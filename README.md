@@ -419,17 +419,17 @@ STATUS_ERROR = 500; // 系统出错
 STATUS_ACCESS_DENIED = 401;// 无权限
 ```
 
-##1. 注册接口
+## 1. 注册接口
 
-###1.1 请求地址
+### 1.1 请求地址
 
 > /register
 
-###1.2 请求方式
+### 1.2 请求方式
 
 > POST
 
-###1.3 请求参数
+### 1.3 请求参数
 
 > 格式：json
 
@@ -442,7 +442,7 @@ STATUS_ACCESS_DENIED = 401;// 无权限
 | number   | String       | 学号   | 不能     |
 | code     | String       | 验证码 | 不能     |
 
-###1.4 返回数据
+### 1.4 返回数据
 
 > 格式：json
 
@@ -452,9 +452,9 @@ STATUS_ACCESS_DENIED = 401;// 无权限
 | data   | json         | 后台查询数据存储于这     |
 | msg    | String       | 消息                     |
 
-##2. 注册接口
+## 2. 注册接口
 
-###2.1 请求地址
+### 2.1 请求地址
 
 > /login
 
@@ -471,7 +471,7 @@ STATUS_ACCESS_DENIED = 401;// 无权限
 | username | String       | 账号 | 不能     |
 | password | String       | 密码 | 不能     |
 
-###2.4 返回数据
+### 2.4 返回数据
 
 > 格式：json
 
@@ -492,5 +492,3 @@ data数据
 | nickname | String       | 昵称     |
 | avatar   | String       | 头像地址 |
 | email    | String       | 邮箱     |
-
-###
