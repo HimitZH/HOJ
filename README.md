@@ -56,7 +56,7 @@ user_info表
 | avatar       | String       |      | 头像图片地址         |
 | signature    | String       |      | 个性签名             |
 | cf_name      | String       |      | codeforces的username |
-| Status       | int          |      | 0可用，1不可用       |
+| status       | int          |      | 0可用，1不可用       |
 | gmt_create   | datetime     |      | 创建时间             |
 | gmt_modified | datetime     |      | 修改时间             |
 
