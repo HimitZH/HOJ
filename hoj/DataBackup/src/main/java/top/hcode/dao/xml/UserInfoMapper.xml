@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="top.hcode.dao.UserInfoMapper">
-    <insert id="addUser" parameterType="top.hcode.common.dto.RegisterDto">
-        insert into user_info(uuid,username,password,nickname,email,number) values (
-           #{uuid}, #{username},#{password},#{nickname},#{email},#{number}
-        )
-    </insert>
-</mapper>

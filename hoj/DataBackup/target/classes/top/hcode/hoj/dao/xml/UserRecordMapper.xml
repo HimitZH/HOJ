@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.dao.UserRecordMapper">
+    <select id="getRankList" resultType="top.hcode.hoj.pojo.vo.RankVo" useCache="false">
+        select uuid,nickname,username,number,total,ac,submissions,rating,score from user_info u,user_record ur
+        where status = 0 and u.uuid = ur.uid
+        order by score,ac,rating Desc
+    </select>
+</mapper>

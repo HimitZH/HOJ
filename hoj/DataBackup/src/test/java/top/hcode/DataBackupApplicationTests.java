@@ -4,9 +4,8 @@ import cn.hutool.core.util.IdUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import top.hcode.common.dto.RegisterDto;
-import top.hcode.dao.UserInfoMapper;
-import top.hcode.entity.UserInfo;
+import top.hcode.hoj.pojo.dto.RegisterDto;
+import top.hcode.hoj.dao.UserInfoMapper;
 
 /**
  * @Author: Himit_ZH

@@ -16,22 +16,22 @@ spring:
     active: dev
   mail:
     properties.mail.smtp.ssl.enable: true
-    username: 372347736@qq.com
-    password: neainmvuetxhbgfa
+    username: ×××××××××
+    password: ×××××××××
     host: smtp.qq.com
   redis:
-    host: 129.204.177.72
+    host: localhost
     port: 6371
 #  application:
 #    name: hoj-data-backup
 #  cloud:
 #    nacos:
 #      discovery:
-#        server-addr: 129.204.177.72:8848
+#        server-addr: localhost:8848
   datasource:
     username: root
-    password: Hzh&hy2020
-    url: jdbc:mysql://129.204.177.72:3306/hoj?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2b8
+    password: 123456
+    url: jdbc:mysql://localhost:3306/hoj?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2b8
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     initial-size: 10 # 初始化时建立物理连接的个数。初始化发生在显示调用init方法，或者第一次getConnection时
@@ -60,17 +60,17 @@ spring:
 
 
 mybatis-plus:
-  mapper-locations: classpath*:top/hcode/dao/xml/**Mapper.xml
-  type-aliases-package: top.hcode.entity
+  mapper-locations: classpath*:top/hcode/hoj/dao/xml/**Mapper.xml
+  type-aliases-package: top.hcode.hoj.pojo.entity
 
 shiro-redis:
   enabled: true
   redis-manager:
-    host: 129.204.177.72:6371
+    host: localhost:6371
 hoj:
   jwt:
     # 加密秘钥
-    secret: zsc-acm-hoj
+    secret: ×××××
     # token有效时长，1小时，单位秒
     expire: 3600
     header: token
