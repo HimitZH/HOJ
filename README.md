@@ -51,7 +51,6 @@ user_info表
 | school       | String       |      | 学校                 |
 | course       | String       |      | 专业                 |
 | number       | String       |      | 学号                 |
-| classes      | String       |      | 班级                 |
 | realname     | String       |      | 真实名字             |
 | email        | Srting       |      | 邮箱                 |
 | avatar       | String       |      | 头像图片地址         |
