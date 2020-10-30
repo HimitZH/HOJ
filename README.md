@@ -39,7 +39,7 @@
 
 > HOJ基本逻辑架构图
 
-![image-20201030234527577](.\md-images\hoj.png)
+![image-20201030234527577](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj.png)
 
 
 
@@ -51,7 +51,7 @@
 >
 > Nacos：注册中心，Consumer通过nacos调用Provider
 
-![](.\md-images\spingcloud-Alibaba.png)
+![spingcloud-Alibaba.png](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/spingcloud-Alibaba.png)
 
 
 
