@@ -10,18 +10,17 @@
 | ---------- | ------------------------------------------------------ | -------- |
 | 2020-10-26 | 数据库设计，登录和注册接口，文档记录开始。             | Himit_ZH |
 | 2020-10-28 | 用户模块接口，题目模块接口，比赛模块接口，排行模块接口 | Himit_ZH |
+| 2020-10-30 | 评测模块接口，判题服务系统，初始化前端vue项目          | Himit_ZH |
 
 # 二、系统架构
 
-> 总概五大系统
+> 总概四大系统
 
 1. 前端vue页面显示系统（电脑端，手机端）
 
 2. 数据交互后台系统 
 
-3. 判题后台系统 
-
-4. 判题机系统 
+4. 判题服务系统 
 
 5. 爬虫系统
 
@@ -33,9 +32,28 @@
 
 1. 前端提交数据。
 2. 后端数据交互后台微服务，将提交写入数据库，使用springcloud alibaba通过nacos注册中心调用判题后台系统微服务。
-3. 判题后台系统微服务，使用RabbitMQ告知判题机系统（传递submitId集合) 。
-4. 判题机系统启用多台判题机（多个进程，有限，防宕机）进行测评，最后将结果更新到数据库。
-5. 爬虫系统负责爬取用户相关的codeforces的积分，vjudge的做题数等。
+3. 判题后台系统微服务，启用多台判题机（多个进程，有限，防宕机）进行测评，最后将结果更新到数据库。
+4. 爬虫系统负责爬取用户相关的codeforces的积分，vjudge的做题数等。
+
+
+
+> HOJ基本逻辑架构图
+
+![image-20201030234527577](.\md-images\hoj.png)
+
+
+
+> springcloud alibaba 分布式微服务架构图
+>
+> Consumer：后台数据交互服务
+>
+> Provider：判题服务
+>
+> Nacos：注册中心，Consumer通过nacos调用Provider
+
+![](.\md-images\spingcloud-Alibaba.png)
+
+
 
 # 三、数据库
 
@@ -195,44 +213,49 @@ problem_count表
 
 > 判题结果status
 
-STATUS_ACCPET = 0
+排队中：STATUS_QUEUING = -10
 
-STATUS__WRONG_ANSWER = -1
+判题中   STATUS_JUDGING = -5
 
-STATUS__CPU_TIME_LIMIT_EXCEEDED = 1
+通过：STATUS_ACCPET = 0
 
-STATUS__REAL_TIME_LIMIT_EXCEEDED = 2
+答案错误：STATUS__WRONG_ANSWER = -1
 
-STATUS__MEMORY_LIMIT_EXCEEDED = 3
+cpu时间超限：STATUS__CPU_TIME_LIMIT_EXCEEDED = 1
 
-STATUS__RUNTIME_ERROR = 4
+真实时间超限：STATUS__REAL_TIME_LIMIT_EXCEEDED = 2
 
-STATUS__SYSTEM_ERROR = 5
+空间超限：STATUS__MEMORY_LIMIT_EXCEEDED = 3
+
+运行错误：STATUS__RUNTIME_ERROR = 4
+
+系统错误：STATUS__SYSTEM_ERROR = 5
 
  
 
 judge表
 
-| 列名         | 实体属性类型 | 键          | 备注                               |
-| ------------ | ------------ | ----------- | ---------------------------------- |
-| submit_id    | long         | primary key | auto_increment                     |
-| pid          | long         | 外键        | 题目id                             |
-| uid          | String       | 外键        | 提交用户的id                       |
-| submit_time  | datetime     |             | 提交时间                           |
-| status       | String       |             | 判题结果                           |
-| auth         | int          |             | 0为代码全部人可见，1为仅自己可见。 |
-| error_message| String       |             | 错误提醒（编译错误，或者vj提醒）   |
-| time         | int          |             | 运行时间                           |
-| memory       | int          |             | 所耗内存                           |
-| length       | int          |             | 代码长度                           |
-| code         | String       |             | 代码                               |
-| language     | String       |             | 代码语言                           |
-| cpid         | int          |             | 比赛中的题目编号id                 |
-| judger       | String       |             | 判题机ip                           |
-| ip           | String       |             | 提交者ip                           |
-| cid          | int          |             | 题目来源的比赛id，默认为0          |
-| gmt_create   | datetime     |             | 创建时间                           |
-| gmt_modified | datetime     |             | 修改时间                           |
+| 列名          | 实体属性类型 | 键          | 备注                               |
+| ------------- | ------------ | ----------- | ---------------------------------- |
+| submit_id     | long         | primary key | auto_increment                     |
+| pid           | long         | 外键        | 题目id                             |
+| uid           | String       | 外键        | 提交用户的id                       |
+| submit_time   | datetime     |             | 提交时间                           |
+| status        | String       |             | 判题结果                           |
+| auth          | int          |             | 0为代码全部人可见，1为仅自己可见。 |
+| error_message | String       |             | 错误提醒（编译错误，或者vj提醒）   |
+| time          | int          |             | 运行时间                           |
+| memory        | int          |             | 所耗内存                           |
+| length        | int          |             | 代码长度                           |
+| code          | String       |             | 代码                               |
+| language      | String       |             | 代码语言                           |
+| cpid          | int          |             | 比赛中的题目编号id                 |
+| judger        | String       |             | 判题机ip                           |
+| ip            | String       |             | 提交者ip                           |
+| cid           | int          |             | 题目来源的比赛id，默认为0          |
+| version       | int          |             | 乐观锁                             |
+| gmt_create    | datetime     |             | 创建时间                           |
+| gmt_modified  | datetime     |             | 修改时间                           |
 
  
 
@@ -289,15 +312,14 @@ contest表
 
 contest_problem表
 
-| 列名         | 实体属性类型 | 键          | 备注                   |
-| ------------ | ------------ | ----------- | ---------------------- |
-| id           | long         | 主键         | auto_increment         |
-| cid          | int          | 外键        | 比赛id                 |
-| pid          | int          | 外键        | 题目id                 |
-| cp_name      | String       |             | 用于当场比赛的题目标题 |
-| cp_num       | String       |             | 比赛题目的顺序id       |
-| gmt_create   | datetime     |             | 创建时间               |
-| gmt_modified | datetime     |             | 修改时间               |
+| 列名         | 实体属性类型 | 键   | 备注                   |
+| ------------ | ------------ | ---- | ---------------------- |
+| id           | long         | 主键 | auto_increment         |
+| cid          | int          | 外键 | 比赛id                 |
+| pid          | int          | 外键 | 题目id                 |
+| cp_name      | String       |      | 用于当场比赛的题目标题 |
+| gmt_create   | datetime     |      | 创建时间               |
+| gmt_modified | datetime     |      | 修改时间               |
 
  
 
@@ -408,7 +430,7 @@ comment_tag表  讨论标签表
 
  
 
-# 四、后端数据接口
+# 四、后端交互系统
 
 
 
@@ -894,3 +916,159 @@ data数据
 | ac          | int          | 总通过数     |
 | Rating      | int          | cf得分       |
 | score       | int          | io制比赛得分 |
+
+### （五）、评测模块
+
+> 评测分为普通做题评测和比赛做题评测
+
+#### 1. 提交评测接口
+
+##### 1.1 请求地址
+
+> /api/submit-problem-judge
+
+##### 1.2 请求方式
+
+> POST
+
+**需要做登录授权认证！**
+
+##### 1.3 请求参数
+
+> 格式：json 
+
+| 字段名   | 实体属性类型 | 说明                             | 能否为空 |
+| -------- | ------------ | -------------------------------- | -------- |
+| pid      | long         | 题目id                           | 不能     |
+| uid      | String       | 用户id                           | 不能     |
+| language | String       | 代码语言                         | 不能     |
+| code     | String       | 代码                             | 不能     |
+| auth     | int          | 0为代码全部人可见，1为仅自己可见 | 不能     |
+| cid      | long         | 所属比赛id，若无设置为0          | 不能     |
+| cpid     | long         | 所属比赛题目id，若无设置为0      | 不能     |
+
+##### 1.4 返回数据
+
+> 格式：json
+
+| 字段名 | 实体属性类型 | 说明                               |
+| ------ | ------------ | ---------------------------------- |
+| status | int          | 状态码，详情见状态码说明           |
+| data   | json         | 评测结果（具体看Judge类或judge表） |
+| msg    | String       | 消息                               |
+
+#### 2. 评测列表接口
+
+##### 2.1 请求地址
+
+> /api/get-judge-list
+
+##### 2.2 请求方式
+
+> GET
+
+##### 2.3 请求参数
+
+> 格式：x-www-form-urlencoded
+
+| 字段名         | 实体属性类型 | 说明                                         | 能否为空 |
+| -------------- | ------------ | -------------------------------------------- | -------- |
+| limit          | String       | （查询条件）每页的判题条数                   | 能       |
+| currentPage    | int          | （查询条件）页数                             | 能       |
+| searchPid      | long         | （查询条件）题目id                           | 能       |
+| searchSource   | String       | （查询条件）题目来源                         | 能       |
+| searchLanguage | String       | （查询条件）提交代码语言                     | 能       |
+| searchStatus   | int          | （查询条件）提交代码结果                     | 能       |
+| searchUsername | String       | （查询条件）提交的用户名                     | 能       |
+| searchCid      | long         | 比赛评测状态根据cid，若非比赛的则设置为0即可 | 不能     |
+
+##### 2.4 返回数据
+
+> 格式：json
+
+| 字段名 | 实体属性类型 | 说明                              |
+| ------ | ------------ | --------------------------------- |
+| status | int          | 状态码，详情见状态码说明          |
+| data   | json         | 判题结果列表（具体请看JudgeVo类） |
+| msg    | String       | 消息                              |
+
+
+
+#### 3. 评测样例接口
+
+##### 1.1 请求地址
+
+> /api/get-judge-case
+
+##### 1.2 请求方式
+
+> GET
+
+##### 1.3 请求参数
+
+> 格式：x-www-form-urlencoded
+
+| 字段名   | 实体属性类型 | 说明   | 能否为空 |
+| -------- | ------------ | ------ | -------- |
+| submitId | long         | 提交id | 不能     |
+| pid      | long         | 题目id | 不能     |
+
+##### 1.4 返回数据
+
+> 格式：json
+
+| 字段名 | 实体属性类型 | 说明                                      |
+| ------ | ------------ | ----------------------------------------- |
+| status | int          | 状态码，详情见状态码说明                  |
+| data   | json         | 评测样例列表（JudgeCase类或judge_case表） |
+| msg    | String       | 消息                                      |
+
+### （六）、讨论模块
+
+> 暂时搁置，可能自己写，也可能用别人的组件！！！！
+
+##### 
+
+# 五、判题服务系统
+
+### （一）、数据接口模块
+
+> 后端数据交互系统在nacos注册中心通过openfeign的形式调用判题系统服务
+
+#### 1. 评测接口
+
+##### 1.1 请求地址
+
+> /judge
+
+##### 1.2 请求方式
+
+> POST
+
+##### 1.3 请求参数
+
+> 格式：json 
+
+| 字段名   | 实体属性类型 | 说明                             | 能否为空 |
+| -------- | ------------ | -------------------------------- | -------- |
+| pid      | long         | 题目id                           | 不能     |
+| uid      | String       | 用户id                           | 不能     |
+| language | String       | 代码语言                         | 不能     |
+| code     | String       | 代码                             | 不能     |
+| auth     | int          | 0为代码全部人可见，1为仅自己可见 | 不能     |
+| cid      | long         | 所属比赛id，若无设置为0          | 不能     |
+| cpid     | long         | 所属比赛题目id，若无设置为0      | 不能     |
+
+##### 1.4 返回数据
+
+> 格式：json
+
+| 字段名 | 实体属性类型 | 说明                               |
+| ------ | ------------ | ---------------------------------- |
+| status | int          | 状态码，详情见状态码说明           |
+| data   | json         | 评测结果（具体看Judge类或judge表） |
+| msg    | String       | 消息                               |
+
+
+
+###（二）、判题机模块
