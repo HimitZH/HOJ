@@ -1,6 +1,6 @@
 package top.hcode.hoj.service;
 
-import top.hcode.hoj.pojo.entity.CommentTag;
+import top.hcode.hoj.pojo.entity.Tag;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author Himit_ZH
  * @since 2020-10-23
  */
-public interface CommentTagService extends IService<CommentTag> {
+public interface TagService extends IService<Tag> {
 
 }

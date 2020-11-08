@@ -1,8 +1,8 @@
 package top.hcode.hoj.service.impl;
 
-import top.hcode.hoj.pojo.entity.CommentTag;
-import top.hcode.hoj.dao.CommentTagMapper;
-import top.hcode.hoj.service.CommentTagService;
+import top.hcode.hoj.pojo.entity.Tag;
+import top.hcode.hoj.dao.TagMapper;
+import top.hcode.hoj.service.TagService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2020-10-23
  */
 @Service
-public class CommentTagServiceImpl extends ServiceImpl<CommentTagMapper, CommentTag> implements CommentTagService {
+public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagService {
 
 }

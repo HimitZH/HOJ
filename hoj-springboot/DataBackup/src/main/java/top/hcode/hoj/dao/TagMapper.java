@@ -1,6 +1,6 @@
 package top.hcode.hoj.dao;
 
-import top.hcode.hoj.pojo.entity.CommentTag;
+import top.hcode.hoj.pojo.entity.Tag;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author Himit_ZH
  * @since 2020-10-23
  */
-public interface CommentTagMapper extends BaseMapper<CommentTag> {
+public interface TagMapper extends BaseMapper<Tag> {
 
 }

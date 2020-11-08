@@ -24,8 +24,8 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="CommentTag对象", description="")
-public class CommentTag implements Serializable {
+@ApiModel(value="Tag对象", description="")
+public class Tag implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

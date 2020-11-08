@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableDiscoveryClient
 @SpringBootApplication
 @EnableFeignClients // 开启feign
-@EnableAsync //开启异步注解
+@EnableAsync(proxyTargetClass=true) //开启异步注解
 public class DataBackupApplication {
     public static void main(String[] args) {
         SpringApplication.run(DataBackupApplication.class,args);

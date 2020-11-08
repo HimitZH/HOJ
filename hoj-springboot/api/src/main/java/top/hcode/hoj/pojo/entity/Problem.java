@@ -60,6 +60,9 @@ public class Problem implements Serializable {
     @ApiModelProperty(value = "题目来源")
     private String source;
 
+    @ApiModelProperty(value = "题目难度")
+    private String difficulty;
+
     @ApiModelProperty(value = "备注")
     private String comment;
 

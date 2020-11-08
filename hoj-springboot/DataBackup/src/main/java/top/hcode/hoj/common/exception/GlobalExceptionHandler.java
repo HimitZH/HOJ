@@ -4,6 +4,7 @@ package top.hcode.hoj.common.exception;
 import com.google.protobuf.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.ShiroException;
+import org.apache.shiro.authc.ExpiredCredentialsException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -36,11 +37,12 @@ public class GlobalExceptionHandler {
      * 401 -UnAuthorized 处理shiro的异常
      */
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(ShiroException.class)
+    @ExceptionHandler({ShiroException.class, ExpiredCredentialsException.class})
     public CommonResult handle401(ShiroException e) {
         log.error("shiro异常-------------->{}", e.getMessage());
         return CommonResult.errorResponse("对不起，您无权限进行此操作，请先登录进行授权认证", CommonResult.STATUS_ACCESS_DENIED);
     }
+
 
     /**
      * 400 - Bad Request 处理Assert的异常 断言的异常！

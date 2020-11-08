@@ -1,5 +1,7 @@
 package top.hcode.hoj.dao;
 
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.Role;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -11,6 +13,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author Himit_ZH
  * @since 2020-10-23
  */
+@Mapper
+@Repository
 public interface RoleMapper extends BaseMapper<Role> {
 
 }
