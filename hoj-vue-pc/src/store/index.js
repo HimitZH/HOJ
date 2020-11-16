@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import user from '@/store/user'
+import contest from "@/store/contest"
 Vue.use(Vuex)
 const rootState = {
   modalStatus: {
@@ -72,12 +73,20 @@ const rootActions = {
   },
   startTimeOut({ commit }, payload) {
     commit('startTimeOut', payload)
+  },
+  changeDomTitle ({commit, state}, payload) {
+    if (payload && payload.title) {
+      window.document.title = state.website.website_name_shortcut + ' | ' + payload.title
+    } else {
+      window.document.title = state.website.website_name_shortcut + ' | ' + state.route.meta.title
+    }
   }
 }
 
 export default new Vuex.Store({
   modules: {
     user,
+    contest
   },
   state: rootState,
   getters: rootGetters,

@@ -4,8 +4,10 @@
       <el-menu
         :default-active="activeIndex"
         mode="horizontal"
-        :router="isRouter"
+        router
         active-text-color="#2196f3"
+        text-color="#495060"
+        
       >
         <div class="logo">
           <el-image
@@ -26,13 +28,16 @@
         <el-menu-item index="/status"
           ><i class="el-icon-s-marketing"></i>Status</el-menu-item
         >
-        <el-menu-item index="/rank"
-          ><i class="el-icon-s-data"></i>Rank</el-menu-item
-        >
+        <el-submenu index="rank" >
+          <template slot="title"><i class="el-icon-s-data"></i>Rank</template>
+          <el-menu-item index="/acm-rank">ACM Rank</el-menu-item>
+          <el-menu-item index="/oi-rank">OI Rank</el-menu-item>
+        </el-submenu>
+
         <el-submenu index="about">
           <template slot="title"><i class="el-icon-info"></i>About</template>
-          <el-menu-item index="6-1">Introduction</el-menu-item>
-          <el-menu-item index="6-2">Developer</el-menu-item>
+          <el-menu-item index="/introduction">Introduction</el-menu-item>
+          <el-menu-item index="/developer">Developer</el-menu-item>
         </el-submenu>
 
         <template v-if="!isAuthenticated">
@@ -58,7 +63,7 @@
            
           >
           <span class="el-dropdown-link">
-        {{userInfo.username}}<i class="el-icon-arrow-down el-icon--right"></i>
+        {{userInfo.username}}<i class="el-icon-caret-bottom"></i>
       </span>
             
             
@@ -98,12 +103,16 @@ export default {
     ResetPwd,
   },
   mounted() {
-    this.activeIndex = this.$route.path
+    let activeName = this.$route.path.split("/")[1];
+    if(activeName === ''){
+      this.activeIndex = '/home'
+    }else{
+      this.activeIndex = '/'+activeName
+    }
   },
   data() {
     return {
       activeIndex: "home",
-      isRouter:true,
       centerDialogVisible: false,
       imgUrl: require("@/assets/logo.png"),
     };
@@ -126,9 +135,6 @@ export default {
   },
   computed: {
     ...mapGetters(["modalStatus", "userInfo", "isAuthenticated", "isAdminRole","token"]),
-    activeMenu() {
-      return "/" + this.$route.path.split("/")[1];
-    },
     modalVisible: {
       get() {
         return this.modalStatus.visible;
@@ -202,4 +208,14 @@ export default {
   line-height: 1em;
   color: #4e4e4e;
 }
+  .el-submenu__title i {
+    color: #495060!important;
+  }
+  .el-menu-item i{
+    color: #495060;
+  }
+   .is-active .el-submenu__title i,.is-active{
+    color:#2196f3!important;
+  }
+
 </style>

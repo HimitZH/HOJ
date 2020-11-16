@@ -5,11 +5,23 @@ import Setting from "@/views/user/Setting.vue"
 import ProblemLIst from "@/views/problem/ProblemList.vue"
 import Logout from "@/views/user/Logout.vue"
 import SubmissionList from "@/views/status/SubmissionList.vue"
+import SubmissionDetails from "@/views/status/SubmissionDetails.vue"
+import ContestList from "@/views/contest/ContestList.vue"
+import Problem from "@/views/problem/Problem.vue"
+import ACMRank from "@/views/rank/ACMRank.vue"
+import OIRank from "@/views/rank/OIRank.vue"
+import CountDown from "@/views/contest/test.vue"
 const routes = [
   {
+    path: '/count-down',
+    name: 'CountDown',
+    component: CountDown
+  },
+  {
     path: '/',
-    name: 'Home',
-    component: Home
+    redirect: {
+      name: 'Home',
+    }
   },
   {
     path: '/home',
@@ -22,9 +34,34 @@ const routes = [
     component: ProblemLIst
   },
   {
+    path: '/problem/1',
+    name: 'problem-details',
+    component: Problem
+  },
+  {
+    path: '/contest',
+    name: 'ContestList',
+    component: ContestList
+  },
+  {
     path: '/status',
     name: 'SubmissionList',
     component: SubmissionList
+  },
+  {
+    path: '/submission-detail',
+    name: 'SubmissionDeatil',
+    component: SubmissionDetails
+  },
+  {
+    path: '/acm-rank',
+    name: 'ACM Rank',
+    component: ACMRank
+  },
+  {
+    path: '/oi-rank',
+    name: 'OI Rank',
+    component: OIRank
   },
   {
     path: '/reset-password',
@@ -35,19 +72,19 @@ const routes = [
     name: 'UserHome',
     path: '/user-home',
     component: UserHome,
-    meta: {requireAuth: true, title: 'User Home'}
+    meta: { requireAuth: true, title: 'User Home' }
   },
   {
     name: 'Setting',
     path: '/setting',
     component: Setting,
-    meta: {requireAuth: true, title: 'Setting'}
+    meta: { requireAuth: true, title: 'Setting' }
   },
   {
     name: 'Logout',
     path: '/logout',
     component: Logout,
-    meta: {requireAuth: true, title: 'Logout'}
+    meta: { requireAuth: true, title: 'Logout' }
   },
 ]
 export default routes

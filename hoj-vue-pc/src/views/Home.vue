@@ -9,7 +9,7 @@
       <div class="contest-info">
             <div class="contest-tags">
               <el-button type="primary" round size="mini"><i class="fa fa-calendar"></i>
-                {{contest.beginTime | localtime('YYYY-M-D HH:mm') }}
+                {{contest.beginTime | localtime }}
               </el-button>
               <el-button type="success" round size="mini"><i class="fa fa-clock-o"></i>
                 {{contest.duration}}
@@ -88,6 +88,7 @@
 </template>
 
 <script>
+import time from "@/common/time";
 export default {
     name:"home",
     data() {
@@ -96,12 +97,12 @@ export default {
         tableData: [{
           oj: 'Codeforces',
           title: 'Codeforces Round #680 (Div. 1, based on VK Cup 2020-2021 - Final)',
-          beginTime: '2016-05-03 12:00:00',
-          endTime:'2016-05-03 17:00:00',
+          beginTime: '2020-11-08T05:00:00Z',
+          endTime:'2020-11-08T08:00:00Z',
         },],
         contests: [
           {
-            beginTime:'2020-11-11',
+            beginTime:'2020-11-08T05:00:00Z',
             duration:'5hours',
             type:"ACM",
             description:'<h1>描述</h1>',
@@ -113,7 +114,12 @@ export default {
       goContest(){
 
       }
-    }
+    },
+    filters: {
+    localtime(value) {
+      return time.utcToLocal(value);
+    },
+  },
   }
 </script>
 <style scoped>

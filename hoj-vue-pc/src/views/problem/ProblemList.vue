@@ -16,7 +16,7 @@
           >
           <span class="el-dropdown-link">
               {{query.difficulty === '' ? 'Difficulty' : query.difficulty}}
-            <i class="el-icon-arrow-down el-icon--right"></i>
+            <i class="el-icon-caret-bottom"></i>
           </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="All">All</el-dropdown-item>
@@ -37,9 +37,24 @@
             @cell-mouseenter="cellHover"
             :data="problemList">
             <vxe-table-column field="pid" title="Problem ID" width="100"></vxe-table-column>
-            <vxe-table-column field="title" title="Title" width="300" type="html"></vxe-table-column>
-            <vxe-table-column field="level" title="Level" width="150" type="html"></vxe-table-column>
-            <vxe-table-column field="tag" title="Tag" width="250" type="html"></vxe-table-column>
+
+            <vxe-table-column field="title" title="Title" width="300">
+              <template v-slot="{ row }">
+                <a :href="getProblemUri(row.pid)" style="color:rgb(87, 163, 243);">{{row.title}}</a>
+              </template>
+            </vxe-table-column>
+
+            <vxe-table-column field="level" title="Level" width="150">
+              <template v-slot="{ row }">
+                <span :class="getLevelColor(row.level)">{{PROBLEM_LEVEL[row.level].name}}</span>
+              </template>
+            </vxe-table-column>
+            
+            <vxe-table-column field="tag" title="Tag" width="250" type="html">
+              <template v-slot="{ row }">
+              <span class="el-tag el-tag--medium el-tag--light is-hit" style="margin-right: 7px;" v-for="tag in row.tags" :key="tag">{{tag}}</span>
+              </template>
+            </vxe-table-column>
             <vxe-table-column field="total" title="Total" width="100"></vxe-table-column>
             <vxe-table-column field="ACRate" title="AC Rate" width="100"></vxe-table-column>
       </vxe-table>
@@ -51,71 +66,15 @@
     <el-col :sm="24" :md="6" :lg="6">
      <el-card style="text-align:center">
        <span class="panel-title" >题目</span>
-      <el-row>
+      <el-row v-for="record in problemRecord" :key="record">
         <el-col :xs="5" :sm="4" :md="6" :lg="4" style="margin-top: 10px;">  
-          <el-tag type="success" effect="dark" size="small">AC</el-tag>
+          <el-tag  effect="dark" size="small" :color="JUDGE_STATUS[record.status].rgb">{{JUDGE_STATUS[record.status].short}}</el-tag>
         </el-col>
         <el-col :xs="19" :sm="20" :md="18" :lg="20" > 
-          <el-progress :text-inside="true" :stroke-width="20" :percentage="70" status="success"></el-progress>
+          <el-progress :text-inside="true" :stroke-width="20" :percentage="record.count" :color="JUDGE_STATUS[record.status].rgb"></el-progress>
         </el-col>
       </el-row>
-      <el-row>
-        <el-col :xs="5" :sm="4" :md="6" :lg="4" style="margin-top: 10px;">  
-          <el-tag type="danger" effect="dark" size="small">WA</el-tag>
-        </el-col>
-        <el-col :xs="19" :sm="20" :md="18" :lg="20" > 
-          <el-progress :text-inside="true" :stroke-width="20" :percentage="70" status="exception"></el-progress>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :xs="5" :sm="4" :md="6" :lg="4" style="margin-top: 10px;">  
-          <el-tag type="danger" effect="dark" size="small">MLE</el-tag>
-        </el-col>
-        <el-col :xs="19" :sm="20" :md="18" :lg="20" > 
-          <el-progress :text-inside="true" :stroke-width="20" :percentage="70" status="exception"></el-progress>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :xs="5" :sm="4" :md="6" :lg="4" style="margin-top: 10px;">  
-          <el-tag type="danger" effect="dark" size="small">TLE</el-tag>
-        </el-col>
-        <el-col :xs="19" :sm="20" :md="18" :lg="20" > 
-          <el-progress :text-inside="true" :stroke-width="20" :percentage="70" status="exception"></el-progress>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :xs="5" :sm="4" :md="6" :lg="4" style="margin-top: 10px;">  
-          <el-tag type="danger" effect="dark" size="small">RTE</el-tag>
-        </el-col>
-        <el-col :xs="19" :sm="20" :md="18" :lg="20" > 
-          <el-progress :text-inside="true" :stroke-width="20" :percentage="70" status="exception"></el-progress>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :xs="5" :sm="4" :md="6" :lg="4" style="margin-top: 10px;">  
-          <el-tag type="warning" effect="dark" size="small">PE</el-tag>
-        </el-col>
-        <el-col :xs="19" :sm="20" :md="18" :lg="20" > 
-          <el-progress :text-inside="true" :stroke-width="20" :percentage="70" status="warning"></el-progress>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :xs="5" :sm="4" :md="6" :lg="4" style="margin-top: 10px;">  
-          <el-tag type="warning" effect="dark" size="small">CE</el-tag>
-        </el-col>
-        <el-col :xs="19" :sm="20" :md="18" :lg="20" > 
-          <el-progress :text-inside="true" :stroke-width="20" :percentage="70" status="warning"></el-progress>
-        </el-col>
-      </el-row>
-       <el-row>
-        <el-col :xs="5" :sm="4" :md="6" :lg="4" style="margin-top: 10px;">  
-          <el-tag type="info" effect="dark" size="small">SE</el-tag>
-        </el-col>
-        <el-col :xs="19" :sm="20" :md="18" :lg="20" > 
-          <el-progress :text-inside="true" :stroke-width="20" :percentage="70" :color="SEcolor"></el-progress>
-        </el-col>
-      </el-row>
-      </el-card> 
+    </el-card> 
     <el-card :padding="10" style="margin-top:20px">
       <div slot="header" ><span class="taglist-title">Tags</span></div>
       <el-button v-for="tag in tagList"
@@ -140,6 +99,7 @@
   import { mapGetters } from 'vuex'
   import api from '@/common/api'
   import utils from '@/common/utils'
+  import { PROBLEM_LEVEL,JUDGE_STATUS } from '@/common/constants'
   import Pagination from '@/components/common/Pagination'
 
   export default {
@@ -150,41 +110,33 @@
     data () {
       return {
         SEcolor:'#909399',
+        PROBLEM_LEVEL:'',
+        JUDGE_STATUS:'',
         tagList: [{
           id:'12',
           name:'模拟题'
-        },
-        {
-          id:'13',
-          name:'模拟题'
-        },
-        {
-          id:'14',
-          name:'模拟题'
-        },
-         {
-          id:'15',
-          name:'模拟题'
-        },
-         {
-          id:'16',
-          name:'模拟题'
-        },],
+        }],
+        problemRecord:[
+          {status:'0',count:'70'},
+          {status:'-1',count:'70'},
+          {status:'3',count:'70'},
+          {status:'1',count:'70'},
+          {status:'4',count:'70'},
+          {status:'-3',count:'70'},
+          {status:'-2',count:'70'},
+          {status:'5',count:'70'},
+        ],
         problemList: [
-          {pid:'1000',title:'<a href="https://github.com/x-extends/vxe-table" class="title-link">测试标题</a>',level:'<span class="el-tag el-tag--dark el-tag--small">Easy</span>',
-          tag:'<span class="el-tag el-tag--medium el-tag--light is-hit" style="margin-right: 7px;">简单题</span><span class="el-tag el-tag--medium el-tag--light is-hit" style="margin-right: 7px;">简单题</span>',
+          {pid:'1000',title:'测试标题',level:0,
+          tags:['简单题','模拟题'],
           total:'10000',ACRate:'59.12%'
           },
-          {pid:'1000',title:'<a href="https://github.com/x-extends/vxe-table" class="title-link">测试标题</a>',level:'<span class="el-tag el-tag--dark el-tag--small">Easy</span>',
-          tag:'<span class="el-tag el-tag--medium el-tag--light is-hit" style="margin-right: 7px;">简单题</span><span class="el-tag el-tag--medium el-tag--light is-hit" style="margin-right: 7px;">简单题</span>',
+          {pid:'1000',title:'测试标题',level:1,
+          tags:['简单题','模拟题'],
           total:'10000',ACRate:'59.12%'
           },
-          {pid:'1000',title:'<a href="https://github.com/x-extends/vxe-table" class="title-link">测试标题</a>',level:'<span class="el-tag el-tag--dark el-tag--small">Easy</span>',
-          tag:'<span class="el-tag el-tag--medium el-tag--light is-hit" style="margin-right: 7px;">简单题</span><span class="el-tag el-tag--medium el-tag--light is-hit" style="margin-right: 7px;">简单题</span>',
-          total:'10000',ACRate:'59.12%'
-          },
-          {pid:'1000',title:'<a href="https://github.com/x-extends/vxe-table" class="title-link">测试标题</a>',level:'<span class="el-tag el-tag--dark el-tag--small">Easy</span>',
-          tag:'<span class="el-tag el-tag--medium el-tag--light is-hit" style="margin-right: 7px;">简单题</span><span class="el-tag el-tag--medium el-tag--light is-hit" style="margin-right: 7px;">简单题</span>',
+          {pid:'1000',title:'测试标题',level:2,
+          tags:['简单题','模拟题'],
           total:'10000',ACRate:'59.12%'
           },
         ],
@@ -210,7 +162,9 @@
       }
     },
     mounted () {
-       this.init()
+       this.init();
+       this.PROBLEM_LEVEL = Object.assign({}, PROBLEM_LEVEL);
+       this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS)
     },
     methods: {
       init (simulate = false) {
@@ -279,6 +233,12 @@
           this.$success('Good Luck')
           this.$router.push({name: 'problem-details', params: {problemID: res.data.data}})
         })
+      },
+      getProblemUri(pid){
+        return '/problem/'+pid;
+      },
+      getLevelColor(level){
+        return 'el-tag el-tag--small status-'+PROBLEM_LEVEL[level].color;
       }
     },
     computed: {
@@ -305,7 +265,9 @@
     font-size: 21px;
     font-weight: 500;
   }
-
+  /deep/.el-tag--dark {
+    border-color: #d9ecff;
+  }
   /deep/.tag-btn {
     margin-left: 4px!important;
     margin-top: 4px;
@@ -326,13 +288,6 @@
       padding-top: 0px;
       margin-top:5px;
     }
-  }
-  .panel-title{
-    font-size: 21px;
-    font-weight: 500;
-    padding-top: 10px;
-    padding-bottom: 20px;
-    line-height: 30px;
   }
   ul{
     float: right;

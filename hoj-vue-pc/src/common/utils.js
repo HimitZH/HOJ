@@ -78,6 +78,39 @@ function downloadFile (url) {
   })
 }
 
+function getLanguages () {
+  return new Promise((resolve, reject) => {
+    let languages = storage.get(STORAGE_KEY.languages)
+    if (languages) {
+      resolve(languages)
+    }else{
+      let langs = [
+      {
+        content_type: "text/x-csrc",
+        description: "GCC 5.4",
+        name: "C",
+      },
+      {
+        content_type: "text/x-c++src",
+        description: "G++ 5.4",
+        name: "C++",
+      },  
+      { content_type: "text/x-java",
+        description: "OpenJDK 1.8",
+        name: "Java",
+      },
+      {
+        content_type: "text/x-python",
+        description: "Python 3.7",
+        name: "Python3",
+      }
+      ];
+      storage.set(STORAGE_KEY.languages,langs);
+      resolve(langs);
+    }
+  })
+}
+
 
 
 export default {
@@ -87,4 +120,5 @@ export default {
   filterEmptyValue: filterEmptyValue,
   breakLongWords: breakLongWords,
   downloadFile: downloadFile,
+  getLanguages:getLanguages
 }

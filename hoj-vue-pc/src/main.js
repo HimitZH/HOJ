@@ -5,6 +5,7 @@ import store from './store'
 import Element from 'element-ui'
 import "element-ui/lib/theme-chalk/index.css"
 import 'font-awesome/css/font-awesome.min.css'
+import 'default-passive-events'
 import Message from 'vue-m-message'
 import 'vue-m-message/dist/index.css'
 import VueCropper from 'vue-cropper'
@@ -14,11 +15,37 @@ import 'xe-utils'
 import VXETable from 'vxe-table'
 import 'vxe-table/lib/style.css'
 
-Vue.use(VXETable)
+import Katex from '@/common/katex'
 
+import VueClipboard from 'vue-clipboard2'
+import highlight from '@/common/highlight'
+
+import filters from '@/common/filters.js'
+
+import ECharts from 'vue-echarts/components/ECharts.vue'
+import 'echarts/lib/chart/bar'
+import 'echarts/lib/chart/line'
+import 'echarts/lib/chart/pie'
+import 'echarts/lib/component/title'
+import 'echarts/lib/component/grid'
+import 'echarts/lib/component/dataZoom'
+import 'echarts/lib/component/legend'
+import 'echarts/lib/component/tooltip'
+import 'echarts/lib/component/toolbox'
+import 'echarts/lib/component/markPoint'
+
+Object.keys(filters).forEach(key => {   // 注册全局过滤器
+  Vue.filter(key, filters[key])
+})
+Vue.use(Katex)  // 数学公式渲染
+Vue.use(VXETable) // 表格组件
+Vue.use(VueClipboard) // 剪贴板
+Vue.use(highlight) // 代码高亮
 Vue.use(Element)
 Vue.use(VueCropper)
-Vue.use(Message, { name: 'msg' }) // `Vue.prototype.$msg`
+Vue.use(Message, { name: 'msg' }) // `Vue.prototype.$msg` 全局消息提示
+
+Vue.component('ECharts', ECharts)
 Vue.prototype.$axios = axios
 Vue.config.productionTip = false
 new Vue({
