@@ -1,25 +1,25 @@
 <template>
   <el-row type="flex" justify="space-around">
-    <el-col :span="22">
+    <el-col :span="24">
     <el-card :padding="10">
       <div slot="header"><span class="panel-title">OI Ranklist</span></div>
       <div class="echarts">
         <ECharts :options="options" ref="chart" auto-resize></ECharts>
       </div>
     </el-card>
-    <vxe-table :data="dataRank" :loading="loadingTable" align="center" highlight-hover-row style="font-weight: 500;">
-      <vxe-table-column type="seq" width="100"></vxe-table-column>
-      <vxe-table-column field="username" title="User" width="168">
+    <vxe-table :data="dataRank" :loading="loadingTable" align="center" highlight-hover-row  auto-resize style="font-weight: 500;">
+      <vxe-table-column type="seq" min-width="50"></vxe-table-column>
+      <vxe-table-column field="username" title="User" min-width="150">
          <template v-slot="{ row }">
           <a :href="getInfoByUsername(row.username)" style="color:rgb(87, 163, 243);">{{row.username}}</a>
         </template>
       </vxe-table-column>
-      <vxe-table-column field="nickname" title="Nickname" width="168"></vxe-table-column>
-      <vxe-table-column field="signature" title="Mood" width="173"></vxe-table-column>
-      <vxe-table-column field="score" title="Score" width="168"></vxe-table-column>
-      <vxe-table-column field="ac" title="AC" width="168"></vxe-table-column>
-      <vxe-table-column field="total" title="Total" width="168"></vxe-table-column>
-      <vxe-table-column field="rating" title="Rating" width="168"></vxe-table-column>
+      <vxe-table-column field="nickname" title="Nickname" min-width="180"></vxe-table-column>
+      <vxe-table-column field="signature" title="Mood" min-width="180"></vxe-table-column>
+      <vxe-table-column field="score" title="Score" min-width="80"></vxe-table-column>
+      <vxe-table-column field="ac" title="AC" min-width="80"></vxe-table-column>
+      <vxe-table-column field="total" title="Total" min-width="80"></vxe-table-column>
+      <vxe-table-column field="rating" title="Rating" min-width="80"></vxe-table-column>
     </vxe-table>
     <Pagination :total="total" :page-size.sync="limit" :current.sync="page"
                 @on-change="getRankData"
@@ -44,11 +44,7 @@
         page: 1,
         limit: 30,
         total: 0,
-        dataRank: [
-          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
-          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
-          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
-        ],
+        dataRank:[],
         options: {
           tooltip: {
             trigger: 'axis'
@@ -58,7 +54,9 @@
           },
           grid: {
             x: '3%',
-            x2: '3%'
+            x2: '3%',
+            left:'8%',
+            right:'8%'
           },
           toolbox: {
             show: true,
@@ -67,8 +65,8 @@
               magicType: {show: true, type: ['line', 'bar']},
               saveAsImage: {show: true}
             },
-            right: '5%',
-            top:'5%'
+            right: '8%',
+            top:'5%',
           },
           calculable: true,
           xAxis: [
@@ -92,7 +90,13 @@
           ],
           yAxis: [
             {
-              type: 'value'
+              type: 'value', 
+              axisLabel: {
+                rotate:50,
+                textStyle:{
+                    fontSize:'12em',
+                },
+              }
             }
           ],
           series: [
@@ -113,6 +117,20 @@
     },
     mounted () {
       // this.getRankData(1)
+      let data =  [
+          {username:'root111',nickname:'Himit_ZH',signature:'Show me your code',score:100000,ac:100,total:100,rating:'100%'},
+          {username:'测试一下不会真的有人取那么长的名字吧',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
+          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
+          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
+          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
+          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
+          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
+          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
+          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
+          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
+        ];
+      this.dataRank = data;
+      this.changeCharts(data);
     },
     methods: {
       getRankData (page) {
@@ -131,8 +149,8 @@
       changeCharts (rankData) {
         let [usernames, scores] = [[], []]
         rankData.forEach(ele => {
-          usernames.push(ele.user.username)
-          scores.push(ele.total_score)
+          usernames.push(ele.username)
+          scores.push(ele.score)
         })
         this.options.xAxis[0].data = usernames
         this.options.series[0].data = scores
@@ -147,7 +165,12 @@
 <style scoped>
   .echarts {
     margin: 0 auto;
-    width: 95%;
+    width: 100%;
     height: 400px;
+  }
+  @media screen and (max-width: 768px) {
+    /deep/.el-card__body {
+      padding: 0!important;
+    }
   }
 </style>

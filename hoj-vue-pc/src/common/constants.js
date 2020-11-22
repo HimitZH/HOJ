@@ -1,4 +1,11 @@
 export const JUDGE_STATUS = {
+  '-10': {
+    name: 'Not submitted',
+    short: 'NS',
+    color: 'gray',
+    type: 'info',
+    rgb:'#909399'
+  },
   '-3': {
     name: 'Presentation Error',
     short: 'PE',
@@ -156,7 +163,8 @@ export const CONTEST_TYPE_REVERSE = {
 
 export const CONTEST_TYPE = {
   PUBLIC: 'Public',
-  PRIVATE: 'Password Protected'
+  PRIVATE: 'Password Protected',
+  PROTECT: 'Submit Protected'
 }
 
 export const USER_TYPE = {

@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import storage from '@/common/storage'
 import { STORAGE_KEY } from '@/common/constants'
-import ojAPI from '@/common/api'
 
 function submissionMemoryFormat (memory) {
   if (memory === undefined) return '--'
@@ -39,7 +38,7 @@ function breakLongWords (value, length = 16) {
     re = new RegExp('(.{' + length + '})', 'g')
   } else {
     // 中文字符
-    re = new RegExp('(.{' + (length / 2 + 1) + '})', 'g')
+    re = new RegExp('(.{' + (parseInt(length / 2) + 1) + '})', 'g')
   }
   return value.replace(re, '$1\n')
 }

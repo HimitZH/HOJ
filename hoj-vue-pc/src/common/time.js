@@ -1,7 +1,7 @@
 import moment from 'moment'
 
 // convert utc time to localtime
-function utcToLocal (utcDt, format = 'YYYY-M-D  HH:mm:ss') {
+function utcToLocal (utcDt, format = 'YYYY-MM-DD  HH:mm:ss') {
   return moment.utc(utcDt).local().format(format)
 }
 
@@ -16,13 +16,22 @@ function duration (startTime, endTime) {
   return Math.abs(duration.asHours().toFixed(1)) + ' hours'
 }
 
-function secondFormat (seconds) {
-  let m = moment.duration(seconds, 'seconds')
-  return Math.floor(m.asHours()) + ':' + m.minutes() + ':' + m.seconds()
+function secondFormat (time) {
+  let m = moment.duration(time, 'seconds')
+  let seconds =  m.seconds()>=10?m.seconds():'0'+m.seconds();
+  let hours = Math.floor(m.asHours())>=10?Math.floor(m.asHours()):'0'+Math.floor(m.asHours());
+  let minutes = m.minutes()>=10?m.minutes():'0'+m.minutes();
+  return hours + ':' + minutes + ':' + seconds;
 }
 
+function durationMs (startTime, endTime) {  // 计算时间段的时间戳
+  let start = moment(startTime)
+  let end = moment(endTime)
+  return end.diff(start, 'seconds');
+}
 export default {
   utcToLocal: utcToLocal,
   duration: duration,
-  secondFormat: secondFormat
+  secondFormat: secondFormat,
+  durationMs:durationMs,
 }

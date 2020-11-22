@@ -34,29 +34,38 @@
       <vxe-table
             border="inner"
             stripe
+            auto-resize
             @cell-mouseenter="cellHover"
             :data="problemList">
-            <vxe-table-column field="pid" title="Problem ID" width="100"></vxe-table-column>
+            <vxe-table-column field="status" title="" width="30">
+              <template v-slot="{ row }" >
+                <el-tooltip :content="JUDGE_STATUS[row.myStatus].name" placement="top" >
+                  <i class="el-icon-check" :style="getIconColor(row.myStatus)" v-if="row.myStatus==0" ></i>
+                  <i class="el-icon-minus" :style="getIconColor(row.myStatus)" v-else-if="row.myStatus!=-10" ></i>
+                </el-tooltip>
+              </template>
+            </vxe-table-column>
+            <vxe-table-column field="pid" title="Problem ID" min-width="100"></vxe-table-column>
 
-            <vxe-table-column field="title" title="Title" width="300">
+            <vxe-table-column field="title" title="Title" min-width="250">
               <template v-slot="{ row }">
-                <a :href="getProblemUri(row.pid)" style="color:rgb(87, 163, 243);">{{row.title}}</a>
+                <a :href="getProblemUri(row.pid)" style="color:rgb(87, 163, 243);font-size: 14px;">{{row.title}}</a>
               </template>
             </vxe-table-column>
 
-            <vxe-table-column field="level" title="Level" width="150">
+            <vxe-table-column field="level" title="Level" min-width="100">
               <template v-slot="{ row }">
                 <span :class="getLevelColor(row.level)">{{PROBLEM_LEVEL[row.level].name}}</span>
               </template>
             </vxe-table-column>
             
-            <vxe-table-column field="tag" title="Tag" width="250" type="html">
+            <vxe-table-column field="tag" title="Tag" min-width="200">
               <template v-slot="{ row }">
-              <span class="el-tag el-tag--medium el-tag--light is-hit" style="margin-right: 7px;" v-for="tag in row.tags" :key="tag">{{tag}}</span>
+              <span class="el-tag el-tag--medium el-tag--light is-hit" style="margin-right: 7px;margin-top:4px" v-for="tag in row.tags" :key="tag">{{tag}}</span>
               </template>
             </vxe-table-column>
-            <vxe-table-column field="total" title="Total" width="100"></vxe-table-column>
-            <vxe-table-column field="ACRate" title="AC Rate" width="100"></vxe-table-column>
+            <vxe-table-column field="total" title="Total" min-width="80"></vxe-table-column>
+            <vxe-table-column field="ACRate" title="AC Rate" min-width="80"></vxe-table-column>
       </vxe-table>
     </el-card>
     <Pagination :total="total" :page-size="limit" @on-change="pushRouter" :current.sync="query.page"></Pagination>
@@ -117,25 +126,25 @@
           name:'模拟题'
         }],
         problemRecord:[
-          {status:'0',count:'70'},
-          {status:'-1',count:'70'},
-          {status:'3',count:'70'},
-          {status:'1',count:'70'},
-          {status:'4',count:'70'},
-          {status:'-3',count:'70'},
-          {status:'-2',count:'70'},
-          {status:'5',count:'70'},
+          {status:'0',count:70},
+          {status:'-1',count:70},
+          {status:'3',count:70},
+          {status:'1',count:70},
+          {status:'4',count:70},
+          {status:'-3',count:70},
+          {status:'-2',count:70},
+          {status:'5',count:70},
         ],
         problemList: [
-          {pid:'1000',title:'测试标题',level:0,
+          {myStatus:-10,pid:'1000',title:'测试标题',level:0,
           tags:['简单题','模拟题'],
           total:'10000',ACRate:'59.12%'
           },
-          {pid:'1000',title:'测试标题',level:1,
-          tags:['简单题','模拟题'],
+          {myStatus:-1,pid:'1000',title:'测试标题',level:1,
+          tags:['简单题','模拟题','递归题','递归题'],
           total:'10000',ACRate:'59.12%'
           },
-          {pid:'1000',title:'测试标题',level:2,
+          {myStatus:0,pid:'1000',title:'测试标题',level:2,
           tags:['简单题','模拟题'],
           total:'10000',ACRate:'59.12%'
           },
@@ -239,6 +248,9 @@
       },
       getLevelColor(level){
         return 'el-tag el-tag--small status-'+PROBLEM_LEVEL[level].color;
+      },
+      getIconColor(status){
+        return "font-weight: 600;font-size: 16px;color:"+JUDGE_STATUS[status].rgb;
       }
     },
     computed: {

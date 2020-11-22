@@ -21,14 +21,14 @@
     </el-col>
 
     <el-col v-if="submission.data && !isCE" :span="22">
-      <vxe-table align="center" :data="submission.data" stripe  style="padding-top: 13px;">
-        <vxe-table-column field="sid" title="ID" width="213"></vxe-table-column>
+      <vxe-table align="center" :data="submission.data" stripe auto-resize style="padding-top: 13px;">
+        <vxe-table-column field="sid" title="ID"  min-width="100"></vxe-table-column>
         <vxe-table-column
           field="stime"
           title="Submit time"
-          width="213"
+          min-width="150"
         ></vxe-table-column>
-        <vxe-table-column field="pid" title="Problem ID" width="213">
+        <vxe-table-column field="pid" title="Problem ID" min-width="100">
           <template v-slot="{ row }">
             <a
               :href="getProblemUri(row.pid)"
@@ -37,7 +37,7 @@
             >
           </template>
         </vxe-table-column>
-        <vxe-table-column field="status" title="Status" width="213">
+        <vxe-table-column field="status" title="Status" min-width="100">
           <template v-slot="{ row }">
             <span :class="getStatusColor(row.status)">{{
               JUDGE_STATUS[row.status].name
@@ -47,12 +47,12 @@
         <vxe-table-column
           field="time"
           title="Time"
-          width="213"
+          min-width="64"
         ></vxe-table-column>
         <vxe-table-column
           field="memory"
           title="Memory"
-          width="213"
+          min-width="96"
         ></vxe-table-column>
       </vxe-table>
     </el-col>
@@ -120,8 +120,8 @@ export default {
           stime: "2020-08-08 16:00:00",
           pid: "1001",
           status: 0,
-          time: "4ms",
-          memory: "3MB",
+          time: "1000ms",
+          memory: "9999MB",
           language:'Java',
           author: "Himit_ZH",
           err_info:'CE错误',

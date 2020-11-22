@@ -2,7 +2,7 @@
 <div>
   <NavBar></NavBar>
   <div id="app">
-      <transition name="fadeInUp" mode="out-in">
+      <transition name="el-zoom-in-bottom">
         <router-view></router-view>
       </transition>
   </div>
@@ -24,6 +24,7 @@ export default {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
+
   }
   body{
     background-color: #eee;
@@ -35,7 +36,7 @@ export default {
   code, kbd, pre, samp {
     font-family: Consolas,Menlo,Courier,monospace;
   }
-
+  
   a {
     text-decoration: none;
     background-color: transparent;
@@ -56,6 +57,27 @@ export default {
     padding-top: 10px;
     padding-bottom: 20px;
     line-height: 30px;
+  }
+  
+  .home-title{
+    color: #409EFF;
+  }
+  .oi-100,.first-ac{
+    background-color: #080;
+    color: #fff;
+    font-weight: 700;
+  }
+  .oi-between{
+    background-color: #2d8cf0;
+    color: #fff;
+  }
+  .ac{
+    background-color: #a9f5af;
+    color: #3c763d;
+  }
+  .oi-0,.wa{
+    color: #a94442;
+    background-color: #f2dede;
   }
   .status-green{
     background-color: #19be6b!important;
@@ -83,6 +105,10 @@ export default {
   .vxe-table{
     color: #495060!important;
     font-size: 12px!important;
+    font-weight: 500!important;
+  }
+  .vxe-table .vxe-body--column:not(.col--ellipsis), .vxe-table .vxe-footer--column:not(.col--ellipsis), .vxe-table .vxe-header--column:not(.col--ellipsis) {
+    padding: 9px 0!important;
   }
   #nprogress .bar {
     background: #66B1FF !important;
@@ -99,10 +125,22 @@ export default {
     padding: 0 4%;
   }
 }
+@media screen and (max-width: 768px) {
+  #app {
+    margin-top: 210px;
+    padding: 0 0;
+  }
+  .markdown-body img{
+    max-width: 100%;
+  }
+}
 @media screen and (max-width: 400px) {
   #app {
     margin-top: 270px;
-    padding: 0 4%;
+    padding: 0 0;
+  }
+  .markdown-body img{
+    width: 100%;
   }
 }
   #problem-content .sample pre {

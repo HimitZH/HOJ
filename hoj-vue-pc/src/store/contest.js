@@ -138,8 +138,8 @@ const actions = {
       api.getContest(rootState.route.params.contestID).then((res) => {
         resolve(res)
         let contest = res.data.data
-        commit(types.CHANGE_CONTEST, {contest: contest})
-        commit(types.NOW, {now: moment(contest.now)})
+        commit('changeContest', {contest: contest})
+        commit('now', {now: moment(contest.now)})
         if (contest.contest_type === CONTEST_TYPE.PRIVATE) {
           dispatch('getContestAccess')
         }
@@ -159,17 +159,17 @@ const actions = {
           }
           return -1
         })
-        commit(types.CHANGE_CONTEST_PROBLEMS, {contestProblems: res.data.data})
+        commit('changeContestProblems', {contestProblems: res.data.data})
         resolve(res)
       }, () => {
-        commit(types.CHANGE_CONTEST_PROBLEMS, {contestProblems: []})
+        commit('changeContestProblems', {contestProblems: []})
       })
     })
   },
   getContestAccess ({commit, rootState}) {
     return new Promise((resolve, reject) => {
       api.getContestAccess(rootState.route.params.contestID).then(res => {
-        commit(types.CONTEST_ACCESS, {access: res.data.data.access})
+        commit('contestAccess', {access: res.data.data.access})
         resolve(res)
       }).catch()
     })

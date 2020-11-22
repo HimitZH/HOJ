@@ -1,10 +1,10 @@
 import axios from 'axios'
 import mMessage from '@/common/message'
-import NProgress from 'nprogress' // nprogress插件
-import 'nprogress/nprogress.css' // nprogress样式
+// import NProgress from 'nprogress' // nprogress插件
+// import 'nprogress/nprogress.css' // nprogress样式
 
-// 配置NProgress进度条选项  —— 动画效果
-NProgress.configure({ ease: 'ease', speed: 1000,showSpinner: false})
+// // 配置NProgress进度条选项  —— 动画效果
+// NProgress.configure({ ease: 'ease', speed: 1000,showSpinner: false})
 
 // 环境的切换
 if (process.env.NODE_ENV == 'development') {
@@ -22,7 +22,7 @@ axios.interceptors.request.use(
   
   config => {
     
-    NProgress.start();
+    // NProgress.start();
     // 每次发送请求之前判断vuex中是否存在token        
     // 如果存在，则统一在http请求的header都加上token，这样后台根据token判断你的登录情况
     // 即使本地存在token，也有可能token是过期的，所以在响应拦截器中要对返回状态进行判断 
@@ -32,7 +32,7 @@ axios.interceptors.request.use(
     return config;
   },
   error => {
-    NProgress.done();
+    // NProgress.done();
     mmMessage.error(error.response.data.mMessage);
     return Promise.error(error);
   })
@@ -40,7 +40,7 @@ axios.interceptors.request.use(
 // 响应拦截器
 axios.interceptors.response.use(
   response => {
-    NProgress.done();
+    // NProgress.done();
     if (response.data.status === 200) {
       return Promise.resolve(response);
     } else {
@@ -50,7 +50,7 @@ axios.interceptors.response.use(
   },
   // 服务器状态码不是200的情况    
   error => {
-    NProgress.done();
+    // NProgress.done();
     if (error.response) {
       switch (error.response.status) {
         // 401: 未登录                
