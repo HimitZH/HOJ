@@ -3,6 +3,11 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import Element from 'element-ui'
+
+import MuseUI from 'muse-ui';
+import 'muse-ui/dist/muse-ui.css';
+
+
 import "element-ui/lib/theme-chalk/index.css"
 import 'font-awesome/css/font-awesome.min.css'
 import 'default-passive-events'
@@ -42,6 +47,7 @@ Vue.use(VXETable) // 表格组件
 Vue.use(VueClipboard) // 剪贴板
 Vue.use(highlight) // 代码高亮
 Vue.use(Element)
+Vue.use(MuseUI) // 移动端导航栏需要该组件
 Vue.use(VueCropper)
 Vue.use(Message, { name: 'msg' }) // `Vue.prototype.$msg` 全局消息提示
 

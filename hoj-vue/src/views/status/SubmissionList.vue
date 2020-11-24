@@ -93,7 +93,7 @@
               >
             </template>
           </vxe-table-column>
-          <vxe-table-column field="status" title="Status" min-width="100">
+          <vxe-table-column field="status" title="Status" min-width="170">
             <template v-slot="{ row }">
               <span :class="getStatusColor(row.status)">{{
                 JUDGE_STATUS[row.status].name
@@ -172,7 +172,7 @@ export default {
           sid: 1000,
           stime: "2020-08-08 16:00:00",
           pid: "1001",
-          status: 0,
+          status: 1,
           time: "4ms",
           memory: "3MB",
           language: "C++",
@@ -183,7 +183,7 @@ export default {
           sid: 1001,
           stime: "2020-08-08 16:00:00",
           pid: "1001",
-          status: 0,
+          status: -3,
           time: "1000ms",
           memory: "3MB",
           language: "C++",
@@ -194,7 +194,7 @@ export default {
           sid: 1000,
           stime: "2020-08-08 16:00:00",
           pid: "1001",
-          status: 0,
+          status: 3,
           time: "4ms",
           memory: "3MB",
           language: "C++",

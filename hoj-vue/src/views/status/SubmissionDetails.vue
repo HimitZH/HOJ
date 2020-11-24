@@ -37,7 +37,7 @@
             >
           </template>
         </vxe-table-column>
-        <vxe-table-column field="status" title="Status" min-width="100">
+        <vxe-table-column field="status" title="Status" min-width="170">
           <template v-slot="{ row }">
             <span :class="getStatusColor(row.status)">{{
               JUDGE_STATUS[row.status].name

@@ -16,6 +16,7 @@
     "highlight.js": "^10.3.2",
     "katex": "^0.12.0",
     "moment": "^2.29.1",
+    "muse-ui": "^3.0.2",
     "nprogress": "^0.2.0",
     "vue": "^2.6.11",
     "vue-clipboard2": "^0.3.1",

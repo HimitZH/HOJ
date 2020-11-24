@@ -14,6 +14,8 @@ import ContestDetails from "@/views/contest/ContestDetails.vue"
 import ContestProblemList from "@/views/contest/children/ContestProblemList.vue"
 import ContestRank from "@/views/contest/children/ContestRank.vue"
 import Announcements from "@/components/common/Announcements.vue"
+import Introduction from "@/views/about/Introduction.vue"
+import NotFound from "@/views/404.vue"
 const routes = [
   {
     path: '/',
@@ -122,5 +124,15 @@ const routes = [
       // }
     ]
   },
+  {
+    path: '/introduction',
+    meta: {title: 'Introduction'},
+    component:Introduction
+  },
+  {
+    path: '*',
+    meta: {title: '404'},
+    component:NotFound
+  }
 ]
 export default routes

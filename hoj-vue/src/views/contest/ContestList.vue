@@ -68,11 +68,11 @@
         <ol id="contest-list">
           <li v-for="contest in contests" :key="contest.title" :style="getborderColor(contest)">
             <el-row type="flex" justify="space-between" align="middle">
-              <el-col :xs="10" :md="2" :lg="2">
+              <el-col :xs="10" :sm="4" :md="3" :lg="2">
                 <img v-show="contest.rule_type == 'ACM'" class="trophy" :src="acmSrc" width="95px"/>
                 <img v-show="contest.rule_type == 'OI'" class="trophy" :src="oiSrc" width="95px" />
               </el-col>
-              <el-col :xs="10" :md="20" :lg="20" class="contest-main">
+              <el-col :xs="10" :sm="16" :md="19" :lg="20" class="contest-main">
                 <p class="title">
                   <a class="entry" @click.stop="toContest(contest)">
                     {{ contest.title }}
@@ -118,7 +118,7 @@
                   </li>
                 </ul>
               </el-col>
-              <el-col :xs="4" :md="2" :lg="2" style="text-align: center">
+              <el-col :xs="4" :sm="4" :md="2" :lg="2" style="text-align: center">
                 <el-tag
                   effect="dark"
                   :color="CONTEST_STATUS_REVERSE[contest.status].color"
@@ -318,12 +318,22 @@ export default {
   .filter-row span {
     margin-right: 2px;
   }
+  ol{
+    padding-inline-start: 5px;
+  }
+  /deep/ .el-card__header {
+    margin-bottom: 5px;
+  }
 }
 @media screen and (min-width: 768px) {
   .filter-row span {
     margin-right: 20px;
   }
 }
+/deep/ .el-card__header {
+  border-bottom: 0px;
+}
+
 #contest-list > li {
   padding: 5px;
   margin-left: -20px;

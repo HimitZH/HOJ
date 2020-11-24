@@ -88,20 +88,28 @@ function getLanguages () {
         content_type: "text/x-csrc",
         description: "GCC 5.4",
         name: "C",
+        compile_command: "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {src_path} -lm -o {exe_path}",
+        template: "#include <stdio.h>\nint add(int a, int b) {\n    return a+b;\n}\nint main() {\n    printf(\"%d\", add(1, 2));\n    return 0;\n}"
       },
       {
         content_type: "text/x-c++src",
         description: "G++ 5.4",
         name: "C++",
+        compile_command: "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {src_path} -lm -o {exe_path}",
+        template: "#include <iostream>\nint add(int a, int b) {\n    return a+b;\n}\nint main() {\n    std::cout << add(1, 2);\n    return 0;\n}",
       },  
       { content_type: "text/x-java",
         description: "OpenJDK 1.8",
         name: "Java",
+        compile_command: "/usr/bin/javac {src_path} -d {exe_dir} -encoding UTF8",
+        template: "import java.util.Scanner;\npublic class Main{\n    public static void main(String[] args){\n        Scanner in=new Scanner(System.in);\n        int a=in.nextInt();\n        int b=in.nextInt();\n        System.out.println((a+b));\n    }\n}"
       },
       {
         content_type: "text/x-python",
         description: "Python 3.7",
         name: "Python3",
+        template: "a, b = map(int, input().split())\nprint(a + b)",
+        compile_command: "/usr/bin/python3 -m py_compile {src_path}"
       }
       ];
       storage.set(STORAGE_KEY.languages,langs);
