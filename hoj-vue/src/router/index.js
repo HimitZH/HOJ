@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import { sync } from 'vuex-router-sync'
-import routes from '@/router/routes'
+import adminRoutes from '@/router/adminRoutes'
+import ojRoutes from '@/router/ojRoutes'
 import mMessage from '@/common/message'
 import store from '@/store'
 import NProgress from 'nprogress' // nprogress插件
@@ -11,7 +12,7 @@ import 'nprogress/nprogress.css' // nprogress样式
 NProgress.configure({ ease: 'ease', speed: 1000,showSpinner: false })
 
 Vue.use(VueRouter)
-
+let routes = new Set([...ojRoutes, ...adminRoutes]);
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,

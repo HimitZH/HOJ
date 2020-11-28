@@ -7,9 +7,20 @@ function fromNow (time) {
   return moment(time * 3).fromNow()
 }
 
+function parseRole(num){
+  if(num==1000){
+    return '超级管理员'
+  }else if(num==1001){
+    return '管理员'
+  }else if(num==1002){
+    return '用户'
+  }
+}
+
 export default {
   submissionMemory: utils.submissionMemoryFormat,
   submissionTime: utils.submissionTimeFormat,
   localtime: time.utcToLocal,
-  fromNow: fromNow
+  fromNow: fromNow,
+  parseRole:parseRole
 }

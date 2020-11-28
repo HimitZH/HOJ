@@ -18,8 +18,8 @@ const info = function (msg) {
     return message('info',msg)
 }
 
-const waring = function (msg) {
-    return message('waring',msg)
+const warning = function (msg) {
+    return message('warning',msg)
 }
 const loading = function(msg){
     return message('loading',msg)
@@ -29,7 +29,7 @@ const mMessage = {
     error,
     success,
     info,
-    waring,
+    warning,
     loading,
     message
 }

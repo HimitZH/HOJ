@@ -67,7 +67,7 @@ user_info表
 
 | 列名         | 实体属性类型 | 键   | 备注                 |
 | ------------ | ------------ | ---- | -------------------- |
-| userId       | String       | 主键 | uuid                 |
+| uuid         | String       | 主键 | uuid用户id           |
 | username     | String       |      | 登录账号             |
 | password     | String       |      | 登录密码             |
 | nickname     | String       |      | 用户昵称             |
@@ -157,7 +157,7 @@ user_acproblem表
 | ------ | ------------ | ----------- | -------------- |
 | id     | long         | primary key | auto_increment |
 | userId | String       | 外键        | 用户id         |
-| Pid    | int          | 外键        | Ac的题目id     |
+| pid    | int          | 外键        | Ac的题目id     |
 
  
 
@@ -177,8 +177,8 @@ problem表
 | time_limit    | int          |             | 时间限制(ms)，默认为c/c++限制,其它语言为2倍 |
 | memory_limit  | int          |             | 空间限制(k)，默认为c/c++限制,其它语言为2倍  |
 | description  | String       |             | 内容描述                                    |
-| Input        | String       |             | 输入描述                                    |
-| Output       | String       |             | 输出描述                                    |
+| input       | String       |             | 输入描述                                    |
+| output      | String       |             | 输出描述                                    |
 | sample_input  | Srting       |             | 输入样例，多样例用(#)隔开                   |
 | sample_output | String       |             | 输出样例                                    |
 | source       | int          |             | 题目来源（比赛id），默认为hoj,可能为爬虫vj  |
@@ -214,7 +214,7 @@ problem_tag表
 | 列名         | 实体属性类型 | 键   | 备注     |
 | ------------ | ------------ | ---- | -------- |
 | id           | int          |      | 主键id   |
-| tid          | int          |      | 通过数   |
+| tid          | int          |      | 标签id   |
 | gmt_create   | datetime     |      | 创建时间 |
 | gmt_modified | datetime     |      | 修改时间 |
 
@@ -226,13 +226,21 @@ problem_tag表
 
 > 判题结果status
 
-排队中：STATUS_QUEUING = -10
+未提交：STATUS_NOT_SUBMITTED = -10
 
-判题中   STATUS_JUDGING = -5
+提交中：STATUS_SUBMITTING = 9
 
-通过：STATUS_ACCPET = 0
+排队中：STATUS_PENDING  =  6
+
+评测中：STATUS_JUDGING =  7
+
+编译错误：STATUS_COMPILE_ERROR = -2
+
+输出格式错误：STATUS_PRESENTATION_ERROR = -3
 
 答案错误：STATUS__WRONG_ANSWER = -1
+
+评测通过：STATUS_ACCPETED = 0
 
 cpu时间超限：STATUS__CPU_TIME_LIMIT_EXCEEDED = 1
 
@@ -244,7 +252,9 @@ cpu时间超限：STATUS__CPU_TIME_LIMIT_EXCEEDED = 1
 
 系统错误：STATUS__SYSTEM_ERROR = 5
 
- 
+OI评测部分通过 STATUS_PARTIAL_ACCEPTED = 8
+
+
 
 judge表
 
@@ -272,9 +282,21 @@ judge表
 
  
 
-jugdeCase表 评测单个样例结果表
+case表
 
- 
+| 列名         | 实体属性类型 | 键          | 备注               |
+| ------------ | ------------ | ----------- | ------------------ |
+| id           | long         | primary key | auto_increment     |
+| pid          | long         | 外键        | 题目id             |
+| input        | String       |             | 测试样例的输入     |
+| output       | String       |             | 测试样例的输出     |
+| status       | String       |             | 状态0可用，1不可用 |
+| gmt_create   | datetime     |             | 创建时间           |
+| gmt_modified | datetime     |             | 修改时间           |
+
+
+
+jugdeCase表 评测单个样例结果表
 
 | 列名         | 实体属性类型 | 键   | 备注                     |
 | ------------ | ------------ | ---- | ------------------------ |

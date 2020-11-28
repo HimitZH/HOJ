@@ -39,9 +39,13 @@ import 'echarts/lib/component/tooltip'
 import 'echarts/lib/component/toolbox'
 import 'echarts/lib/component/markPoint'
 
+import VueParticles from 'vue-particles'
+
+
 Object.keys(filters).forEach(key => {   // 注册全局过滤器
   Vue.filter(key, filters[key])
 })
+Vue.use(VueParticles) // 粒子特效背景
 Vue.use(Katex)  // 数学公式渲染
 Vue.use(VXETable) // 表格组件
 Vue.use(VueClipboard) // 剪贴板

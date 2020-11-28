@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div v-if="!isAdminView">
     <NavBar></NavBar>
-    <div id="app-contest">
+    <div id="oj-content">
       <transition name="el-zoom-in-bottom">
         <router-view></router-view>
       </transition>
@@ -9,34 +9,33 @@
     <div class="footer">
       <p>浙ICP备20009096号-1</p>
       <p>
-        Powered by <a href="https://www.hcode.top" style="">HOJ</a>
+        Powered by <a href="https://www.hcode.top" style="color:#1E9FFF">HOJ</a>
         <span>&nbsp; Version: 1.0</span>
       </p>
     </div>
-    <!-- <div id="app-loader">
-     <div class="square"></div>
-      <div class="square"></div>
-      <div class="square last"></div>
-      <div class="square clear"></div>
-      <div class="square"></div>
-      <div class="square last"></div>
-      <div class="square clear"></div>
-      <div class="square "></div>
-      <div class="square last"></div>
-      <div class="loader-content">
-        <span>Loading...</span>
-      </div>
-  </div> -->
+   
+  </div>
+  <div v-else>
+    <div id="admin-content">
+      <transition name="el-zoom-in-bottom">
+        <router-view></router-view>
+      </transition>
+    </div>
   </div>
 </template>
 
 <script>
-import NavBar from "@/components/common/NavBar";
+import NavBar from "@/components/oj/common/NavBar";
 import { mapActions, mapState } from "vuex";
 export default {
-  name: "app-contest",
+  name: "app-content",
   components: {
     NavBar,
+  },
+  data() {
+    return {
+      isAdminView: false,
+    };
   },
   watch: {
     $route() {
@@ -49,6 +48,11 @@ export default {
     } catch (e) {
       console.log(e);
     }
+    if (this.$route.path.split("/")[1] != "admin") {
+      this.isAdminView = false;
+    } else {
+      this.isAdminView = true;
+    }
   },
 };
 </script>
@@ -60,12 +64,12 @@ export default {
   box-sizing: border-box;
 }
 body {
-  background-color: #eee;
+  background-color: #eee !important;
   font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
-    Microsoft YaHei, \\5fae\8f6f\96c5\9ed1, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  color: #495060;
-  font-size: 12px;
+    Microsoft YaHei, \\5fae\8f6f\96c5\9ed1, Arial, sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  color: #495060 !important;
+  font-size: 12px !important;
 }
 code,
 kbd,
@@ -73,11 +77,26 @@ pre,
 samp {
   font-family: Consolas, Menlo, Courier, monospace;
 }
+#admin-content{
+  background-color: #1E9FFF;
+  position:absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
 
+#particles-js{
+  position:fixed;
+  z-index:0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
 a {
   text-decoration: none;
   background-color: transparent;
-  color: #495060;
+  color: #495060!important;
   outline: 0;
   cursor: pointer;
   transition: color 0.2s ease;
@@ -155,19 +174,19 @@ a:hover {
   background: #66b1ff !important;
 }
 @media screen and (min-width: 1080px) {
-  #app-contest {
+  #oj-content {
     margin-top: 80px;
     padding: 0 4%;
   }
 }
- .markdown-body img {
-    max-width: 100%;
-  }
-  .contest-description img {
-    max-width: 100%;
-  }
+.markdown-body img {
+  max-width: 100%;
+}
+.contest-description img {
+  max-width: 100%;
+}
 @media screen and (max-width: 1080px) {
-  #app-contest {
+  #oj-content {
     margin-top: 20px;
     padding: 0 5px;
   }
@@ -206,6 +225,10 @@ a:hover {
 }
 .el-menu--popup {
   min-width: 120px !important;
+  text-align: center;
+}
+.panel-options{
+  margin-top:10px;
   text-align: center;
 }
 </style>

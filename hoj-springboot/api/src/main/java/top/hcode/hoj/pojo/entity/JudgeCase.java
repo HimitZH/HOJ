@@ -47,7 +47,7 @@ public class JudgeCase implements Serializable {
     private Integer memory;
 
     @ApiModelProperty(value = "测试样例id")
-    private String caseId;
+    private Long caseId;
 
     @ApiModelProperty(value = "样例输入，比赛不可看")
     private String inputData;

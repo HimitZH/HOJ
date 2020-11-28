@@ -57,6 +57,7 @@ export default {
       this.$router.push({
         name: "Home",
       });
+      
     },
     init() {
       var loop1,
