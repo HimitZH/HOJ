@@ -44,11 +44,11 @@
         </vxe-table-column>
         <vxe-table-column  title="Option" min-width="150">
           <template v-slot="{ row }">
-            <el-tooltip class="item" effect="dark" content="编辑用户" placement="top">
+            <el-tooltip  effect="dark" content="编辑用户" placement="top">
                 <el-button icon="el-icon-edit-outline" size="mini" @click.native="openUserDialog(row)" type="primary">
                 </el-button>
             </el-tooltip>
-            <el-tooltip class="item" effect="dark" content="删除用户" placement="top">
+            <el-tooltip  effect="dark" content="删除用户" placement="top">
                 <el-button  icon="el-icon-delete-solid" size="mini" @click.native="deleteUsers([row.uid])" type="danger">
                 </el-button>
             </el-tooltip>
@@ -78,7 +78,7 @@
                  :show-file-list="false"
                  accept=".csv"
                  :before-upload="handleUsersCSV">
-        <el-button size="small" icon="el-icon-upload" type="primary">Choose File</el-button>
+        <el-button size="small" icon="el-icon-folder-opened" type="primary">Choose File</el-button>
       </el-upload>
       <template v-else>
 
@@ -319,7 +319,7 @@
         })
       },
       filterByKeyword(){
-        console.log("ssssssss")
+        this.currentChange(1)
       },
       // 打开用户对话框
       openUserDialog (row) {
@@ -418,9 +418,6 @@
       }
     },
     watch: {
-      'keyword' () {
-        this.currentChange(1)
-      },
       'uploadUsersCurrentPage' (page) {
         this.uploadUsersPage = this.uploadUsers.slice((page - 1) * this.uploadUsersPageSize, page * this.uploadUsersPageSize)
       }

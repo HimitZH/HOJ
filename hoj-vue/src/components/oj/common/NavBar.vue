@@ -137,61 +137,67 @@
     </mu-appbar>
 
       <mu-drawer :open.sync="opendrawer" :docked="false" :right="false">
-        <mu-list @change="opendrawer = false">
-          <mu-list-item button to="/home">
+        <mu-list toggle-nested>
+          <mu-list-item button to="/home" @click="opendrawer =!opendrawer">
             <mu-list-item-action>
-              <i class="el-icon-s-home" style="font-size: 20px;"></i>
+              <mu-icon value="home" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>Home</mu-list-item-title>
           </mu-list-item>
 
-          <mu-list-item button to="/problem">
+          <mu-list-item button to="/problem" @click="opendrawer =!opendrawer">
             <mu-list-item-action>
-              <i class="el-icon-s-grid" style="font-size: 20px;"></i>
+              <mu-icon value=":el-icon-s-grid" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>Problem</mu-list-item-title>
           </mu-list-item>
 
-          <mu-list-item button to="/contest">
+          <mu-list-item button to="/contest" @click="opendrawer =!opendrawer">
             <mu-list-item-action>
-              <i class="el-icon-trophy" style="font-size: 20px;"></i>
+              <mu-icon value=":el-icon-trophy" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>Contest</mu-list-item-title>
           </mu-list-item>
 
-          <mu-list-item button to="/status">
+          <mu-list-item button to="/status" @click="opendrawer =!opendrawer">
             <mu-list-item-action>
-              <i class="el-icon-s-marketing" style="font-size: 20px;"></i>
+              <mu-icon value=":el-icon-s-marketing" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>Status</mu-list-item-title>
           </mu-list-item>
-
-          <mu-list-item button to="/acm-rank">
+          
+          <mu-list-item button :ripple="false"
+           nested :open="openSideMenu === 'rank'" @toggle-nested="openSideMenu = arguments[0] ? 'rank' : ''">
             <mu-list-item-action>
-              <i class="el-icon-s-data" style="font-size: 20px;"></i>
+              <mu-icon value=":el-icon-s-data" size="24"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>Rank-ACM</mu-list-item-title>
+            <mu-list-item-title>Rank</mu-list-item-title>
+            <mu-list-item-action>
+              <mu-icon class="toggle-icon" size="24" value="keyboard_arrow_down"></mu-icon>
+            </mu-list-item-action>
+            <mu-list-item button :ripple="false" slot="nested" to="/acm-rank" @click="opendrawer =!opendrawer">
+              <mu-list-item-title>ACM Rank</mu-list-item-title>
+            </mu-list-item>
+            <mu-list-item button :ripple="false" slot="nested" to="/oi-rank" @click="opendrawer =!opendrawer">
+              <mu-list-item-title>OI Rank</mu-list-item-title>
+            </mu-list-item>
           </mu-list-item>
 
-          <mu-list-item button to="/oi-rank">
+          <mu-list-item button :ripple="false" 
+          nested :open="openSideMenu === 'about'" @toggle-nested="openSideMenu = arguments[0] ? 'about' : ''">
             <mu-list-item-action>
-              <i class="el-icon-data-analysis" style="font-size: 20px;"></i>
+              <mu-icon value=":el-icon-info" size="24"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>Rank-OI</mu-list-item-title>
-          </mu-list-item>
-
-          <mu-list-item button to="/introduction" style="font-size: 20px;">
+            <mu-list-item-title>About</mu-list-item-title>
             <mu-list-item-action>
-              <i class="el-icon-info"></i>
+              <mu-icon class="toggle-icon" size="24" value="keyboard_arrow_down"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>About-Introduction</mu-list-item-title>
-          </mu-list-item>
-
-          <mu-list-item button to="/developer" style="font-size: 20px;">
-            <mu-list-item-action>
-              <i class="el-icon-user-solid"></i>
-            </mu-list-item-action>
-            <mu-list-item-title>About-Developer</mu-list-item-title>
+            <mu-list-item button :ripple="false" slot="nested" to="/introduction" @click="opendrawer =!opendrawer">
+              <mu-list-item-title>Introduction</mu-list-item-title>
+            </mu-list-item>
+            <mu-list-item button :ripple="false" slot="nested" to="/developer" @click="opendrawer =!opendrawer">
+              <mu-list-item-title>Developer</mu-list-item-title>
+            </mu-list-item>
           </mu-list-item>
 
         </mu-list>
@@ -239,6 +245,7 @@ export default {
       mobileNar: false,
       opendrawer:false,
       openusermenu:false,
+      openSideMenu:'',
       imgUrl: require("@/assets/logo.png"),
     };
   },

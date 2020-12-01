@@ -53,9 +53,9 @@
               </template>
             </vxe-table-column>
 
-            <vxe-table-column field="level" title="Level" min-width="100">
+            <vxe-table-column field="difficulty" title="Level" min-width="100">
               <template v-slot="{ row }">
-                <span :class="getLevelColor(row.level)">{{PROBLEM_LEVEL[row.level].name}}</span>
+                <span :class="getLevelColor(row.difficulty)">{{PROBLEM_LEVEL[row.difficulty].name}}</span>
               </template>
             </vxe-table-column>
             
@@ -136,15 +136,15 @@
           {status:5,count:70},
         ],
         problemList: [
-          {myStatus:-10,pid:'1000',title:'测试标题',level:0,
+          {myStatus:-10,pid:'1000',title:'测试标题',difficulty:0,
           tags:['简单题','模拟题'],
           total:'10000',ACRate:'59.12%'
           },
-          {myStatus:-1,pid:'1000',title:'测试标题',level:1,
+          {myStatus:-1,pid:'1000',title:'测试标题',difficulty:1,
           tags:['简单题','模拟题','递归题','递归题'],
           total:'10000',ACRate:'59.12%'
           },
-          {myStatus:0,pid:'1000',title:'测试标题',level:2,
+          {myStatus:0,pid:'1000',title:'测试标题',difficulty:2,
           tags:['简单题','模拟题'],
           total:'10000',ACRate:'59.12%'
           },
@@ -246,8 +246,8 @@
       getProblemUri(pid){
         return '/problem/'+pid;
       },
-      getLevelColor(level){
-        return 'el-tag el-tag--small status-'+PROBLEM_LEVEL[level].color;
+      getLevelColor(difficulty){
+        return 'el-tag el-tag--small status-'+PROBLEM_LEVEL[difficulty].color;
       },
       getIconColor(status){
         console.log(JUDGE_STATUS[status])

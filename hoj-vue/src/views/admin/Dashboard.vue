@@ -77,7 +77,7 @@
     </el-col>
   </el-row>
 
-   <el-card>
+   <el-card style="margin-top:10px">
         <div slot="header">
           <span class="panel-title home-title">Judger Service</span>
         </div>
@@ -294,11 +294,6 @@ export default {
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
-}
-@media screen and (max-width: 1080px) {
-  .info-container{
-    margin-top: 10px;
-  }
 }
 .info-container .info-item {
   flex: 1 0 auto;

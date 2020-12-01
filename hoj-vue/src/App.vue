@@ -96,13 +96,13 @@ samp {
 a {
   text-decoration: none;
   background-color: transparent;
-  color: #495060!important;
+  color: #495060;
   outline: 0;
   cursor: pointer;
   transition: color 0.2s ease;
 }
 a:hover {
-  color: #2196f3;
+  color: #2196f3!important;
 }
 .drop-menu {
   padding-top: 7px;
@@ -164,6 +164,10 @@ a:hover {
   color: #495060 !important;
   font-size: 12px !important;
   font-weight: 500 !important;
+}
+.row--hover{
+  cursor: pointer;
+  background-color: #ebf7ff!important;
 }
 .vxe-table .vxe-body--column:not(.col--ellipsis),
 .vxe-table .vxe-footer--column:not(.col--ellipsis),

@@ -16,11 +16,19 @@ function parseRole(num){
     return '用户'
   }
 }
+function parseContestType(num){
+  if(num==0){
+    return 'ACM'
+  }else if(num==1){
+    return 'OI'
+  }
+}
 
 export default {
   submissionMemory: utils.submissionMemoryFormat,
   submissionTime: utils.submissionTimeFormat,
   localtime: time.utcToLocal,
   fromNow: fromNow,
+  parseContestType:parseContestType,
   parseRole:parseRole
 }

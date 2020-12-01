@@ -32,14 +32,19 @@ public class Problem implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @ApiModelProperty(value = "题目")
     private String title;
 
+    @ApiModelProperty(value = "作者")
     private String author;
+
+    @ApiModelProperty(value = "0为ACM,1为OI")
+    private Integer type;
 
     @ApiModelProperty(value = "单位ms")
     private Integer timeLimit;
 
-    @ApiModelProperty(value = "单位kb")
+    @ApiModelProperty(value = "单位mb")
     private Integer memoryLimit;
 
     @ApiModelProperty(value = "描述")
@@ -63,11 +68,14 @@ public class Problem implements Serializable {
     @ApiModelProperty(value = "题目难度")
     private String difficulty;
 
-    @ApiModelProperty(value = "备注")
-    private String comment;
+    @ApiModelProperty(value = "备注,提醒")
+    private String hint;
 
     @ApiModelProperty(value = "默认为1公开，2为私有，3为比赛中")
     private Integer auth;
+
+    @ApiModelProperty(value = "该题目对应的相关提交代码，用户是否可用分享")
+    private Boolean codeShare;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;

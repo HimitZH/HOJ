@@ -1,0 +1,182 @@
+<template>
+  <div>
+    <el-card>
+      <div slot="header">
+        <span class="panel-title home-title">Export Problems</span>
+        <div class="filter-row">
+            <span>
+        <el-button type="primary" size="small"
+                   @click="exportProblems" icon="el-icon-arrow-down">Export
+        </el-button>
+            </span>
+            <span>
+        <vxe-input v-model="keyword" placeholder="Enter keyword" type="search" size="medium" @search-click="filterByKeyword"></vxe-input>
+        </span>
+      </div>
+      </div>
+      <vxe-table :data="problems" stripe auto-resize
+        ref="xTable"
+      :loading="loadingProblems"
+      :checkbox-config="{labelField: '', highlight: true, range: true}"
+      @checkbox-change="handleSelectionChange"
+      @checkbox-all="handlechangeAll">
+        <vxe-table-column type="checkbox" width="60">
+        </vxe-table-column>
+        <vxe-table-column
+          title="ID"
+          min-width="100"
+          field="id">
+        </vxe-table-column>
+        <vxe-table-column
+          min-width="150"
+          title="Title"
+          field="title">
+        </vxe-table-column>
+        <vxe-table-column
+          min-width="150"
+          field="author"
+          title="Author">
+        </vxe-table-column>
+
+        <vxe-table-column
+          field="gmtCreate"
+          title="Create Time">
+          <template v-slot="{row}">
+            {{row.create_time | localtime }}
+          </template>
+        </vxe-table-column>
+      </vxe-table>
+
+      <div class="panel-options">
+        <el-pagination
+          class="page"
+          layout="prev, pager, next"
+          @current-change="getProblems"
+          :page-size="limit"
+          :total="total">
+        </el-pagination>
+      </div>
+    </el-card>
+
+
+    <el-card style="margin-top:15px">
+      <div slot="header">
+        <span class="panel-title home-title">Import QDUOJ Problems</span>
+      </div>
+      <el-upload
+        ref="QDU"
+        action="/api/admin/import_problem"
+        name="file"
+        :file-list="fileList1"
+        :show-file-list="true"
+        :with-credentials="true"
+        :limit="3"
+        :on-change="onFile1Change"
+        :auto-upload="false"
+        :on-success="uploadSucceeded"
+        :on-error="uploadFailed">
+        <el-button size="small" type="primary" slot="trigger" icon="el-icon-folder-opened">Choose File</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload('QDU')" icon="el-icon-upload">Upload</el-button>
+      </el-upload>
+    </el-card>
+
+  </div>
+</template>
+<script>
+  import api from '@/common/api'
+  import utils from '@/common/utils'
+
+  export default {
+    name: 'import_and_export',
+    data () {
+      return {
+        fileList1: [],
+        page: 1,
+        limit: 10,
+        total: 0,
+        loadingProblems: false,
+        loadingImporting: false,
+        keyword: '',
+        problems: [
+          {id:1001,author:'Himit_ZH',title:'测试题目',gmtCreate:'2020-11-11 11:11:11'}
+        ],
+        selected_problems: []
+      }
+    },
+    mounted () {
+      // this.getProblems()
+    },
+    methods: {
+       // 题目表部分勾选 改变选中的内容
+      handleSelectionChange ({records }) {
+        this.selected_problems = records 
+      },
+
+      // 一键全部选中，改变选中的内容列表
+      handlechangeAll () {
+        this.selected_problems = this.$refs.xTable.getCheckboxRecords();
+      },
+
+      getProblems (page = 1) {
+        let params = {
+          keyword: this.keyword,
+          offset: (page - 1) * this.limit,
+          limit: this.limit
+        }
+        this.loadingProblems = true
+        api.getProblemList(params).then(res => {
+          this.problems = res.data.data.results
+          this.total = res.data.data.total
+          this.loadingProblems = false
+        })
+      },
+      exportProblems () {
+        let params = []
+        for (let p of this.selected_problems) {
+          params.push('problem_id=' + p.id)
+        }
+        let url = '/admin/export_problem?' + params.join('&')
+        utils.downloadFile(url)
+      },
+      submitUpload (ref) {
+        this.$refs[ref].submit()
+      },
+      onFile1Change (file, fileList) {
+        this.fileList1 = fileList.slice(-1)
+      },
+      onFile2Change (file, fileList) {
+        this.fileList2 = fileList.slice(-1)
+      },
+      uploadSucceeded (response) {
+        if (response.error) {
+          this.$error(response.data)
+        } else {
+          this.$success('Successfully imported ' + response.data.import_count + ' problems')
+          this.getProblems()
+        }
+      },
+      uploadFailed () {
+        this.$error('Upload failed')
+      },
+       filterByKeyword(){
+         this.getProblems()
+      },
+    }
+  }
+</script>
+
+<style scoped>
+  .filter-row{
+    margin-top: 10px;
+  }
+  @media screen and (max-width: 768px) {
+  .filter-row span {
+    margin-right: 5px;
+  }
+}
+  @media screen and (min-width: 768px) {
+    .filter-row span {
+      margin-right: 20px;
+    }
+  }
+</style>

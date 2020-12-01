@@ -251,7 +251,6 @@ export default {
           },
         ],
         tags: ['简单题','模拟题'],
-        io_mode: { io_mode: "Standard IO" },
       },
       pie: pie,
       largePie: largePie,

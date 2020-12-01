@@ -6,11 +6,16 @@ import Dashboard from '@/views/admin/Dashboard'
 import User from '@/views/admin/general/User'
 import Announcement from '@/views/admin/general/Announcement'
 import SystemConfig from '@/views/admin/general/SystemConfig'
-import PruneTestCase from '@/views/admin/general/PruneTestCase'
+import DeleteTestCase from '@/views/admin/general/DeleteTestCase'
+import ProblemList from '@/views/admin/problem/ProblemList'
+import Problem from '@/views/admin/problem/Problem'
+import ProblemImportAndExport from '@/views/admin/problem/ImportAndExport'
+import Contest from '@/views/admin/contest/Contest'
+import ContestList from '@/views/admin/contest/ContestList'
 const adminRoutes= [
     {
       path: '/admin/login',
-      name: 'login',
+      name: 'admin-login',
       component: Login
     },
     {
@@ -19,88 +24,88 @@ const adminRoutes= [
       children: [
         {
           path: '',
-          name: 'dashboard',
+          name: 'admin-dashboard',
           component: Dashboard
         },
         {
           path: 'user',
-          name: 'user',
+          name: 'admin-user',
           component: User
       },
         {
           path: 'announcement',
-          name: 'announcement',
+          name: 'admin-announcement',
           component: Announcement
       },
         {
           path: 'conf',
-          name: 'conf',
+          name: 'admin-conf',
           component: SystemConfig
         },
         {
-          path: 'prune-test-case',
-          name: 'prune-test-case',
-          component: PruneTestCase
+          path: 'delete-test-case',
+          name: 'admin-delete-test-case',
+          component: DeleteTestCase
         },
-    //     {
-    //       path: '/problems',
-    //       name: 'problem-list',
-    //       component: ProblemList
-    //     },
-    //     {
-    //       path: '/problem/create',
-    //       name: 'create-problem',
-    //       component: Problem
-    //     },
-    //     {
-    //       path: '/problem/edit/:problemId',
-    //       name: 'edit-problem',
-    //       component: Problem
-    //     },
-    //     {
-    //       path: '/problem/batch_ops',
-    //       name: 'problem_batch_ops',
-    //       component: ProblemImportOrExport
-    //     },
-    //     {
-    //       path: '/contest/create',
-    //       name: 'create-contest',
-    //       component: Contest
-    //     },
-    //     {
-    //       path: '/contest',
-    //       name: 'contest-list',
-    //       component: ContestList
-    //     },
-    //     {
-    //       path: '/contest/:contestId/edit',
-    //       name: 'edit-contest',
-    //       component: Contest
-    //     },
-    //     {
-    //       path: '/contest/:contestId/announcement',
-    //       name: 'contest-announcement',
-    //       component: Announcement
-    //     },
-    //     {
-    //       path: '/contest/:contestId/problems',
-    //       name: 'contest-problem-list',
-    //       component: ProblemList
-    //     },
-    //     {
-    //       path: '/contest/:contestId/problem/create',
-    //       name: 'create-contest-problem',
-    //       component: Problem
-    //     },
-    //     {
-    //       path: '/contest/:contestId/problem/:problemId/edit',
-    //       name: 'edit-contest-problem',
-    //       component: Problem
-    //     }
+        {
+          path: 'problems',
+          name: 'admin-problem-list',
+          component: ProblemList
+        },
+        {
+          path: 'problem/create',
+          name: 'admin-create-problem',
+          component: Problem
+        },
+        {
+          path: 'problem/edit/:problemId',
+          name: 'admin-edit-problem',
+          component: Problem
+        },
+        {
+          path: 'problem/batch-operation',
+          name: 'admin-problem_batch_operation',
+          component: ProblemImportAndExport
+        },
+        {
+          path: 'contest/create',
+          name: 'admin-create-contest',
+          component: Contest
+        },
+        {
+          path: 'contest',
+          name: 'admin-contest-list',
+          component: ContestList
+        },
+        {
+          path: 'contest/:contestId/edit',
+          name: 'admin-edit-contest',
+          component: Contest
+        },
+        {
+          path: 'contest/:contestId/announcement',
+          name: 'admin-contest-announcement',
+          component: Announcement
+        },
+        {
+          path: 'contest/:contestId/problems',
+          name: 'admin-contest-problem-list',
+          component: ProblemList
+        },
+        {
+          path: 'contest/:contestId/problem/create',
+          name: 'admin-create-contest-problem',
+          component: Problem
+        },
+        {
+          path: 'contest/:contestId/problem/:problemId/edit',
+          name: 'admin-edit-contest-problem',
+          component: Problem
+        }
       ]
     },
     {
-      path: '*', redirect: '/login'
+      path: '/admin/*', redirect: '/admin/login'
     }
   ]
 

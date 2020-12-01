@@ -477,9 +477,9 @@
     padding: 8px!important;
   } 
   a.emphasis{
-    color:#495060
+    color:#495060!important;
   }
   a.emphasis:hover{
-    color:#2d8cf0
+    color:#2d8cf0;
   }
 </style>

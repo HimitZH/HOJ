@@ -65,6 +65,11 @@ export default {
   text-align: center;
   vertical-align: middle;
 }
+@media screen and (max-width: 1080px) {
+  .info-card {
+    margin-right: 0;
+  }
+}
 .info-card-container {
   height: 100%;
   align-items: center;

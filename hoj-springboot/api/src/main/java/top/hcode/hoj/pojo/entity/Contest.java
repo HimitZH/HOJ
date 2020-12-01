@@ -48,7 +48,7 @@ public class Contest implements Serializable {
     @ApiModelProperty(value = "比赛来源，原创为0，克隆赛为比赛id")
     private Integer source;
 
-    @ApiModelProperty(value = "0为公开赛，1为私有赛（有密码），2为报名赛")
+    @ApiModelProperty(value = "0为公开赛，1为私有赛（有密码），2为保护赛")
     private Integer auth;
 
     @ApiModelProperty(value = "比赛密码")
@@ -60,8 +60,17 @@ public class Contest implements Serializable {
     @ApiModelProperty(value = "结束时间")
     private Date endTime;
 
-    @ApiModelProperty(value = "比赛时长（分）")
-    private Integer duration;
+    @ApiModelProperty(value = "比赛时长（s）")
+    private Long duration;
+
+    @ApiModelProperty(value = "是否开启封榜")
+    private Boolean sealRank;
+
+    @ApiModelProperty(value = "封榜起始时间，一直到比赛结束，不刷新榜单")
+    private Date sealRankTime;
+
+    @ApiModelProperty(value = "-1为未开始，0为进行中，1为已结束")
+    private Integer status;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;

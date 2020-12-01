@@ -64,7 +64,7 @@
             </vxe-table-column>
             <vxe-table-column min-width="80" v-for="problem in problems" :key="problem.id">
               <template v-slot:header>
-                <span><a @click="getContestProblemById(problem.id)">{{problem.id}}</a></span>
+                <span><a @click="getContestProblemById(problem.id)" style="color:#495060;">{{problem.id}}</a></span>
               </template>
               <template v-slot="{ row }">
                 <span v-if="row.submission_info[problem.id].is_ac">{{ row.submission_info[problem.id].ac_time }}<br></span>

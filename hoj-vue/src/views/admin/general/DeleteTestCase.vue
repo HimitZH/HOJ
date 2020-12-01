@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-card>
-      <span slot="header" class="panel-title home-title">Prune Test Case
+      <span slot="header" class="panel-title home-title">Delete Test Case
         <el-popover placement="right" trigger="hover">
           这些测试用例不属于任何问题，您可以安全地清理它们。
           <i slot="reference" class="el-icon-question"></i>

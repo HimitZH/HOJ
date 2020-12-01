@@ -16,6 +16,7 @@
 | 2020-11-22 | 前端比赛首页，比赛题目列表，比赛排行榜，比赛公告，首页布局调整 | Himit_ZH |
 | 2020-11-24 | 介绍页，导航栏移动端优化，首页优化，公告栏优化               | Himit_ZH |
 | 2020-11-28 | 前端项目重构,加入管理端部分页面,增加case表                   | Himit_ZH |
+| 2020-12-01 | 前端管理端基本完成，准备开始前后端接口对接与测试             | Himit_ZH |
 
 # 二、系统架构
 
@@ -175,16 +176,19 @@ problem表
 | id           | long         | primary key | auto_increment 1000开始                     |
 | title        | String       |             | 题目                                        |
 | author       | String       |             | 默认可为无                                  |
+| type | int | | 题目类型 0为ACM,1为OI |
 | time_limit    | int          |             | 时间限制(ms)，默认为c/c++限制,其它语言为2倍 |
-| memory_limit  | int          |             | 空间限制(k)，默认为c/c++限制,其它语言为2倍  |
+| memory_limit  | int          |             | 空间限制(mb)，默认为c/c++限制,其它语言为2倍 |
 | description  | String       |             | 内容描述                                    |
 | input       | String       |             | 输入描述                                    |
 | output      | String       |             | 输出描述                                    |
 | sample_input  | Srting       |             | 输入样例，多样例用(#)隔开                   |
 | sample_output | String       |             | 输出样例                                    |
 | source       | int          |             | 题目来源（比赛id），默认为hoj,可能为爬虫vj  |
-| comment      | String       |             | 备注                                        |
+| difficulty | int | | 题目难度，0简单，1中等，2困难 |
+| hint  | String       |             | 备注 提醒                                     |
 | auth         | int          |             | 默认为1公开，2为私有，3为比赛中。           |
+| code_share | boolean | | 该题目对应的相关提交代码，用户是否可用分享 |
 | gmt_create   | datetime     |             | 创建时间                                    |
 | gmt_modified | datetime     |             | 修改时间                                    |
 
@@ -322,25 +326,69 @@ jugdeCase表 评测单个样例结果表
 
 ## 比赛模块
 
- 
+更新比赛状态的存储过程
+
+ ```sql
+DELIMITER |
+
+DROP PROCEDURE IF EXISTS contest_status |
+CREATE PROCEDURE contest_status()
+
+    BEGIN
+      UPDATE contest 
+	SET STATUS = (
+	CASE 
+	  WHEN NOW() < start_time THEN STATUS = -1 
+	  WHEN NOW() >= start_time AND NOW()<end_time THEN STATUS = 0
+	  WHEN NOW() > end_time THEN STATUS = 1
+	END);
+    END
+|
+
+ ```
+
+设置定时器
+
+```sql
+SET GLOBAL event_scheduler = 1;  // 开启定时器
+CREATE EVENT IF NOT EXISTS contest_event
+
+ON SCHEDULE EVERY 1 SECOND // 每秒执行一次
+
+ON COMPLETION PRESERVE  
+
+DO CALL contest_status(); // 调用存储过程
+```
+
+开启或关闭定时器
+
+```sql
+ALTER EVENT contest_event ON  COMPLETION PRESERVE ENABLE;   -- 开启事件
+ALTER EVENT contest_event ON  COMPLETION PRESERVE DISABLE;  -- 关闭事件
+```
+
+
 
 contest表
 
-| 列名         | 实体属性类型 | 键   | 备注                                                  |
-| ------------ | ------------ | ---- | ----------------------------------------------------- |
-| id           | long         | 主键 | auto_increment  1000起步                              |
-| uid          | String       | 外键 | 创建者id                                              |
-| title        | String       |      | 比赛标题                                              |
-| type         | int          |      | Acm赛制或者Rating                                     |
-| source       | int          |      | 比赛来源，原创为0，克隆赛为比赛id                     |
-| auth         | int          |      | 0为公开赛，1为私有赛（有密码），3为保护赛（有密码）。 |
-| pwd          | string       |      | 比赛密码                                              |
-| start_time   | datetime     |      | 开始时间                                              |
-| end_time     | datetime     |      | 结束时间                                              |
-| duration     | int          |      | 比赛时长（分）                                        |
-| explain      | Srting       |      | 比赛说明                                              |
-| gmt_create   | datetime     |      | 创建时间                                              |
-| gmt_modified | datetime     |      | 修改时间                                              |
+| 列名           | 实体属性类型 | 键   | 备注                                                  |
+| -------------- | ------------ | ---- | ----------------------------------------------------- |
+| id             | long         | 主键 | auto_increment  1000起步                              |
+| uid            | String       | 外键 | 创建者id                                              |
+| title          | String       |      | 比赛标题                                              |
+| type           | int          |      | Acm赛制或者Rating                                     |
+| source         | int          |      | 比赛来源，原创为0，克隆赛为比赛id                     |
+| auth           | int          |      | 0为公开赛，1为私有赛（有密码），3为保护赛（有密码）。 |
+| pwd            | string       |      | 比赛密码                                              |
+| start_time     | datetime     |      | 开始时间                                              |
+| end_time       | datetime     |      | 结束时间                                              |
+| duration       | long         |      | 比赛时长（s）                                         |
+| explain        | Srting       |      | 比赛说明                                              |
+| seal_rank      | boolean      |      | 是否开启封榜                                          |
+| seal_rank_time | datetime     |      | 封榜起始时间，一直到比赛结束，不刷新榜单。            |
+| status         | int          |      | -1为未开始，0为进行中，1为已结束                      |
+| gmt_create     | datetime     |      | 创建时间                                              |
+| gmt_modified   | datetime     |      | 修改时间                                              |
 
  
 

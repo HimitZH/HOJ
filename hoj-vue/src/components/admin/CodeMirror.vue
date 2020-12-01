@@ -16,7 +16,7 @@
           mode: 'text/x-csrc',
           lineNumbers: true,
           lineWrapping: false,
-          theme: 'solarized',
+          theme: 'monokai',
           tabSize: 4,
           line: true,
           foldGutter: true,

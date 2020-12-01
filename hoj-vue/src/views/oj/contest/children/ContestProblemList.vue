@@ -4,6 +4,7 @@
             border="inner"
             stripe
             auto-resize
+            highlight-hover-row
             :data="problems"
             @cell-click="goContestProblem">
             <vxe-table-column field="status" title="" width="50">
