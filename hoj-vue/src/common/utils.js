@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import storage from '@/common/storage'
 import { STORAGE_KEY } from '@/common/constants'
+import myMessage from '@/common/message'
+import { isArguments } from 'xe-utils/methods'
 
 function submissionMemoryFormat (memory) {
   if (memory === undefined) return '--'
@@ -45,21 +47,21 @@ function breakLongWords (value, length = 16) {
 
 function downloadFile (url) {
   return new Promise((resolve, reject) => {
-    Vue.prototype.$http.get(url, {responseType: 'blob'}).then(resp => {
+    Vue.prototype.$axios.get(url, {responseType: 'blob'}).then(resp => {
       let headers = resp.headers
       if (headers['content-type'].indexOf('json') !== -1) {
         let fr = new window.FileReader()
         if (resp.data.error) {
-          Vue.prototype.$error(resp.data.error)
+          myMessage.error(resp.data.error)
         } else {
-          Vue.prototype.$error('Invalid file format')
+          myMessage.error('Invalid file format')
         }
         fr.onload = (event) => {
           let data = JSON.parse(event.target.result)
           if (data.error) {
-            Vue.prototype.$error(data.data)
+            myMessage.error(data.data)
           } else {
-            Vue.prototype.$error('Invalid file format')
+            myMessage.error('Invalid file format')
           }
         }
         let b = new window.Blob([resp.data], {type: 'application/json'})
@@ -70,10 +72,13 @@ function downloadFile (url) {
       link.href = window.URL.createObjectURL(new window.Blob([resp.data], {type: headers['content-type']}))
       link.download = (headers['content-disposition'] || '').split('filename=')[1]
       document.body.appendChild(link)
+      console.log(link)
       link.click()
       link.remove()
       resolve()
-    }).catch(() => {})
+    }).catch((error) => {
+      reject(error)
+    })
   })
 }
 
@@ -118,6 +123,25 @@ function getLanguages () {
   })
 }
 
+function stringToExamples(value){
+  let reg = "<input>(.+?)</input><output>(.+?)</output>";
+  let re = RegExp(reg,"g");
+  let objList = []
+  let tmp;
+  while(tmp=re.exec(value)){
+    objList.push({input:tmp[1],output:tmp[2]})
+  }
+  return objList
+}
+
+function examplesToString(objList){
+  let result=""
+  for(let obj of objList){
+    result+= "<input>"+obj.input+"</input><output>"+obj.output+"</output>"
+  }
+  return result
+}
+
 
 
 export default {
@@ -127,5 +151,7 @@ export default {
   filterEmptyValue: filterEmptyValue,
   breakLongWords: breakLongWords,
   downloadFile: downloadFile,
-  getLanguages:getLanguages
+  getLanguages:getLanguages,
+  stringToExamples:stringToExamples,
+  examplesToString:examplesToString
 }

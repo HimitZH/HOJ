@@ -36,4 +36,6 @@ public class JudgeController {
         judgeMapper.updateById(judge);
         return CommonResult.successResponse(judge,"评测成功");
     }
+
+
 }

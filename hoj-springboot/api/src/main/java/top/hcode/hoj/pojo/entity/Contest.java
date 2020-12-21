@@ -36,6 +36,9 @@ public class Contest implements Serializable {
     @ApiModelProperty(value = "比赛创建者id")
     private String uid;
 
+    @ApiModelProperty(value = "比赛创建者的用户名")
+    private String author;
+
     @ApiModelProperty(value = "比赛标题")
     private String title;
 
@@ -43,7 +46,7 @@ public class Contest implements Serializable {
     private Integer type;
 
     @ApiModelProperty(value = "比赛说明")
-    private String explain;
+    private String description;
 
     @ApiModelProperty(value = "比赛来源，原创为0，克隆赛为比赛id")
     private Integer source;

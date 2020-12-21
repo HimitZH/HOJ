@@ -9,6 +9,7 @@ import java.io.Serializable;
 public class CommonResult implements Serializable {
     public final static Integer STATUS_SUCCESS = 200;
     public final static Integer STATUS_FAIL = 400;
+    public final static Integer STATUS_FORBIDDEN = 403;
     public final static Integer STATUS_NOT_FOUND = 404;
     public final static Integer STATUS_ERROR = 500;
     public final static Integer STATUS_ACCESS_DENIED = 401;

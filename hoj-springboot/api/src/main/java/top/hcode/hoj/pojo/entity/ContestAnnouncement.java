@@ -32,16 +32,11 @@ public class ContestAnnouncement implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @ApiModelProperty(value = "公告id")
+    private Long aid;
+
+    @ApiModelProperty(value = "比赛id")
     private Long cid;
-
-    @ApiModelProperty(value = "通知标题")
-    private String title;
-
-    @ApiModelProperty(value = "通知内容")
-    private String content;
-
-    @ApiModelProperty(value = "发布者（必须为比赛创建者或者超级管理员才能）")
-    private String uid;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;

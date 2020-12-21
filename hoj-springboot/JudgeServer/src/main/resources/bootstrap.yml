@@ -1,0 +1,19 @@
+server:
+  port: 8010
+spring:
+  profiles:
+    active: prod
+  application:
+    name: hoj-judge-server
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848 #配置Nacos地址
+      config:
+        server-addr: localhost:8848 #Nacos 作为配置中心地址
+        file-extension: yml #指定yaml格式的配置
+        group: DEFAULT_GROUP  # 指定分组
+        #namespace:命名空间ID  默认为public
+
+# ${spring.application.name}-${spring.profile.active}.${spring.cloud.naces.config.file-extension}
+# hoj-judge-server-prod.yml

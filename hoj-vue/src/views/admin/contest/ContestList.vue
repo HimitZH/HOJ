@@ -66,7 +66,7 @@
           <template v-slot="{row}">
             <p>Start Time: {{row.startTime | localtime }}</p>
             <p>End Time: {{row.endTime | localtime }}</p>
-            <p>Create Time: {{row.gmtGreate | localtime}}</p>
+            <p>Create Time: {{row.gmtCreate | localtime}}</p>
             <p>Creator: {{row.author}}</p>
           </template>
         </vxe-table-column>
@@ -126,9 +126,6 @@
         pageSize: 10,
         total: 0,
         contestList: [
-          {id:1000,startTime:'2020-12-12 12:00:00',endTime:'2020-12-12 17:00:00',gmtGreate:'2020-12-11 12:00:00',
-           author:'Himit_ZH',title:'测试比赛',type:0,auth:0,status:-1
-          }
         ],
         keyword: '',
         loading: false,
@@ -142,7 +139,15 @@
     mounted () {
       this.CONTEST_TYPE_REVERSE = Object.assign({},CONTEST_TYPE_REVERSE)
       this.CONTEST_STATUS_REVERSE = Object.assign({},CONTEST_STATUS_REVERSE)
-      // this.getContestList(this.currentPage)
+      this.getContestList(this.currentPage)
+    },
+    watch: {
+      $route() {
+        let refresh = this.$route.query.refresh == 'true'?true:false
+        if(refresh){
+          this.getContestList(1)
+        }
+      }
     },
     methods: {
       // 切换页码回调
@@ -152,10 +157,10 @@
       },
       getContestList (page) {
         this.loading = true
-        api.getContestList((page - 1) * this.pageSize, this.pageSize, this.keyword).then(res => {
+        api.admin_getContestList(page, this.pageSize, this.keyword).then(res => {
           this.loading = false
           this.total = res.data.data.total
-          this.contestList = res.data.data.results
+          this.contestList = res.data.data.records;
         }, res => {
           this.loading = false
         })

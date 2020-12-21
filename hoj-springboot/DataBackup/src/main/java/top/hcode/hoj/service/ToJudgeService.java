@@ -3,6 +3,7 @@ package top.hcode.hoj.service;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import top.hcode.hoj.common.exception.CloudHandler;
@@ -17,4 +18,6 @@ public interface ToJudgeService {
 
     @PostMapping(value = "/judge")
     public CommonResult submitProblemJudge(@RequestBody Judge judge);
+
+
 }

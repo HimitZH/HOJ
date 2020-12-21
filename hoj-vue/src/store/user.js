@@ -12,15 +12,20 @@ const getters = {
     return !!getters.token
   },
   isAdminRole: (state, getters) => {
-    return getters.userInfo.role === USER_TYPE.ADMIN ||
-      getters.userInfo.role === USER_TYPE.SUPER_ADMIN
+    if(getters.userInfo.roleList){
+      return getters.userInfo.roleList.indexOf(USER_TYPE.ADMIN)!=-1 ||
+        getters.userInfo.roleList.indexOf(USER_TYPE.SUPER_ADMIN)!=-1
+    }else{
+      return false;
+    }
   },
   isSuperAdmin: (state, getters) => {
-    return getters.userInfo.role === USER_TYPE.SUPER_ADMIN
+    if(getters.userInfo.roleList){
+      return getters.userInfo.roleList.indexOf(USER_TYPE.SUPER_ADMIN) !=-1
+    }else{
+      return false;
+    }
   },
-  hasProblemPermission: (state, getters) => {
-    return getters.user.problem_permission !== PROBLEM_PERMISSION.NONE
-  }
 }
 
 const mutations = {

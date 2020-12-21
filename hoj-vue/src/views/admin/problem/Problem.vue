@@ -21,6 +21,28 @@
             </el-form-item>
           </el-col>
         </el-row>
+
+        <el-row :gutter="20" v-if="contestID">
+          <el-col :md="12" :xs="24">
+            <el-form-item label="Display Title" >
+              <el-input
+                placeholder="Enter the display title of problem in contest"
+                v-model="contestProblem.displayTitle"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+
+          <el-col :md="12" :xs="24">
+            <el-form-item label="Display ID">
+              <el-input
+                placeholder="Enter the display ID of problem in contest"
+                v-model="contestProblem.displayId"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+
+        </el-row>
+
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item prop="description" label="Description" required>
@@ -91,14 +113,14 @@
               <el-select v-model="problem.auth" size="small">
                 <el-option label="公开" :value="1"></el-option>
                 <el-option label="私有" :value="2"></el-option>
-                <el-option label="比赛中" :value="3"></el-option>
+                <el-option label="比赛题目" :value="3"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
            <el-col :md="4" :xs="24">
             <el-form-item label="Code Shareable">
               <el-switch
-                v-model="problem.code_share"
+                v-model="problem.codeShare"
                 active-text=""
                 inactive-text="">
               </el-switch>
@@ -107,7 +129,7 @@
           <el-col :md="16" :xs="24">
             <el-form-item label="Tags" required>
               <el-tag
-                v-for="tag in problem.tags"
+                v-for="tag in problemTags"
                 closable
                 :close-transition="false"
                 :key="tag.name"
@@ -122,8 +144,9 @@
                 size="mini"
                 class="input-new-tag"
                 v-model="tagInput"
-                :trigger-on-focus="false"
+                :trigger-on-focus="true"
                 @keyup.enter.native="addTag"
+                @click="selectTag"
                 @blur="addTag"
                 @select="addTag"
                 :fetch-suggestions="querySearch"
@@ -149,10 +172,10 @@
         <el-row>
            <el-col :md="24" :xs="24">
             <el-form-item label="Language" :error="error.languages" required>
-              <el-checkbox-group v-model="problem.languages">
+              <el-checkbox-group v-model="problemLanguages">
                 <el-tooltip
                   class="spj-radio"
-                  v-for="lang in allLanguage.languages"
+                  v-for="lang in allLanguage"
                   :key="lang.name"
                   effect="dark"
                   :content="lang.description"
@@ -197,6 +220,7 @@
                       type="textarea"
                       placeholder="Input Example"
                       v-model="example.input"
+                      style="white-space: pre-line"
                     >
                     </el-input>
                   </el-form-item>
@@ -236,7 +260,7 @@
         </el-popover>
         </div>
           <el-form-item
-            v-for="(sample, index) in problem.samples"
+            v-for="(sample, index) in problemSamples"
             :key="'sample' + index"
           >
             <Accordion :title="'Sample' + (index + 1)">
@@ -290,7 +314,7 @@
            Special Judge
          <el-popover placement="right" trigger="hover">
           <p>使用特殊判题的原因：</p>
-          <p>1. 题目要求的输出结果可能不唯一，允许不同结果存在</p>
+          <p>1. 题目要求的输出结果可能不唯一，允许不同结果存在。</p>
           <p>2. 题目最终要求输出一个浮点数，而且会告诉只要答案和标准答案相差不超过某个较小的数就可以。
             例如题目要求保留几位小数，输出结果后几位小数不相同也是正确的。</p>
           <i slot="reference" class="el-icon-question"></i>
@@ -312,7 +336,7 @@
               <el-radio-group v-model="problem.spj_language">
                 <el-tooltip
                   class="spj-radio"
-                  v-for="lang in allLanguage.spj_languages"
+                  v-for="lang in allSpjLanguage"
                   :key="lang.name"
                   effect="dark"
                   :content="lang.description"
@@ -324,7 +348,7 @@
               <el-button
                 type="primary"
                 size="small"
-                icon="el-icon-fa-random"
+                icon="el-icon-folder-checked"
                 @click="compileSPJ"
                 :loading="loadingCompile"
                 style="margin-left:10px"
@@ -332,7 +356,7 @@
               </el-button>
             </template>
             <code-mirror
-              v-model="problem.spj_code"
+              v-model="problem.spjCode"
               :mode="spjMode"
             ></code-mirror>
           </Accordion>
@@ -373,13 +397,12 @@
           </el-col>
 
           <el-col :span="24">
-
-            <vxe-table stripe auto-resize :data="problem.test_case_score">
-              <vxe-table-column field="input_name" title="Input" min-width="150">
+            <vxe-table stripe auto-resize :data="problem.test_case_score" align="center">
+              <vxe-table-column field="input_name" title="Input" min-width="100">
               </vxe-table-column>
-              <vxe-table-column field="output_name" title="Output" min-width="150">
+              <vxe-table-column field="output_name" title="Output" min-width="100">
               </vxe-table-column>
-              <vxe-table-column field="score" title="Score" min-width="150">
+              <vxe-table-column field="score" title="Score" min-width="100">
                 <template v-slot="{ row }">
                   <el-input
                     size="small"
@@ -391,7 +414,6 @@
                 </template>
               </vxe-table-column>
             </vxe-table>
-
           </el-col>
         </el-row>
 
@@ -413,8 +435,10 @@
 import Simditor from "@/components/admin/Simditor";
 import Accordion from "@/components/admin/Accordion";
 import CodeMirror from "@/components/admin/CodeMirror";
+import utils from "@/common/utils"
+import { mapGetters } from "vuex";
 import api from "@/common/api";
-
+import myMessage from '@/common/message'
 export default {
   name: "Problem",
   components: {
@@ -444,96 +468,48 @@ export default {
       loadingCompile: false,
       mode: "", // 该题目是编辑或者创建
       contest: {},
+      pid:null, // 题目id，如果为创建模式则为null
+      contestID: null, // 比赛id
+       contestProblem:{
+        displayId: null,
+        displayTitle:null,
+        cid:null,
+        pid:null
+      }, // 比赛题目的相关属性
       problem: {
-        id: "",
+        id: null,
         title: "",
         description: "",
-        input_description: "",
-        output_description: "",
-        time_limit: 1000,
-        memory_limit: 256,
+        input: "",
+        output: "",
+        timeLimit: 1000,
+        memoryLimit: 256,
         difficulty: 0,
         auth: 1,
-        code_share: true,
-        tags: [
-          {
-            id:1001,
-            name:'模拟题'
-          },
-          {
-            id:1002,
-            name:'递归题'
-          }
-        ],
-        languages: [],
-        examples:[{ input: "", output: "" }], // 题面上的样例输入输出
-        samples: [{ input: "", output: "" }], // 判题机使用的样例
+        codeShare: true,
+        examples:[], // 题面上的样例输入输出
         spj: false,
-        spj_language: "",
-        spj_code: "",
+        spjLanguage: "",
+        spjCode: "",
         spj_compile_ok: false,
         test_case_id: "",
-        test_case_score: [
-          {input_name:'1.in',output_name:'1.out',score:100}
-        ],
+        test_case_score: [],
         type: 0,
         hint: "",
         source: "",
+        cid:null,
       },
-
+      problemTags: [], //指定问题的标签列表
+      problemLanguages: [], //指定问题的编程语言列表
+      problemSamples: [], // 判题机使用的样例
       reProblem: {
-        languages: [],
       },
       testCaseUploaded: false,
-      allLanguage: {
-          languages:[
-              {
-            content_type: "text/x-csrc",
-            description: "GCC 5.4",
-            name: "C",
-            compile_command: "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {src_path} -lm -o {exe_path}",
-            template: "#include <stdio.h>\nint add(int a, int b) {\n    return a+b;\n}\nint main() {\n    printf(\"%d\", add(1, 2));\n    return 0;\n}"
-          },
-          {
-            content_type: "text/x-c++src",
-            description: "G++ 5.4",
-            name: "C++",
-            compile_command: "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {src_path} -lm -o {exe_path}",
-            template: "#include <iostream>\nint add(int a, int b) {\n    return a+b;\n}\nint main() {\n    std::cout << add(1, 2);\n    return 0;\n}",
-          },  
-          { content_type: "text/x-java",
-            description: "OpenJDK 1.8",
-            name: "Java",
-            compile_command: "/usr/bin/javac {src_path} -d {exe_dir} -encoding UTF8",
-            template: "import java.util.Scanner;\npublic class Main{\n    public static void main(String[] args){\n        Scanner in=new Scanner(System.in);\n        int a=in.nextInt();\n        int b=in.nextInt();\n        System.out.println((a+b));\n    }\n}"
-          },
-          {
-            content_type: "text/x-python",
-            description: "Python 3.7",
-            name: "Python3",
-            template: "a, b = map(int, input().split())\nprint(a + b)",
-            compile_command: "/usr/bin/python3 -m py_compile {src_path}"
-          }
-        ],
-        spj_languages:[
-          {
-            content_type: "text/x-csrc",
-            description: "GCC 5.4",
-            name: "C",
-            compile_command: "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {src_path} -lm -o {exe_path}",
-            template: "#include <stdio.h>\nint add(int a, int b) {\n    return a+b;\n}\nint main() {\n    printf(\"%d\", add(1, 2));\n    return 0;\n}"
-          },
-          {
-            content_type: "text/x-c++src",
-            description: "G++ 5.4",
-            name: "C++",
-            compile_command: "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {src_path} -lm -o {exe_path}",
-            template: "#include <iostream>\nint add(int a, int b) {\n    return a+b;\n}\nint main() {\n    std::cout << add(1, 2);\n    return 0;\n}",
-          },  
-        ]
-      },
+      allLanguage: [], //所有编程语言
+      allSpjLanguage: [], // 所有可以用特殊判题的语言
+      allTags:[],
       inputVisible: false,
-      tagInput: '',
+      tagInput: "",
       title: "",
       spjMode: "",
       disableRuleType: false,
@@ -549,8 +525,8 @@ export default {
   mounted() {
     this.routeName = this.$route.name;
     if (
-      this.routeName === "edit-problem" ||
-      this.routeName === "edit-contest-problem"
+      this.routeName === "admin-edit-problem" ||
+      this.routeName === "admin-edit-contest-problem"
     ) {
       this.mode = "edit";
     } else {
@@ -558,89 +534,135 @@ export default {
     }
     api.getLanguages().then((res) => {
       this.problem = this.reProblem = {
-        id: "",
+        id: null,
         title: "",
         description: "",
-        input_description: "",
-        output_description: "",
-        time_limit: 1000,
-        memory_limit: 256,
+        input: "",
+        output: "",
+        timeLimit: 1000,
+        memoryLimit: 256,
         difficulty: 0,
-        visible: true,
-        share_submission: false,
-        tags: [],
-        languages: [],
-        samples: [{ input: "", output: "" }],
+        auth: 1,
+        codeShare: true,
+        examples:[],
         spj: false,
-        spj_language: "",
-        spj_code: "",
+        spjLanguage: "",
+        spjCode: "",
         spj_compile_ok: false,
         test_case_id: "",
         test_case_score: [],
+        contestProblem:{},
         type: 0,
         hint: "",
         source: "",
+        cid:null
       };
       let contestID = this.$route.params.contestId;
+      this.contestID = contestID;
       if (contestID) {
-        this.problem.contest_id = this.reProblem.contest_id = contestID;
+        this.problem.cid = this.reProblem.cid = contestID;
+        this.problem.auth = this.reProblem.auth = 3;
         this.disableRuleType = true;
-        api.getContest(contestID).then((res) => {
+        api.admin_getContest(contestID).then((res) => {
           this.problem.type = this.reProblem.type =
             res.data.data.type;
           this.contest = res.data.data;
         });
       }
-
-      this.problem.spj_language = "C";
+      this.problem.spjLanguage = "C";
       let allLanguage = res.data.data;
       this.allLanguage = allLanguage;
-
-      // get problem after getting languages list to avoid find undefined value in `watch problem.languages`
-      if (this.mode === "edit") {
-        this.title = "Edit Problem";
-        let funcName = {
-          "admin-edit-problem": "getProblem",
-          "admin-edit-contest-problem": "getContestProblem",
-        }[this.routeName];
-        // api[funcName](this.$route.params.problemId).then((problemRes) => {
-        //   let data = problemRes.data.data;
-        //   if (!data.spj_code) {
-        //     data.spj_code = "";
-        //   }
-        //   data.spj_language = data.spj_language || "C";
-        //   this.problem = data;
-        //   this.testCaseUploaded = true;
-        // });
-      } else {
-        this.title = "Add Problem";
-        for (let item of allLanguage.languages) {
-          this.problem.languages.push(item.name);
+      for(let i = 0;i<allLanguage.length;i++){
+        if(allLanguage[i].isSpj==true){
+          this.allSpjLanguage.push(allLanguage[i])
         }
       }
+
+      // get problem after getting languages list to avoid find undefined value in `watch problemLanguages`
+      this.init()
     });
   },
   watch: {
     $route() {
+      this.routeName = this.$route.name;
+      if (
+        this.routeName === "admin-edit-problem" ||
+        this.routeName === "admin-edit-contest-problem"
+      ) {
+        this.mode = "edit";
+      } else {
+        this.mode = "add";
+      }
       this.$refs.form.resetFields();
       this.problem = this.reProblem;
+      this.problemTags=[]; //指定问题的标签列表
+      this.problemLanguages=[]; //指定问题的编程语言列表
+      this.problemSamples=[] 
+      this.init()
     },
 
-    "problem.spj_language"(newVal) {
-      this.spjMode = this.allLanguage.spj_languages.find((item) => {
-        return item.name === this.problem.spj_language;
+    "problem.spjLanguage"(newVal) {
+      this.spjMode = this.allLanguage.find((item) => {
+        return item.name === this.problem.spjLanguage && item.isSpj == true;
       }).content_type;
     },
   },
   methods: {
+    init(){
+      if (this.mode === "edit") {
+        this.pid = this.$route.params.problemId;
+        this.title = "Edit Problem";
+        let funcName = {
+          "admin-edit-problem": "admin_getProblem",
+          "admin-edit-contest-problem": "admin_getContestProblem",
+        }[this.routeName];
+        api[funcName](this.pid).then((problemRes) => {
+          let data = problemRes.data.data;
+          data.spj_compile_ok = false,
+          data.test_case_id = "",
+          data.test_case_score = []
+          data.spj = true
+          if (!data.spjCode) {
+            data.spjCode = "";
+            data.spj = false
+          }
+          data.spjLanguage = data.spjLanguage || "C";
+          this.problem = data;
+          this.problem['examples'] = utils.stringToExamples(data.examples);
+          this.testCaseUploaded = true;
+        });
+        if(funcName==='admin_getContestProblem'){
+          api.admin_getContestProblemInfo(this.pid,this.contestID).then((res)=>{
+            this.contestProblem = res.data.data;
+          });
+        }
+        api.getProblemLanguages(this.pid).then((res)=>{
+          let Languages = res.data.data;
+          for (let i =0;i<Languages.length;i++) {
+            this.problemLanguages.push(Languages[i].name);
+          }
+        })
+        api.admin_getProblemCases(this.pid).then((res)=>{
+          this.problemSamples = res.data.data
+        })
+        api.admin_getProblemTags(this.pid).then((res)=>{
+          this.problemTags = res.data.data
+        })
+      } else {
+        this.title = "Add Problem";
+        for (let item of this.allLanguage) {
+          this.problemLanguages.push(item.name);
+        }
+      }
+    },
     switchSpj() {
       if (this.testCaseUploaded) {
         this.$confirm(
-          "If you change problem judge method, you need to re-upload test cases",
-          "Warning",
+          "如果你想改变该题目的判题方法，那么你需要重新上传测试数据。",
+          "注意",
           {
-            confirmButtonText: "Yes",
-            cancelButtonText: "Cancel",
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
             type: "warning",
           }
         )
@@ -653,39 +675,54 @@ export default {
         this.problem.spj = !this.problem.spj;
       }
     },
-    querySearch(queryString, callback) {
-      // api
-      //   .getProblemTagList()
-      //   .then((res) => {
-      //     let tagList = [];
-      //     for (let tag of res.data.data) {
-      //       tagList.push({ value: tag.name});
-      //     }
-      //     callback(tagList);
-      //   })
-      //   .catch(() => {});
-      let tagList = [{value:'简单题'}];
-      callback(tagList);
+    querySearch(queryString, cb) {
+      api.admin_getAllProblemTagList().then((res) => {
+          let tagList = []
+          this.allTags = res.data.data;
+          for (let tag of res.data.data) {
+            tagList.push({ value: tag.name});
+          }
+          cb(tagList);
+        })
+        .catch(() => {});
     },
     resetTestCase() {
       this.testCaseUploaded = false;
       this.problem.test_case_score = [];
       this.problem.test_case_id = "";
     },
-    addTag() {
+    selectTag(item){
+       for(var i=0;i<this.problemTags.length;i++){
+         if(this.problemTags[i].name == item.value){
+          myMessage.warning("该标签已添加，请不要重复添加！")
+          this.tagInput = '';
+          return;
+         }
+       }
+      this.tagInput = item.value
+    },
+    addTag(item) {
       let newTag ={
-        name:this.tagInput,
+        name:this.tagInput
       }
-      if (newTag) {
-        this.problem.tags.push(newTag);
+      if (this.tagInput) {
+        for(var i=0;i<this.problemTags.length;i++){
+         if(this.problemTags[i].name == this.tagInput){
+          myMessage.warning("该标签已添加，请不要重复添加！")
+          this.tagInput = '';
+          return;
+         }
+       }
+        this.problemTags.push(newTag);
+        this.inputVisible = false;
+        this.tagInput = '';
       }
-      this.inputVisible = false;
-      this.tagInput = '';
+      
     },
 
     // 根据tagID从题目的tags列表中移除
     closeTag(tag) {
-      this.problem.tags.splice(this.problem.tags.indexOf(tag), 1);
+      this.problemTags.splice(this.problemTags.indexOf(tag), 1);
     },
     // 添加题目样例
     addExample(){
@@ -693,7 +730,7 @@ export default {
     },
   // 添加判题机的测试样例
     addSample() {
-      this.problem.samples.push({ input: "", output: "" });
+      this.problemSamples.push({ input: "", output: "",pid: this.pid});
     },
   //根据下标删除特定的题目样例
     deleteExample(index){
@@ -701,11 +738,11 @@ export default {
     },
   //根据下标删除特定的判题机测试样例
     deleteSample(index) {
-      this.problem.samples.splice(index, 1);
+      this.problemSamples.splice(index, 1);
     },
     uploadSucceeded(response) {
       if (response.error) {
-        this.$error(response.data);
+        myMessage.error(response.data);
         return;
       }
       let fileList = response.data.info;
@@ -720,14 +757,14 @@ export default {
       this.problem.test_case_id = response.data.id;
     },
     uploadFailed() {
-      this.$error("Upload failed");
+      myMessage.error("Upload failed");
     },
 
     compileSPJ() {
       let data = {
         id: this.problem.id,
-        spj_code: this.problem.spj_code,
-        spj_language: this.problem.spj_language,
+        spjCode: this.problem.spjCode,
+        spjLanguage: this.problem.spjLanguage,
       };
       this.loadingCompile = true;
       api.compileSPJ(data).then(
@@ -753,87 +790,137 @@ export default {
     },
 
     submit() {
-      if (!this.problem.samples.length) {
-        this.$error("Sample is required");
+      if(!this.problem.examples.length){
+        myMessage.error("题面测试数据是不能为空！至少输入一项！");
         return;
       }
-      for (let sample of this.problem.samples) {
-        if (!sample.input || !sample.output) {
-          this.$error("Sample input and output is required");
+      for (let example of this.problem.examples) {
+        if (!example.input || !example.output) {
+          myMessage.error("每一项题面测试数据的输入输出都不能为空！");
           return;
         }
       }
-      if (!this.problem.tags.length) {
-        this.error.tags = "Please add at least one tag";
-        this.$error(this.error.tags);
+      if (!this.problemSamples.length) {
+        myMessage.error("评测数据是不能为空！");
+        return;
+      }
+      for (let sample of this.problemSamples) {
+        if (!sample.input || !sample.output) {
+          myMessage.error("每一项评测数据的输入输出都不能为空！");
+          return;
+        }
+      }
+      if (!this.problemTags.length) {
+        this.error.tags = "请添加至少一个题目标签！";
+        myMessage.error(this.error.tags);
         return;
       }
 
       if (this.problem.spj) {
-        if (!this.problem.spj_code) {
-          this.error.spj = "Spj code is required";
-          this.$error(this.error.spj);
+        if (!this.problem.spjCode) {
+          this.error.spj = "特殊判题的程序代码不能为空！";
+          myMessage.error(this.error.spj);
         } else if (!this.problem.spj_compile_ok) {
-          this.error.spj = "SPJ code has not been successfully compiled";
+          this.error.spj = "特殊判题的程序没有编译成功，请重新编译！";
         }
         if (this.error.spj) {
-          this.$error(this.error.spj);
+          myMessage.error(this.error.spj);
           return;
         }
       }
 
-      if (!this.problem.languages.length) {
-        this.error.languages =
-          "Please choose at least one language for problem";
-        this.$error(this.error.languages);
+      if (!this.problemLanguages.length) {
+        this.error.languages ="请至少给题目选择一项编程语言！";
+        myMessage.error(this.error.languages);
         return;
       }
-      if (!this.testCaseUploaded) {
-        this.error.testCase = "Test case is not uploaded yet";
-        this.$error(this.error.testCase);
-        return;
-      }
+      // if (!this.testCaseUploaded) {
+      //   this.error.testCase = "评测数据还没有成功上传！";
+      //   myMessage.error(this.error.testCase);
+      //   return;
+      // }
 
-      if (this.problem.type === "OI") {
+      if (this.problem.type === 1) {
         for (let item of this.problem.test_case_score) {
           try {
             if (parseInt(item.score) <= 0) {
-              this.$error("Invalid test case score");
+              myMessage.error("测评得分小于0是无效的！");
               return;
             }
           } catch (e) {
-            this.$error("Test case score must be an integer");
+            myMessage.error("测评得分的结果必须是数字类型！");
             return;
           }
         }
       }
-      this.problem.languages = this.problem.languages.sort();
+      
       let funcName = {
-        "create-problem": "createProblem",
-        "edit-problem": "editProblem",
-        "create-contest-problem": "createContestProblem",
-        "edit-contest-problem": "editContestProblem",
+        "admin-create-problem": "admin_createProblem",
+        "admin-edit-problem": "admin_editProblem",
+        "admin-create-contest-problem": "admin_createContestProblem",
+        "admin-edit-contest-problem": "admin_editContestProblem",
       }[this.routeName];
       // edit contest problem 时, contest_id会被后来的请求覆盖掉
       if (funcName === "editContestProblem") {
         this.problem.contest_id = this.contest.id;
       }
-      api[funcName](this.problem)
+      if(funcName === "admin_createProblem" || funcName ==="admin_createContestProblem"){
+        this.problem.author = this.userInfo.username
+      }
+
+      let problemTagList = Object.assign([],this.problemTags)
+      for(let i=0;i<problemTagList.length;i++){ //避免后台插入违反唯一性
+        for(let tag2 of this.allTags){
+          if(problemTagList[i].name == tag2.name){
+            problemTagList[i] = tag2
+            break;
+          }
+        }
+      }
+      let problemLanguageList = Object.assign([],this.problemLanguages) // 深克隆 防止影响
+      for(let i =0;i<problemLanguageList.length;i++){
+        problemLanguageList[i] = {name:problemLanguageList[i]}
+        for(let lang of this.allLanguage){
+          if(problemLanguageList[i].name == lang.name){
+            problemLanguageList[i] = lang
+            break;
+          } 
+        }
+      }
+
+      let problemDto = {} // 上传给后台的数据
+      problemDto['problem'] =  Object.assign({},this.problem) // 深克隆
+      problemDto.problem.examples = utils.examplesToString(this.problem.examples) // 需要转换格式
+      
+      problemDto['tags'] = problemTagList
+      problemDto['languages'] = problemLanguageList
+      problemDto['samples'] = this.problemSamples
+
+      api[funcName](problemDto)
         .then((res) => {
           if (
-            this.routeName === "create-contest-problem" ||
-            this.routeName === "edit-contest-problem"
+            this.routeName === "admin-create-contest-problem" ||
+            this.routeName === "admin-edit-contest-problem"
           ) {
-            this.$router.push({
-              name: "contest-problem-list",
-              params: { contestId: this.$route.params.contestId },
-            });
+            if(res.data.data){ // 新增题目操作 需要使用返回来的pid
+              this.contestProblem['pid'] = res.data.data.pid;
+              this.contestProblem['cid'] = this.$route.params.contestId;
+            }
+            api.admin_setContestProblemInfo(this.contestProblem).then((res)=>{
+                this.$router.push({
+                name: "admin-contest-problem-list",
+                params: { contestId: this.$route.params.contestId },
+              });
+            })  
           } else {
-            this.$router.push({ name: "problem-list" });
+            this.$router.push({ name: "admin-problem-list" });
           }
         })
         .catch(() => {});
     },
+  },
+  computed: {
+    ...mapGetters(["userInfo"]),
   },
 };
 </script>
@@ -849,7 +936,7 @@ export default {
   width: 120px;
 }
 .input-new-tag {
-  width: 78px;
+  width: 120px;
 }
 .button-new-tag {
   height: 24px;

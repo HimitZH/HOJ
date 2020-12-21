@@ -1,10 +1,12 @@
-server:
-  port: 9010
+spring:
+  profiles:
+    active: dev
 
+---
 # 消费者将要去访问的微服务名称（注册成功进入nacos的微服务提供者）
-
 service-url:
   hoj-judge-server: http://hoj-judge-server
+
 
 #激活Sentinel对Feign的支持
 feign:
@@ -12,26 +14,25 @@ feign:
     enabled: true
 
 spring:
-  profiles:
-    active: dev
+  profiles: dev
   mail:
-    properties.mail.smtp.ssl.enable: true
-    username: 372347736@qq.com
-    password: hhaociozbzklbigh
-    host: smtp.qq.com
+    properties.mail.smtp.ssl.enable: ${hoj.mail.ssl}
+    username: ${hoj.mail.username}
+    password: ${hoj.mail.password}
+    host: ${hoj.mail.host}
   redis:
-    host: 129.204.177.72
-    port: 6371
-  application:
-    name: hoj-data-backup
-  cloud:
-    nacos:
-      discovery:
-        server-addr: localhost:8848
+    host: ${hoj.redis.host}
+    port: ${hoj.redis.port}
+    timeout: 6000
+    jedis:
+      pool:
+        min-idle: 10
+        max-idle: 20
+        max-active: 50
   datasource:
-    username: root
-    password: Hzh&hy2020
-    url: jdbc:mysql://129.204.177.72:3306/hoj?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2b8
+    username: ${hoj.db.username}
+    password: ${hoj.db.password}
+    url: jdbc:mysql://${hoj.db.host}:${hoj.db.port}/${hoj.db.name}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&rewriteBatchedStatements=true
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     initial-size: 10 # 初始化时建立物理连接的个数。初始化发生在显示调用init方法，或者第一次getConnection时
@@ -66,11 +67,4 @@ mybatis-plus:
 shiro-redis:
   enabled: true
   redis-manager:
-    host: 129.204.177.72:6371
-hoj:
-  jwt:
-    # 加密秘钥
-    secret: zsc-acm-hoj
-    # token有效时长，1小时，单位秒
-    expire: 3600
-    header: token
+    host: ${hoj.redis.host}:${hoj.redis.port}

@@ -12,7 +12,7 @@
               <span class="panel-title admin-info-name">{{
                 userInfo.username
               }}</span>
-              <p>{{ userInfo.admin_type }}</p>
+              <p>{{ isSuperAdmin==true?'超级管理员':'管理员'}}</p>
             </el-col>
           </el-row>
         </div>
@@ -20,7 +20,7 @@
           <p class="last-info-title home-title">Last Login</p>
           <el-form label-width="80px" class="last-info-body">
             <el-form-item label="Time:">
-              <span>{{ session.last_activity | localtime }}</span>
+              <span>{{ session.gmtCreate | localtime }}</span>
             </el-form-item>
             <el-form-item label="IP:">
               <span>{{ session.ip }}</span>
@@ -45,34 +45,101 @@
           message="Total Users"
           iconSize="30px"
           class="info-item"
-          :value="infoData.user_count"
+          :value="infoData.userNum"
         ></info-card>
         <info-card
           color="#67C23A"
           icon="fa fa-list"
           message="Today Submissions"
           class="info-item"
-          :value="infoData.today_submission_count"
+          :value="infoData.todayJudgeNum"
         ></info-card>
         <info-card
           color="#409EFF"
           icon="fa fa-trophy"
-          message="Recent Contests"
+          message="Recent 14 Days Contests"
           class="info-item"
-          :value="infoData.recent_contest_count"
+          :value="infoData.recentContestNum"
         ></info-card>
       </div>
       <!-- <el-card title="System_Overview" v-if="isSuperAdmin"> -->
       <el-card>
           <div slot="header">
-            <span class="panel-title home-title">System Overview</span>
+            <span class="panel-title home-title">General System</span>
           </div>
-          <p>Judge Server: {{ infoData.judge_server_count }}</p>
-          <p>Https Status:
-            <el-tag :type="https ? 'success' : 'danger'" size="small">
+          <el-row>
+            <el-col :xs="24" :md="8">
+              <span>HOJ Server Num：
+                <el-tag effect="dark" color="#2d8cf0" size="mini">{{ generalInfo.nacos.instanceCount }}</el-tag>
+              </span>
+            </el-col>
+            <el-col :xs="24" :md="8">
+            <span>Nacos Status：
+              <el-tag effect="dark" color="#19be6b" size="mini" v-if="generalInfo.nacos.status=='UP'">{{generalInfo.nacos.status}}</el-tag>
+              <el-tag effect="dark" color="#f90" size="mini" v-else>{{generalInfo.nacos.status}}</el-tag>
+            </span>
+            </el-col>
+            <el-col :xs="24" :md="8">
+            <span>Https Status：
+                <el-tag :type="https ? 'success' : 'danger'" size="small" effect="dark"> 
               {{ https ? "Enabled" : "Disabled" }}
             </el-tag>
-          </p>
+            </span>
+            </el-col>
+          </el-row>
+          <h2 class="home-title">Backup Service</h2>
+          <vxe-table stripe auto-resize :data="generalInfo.backupService" align="center">
+          <vxe-table-column
+            field="serviceId"
+            title="Name"
+            min-width="130"
+          ></vxe-table-column>
+          <vxe-table-column
+            field="host"
+            title="Host"
+            min-width="100"
+          ></vxe-table-column>
+          <vxe-table-column
+            field="port"
+            title="Port"
+            min-width="80"
+          ></vxe-table-column>
+           <vxe-table-column
+           min-width="80"
+           field="backupCores"
+          title="CPU Core">
+        </vxe-table-column>
+
+        <vxe-table-column
+          min-width="100"
+          field="backupPercentCpuLoad"
+          title="CPU Usage">
+        </vxe-table-column>
+
+        <vxe-table-column
+          min-width="100"
+          field="backupPercentMemoryLoad"
+          title="Mem Usage">
+        </vxe-table-column>
+          <vxe-table-column field="secure" title="Secure" min-width="80">
+            <template v-slot="{ row }">
+             <el-tooltip content="是否触发保护阈值" placement="top">
+               <el-tag effect="dark" color="#ed3f14" v-if="row.secure">True</el-tag>
+              <el-tag effect="dark" color="#2d8cf0" v-else>False</el-tag>
+             </el-tooltip>
+            </template>
+          </vxe-table-column>
+          <vxe-table-column title="Healthy" min-width="100">
+            <template v-slot="{ row }">
+              <el-tag effect="dark" color="#19be6b" v-if="row.metadata['nacos.healthy']=='true'"
+                >healthy</el-tag
+              >
+              <el-tag effect="dark" color="#f90" v-else>unhealthy</el-tag>
+            </template>
+          </vxe-table-column>
+        </vxe-table>
+
+
       </el-card>
     </el-col>
   </el-row>
@@ -155,11 +222,16 @@ export default {
   data() {
     return {
       infoData: {
-        user_count: 0,
-        recent_contest_count: 0,
-        today_submission_count: 0,
-        judge_server_count: 0,
-        env: {},
+        userNum: 0,
+        recentContestNum: 0,
+        todayJudgeNum: 0,
+      },
+      generalInfo:{
+        backupCores: 0,
+        backupPercentCpuLoad: '0%',
+        backupPercentMemoryLoad: '0%',
+        backupService:[],
+        nacos:{}
       },
       judgeInfo: [
         {
@@ -195,11 +267,6 @@ export default {
       ],
       activeNames: [1],
       session: {},
-      userInfo: {
-        username: "Himit_ZH",
-        admin_type: "管理员",
-        avatar: "https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/HCODE.png",
-      },
     };
   },
   mounted() {
@@ -207,33 +274,30 @@ export default {
     // this.intervalId = setInterval(() => {
     //     this.refreshJudgeServerList()
     // }, 5000)
-
-    api.getDashboardInfo().then(
+    api.admin_getGeneralSystemInfo().then(
+      (res)=>{
+        this.generalInfo = res.data.data
+        this.generalInfo.backupService[0]['backupCores'] = this.generalInfo.backupCores;
+        this.generalInfo.backupService[0]['backupPercentCpuLoad'] = this.generalInfo.backupPercentCpuLoad;
+        this.generalInfo.backupService[0]['backupPercentMemoryLoad'] = this.generalInfo.backupPercentMemoryLoad;
+      },
+      ()=>{}
+    )
+    api.admin_getDashboardInfo().then(
       (resp) => {
         this.infoData = resp.data.data;
       },
       () => {}
     );
     
-    api.getSessions().then(
+    api.getSessions(this.userInfo.uid).then(
       (resp) => {
-        this.parseSession(resp.data.data);
+        this.session = resp.data.data
       },
       () => {}
     );
   },
   methods: {
-    parseSession(sessions) {
-      let session = sessions[0];
-      if (sessions.length > 1) {
-        session = sessions
-          .filter((s) => !s.current_session)
-          .sort((a, b) => {
-            return a.last_activity < b.last_activity;
-          })[0];
-      }
-      this.session = session;
-    },
     refreshJudgeServerList () {
         api.getJudgeServer().then(res => {
           this.servers = res.data.data.servers
@@ -241,7 +305,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["profile", "userInfo", "isSuperAdmin"]),
+    ...mapGetters(["userInfo", "isSuperAdmin"]),
     cdn() {
       return this.infoData.env.STATIC_CDN_HOST;
     },
@@ -249,7 +313,7 @@ export default {
       return document.URL.slice(0, 5) === "https";
     },
     browser() {
-      let b = browserDetector(this.session.user_agent);
+      let b = browserDetector(this.session.userAgent);
       if (b.name && b.version) {
         return b.name + " " + b.version;
       } else {
@@ -257,7 +321,7 @@ export default {
       }
     },
     os() {
-      let b = browserDetector(this.session.user_agent);
+      let b = browserDetector(this.session.userAgent);
       return b.os ? b.os : "Unknown";
     },
   },

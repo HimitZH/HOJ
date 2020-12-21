@@ -13,14 +13,11 @@
           <i class="fa fa-tachometer" aria-hidden="true"></i>Dashboard
         </el-menu-item>
         <!-- <el-submenu v-if="isSuperAdmin" index="general"> -->
-        <el-submenu index="general">
+        <el-submenu index="general" v-if="isSuperAdmin">
           <template slot="title"><i class="el-icon-menu"></i>General</template>
           <el-menu-item index="/admin/user">User</el-menu-item>
           <el-menu-item index="/admin/announcement">Announcement</el-menu-item>
           <el-menu-item index="/admin/conf">System Config</el-menu-item>
-          <el-menu-item index="/admin/delete-test-case"
-            >Delete Test Case</el-menu-item
-          >
         </el-submenu>
         <!-- <el-submenu index="problem" v-if="hasProblemPermission"> -->
         <el-submenu index="problem">
@@ -59,11 +56,11 @@
               </el-breadcrumb>
             </div>
           </el-col>
-          <el-col :span="4">
+          <el-col :span="4" v-show="isAuthenticated">
             <i class="fa fa-font katex-editor" @click="katexVisible = true"></i>
             <el-dropdown @command="handleCommand">
               <span
-                >{{ user.username
+                >{{ userInfo.username
                 }}<i class="el-icon-caret-bottom el-icon--right"></i
               ></span>
               <el-dropdown-menu slot="dropdown">
@@ -92,7 +89,7 @@
           :open.sync="openusermenu"
         >
           <mu-button flat>
-            {{ user.username }}<i class="el-icon-caret-bottom"></i>
+            {{ userInfo.username }}<i class="el-icon-caret-bottom"></i>
           </mu-button>
           <mu-list slot="content" @change="handleCommand">
             <mu-list-item button value="logout">
@@ -120,6 +117,7 @@
           </mu-list-item>
 
           <mu-list-item
+           v-if="isSuperAdmin"
             button
             :ripple="false"
             nested
@@ -163,15 +161,6 @@
               @click="opendrawer = !opendrawer"
             >
               <mu-list-item-title>System Config</mu-list-item-title>
-            </mu-list-item>
-            <mu-list-item
-              button
-              :ripple="false"
-              slot="nested"
-              to="/admin/delete-test-case"
-              @click="opendrawer = !opendrawer"
-            >
-              <mu-list-item-title>Delete Test Case</mu-list-item-title>
             </mu-list-item>
           </mu-list-item>
 
@@ -278,6 +267,7 @@
 import { mapGetters } from "vuex";
 import KatexEditor from "@/components/admin/KatexEditor.vue";
 import api from "@/common/api";
+import mMessage from '@/common/message'
 
 export default {
   name: "app",
@@ -291,16 +281,12 @@ export default {
   },
   data() {
     return {
-      isAuthenticated: true,
       openusermenu: false,
       openSideMenu: "",
       katexVisible: false,
       opendrawer: false,
       mobileNar: false,
       currentPath: "",
-      user: {
-        username: "Himit_ZH",
-      },
       routeList: [],
     };
   },
@@ -310,8 +296,10 @@ export default {
   methods: {
     handleCommand(command) {
       if (command === "logout") {
-        api.logout().then(() => {
-          this.$router.push({ name: "/admin/login" });
+        api.admin_logout().then((res) => {
+          this.$router.push({ path: "/admin/login" });
+          mMessage.success(res.data.msg)
+          this.$store.commit('clearUserInfoAndToken');
         });
       }
     },
@@ -329,7 +317,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["userInfo", "isSuperAdmin", "hasProblemPermission"]),
+    ...mapGetters(["userInfo", "isSuperAdmin","isAuthenticated"]),
   },
   watch: {
     $route() {

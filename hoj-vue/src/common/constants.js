@@ -118,7 +118,7 @@ export const CONTEST_STATUS = {
 }
 
 export const CONTEST_STATUS_REVERSE = {
-  '1': {
+  '-1': {
     name: 'Scheduled',
     color: '#f90'
   },
@@ -126,7 +126,7 @@ export const CONTEST_STATUS_REVERSE = {
     name: 'Running',
     color: '#19be6b'
   },
-  '-1': {
+  '1': {
     name: 'Ended',
     color: '#ed3f14'
   }
@@ -173,11 +173,7 @@ export const USER_TYPE = {
   SUPER_ADMIN: 'root'
 }
 
-export const PROBLEM_PERMISSION = {
-  NONE: 'None',
-  OWN: 'Own',
-  ALL: 'All'
-}
+
 
 export const STORAGE_KEY = {
   AUTHED: 'authed',
