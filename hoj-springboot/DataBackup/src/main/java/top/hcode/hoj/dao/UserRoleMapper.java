@@ -1,9 +1,15 @@
 package top.hcode.hoj.dao;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.UserRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import top.hcode.hoj.pojo.vo.UserRolesVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,5 +22,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 @Mapper
 @Repository
 public interface UserRoleMapper extends BaseMapper<UserRole> {
-
+    UserRolesVo getUserRoles(@Param("uid")String uid,@Param("username")String username);
+    IPage<UserRolesVo> getUserList(Page<UserRolesVo> page, @Param("limit")int limit,
+                                   @Param("currentPage")int currentPage,
+                                   @Param("keyword")String keyword);
 }

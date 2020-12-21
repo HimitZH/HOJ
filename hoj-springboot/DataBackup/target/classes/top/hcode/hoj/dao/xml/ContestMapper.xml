@@ -10,4 +10,7 @@
         select c.id,c.uid,u.nickname,u.username,c.title,c.explain,c.type,c.source,c.auth,c.start_time,c.end_time,c.duration from contest c,user_info u
         where c.id = #{cid} and u.uuid = c.uid
     </select>
+    <select id="getWithinNext14DaysContests" resultType="top.hcode.hoj.pojo.entity.Contest">
+        SELECT * FROM contest WHERE DATE_ADD(CURDATE(), INTERVAL 14 DAY) >= DATE(start_time) AND STATUS != 1
+    </select>
 </mapper>

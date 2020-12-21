@@ -1,6 +1,7 @@
 package top.hcode.hoj.service;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +21,8 @@ import top.hcode.hoj.pojo.vo.JudgeVo;
  */
 
 public interface JudgeService extends IService<Judge> {
-    Page<JudgeVo> getCommonJudgeList(int limit, int currentPage, long pid, String source,
-                                     String language, int status,
-                                     String username, long cid);
+    IPage<JudgeVo> getCommonJudgeList(int limit, int currentPage, long pid, String source,
+                                      String language, int status,
+                                      String username, long cid);
 
 }

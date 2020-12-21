@@ -6,7 +6,7 @@
         <div class="filter-row">
             <span>
             <el-button type="danger" icon="el-icon-delete-solid"
-              @click="deleteUsers" size="small">Delete
+              @click="deleteUsers(null)" size="small">Delete
             </el-button>
             </span>
             <span>
@@ -22,7 +22,7 @@
       @checkbox-all="handlechangeAll"
       >
         <vxe-table-column type="checkbox" width="60"></vxe-table-column>
-        <vxe-table-column field="uid" title="ID" width="140"></vxe-table-column>
+        <vxe-table-column field="uid" title="UUID" width="130"></vxe-table-column>
         <vxe-table-column field="username" title="Username" min-width="140"></vxe-table-column>
         <vxe-table-column field="realname" title="Real Name" min-width="140"></vxe-table-column>
         <vxe-table-column field="email" title="Email" min-width="150"></vxe-table-column>
@@ -33,7 +33,7 @@
         </vxe-table-column>
         <vxe-table-column field="role" title="User Type" min-width="100">
           <template v-slot="{ row }">
-            {{row.role|parseRole}}
+            {{getRole(row.roles) | parseRole}}
           </template>
         </vxe-table-column>
         <vxe-table-column field="status" title="Status" min-width="100">
@@ -173,31 +173,40 @@
 
     <!--编辑用户的对话框-->
     <el-dialog title="User Info" :visible.sync="showUserDialog" width="350px">
-      <el-form :model="selectUser" label-width="100px" label-position="left">
+      <el-form :model="selectUser" label-width="100px" label-position="left" :rules="updateUserRules" ref="updateUser">
         <el-row :gutter="10">
           <el-col :span="24">
-            <el-form-item label="Username" required>
+            <el-form-item label="Username" required prop="username">
               <el-input v-model="selectUser.username"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="Real Name" required>
+            <el-form-item label="Real Name" required prop="realname">
               <el-input v-model="selectUser.realname"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="Email" required>
+            <el-form-item label="Email" required prop="email">
               <el-input v-model="selectUser.email"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="Password" required>
-              <el-input v-model="selectUser.password"></el-input>
+            <el-form-item label="Set NewPwd">
+              <el-switch
+              :active-value="true"
+              :inactive-value="false"
+              v-model="selectUser.setNewPwd">
+              </el-switch>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24" v-if="selectUser.setNewPwd==1">
+            <el-form-item label="New Pwd" required prop="password">
+              <el-input v-model="selectUser.password" placeholder="Enter the new password"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item label="User Type">
-              <el-select v-model="selectUser.role">
+              <el-select :value="selectUser.type">
                 <el-option label="用户" :value="1002"></el-option>
                 <el-option label="管理员" :value="1001"></el-option>
                 <el-option label="超级管理员" :value="1000"></el-option>
@@ -237,29 +246,43 @@
           }
           callback();
       }
-
       const CheckPwdLength=(rule, value, callback) => {
       if (value<6||value>25) {
         callback(new Error("密码长度请选择6~25字符长度"));
           }
           callback();
       }
+      const CheckUsernameNotExist =(rule, value, callback) =>{
+      api.checkUsernameOrEmail(value, undefined).then(
+        (res) => {
+          if (res.data.data.username === true && value!=this.selectUser.username) {
+            callback(new Error("用户名已存在"));
+          } else {
+            callback();
+          }
+        },
+        (_) => callback()
+      );
+    }
+    const CheckEmailNotExist=(rule, value, callback) =>{
+      api.checkUsernameOrEmail(undefined, value).then(
+        (res) => {
+          if (res.data.data.email === true && value!=this.selectUser.email) {
+            callback(new Error("邮箱已存在"));
+          } else {
+            callback();
+          }
+        },
+        (_) => callback()
+      );
+    }
       return {
         // 一页显示的用户数
         pageSize: 10,
         // 用户总数
         total: 0,
         // 数据库查询的用户列表
-        userList: [
-          {
-            uid:"1001",username:'Himit_ZH',realname:"黄志浩",email:"372347736@qq.com",password:"123456",
-            gmtCreate:'2020-11-11 11:11:11',role:1000,status:0
-          },
-          {
-            uid:"1002",username:'Himit_ZH',realname:"黄志浩",email:"372347736@qq.com",password:"123456",
-            gmtCreate:'2020-11-11 11:11:11',role:1001,status:0
-          }
-        ],
+        userList: [],
         uploadUsers: [],
         uploadUsersPage: [],
         uploadUsersCurrentPage: 1,
@@ -270,18 +293,52 @@
         showUserDialog: false,
 
         // 当前用户model
-        selectUser: {},
+        selectUser: {
+          uid:'',
+          username:'',
+          realname: '',
+          email: '',
+          password: '',
+          type: 1002,
+          status:0,
+          setNewPwd:false
+        },
+        updateUserRules: {
+            username: [
+              {required: true, message: "Username is required", trigger: "blur" },
+              {validator:CheckUsernameNotExist, trigger: "blur",message:"The username already exists"},
+              {max:255,message:"The longest length of a username is 255",trigger: "blur"}
+            ],
+            realname: [
+              {required: true, message: "Realname is required", trigger: "blur" },
+              {max:255,message:"The longest length of a username is 255",trigger: "blur"}
+            ],
+            email: [
+              {
+                required: true,
+                message: "Email is required", 
+                trigger: "blur",
+              },
+              {
+                type: "email",
+                message: "The email format is incorrect",
+                trigger: "blur",
+              },
+              { validator: CheckEmailNotExist,message: "The email already exists",trigger: "blur" },
+            ],
+          
+        },
         loadingTable: false,
         loadingGenerate: false,
         // 当前页码
-        currentPage: 0,
+        currentPage: 1,
         selectedUsers: [],
         formGenerateUser: {
           prefix: '',
           suffix: '',
           number_from: 0,
           number_to: 10,
-          password_length: 8
+          password_length: 6
         },
         formGenerateRules: {
           number_from: [
@@ -300,7 +357,7 @@
       }
     },
     mounted () {
-      // this.getUserList(1)
+      this.getUserList(1)
     },
     methods: {
       // 切换页码回调
@@ -310,53 +367,97 @@
       },
       // 提交修改用户的信息
       saveUser () {
-        api.editUser(this.selectUser).then(res => {
-          // 更新列表
-          this.getUserList(this.currentPage)
-        }).then(() => {
-          this.showUserDialog = false
-        }).catch(() => {
+        this.$refs['updateUser'].validate((valid)  =>{
+          if(valid){
+            api.admin_editUser(this.selectUser).then(res => {
+              // 更新列表
+              myMessage.success(res.data.msg)
+              this.getUserList(this.currentPage)
+              
+            }).then(() => {
+              this.showUserDialog = false
+            }).catch(() => {
+            })
+          }
         })
       },
       filterByKeyword(){
         this.currentChange(1)
+        this.keyword = ''
+      },
+      getRole(roles){
+        let type = 1002
+        for(var item=0;item<roles.length;item++){
+          if(roles[item]['id']== 1000){
+            type = 1000
+          }else if(roles[item]['id'] == 1001){
+            type = 1001
+          }else if(roles[item]['id'] ==1002){
+            type = 1002
+          }
+        }
+        return type
       },
       // 打开用户对话框
       openUserDialog (row) {
         this.showUserDialog = true
-        this.selectUser = Object.assign({}, row); // 深克隆 防止影响原来的表格
+        this.selectUser.uid = row.uid
+        this.selectUser.username = row.username
+        this.selectUser.realname = row.realname
+        this.selectUser.email = row.email
+        this.selectUser.setNewPwd = false
+        this.selectUser.password = ''
+        this.selectUser.type = this.getRole(row.roles)
+        this.selectUser.status = row.status
       },
       // 获取用户列表
       getUserList (page) {
         this.loadingTable = true
-        api.getUserList((page - 1) * this.pageSize, this.pageSize, this.keyword).then(res => {
+        api.admin_getUserList(page, this.pageSize, this.keyword).then(res => {
           this.loadingTable = false
           this.total = res.data.data.total
-          this.userList = res.data.data.results
+          this.userList = res.data.data.records
         }, res => {
           this.loadingTable = false
         })
       },
       deleteUsers (ids) {
-        this.$confirm('你确定要删除该用户？可能会关联删除该用户创建的公告，题目，比赛等。', '确认', {
-          type: 'warning'
-        }).then(() => {
-          api.deleteUsers(ids.join(',')).then(res => {
-            this.getUserList(this.currentPage)
-          }).catch(() => {
-            this.getUserList(this.currentPage)
+        if(!ids){
+          ids = this.selectedUsers
+        }
+        if(ids.length>0){
+          this.$confirm('你确定要删除该用户？可能会关联删除该用户创建的公告，题目，比赛等。', '确认', {
+            type: 'warning'
+          }).then(() => {
+            api.admin_deleteUsers(ids).then(res => {
+              myMessage.success(res.data.msg)
+              this.selectedUsers = []
+              this.getUserList(this.currentPage)
+            }).catch(() => {
+              this.selectedUsers = []
+              this.getUserList(this.currentPage)
+            })
+          }, () => {
           })
-        }, () => {
-        })
+        }else{
+          myMessage.warning("勾选的用户不能为空！")
+        }
       },
 
       // 用户表部分勾选 改变选中的内容
       handleSelectionChange ({records }) {
-        this.selectedUsers = records 
+        this.selectedUsers = []
+        for(let num =0;num<records.length;num++){
+            this.selectedUsers.push(records[num].uid)
+        }
       },
       // 一键全部选中，改变选中的内容列表
       handlechangeAll () {
-        this.selectedUsers = this.$refs.xTable.getCheckboxRecords();
+        let userList = this.$refs.xTable.getCheckboxRecords();
+        this.selectedUsers = []
+        for(let num =0;num<userList.length;num++){
+            this.selectedUsers.push(userList[num].uid)
+        }
       },
       generateUser () {
         this.$refs['formGenerateUser'].validate((valid) => {
@@ -366,11 +467,12 @@
           }
           this.loadingGenerate = true
           let data = Object.assign({}, this.formGenerateUser)
-          api.generateUser(data).then(res => {
+          api.admin_generateUser(data).then(res => {
             this.loadingGenerate = false
-            let url = '/admin/generate_user?file_id=' + res.data.data.file_id
+            myMessage.success(res.data.msg)
+            let url = '/file/generate-user-excel?key=' + res.data.data.key
             utils.downloadFile(url).then(() => {
-              this.$alert('所有用户创建成功，用户表已下载到您的电脑里了。', '提醒')
+              this.$alert('所有指定格式用户创建成功，用户表已成功下载到您的电脑里了！', '提醒')
             })
             this.getUserList(1)
           }).catch(() => {
@@ -398,9 +500,10 @@
         })
       },
       handleUsersUpload () {
-        api.importUsers(this.uploadUsers).then(res => {
+        api.admin_importUsers(this.uploadUsers).then(res => {
           this.getUserList(1)
           this.handleResetData()
+          myMessage.success(res.data.msg)
         }).catch(() => {
         })
       },

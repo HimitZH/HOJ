@@ -44,7 +44,7 @@
           field="gmtCreate"
           title="Create Time">
           <template v-slot="{row}">
-            {{row.create_time | localtime }}
+            {{row.gmtCreate | localtime }}
           </template>
         </vxe-table-column>
         <vxe-table-column
@@ -52,10 +52,10 @@
           field="auth"
           title="Auth">
           <template v-slot="{row}">
-            <el-select v-model="row.auth" @change="updateProblem(row)" size="small">
+            <el-select v-model="row.auth" @change="changeProblemAuth(row)" size="small" :disabled="row.auth==3 && !contestId">
                 <el-option label="公开" :value="1"></el-option>
                 <el-option label="私有" :value="2"></el-option>
-                <el-option label="比赛中" :value="3"></el-option>
+                <el-option label="比赛题目" :value="3" :disabled="!contestId"></el-option>
             </el-select>
           </template>
         </vxe-table-column>
@@ -64,7 +64,7 @@
           min-width="200">
           <template v-slot="{row}">
             <el-tooltip effect="dark" content="编辑题目" placement="top">
-                <el-button icon="el-icon-edit-outline" size="mini" @click.native="goEdit(row)" type="primary">
+                <el-button icon="el-icon-edit-outline" size="mini" @click.native="goEdit(row.id)" type="primary">
                 </el-button>
             </el-tooltip>
 
@@ -109,7 +109,7 @@
   import api from '@/common/api'
   import utils from '@/common/utils'
   import ContestAddProblem from '@/components/admin/ContestAddProblem.vue'
-
+  import myMessage from '@/common/message'
   export default {
     name: 'ProblemList',
     components: {
@@ -119,9 +119,7 @@
       return {
         pageSize: 10,
         total: 0,
-        problemList: [
-          {id:1001,title:'测试标题',author:'Himit_ZH',gmtCreate:'2020-11-11 22:22:22',auth:1}
-        ],
+        problemList: [],
         keyword: '',
         loading: false,
         currentPage: 1,
@@ -136,7 +134,7 @@
     mounted () {
       this.routeName = this.$route.name
       this.contestId = this.$route.params.contestId
-      // this.getProblemList(this.currentPage)
+      this.getProblemList(this.currentPage)
     },
     methods: {
       handleDblclick (row) {
@@ -163,32 +161,40 @@
       },
       getProblemList (page = 1) {
         this.loading = true
-        let funcName = this.routeName === 'admin-problem-list' ? 'getProblemList' : 'getContestProblemList'
+        let funcName = this.routeName === 'admin-problem-list' ? 'admin_getProblemList' : 'admin_getContestProblemList'
         let params = {
           limit: this.pageSize,
-          offset: (page - 1) * this.pageSize,
+          currentPage: page,
           keyword: this.keyword,
-          contest_id: this.contestId
+          cid: this.contestId
         }
         api[funcName](params).then(res => {
           this.loading = false
           this.total = res.data.data.total
-          for (let problem of res.data.data.results) {
+          for (let problem of res.data.data.records) {
             problem.isEditing = false
           }
-          this.problemList = res.data.data.results
+          this.problemList = res.data.data.records
         }, err => {
           this.loading = false
         })
       },
+
+      changeProblemAuth(row){
+       api.admin_changeProblemPublic(row).then((res)=>{
+         myMessage.success(res.data.msg)
+       })
+      },
+
       deleteProblem (id) {
         this.$confirm('确定要删除此问题吗？注意：该问题的相关提交数据也将被删除。', '删除题目', {
           type: 'warning'
         }).then(() => {
-          let funcName = this.routeName === 'admin-problem-list' ? 'deleteProblem' : 'deleteContestProblem'
-          api[funcName](id).then(() => [
-            this.getProblemList(this.currentPage - 1)
-          ]).catch(() => {
+          let funcName = this.routeName === 'admin-problem-list' ? 'admin_deleteProblem' : 'admin_deleteContestProblem'
+          api[funcName](id).then((res) => {
+            myMessage.success(res.data.msg)
+            this.getProblemList(this.currentPage)
+          }).catch(() => {
           })
         }, () => {
         })
@@ -198,24 +204,25 @@
         let funcName = ''
         if (this.contestId) {
           data.contest_id = this.contestId
-          funcName = 'editContestProblem'
+          funcName = 'admin_editContestProblem'
         } else {
-          funcName = 'editProblem'
+          funcName = 'admin_editProblem'
         }
         api[funcName](data).then(res => {
+          myMessage.success(res.data.msg)
           this.getProblemList(this.currentPage)
         }).catch(() => {
         })
       },
       downloadTestCase (problemID) {
         let url = '/admin/test_case?problem_id=' + problemID
-        utils.downloadFile(url)
-      },
-      getPublicProblem () {
-        api.getProblemList()
+        utils.downloadFile(url).then(() => {
+            this.$alert('该题目的测试样例已成功下载！', '提醒')
+        })
       },
       filterByKeyword(){
-         this.currentChange()
+        this.currentChange(1)
+        this.keyword = ''
       }
     },
     watch: {

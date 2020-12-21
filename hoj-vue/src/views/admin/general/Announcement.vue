@@ -68,7 +68,7 @@
                 <el-button  icon="el-icon-edit-outline" @click.native="openAnnouncementDialog(row)" size="mini" type="primary"></el-button>
               </el-tooltip>
               <el-tooltip class="item" effect="dark" content="删除公告" placement="top">
-                <el-button  icon="el-icon-delete-solid" @click.native="deleteAnnouncement(row.id)" size="mini" type="danger"></el-button>
+                <el-button  icon="el-icon-delete-solid" @click.native="deleteAnnouncement(row.row.id)" size="mini" type="danger"></el-button>
               </el-tooltip>
             </template>
           </vxe-table-column>
@@ -122,7 +122,8 @@
 <script>
   import Simditor from '@/components/admin/Simditor.vue'
   import api from '@/common/api'
-
+  import myMessage from '@/common/message'
+  import { mapGetters } from "vuex";
   export default {
     name: 'announcement',
     components: {
@@ -134,10 +135,7 @@
         // 显示编辑公告对话框
         showEditAnnouncementDialog: false,
         // 公告列表
-        announcementList: [
-          {id:1001,title:'测试公告',gmtCreate:'2020-11-11 12:22:22',content:"测试内容",
-          gmtModified:'2020-11-11 12:53:22',username:'Himit_ZH',status:0}
-        ],
+        announcementList: [],
         // 一页显示的公告数
         pageSize: 15,
         // 总公告数
@@ -146,9 +144,12 @@
         // 公告 (new | edit) model
 
         announcement: {
+          id:null,
           title: '',
+          content:'',
           status: 0,
-          content: ''
+          content: '',
+          uid:'',          
         },
         // 对话框标题
         announcementDialogTitle: 'Edit Announcement',
@@ -159,13 +160,13 @@
       }
     },
     mounted () {
-      // this.init()
+       this.init()
     },
     methods: {
       init () {
         this.contestID = this.$route.params.contestId
         if (this.contestID) {
-          this.getContestAnnouncementList()
+          this.getContestAnnouncementList(1)
         } else {
           this.getAnnouncementList(1)
         }
@@ -173,24 +174,29 @@
       // 切换页码回调
       currentChange (page) {
         this.currentPage = page
-        this.getAnnouncementList(page)
+        if (this.contestID) {
+          this.getContestAnnouncementList(page)
+        }else{
+          this.getAnnouncementList(page)
+        }
       },
 
       getAnnouncementList (page) {
         this.loading = true
-        api.getAnnouncementList((page - 1) * this.pageSize, this.pageSize).then(res => {
+        api.admin_getAnnouncementList(page, this.pageSize).then(res => {
           this.loading = false
           this.total = res.data.data.total
-          this.announcementList = res.data.data.results
+          this.announcementList = res.data.data.records
         }, res => {
           this.loading = false
         })
       },
-      getContestAnnouncementList () {
+      getContestAnnouncementList (page) {
         this.loading = true
-        api.getContestAnnouncementList(this.contestID).then(res => {
+        api.admin_getContestAnnouncementList(this.contestID,page,this.pageSize).then(res => {
           this.loading = false
-          this.announcementList = res.data.data
+          this.total = res.data.data.total
+          this.announcementList = res.data.data.records
         }).catch(() => {
           this.loading = false
         })
@@ -213,22 +219,24 @@
       // 默认传入MouseEvent
       submitAnnouncement (data = undefined) {
         let funcName = ''
-        if (!data.title) {
-          data = {
-            id: this.announcement.id,
-            title: this.announcement.title,
-            content: this.announcement.content,
-            status: this.announcement.status
-          }
+        if (!data.id) {
+          data = this.announcement
         }
+        let requestData;
         if (this.contestID) {
-          data.contest_id = this.contestID
-          funcName = this.mode === 'edit' ? 'updateContestAnnouncement' : 'createContestAnnouncement'
+          let announcement = {
+            announcement:data,
+            cid:this.contestID
+          }
+          requestData = announcement
+          funcName = this.mode === 'edit' ? 'admin_updateContestAnnouncement' : 'admin_createContestAnnouncement'
         } else {
-          funcName = this.mode === 'edit' ? 'updateAnnouncement' : 'createAnnouncement'
+          funcName = this.mode === 'edit' ? 'admin_updateAnnouncement' : 'admin_createAnnouncement'
+          requestData = data
         }
-        api[funcName](data).then(res => {
+        api[funcName](requestData).then(res => {
           this.showEditAnnouncementDialog = false
+          myMessage.success(res.data.msg);
           this.init()
         }).catch()
       },
@@ -242,9 +250,10 @@
         }).then(() => {
           // then 为确定
           this.loading = true
-          let funcName = this.contestID ? 'deleteContestAnnouncement' : 'deleteAnnouncement'
+          let funcName = this.contestID ? 'admin_deleteContestAnnouncement' : 'admin_deleteAnnouncement'
           api[funcName](announcementId).then(res => {
             this.loading = true
+            myMessage.success(res.data.msg);
             this.init()
           })
         }).catch(() => {
@@ -258,22 +267,25 @@
         if (row !== null) {
           this.announcementDialogTitle = 'Edit Announcement'
           this.announcement = Object.assign({},row.data[0])
-          console.log(this.announcement)
+          this.mode = 'edit'
         } else {
           this.announcementDialogTitle = 'Create Announcement'
           this.announcement.title = ''
-          this.announcement.visible = 0
+          this.announcement.status = 0
           this.announcement.content = ''
+          this.announcement.uid = this.userInfo.uid
+          this.announcement.username = this.userInfo.username
           this.mode = 'create'
         }
       },
       handleVisibleSwitch (row) {
         this.mode = 'edit'
         this.submitAnnouncement({
-          id: row.data[0].id,
-          title: row.data[0].title,
-          content: row.data[0].content,
-          status: row.data[0].status
+          id: row.id,
+          title: row.title,
+          content: row.content,
+          status: row.status,
+          uid:row.uid
         })
       }
     },
@@ -281,6 +293,9 @@
       $route () {
         this.init()
       }
+    },
+    computed: {
+      ...mapGetters(["userInfo"]),
     }
   }
 </script>

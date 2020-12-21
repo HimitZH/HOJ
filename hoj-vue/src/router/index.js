@@ -34,18 +34,66 @@ router.beforeEach((to, from, next) => {
   NProgress.start()
   if (to.matched.some(record => record.meta.requireAuth)) { // 判断该路由是否需要登录权限
     const token = localStorage.getItem('token')
+    const isSuperAdmin = store.getters.isSuperAdmin
+    const isAmdin = store.getters.isAdminRole
     if (token) { // 判断当前的token是否存在 ； 登录存入的token
-      next()
-    } else {
-      next({
-        path: '/'  // 无token认证的一致返回到主页
-      })
-      store.commit('changeModalStatus',{mode: 'Login', visible: true})
+
+      if(to.matched.some(record => record.meta.requireSuperAdmin)){ // 判断是否需要超级管理权限
+
+        if(isSuperAdmin){ // 拥有权限就进入
+          next()
+        }else{ // 没有超级管理员权限 全部返回登录页，并且清除缓存
+          if(to.path.split('/')[1]==='admin'){ //管理端
+            next({
+              path: '/admin/login' 
+            })
+          }else{ // oj端
+            next({
+              path: '/' 
+            })
+            store.commit('changeModalStatus',{mode: 'Login', visible: true})
+          }
+          mMessage.error('对不起！您并非超级管理员，您无权操作，请重新登陆！')
+          store.commit("clearUserInfoAndToken");
+        }
+      }else if(to.matched.some(record => record.meta.requireAdmin)){ //判断是否需要管理员权限
+        if(isAmdin){
+          next()
+        }else{ // 没有管理员权限 全部返回登录页，并且清除缓存
+          if(to.path.split('/')[1]==='admin'){ // 管理端
+            next({
+              path: '/admin/login' 
+            })
+          }else{
+            next({
+              path: '/' 
+            })
+            store.commit('changeModalStatus',{mode: 'Login', visible: true})
+          }  
+          mMessage.error('对不起！您并非管理员，您无权操作，请重新登录！')
+          store.commit("clearUserInfoAndToken");
+        }
+      }
+
+    } else { // 如果没有token
+
+      if(to.path.split('/')[1]==='admin'){
+        next({
+          path: '/admin/login'  // 管理端无token认证返回登录页
+        })
+      }else{
+        next({
+          path: '/'  // 无token认证的一致返回到主页
+        })
+        store.commit('changeModalStatus',{mode: 'Login', visible: true})
+      }
+      store.commit("clearUserInfoAndToken");
       mMessage.error('请您先登录！')
     }
-  } else {
+  } else { // 不需要认证的页面
     next()
   }
+  
 })
 
 router.afterEach((to, from, next) => {

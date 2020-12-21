@@ -1,5 +1,8 @@
 import axios from 'axios'
 import mMessage from '@/common/message'
+import router from '@/router'
+import store from "@/store"
+import utils from '@/common/utils'
 // import NProgress from 'nprogress' // nprogress插件
 // import 'nprogress/nprogress.css' // nprogress样式
 
@@ -28,6 +31,12 @@ axios.interceptors.request.use(
     // 即使本地存在token，也有可能token是过期的，所以在响应拦截器中要对返回状态进行判断 
     const token = localStorage.getItem('token')
     token && (config.headers.Authorization = token);
+    let type = config.url.split("/")[1];
+    if (type === 'admin'){ // 携带请求区别是否为admin
+      config.headers['Url-Type'] = type
+    }else{
+      config.headers['Url-Type'] = 'general'
+    }
     
     return config;
   },
@@ -41,34 +50,41 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   response => {
     // NProgress.done();
-    if (response.data.status === 200) {
+    if(response.headers['refresh-token']){ // token续约！
+      store.commit('changeUserToken',response.headers['authorization'])
+    } 
+    if (response.data.status === 200 || response.data.status==undefined) {
       return Promise.resolve(response);
     } else {
       mMessage.error(response.data.msg);
       return Promise.reject(response);
     }
+   
   },
   // 服务器状态码不是200的情况    
   error => {
     // NProgress.done();
     if (error.response) {
+      if(error.response.headers['refresh-token']){ // token续约！！
+        store.commit('changeUserToken',error.response.headers['authorization'])
+      } 
       switch (error.response.status) {
-        // 401: 未登录                
+        // 401: 未登录 token过期               
         // 未登录则跳转登录页面，并携带当前页面的路径                
         // 在登录成功后返回当前页面，这一步需要在登录页操作。                
         case 401:
-          mMessage.error('请您先登录！');
-          store.commit('changeModalStatus', { mode: 'Login', visible: true });
+          mMessage.error(error.response.data.msg);
+          if(error.response.config.headers['Url-Type'] === 'admin'){
+            router.push("/admin/login")
+          }else{
+            store.commit('changeModalStatus', { mode: 'Login', visible: true });
+          }
+          store.commit('clearUserInfoAndToken');
           break;
-        // 403 token过期                
-        // 登录过期对用户进行提示                
-        // 清除本地token和清空vuex中token对象                
-        // 跳转登录页面                
+        // 403                               
+        // 无权限访问或操作的请求             
         case 403:
-          mMessage.error('登录过期，请重新登录！');
-          // 清除token  userInfo                                                      
-          store.dispatch('clearUserInfoAndToken');
-          store.commit('changeModalStatus', { mode: 'Login', visible: true });
+          mMessage.error(error.response.data.msg);
           break;
         // 404请求不存在                
         case 404:
@@ -81,15 +97,12 @@ axios.interceptors.response.use(
       }
       return Promise.reject(error);
     } else { //处理断网，请求没响应
-      mMessage.error( '网络出现异常，请稍后再尝试！');
+      mMessage.error( '与服务器链接出现异常，请稍后再尝试！');
       return Promise.reject(error);
     }
   }
 );
 
-// 集中导出oj前台的api和admin管理端的api 
-let api = {...ojApi,...adminApi}
-export default api
 
 // 处理oj前台的请求
 const ojApi = {
@@ -224,122 +237,133 @@ const ojApi = {
 // 处理admin后台管理的请求
 const adminApi = {
   // 登录
-  login (username, password) {
-    return ajax('login', 'post', {
+  admin_login (username, password) {
+    return ajax('/admin/login', 'post', {
       data: {
         username,
         password
       }
     })
   },
-  logout () {
-    return ajax('logout', 'get')
+  admin_logout () {
+    return ajax('/admin/logout', 'get')
   },
-  getProfile () {
-    return ajax('profile', 'get')
+  admin_getDashboardInfo () {
+    return ajax('/admin/dashboard/get-dashboard-info', 'get')
   },
-  // 获取公告列表
-  getAnnouncementList (offset, limit) {
-    return ajax('admin/announcement', 'get', {
-      params: {
-        paging: true,
-        offset,
-        limit
-      }
-    })
-  },
-  // 删除公告
-  deleteAnnouncement (id) {
-    return ajax('admin/announcement', 'delete', {
-      params: {
-        id
-      }
-    })
-  },
-  // 修改公告
-  updateAnnouncement (data) {
-    return ajax('admin/announcement', 'put', {
+  getSessions (data) {
+    return ajax('/admin/dashboard/get-sessions', 'post',{
       data
     })
   },
-  // 添加公告
-  createAnnouncement (data) {
-    return ajax('admin/announcement', 'post', {
-      data
-    })
+  //获取数据后台服务和nacos相关详情
+  admin_getGeneralSystemInfo(){
+    return ajax('/admin/config/get-service-info','get')
   },
+
   // 获取用户列表
-  getUserList (offset, limit, keyword) {
-    let params = {paging: true, offset, limit}
+  admin_getUserList (currentPage, limit, keyword) {
+    let params = {currentPage, limit}
     if (keyword) {
       params.keyword = keyword
     }
-    return ajax('admin/user', 'get', {
+    return ajax('/admin/user/get-user-list', 'get', {
       params: params
     })
   },
-  // 获取单个用户信息
-  getUser (id) {
-    return ajax('admin/user', 'get', {
-      params: {
-        id
-      }
-    })
-  },
   // 编辑用户
-  editUser (data) {
-    return ajax('admin/user', 'put', {
+  admin_editUser (data) {
+    return ajax('/admin/user/edit-user', 'put', {
       data
     })
   },
-  deleteUsers (id) {
-    return ajax('admin/user', 'delete', {
-      params: {
-        id
-      }
+  admin_deleteUsers (ids) {
+    return ajax('/admin/user/delete-user', 'delete', {
+      data:{ids}
     })
   },
-  importUsers (users) {
-    return ajax('admin/user', 'post', {
+  admin_importUsers (users) {
+    return ajax('/admin/user/insert-batch-user', 'post', {
       data: {
         users
       }
     })
   },
-  generateUser (data) {
-    return ajax('admin/generate_user', 'post', {
+  admin_generateUser (data) {
+    return ajax('/admin/user/generate-user', 'post', {
       data
     })
   },
-  getLanguages () {
-    return ajax('languages', 'get')
+  // 获取公告列表
+  admin_getAnnouncementList (currentPage, limit) {
+    return ajax('/admin/announcement', 'get', {
+      params: {
+        currentPage,
+        limit
+      }
+    })
   },
-  getSMTPConfig () {
-    return ajax('admin/smtp', 'get')
+  // 删除公告
+  admin_deleteAnnouncement (aid) {
+    return ajax('/admin/announcement', 'delete', {
+      params: {
+        aid
+      }
+    })
   },
-  createSMTPConfig (data) {
-    return ajax('admin/smtp', 'post', {
+  // 修改公告
+  admin_updateAnnouncement (data) {
+    return ajax('/admin/announcement', 'put', {
       data
     })
   },
-  editSMTPConfig (data) {
-    return ajax('admin/smtp', 'put', {
+  // 添加公告
+  admin_createAnnouncement (data) {
+    return ajax('/admin/announcement', 'post', {
       data
     })
   },
-  testSMTPConfig (email) {
-    return ajax('admin/smtp_test', 'post', {
+  // 系统配置
+  admin_getSMTPConfig () {
+    return ajax('/admin/config/get-email-config', 'get')
+  },
+  admin_editSMTPConfig (data) {
+    return ajax('/admin/config/set-email-config', 'put', {
+      data
+    })
+  },
+  admin_testSMTPConfig (email) {
+    return ajax('/admin/config/test-email', 'post', {
       data: {
         email
       }
     })
   },
-  getWebsiteConfig () {
-    return ajax('admin/website', 'get')
+  admin_getWebsiteConfig () {
+    return ajax('/admin/config/get-web-config', 'get')
   },
-  editWebsiteConfig (data) {
-    return ajax('admin/website', 'post', {
+  admin_editWebsiteConfig (data) {
+    return ajax('/admin/config/set-web-config', 'put', {
       data
+    })
+  },
+  admin_getDataBaseConfig(){
+    return ajax('/admin/config/get-db-and-redis-config', 'get')
+  },
+  admin_editDataBaseConfig(data){
+    return ajax('/admin/config/set-db-and-redis-config', 'put', {
+      data
+    })
+  },
+
+  getLanguages () {
+    return ajax('/api/languages', 'get')
+  },
+  getProblemLanguages (pid) {
+    return ajax('/api/get-Problem-languages', 'get',{
+      params: {
+        pid: pid
+      }
     })
   },
   getJudgeServer () {
@@ -357,161 +381,181 @@ const adminApi = {
       data
     })
   },
-  getInvalidTestCaseList () {
-    return ajax('admin/prune_test_case', 'get')
+
+  admin_getProblemList (params) {
+    params = utils.filterEmptyValue(params)
+    return ajax('/admin/problem/get-problem-list', 'get', {
+      params
+    })
   },
-  pruneTestCase (id) {
-    return ajax('admin/prune_test_case', 'delete', {
+  admin_createProblem (data) {
+    return ajax('/admin/problem', 'post', {
+      data
+    })
+  },
+  admin_editProblem (data) {
+    return ajax('/admin/problem', 'put', {
+      data
+    })
+  },
+  admin_deleteProblem (id) {
+    return ajax('/admin/problem', 'delete', {
       params: {
         id
       }
     })
   },
-  createContest (data) {
-    return ajax('admin/contest', 'post', {
-      data
-    })
-  },
-  getContest (id) {
-    return ajax('admin/contest', 'get', {
+
+  admin_getProblem (id) {
+    return ajax('/admin/problem', 'get', {
       params: {
         id
       }
     })
   },
-  editContest (data) {
-    return ajax('admin/contest', 'put', {
-      data
-    })
+  admin_getAllProblemTagList () {
+    return ajax('/api/get-all-problem-tags', 'get')
   },
-  getContestList (offset, limit, keyword) {
-    let params = {paging: true, offset, limit}
-    if (keyword) {
-      params.keyword = keyword
-    }
-    return ajax('admin/contest', 'get', {
-      params: params
-    })
-  },
-  getContestAnnouncementList (contestID) {
-    return ajax('admin/contest/announcement', 'get', {
+
+  admin_getProblemTags(pid){
+    return ajax('/api/get-problem-tags', 'get',{
       params: {
-        contest_id: contestID
+        pid
       }
     })
   },
-  createContestAnnouncement (data) {
-    return ajax('admin/contest/announcement', 'post', {
-      data
-    })
-  },
-  deleteContestAnnouncement (id) {
-    return ajax('admin/contest/announcement', 'delete', {
+  admin_getProblemCases(pid){
+    return ajax('/admin/problem/get-problem-cases', 'get',{
       params: {
-        id
+        pid
       }
     })
-  },
-  updateContestAnnouncement (data) {
-    return ajax('admin/contest/announcement', 'put', {
-      data
-    })
-  },
-  getProblemTagList () {
-    return ajax('problem/tags', 'get')
   },
   compileSPJ (data) {
-    return ajax('admin/compile_spj', 'post', {
+    return ajax('/admin/compile_spj', 'post', {
       data
     })
   },
-  createProblem (data) {
-    return ajax('admin/problem', 'post', {
-      data
-    })
-  },
-  editProblem (data) {
-    return ajax('admin/problem', 'put', {
-      data
-    })
-  },
-  deleteProblem (id) {
-    return ajax('admin/problem', 'delete', {
+  
+  admin_getContestProblemInfo(pid,cid) {
+    return ajax('/admin/contest/contest-problem', 'get', {
       params: {
-        id
+        cid,
+        pid
       }
     })
   },
-  getProblem (id) {
-    return ajax('admin/problem', 'get', {
-      params: {
-        id
-      }
+  admin_setContestProblemInfo(data) {
+    return ajax('/admin/contest/contest-problem', 'put', {
+      data
     })
   },
-  getProblemList (params) {
+
+  admin_getContestProblemList (params) {
     params = utils.filterEmptyValue(params)
-    return ajax('admin/problem', 'get', {
+    return ajax('/admin/contest/get-problem-list', 'get', {
       params
     })
   },
-  getContestProblemList (params) {
-    params = utils.filterEmptyValue(params)
-    return ajax('admin/contest/problem', 'get', {
-      params
+
+  admin_getContestProblem (pid) {
+    return ajax('/admin/contest/problem', 'get', {
+      params: {
+        pid,
+      }
     })
   },
-  getContestProblem (id) {
-    return ajax('admin/contest/problem', 'get', {
+  admin_createContestProblem (data) {
+    return ajax('/admin/contest/problem', 'post', {
+      data
+    })
+  },
+  admin_editContestProblem (data) {
+    return ajax('/admin/contest/problem', 'put', {
+      data
+    })
+  },
+  admin_deleteContestProblem (pid) {
+    return ajax('/admin/contest/problem', 'delete', {
       params: {
         id
       }
     })
   },
-  createContestProblem (data) {
-    return ajax('admin/contest/problem', 'post', {
+  admin_changeProblemPublic (data) {
+    return ajax('/admin/contest/change-problem-auth', 'put', {
       data
     })
   },
-  editContestProblem (data) {
-    return ajax('admin/contest/problem', 'put', {
+  admin_addProblemFromPublic (data) {
+    return ajax('/admin/contest/add-problem-from-public', 'post', {
       data
     })
   },
-  deleteContestProblem (id) {
-    return ajax('admin/contest/problem', 'delete', {
-      params: {
-        id
-      }
-    })
-  },
-  makeContestProblemPublic (data) {
-    return ajax('admin/contest_problem/make_public', 'post', {
-      data
-    })
-  },
-  addProblemFromPublic (data) {
-    return ajax('admin/contest/add_problem_from_public', 'post', {
-      data
-    })
-  },
-  getReleaseNotes () {
-    return ajax('admin/versions', 'get')
-  },
-  getDashboardInfo () {
-    return ajax('admin/dashboard_info', 'get')
-  },
-  getSessions () {
-    return ajax('sessions', 'get')
-  },
+  
   exportProblems (data) {
     return ajax('export_problem', 'post', {
       data
     })
-  }
+  },
+
+  admin_createContest (data) {
+    return ajax('/admin/contest', 'post', {
+      data
+    })
+  },
+  admin_getContest (cid) {
+    return ajax('/admin/contest', 'get', {
+      params: {
+        cid
+      }
+    })
+  },
+  admin_editContest (data) {
+    return ajax('/admin/contest', 'put', {
+      data
+    })
+  },
+  admin_getContestList (currentPage, limit, keyword) {
+    let params = {currentPage, limit}
+    if (keyword) {
+      params.keyword = keyword
+    }
+    return ajax('/admin/contest/get-contest-list', 'get', {
+      params: params
+    })
+  },
+  admin_getContestAnnouncementList (cid,currentPage,limit) {
+    return ajax('/admin/contest/announcement', 'get', {
+      params: {
+        cid,
+        currentPage,
+        limit
+      }
+    })
+  },
+  admin_createContestAnnouncement (data) {
+    return ajax('/admin/contest/announcement', 'post', {
+      data
+    })
+  },
+  admin_deleteContestAnnouncement (aid) {
+    return ajax('/admin/contest/announcement', 'delete', {
+      params: {
+        aid
+      }
+    })
+  },
+  admin_updateContestAnnouncement (data) {
+    return ajax('admin/contest/announcement', 'put', {
+      data
+    })
+  },
 }
 
-
+// 集中导出oj前台的api和admin管理端的api 
+let api = Object.assign(ojApi,adminApi)
+export default api
 /**
  * @param url
  * @param method get|post|put|delete...

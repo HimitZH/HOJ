@@ -83,11 +83,14 @@ export default {
       this.$refs.ruleForm2.validate((valid) => {
         if (valid) {
           this.logining = true;
-          api.login(this.ruleForm2.account, this.ruleForm2.password).then(
-            (data) => {
+          api.admin_login(this.ruleForm2.username, this.ruleForm2.password).then(
+            (res) => {
               this.logining = false;
-              this.$router.push({ name: "dashboard" });
+              const jwt = res.headers["authorization"];
+              this.$store.commit('changeUserToken',jwt);
+              this.$store.dispatch('setUserInfo',res.data.data);
               mMessage.success("尊敬的管理员，欢迎回来~")
+              this.$router.push({ name: "admin-dashboard" });
             },
             () => {
               this.logining = false;

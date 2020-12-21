@@ -6,7 +6,6 @@ import Dashboard from '@/views/admin/Dashboard'
 import User from '@/views/admin/general/User'
 import Announcement from '@/views/admin/general/Announcement'
 import SystemConfig from '@/views/admin/general/SystemConfig'
-import DeleteTestCase from '@/views/admin/general/DeleteTestCase'
 import ProblemList from '@/views/admin/problem/ProblemList'
 import Problem from '@/views/admin/problem/Problem'
 import ProblemImportAndExport from '@/views/admin/problem/ImportAndExport'
@@ -21,6 +20,7 @@ const adminRoutes= [
     {
       path: '/admin/',
       component: Home,
+      meta: {requireAuth:true, requireAdmin: true},
       children: [
         {
           path: '',
@@ -30,22 +30,20 @@ const adminRoutes= [
         {
           path: 'user',
           name: 'admin-user',
-          component: User
+          component: User,
+          meta: { requireSuperAdmin: true},
       },
         {
           path: 'announcement',
           name: 'admin-announcement',
-          component: Announcement
+          component: Announcement,
+          meta: { requireSuperAdmin: true},
       },
         {
           path: 'conf',
           name: 'admin-conf',
-          component: SystemConfig
-        },
-        {
-          path: 'delete-test-case',
-          name: 'admin-delete-test-case',
-          component: DeleteTestCase
+          component: SystemConfig,
+          meta: { requireSuperAdmin: true},
         },
         {
           path: 'problems',

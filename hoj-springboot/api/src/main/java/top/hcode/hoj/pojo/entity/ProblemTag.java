@@ -28,7 +28,7 @@ public class ProblemTag {
 
     private Long pid;
 
-    private Long tig;
+    private Long tid;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;

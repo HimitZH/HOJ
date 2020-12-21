@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
  * @Date: 2020/10/22 23:25
  * @Description:
  */
-@EnableDiscoveryClient
+@EnableDiscoveryClient // 开启注册发现
 @SpringBootApplication
 @EnableFeignClients // 开启feign
 @EnableAsync(proxyTargetClass=true) //开启异步注解

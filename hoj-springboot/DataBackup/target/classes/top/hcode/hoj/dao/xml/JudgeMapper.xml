@@ -29,4 +29,7 @@
         order by j.submit_time,j.submit_id Desc
     </select>
 
+    <select id="getTodayJudgeNum" resultType="int">
+        SELECT count(*) FROM judge WHERE DATE(gmt_create) = CURDATE();
+    </select>
 </mapper>

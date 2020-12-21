@@ -4,7 +4,9 @@ package top.hcode.hoj.common.exception;
 import com.google.protobuf.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.ShiroException;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.ExpiredCredentialsException;
+import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -19,12 +21,16 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.apache.ibatis.executor.BatchExecutorException;
 import top.hcode.hoj.common.result.CommonResult;
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import java.io.IOException;
+import java.sql.BatchUpdateException;
 import java.util.Set;
 
 /**
@@ -33,14 +39,44 @@ import java.util.Set;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
     /**
-     * 401 -UnAuthorized 处理shiro的异常
+     * 401 -UnAuthorized 处理AuthenticationException,token相关异常 即是认证出错 可能无法处理！
      */
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler({ShiroException.class, ExpiredCredentialsException.class})
-    public CommonResult handle401(ShiroException e) {
-        log.error("shiro异常-------------->{}", e.getMessage());
-        return CommonResult.errorResponse("对不起，您无权限进行此操作，请先登录进行授权认证", CommonResult.STATUS_ACCESS_DENIED);
+    @ExceptionHandler(value = AuthenticationException.class)
+    public CommonResult handleAuthenticationException(AuthenticationException e,
+                                                      HttpServletRequest httpRequest,
+                                                      HttpServletResponse httpResponse) {
+        httpResponse.setHeader("Url-Type", httpRequest.getHeader("Url-Type")); // 为了前端能区别请求来源
+        log.error("登录认证异常-------------->{}", e.getMessage());
+        return CommonResult.errorResponse(e.getMessage(), CommonResult.STATUS_ACCESS_DENIED);
+    }
+
+    /**
+     * 403 -FORBIDDEN AuthorizationException异常 即是授权认证出错 可能无法处理！
+     */
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(value = AuthorizationException.class)
+    public CommonResult handleAuthenticationException(AuthorizationException e,
+                                                      HttpServletRequest httpRequest,
+                                                      HttpServletResponse httpResponse) {
+        httpResponse.setHeader("Url-Type", httpRequest.getHeader("Url-Type")); // 为了前端能区别请求来源
+        log.error("权限验证异常-------------->{}", e.getMessage());
+        return CommonResult.errorResponse("对不起，您无权限进行此操作！", CommonResult.STATUS_FORBIDDEN);
+    }
+
+    /**
+     * 403 -FORBIDDEN 处理shiro的异常 无法处理！ 未能走到controller层
+     */
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(value = ShiroException.class)
+    public CommonResult handleShiroException(ShiroException e,
+                                             HttpServletRequest httpRequest,
+                                             HttpServletResponse httpResponse) {
+        log.error("Shiro异常-------------->{}", e.getMessage());
+        httpResponse.setHeader("Url-Type", httpRequest.getHeader("Url-Type")); // 为了前端能区别请求来源
+        return CommonResult.errorResponse("对不起，您无权限进行此操作，请先登录进行授权认证", CommonResult.STATUS_FORBIDDEN);
     }
 
 
@@ -59,7 +95,7 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public CommonResult handler(MethodArgumentNotValidException e) throws IOException {
+    public CommonResult handlerMethodArgumentNotValidException(MethodArgumentNotValidException e) throws IOException {
         log.error("实体校验异常-------------->{}", e);
         BindingResult bindingResult = e.getBindingResult();
         ObjectError objectError = bindingResult.getAllErrors().stream().findFirst().get();
@@ -75,7 +111,7 @@ public class GlobalExceptionHandler {
     public CommonResult handleMissingServletRequestParameterException(
             MissingServletRequestParameterException e) {
         log.error("缺少请求参数-------------->{}", e.getMessage());
-        return CommonResult.errorResponse("缺少必要的请求参数："+e.getMessage(),CommonResult.STATUS_FAIL);
+        return CommonResult.errorResponse("缺少必要的请求参数：" + e.getMessage(), CommonResult.STATUS_FAIL);
     }
 
     /**
@@ -86,7 +122,7 @@ public class GlobalExceptionHandler {
     public CommonResult handleHttpMessageNotReadableException(
             HttpMessageNotReadableException e) {
         log.error("参数解析失败-------------->{}", e.getMessage());
-        return CommonResult.errorResponse("解析参数格式失败",CommonResult.STATUS_FAIL);
+        return CommonResult.errorResponse("解析参数格式失败", CommonResult.STATUS_FAIL);
     }
 
 
@@ -102,7 +138,7 @@ public class GlobalExceptionHandler {
         String field = error.getField();
         String code = error.getDefaultMessage();
         String message = String.format("%s:%s", field, code);
-        return CommonResult.errorResponse("参数绑定失败",CommonResult.STATUS_FAIL);
+        return CommonResult.errorResponse("参数绑定失败", CommonResult.STATUS_FAIL);
     }
 
     /**
@@ -115,7 +151,7 @@ public class GlobalExceptionHandler {
         Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
         ConstraintViolation<?> violation = violations.iterator().next();
         String message = violation.getMessage();
-        return CommonResult.errorResponse("[参数验证失败]parameter:" + message,CommonResult.STATUS_FAIL);
+        return CommonResult.errorResponse("[参数验证失败]parameter:" + message, CommonResult.STATUS_FAIL);
     }
 
     /**
@@ -125,7 +161,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ValidationException.class)
     public CommonResult handleValidationException(ValidationException e) {
         log.error("实体校验失败-------------->{}", e.getMessage());
-        return CommonResult.errorResponse("实体校验失败,请求参数不对",CommonResult.STATUS_FAIL);
+        return CommonResult.errorResponse("实体校验失败,请求参数不对", CommonResult.STATUS_FAIL);
     }
 
     /**
@@ -136,7 +172,7 @@ public class GlobalExceptionHandler {
     public CommonResult handleHttpRequestMethodNotSupportedException(
             HttpRequestMethodNotSupportedException e) {
         log.error("不支持当前请求方法-------------->{}", e.getMessage());
-        return CommonResult.errorResponse("不支持当前请求方法",405);
+        return CommonResult.errorResponse("不支持当前请求方法", 405);
     }
 
     /**
@@ -146,7 +182,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public CommonResult handleHttpMediaTypeNotSupportedException(Exception e) {
         log.error("不支持当前媒体类型-------------->{}", e.getMessage());
-        return CommonResult.errorResponse("不支持当前媒体类型",415);
+        return CommonResult.errorResponse("不支持当前媒体类型", 415);
     }
 
 
@@ -167,8 +203,30 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ServiceException.class)
     public CommonResult handleServiceException(ServiceException e) {
         log.error("业务逻辑异常-------------->{}", e.getMessage());
-        return CommonResult.errorResponse("业务逻辑异常：" + e.getMessage(),CommonResult.STATUS_ERROR);
+        return CommonResult.errorResponse("业务逻辑异常：" + e.getCause(), CommonResult.STATUS_ERROR);
     }
+
+    /**
+     * 500 - Internal Server Error 操作数据库出现异常:名称重复，外键关联
+     */
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public CommonResult handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        log.error("操作数据库出现异常-------------->{}", e.getMessage());
+        return CommonResult.errorResponse("操作数据库出现异常：字段重复、有外键关联等", CommonResult.STATUS_ERROR);
+    }
+
+    /**
+     * 500 - Internal Server Error 批量操作数据库出现异常:名称重复，外键关联
+     */
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(BatchExecutorException.class)
+    public CommonResult handleBatchUpdateException(BatchExecutorException e) {
+        log.error("操作数据库出现异常-------------->{}", e.getMessage());
+        return CommonResult.errorResponse("批量插入或更新数据库出现异常：字段重复、有外键关联等", CommonResult.STATUS_ERROR);
+    }
+
+
 
     /**
      * 500 - Internal Server Error 系统通用异常
@@ -177,16 +235,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public CommonResult handleException(Exception e) {
         log.error("系统通用异常-------------->{}", e.getMessage());
-        return CommonResult.errorResponse("系统通用异常：" + e.getMessage(),CommonResult.STATUS_ERROR);
-    }
-
-    /**
-     * 500 - Internal Server Error 操作数据库出现异常:名称重复，外键关联
-     */
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public CommonResult handleException(DataIntegrityViolationException e) {
-        log.error("操作数据库出现异常-------------->{}", e.getMessage());
-        return CommonResult.errorResponse("操作数据库出现异常：字段重复、有外键关联等",CommonResult.STATUS_ERROR);
+        return CommonResult.errorResponse("系统通用异常：" + e.getCause(), CommonResult.STATUS_ERROR);
     }
 }

@@ -56,17 +56,14 @@ public class Problem implements Serializable {
     @ApiModelProperty(value = "输出描述")
     private String output;
 
-    @ApiModelProperty(value = "多样例用(#)隔开")
-    private String inputSample;
-
-    @ApiModelProperty(value = "多样例用(#)隔开")
-    private String outputSample;
+    @ApiModelProperty(value = "题面样例")
+    private String examples;
 
     @ApiModelProperty(value = "题目来源")
     private String source;
 
     @ApiModelProperty(value = "题目难度")
-    private String difficulty;
+    private Integer difficulty;
 
     @ApiModelProperty(value = "备注,提醒")
     private String hint;
@@ -76,6 +73,12 @@ public class Problem implements Serializable {
 
     @ApiModelProperty(value = "该题目对应的相关提交代码，用户是否可用分享")
     private Boolean codeShare;
+
+    @ApiModelProperty(value = "特判程序的代码 空代表无特判")
+    private String spjCode;
+
+    @ApiModelProperty(value = "特判程序的语言")
+    private String spjLanguage;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;

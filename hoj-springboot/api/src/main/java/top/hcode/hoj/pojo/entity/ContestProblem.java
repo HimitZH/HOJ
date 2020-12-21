@@ -29,9 +29,11 @@ public class ContestProblem implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "该题目在比赛中的顺序id")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+
+    @ApiModelProperty(value = "该题目在比赛中的顺序id")
+    private String displayId;
 
     @ApiModelProperty(value = "比赛id")
     private Long cid;
@@ -40,7 +42,7 @@ public class ContestProblem implements Serializable {
     private Long pid;
 
     @ApiModelProperty(value = "该题目在比赛中的标题，默认为原名字")
-    private String cpName;
+    private String displayTitle;
 
 
     @TableField(fill = FieldFill.INSERT)

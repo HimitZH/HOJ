@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="text-align:center">
      <vxe-input v-model="keyword" placeholder="Enter keyword" 
      type="search" size="medium" @search-click="filterByKeyword" style="margin-bottom:10px"></vxe-input>
     <vxe-table 
@@ -41,58 +41,58 @@
   </div>
 </template>
 <script>
-  import api from '@/common/api'
-
+import api from '@/common/api'
+import myMessage from '@/common/message'
   export default {
     name: 'add-problem-from-public',
-    fields: ['contestID'],
+    props: ['contestID'],
     data () {
       return {
         page: 1,
         limit: 10,
         total: 0,
         loading: false,
-        problems: [
-          
-            {id:1000,title:'测试'}
-          
-        ],
+        problems: [],
         contest: {},
         keyword: ''
       }
     },
     mounted () {
-      // api.getContest(this.contestID).then(res => {
-      //   this.contest = res.data.data
-      //   this.getPublicProblem()
-      // }).catch(() => {
-      // })
+      api.admin_getContest(this.contestID).then(res => {
+        this.contest = res.data.data
+        this.getPublicProblem()
+      }).catch(() => {
+      })
     },
     methods: {
       getPublicProblem (page) {
         this.loading = true
         let params = {
           keyword: this.keyword,
-          offset: (page - 1) * this.limit,
+          currentPage: page,
           limit: this.limit,
-          rule_type: this.contest.rule_type
+          problem_type: this.contest.type,
+          cid: this.contest.id
         }
-        api.getProblemList(params).then(res => {
+        api.admin_getContestProblemList(params).then(res => {
           this.loading = false
           this.total = res.data.data.total
-          this.problems = res.data.data.results
+          this.problems = res.data.data.records
         }).catch(() => {
+          this.loading = false
         })
       },
       handleAddProblem (problemID) {
-        this.$prompt('Please input display id for the contest problem', 'confirm').then(({value}) => {
+        this.$prompt('请输入该题目在比赛中显示的序号ID', '确认').then(({value}) => {
           let data = {
-            problem_id: problemID,
-            contest_id: this.contestID,
-            display_id: value
+            pid: problemID,
+            cid: this.contestID,
+            displayId: value
           }
-          api.addProblemFromPublic(data).then(() => {
+          api.admin_addProblemFromPublic(data).then((res) => {
             this.$emit('on-change')
+            myMessage.success(res.data.msg)
+            this.getPublicProblem(this.page);
           }, () => {
           })
         }, () => {

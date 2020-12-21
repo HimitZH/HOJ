@@ -1,5 +1,6 @@
 package top.hcode.hoj.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -17,12 +18,37 @@ import java.util.concurrent.TimeUnit;
  */
 
 @Component
+@Slf4j
 public final class RedisUtils {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
     // =============================common============================
+
+    public boolean getLock(String lockName, int expireTime) {
+        boolean result = false;
+        try {
+            boolean isExist = hasKey(lockName);
+            if(!isExist){
+                set(lockName,0);
+                expire(lockName,expireTime<=0? 3600:expireTime);
+            }
+            long reVal =  incr(lockName,1);
+            if(1==reVal){
+                //获取到锁
+                result = true;
+            }
+        } catch (Exception e) {
+            log.error("获取锁过程出错-->", e.getMessage());
+        }
+        return result;
+    }
+    public boolean releaseLock(String lockName) {
+
+        return expire(lockName, 30);
+    }
+
     /**
      * 指定缓存失效时间
      * @param key  键

@@ -15,7 +15,7 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="Contest Description" required>
-              <Simditor v-model="contest.explain"></Simditor>
+              <Simditor v-model="contest.description"></Simditor>
             </el-form-item>
           </el-col>
           <el-col :md="8" :xs="24">
@@ -123,7 +123,8 @@
   import Simditor from '@/components/admin/Simditor.vue'
   import time from '@/common/time'
   import moment from 'moment'
-
+  import { mapGetters } from "vuex";
+  import myMessage from '@/common/message'
   export default {
     name: 'CreateContest',
     components: {
@@ -137,24 +138,80 @@
         seal_rank_time:0, // 当开启封榜模式，即实时榜单关闭时，可选择前半小时，前一小时，全程封榜,默认半小时1800s
         contest: {
           title: '',
-          explain: '',
-          startTime: '2020-12-12 12:00:00',
-          endTime: '2020-12-12 17:00:00',
+          description: '',
+          startTime: '',
+          endTime: '',
           duration:0,
           type: 0,
           password: '',
           sealRank: true,
           sealRankTime:'',//封榜时间
           auth: 0,
-          allowed_ip_ranges: [{
-            value: ''
-          }]
+          // allowed_ip_ranges: [{
+          //   value: ''
+          // }]
         }
       }
     },
+    mounted () {
+      if (this.$route.name === 'admin-edit-contest') {
+        this.title = 'Edit Contest'
+        this.disableRuleType = true
+        this.getContestByCid();
+      }
+    },
+    watch: {
+      $route() {
+          if (this.$route.name === 'admin-edit-contest') {
+            this.title = 'Edit Contest'
+            this.disableRuleType = true
+            this.getContestByCid();
+          }else{
+            this.title = 'Create Contest'
+            this.disableRuleType = false
+            this.contest = []
+          }
+        }
+    },
+    computed: {
+    ...mapGetters(["userInfo"]),
+    },
     methods: {
+      getContestByCid(){
+         api.admin_getContest(this.$route.params.contestId).then(res => {
+          let data = res.data.data
+          // let ranges = []
+          // for (let v of data.allowed_ip_ranges) {
+          //   ranges.push({value: v})
+          // }
+          // if (ranges.length === 0) {
+          //   ranges.push({value: ''})
+          // }
+          // data.allowed_ip_ranges = ranges
+          this.contest = data
+          this.changeDuration()
+          // 封榜时间转换
+          let halfHour =  moment(this.contest.endTime).subtract(1800,'seconds').toString()
+          let oneHour =  moment(this.contest.endTime).subtract(3600,'seconds').toString()
+          let allHour =  moment(this.contest.startTime).toString()
+          let sealRankTime = moment(this.contest.sealRankTime).toString()
+          switch(sealRankTime){
+            case halfHour:
+              this.seal_rank_time = 0;
+              break;
+            case oneHour:
+              this.seal_rank_time = 1;
+              break;
+            case allHour:
+              this.seal_rank_time = 2;
+              break;
+          }
+        }).catch(() => {
+        })
+      },
+
       saveContest () {
-        let funcName = this.$route.name === 'edit-contest' ? 'editContest' : 'createContest'
+        let funcName = this.$route.name === 'admin-edit-contest' ? 'admin_editContest' : 'admin_createContest'
 
         switch(this.seal_rank_time){
           case 0: // 结束前半小时
@@ -167,14 +224,20 @@
             this.contest.sealRankTime = moment(this.contest.startTime);
         }
         let data = Object.assign({}, this.contest)
-        let ranges = []
-        for (let v of data.allowed_ip_ranges) {
-          if (v.value !== '') {
-            ranges.push(v.value)
-          }
+        // let ranges = []
+        // for (let v of data.allowed_ip_ranges) {
+        //   if (v.value !== '') {
+        //     ranges.push(v.value)
+        //   }
+        // }
+        // data.allowed_ip_ranges = ranges
+        if(funcName === 'admin_createContest'){
+          data['uid'] = this.userInfo.uid
+          data['author'] = this.userInfo.username
         }
-        data.allowed_ip_ranges = ranges
-        api[funcName](data).then(res => {
+        
+        api[funcName](data).then((res) => {
+          myMessage.success(res.data.msg)
           this.$router.push({name: 'admin-contest-list', query: {refresh: 'true'}})
         }).catch(() => {
         })
@@ -203,25 +266,5 @@
     //     }
     //   }
     },
-    mounted () {
-      this.changeDuration()
-      if (this.$route.name === 'admin-edit-contest') {
-        this.title = 'Edit Contest'
-        this.disableRuleType = true
-        api.getContest(this.$route.params.contestId).then(res => {
-          let data = res.data.data
-          let ranges = []
-          for (let v of data.allowed_ip_ranges) {
-            ranges.push({value: v})
-          }
-          if (ranges.length === 0) {
-            ranges.push({value: ''})
-          }
-          data.allowed_ip_ranges = ranges
-          this.contest = data
-        }).catch(() => {
-        })
-      }
-    }
   }
 </script>

@@ -1,16 +1,8 @@
 package top.hcode.hoj.service;
 
-import top.hcode.hoj.pojo.entity.ContestAnnouncement;
+
 import com.baomidou.mybatisplus.extension.service.IService;
+import top.hcode.hoj.pojo.entity.ContestAnnouncement;
 
-/**
- * <p>
- *  服务类
- * </p>
- *
- * @author Himit_ZH
- * @since 2020-10-23
- */
 public interface ContestAnnouncementService extends IService<ContestAnnouncement> {
-
 }

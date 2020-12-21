@@ -1,6 +1,7 @@
 package top.hcode.hoj.dao;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -21,7 +22,8 @@ import java.util.List;
 @Mapper
 @Repository
 public interface JudgeMapper extends BaseMapper<Judge> {
-    List<JudgeVo> getCommonJudgeList(IPage page, @Param("pid") long pid, @Param("source") String source,
+    IPage<JudgeVo> getCommonJudgeList(Page<JudgeVo> page, @Param("pid") long pid, @Param("source") String source,
                                      @Param("language") String language, @Param("status") int status,
                                      @Param("username") String username, @Param("cid") long cid);
+    int getTodayJudgeNum();
 }

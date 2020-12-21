@@ -1,8 +1,11 @@
 package top.hcode.hoj.shiro;
 
 import lombok.Data;
+import top.hcode.hoj.pojo.entity.Role;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @Author: Himit_ZH
@@ -11,7 +14,7 @@ import java.io.Serializable;
  */
 @Data
 public class AccountProfile implements Serializable {
-    private String uuid;
+    private String uid;
 
     private String username;
 
@@ -37,7 +40,15 @@ public class AccountProfile implements Serializable {
 
     private int status;
 
+    private Date gmtCreate;
+
+
+    private Date gmtModified;
+
+
+    private List<Role> roles;
+
     public String getId(){ //shiro登录用户实体默认主键获取方法要为getId
-        return uuid;
+        return uid;
     }
 }

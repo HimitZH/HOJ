@@ -17,6 +17,7 @@
 | 2020-11-24 | 介绍页，导航栏移动端优化，首页优化，公告栏优化               | Himit_ZH |
 | 2020-11-28 | 前端项目重构,加入管理端部分页面,增加case表                   | Himit_ZH |
 | 2020-12-01 | 前端管理端基本完成，准备开始前后端接口对接与测试             | Himit_ZH |
+| 2020-12-21 | 管理端前后端接口对接基本完成，准备客户端接口对接             | Himit_ZH |
 
 # 二、系统架构
 
@@ -84,6 +85,17 @@ user_info表
 | status       | int          |      | 0可用，1不可用       |
 | gmt_create   | datetime     |      | 创建时间             |
 | gmt_modified | datetime     |      | 修改时间             |
+
+session表  
+
+| 列名         | 实体属性类型 | 键   | 备注             |
+| ------------ | ------------ | ---- | ---------------- |
+| id           | long         | 主键 | auto_increment   |
+| uid          | String       | 外键 | 用户id           |
+| user_agent   | String       |      | 访问的浏览器参数 |
+| ip           | Srting       |      | 访问所在的ip     |
+| gmt_create   | datetime     |      | 创建时间         |
+| gmt_modified | datetime     |      | 修改时间         |
 
 
 
@@ -182,17 +194,32 @@ problem表
 | description  | String       |             | 内容描述                                    |
 | input       | String       |             | 输入描述                                    |
 | output      | String       |             | 输出描述                                    |
-| sample_input  | Srting       |             | 输入样例，多样例用(#)隔开                   |
-| sample_output | String       |             | 输出样例                                    |
+| examples | Srting       |             | 题面输入输出样例，不纳入评测数据 |
 | source       | int          |             | 题目来源（比赛id），默认为hoj,可能为爬虫vj  |
 | difficulty | int | | 题目难度，0简单，1中等，2困难 |
 | hint  | String       |             | 备注 提醒                                     |
 | auth         | int          |             | 默认为1公开，2为私有，3为比赛中。           |
 | code_share | boolean | | 该题目对应的相关提交代码，用户是否可用分享 |
+| spj_code | String | | 特判程序代码 空代表非特判 |
+| spj_language | String | | 特判程序的语言 |
 | gmt_create   | datetime     |             | 创建时间                                    |
 | gmt_modified | datetime     |             | 修改时间                                    |
 
  
+
+problem_case表
+
+| 列名         | 实体属性类型 | 键          | 备注               |
+| ------------ | ------------ | ----------- | ------------------ |
+| id           | long         | primary key | auto_increment     |
+| pid          | long         | 外键        | 题目id             |
+| input        | String       |             | 测试样例的输入     |
+| output       | String       |             | 测试样例的输出     |
+| status       | String       |             | 状态0可用，1不可用 |
+| gmt_create   | datetime     |             | 创建时间           |
+| gmt_modified | datetime     |             | 修改时间           |
+
+
 
 problem_count表
 
@@ -222,6 +249,22 @@ problem_tag表
 | tid          | int          |      | 标签id   |
 | gmt_create   | datetime     |      | 创建时间 |
 | gmt_modified | datetime     |      | 修改时间 |
+
+  
+
+language表
+
+| 列名            | 实体属性类型 | 键   | 备注                         |
+| --------------- | ------------ | ---- | ---------------------------- |
+| id              | int          |      | 主键id                       |
+| content_type    | String       |      | 语言类型                     |
+| description     | String       |      | 语言描述                     |
+| name            | String       |      | 语言名字                     |
+| compile_command | String       |      | 编译指令                     |
+| template        | String       |      | 模板                         |
+| is_spj          | boolean      |      | 是否可作为特殊判题的一种语言 |
+| gmt_create      | datetime     |      | 创建时间                     |
+| gmt_modified    | datetime     |      | 修改时间                     |
 
   
 
@@ -287,20 +330,6 @@ judge表
 
  
 
-case表
-
-| 列名         | 实体属性类型 | 键          | 备注               |
-| ------------ | ------------ | ----------- | ------------------ |
-| id           | long         | primary key | auto_increment     |
-| pid          | long         | 外键        | 题目id             |
-| input        | String       |             | 测试样例的输入     |
-| output       | String       |             | 测试样例的输出     |
-| status       | String       |             | 状态0可用，1不可用 |
-| gmt_create   | datetime     |             | 创建时间           |
-| gmt_modified | datetime     |             | 修改时间           |
-
-
-
 jugdeCase表 评测单个样例结果表
 
 | 列名         | 实体属性类型 | 键   | 备注                     |
@@ -338,14 +367,37 @@ CREATE PROCEDURE contest_status()
       UPDATE contest 
 	SET STATUS = (
 	CASE 
-	  WHEN NOW() < start_time THEN STATUS = -1 
-	  WHEN NOW() >= start_time AND NOW()<end_time THEN STATUS = 0
-	  WHEN NOW() > end_time THEN STATUS = 1
+	  WHEN NOW() < start_time THEN -1 
+	  WHEN NOW() >= start_time AND NOW()<end_time THEN  0
+	  WHEN NOW() >= end_time THEN 1
 	END);
     END
 |
 
  ```
+
+
+
+创建插入时的触发器
+
+```sql
+DROP TRIGGER IF EXISTS contest_trigger;
+
+DELIMITER $$
+CREATE TRIGGER contest_trigger
+BEFORE INSERT ON contest FOR EACH ROW
+BEGIN
+SET new.status=(
+	CASE 
+	  WHEN NOW() < new.start_time THEN -1 
+	  WHEN NOW() >= new.start_time AND NOW()<new.end_time THEN  0
+	  WHEN NOW() >= new.end_time THEN 1
+	END);
+END$$
+DELIMITER ;
+```
+
+
 
 设置定时器
 
@@ -375,6 +427,7 @@ contest表
 | -------------- | ------------ | ---- | ----------------------------------------------------- |
 | id             | long         | 主键 | auto_increment  1000起步                              |
 | uid            | String       | 外键 | 创建者id                                              |
+| author         | String       |      | 比赛创建者的用户名                                    |
 | title          | String       |      | 比赛标题                                              |
 | type           | int          |      | Acm赛制或者Rating                                     |
 | source         | int          |      | 比赛来源，原创为0，克隆赛为比赛id                     |
@@ -383,7 +436,7 @@ contest表
 | start_time     | datetime     |      | 开始时间                                              |
 | end_time       | datetime     |      | 结束时间                                              |
 | duration       | long         |      | 比赛时长（s）                                         |
-| explain        | Srting       |      | 比赛说明                                              |
+| description    | Srting       |      | 比赛说明                                              |
 | seal_rank      | boolean      |      | 是否开启封榜                                          |
 | seal_rank_time | datetime     |      | 封榜起始时间，一直到比赛结束，不刷新榜单。            |
 | status         | int          |      | -1为未开始，0为进行中，1为已结束                      |
@@ -399,6 +452,7 @@ contest_problem表
 | 列名         | 实体属性类型 | 键   | 备注                   |
 | ------------ | ------------ | ---- | ---------------------- |
 | id           | long         | 主键 | auto_increment         |
+| display_id   | String       |      | 展示的id               |
 | cid          | int          | 外键 | 比赛id                 |
 | pid          | int          | 外键 | 题目id                 |
 | cp_name      | String       |      | 用于当场比赛的题目标题 |
@@ -449,19 +503,30 @@ contest_record表 比赛记录表
 | gmt_create   | datetime     |      | 创建时间                                                     |
 | gmt_modified | datetime     |      | 修改时间                                                     |
 
- 
-
-contest_announcement表 比赛时的通知表
+ announcement表 
 
 | 列名         | 实体属性类型 | 键   | 备注                                           |
 | ------------ | ------------ | ---- | ---------------------------------------------- |
 | id           | long         | 主键 | auto_increment                                 |
-| cid          | int          | 外键 | 比赛id                                         |
-| title        | String       | 外键 | 通知标题                                       |
-| content      | String       |      | 内容                                           |
+| title        | String       |      | 公告标题                                       |
+| content      | String       |      | 公告内容                                       |
 | uid          | String       | 外键 | 发布者id（必须为比赛创建者或者超级管理员才能） |
 | gmt_create   | datetime     |      | 创建时间                                       |
 | gmt_modified | datetime     |      | 修改时间                                       |
+
+
+
+
+
+contest_announcement表 比赛时的通知表
+
+| 列名         | 实体属性类型 | 键   | 备注           |
+| ------------ | ------------ | ---- | -------------- |
+| id           | long         | 主键 | auto_increment |
+| aid          | long         | 外键 | 公告id         |
+| cid          | int          | 外键 | 比赛id         |
+| gmt_create   | datetime     |      | 创建时间       |
+| gmt_modified | datetime     |      | 修改时间       |
 
  
 

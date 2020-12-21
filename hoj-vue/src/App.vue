@@ -104,9 +104,6 @@ a {
 a:hover {
   color: #2196f3!important;
 }
-.drop-menu {
-  padding-top: 7px;
-}
 .panel-title {
   font-size: 21px;
   font-weight: 500;

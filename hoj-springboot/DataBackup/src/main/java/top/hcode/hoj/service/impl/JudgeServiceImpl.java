@@ -1,5 +1,6 @@
 package top.hcode.hoj.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.hcode.hoj.pojo.entity.Judge;
@@ -24,10 +25,10 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     private JudgeMapper judgeMapper;
 
     @Override
-    public Page<JudgeVo> getCommonJudgeList(int limit, int currentPage, long pid, String source, String language, int status, String username, long cid) {
+    public IPage<JudgeVo> getCommonJudgeList(int limit, int currentPage, long pid, String source, String language, int status, String username, long cid) {
         //新建分页
         Page<JudgeVo> page = new Page<>(currentPage, limit);
 
-        return page.setRecords(judgeMapper.getCommonJudgeList(page, pid, source, language, status, username, cid));
+        return judgeMapper.getCommonJudgeList(page, pid, source, language, status, username, cid);
     }
 }
