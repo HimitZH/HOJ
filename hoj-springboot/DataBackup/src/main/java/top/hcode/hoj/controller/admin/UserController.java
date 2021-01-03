@@ -57,7 +57,7 @@ public class UserController {
         if (limit == null || limit < 1) limit = 10;
         IPage<UserRolesVo> userList = userRoleService.getUserList(limit, currentPage, keyword);
         if (userList.getTotal() == 0) { // 未查询到一条数据
-            return CommonResult.successResponse(null,"暂无数据");
+            return CommonResult.successResponse(userList,"暂无数据");
         } else {
             return CommonResult.successResponse(userList, "获取成功");
         }

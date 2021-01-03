@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.dao.ContestMapper">
-    <select id="getContestList" resultType="top.hcode.hoj.pojo.vo.ContestVo" useCache="false">
-        select c.id,c.uid,u.nickname,u.username,c.title,c.explain,c.type,c.source,c.auth,c.start_time,c.end_time,c.duration from contest c,user_info u
-        where c.uid = u.uuid
-        order by c.start_time DESC
+    <select id="getContestList" resultType="top.hcode.hoj.pojo.vo.ContestVo" useCache="true">
+        select c.id,c.author,c.title,c.description,c.type,c.source,c.auth,c.start_time,c.end_time,c.duration
+        from contest order by c.start_time DESC
     </select>
     <select id="getContestInfoById" resultType="top.hcode.hoj.pojo.vo.ContestVo" useCache="true">
-        select c.id,c.uid,u.nickname,u.username,c.title,c.explain,c.type,c.source,c.auth,c.start_time,c.end_time,c.duration from contest c,user_info u
-        where c.id = #{cid} and u.uuid = c.uid
+        select c.id,c.author,c.title,c.description,c.type,c.source,c.auth,c.start_time,c.end_time,c.duration
+        from contest c where c.id = #{cid}
     </select>
-    <select id="getWithinNext14DaysContests" resultType="top.hcode.hoj.pojo.entity.Contest">
-        SELECT * FROM contest WHERE DATE_ADD(CURDATE(), INTERVAL 14 DAY) >= DATE(start_time) AND STATUS != 1
+    <select id="getWithinNext14DaysContests" resultType="top.hcode.hoj.pojo.vo.ContestVo">
+        SELECT c.id,c.author,c.title,c.description,c.type,c.source,c.auth,c.start_time,c.end_time,c.duration
+        FROM contest c WHERE DATE_ADD(CURDATE(), INTERVAL 14 DAY) >= DATE(start_time) AND STATUS != 1
     </select>
 </mapper>

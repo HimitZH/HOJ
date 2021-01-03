@@ -1,26 +1,25 @@
 <template>
-  <div class="flex-container">
+  <el-row class="flex-container">
     <div id="main">
       <el-card shadow>
         <div slot="header">
           <el-row :gutter="18">
-            <el-col :md="2" :lg="2">
-              <span class="panel-title hidden-xs-only">Status</span>
+            <el-col :md="4" :lg="2">
+              <span class="panel-title hidden-md-and-down">Status</span>
             </el-col>
-
-            <el-col :xs="16" :md="10" :lg="10">
+            <el-col :xs="10" :sm="8" :md="4" :lg="4">
               <el-switch
                 style="display: block"
-                v-model="formFilter.myself"
-                active-color="#ff4949"
+                v-model="formFilter.onlyMine"
                 active-text="Mine"
                 :width="40"
+                @change="handleOnlyMine"
                 inactive-text="All"
               >
               </el-switch>
             </el-col>
 
-            <el-col :xs="8" :md="4" :lg="4">
+            <el-col :xs="10" :sm="8" :md="5" :lg="4" style="padding-top: 5px;">
               <el-dropdown
                 class="drop-menu"
                 @command="handleStatusChange"
@@ -28,7 +27,7 @@
                 trigger="hover"
               >
                 <span class="el-dropdown-link">
-                  {{ formFilter.status === "" ? "Status" : formFilter.status }}
+                  {{status }}
                   <i class="el-icon-caret-bottom"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
@@ -44,22 +43,30 @@
               </el-dropdown>
             </el-col>
 
-            <el-col :xs="24" :md="4" :lg="4" class="search">
+            <el-col  :sm="8" :md="5" :lg="4" class="hidden-xs-only">
+              <el-button type="primary"  size="small" icon="el-icon-refresh" round @click="getSubmissions">Refresh</el-button>
+            </el-col>
+            <el-col :xs="4" class="hidden-sm-and-up">
+              <el-button type="primary" size="small" icon="el-icon-refresh" circle @click="getSubmissions"></el-button>
+            </el-col>
+
+            <el-col :xs="24" :sm="12" :md="5" :lg="5" class="search">
               <vxe-input
-                v-model="formFilter.pid"
+                v-model="formFilter.problemID"
                 placeholder="Enter Problem ID"
                 type="search"
                 size="medium"
-                @search-click="filterByKeyword"
+                @search-click="handleQueryChange"
               ></vxe-input>
             </el-col>
-            <el-col :xs="24" :md="4" :lg="4" class="search">
+            <el-col :xs="24" :sm="12" :md="5" :lg="5" class="search">
               <vxe-input
-                v-model="formFilter.pid"
+                v-model="formFilter.username"
+                :disabled="formFilter.onlyMine"
                 placeholder="Enter Author"
                 type="search"
                 size="medium"
-                @search-click="filterByKeyword"
+                @search-click="handleQueryChange"
               ></vxe-input>
             </el-col>
           </el-row>
@@ -67,23 +74,30 @@
         <vxe-table
           border="inner"
           stripe
+          keep-source
+          ref="xTable"
           highlight-current-row
           highlight-hover-row
           align="center"
           auto-resize
           :row-class-name="tableRowClassName"
           :data="submissions"
+          :loading="loadingTable"
         >
           <vxe-table-column
-            field="sid"
+            field="submitId"
             title="Run ID"
             min-width="100"
           ></vxe-table-column>
           <vxe-table-column
-            field="stime"
+            field="submitTime"
             title="Submit time"
             min-width="150"
-          ></vxe-table-column>
+          >
+          <template v-slot="{ row }">
+            <span>{{row.submitTime|localtime}}</span>
+          </template>
+          </vxe-table-column>
           <vxe-table-column field="pid" title="Problem ID" min-width="100">
             <template v-slot="{ row }">
               <a
@@ -95,28 +109,50 @@
           </vxe-table-column>
           <vxe-table-column field="status" title="Status" min-width="170">
             <template v-slot="{ row }">
-              <span :class="getStatusColor(row.status)">{{
-                JUDGE_STATUS[row.status].name
-              }}</span>
+              <span :class="getStatusColor(row.status)">
+                <i class="el-icon-loading" v-if="row.status == JUDGE_STATUS_RESERVE['Pending'] || row.status == JUDGE_STATUS_RESERVE['Judging']"></i> 
+                {{JUDGE_STATUS[row.status].name}}
+              </span>
             </template>
           </vxe-table-column>
           <vxe-table-column
             field="time"
             title="Time"
             min-width="64"
-          ></vxe-table-column>
+          >
+          <template v-slot="{row}">
+            <span>{{submissionTimeFormat(row.time)}}</span>
+          </template>
+          </vxe-table-column>
           <vxe-table-column
             field="memory"
             title="Memory"
             min-width="96"
-          ></vxe-table-column>
+          >
+          <template v-slot="{row}">
+            <span>{{submissionMemoryFormat(row.memory)}}</span>
+          </template>
+          </vxe-table-column>
+
+          <vxe-table-column
+            field="length"
+            title="Length"
+            min-width="60"
+          >
+          <template v-slot="{row}">
+            <span>{{submissionLengthFormat(row.length)}}</span>
+          </template>
+          </vxe-table-column>
+
           <vxe-table-column field="language" title="Language" min-width="100">
             <template v-slot="{ row }">
+              <span v-if="!row.share&&row.uid!=userInfo.uid&&!isAuthenticated">{{row.language}}</span>
               <el-tooltip
                 class="item"
                 effect="dark"
                 content="查看提交详情"
                 placement="top"
+                v-else
               >
                 <el-button type="text" @click="showSubmitDetail(row)">{{
                   row.language
@@ -128,31 +164,52 @@
             field="judger"
             title="Judger"
             min-width="100"
-          ></vxe-table-column>
+          >
+          <template v-slot="{ row }">
+            <span v-if="row.judger">{{row.judger}}</span>
+            <span v-else>--</span>
+          </template>
+          </vxe-table-column>
           <vxe-table-column
-            field="author"
+            field="username"
             title="Author"
             min-width="100"
-          ></vxe-table-column>
+          >
+          <template v-slot="{ row }">
+              <a
+                @click="goUserHome(row.username,row.uid)"
+                style="color: rgb(87, 163, 243)"
+                >{{ row.username }}</a
+              >
+            </template>
+          </vxe-table-column>
+          <!-- 非比赛提交记录，超级管理员可以对提交进行重判 -->
+          <vxe-table-column v-if="rejudgeColumnVisible" title="Option" min-width="90">
+            <template v-slot="{ row }">
+              <vxe-button status="primary" @click="handleRejudge(row)" 
+              size="mini" :loading="row.loading">Rejudge</vxe-button>
+            </template>
+          </vxe-table-column>
         </vxe-table>
       </el-card>
       <Pagination
         :total="total"
         :page-size="limit"
         @on-change="changeRoute"
-        :current.sync="page"
+        :current.sync="currentPage"
       ></Pagination>
     </div>
-  </div>
+  </el-row>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
 import api from "@/common/api";
-import { JUDGE_STATUS, USER_TYPE } from "@/common/constants";
+import { JUDGE_STATUS, USER_TYPE,JUDGE_STATUS_RESERVE } from "@/common/constants";
 import utils from "@/common/utils";
 import time from "@/common/time";
 import Pagination from "@/components/oj/common/Pagination";
+import myMessage from '@/common/message'
 export default {
   name: "submissionList",
   components: {
@@ -161,61 +218,31 @@ export default {
   data() {
     return {
       formFilter: {
-        myself: false,
+        onlyMine: false,
         status: "",
         username: "",
-        pid: "",
+        problemID: "",
       },
       loadingTable: false,
       submissions: [
-        {
-          sid: 1000,
-          stime: "2020-08-08 16:00:00",
-          pid: "1001",
-          status: 1,
-          time: "4ms",
-          memory: "3MB",
-          language: "C++",
-          judger: "192.168.1.1",
-          author: "Himit_ZH",
-        },
-        {
-          sid: 1001,
-          stime: "2020-08-08 16:00:00",
-          pid: "1001",
-          status: -3,
-          time: "1000ms",
-          memory: "3MB",
-          language: "C++",
-          judger: "192.168.1.1",
-          author: "Himit_Z",
-        },
-        {
-          sid: 1000,
-          stime: "2020-08-08 16:00:00",
-          pid: "1001",
-          status: 3,
-          time: "4ms",
-          memory: "3MB",
-          language: "C++",
-          judger: "192.168.1.1",
-          author: "Himit_H",
-        },
       ],
+      needCheckSubmitIds:{}, // 当前状态为6和7的提交记录Id 需要重新检查更新
       total: 30,
       limit: 15,
-      page: 1,
+      currentPage: 1,
       contestID: "",
-      problemID: "",
       routeName: "",
       JUDGE_STATUS: "",
-      rejudge_column: false,
+      autoCheckOpen:false,
+      JUDGE_STATUS_RESERVE:{}
     };
   },
   mounted() {
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
-    // 去除submitting的状态 和 两个
+    this.JUDGE_STATUS_RESERVE = Object.assign({},JUDGE_STATUS_RESERVE);
+    // 去除submitting,Not Submitted,Time Limit Exceeded(多的)三种状态
     delete this.JUDGE_STATUS["9"];
+    delete this.JUDGE_STATUS["-10"];
     delete this.JUDGE_STATUS["2"];
     this.init();
   },
@@ -223,121 +250,234 @@ export default {
     init() {
       this.contestID = this.$route.params.contestID;
       let query = this.$route.query;
-      this.problemID = query.problemID;
-      this.formFilter.myself = query.myself === "1";
-      this.formFilter.status = query.status || "";
+      this.formFilter.problemID = query.problemID;
       this.formFilter.username = query.username || "";
-      this.page = parseInt(query.page) || 1;
-      if (this.page < 1) {
-        this.page = 1;
+      this.formFilter.onlyMine = (query.onlyMine+"")=="true"?true:false; // 统一换成字符串判断
+      this.formFilter.status = query.status!=''?parseInt(query.status):'';
+
+      if(this.formFilter.onlyMine){ // 当前为搜索自己的提交 那么不可搜索别人的提交
+        this.formFilter.username = "";
+      }
+      this.currentPage = parseInt(query.currentPage) || 1;
+      if (this.currentPage < 1) {
+        this.currentPage = 1;
       }
       this.routeName = this.$route.name;
       this.getSubmissions();
+      
     },
     buildQuery() {
       return {
-        myself: this.formFilter.myself === true ? "1" : "0",
+        onlyMine: this.formFilter.onlyMine,
         status: this.formFilter.status,
         username: this.formFilter.username,
-        page: this.page,
+        problemID:this.formFilter.problemID,
+        currentPage: this.currentPage,
       };
     },
+
+    submissionTimeFormat(time){
+      return utils.submissionTimeFormat(time)
+    },
+
+    submissionMemoryFormat(memory){
+      return utils.submissionMemoryFormat(memory)
+    },
+
+    submissionLengthFormat(length){
+      return utils.submissionLengthFormat(length)
+    },
+
     getSubmissions() {
       let params = this.buildQuery();
-      params.contest_id = this.contestID;
-      params.problem_id = this.problemID;
-      let offset = (this.page - 1) * this.limit;
+      params.contestID = this.contestID;
+      if(this.formFilter.onlyMine){ // 需要判断是否为登陆状态
+        if(this.isAuthenticated){
+          params.username = '' // 如果是搜索当前用户的提交记录，那么用户名搜索应该无效
+          this.formFilter.username = ''
+        }else{
+          this.formFilter.onlyMine = false
+          myMessage.error("请您先登陆！")
+          return;
+        }
+      }
+
       let func = this.contestID
         ? "getContestSubmissionList"
         : "getSubmissionList";
       this.loadingTable = true;
-      api[func](offset, this.limit, params)
+      this.submissions = [];
+      this.needCheckSubmitIds = {};
+      api[func](this.limit,utils.filterEmptyValue(params))
         .then((res) => {
           let data = res.data.data;
-          for (let v of data.results) {
+          let index = 0;
+          for (let v of data.records) {
+            if(v.status == JUDGE_STATUS_RESERVE['Pending'] || v.status == JUDGE_STATUS_RESERVE['Judging']){
+              this.needCheckSubmitIds[v.submitId] = index
+            }
             v.loading = false;
+            v.index = index;
+            index+=1;
           }
-          this.adjustRejudgeColumn();
           this.loadingTable = false;
-          this.submissions = data.results;
+          this.submissions = data.records;
           this.total = data.total;
+          if(Object.keys(this.needCheckSubmitIds).length>0){
+            this.checkSubmissionsStatus();
+          }
         })
         .catch(() => {
           this.loadingTable = false;
         });
     },
+    // 对当前提交列表 状态为Pending（6）和Judging（7）的提交记录每2秒查询一下最新结果
+    checkSubmissionsStatus() {
+      // 使用setTimeout避免一些问题
+      if (this.refreshStatus) {
+        // 如果之前的提交状态检查还没有停止,则停止,否则将会失去timeout的引用造成无限请求
+        clearTimeout(this.refreshStatus);
+        this.autoCheckOpen = false
+      }
+      const checkStatus = () => {
+        let submitIds = this.needCheckSubmitIds
+        api.checkSubmissonsStatus(Object.keys(submitIds)).then(
+          (res) => {
+            let result = res.data.data
+            let viewData = this.$refs.xTable.getTableData().tableData;
+            for(let key in submitIds){
+              let submitId = parseInt(key);
+              // 更新数据列表
+              this.submissions[submitIds[key]] = result[submitId]
+              // 更新view中的结果，耗时，空间消耗，判题机ip
+              viewData[submitIds[key]].status = result[submitId].status
+              viewData[submitIds[key]].time = result[submitId].time
+              viewData[submitIds[key]].memory = result[submitId].memory
+              viewData[submitIds[key]].judger = result[submitId].judger
+              // 重新加载这行数据到view中
+              this.$refs.xTable.reloadRow(viewData[submitIds[key]], null, null)
+
+              if(result[submitId].status != JUDGE_STATUS_RESERVE['Pending']&&result[submitId].status != JUDGE_STATUS_RESERVE['Judging']){
+                  delete this.needCheckSubmitIds[key]
+              }
+            }
+            if(Object.keys(this.needCheckSubmitIds).length==0){
+              clearTimeout(this.refreshStatus);
+              this.autoCheckOpen = false
+            }else{
+               this.refreshStatus = setTimeout(checkStatus, 2000);
+            }
+          },
+          (res) => {
+            clearTimeout(this.refreshStatus);
+            this.autoCheckOpen = false
+          }
+        );
+      };
+      // 设置每2秒检查一下提交结果
+      this.refreshStatus = setTimeout(checkStatus, 2000);
+      this.autoCheckOpen = true
+    },
+
     // 改变route， 通过监听route变化请求数据，这样可以产生route history， 用户返回时就会保存之前的状态
     changeRoute() {
-      let query = utils.filterEmptyValue(this.buildQuery());
+      let query = this.buildQuery();
       query.contestID = this.contestID;
-      query.problemID = this.problemID;
-      let routeName = query.contestID
-        ? "contest-submission-list"
-        : "submission-list";
-      this.$router.push({
-        name: routeName,
-        query: utils.filterEmptyValue(query),
-      });
+      let queryParams = utils.filterEmptyValue(query);
+        // 判断新路径请求参数与当前路径请求的参数是否一致，避免重复访问路由报错
+      let equal = true
+      for(let key in queryParams){
+          if(queryParams[key] != this.$route.query[key]){
+            equal = false
+            break
+          }
+      }
+      if(equal){ // 判断请求参数的长短
+        if(Object.keys(queryParams).length!=Object.keys(this.$route.query).length){
+          equal = false
+        }
+      }
+
+      if(!equal){ // 避免重复同个路径请求导致报错
+        let routeName = queryParams.contestID
+          ? "contestSubmissionList"
+          : "SubmissionList";
+        this.$router.push({
+          name: routeName,
+          query: queryParams,
+        });
+      }
     },
     goRoute(route) {
       this.$router.push(route);
     },
-    adjustRejudgeColumn() {
-      if (!this.rejudgeColumnVisible || this.rejudge_column) {
-        return;
-      }
-      const judgeColumn = {
-        title: this.$i18n.t("m.Option"),
-        fixed: "right",
-        align: "center",
-        width: 90,
-        render: (h, params) => {
-          return h(
-            "Button",
-            {
-              props: {
-                type: "primary",
-                size: "small",
-                loading: params.row.loading,
-              },
-              on: {
-                click: () => {
-                  this.handleRejudge(params.row.id, params.index);
-                },
-              },
-            },
-            this.$i18n.t("m.Rejudge")
-          );
-        },
-      };
-      this.columns.push(judgeColumn);
-      this.rejudge_column = true;
+    goUserHome(username,uid){
+      this.$router.push({
+        path: '/user-home',
+        query: {username,uid},
+      });
     },
     handleStatusChange(status) {
-      this.page = 1;
-      this.formFilter.status = status;
+      if(status=='All'){
+        this.formFilter.status = ''
+      }else{
+         this.formFilter.status = status;
+      }
+      this.currentPage = 1;
       this.changeRoute();
     },
     handleQueryChange() {
-      this.page = 1;
+      this.currentPage = 1;
       this.changeRoute();
     },
-    handleRejudge(id, index) {
-      this.submissions[index].loading = true;
-      api.submissionRejudge(id).then(
+    handleRejudge(row) {
+      this.submissions[row.index].loading = true;
+      api.submissionRejudge(row.submitId).then(
         (res) => {
-          this.submissions[index].loading = false;
-          this.$success("Succeeded");
-          this.getSubmissions();
+          let xTable = this.$refs.xTable
+          // 重判开始，需要将该提交的部分参数初始化
+          row.status = res.data.data.status
+          row.time = res.data.data.time
+          row.memory = res.data.data.memory
+          row.errorMessage = res.data.data.errorMessage
+          row.judger = res.data.data.judger
+          row.loading = false
+          // 重新加载该行数据到view
+          xTable.reloadRow(row, null, null)
+
+          this.submissions[row.index] = res.data.data
+          this.submissions[row.index].loading = false;
+          myMessage.success(res.data.msg);
+
+          // 加入待重判列表
+          this.needCheckSubmitIds[row.submitId] = row.index
+          if(!this.autoCheckOpen){ // 如果当前未开启自动检查提交状态的定时任务，则开启
+            this.checkSubmissionsStatus();
+          }
         },
         () => {
-          this.submissions[index].loading = false;
+          this.submissions[row.index].loading = false;
         }
       );
     },
+    handleOnlyMine(){
+      if(this.formFilter.onlyMine){ // 需要判断是否为登陆状态
+        if(this.isAuthenticated){
+          this.formFilter.username = ''
+        }else{
+          this.formFilter.onlyMine = false
+          myMessage.error("请您先登陆！")
+          return;
+        }
+      }
+      this.currentPage = 1;
+      this.changeRoute();
+    },
     showSubmitDetail(row) {
-      this.selectSubmitRow = row;
-      this.showDetails = true;
+      this.$router.push({
+        name:"SubmissionDeatil",
+        params:{submitID:row.submitId}
+      })
     },
     getProblemUri(pid) {
       return "/problem/" + pid;
@@ -346,13 +486,13 @@ export default {
       return "el-tag el-tag--medium status-" + JUDGE_STATUS[status].color;
     },
     tableRowClassName({ row, rowIndex }) {
-      if (row.author == "Himit_ZH") {
+      if (row.username == this.userInfo.username && this.isAuthenticated) {
         return "own-submit-row";
       }
     },
   },
   computed: {
-    ...mapGetters(["isAuthenticated", "userInfo"]),
+    ...mapGetters(["isAuthenticated", "userInfo","isSuperAdmin"]),
     title() {
       if (!this.contestID) {
         return "Status";
@@ -365,24 +505,29 @@ export default {
     status() {
       return this.formFilter.status === ""
         ? "Status"
-        : JUDGE_STATUS[this.formFilter.status].name.replace(/ /g, "_");
+        : JUDGE_STATUS[this.formFilter.status]?JUDGE_STATUS[this.formFilter.status].name:"Status";
     },
     rejudgeColumnVisible() {
-      return !this.contestID && this.userInfo.role === USER_TYPE.SUPER_ADMIN;
+      return !this.contestID && this.isSuperAdmin
     },
   },
   watch: {
     $route(newVal, oldVal) {
       if (newVal !== oldVal) {
-        this.init();
+        if(this.autoCheckOpen){
+          clearInterval(this.refreshStatus);
+        }
+        this.init(); 
       }
-    },
-    rejudgeColumnVisible() {
-      this.adjustRejudgeColumn();
     },
     isAuthenticated() {
       this.init();
     },
+  },
+  beforeRouteLeave(to, from, next) {
+    // 防止切换组件后仍然不断请求
+    clearInterval(this.refreshStatus);
+    next();
   },
 };
 </script>
@@ -418,5 +563,10 @@ export default {
 }
 /deep/ .el-switch {
   padding-top: 6px;
+}
+@media only screen and (min-width: 768px) and (max-width: 992px){
+  .el-col-sm-12 {
+    padding-top: 10px;
+  }
 }
 </style>

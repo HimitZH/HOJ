@@ -2,12 +2,14 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import user from '@/store/user'
 import contest from "@/store/contest"
+import api from '@/common/api'
 Vue.use(Vuex)
 const rootState = {
   modalStatus: {
     mode: 'Login', // or 'register',
     visible: false
   },
+  websiteConfig:{},
   registerTimeOut: 60,
   resetTimeOut: 90,
 }
@@ -21,7 +23,10 @@ const rootGetters = {
   },
   'resetTimeOut'(state) {
     return state.resetTimeOut
-  }
+  },
+  'websiteConfig' (state) {
+    return state.websiteConfig
+  },
 }
 
 const rootMutations = {
@@ -59,7 +64,10 @@ const rootMutations = {
       state.registerTimeOut--;
     }
     setTimeout(() => {this.commit('startTimeOut', { name: name }) }, 1000);
-  }
+  },
+  changeWebsiteConfig(state, payload) {
+    state.websiteConfig = payload.websiteConfig
+  },
 }
 const rootActions = {
   changeModalStatus({ commit }, payload) {
@@ -76,11 +84,18 @@ const rootActions = {
   },
   changeDomTitle ({commit, state}, payload) {
     if (payload && payload.title) {
-      window.document.title = 'HOJ' + ' - ' + payload.title
+      window.document.title = payload.title + ' - ' + (state.websiteConfig.shortName+'').toUpperCase()
     } else {
-      window.document.title = 'HOJ' + ' - ' + state.route.meta.title
+      window.document.title = state.route.meta.title + ' - '+(state.websiteConfig.shortName+'').toUpperCase()
     }
-  }
+  },
+  getWebsiteConfig ({commit}) {
+    api.getWebsiteConfig().then(res => {
+      commit('changeWebsiteConfig', {
+        websiteConfig: res.data.data
+      })
+    })
+  },
 }
 
 export default new Vuex.Store({

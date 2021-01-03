@@ -367,7 +367,7 @@
         </el-form-item>
 
         <el-row :gutter="20">
-          <el-col :span="4">
+          <el-col :span="12">
             <el-form-item label="Type">
               <el-radio-group
                 v-model="problem.type"
@@ -379,7 +379,13 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="6">
+          <el-col :span="12">
+            <el-form-item label="Total Score" v-show="problem.type==1" :required="problem.type==1">
+              <el-input v-model="problem.ioScore" placeholder="Total Score"></el-input>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="24">
             <el-form-item label="TestCase" :error="error.testcase">
               <el-upload
                 action="/api/admin/test_case"
@@ -649,7 +655,7 @@ export default {
           this.problemTags = res.data.data
         })
       } else {
-        this.title = "Add Problem";
+        this.title = "Create Problem";
         for (let item of this.allLanguage) {
           this.problemLanguages.push(item.name);
         }
@@ -907,12 +913,14 @@ export default {
               this.contestProblem['cid'] = this.$route.params.contestId;
             }
             api.admin_setContestProblemInfo(this.contestProblem).then((res)=>{
+                myMessage.success(res.data.msg)
                 this.$router.push({
                 name: "admin-contest-problem-list",
                 params: { contestId: this.$route.params.contestId },
               });
             })  
           } else {
+            myMessage.success(res.data.msg)
             this.$router.push({ name: "admin-problem-list" });
           }
         })

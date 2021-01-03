@@ -4,10 +4,12 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,8 +40,6 @@ import java.util.List;
 public class AccountRealm extends AuthorizingRealm {
     @Autowired
     private JwtUtils jwtUtils;
-    @Autowired
-    private UserInfoServiceImpl userInfoService;
     @Autowired
     private UserRoleMapper userRoleDao;
     @Autowired
@@ -83,6 +83,9 @@ public class AccountRealm extends AuthorizingRealm {
         }
         AccountProfile profile = new AccountProfile();
         BeanUtil.copyProperties(userRoles, profile);
+        // 写入会话，后续不必重复查询
+        Session session = SecurityUtils.getSubject().getSession();
+        session.setAttribute("userInfo", userRoles);
         return new SimpleAuthenticationInfo(profile, jwt.getCredentials(), getName());
     }
 }

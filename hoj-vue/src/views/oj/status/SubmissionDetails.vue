@@ -1,33 +1,37 @@
 <template>
   <el-row type="flex" justify="space-around">
     <el-col :span="22" id="status">
-      <el-alert :type="status.type" show-icon :closable="false" effect="dark" :class="getbackgroudColor(submission.data[0].status)"
+      <el-alert :type="status.type" show-icon :closable="false" effect="dark" :class="getbackgroudColor(submission.status)"
         style="padding: 18px;">
         <template slot="title">
           <span class="title">{{ status.statusName }}</span>
         </template>
         <template slot>
           <div v-if="isCE"  class="content">
-            <pre>{{ submission.data[0].err_info }}</pre>
+            <pre>{{ submission.errorMessage }}</pre>
           </div>
           <div v-else  class="content">
-            <span class="span-row">Time: {{ submission.data[0].time }}</span>
-            <span class="span-row">Memory: {{ submission.data[0].memory }}</span>
-            <span class="span-row">Language: {{ submission.data[0].language }}</span>
-            <span class="span-row">Author: {{ submission.data[0].author }}</span>
+            <span class="span-row">Time: {{ submissionTimeFormat(submission.time) }}</span>
+            <span class="span-row">Memory: {{ submissionMemoryFormat(submission.memory) }}</span>
+            <span class="span-row">Length: {{ submissionLengthFormat(submission.length) }}</span>
+            <span class="span-row">Language: {{ submission.language }}</span>
+            <span class="span-row">Author: {{ submission.username }}</span>
           </div>
         </template>
       </el-alert>
     </el-col>
 
-    <el-col v-if="submission.data && !isCE" :span="22">
-      <vxe-table align="center" :data="submission.data" stripe auto-resize style="padding-top: 13px;">
-        <vxe-table-column field="sid" title="ID"  min-width="100"></vxe-table-column>
+    <el-col v-if="tableData&& !isCE" :span="22">
+      <vxe-table align="center" :data="tableData" stripe auto-resize style="padding-top: 13px;" :loading="loadingTable">
+        <vxe-table-column field="submitId" title="ID"  min-width="100"></vxe-table-column>
         <vxe-table-column
-          field="stime"
           title="Submit time"
           min-width="150"
-        ></vxe-table-column>
+        >
+         <template v-slot="{ row }">
+           <span>{{row.submitTime | localtime}}</span>
+         </template>
+        </vxe-table-column>
         <vxe-table-column field="pid" title="Problem ID" min-width="100">
           <template v-slot="{ row }">
             <a
@@ -45,13 +49,34 @@
           </template>
         </vxe-table-column>
         <vxe-table-column
-          field="time"
           title="Time"
           min-width="64"
-        ></vxe-table-column>
+        >
+        <template v-slot="{ row }">
+           <span>{{submissionTimeFormat(row.time)}}</span>
+         </template>
+        </vxe-table-column>
         <vxe-table-column
-          field="memory"
           title="Memory"
+          min-width="96"
+        >
+        <template v-slot="{ row }">
+           <span>{{submissionMemoryFormat(row.memory)}}</span>
+         </template>
+        </vxe-table-column>
+
+        <vxe-table-column
+          title="Length"
+          min-width="60"
+        >
+        <template v-slot="{ row }">
+           <span>{{submissionLengthFormat(row.length)}}</span>
+         </template>
+        </vxe-table-column>
+
+        <vxe-table-column v-if="isIOProblem"
+          field="score"
+          title="Score"
           min-width="96"
         ></vxe-table-column>
       </vxe-table>
@@ -64,11 +89,11 @@
         :border-color="status.color"
       ></Highlight>
     </el-col>
-    <el-col v-if="submission.can_unshare" :span="22">
+    <el-col v-if="codeShare" :span="22">
       <div id="share-btn">
-        <el-button type="primary" icon="el-icon-document-copy" size="large" @click="doCopy">Copy</el-button>
+        <el-button type="primary" icon="el-icon-document-copy" size="large" @click="doCopy" v-if="submission.code">Copy</el-button>
         <el-button
-          v-if="submission.shared"
+          v-if="submission.share&&isAuthenticated&&isMeSubmisson"
           type="warning"
           size="large"
           icon="el-icon-circle-close"
@@ -77,7 +102,7 @@
           Unshared
         </el-button>
         <el-button
-          v-else
+          v-else-if="isAuthenticated&&!submission.share&&isMeSubmisson"
           type="primary"
           size="large"
           icon="el-icon-share"
@@ -95,7 +120,7 @@ import api from "@/common/api";
 import { JUDGE_STATUS } from "@/common/constants";
 import utils from "@/common/utils";
 import Highlight from "@/components/oj/common/Highlight";
-import mMessage from '@/common/message'
+import myMessage from '@/common/message'
 
 export default {
   name: "submissionDetails",
@@ -105,32 +130,22 @@ export default {
   data() {
     return {
       submission: {
-        code:
-          "import java.util.Scanner;\n\
-          public class Main{\n\
-              public static void main(String[] args){\n\
-                  Scanner in=new Scanner(System.in);\n\
-                  int a=in.nextInt();\n\
-                  int b=in.nextInt();\n\
-                  System.out.println((a+b));  \n\
-              }\n\
-          }",
-        data: [{
-          sid: 1000,
-          stime: "2020-08-08 16:00:00",
-          pid: "1001",
+          code:"",
+          submitId: "",
+          submitTime: "",
+          pid: "",
           status: 0,
-          time: "1000ms",
-          memory: "9999MB",
-          language:'Java',
-          author: "Himit_ZH",
-          err_info:'CE错误',
-        }],
-        can_unshare:true,
-        shared:true
+          time: "",
+          memory: "",
+          language:'',
+          author: "",
+          errorMessage:'',
+          share:true
       },
-      isConcat: false,
-      loading: false,
+      tableData:[],
+      codeShare:true,
+      isIOProblem: false,
+      loadingTable: false,
       JUDGE_STATUS:'',
     };
   },
@@ -141,11 +156,24 @@ export default {
   methods: {
     doCopy() {
       this.$copyText(this.submission.code).then(function (e) {
-        mMessage.success('Code copied successfully');
+        myMessage.success('Code copied successfully');
       }, function (e) {
-        mMessage.success('Code copy failed');
+        myMessage.success('Code copy failed');
       })
     },
+
+    submissionTimeFormat(time){
+      return utils.submissionTimeFormat(time)
+    },
+
+    submissionMemoryFormat(memory){
+      return utils.submissionMemoryFormat(memory)
+    },
+
+    submissionLengthFormat(length){
+      return utils.submissionLengthFormat(length)
+    },
+
     getProblemUri(pid) {
       return "/problem/" + pid;
     },
@@ -156,58 +184,32 @@ export default {
       return "status-" + JUDGE_STATUS[status].color;
     },
     getSubmission() {
-      this.loading = true;
-      api.getSubmission(this.$route.params.id).then(
+      this.loadingTable = true;
+      api.getSubmission(this.$route.params.submitID).then(
         (res) => {
-          this.loading = false;
+          this.loadingTable = false;
           let data = res.data.data;
-          if (data.info && data.info.data && !this.isConcat) {
+          if (data.submission.memory && data.submission.score && !this.isIOProblem) {
             // score exist means the submission is OI problem submission
-            if (data.info.data[0].score !== undefined) {
-              this.isConcat = true;
-              const scoreColumn = {
-                title: this.$i18n.t("m.Score"),
-                align: "center",
-                key: "score",
-              };
-              this.columns.push(scoreColumn);
-              this.loadingTable = false;
-            }
-            if (this.isAdminRole) {
-              this.isConcat = true;
-              const adminColumn = [
-                {
-                  title: this.$i18n.t("m.Real_Time"),
-                  align: "center",
-                  render: (h, params) => {
-                    return h(
-                      "span",
-                      utils.submissionTimeFormat(params.row.real_time)
-                    );
-                  },
-                },
-                {
-                  title: this.$i18n.t("m.Signal"),
-                  align: "center",
-                  key: "signal",
-                },
-              ];
-              this.columns = this.columns.concat(adminColumn);
+            if (data.submission.score !== null) {
+              this.isIOProblem = true;
             }
           }
-          this.submission = data;
+          this.submission = data.submission;
+          this.tableData = [data.submission];
+          this.codeShare = data.codeShare;
         },
         () => {
-          this.loading = false;
+          this.loadingTable = false;
         }
       );
     },
     shareSubmission(shared) {
-      let data = { id: this.submission.data[0].sid, shared: shared };
+      let data = { submitId: this.submission.submitId, share: shared,uid:this.submission.uid };
       api.updateSubmission(data).then(
         (res) => {
           this.getSubmission();
-          this.$success(this.$i18n.t("m.Succeeded"));
+          myMessage.success(res.data.msg)
         },
         () => {}
       );
@@ -216,17 +218,23 @@ export default {
   computed: {
     status() {
       return {
-        type: JUDGE_STATUS[this.submission.data[0].status].type,
-        statusName: JUDGE_STATUS[this.submission.data[0].status].name,
-        color: JUDGE_STATUS[this.submission.data[0].status].rgb,
+        type: JUDGE_STATUS[this.submission.status].type,
+        statusName: JUDGE_STATUS[this.submission.status].name,
+        color: JUDGE_STATUS[this.submission.status].rgb,
       };
     },
     isCE() {
-      return this.submission.data[0].status === -2;
+      return this.submission.status === -2;
     },
     isAdminRole() {
       return this.$store.getters.isAdminRole;
     },
+    isAuthenticated(){
+      return this.$store.getters.isAuthenticated;
+    },
+    isMeSubmisson(){
+      return this.$store.getters.userInfo.uid === this.submission.uid
+    }
   },
 };
 </script>
@@ -256,6 +264,9 @@ export default {
   float: right;
   margin-top: 5px;
   margin-right: 10px;
+}
+#share-btn:nth-child(1){
+  margin-right: 0px;
 }
 .el-row--flex {
   flex-wrap: wrap;

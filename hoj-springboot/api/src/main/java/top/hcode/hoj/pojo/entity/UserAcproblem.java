@@ -1,4 +1,4 @@
-package top.hcode.pojo.entity;
+package top.hcode.hoj.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;

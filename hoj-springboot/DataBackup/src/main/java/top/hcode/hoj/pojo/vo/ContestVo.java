@@ -21,20 +21,14 @@ public class ContestVo implements Serializable {
     @TableId(value = "比赛id", type = IdType.AUTO)
     private Long id;
 
-    @ApiModelProperty(value = "比赛创建者id")
-    private String uid;
-
     @ApiModelProperty(value = "创建者用户名")
-    private String username;
-
-    @ApiModelProperty(value = "创建者昵称")
-    private String nickname;
+    private String author;
 
     @ApiModelProperty(value = "比赛标题")
     private String title;
 
     @ApiModelProperty(value = "比赛说明")
-    private String explain;
+    private String description;
 
     @ApiModelProperty(value = "0为acm赛制，1为比分赛制")
     private Integer type;
@@ -42,7 +36,7 @@ public class ContestVo implements Serializable {
     @ApiModelProperty(value = "比赛来源，原创为0，克隆赛为比赛id")
     private Integer source;
 
-    @ApiModelProperty(value = "0为公开赛，1为私有赛（有密码），2为报名赛")
+    @ApiModelProperty(value = "0为公开赛，1为私有赛（有密码），2为保护赛")
     private Integer auth;
 
     @ApiModelProperty(value = "开始时间")
@@ -51,6 +45,6 @@ public class ContestVo implements Serializable {
     @ApiModelProperty(value = "结束时间")
     private Date endTime;
 
-    @ApiModelProperty(value = "比赛时长（分）")
+    @ApiModelProperty(value = "比赛时长（秒）")
     private Integer duration;
 }

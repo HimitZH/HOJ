@@ -18,22 +18,13 @@ public class ToJudgeDto {
     @NotBlank(message = "题目id不能为空")
     private Long pid;
 
-    @NotBlank(message = "用户id不能为空")
-    private String uid;
-
     @NotBlank(message = "代码语言选择不能为空")
     private String language;
 
     @NotBlank(message = "提交的代码不能为空")
     private String code;
 
-    @NotBlank(message = "查看代码权限不能为空")
-    private Integer auth;
-
     @NotBlank(message = "提交的比赛id所属不能为空，若并非比赛提交，请设置为0")
     private Long cid;
-
-    @NotBlank(message = "提交的比赛题目id所属不能为空，若并非比赛提交，请设置为0")
-    private Long cpid;
 
 }

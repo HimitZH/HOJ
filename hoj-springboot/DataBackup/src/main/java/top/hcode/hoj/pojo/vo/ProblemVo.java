@@ -1,12 +1,12 @@
 package top.hcode.hoj.pojo.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import top.hcode.hoj.pojo.entity.Tag;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @Author: Himit_ZH
@@ -18,17 +18,21 @@ import java.io.Serializable;
 public class ProblemVo implements Serializable {
 
     @ApiModelProperty(value = "题目id")
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private Long pid;
 
-    @ApiModelProperty(value = "题目")
+    @ApiModelProperty(value = "题目标题")
     private String title;
 
-    @ApiModelProperty(value = "作者")
-    private String author;
+    @ApiModelProperty(value = "题目难度")
+    private Integer difficulty;
 
-    @ApiModelProperty(value = "题目来源")
-    private String source;
+    @ApiModelProperty(value = "题目类型")
+    private Integer type;
+
+    @ApiModelProperty(value = "题目标签")
+    private List<Tag> tags;
+
+    // 以下为题目做题情况
 
     @ApiModelProperty(value = "该题总提交数")
     private Integer total;
@@ -57,7 +61,10 @@ public class ProblemVo implements Serializable {
     @ApiModelProperty(value = "系统错误提交数")
     private Integer se;
 
-    @ApiModelProperty(value = "题目分数，默认为100")
+    @ApiModelProperty(value = "该IO题目分数总和")
+    private Integer pa;
+
+    @ApiModelProperty(value = "IO题目总分数")
     private Integer score;
 
 }

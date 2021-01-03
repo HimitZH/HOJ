@@ -24,6 +24,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
@@ -83,9 +84,7 @@ public class JwtFilter extends AuthenticatingFilter {
                 //过了需更新token时间，但是还未过期，则进行token刷新
                 this.refreshToken(httpRequest, httpResponse, userId);
             }
-            request.setAttribute("userId", userId);
         }
-
         // 执行自动登录
         return executeLogin(servletRequest, servletResponse);
     }

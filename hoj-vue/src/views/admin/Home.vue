@@ -51,7 +51,7 @@
                   >Home page</el-breadcrumb-item
                 >
                 <el-breadcrumb-item v-for="item in routeList" :key="item.path">
-                  {{ item.name }}
+                  {{ item.meta.title }}
                 </el-breadcrumb-item>
               </el-breadcrumb>
             </div>
@@ -107,8 +107,9 @@
             button
             :ripple="true"
             nested
-            to="/admin/"
+            to="/admin/dashboard"
             @click="opendrawer = !opendrawer"
+            active-class="mobile-menu-active"
           >
             <mu-list-item-action>
               <mu-icon value="dashboard" size="24"></mu-icon>
@@ -141,6 +142,7 @@
               slot="nested"
               to="/admin/user"
               @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
             >
               <mu-list-item-title>User</mu-list-item-title>
             </mu-list-item>
@@ -150,6 +152,7 @@
               slot="nested"
               to="/admin/announcement"
               @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
             >
               <mu-list-item-title>Announcement</mu-list-item-title>
             </mu-list-item>
@@ -159,6 +162,7 @@
               slot="nested"
               to="/admin/conf"
               @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
             >
               <mu-list-item-title>System Config</mu-list-item-title>
             </mu-list-item>
@@ -188,6 +192,7 @@
               slot="nested"
               to="/admin/problems"
               @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
             >
               <mu-list-item-title>Problem List</mu-list-item-title>
             </mu-list-item>
@@ -197,6 +202,7 @@
               slot="nested"
               to="/admin/problem/create"
               @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
             >
               <mu-list-item-title>Create Problem</mu-list-item-title>
             </mu-list-item>
@@ -206,6 +212,7 @@
               slot="nested"
               to="/admin/problem/batch-operation"
               @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
             >
               <mu-list-item-title>Export&Import Problem</mu-list-item-title>
             </mu-list-item>
@@ -235,6 +242,7 @@
               slot="nested"
               to="/admin/contest"
               @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
             >
               <mu-list-item-title>Contest List</mu-list-item-title>
             </mu-list-item>
@@ -244,6 +252,7 @@
               slot="nested"
               to="/admin/contest/create"
               @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
             >
               <mu-list-item-title>Create Contest</mu-list-item-title>
             </mu-list-item>
@@ -312,7 +321,7 @@ export default {
       }
     },
     getBreadcrumb() {
-      let matched = this.$route.matched.filter((item) => item.name); //获取路由信息，并过滤保留路由名称信息存入数组
+      let matched = this.$route.matched.filter((item) => item.meta.title); //获取路由信息，并过滤保留路由标题信息存入数组
       this.routeList = matched;
     },
   },

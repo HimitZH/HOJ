@@ -148,7 +148,7 @@ public class ContestController {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;
 
-        IPage<AnnouncementVo> contestAnnouncementList = announcementService.getContestAnnouncement(cid,limit,currentPage);
+        IPage<AnnouncementVo> contestAnnouncementList = announcementService.getContestAnnouncement(cid,true,limit,currentPage);
         if (contestAnnouncementList.getTotal() == 0) {
             return CommonResult.errorResponse("暂无数据", CommonResult.STATUS_NOT_FOUND);
         } else {

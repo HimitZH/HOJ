@@ -18,6 +18,7 @@
 | 2020-11-28 | 前端项目重构,加入管理端部分页面,增加case表                   | Himit_ZH |
 | 2020-12-01 | 前端管理端基本完成，准备开始前后端接口对接与测试             | Himit_ZH |
 | 2020-12-21 | 管理端前后端接口对接基本完成，准备客户端接口对接             | Himit_ZH |
+| 2021-01-04 | 客户端首页，题目，提交模块的接口对接完毕                     | Himit_ZH |
 
 # 二、系统架构
 
@@ -151,17 +152,15 @@ role_auth表
 
  user_record表 个人做题记录表
 
-| 列名         | 实体属性类型 | 键          | 备注                         |
-| ------------ | ------------ | ----------- | ---------------------------- |
-| id           | long         | primary key | auto_increment               |
-| uid          | String       | 外键        | 用户id                       |
-| total        | int          |             | 总做题数                     |
-| submissions  | int          |             | 总提交数                     |
-| accept       | int          |             | 通过数                       |
-| Rating       | int          |             | Cf得分，未参加过默认为1500   |
-| score        | int          |             | IO制比赛得分,比赛ac一题得100 |
-| gmt_create   | datetime     |             | 创建时间                     |
-| gmt_modified | datetime     |             | 修改时间                     |
+| 列名         | 实体属性类型 | 键          | 备注                       |
+| ------------ | ------------ | ----------- | -------------------------- |
+| id           | long         | primary key | auto_increment             |
+| uid          | String       | 外键        | 用户id                     |
+| total        | int          |             | 总做题数                   |
+| submissions  | int          |             | 总提交数                   |
+| rating       | int          |             | Cf得分，未参加过默认为1500 |
+| gmt_create   | datetime     |             | 创建时间                   |
+| gmt_modified | datetime     |             | 修改时间                   |
 
  
 
@@ -199,6 +198,7 @@ problem表
 | difficulty | int | | 题目难度，0简单，1中等，2困难 |
 | hint  | String       |             | 备注 提醒                                     |
 | auth         | int          |             | 默认为1公开，2为私有，3为比赛中。           |
+| io_score | int | | 当该题目为io题目时的分数 默认为100 |
 | code_share | boolean | | 该题目对应的相关提交代码，用户是否可用分享 |
 | spj_code | String | | 特判程序代码 空代表非特判 |
 | spj_language | String | | 特判程序的语言 |
@@ -223,21 +223,21 @@ problem_case表
 
 problem_count表
 
-| 列名         | 实体属性类型 | 键   | 备注                |
-| ------------ | ------------ | ---- | ------------------- |
-| pid          | int          |      | 题目id              |
-| total        | int          |      | 总提交数            |
-| ac           | int          |      | 通过数              |
-| mle          | int          |      | 空间超限            |
-| tle          | int          |      | 时间超限            |
-| re           | int          |      | 运行错误            |
-| pe           | int          |      | 格式错误            |
-| ce           | int          |      | 编译错误            |
-| wa           | int          |      | 答案错误            |
-| se           | int          |      | 系统错误            |
-| score        | int          |      | 题目分数，默认为100 |
-| gmt_create   | datetime     |      | 创建时间            |
-| gmt_modified | datetime     |      | 修改时间            |
+| 列名         | 实体属性类型 | 键   | 备注             |
+| ------------ | ------------ | ---- | ---------------- |
+| pid          | int          |      | 题目id           |
+| total        | int          |      | 总提交数         |
+| ac           | int          |      | 通过数           |
+| mle          | int          |      | 空间超限         |
+| tle          | int          |      | 时间超限         |
+| re           | int          |      | 运行错误         |
+| pe           | int          |      | 格式错误         |
+| ce           | int          |      | 编译错误         |
+| wa           | int          |      | 答案错误         |
+| se           | int          |      | 系统错误         |
+| pa           | int          |      | 该IO题目分数总和 |
+| gmt_create   | datetime     |      | 创建时间         |
+| gmt_modified | datetime     |      | 修改时间         |
 
  
 
@@ -288,7 +288,7 @@ language表
 
 答案错误：STATUS__WRONG_ANSWER = -1
 
-评测通过：STATUS_ACCPETED = 0
+评测通过：STATUS_ACCEPTED = 0
 
 cpu时间超限：STATUS__CPU_TIME_LIMIT_EXCEEDED = 1
 
@@ -306,27 +306,28 @@ OI评测部分通过 STATUS_PARTIAL_ACCEPTED = 8
 
 judge表
 
-| 列名          | 实体属性类型 | 键          | 备注                               |
-| ------------- | ------------ | ----------- | ---------------------------------- |
-| submit_id     | long         | primary key | auto_increment                     |
-| pid           | long         | 外键        | 题目id                             |
-| uid           | String       | 外键        | 提交用户的id                       |
-| submit_time   | datetime     |             | 提交时间                           |
-| status        | String       |             | 判题结果                           |
-| auth          | int          |             | 0为代码全部人可见，1为仅自己可见。 |
-| error_message | String       |             | 错误提醒（编译错误，或者vj提醒）   |
-| time          | int          |             | 运行时间                           |
-| memory        | int          |             | 所耗内存                           |
-| length        | int          |             | 代码长度                           |
-| code          | String       |             | 代码                               |
-| language      | String       |             | 代码语言                           |
-| cpid          | int          |             | 比赛中的题目编号id                 |
-| judger        | String       |             | 判题机ip                           |
-| ip            | String       |             | 提交者ip                           |
-| cid           | int          |             | 题目来源的比赛id，默认为0          |
-| version       | int          |             | 乐观锁                             |
-| gmt_create    | datetime     |             | 创建时间                           |
-| gmt_modified  | datetime     |             | 修改时间                           |
+| 列名          | 实体属性类型 | 键          | 备注                             |
+| ------------- | ------------ | ----------- | -------------------------------- |
+| submit_id     | long         | primary key | auto_increment                   |
+| pid           | long         | 外键        | 题目id                           |
+| uid           | String       | 外键        | 提交用户的id                     |
+| username      | String       | 外键        | 用户名                           |
+| submit_time   | datetime     |             | 提交时间                         |
+| status        | String       |             | 判题结果                         |
+| share         | Boolean      |             | 代码是否分享                     |
+| error_message | String       |             | 错误提醒（编译错误，或者vj提醒） |
+| time          | int          |             | 运行时间                         |
+| memory        | int          |             | 所耗内存                         |
+| length        | int          |             | 代码长度                         |
+| code          | String       |             | 代码                             |
+| language      | String       |             | 代码语言                         |
+| cpid          | int          |             | 比赛中的题目编号id               |
+| judger        | String       |             | 判题机ip                         |
+| ip            | String       |             | 提交者ip                         |
+| cid           | int          |             | 题目来源的比赛id，默认为0        |
+| version       | int          |             | 乐观锁                           |
+| gmt_create    | datetime     |             | 创建时间                         |
+| gmt_modified  | datetime     |             | 修改时间                         |
 
  
 

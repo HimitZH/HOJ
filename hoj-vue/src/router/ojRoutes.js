@@ -20,54 +20,63 @@ import NotFound from "@/views/404.vue"
 const ojRoutes = [
   {
     path: '/',
-    redirect: {
-      name: 'Home',
-    }
+    redirect: '/home',
+    component: Home,
+    meta: { title: 'Home' }
   },
   {
     path: '/home',
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: { title: 'Home' }
   },
   {
     path: '/problem',
     name: 'ProblemList',
-    component: ProblemLIst
+    component: ProblemLIst,
+    meta: { title: 'Problem' }
   },
   {
-    path: '/problem/1',
-    name: 'problem-details',
-    component: Problem
+    path: '/problem/:problemID',
+    name: 'problemDetails',
+    component: Problem,
+    meta: { title: 'Problem Details' }
   },
   {
     path: '/contest',
     name: 'ContestList',
-    component: ContestList
+    component: ContestList,
+    meta: { title: 'Contest' }
   },
   {
     path: '/status',
     name: 'SubmissionList',
-    component: SubmissionList
+    component: SubmissionList,
+    meta: { title: 'Status' }
   },
   {
-    path: '/submission-detail',
+    path: '/submission-detail/:submitID',
     name: 'SubmissionDeatil',
-    component: SubmissionDetails
+    component: SubmissionDetails,
+    meta: { title: 'Submission Deatil' }
   },
   {
     path: '/acm-rank',
     name: 'ACM Rank',
-    component: ACMRank
+    component: ACMRank,
+    meta: { title: 'ACM Rank' }
   },
   {
     path: '/oi-rank',
     name: 'OI Rank',
-    component: OIRank
+    component: OIRank,
+    meta: { title: 'OI Rank' }
   },
   {
     path: '/reset-password',
     name: 'SetNewPassword',
-    component: SetNewPassword
+    component: SetNewPassword,
+    meta: { title: 'Reset Password' }
   },
   {
     name: 'UserHome',
@@ -88,52 +97,60 @@ const ojRoutes = [
     meta: { requireAuth: true, title: 'Logout' }
   },
   {
-    name: 'contest-details',
+    name: 'contestDetails',
     path: '/contest/:contestID/',
     component:ContestDetails,
     meta: {title: 'Contest Details'},
     children: [
       {
-        name: 'contest-submission-list',
+        name: 'contestSubmissionList',
         path: 'submissions',
-        component: SubmissionList
+        component: SubmissionList,
+        meta: { title: 'Contest Submission' }
       },
       {
-        name: 'contest-problem-list',
+        name: 'contestProblemList',
         path: 'problems',
-        component: ContestProblemList
+        component: ContestProblemList,
+        meta: { title: 'Contest Problem' }
       },
       {
-        name: 'contest-problem-details',
+        name: 'contestProblemDetails',
         path: 'problem/:problemID/',
-        component: Problem
+        component: Problem,
+        meta: { title: 'Contest Problem Details' }
       },
       {
-        name: 'contest-announcement-list',
+        name: 'contestAnnouncementList',
         path: 'announcements',
-        component: Announcements
+        component: Announcements,
+        meta: { title: 'Contest Announcement' }
       },
       {
-        name: 'contest-rank',
+        name: 'contestRank',
         path: 'rank',
-        component: ContestRank
+        component: ContestRank,
+        meta: { title: 'Contest Rank' }
       },
       {
-        name: 'contest-ac-info',
+        name: 'contestACInfo',
         path: 'ac-info',
-        component: ACMInfoAdmin
+        component: ACMInfoAdmin,
+        meta: { title: 'Contest AC Info' }
       }
     ]
   },
   {
     path: '/introduction',
     meta: {title: 'Introduction'},
-    component:Introduction
+    component:Introduction,
+    meta: { title: 'Introduction' }
   },
   {
     path: '*',
     meta: {title: '404'},
-    component:NotFound
+    component:NotFound,
+    meta: { title: '404' }
   }
 ]
 export default ojRoutes

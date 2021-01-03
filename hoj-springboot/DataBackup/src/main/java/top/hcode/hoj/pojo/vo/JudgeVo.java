@@ -27,9 +27,6 @@ public class JudgeVo {
     @ApiModelProperty(value = "用户名")
     private String username;
 
-    @ApiModelProperty(value = "用户昵称")
-    private String nickname;
-
     @ApiModelProperty(value = "题目id")
     private Long pid;
 
@@ -40,15 +37,12 @@ public class JudgeVo {
     private Integer status;
 
     @ApiModelProperty(value = "0为代码全部人可见，1为仅自己可见。")
-    private Integer auth;
+    private Boolean share;
 
-    @ApiModelProperty(value = "错误提醒（编译错误，或者vj提醒）")
-    private String errorMessage;
-
-    @ApiModelProperty(value = "运行时间")
+    @ApiModelProperty(value = "运行时间(ms)")
     private Integer time;
 
-    @ApiModelProperty(value = "运行内存")
+    @ApiModelProperty(value = "运行内存（b）")
     private Integer memory;
 
     @ApiModelProperty(value = "代码长度")

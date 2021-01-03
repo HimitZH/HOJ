@@ -56,7 +56,7 @@ public class AdminProblemController {
         }
 
         if (problemList.getTotal() == 0) { // 未查询到一条数据
-            return CommonResult.successResponse(null,"暂无数据");
+            return CommonResult.successResponse(problemList,"暂无数据");
         } else {
             return CommonResult.successResponse(problemList, "获取成功");
         }

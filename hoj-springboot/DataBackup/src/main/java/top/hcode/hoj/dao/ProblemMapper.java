@@ -1,6 +1,7 @@
 package top.hcode.hoj.dao;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -21,5 +22,6 @@ import java.util.List;
 @Mapper
 @Repository
 public interface ProblemMapper extends BaseMapper<Problem> {
-    List<ProblemVo> getProblemList(IPage page, @Param("pid") long pid, @Param("title") String title);
+    List<ProblemVo> getProblemList(IPage page, @Param("pid") Long pid, @Param("keyword")String keyword,
+                                   @Param("difficulty")Integer difficulty, @Param("tid")Long tid);
 }

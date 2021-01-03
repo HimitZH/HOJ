@@ -33,7 +33,7 @@ router.beforeEach((to, from, next) => {
   
   NProgress.start()
   if (to.matched.some(record => record.meta.requireAuth)) { // 判断该路由是否需要登录权限
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token') || ''
     const isSuperAdmin = store.getters.isSuperAdmin
     const isAmdin = store.getters.isAdminRole
     if (token) { // 判断当前的token是否存在 ； 登录存入的token
@@ -49,7 +49,7 @@ router.beforeEach((to, from, next) => {
             })
           }else{ // oj端
             next({
-              path: '/' 
+              path: '/home' 
             })
             store.commit('changeModalStatus',{mode: 'Login', visible: true})
           }
@@ -66,13 +66,15 @@ router.beforeEach((to, from, next) => {
             })
           }else{
             next({
-              path: '/' 
+              path: '/home' 
             })
             store.commit('changeModalStatus',{mode: 'Login', visible: true})
           }  
           mMessage.error('对不起！您并非管理员，您无权操作，请重新登录！')
           store.commit("clearUserInfoAndToken");
         }
+      }else{
+        next()
       }
 
     } else { // 如果没有token
@@ -83,7 +85,7 @@ router.beforeEach((to, from, next) => {
         })
       }else{
         next({
-          path: '/'  // 无token认证的一致返回到主页
+          path: '/home'  // 无token认证的一致返回到主页
         })
         store.commit('changeModalStatus',{mode: 'Login', visible: true})
       }

@@ -1,6 +1,6 @@
 export const JUDGE_STATUS = {
   '-10': {
-    name: 'Not submitted',
+    name: 'Not Submitted',
     short: 'NS',
     color: 'gray',
     type: 'info',
@@ -96,6 +96,19 @@ export const JUDGE_STATUS = {
   }
 }
 
+export const JUDGE_STATUS_RESERVE={
+  'pe':'-3',
+  'ce':'-2',
+  'wa':'-1',
+  'ac':'0',
+  'tle':'1',
+  'mle':'3',
+  're':'4',
+  'se':'5',
+  'Pending':6,
+  'Judging':7
+}
+
 export const PROBLEM_LEVEL={
   '0':{
     name:'Easy',
@@ -110,6 +123,13 @@ export const PROBLEM_LEVEL={
     color:'red'
   }
 }
+
+export const PROBLEM_LEVEL_RESERVE={
+  'Easy':0,
+  'Mid': 1,
+  'Hard':2,
+}
+
 
 export const CONTEST_STATUS = {
   'SCHEDULED': '1',
@@ -177,7 +197,7 @@ export const USER_TYPE = {
 
 export const STORAGE_KEY = {
   AUTHED: 'authed',
-  PROBLEM_CODE: 'problemCode',
+  PROBLEM_CODE: 'hojProblemCode',
   languages: 'languages'
 }
 
@@ -185,6 +205,6 @@ export function buildProblemCodeKey (problemID, contestID = null) {
   if (contestID) {
     return `${STORAGE_KEY.PROBLEM_CODE}_${contestID}_${problemID}`
   }
-  return `${STORAGE_KEY.PROBLEM_CODE}_NaN_${problemID}`
+  return `${STORAGE_KEY.PROBLEM_CODE}_NoContest_${problemID}`
 }
 

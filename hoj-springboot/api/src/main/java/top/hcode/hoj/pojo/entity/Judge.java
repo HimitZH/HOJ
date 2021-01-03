@@ -35,23 +35,32 @@ public class Judge implements Serializable {
     @ApiModelProperty(value = "用户id")
     private String uid;
 
+    @ApiModelProperty(value = "用户名")
+    private String username;
+
     @ApiModelProperty(value = "结果码具体参考文档")
     private Date submitTime;
 
     @ApiModelProperty(value = "结果码具体参考文档")
     private Integer status;
 
-    @ApiModelProperty(value = "0为代码全部人可见，1为仅自己可见。")
-    private Integer auth;
+    @ApiModelProperty(value = "0为仅自己可见，1为全部人可见。")
+    private Boolean share;
 
     @ApiModelProperty(value = "错误提醒（编译错误，或者vj提醒）")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String errorMessage;
 
-    @ApiModelProperty(value = "运行时间")
+    @ApiModelProperty(value = "运行时间(ms)")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Integer time;
 
-    @ApiModelProperty(value = "运行内存")
+    @ApiModelProperty(value = "运行内存(b)")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Integer memory;
+
+    @ApiModelProperty(value = "IO判题不为空")
+    private Integer score;
 
     @ApiModelProperty(value = "代码长度")
     private Integer length;
@@ -69,6 +78,7 @@ public class Judge implements Serializable {
     private Long cpid;
 
     @ApiModelProperty(value = "判题机ip")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String judger;
 
     @ApiModelProperty(value = "提交者所在ip")

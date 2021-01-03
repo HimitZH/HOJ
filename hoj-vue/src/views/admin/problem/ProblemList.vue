@@ -48,7 +48,7 @@
           </template>
         </vxe-table-column>
         <vxe-table-column
-          min-width="100"
+          min-width="130"
           field="auth"
           title="Auth">
           <template v-slot="{row}">

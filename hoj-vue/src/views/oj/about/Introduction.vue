@@ -9,7 +9,7 @@
               <li v-for="lang in languages" :key="lang.name">
                 {{ lang.name }} ( {{ lang.description }} )
                 <p style="color: #409EFF;font-size:16px">Compiler</p>
-                <pre>{{ lang.compile_command }}</pre>
+                <pre>{{ lang.compileCommand }}</pre>
                 <p style="color: #409EFF;font-size:16px">A+B Problem</p>
                 <Highlight
                   :code="lang.template"

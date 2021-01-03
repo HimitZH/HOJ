@@ -25,10 +25,11 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     private JudgeMapper judgeMapper;
 
     @Override
-    public IPage<JudgeVo> getCommonJudgeList(int limit, int currentPage, long pid, String source, String language, int status, String username, long cid) {
+    public IPage<JudgeVo> getCommonJudgeList(Integer limit, Integer currentPage, Long pid, Integer status, String username,
+                                             Long cid,String uid) {
         //新建分页
         Page<JudgeVo> page = new Page<>(currentPage, limit);
 
-        return judgeMapper.getCommonJudgeList(page, pid, source, language, status, username, cid);
+        return judgeMapper.getCommonJudgeList(page, pid, status, username, cid,uid);
     }
 }

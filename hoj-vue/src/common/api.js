@@ -106,6 +106,29 @@ axios.interceptors.response.use(
 
 // 处理oj前台的请求
 const ojApi = {
+  // Home页的请求
+  getWebsiteConfig(){
+    return ajax('/api/get-website-config', 'get', {
+    })
+  },
+  getRecentContests(){
+    return ajax('/api/get-recent-contest', 'get', {
+    })
+  },
+  getAnnouncementList(currentPage, limit) {
+    let params = {
+      currentPage: currentPage,
+      limit: limit
+    }
+    return ajax('/api/get-common-announcement', 'get', {
+      params
+    })
+  },
+  getRecentOtherContests(){
+
+  },
+
+  // 用户账户的相关请求
   getRegisterEmail(email) {
     let params = {
       email: email
@@ -114,15 +137,7 @@ const ojApi = {
       params
     })
   },
-  getAnnouncementList(offset, limit) {
-    let params = {
-      offset: offset,
-      limit: limit
-    }
-    return ajax('/api/announcement', 'get', {
-      params
-    })
-  },
+
   login(data) {
     return ajax('/api/login', 'post', {
       data
@@ -145,6 +160,8 @@ const ojApi = {
   logout() {
     return ajax('/api/logout', 'get')
   },
+
+  // 账户的相关操作
   updateProfile(profile) {
     return ajax('profile', 'put', {
       data: profile
@@ -170,13 +187,12 @@ const ojApi = {
       data
     })
   },
+  // Problem List页的相关请求
   getProblemTagList () {
-    return ajax('/api/get-problem-tags', 'get')
+    return ajax('/api/get-all-problem-tags', 'get')
   },
-  getProblemList (offset, limit, searchParams) {
+  getProblemList (limit, searchParams) {
     let params = {
-      paging: true,
-      offset,
       limit
     }
     Object.keys(searchParams).forEach((element) => {
@@ -188,20 +204,58 @@ const ojApi = {
       params: params
     })
   },
-  pickone () {
-    return ajax('pickone', 'get')
+
+  // 查询当前登录用户对题目的提交状态
+  getUserProblemStatus(pidList){
+    return ajax("/api/get-user-problem-status",'post',{
+      data:{
+        pidList
+      }
+    })
   },
+  // 随机来一题
+  pickone () {
+    return ajax('/api/get-random-problem', 'get')
+  },
+
+  // Problem详情页的相关请求
+  getProblem(pid){
+    return ajax('/api/get-problem','get',{
+      params:{
+        pid
+      }
+    })
+  },
+
   // 提交评测模块
   submitCode (data) {
-    return ajax('submission', 'post', {
+    return ajax('/api/submit-problem-judge', 'post', {
       data
     })
   },
-  getSubmissionList (offset, limit, params) {
+  // 获取单个提交的信息
+  getSubmission (submitId) {
+    return ajax('/api/submission', 'get', {
+      params: {
+        submitId
+      }
+    })
+  },
+  // 更新提交详情
+  updateSubmission(data){
+    return ajax('/api/submission', 'put', {
+     data
+    })
+  },
+  getSubmissionList (limit, params) {
     params.limit = limit
-    params.offset = offset
-    return ajax('submissions', 'get', {
+    return ajax('/api/submissions', 'get', {
       params
+    })
+  },
+  checkSubmissonsStatus(submitIds){
+    return ajax('/api/check-submissions-status', 'post', {
+      data:{submitIds}
     })
   },
   getContestSubmissionList (offset, limit, params) {
@@ -211,27 +265,18 @@ const ojApi = {
       params
     })
   },
-  getSubmission (id) {
-    return ajax('submission', 'get', {
+  
+  submissionRejudge (submitId) {
+    return ajax('/admin/judge/rejudge', 'get', {
       params: {
-        id
+        submitId
       }
     })
   },
-  submissionExists (problemID) {
-    return ajax('submission_exists', 'get', {
-      params: {
-        problem_id: problemID
-      }
-    })
-  },
-  submissionRejudge (id) {
-    return ajax('admin/submission/rejudge', 'get', {
-      params: {
-        id
-      }
-    })
-  },
+  // about页部分请求
+  getAllLanguages(){
+    return ajax("/api/languages",'get')
+  }
 }
 
 // 处理admin后台管理的请求

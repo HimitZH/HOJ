@@ -21,8 +21,7 @@ import top.hcode.hoj.pojo.vo.JudgeVo;
  */
 
 public interface JudgeService extends IService<Judge> {
-    IPage<JudgeVo> getCommonJudgeList(int limit, int currentPage, long pid, String source,
-                                      String language, int status,
-                                      String username, long cid);
+    IPage<JudgeVo> getCommonJudgeList(Integer limit, Integer currentPage, Long pid, Integer status, String username,
+                                      Long cid,String uid);
 
 }

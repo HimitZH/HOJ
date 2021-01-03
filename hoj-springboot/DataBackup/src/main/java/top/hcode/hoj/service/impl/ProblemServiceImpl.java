@@ -43,13 +43,16 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     @Autowired
     private ProblemTagServiceImpl problemTagService;
 
+    @Autowired
+    private ProblemCountServiceImpl problemCountService;
+
     @Override
-    public Page<ProblemVo> getProblemList(int limit, int currentPage, long pid, String title) {
+    public Page<ProblemVo> getProblemList(int limit, int currentPage, Long pid, String title, Integer difficulty,Long tid) {
 
         //新建分页
         Page<ProblemVo> page = new Page<>(currentPage, limit);
 
-        return page.setRecords(problemMapper.getProblemList(page, pid, title));
+        return page.setRecords(problemMapper.getProblemList(page, pid, title, difficulty, tid));
     }
 
     @Override
@@ -67,16 +70,22 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         List<ProblemLanguage> oldProblemLanguages = (List<ProblemLanguage>) problemLanguageService.listByMap(map);
         List<ProblemCase> oldProblemCases = (List<ProblemCase>) problemCaseService.listByMap(map);
 
-        Map<Long,Integer> mapOldPT = new HashMap<>();
-        Map<Long,Integer> mapOldPL = new HashMap<>();
+        Map<Long, Integer> mapOldPT = new HashMap<>();
+        Map<Long, Integer> mapOldPL = new HashMap<>();
         List<Long> needDeleteProblemCases = new LinkedList<>();
 
         // 登记一下原有的tag的id
-        oldProblemTags.stream().forEach(problemTag -> {mapOldPT.put(problemTag.getTid(), 0);});
+        oldProblemTags.stream().forEach(problemTag -> {
+            mapOldPT.put(problemTag.getTid(), 0);
+        });
         // 登记一下原有的language的id
-        oldProblemLanguages.stream().forEach(problemLanguage -> {mapOldPL.put(problemLanguage.getLid(), 0);});
+        oldProblemLanguages.stream().forEach(problemLanguage -> {
+            mapOldPL.put(problemLanguage.getLid(), 0);
+        });
         // 登记一下原有的case的id
-        oldProblemCases.stream().forEach(problemCase -> {needDeleteProblemCases.add(problemCase.getId());});
+        oldProblemCases.stream().forEach(problemCase -> {
+            needDeleteProblemCases.add(problemCase.getId());
+        });
 
 
         // 与前端上传的数据进行对比，添加或删除！
@@ -91,19 +100,19 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                     problemTagList.add(new ProblemTag()
                             .setPid(pid).setTid(tag.getId()));
                 }
-            }else { // 已有主键的需要记录一下，若原先在problem_tag有的，现在不见了，表明需要删除
+            } else { // 已有主键的需要记录一下，若原先在problem_tag有的，现在不见了，表明需要删除
                 mapOldPT.put(tag.getId(), 1); // 更新记录，说明该tag未删除
             }
         }
         // 放入需要删除的tagId列表
         List<Long> needDeleteTids = new LinkedList<>();
-        for(Long key:mapOldPT.keySet()){
-            if (mapOldPT.get(key) ==0){ // 记录表中没有更新原来的存在Tid，则表明该tag已不被该problem使用
+        for (Long key : mapOldPT.keySet()) {
+            if (mapOldPT.get(key) == 0) { // 记录表中没有更新原来的存在Tid，则表明该tag已不被该problem使用
                 needDeleteTids.add(key);
             }
         }
         boolean deleteTagsFromProblemResult = true;
-        if (needDeleteTids.size()>0) {
+        if (needDeleteTids.size() > 0) {
             QueryWrapper<ProblemTag> tagWrapper = new QueryWrapper<>();
             tagWrapper.eq("pid", pid).in("tid", needDeleteTids);
             // 执行批量删除操作
@@ -111,7 +120,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         }
         // 执行批量插入操作
         boolean addTagsToProblemResult = true;
-        if (problemTagList.size()>0) {
+        if (problemTagList.size() > 0) {
             addTagsToProblemResult = problemTagService.saveOrUpdateBatch(problemTagList);
         }
 
@@ -123,21 +132,21 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         //构建problem_language实体列表
         List<ProblemLanguage> problemLanguageList = new LinkedList<>();
         for (Language language : problemDto.getLanguages()) { // 遍历插入
-            if (mapOldPL.get(language.getId())!=null){ // 如果记录中有，则表式该language原来已有选中。
+            if (mapOldPL.get(language.getId()) != null) { // 如果记录中有，则表式该language原来已有选中。
                 mapOldPL.put(language.getId(), 1); // 记录一下，新数据也有该language
-            }else{ // 没有记录，则表明为新添加的language
+            } else { // 没有记录，则表明为新添加的language
                 problemLanguageList.add(new ProblemLanguage().setLid(language.getId()).setPid(pid));
             }
         }
         // 放入需要删除的languageId列表
         List<Long> needDeleteLids = new LinkedList<>();
-        for(Long key:mapOldPL.keySet()){
-            if (mapOldPL.get(key) ==0){ // 记录表中没有更新原来的存在Lid，则表明该language已不被该problem使用
+        for (Long key : mapOldPL.keySet()) {
+            if (mapOldPL.get(key) == 0) { // 记录表中没有更新原来的存在Lid，则表明该language已不被该problem使用
                 needDeleteLids.add(key);
             }
         }
         boolean deleteLanguagesFromProblemResult = true;
-        if (needDeleteLids.size()>0) {
+        if (needDeleteLids.size() > 0) {
             QueryWrapper<ProblemLanguage> LangWrapper = new QueryWrapper<>();
             LangWrapper.eq("pid", pid).in("lid", needDeleteLids);
             // 执行批量删除操作
@@ -145,7 +154,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         }
         // 执行批量添加操作
         boolean addLanguagesToProblemResult = true;
-        if (problemLanguageList.size()>0) {
+        if (problemLanguageList.size() > 0) {
             addLanguagesToProblemResult = problemLanguageService.saveOrUpdateBatch(problemLanguageList);
         }
 
@@ -155,30 +164,30 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         // 新增加的case列表
         List<ProblemCase> problemCaseList = new LinkedList<>();
         // 遍历上传的case列表，如果
-        for(ProblemCase problemCase:problemDto.getSamples()){
-            if (problemCase.getId()!=null) { // 已存在的case
+        for (ProblemCase problemCase : problemDto.getSamples()) {
+            if (problemCase.getId() != null) { // 已存在的case
                 needDeleteProblemCases.remove(problemCase.getId());
-            }else{
+            } else {
                 problemCaseList.add(problemCase);
             }
         }
 
         // 执行批量删除操作
         boolean deleteCasesFromProblemResult = true;
-        if (needDeleteProblemCases.size()>0) {
+        if (needDeleteProblemCases.size() > 0) {
             deleteCasesFromProblemResult = problemCaseService.removeByIds(needDeleteProblemCases);
         }
         // 执行批量添加操作
         boolean addCasesToProblemResult = true;
-        if (problemCaseList.size()>0) {
+        if (problemCaseList.size() > 0) {
             addCasesToProblemResult = problemCaseService.saveOrUpdateBatch(problemCaseList);
         }
 
 
-        if (problemUpdateResult&&deleteCasesFromProblemResult&&deleteLanguagesFromProblemResult&&deleteTagsFromProblemResult
-                &&addCasesToProblemResult&&addLanguagesToProblemResult&&addTagsToProblemResult){
+        if (problemUpdateResult && deleteCasesFromProblemResult && deleteLanguagesFromProblemResult && deleteTagsFromProblemResult
+                && addCasesToProblemResult && addLanguagesToProblemResult && addTagsToProblemResult) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -186,11 +195,11 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     @Override
     @Transactional
     public boolean adminAddProblem(ProblemDto problemDto) {
-        boolean addProblemResult = problemMapper.insert(problemDto.getProblem())==1;
+        boolean addProblemResult = problemMapper.insert(problemDto.getProblem()) == 1;
         long pid = problemDto.getProblem().getId();
         // 为新的题目添加对应的language
         List<ProblemLanguage> problemLanguageList = new LinkedList<>();
-        for(Language language:problemDto.getLanguages()){
+        for (Language language : problemDto.getLanguages()) {
             problemLanguageList.add(new ProblemLanguage().setPid(pid).setLid(language.getId()));
         }
         boolean addLangToProblemResult = problemLanguageService.saveOrUpdateBatch(problemLanguageList);
@@ -202,17 +211,21 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
         // 为新的题目添加对应的tag，可能tag是原表已有，也可能是新的，所以需要判断。
         List<ProblemTag> problemTagList = new LinkedList<>();
-        for(Tag tag:problemDto.getTags()){
-            if (tag.getId() == null){ //id为空 表示为原tag表中不存在的 插入后可以获取到对应的tagId
+        for (Tag tag : problemDto.getTags()) {
+            if (tag.getId() == null) { //id为空 表示为原tag表中不存在的 插入后可以获取到对应的tagId
                 tagService.save(tag);
             }
             problemTagList.add(new ProblemTag().setTid(tag.getId()).setPid(pid));
         }
         boolean addTagsToProblemResult = problemTagService.saveOrUpdateBatch(problemTagList);
 
-        if (addProblemResult&&addCasesToProblemResult&&addLangToProblemResult&&addTagsToProblemResult){
+        // 为新的题目初始化problem_count表
+        boolean initProblemCountResult = problemCountService.save(new ProblemCount().setPid(pid));
+
+        if (addProblemResult && addCasesToProblemResult && addLangToProblemResult
+                && addTagsToProblemResult&&initProblemCountResult) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }

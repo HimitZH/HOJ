@@ -15,7 +15,8 @@ const adminRoutes= [
     {
       path: '/admin/login',
       name: 'admin-login',
-      component: Login
+      component: Login,
+      meta: { title: 'Login' }
     },
     {
       path: '/admin/',
@@ -24,81 +25,99 @@ const adminRoutes= [
       children: [
         {
           path: '',
+          redirect: 'dashboard',
+          component: Dashboard,
+          meta: { title: 'Dashboard' }
+        },
+        {
+          path: 'dashboard',
           name: 'admin-dashboard',
-          component: Dashboard
+          component: Dashboard,
+          meta: { title: 'Dashboard' }
         },
         {
           path: 'user',
           name: 'admin-user',
           component: User,
-          meta: { requireSuperAdmin: true},
+          meta: { requireSuperAdmin: true,title:'User'},
       },
         {
           path: 'announcement',
           name: 'admin-announcement',
           component: Announcement,
-          meta: { requireSuperAdmin: true},
+          meta: { requireSuperAdmin: true,title:'Announcement'},
       },
         {
           path: 'conf',
           name: 'admin-conf',
           component: SystemConfig,
-          meta: { requireSuperAdmin: true},
+          meta: { requireSuperAdmin: true,title:'System Config'},
         },
         {
           path: 'problems',
           name: 'admin-problem-list',
-          component: ProblemList
+          component: ProblemList,
+          meta: { title:'Problem List'},
         },
         {
           path: 'problem/create',
           name: 'admin-create-problem',
-          component: Problem
+          component: Problem,
+          meta: { title:'Create Problem'},
         },
         {
           path: 'problem/edit/:problemId',
           name: 'admin-edit-problem',
-          component: Problem
+          component: Problem,
+          meta: { title:'Edit Problem'},
         },
         {
           path: 'problem/batch-operation',
           name: 'admin-problem_batch_operation',
-          component: ProblemImportAndExport
+          component: ProblemImportAndExport,
+          meta: { title:'Problem Operation'},
         },
         {
           path: 'contest/create',
           name: 'admin-create-contest',
-          component: Contest
+          component: Contest,
+          meta: { title:'Create Contest'},
         },
         {
           path: 'contest',
           name: 'admin-contest-list',
-          component: ContestList
+          component: ContestList,
+          meta: { title:'Contest List'}
         },
         {
           path: 'contest/:contestId/edit',
           name: 'admin-edit-contest',
-          component: Contest
+          component: Contest,
+          meta: { title:'Edit Contest'}
         },
         {
           path: 'contest/:contestId/announcement',
           name: 'admin-contest-announcement',
-          component: Announcement
+          component: Announcement,
+          meta: { title:'Create Contest Announcement'}
         },
         {
           path: 'contest/:contestId/problems',
           name: 'admin-contest-problem-list',
-          component: ProblemList
+          component: ProblemList,
+          meta: { title:'Contest Problem List'}
         },
         {
           path: 'contest/:contestId/problem/create',
           name: 'admin-create-contest-problem',
-          component: Problem
+          component: Problem,
+          meta: { title:'Create Contest Problem'}
         },
         {
           path: 'contest/:contestId/problem/:problemId/edit',
           name: 'admin-edit-contest-problem',
-          component: Problem
+          component: Problem,
+          meta: { title:'Edit Contest Problem'}
         }
       ]
     },

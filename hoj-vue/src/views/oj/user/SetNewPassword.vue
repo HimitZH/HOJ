@@ -2,7 +2,7 @@
   <div>
     <div class="container">
       <el-card shadow="always" body-style="{backgroud-color:gray}">
-        <h2>Set New Password - HOJ</h2>
+        <h2 style="text-align: center;">Set New Password - HOJ</h2>
         <el-form :model="formResetPassword" :rules="rules" ref="formResetPassword">
           <el-form-item prop="username">
             <el-input
