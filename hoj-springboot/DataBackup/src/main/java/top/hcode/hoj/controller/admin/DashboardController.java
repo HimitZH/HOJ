@@ -15,9 +15,11 @@ import top.hcode.hoj.dao.ContestMapper;
 import top.hcode.hoj.dao.JudgeMapper;
 import top.hcode.hoj.dao.SessionMapper;
 import top.hcode.hoj.pojo.entity.Session;
+import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.UserInfoService;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -45,8 +47,12 @@ public class DashboardController {
 
     @PostMapping("/get-sessions")
     public CommonResult getSessions(HttpServletRequest request){
-        String userId = (String) request.getAttribute("userId");
-        QueryWrapper<Session> wrapper = new QueryWrapper<Session>().eq("uid",userId).orderByDesc("gmt_create");
+
+        // 需要获取一下该token对应用户的数据
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        QueryWrapper<Session> wrapper = new QueryWrapper<Session>().eq("uid",userRolesVo.getUid()).orderByDesc("gmt_create");
         List<Session> sessionList = sessionDao.selectList(wrapper);
         if (sessionList.size()>1){
             return CommonResult.successResponse(sessionList.get(1));

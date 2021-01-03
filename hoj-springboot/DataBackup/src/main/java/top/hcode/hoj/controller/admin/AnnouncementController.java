@@ -31,9 +31,9 @@ public class AnnouncementController {
                                             @RequestParam(value = "currentPage", required = false) Integer currentPage){
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;
-        IPage<AnnouncementVo> announcementList = announcementDao.getAnnouncementList(limit, currentPage);
+        IPage<AnnouncementVo> announcementList = announcementDao.getAnnouncementList(limit, currentPage,false);
         if (announcementList.getTotal() == 0) { // 未查询到一条数据
-            return CommonResult.successResponse(null,"暂无数据");
+            return CommonResult.successResponse(announcementList,"暂无数据");
         } else {
             return CommonResult.successResponse(announcementList, "获取成功");
         }

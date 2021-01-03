@@ -6,52 +6,52 @@
         <el-col :sm="24" :md="12" :lg="12" class="problem-detail">
           <el-card :padding="10" shadow="always">
             <div slot="header" class="panel-title">
-              <span>{{ problem.title }}</span><br>
-              <span><el-tag v-for="tag in problem.tags" :key="tag" effect="plain" size="small" style="margin-right:10px;">{{ tag }}</el-tag></span>
+              <span>{{ problemData.problem.title }}</span><br>
+              <span><el-tag v-for="tag in problemData.tags" :key="tag" effect="plain" size="small" style="margin-right:10px;">{{ tag }}</el-tag></span>
                 <div class="problem-menu">
-                  <span v-if="this.contestID"> <el-link type="primary" :underline="false"><i class="fa fa-home" aria-hidden="true"></i> Contest</el-link></span>
+                  <span v-if="!this.contestID"> <el-link type="primary" :underline="false"><i class="fa fa-home" aria-hidden="true"></i> Contest</el-link></span>
                   <span> <el-link type="primary" :underline="false" @click="graphVisible = !graphVisible"><i class="fa fa-pie-chart" aria-hidden="true"></i> Statistic</el-link></span>
                   <span> <el-link type="primary" :underline="false"><i class="fa fa-bars" aria-hidden="true"></i> Submissions</el-link></span>
                 </div>
               <div class="question-intr">
-                <span>Time Limit：{{problem.time_limit}}</span><br>
-                <span>Memory Limit：{{problem.memory_limit}}</span><br>
-                <span>Level：{{problem.difficulty}}</span><span style="margin-left: 10px;">Score：{{problem.score}}</span><br>
-                <span v-show="problem.author">Create By：{{problem.author}}</span><br>
+                <span>Time Limit：{{problemData.problem.timeLimit}}MS</span><br>
+                <span>Memory Limit：{{problemData.problem.memoryLimit}}MB</span><br>
+                <span>Level：{{problemData.problem.difficulty | parseProblemLevel }}</span><span v-if="problemData.problem.type==1" style="margin-left: 10px;">Score：{{problemData.problem.ioScore}}</span><br>
+                <span v-show="problemData.problem.author">Create By：{{problemData.problem.author}}</span><br>
               </div>
             </div>
 
             <div id="problem-content" class="markdown-body" v-katex>
               <p class="title">Description</p>
-              <p class="content" v-html="problem.description"></p>
+              <p class="content" v-html="problemData.problem.description"></p>
               <!-- {{$t('m.music')}} -->
               <p class="title">Input</p>
-              <p class="content" v-html="problem.input_description"></p>
+              <p class="content" v-html="problemData.problem.input"></p>
 
               <p class="title">Output</p>
-              <p class="content" v-html="problem.output_description"></p>
+              <p class="content" v-html="problemData.problem.output"></p>
 
-              <div v-for="(sample, index) of problem.samples" :key="index">
-                <div class="flex-container sample">
-                  <div class="sample-input">
+              <div v-for="(example, index) of problemData.problem.examples" :key="index">
+                <div class="flex-container example">
+                  <div class="example-input">
                     <p class="title">
                       Sample Input {{ index + 1 }}
                       <a
                         class="copy"
-                        v-clipboard:copy="sample.input"
+                        v-clipboard:copy="example.input"
                         v-clipboard:success="onCopy"
                         v-clipboard:error="onCopyError"
                       >
                         <i class="el-icon-document-copy"></i>
                       </a>
                     </p>
-                    <pre>{{ sample.input }}</pre>
+                    <pre>{{ example.input }}</pre>
                   </div>
-                  <div class="sample-output">
+                  <div class="example-output">
                     <p class="title">Sample Output {{ index + 1 }}
                       <a
                         class="copy"
-                        v-clipboard:copy="sample.output"
+                        v-clipboard:copy="example.output"
                         v-clipboard:success="onCopy"
                         v-clipboard:error="onCopyError"
                       >
@@ -59,31 +59,30 @@
                       </a>
 
                     </p>
-                    <pre>{{ sample.output }}</pre>
+                    <pre>{{ example.output }}</pre>
                   </div>
                 </div>
               </div>
 
-              <div v-if="problem.hint">
+              <div v-if="problemData.problem.hint">
                 <p class="title">Hint</p>
                 <el-card dis-hover>
-                  <div class="content" v-html="problem.hint"></div>
+                  <div class="content" v-html="problemData.problem.hint"></div>
                 </el-card>
               </div>
 
-              <div v-if="problem.source">
+              <div v-if="problemData.problem.source">
                 <p class="title">Source</p>
-                <p class="content">{{ problem.source }}</p>
+                <p class="content">{{problemData.problem.source }}</p>
               </div>
             </div>
           </el-card>
         </el-col>
         <el-col :sm="24" :md="12" :lg="12" class="submit-detail">
-          <!--problem main end-->
           <el-card :padding="20" id="submit-code" shadow="always">
             <CodeMirror
               :value.sync="code"
-              :languages="problem.languages"
+              :languages="problemData.problem.languages"
               :language="language"
               :theme="theme"
               @resetCode="onResetToTemplate"
@@ -93,19 +92,15 @@
             <el-row>
               <el-col :sm="24" :md="10" :lg="10" style="margin-top:4px;">
                 <div class="status" v-if="statusVisible">
-                  <template
-                    v-if="
-                      !this.contestID ||
-                      (this.contestID && OIContestRealTimePermission)
-                    "
-                  >
-                    <span>Status</span>
+                  <template v-if="!this.contestID ||(this.contestID && OIContestRealTimePermission)">
+                    <span>Status:</span>
                     <el-tag
-                      type="dot"
+                      effect="dark"
                       :color="submissionStatus.color"
-                      @click.native="handleRoute('/status/' + submissionId)"
+                      @click.native="handleRoute('/submission-detail/' + submissionId)"
                     >
-                      {{ submissionStatus.text.replace(/ /g, "_") }}
+                    <i class="fa fa-circle" aria-hidden="true"></i>
+                      {{ submissionStatus.text }}
                     </el-tag>
                   </template>
                   <template
@@ -116,7 +111,7 @@
                     >
                   </template>
                 </div>
-                <div v-else-if="problem.my_status === 0">
+                <div v-else-if="problemData.myStatus == 0">
                   <el-alert type="success" show-icon effect="dark" :closable="false"
                     >You have solved the problem</el-alert
                   >
@@ -155,6 +150,7 @@
                 <el-button
                   type="primary"
                   icon="el-icon-edit-outline"
+                  size="small"
                   :loading="submitting"
                   @click="submitCode"
                   :disabled="problemSubmitDisabled || submitted"
@@ -185,17 +181,19 @@
 import { mapGetters, mapActions } from "vuex";
 import CodeMirror from "@/components/oj/common/CodeMirror.vue";
 import storage from "@/common/storage";
+import utils from "@/common/utils"
 import {
   JUDGE_STATUS,
   CONTEST_STATUS,
+  JUDGE_STATUS_RESERVE,
   buildProblemCodeKey,
 } from "@/common/constants";
 import {pie, largePie} from './chartData'
 import api from "@/common/api";
-import mMessage from '@/common/message'
+import myMessage from '@/common/message'
 
 // 只显示这些状态的图形占用
-const filtedStatus = ["-1", "-2", "0", "1", "2", "3", "4", "8"];
+const filtedStatus = ["wa", "ce", "ac", "tle", "mle", "re", "pe"];
 
 export default {
   name: "Problem",
@@ -210,7 +208,7 @@ export default {
       submissionExists: false,
       captchaCode: "",
       captchaSrc: "",
-      contestID: "",
+      contestID: 0,
       problemID: 1000,
       submitting: false,
       code: "",
@@ -219,38 +217,13 @@ export default {
       submissionId: "",
       submitted: false,
       result: {
-        result: 9,
+        status: 9,
       },
-      problem: {
-        title: "A + B Problem",
-        description:
-          "<p>请计算两个整数的和并输出结果。</p><p>注意不要有不必要的输出，比如&quot;请输入 a 和 b 的值: &quot;，示例代码见隐藏部分。</p>",
-        hint:
-          '<p>C \u8bed\u8a00\u5b9e\u73b0:</p><pre><code class="lang-c++">#include &lt;stdio.h&gt;    \nint main(){\n    int a, b;\n    scanf(&quot;%d%d&quot;, &a, &b);\n    printf(&quot;%d\\n&quot;, a+b);\n    return 0;\n}</code></pre><p>Java \u5b9e\u73b0:</p><pre><code class="lang-java">import java.util.Scanner;\npublic class Main{\n    public static void main(String[] args){\n        Scanner in=new Scanner(System.in);\n        int a=in.nextInt();\n        int b=in.nextInt();\n        System.out.println((a+b));  \n    }\n}</code></pre>',
-        input_description:
-          "<p>\u4e24\u4e2a\u7528\u7a7a\u683c\u5206\u5f00\u7684\u6574\u6570.</p>",
-        output_description: "<p>\u4e24\u6570\u4e4b\u548c</p>",
-        my_status: 0,
-        time_limit:'1000MS',
-        memory_limit:'32MB',
-        score:100,
-        template: {},
-        languages: ["C++", "Python3","C"],
-        author:'Himit_ZH',
-        rule_type: "OI",
-        difficulty: "Mid",
-        source: "\u7ecf\u5178\u9898\u76ee",
-        samples: [
-          {
-            input: "1 1",
-            output: "2",
-          },
-          {
-            input: "2 3",
-            output: "5",
-          },
-        ],
-        tags: ['简单题','模拟题'],
+      problemData: {
+        problem:{},
+        problemCount:{},
+        tags:[],
+        languages:[]
       },
       pie: pie,
       largePie: largePie,
@@ -258,108 +231,113 @@ export default {
       largePieInitOpts: {
         width: '380',
         height: '380'
-      }
+      },
+      JUDGE_STATUS_RESERVE:{}
     };
   },
-  // beforeRouteEnter (to, from, next) {
-  //   let problemCode = storage.get(buildProblemCodeKey(to.params.problemID, to.params.contestID))
-  //   if (problemCode) {
-  //     next(vm => {
-  //       vm.language = problemCode.language
-  //       vm.code = problemCode.code
-  //       vm.theme = problemCode.theme
-  //     })
-  //   } else {
-  //     next()
-  //   }
-  // },
+  // 获取缓存中的该题的做题代码，代码语言，代码风格
+  beforeRouteEnter (to, from, next) {
+    let problemCode = storage.get(buildProblemCodeKey(to.params.problemID, to.params.contestID))
+    if (problemCode) {
+      next(vm => {
+        vm.language = problemCode.language
+        vm.code = problemCode.code
+        vm.theme = problemCode.theme
+      })
+    } else {
+      next()
+    }
+  },
   mounted() {
-    this.$store.commit("changeContestItemVisible", { menu: false });
     this.init();
+    this.JUDGE_STATUS_RESERVE = Object.assign({},JUDGE_STATUS_RESERVE);
   },
   methods: {
     ...mapActions(["changeDomTitle"]),
     init() {
-      // this.$Loading.start()
       this.contestID = this.$route.params.contestID;
       this.problemID = this.$route.params.problemID;
-      let func =
-        this.$route.name === "problem-details"
+      let func =this.$route.name === "problemDetails"
           ? "getProblem"
           : "getContestProblem";
       api[func](this.problemID, this.contestID).then(
         (res) => {
-          this.$Loading.finish();
-          let problem = res.data.data;
-          this.changeDomTitle({ title: problem.title });
-          api.submissionExists(problem.id).then((res) => {
-            this.submissionExists = res.data.data;
-          });
-          problem.languages = problem.languages.sort();
-          this.problem = problem;
-          this.changePie(problem);
+          let result = res.data.data;
+          this.changeDomTitle({ title: result.problem.title });
+          result['myStatus'] = -10 // 设置默认值
+          if(this.isAuthenticated){
+            let pidList = [result.problem.id]
+            api.getUserProblemStatus(pidList).then(res=>{
+              let statusMap = res.data.data
+              if(statusMap[result.problem.id]!=-10){
+                this.submissionExists = true
+                result.myStatus = statusMap[result.problem.id]
+              }else{
+                this.submissionExists = false
+              }
+            })
+          }
+          result.problem.examples = utils.stringToExamples(result.problem.examples);
+          this.problemData = result;
+          this.changePie(result.problemCount);
 
-          // 在beforeRouteEnter中修改了, 说明本地有code，无需加载template
+          // 在beforeRouteEnter中修改了, 说明本地有code,不用更改配置
           if (this.code !== "") {
             return;
           }
-          // try to load problem template
-          this.language = this.problem.languages[0];
-          let template = this.problem.template;
-          if (template && template[this.language]) {
-            this.code = template[this.language];
-          }
+          this.language = this.problemData.languages[0];
+          
         },
         () => {
-          this.$Loading.error();
+     
         }
       );
     },
-    // changePie (problemData) {
-    //   // 只显示特定的一些状态
-    //   for (let k in problemData.statistic_info) {
-    //     if (filtedStatus.indexOf(k) === -1) {
-    //       delete problemData.statistic_info[k]
-    //     }
-    //   }
-    //   let acNum = problemData.accepted_number
-    //   let data = [
-    //     {name: 'WA', value: problemData.submission_number - acNum},
-    //     {name: 'AC', value: acNum}
-    //   ]
-    //   this.pie.series[0].data = data
-    //   // 只把大图的AC selected下，这里需要做一下deepcopy
-    //   let data2 = JSON.parse(JSON.stringify(data))
-    //   data2[1].selected = true
-    //   this.largePie.series[1].data = data2
+     changePie (problemData) {
+      let total = problemData.total
+      let acNum = problemData.ac
+      // 该状态结果数为0的不显示,同时一些无关参数也排除
+      for (let k in problemData) {
+        if (problemData[k]==0 || filtedStatus.indexOf(k)===-1) {
+          delete problemData[k]
+        }
+      }
 
-    //   // 根据结果设置legend,没有提交过的legend不显示
-    //   let legend = Object.keys(problemData.statistic_info).map(ele => JUDGE_STATUS[ele].short)
-    //   if (legend.length === 0) {
-    //     legend.push('AC', 'WA')
-    //   }
-    //   this.largePie.legend.data = legend
+      let data = [
+        {name: 'WA', value: total - acNum},
+        {name: 'AC', value: acNum}
+      ]
+      this.pie.series[0].data = data
+      // 只把大图的AC selected下，这里需要做一下deepcopy
+      let data2 = JSON.parse(JSON.stringify(data))
+      data2[1].selected = true
+      this.largePie.series[1].data = data2
 
-    //   // 把ac的数据提取出来放在最后
-    //   let acCount = problemData.statistic_info['0']
-    //   delete problemData.statistic_info['0']
+      // 根据结果设置legend,没有提交过的legend不显示
+      let legend = Object.keys(problemData).map(ele => (ele+'').toUpperCase())
+      if (legend.length === 0) {
+        legend.push('AC', 'WA')
+      }
+      this.largePie.legend.data = legend
 
-    //   let largePieData = []
-    //   Object.keys(problemData.statistic_info).forEach(ele => {
-    //     largePieData.push({name: JUDGE_STATUS[ele].short, value: problemData.statistic_info[ele]})
-    //   })
-    //   largePieData.push({name: 'AC', value: acCount})
-    //   this.largePie.series[0].data = largePieData
-    // },
+      
+      // 把ac的数据提取出来放在最后
+      let acCount = problemData.ac
+      delete problemData.ac
+
+      let largePieData = []
+      Object.keys(problemData).forEach(ele => {
+        largePieData.push({name: (ele+'').toUpperCase(), value: problemData[ele]})
+      })
+      largePieData.push({name: 'AC', value: acCount})
+      this.largePie.series[0].data = largePieData
+    },
+
+
     handleRoute(route) {
       this.$router.push(route);
     },
     onChangeLang(newLang) {
-      if (this.problem.template[newLang]) {
-        if (this.code.trim() === "") {
-          this.code = this.problem.template[newLang];
-        }
-      }
       this.language = newLang;
     },
     onChangeTheme(newTheme) {
@@ -372,12 +350,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          let template = this.problem.template;
-          if (template && template[this.language]) {
-            this.code = template[this.language];
-          } else {
-            this.code = "";
-          }
+          this.code = "";
         })
         .catch(() => {});
     },
@@ -388,15 +361,20 @@ export default {
         clearTimeout(this.refreshStatus);
       }
       const checkStatus = () => {
-        let id = this.submissionId;
-        api.getSubmission(id).then(
+        let submitId = this.submissionId;
+        api.getSubmission(submitId).then(
           (res) => {
-            this.result = res.data.data;
-            if (Object.keys(res.data.data.statistic_info).length !== 0) {
-              this.submitting = false;
-              this.submitted = false;
-              clearTimeout(this.refreshStatus);
-              this.init();
+            this.result.status = res.data.data.submission.status;
+            if (Object.keys(res.data.data.submission).length !== 0) {
+              // status不为判题和排队中才表示此次判题结束
+              if(res.data.data.submission.status != JUDGE_STATUS_RESERVE['Pending']&&res.data.data.submission.status != JUDGE_STATUS_RESERVE['Judging']){
+                this.submitting = false;
+                this.submitted = false;
+                clearTimeout(this.refreshStatus);
+                this.init();
+              }else{
+                this.refreshStatus = setTimeout(checkStatus, 2000);
+              }
             } else {
               this.refreshStatus = setTimeout(checkStatus, 2000);
             }
@@ -407,21 +385,22 @@ export default {
           }
         );
       };
+      // 设置每2秒检查一下该题的提交结果
       this.refreshStatus = setTimeout(checkStatus, 2000);
     },
     submitCode() {
       if (this.code.trim() === "") {
-        this.$error("m.Code_can_not_be_empty");
+        myMessage.error("提交的代码不能为空！");
         return;
       }
       this.submissionId = "";
-      this.result = { result: 9 };
+      this.result = { status: 9 };
       this.submitting = true;
       let data = {
-        problem_id: this.problem.id,
+        pid: this.problemData.problem.id,
         language: this.language,
         code: this.code,
-        contest_id: this.contestID,
+        cid: this.contestID,
       };
       if (this.captchaRequired) {
         data.captcha = this.captchaCode;
@@ -430,14 +409,14 @@ export default {
         this.statusVisible = true;
         api.submitCode(data).then(
           (res) => {
-            this.submissionId = res.data.data && res.data.data.submission_id;
+            this.submissionId = res.data.data && res.data.data.submitId;
             // 定时检查状态
             this.submitting = false;
             this.submissionExists = true;
             if (!detailsVisible) {
               this.$Modal.success({
                 title: "Success",
-                content: "Submit_code_successfully",
+                content: "代码提交成功！",
               });
               return;
             }
@@ -461,7 +440,7 @@ export default {
             title: "",
             content:
               "<h3>" +
-              "You_have_submission_in_this_problem_sure_to_cover_it" +
+              "你已经有该题目的提交了，确定要再一次提交覆盖之前的提交记录？" +
               "<h3>",
             onOk: () => {
               // 暂时解决对话框与后面提示对话框冲突的问题(否则一闪而过）
@@ -481,10 +460,10 @@ export default {
       }
     },
     onCopy(event) {
-      mMessage.success('Sample copied successfully');
+      myMessage.success('Sample copied successfully');
     },
     onCopyError(e) {
-       mMessage.success('Sample copy failed');
+       myMessage.success('Sample copy failed');
     },
   },
   computed: {
@@ -493,6 +472,7 @@ export default {
       "contestRuleType",
       "OIContestRealTimePermission",
       "contestStatus",
+      'isAuthenticated',
     ]),
     contest() {
       return this.$store.state.contest.contest;
@@ -502,8 +482,8 @@ export default {
     },
     submissionStatus() {
       return {
-        text: JUDGE_STATUS[this.result.result]["name"],
-        color: JUDGE_STATUS[this.result.result]["color"],
+        text: JUDGE_STATUS[this.result.status]["name"],
+        color: JUDGE_STATUS[this.result.status]["rgb"],
       };
     },
     submissionRoute() {
@@ -523,9 +503,7 @@ export default {
   beforeRouteLeave(to, from, next) {
     // 防止切换组件后仍然不断请求
     clearInterval(this.refreshStatus);
-
-    this.$store.commit("changeContestItemVisible", { menu: true });
-    storage.set(buildProblemCodeKey(this.problem._id, from.params.contestID), {
+    storage.set(buildProblemCodeKey(this.problemData.problem.id, from.params.contestID), {
       code: this.code,
       language: this.language,
       theme: this.theme,
@@ -573,8 +551,8 @@ export default {
   .problem-menu span{
     margin-left: 20px;
   }
-  .question-intr{
-    margin-top: 5px;
+  .question-intr {
+    margin-top: 6px;
   }
 }
 .submit-detail{
@@ -615,28 +593,26 @@ p.content {
   align-items: flex-start;
   flex-flow: row nowrap;
 }
-.sample {
+.example {
   align-items: stretch;
 }
-.sample-input,
-.sample-output {
+.example-input,
+.example-output {
   width: 50%;
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   margin-right: 5%;
 }
-.sample pre {
+.example pre {
   flex: 1 1 auto;
   align-self: stretch;
   border-style: solid;
   background: transparent;
 }
-
-/* #submit-code {
-    margin-top: 20px;
-    margin-bottom: 20px;
-  } */
+#submit-code{
+  height: 670px;
+}
 #submit-code .status {
   float: left;
 }

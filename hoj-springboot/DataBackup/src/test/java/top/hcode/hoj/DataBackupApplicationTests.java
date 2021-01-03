@@ -12,9 +12,11 @@ import top.hcode.hoj.pojo.entity.Role;
 import top.hcode.hoj.pojo.entity.Session;
 import top.hcode.hoj.pojo.entity.UserInfo;
 import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.vo.ContestVo;
 import top.hcode.hoj.pojo.vo.RoleAuthsVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.UserInfoService;
+import top.hcode.hoj.service.UserRoleService;
 import top.hcode.hoj.service.impl.AnnouncementServiceImpl;
 import top.hcode.hoj.service.impl.UserInfoServiceImpl;
 import top.hcode.hoj.service.impl.UserRoleServiceImpl;
@@ -49,6 +51,7 @@ public class DataBackupApplicationTests {
     @Autowired
     private UserInfoServiceImpl userInfoService;
 
+
     @Autowired
     private AnnouncementServiceImpl announcementService;
     @Test
@@ -72,8 +75,7 @@ public class DataBackupApplicationTests {
 //        if (b){
 //            System.out.println(userInfo);
 //        }
-        IPage<AnnouncementVo> announcementList = announcementService.getAnnouncementList(10, 1);
-        System.out.println(announcementList.getRecords().get(0));
+
 //        List<AnnouncementVo> contestAnnouncement = announcementService.getContestAnnouncement(1L);
 //        System.out.println(contestAnnouncement.size());
     }
@@ -91,9 +93,10 @@ public class DataBackupApplicationTests {
     }
     @Test
     public void Test4(){
-//        int todayJudgeNum = judgeMapper.getTodayJudgeNum();
-        List<Contest> withinNext14DaysContests = contestMapper.getWithinNext14DaysContests();
-        System.out.println(withinNext14DaysContests);
+////        int todayJudgeNum = judgeMapper.getTodayJudgeNum();
+//        List<ContestVo> withinNext14DaysContests = contestMapper.getWithinNext14DaysContests();
+//        System.out.println(withinNext14DaysContests);
+
     }
 
 }

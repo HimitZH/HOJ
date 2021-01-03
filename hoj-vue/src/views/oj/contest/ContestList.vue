@@ -311,9 +311,6 @@ export default {
 .filter-row {
   float: right;
 }
-.el-tag--dark{
-  border-color: #FFF;
-}
 @media screen and (max-width: 768px) {
   .filter-row span {
     margin-right: 2px;

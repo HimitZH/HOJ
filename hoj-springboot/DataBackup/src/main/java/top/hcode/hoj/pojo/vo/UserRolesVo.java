@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import top.hcode.hoj.pojo.entity.Role;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -15,7 +16,7 @@ import java.util.List;
  */
 @ApiModel(value="用户信息以及其对应的角色", description="")
 @Data
-public class UserRolesVo {
+public class UserRolesVo implements Serializable {
 
     @ApiModelProperty(value = "用户id")
     private String uid;

@@ -2,7 +2,7 @@
   <div>
     <div id="header" v-if="!mobileNar">
       <el-menu
-        :default-active="activeIndex"
+        :default-active="activeMenuName"
         mode="horizontal"
         router
         active-text-color="#2196f3"
@@ -45,6 +45,7 @@
               >Login
             </el-button>
             <el-button
+              v-if="websiteConfig.register"
               round
               type="danger"
               @click="handleBtnClick('Register')"
@@ -66,7 +67,7 @@
 
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="/user-home">Home</el-dropdown-item>
-              <el-dropdown-item command="/status?myself=1"
+              <el-dropdown-item command="/status?onlyMine=true"
                 >Submissions</el-dropdown-item
               >
               <el-dropdown-item command="/setting">Setting</el-dropdown-item>
@@ -91,7 +92,7 @@
         <mu-button flat slot="right" @click="handleBtnClick('Login')"  v-show="!isAuthenticated"
           >Login</mu-button
         >
-        <mu-button flat slot="right" @click="handleBtnClick('Register')" v-show="!isAuthenticated"
+        <mu-button flat slot="right" @click="handleBtnClick('Register')" v-show="!isAuthenticated && websiteConfig.register"
           >Register</mu-button
         >
 
@@ -106,7 +107,7 @@
               </mu-list-item-content>
             </mu-list-item>
 
-            <mu-list-item button value="/status?myself=1">
+            <mu-list-item button value="/status?onlyMine=true">
               <mu-list-item-content>
                 <mu-list-item-title>Submissions</mu-list-item-title>
               </mu-list-item-content>
@@ -138,28 +139,28 @@
 
       <mu-drawer :open.sync="opendrawer" :docked="false" :right="false">
         <mu-list toggle-nested>
-          <mu-list-item button to="/home" @click="opendrawer =!opendrawer">
+          <mu-list-item button to="/home" @click="opendrawer =!opendrawer" active-class="mobile-menu-active">
             <mu-list-item-action>
               <mu-icon value="home" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>Home</mu-list-item-title>
           </mu-list-item>
 
-          <mu-list-item button to="/problem" @click="opendrawer =!opendrawer">
+          <mu-list-item button to="/problem" @click="opendrawer =!opendrawer" active-class="mobile-menu-active">
             <mu-list-item-action>
               <mu-icon value=":el-icon-s-grid" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>Problem</mu-list-item-title>
           </mu-list-item>
 
-          <mu-list-item button to="/contest" @click="opendrawer =!opendrawer">
+          <mu-list-item button to="/contest" @click="opendrawer =!opendrawer" active-class="mobile-menu-active">
             <mu-list-item-action>
               <mu-icon value=":el-icon-trophy" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>Contest</mu-list-item-title>
           </mu-list-item>
 
-          <mu-list-item button to="/status" @click="opendrawer =!opendrawer">
+          <mu-list-item button to="/status" @click="opendrawer =!opendrawer" active-class="mobile-menu-active">
             <mu-list-item-action>
               <mu-icon value=":el-icon-s-marketing" size="24"></mu-icon>
             </mu-list-item-action>
@@ -167,7 +168,7 @@
           </mu-list-item>
           
           <mu-list-item button :ripple="false"
-           nested :open="openSideMenu === 'rank'" @toggle-nested="openSideMenu = arguments[0] ? 'rank' : ''">
+           nested :open="openSideMenu === 'rank'" @toggle-nested="openSideMenu = arguments[0] ? 'rank' : ''" >
             <mu-list-item-action>
               <mu-icon value=":el-icon-s-data" size="24"></mu-icon>
             </mu-list-item-action>
@@ -175,10 +176,10 @@
             <mu-list-item-action>
               <mu-icon class="toggle-icon" size="24" value="keyboard_arrow_down"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item button :ripple="false" slot="nested" to="/acm-rank" @click="opendrawer =!opendrawer">
+            <mu-list-item button :ripple="false" slot="nested" to="/acm-rank" @click="opendrawer =!opendrawer" active-class="mobile-menu-active">
               <mu-list-item-title>ACM Rank</mu-list-item-title>
             </mu-list-item>
-            <mu-list-item button :ripple="false" slot="nested" to="/oi-rank" @click="opendrawer =!opendrawer">
+            <mu-list-item button :ripple="false" slot="nested" to="/oi-rank" @click="opendrawer =!opendrawer" active-class="mobile-menu-active">
               <mu-list-item-title>OI Rank</mu-list-item-title>
             </mu-list-item>
           </mu-list-item>
@@ -192,10 +193,10 @@
             <mu-list-item-action>
               <mu-icon class="toggle-icon" size="24" value="keyboard_arrow_down"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item button :ripple="false" slot="nested" to="/introduction" @click="opendrawer =!opendrawer">
+            <mu-list-item button :ripple="false" slot="nested" to="/introduction" @click="opendrawer =!opendrawer" active-class="mobile-menu-active">
               <mu-list-item-title>Introduction</mu-list-item-title>
             </mu-list-item>
-            <mu-list-item button :ripple="false" slot="nested" to="/developer" @click="opendrawer =!opendrawer">
+            <mu-list-item button :ripple="false" slot="nested" to="/developer" @click="opendrawer =!opendrawer" active-class="mobile-menu-active">
               <mu-list-item-title>Developer</mu-list-item-title>
             </mu-list-item>
           </mu-list-item>
@@ -227,12 +228,6 @@ export default {
     ResetPwd,
   },
   mounted() {
-    let activeName = this.$route.path.split("/")[1];
-    if (activeName === "") {
-      this.activeIndex = "/home";
-    } else {
-      this.activeIndex = "/" + activeName;
-    }
     window.onresize = () => {
       this.page_width();
     };
@@ -240,7 +235,6 @@ export default {
   },
   data() {
     return {
-      activeIndex: "home",
       centerDialogVisible: false,
       mobileNar: false,
       opendrawer:false,
@@ -290,7 +284,11 @@ export default {
       "isAuthenticated",
       "isAdminRole",
       "token",
+      "websiteConfig"
     ]),
+    activeMenuName () {
+        return '/' + this.$route.path.split('/')[1]
+    },
     modalVisible: {
       get() {
         return this.modalStatus.visible;
@@ -331,6 +329,7 @@ export default {
   height: auto;
   width: 100%;
 }
+
 #drawer {
   position: fixed;
   left: 0px;

@@ -6,6 +6,8 @@ import top.hcode.hoj.pojo.vo.ProblemVo;
 import top.hcode.hoj.pojo.entity.Problem;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 
 /**
  * <p>
@@ -17,7 +19,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 
 public interface ProblemService extends IService<Problem> {
-    Page<ProblemVo> getProblemList(int limit,int currentPage,long pid,String title);
+    Page<ProblemVo> getProblemList(int limit, int currentPage, Long pid, String title,Integer difficulty,Long tid);
     boolean adminUpdateProblem(ProblemDto problemDto);
     boolean adminAddProblem(ProblemDto problemDto);
 }

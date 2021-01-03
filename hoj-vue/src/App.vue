@@ -7,10 +7,9 @@
       </transition>
     </div>
     <div class="footer">
-      <p>浙ICP备20009096号-1</p>
+      <a style="color:#1E9FFF" :href="websiteConfig.recordUrl">{{websiteConfig.recordName}}</a>
       <p>
-        Powered by <a href="https://www.hcode.top" style="color:#1E9FFF">HOJ</a>
-        <span>&nbsp; Version: 1.0</span>
+        Powered by <a :href="websiteConfig.projectUrl" style="color:#1E9FFF">{{websiteConfig.projectName}}</a>
       </p>
     </div>
    
@@ -37,10 +36,19 @@ export default {
       isAdminView: false,
     };
   },
+  methods: {
+      ...mapActions(['changeDomTitle','getWebsiteConfig'])
+  },
   watch: {
     $route() {
       this.changeDomTitle();
     },
+    'websiteConfig' () {
+      this.changeDomTitle();
+    },
+  },
+  computed: {
+      ...mapState(['websiteConfig'])
   },
   created: function () {
     try {
@@ -54,6 +62,9 @@ export default {
       this.isAdminView = true;
     }
   },
+  mounted () {
+    this.getWebsiteConfig()
+  },
 };
 </script>
 
@@ -66,7 +77,7 @@ export default {
 body {
   background-color: #eee !important;
   font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
-    Microsoft YaHei, \\5fae\8f6f\96c5\9ed1, Arial, sans-serif !important;
+    Microsoft YaHei, Arial, sans-serif !important;
   -webkit-font-smoothing: antialiased !important;
   color: #495060 !important;
   font-size: 12px !important;
@@ -84,7 +95,15 @@ samp {
   bottom: 0;
   width: 100%;
 }
-
+.mobile-menu-active{
+  background-color: rgba(0,0,0,.1);
+}
+.mobile-menu-active .mu-item-title{
+  color: #2d8cf0!important;
+}
+.mobile-menu-active .mu-icon{
+  color: #2d8cf0!important;
+}
 #particles-js{
   position:fixed;
   z-index:0;
@@ -179,6 +198,9 @@ a:hover {
     margin-top: 80px;
     padding: 0 4%;
   }
+  .vxe-table--body-wrapper{
+    overflow-x: hidden!important;
+  }
 }
 .markdown-body img {
   max-width: 100%;
@@ -231,5 +253,8 @@ a:hover {
 .panel-options{
   margin-top:10px;
   text-align: center;
+}
+.el-tag--dark{
+  border-color: #FFF!important;
 }
 </style>

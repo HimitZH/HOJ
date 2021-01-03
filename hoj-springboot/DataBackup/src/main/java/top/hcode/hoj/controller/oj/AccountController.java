@@ -20,6 +20,7 @@ import top.hcode.hoj.pojo.dto.LoginDto;
 import top.hcode.hoj.pojo.dto.RegisterDto;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.pojo.vo.ConfigVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.UserInfoService;
 import top.hcode.hoj.service.impl.EmailServiceImpl;
@@ -64,6 +65,9 @@ public class AccountController {
     @Autowired
     private SessionMapper sessionDao;
 
+    @Autowired
+    private ConfigVo configVo;
+
     /**
      * @MethodName getRegisterCode
      * @Params * @param null
@@ -73,6 +77,9 @@ public class AccountController {
      */
     @RequestMapping(value = "/get-register-code", method = RequestMethod.GET)
     public CommonResult getRegisterCode(@RequestParam(value = "email", required = true) String email) throws MessagingException {
+        if(!configVo.getRegister()){ // 需要判断一下网站是否开启注册
+            return CommonResult.errorResponse("对不起！本站暂未开启注册功能！", CommonResult.STATUS_ACCESS_DENIED);
+        }
         String numbers = RandomUtil.randomNumbers(6); // 随机生成6位数字的组合
         redisUtils.set(email, numbers, 5 * 60);//默认验证码有效5分钟
         emailService.sendCode(email, numbers);
@@ -146,7 +153,7 @@ public class AccountController {
         String code = IdUtil.simpleUUID().substring(0, 21); // 随机生成20位数字与字母的组合
         redisUtils.set(username, code, 10 * 60);//默认链接有效10分钟
         emailService.sendResetPassword(username, code, email);
-        return CommonResult.successResponse(null, "重置密码邮件已发送至指定邮箱");
+        return CommonResult.successResponse(null, "重置密码邮件已发送至指定邮箱，请稍稍等待一会。");
     }
 
 
@@ -195,6 +202,10 @@ public class AccountController {
     @PostMapping("/register")
     @Transactional
     public CommonResult register(@Validated @RequestBody RegisterDto registerDto) {
+
+        if(!configVo.getRegister()){ // 需要判断一下网站是否开启注册
+            return CommonResult.errorResponse("对不起！本站暂未开启注册功能！", CommonResult.STATUS_ACCESS_DENIED);
+        }
 
         if (!redisUtils.hasKey(registerDto.getEmail())) {
             return CommonResult.errorResponse("验证码不存在或已过期");
@@ -245,7 +256,7 @@ public class AccountController {
         response.setHeader("Access-Control-Expose-Headers", "Authorization");
         // 查询角色列表
         List<String> rolesList = new LinkedList<>();
-        userRoles.getRoles().stream()
+        userRoles.getRoles()
                 .forEach(role -> rolesList.add(role.getRole()));
 
         // 会话记录

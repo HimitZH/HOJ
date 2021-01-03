@@ -1,9 +1,6 @@
 package top.hcode.hoj.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -57,8 +54,11 @@ public class ProblemCount implements Serializable {
     @ApiModelProperty(value = "系统错误")
     private Integer se;
 
-    @ApiModelProperty(value = "题目分数，默认为100")
-    private Integer score;
+    @ApiModelProperty(value = "部分通过，OI题目")
+    private Integer pa;
+
+    @Version
+    private Long version;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;

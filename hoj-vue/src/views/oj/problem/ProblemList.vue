@@ -4,10 +4,10 @@
     <el-card shadow>
       <div slot="header">
         <el-row :gutter="18">
-         <el-col  :md="15" :lg="15">
-        <span class="panel-title hidden-xs-only" >Problem List</span>
+         <el-col :sm="9" :md="10" :lg="13">
+          <span class="panel-title hidden-xs-only" >Problem List</span>
          </el-col>
-          <el-col :xs="8" :md="4" :lg="4">
+          <el-col :xs="7" :sm="4" :md="3" :lg="3" style="padding-top: 6px;">
             <el-dropdown
             class="drop-menu"
             @command="filterByDifficulty"
@@ -15,7 +15,7 @@
             trigger="hover"
           >
           <span class="el-dropdown-link">
-              {{query.difficulty === '' ? 'Difficulty' : query.difficulty}}
+              {{query.difficulty === 'All' ||query.difficulty === '' ? 'Difficulty' : query.difficulty}}
             <i class="el-icon-caret-bottom"></i>
           </span>
             <el-dropdown-menu slot="dropdown">
@@ -26,8 +26,14 @@
             </el-dropdown-menu>
           </el-dropdown>
           </el-col>
-          <el-col :xs="16" :md="5" :lg="5">
+          <el-col :xs="14" :sm="7" :md="7" :lg="5">
             <vxe-input v-model="query.keyword" placeholder="Enter keyword" type="search" size="medium" @search-click="filterByKeyword"></vxe-input>
+        </el-col>
+        <el-col  :sm="4" :md="4" :lg="3" class="hidden-xs-only">
+          <el-button type="primary"  size="small" icon="el-icon-refresh" round @click="onReset">Reset</el-button>
+        </el-col>
+        <el-col :xs="3" class="hidden-sm-and-up">
+          <el-button type="primary" size="small" icon="el-icon-refresh" circle @click="onReset"></el-button>
         </el-col>
         </el-row>
       </div>
@@ -35,9 +41,10 @@
             border="inner"
             stripe
             auto-resize
+            :loading="loadings.table"
             @cell-mouseenter="cellHover"
             :data="problemList">
-            <vxe-table-column field="status" title="" width="30">
+            <vxe-table-column title="" width="30" v-if="isAuthenticated && isGetStatusOk">
               <template v-slot="{ row }" >
                 <el-tooltip :content="JUDGE_STATUS[row.myStatus].name" placement="top" >
                   <i class="el-icon-check" :style="getIconColor(row.myStatus)" v-if="row.myStatus==0" ></i>
@@ -49,7 +56,7 @@
 
             <vxe-table-column field="title" title="Title" min-width="250">
               <template v-slot="{ row }">
-                <a :href="getProblemUri(row.pid)" style="color:rgb(87, 163, 243);font-size: 14px;">{{row.title}}</a>
+                <a :href="getProblemUri(row.pid)" class="title-a">{{row.title}}</a>
               </template>
             </vxe-table-column>
 
@@ -61,21 +68,25 @@
             
             <vxe-table-column field="tag" title="Tag" min-width="200">
               <template v-slot="{ row }">
-              <span class="el-tag el-tag--medium el-tag--light is-hit" style="margin-right: 7px;margin-top:4px" v-for="tag in row.tags" :key="tag">{{tag}}</span>
+              <span class="el-tag el-tag--medium el-tag--light is-hit" style="margin-right: 7px;margin-top:4px" v-for="tag in row.tags" :key="tag.id">{{tag.name}}</span>
               </template>
             </vxe-table-column>
             <vxe-table-column field="total" title="Total" min-width="80"></vxe-table-column>
-            <vxe-table-column field="ACRate" title="AC Rate" min-width="80"></vxe-table-column>
+            <vxe-table-column title="AC Rate" min-width="80">
+              <template v-slot="{ row }">
+              <span>{{getPercentage(row.ac,row.total)}}%</span>
+              </template>
+            </vxe-table-column>
       </vxe-table>
     </el-card>
-    <Pagination :total="total" :page-size="limit" @on-change="pushRouter" :current.sync="query.page"></Pagination>
+    <Pagination :total="total" :page-size="limit" @on-change="pushRouter" :current.sync="query.currentPage"></Pagination>
 
     </el-col>
 
     <el-col :sm="24" :md="6" :lg="6">
      <el-card style="text-align:center">
-       <span class="panel-title" >题目</span>
-      <el-row v-for="record in problemRecord" :key="record">
+       <span class="panel-title" >{{currentProblemTitle}}</span>
+      <el-row v-for="(record,index) in problemRecord" :key="index">
         <el-col :xs="5" :sm="4" :md="6" :lg="4" style="margin-top: 10px;">  
           <el-tag  effect="dark" size="small" :color="JUDGE_STATUS[record.status].rgb">{{JUDGE_STATUS[record.status].short}}</el-tag>
         </el-col>
@@ -88,9 +99,9 @@
       <div slot="header" ><span class="taglist-title">Tags</span></div>
       <el-button v-for="tag in tagList"
               :key="tag.id"
-              @click="filterByTag(tag.name)"
+              @click="filterByTag(tag.id)"
               type="ghost"
-              :disabled="query.tag === tag.name"
+              :disabled="query.tagId == tag.id"
               size="mini"
               class="tag-btn">{{tag.name}}
       </el-button>
@@ -108,8 +119,9 @@
   import { mapGetters } from 'vuex'
   import api from '@/common/api'
   import utils from '@/common/utils'
-  import { PROBLEM_LEVEL,JUDGE_STATUS } from '@/common/constants'
+  import { PROBLEM_LEVEL,PROBLEM_LEVEL_RESERVE,JUDGE_STATUS,JUDGE_STATUS_RESERVE } from '@/common/constants'
   import Pagination from '@/components/oj/common/Pagination'
+  import myMessage from '@/common/message'
 
   export default {
     name: 'ProblemList',
@@ -118,39 +130,18 @@
     },
     data () {
       return {
-        SEcolor:'#909399',
-        PROBLEM_LEVEL:'',
-        JUDGE_STATUS:'',
-        tagList: [{
-          id:'12',
-          name:'模拟题'
-        }],
-        problemRecord:[
-          {status:0,count:70},
-          {status:-1,count:70},
-          {status:3,count:70},
-          {status:1,count:70},
-          {status:4,count:70},
-          {status:-3,count:70},
-          {status:-2,count:70},
-          {status:5,count:70},
-        ],
+        PROBLEM_LEVEL:{},
+        PROBLEM_LEVEL_RESERVE:{},
+        JUDGE_STATUS:{},
+        JUDGE_STATUS_RESERVE: {},
+        tagList: [],
+        currentProblemTitle:'请触碰或鼠标悬浮到指定题目行即可查看提交情况',
+        problemRecord:[],
         problemList: [
-          {myStatus:-10,pid:'1000',title:'测试标题',difficulty:0,
-          tags:['简单题','模拟题'],
-          total:'10000',ACRate:'59.12%'
-          },
-          {myStatus:-1,pid:'1000',title:'测试标题',difficulty:1,
-          tags:['简单题','模拟题','递归题','递归题'],
-          total:'10000',ACRate:'59.12%'
-          },
-          {myStatus:0,pid:'1000',title:'测试标题',difficulty:2,
-          tags:['简单题','模拟题'],
-          total:'10000',ACRate:'59.12%'
-          },
         ],
         limit: 20,
         total: 100,
+        isGetStatusOk:false,
         loadings: {
           table: true,
           tag: true
@@ -165,48 +156,125 @@
         query: {
           keyword: '',
           difficulty: 'All',
-          tag: '',
-          page: 1
-        }
+          tagId: '',
+          currentPage: 1
+        },
       }
     },
     mounted () {
       this.PROBLEM_LEVEL = Object.assign({}, PROBLEM_LEVEL);
+      this.PROBLEM_LEVEL_RESERVE = Object.assign({}, PROBLEM_LEVEL_RESERVE);
+      this.JUDGE_STATUS_RESERVE = Object.assign({}, JUDGE_STATUS_RESERVE);
       this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS)
-      this.init();
+      // 初始化
+      this.problemRecord = [
+          {status:0,count:100},
+          {status:-1,count:100},
+          {status:3,count:100},
+          {status:1,count:100},
+          {status:4,count:100},
+          {status:-3,count:100},
+          {status:-2,count:100},
+          {status:5,count:100}
+          ]
+      this.init();  
+
     },
     methods: {
-      init (simulate = false) {
+      init () {
         this.routeName = this.$route.name
         let query = this.$route.query
         this.query.difficulty = query.difficulty || ''
         this.query.keyword = query.keyword || ''
-        this.query.tag = query.tag || ''
-        this.query.page = parseInt(query.page) || 1
-        if (this.query.page < 1) {
-          this.query.page = 1
+        this.query.tagId = query.tagId || ''
+        this.query.currentPage = parseInt(query.currentPage) || 1
+        if (this.query.currentPage < 1) {
+          this.query.currentPage = 1
         }
-        if (!simulate) {
-          this.getTagList()
-        }
+       
+        this.getTagList()
+        
         this.getProblemList()
       },
       pushRouter () {
-        this.$router.push({
-          path: '/problem',
-          query: utils.filterEmptyValue(this.query)
-        })
+        let queryParams  =  utils.filterEmptyValue(this.query)
+        // 判断新路径请求参数与当前路径请求的参数是否一致，避免重复访问路由报错
+        let equal = true
+         for(let key in queryParams){
+            if(queryParams[key] != this.$route.query[key]){
+              equal = false
+              break
+            }
+         }
+         if(equal){ // 判断请求参数的长短
+          if(Object.keys(queryParams).length!=Object.keys(this.$route.query).length){
+            equal = false
+          }
+         }
+        if(!equal){ // 避免重复同个路径请求导致报错
+          this.$router.push({
+            path: '/problem',
+            query:queryParams
+          })
+        }
       },
+      getPercentage(partNumber,total){
+        return partNumber==0?0:Math.round(partNumber /total * 10000) / 100.00
+      },
+      // 处理触碰或鼠标悬浮某题目，在右上方显示对应的提交数据
       cellHover(event){
-        console.log(event.data[event.rowIndex])
+        let problem = event.data[event.rowIndex]
+        let record
+        if(problem.type==0){ // ACM类型题目
+        record =[
+          {status:0,count:this.getPercentage(problem.ac,problem.total)},
+          {status:-1,count:this.getPercentage(problem.wa,problem.total)},
+          {status:3,count:this.getPercentage(problem.mle,problem.total)},
+          {status:1,count:this.getPercentage(problem.tle,problem.total)},
+          {status:4,count:this.getPercentage(problem.re,problem.total)},
+          {status:-3,count:this.getPercentage(problem.pe,problem.total)},
+          {status:-2,count:this.getPercentage(problem.ce,problem.total)},
+          {status:5,count:this.getPercentage(problem.se,problem.total)},
+        ]
+        }else{ // OI类型题目
+          record = [
+            {status:0,count:this.getPercentage(problem.ac,problem.total)},
+            {status:8,count:this.getPercentage(problem.pa,problem.total)},
+            {status:-1,count:this.getPercentage(problem.wa,problem.total)},
+          ]
+        }
+        
+        this.problemRecord = record
+        this.currentProblemTitle = problem.title
       },
       getProblemList () {
-        let offset = (this.query.page - 1) * this.limit
         this.loadings.table = true
-        api.getProblemList(offset, this.limit, this.query).then(res => {
+        let queryParams = Object.assign({}, this.query)
+        if(queryParams.difficulty == 'All'){
+          queryParams.difficulty = ''
+        }else{
+          queryParams.difficulty = this.PROBLEM_LEVEL_RESERVE[queryParams.difficulty] // 需要对题目难度的显示进行转换 从字符串转为0，1，2
+        }
+        api.getProblemList(this.limit, queryParams).then(res => {
           this.loadings.table = false
           this.total = res.data.data.total
-          this.problemList = res.data.data.results
+          this.problemList = res.data.data.records
+          if(this.isAuthenticated){ // 如果已登录，则需要查询对当前页面题目列表中各个题目的提交情况
+            let pidList = []
+            for(let index=0;index<this.problemList.length;index++){
+                pidList.push(this.problemList[index].pid)
+            }
+            if(pidList.length>0){ // 必须当前页有显示题目才发送查询请求
+              this.isGetStatusOk = false
+              api.getUserProblemStatus(pidList).then(res=>{
+                  let result = res.data.data
+                  for(let index=0;index<this.problemList.length;index++){
+                    this.problemList[index]['myStatus'] = result[this.problemList[index].pid]
+                  }
+                  this.isGetStatusOk = true
+              })
+            }
+          }
         }, res => {
           this.loadings.table = false
         })
@@ -219,28 +287,29 @@
           this.loadings.tag = false
         })
       },
-      filterByTag (tagName) {
-        this.query.tag = tagName
-        this.query.page = 1
+      onReset(){
+        if(JSON.stringify(this.$route.query) != "{}"){
+          this.$router.push({name: 'ProblemList'})
+        }
+      },
+      filterByTag (tagId) {
+        this.query.tagId = tagId
+        this.query.currentPage = 1
         this.pushRouter()
       },
       filterByDifficulty (difficulty) {
-        if(difficulty==='All'){
-          this.query.difficulty = ''
-        }else{
-          this.query.difficulty = difficulty
-        }
-        this.query.page = 1
+        this.query.difficulty = difficulty
+        this.query.currentPage = 1
         this.pushRouter()
       },
       filterByKeyword () {
-        this.query.page = 1
+        this.query.currentPage = 1
         this.pushRouter()
       },
       pickone () {
         api.pickone().then(res => {
-          this.$success('Good Luck')
-          this.$router.push({name: 'problem-details', params: {problemID: res.data.data}})
+          myMessage.success("随机题目获取成功，祝你好运")
+          this.$router.push({name: 'problem-details', params: {problemID: res.data.data.pid}})
         })
       },
       getProblemUri(pid){
@@ -250,7 +319,6 @@
         return 'el-tag el-tag--small status-'+PROBLEM_LEVEL[difficulty].color;
       },
       getIconColor(status){
-        console.log(JUDGE_STATUS[status])
         return "font-weight: 600;font-size: 16px;color:"+JUDGE_STATUS[status].rgb;
       }
     },
@@ -260,7 +328,7 @@
     watch: {
       '$route' (newVal, oldVal) {
         if (newVal !== oldVal) {
-          this.init(true)
+          this.init()
         }
       },
       'isAuthenticated' (newVal) {
@@ -308,6 +376,12 @@
   li{
     display: inline-block;
     padding: 0 10px;
+  }
+  .title-a{
+    color: #495060;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500
   }
   .el-progress {
     margin-top: 15px;

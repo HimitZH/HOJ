@@ -22,8 +22,7 @@ import java.util.List;
 @Mapper
 @Repository
 public interface JudgeMapper extends BaseMapper<Judge> {
-    IPage<JudgeVo> getCommonJudgeList(Page<JudgeVo> page, @Param("pid") long pid, @Param("source") String source,
-                                     @Param("language") String language, @Param("status") int status,
-                                     @Param("username") String username, @Param("cid") long cid);
+    IPage<JudgeVo> getCommonJudgeList(Page<JudgeVo> page, @Param("pid") Long pid, @Param("status") Integer status,
+                                     @Param("username") String username, @Param("cid") Long cid,@Param("uid")String uid);
     int getTodayJudgeNum();
 }

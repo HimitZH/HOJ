@@ -69,7 +69,7 @@ public class AdminContestController {
             contestList = contestService.page(iPage);
         }
         if (contestList.getTotal() == 0) { // 未查询到一条数据
-            return CommonResult.errorResponse("暂无数据", CommonResult.STATUS_NOT_FOUND);
+            return CommonResult.successResponse(contestList,"暂无数据");
         } else {
             return CommonResult.successResponse(contestList, "获取成功");
         }
@@ -172,7 +172,7 @@ public class AdminContestController {
 
         problemList = problemService.page(iPage, problemQueryWrapper);
         if (problemList.getTotal() == 0) { // 未查询到一条数据
-            return CommonResult.successResponse(null,"暂无数据" );
+            return CommonResult.successResponse(problemList,"暂无数据" );
         } else {
             return CommonResult.successResponse(problemList, "获取成功");
         }
@@ -295,9 +295,9 @@ public class AdminContestController {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;
 
-        IPage<AnnouncementVo> announcementList = announcementService.getContestAnnouncement(cid,limit,currentPage);
+        IPage<AnnouncementVo> announcementList = announcementService.getContestAnnouncement(cid,false,limit,currentPage);
         if (announcementList.getTotal() == 0) { // 未查询到一条数据
-            return CommonResult.successResponse(null,"暂无数据");
+            return CommonResult.successResponse(announcementList,"暂无数据");
         } else {
             return CommonResult.successResponse(announcementList, "获取成功");
         }

@@ -24,11 +24,22 @@ function parseContestType(num){
   }
 }
 
+function parseProblemLevel(num){
+  if(num==0){
+    return 'Easy'
+  }else if(num==1){
+    return 'Mid'
+  }else if(num==2){
+    return 'Hard'
+  }
+}
+
 export default {
   submissionMemory: utils.submissionMemoryFormat,
   submissionTime: utils.submissionTimeFormat,
   localtime: time.utcToLocal,
   fromNow: fromNow,
   parseContestType:parseContestType,
-  parseRole:parseRole
+  parseRole:parseRole,
+  parseProblemLevel:parseProblemLevel
 }

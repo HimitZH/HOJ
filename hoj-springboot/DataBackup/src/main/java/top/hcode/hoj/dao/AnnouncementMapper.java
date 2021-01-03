@@ -22,6 +22,6 @@ import java.util.List;
 @Mapper
 @Repository
 public interface AnnouncementMapper extends BaseMapper<Announcement> {
-    IPage<AnnouncementVo> getAnnouncementList(Page<AnnouncementVo> page);
-    IPage<AnnouncementVo> getContestAnnouncement(Page<AnnouncementVo> page,@Param("cid")long cid);
+    IPage<AnnouncementVo> getAnnouncementList(Page<AnnouncementVo> page,@Param("notAdmin") Boolean notAdmin);
+    IPage<AnnouncementVo> getContestAnnouncement(Page<AnnouncementVo> page,@Param("cid")Long cid,@Param("notAdmin") Boolean notAdmin);
 }

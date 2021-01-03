@@ -2,7 +2,7 @@
   <div class="view">
     <el-card>
       <div slot="header">
-        <span class="panel-title home-title">Users</span>
+        <span class="panel-title home-title">User</span>
         <div class="filter-row">
             <span>
             <el-button type="danger" icon="el-icon-delete-solid"
