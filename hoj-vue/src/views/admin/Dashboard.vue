@@ -90,14 +90,17 @@
           <h2 class="home-title">Backup Service</h2>
           <vxe-table stripe auto-resize :data="generalInfo.backupService" align="center">
           <vxe-table-column
-            field="serviceId"
             title="Name"
             min-width="130"
-          ></vxe-table-column>
+          >
+          <template v-slot="{ row }">
+            <span>{{row['serviceId']}}</span> 
+          </template>
+          </vxe-table-column>
           <vxe-table-column
             field="host"
             title="Host"
-            min-width="100"
+            min-width="110"
           ></vxe-table-column>
           <vxe-table-column
             field="port"
@@ -151,52 +154,59 @@
         <vxe-table stripe auto-resize :data="judgeInfo" align="center">
           <vxe-table-column type="seq" width="50"></vxe-table-column>
           <vxe-table-column
-            field="serviceId"
             title="Name"
             min-width="150"
-          ></vxe-table-column>
+          >
+          <template v-slot="{ row }">
+            <span>{{row.service['serviceId']}}</span> 
+          </template>
+          </vxe-table-column>
           <vxe-table-column
-            field="host"
             title="Host"
             min-width="80"
-          ></vxe-table-column>
+          >
+          <template v-slot="{ row }">
+          <span>{{row.service.host}}</span> 
+          </template>
+          </vxe-table-column>
           <vxe-table-column
-            field="port"
             title="Port"
             min-width="80"
-          ></vxe-table-column>
+          >
+          <template v-slot="{ row }">
+            <span>{{row.service.port}}</span> 
+          </template>
+          </vxe-table-column>
 
            <vxe-table-column
            min-width="80"
-          field="cpu_core"
+          field="cpuCores"
           title="CPU Core">
         </vxe-table-column>
 
         <vxe-table-column
           min-width="100"
-          field="cpu_usage"
+          field="percentCpuLoad"
           title="CPU Usage">
-          <template v-slot="{row}">{{ row.cpu_usage }}%</template>
         </vxe-table-column>
 
         <vxe-table-column
           min-width="110"
-          field="memory_usage"
+          field="percentMemoryLoad"
           title="Memory Usage">
-          <template v-slot="{row}">{{row.memory_usage }}%</template>
         </vxe-table-column>
 
-          <vxe-table-column field="secure" title="Secure" min-width="80">
+          <vxe-table-column  title="Secure" min-width="80">
             <template v-slot="{ row }">
              <el-tooltip content="是否触发保护阈值" placement="top">
-               <el-tag effect="dark" color="#ed3f14" v-if="row.secure">True</el-tag>
+               <el-tag effect="dark" color="#ed3f14" v-if="row.service.secure">True</el-tag>
               <el-tag effect="dark" color="#2d8cf0" v-else>False</el-tag>
              </el-tooltip>
             </template>
           </vxe-table-column>
-          <vxe-table-column field="healthy" title="Healthy" min-width="100">
+          <vxe-table-column  title="Healthy" min-width="100">
             <template v-slot="{ row }">
-              <el-tag effect="dark" color="#19be6b" v-if="row.healthy"
+              <el-tag effect="dark" color="#19be6b" v-if="row.service.metadata['nacos.healthy']=='true'"
                 >healthy</el-tag
               >
               <el-tag effect="dark" color="#f90" v-else>unhealthy</el-tag>
@@ -234,38 +244,7 @@ export default {
         nacos:{}
       },
       judgeInfo: [
-        {
-          serviceId: "Judger-server",
-          host: "192.0.0.1",
-          port: "8080",
-          memory_usage:40,
-          cpu_usage:60,
-          cpu_core:2,
-          secure: false,
-          healthy: true,
-        },
-        {
-          serviceId: "Judger-server",
-          host: "192.0.0.2",
-          port: "8080",
-          memory_usage:40,
-          cpu_usage:60,
-          cpu_core:2,
-          secure: true,
-          healthy: false,
-        },
-        {
-          serviceId: "Judger-server",
-          host: "192.0.0.3",
-          port: "8080",
-          memory_usage:40,
-          cpu_usage:60,
-          cpu_core:2,
-          secure: true,
-          healthy: true,
-        },
       ],
-      activeNames: [1],
       session: {},
     };
   },
@@ -296,19 +275,17 @@ export default {
       },
       () => {}
     );
+    this.refreshJudgeServerList()
   },
   methods: {
     refreshJudgeServerList () {
         api.getJudgeServer().then(res => {
-          this.servers = res.data.data.servers
+          this.judgeInfo = res.data.data
         })
     },
   },
   computed: {
     ...mapGetters(["userInfo", "isSuperAdmin"]),
-    cdn() {
-      return this.infoData.env.STATIC_CDN_HOST;
-    },
     https() {
       return document.URL.slice(0, 5) === "https";
     },

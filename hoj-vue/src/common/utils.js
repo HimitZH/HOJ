@@ -5,19 +5,19 @@ import myMessage from '@/common/message'
 import api from "@/common/api";
 
 function submissionMemoryFormat (memory) {
-  if (memory === undefined || memory ==null) return '--'
+  if (memory === undefined || memory ===null || memory === '') return '--'
   // 1048576 = 1024 * 1024
   let t = parseInt(memory) / 1048576
   return String(t.toFixed(0)) + 'MB'
 }
 
 function submissionTimeFormat (time) {
-  if (time === undefined || time ==null) return '--'
+  if (time === undefined || time === null || time === '') return '--'
   return time + 'ms'
 }
 
 function submissionLengthFormat(length){
-  if (length === undefined || length ==null) return '--'
+  if (length === undefined || length ===null || length === '') return '--'
   return length + 'B'
 }
 

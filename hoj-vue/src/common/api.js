@@ -306,6 +306,18 @@ const adminApi = {
     return ajax('/admin/config/get-service-info','get')
   },
 
+  getJudgeServer () {
+    return ajax('/admin/config/get-judge-service-info', 'get')
+  },
+
+  deleteJudgeServer (hostname) {
+    return ajax('admin/judge_server', 'delete', {
+      params: {
+        hostname: hostname
+      }
+    })
+  },
+
   // 获取用户列表
   admin_getUserList (currentPage, limit, keyword) {
     let params = {currentPage, limit}
@@ -409,21 +421,6 @@ const adminApi = {
       params: {
         pid: pid
       }
-    })
-  },
-  getJudgeServer () {
-    return ajax('admin/judge_server', 'get')
-  },
-  deleteJudgeServer (hostname) {
-    return ajax('admin/judge_server', 'delete', {
-      params: {
-        hostname: hostname
-      }
-    })
-  },
-  updateJudgeServer (data) {
-    return ajax('admin/judge_server', 'put', {
-      data
     })
   },
 

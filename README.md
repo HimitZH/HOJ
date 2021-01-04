@@ -156,7 +156,6 @@ role_auth表
 | ------------ | ------------ | ----------- | -------------------------- |
 | id           | long         | primary key | auto_increment             |
 | uid          | String       | 外键        | 用户id                     |
-| total        | int          |             | 总做题数                   |
 | submissions  | int          |             | 总提交数                   |
 | rating       | int          |             | Cf得分，未参加过默认为1500 |
 | gmt_create   | datetime     |             | 创建时间                   |
