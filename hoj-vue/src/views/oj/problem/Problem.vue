@@ -3,15 +3,14 @@
     <div id="problem-main">
       <!--problem main-->
       <el-row >
-        <el-col :sm="24" :md="12" :lg="12" class="problem-detail">
-          <el-card :padding="10" shadow="always">
+        <el-col :sm="24" :md="24" :lg="12" class="problem-detail">
+          <el-card :padding="10" shadow>
             <div slot="header" class="panel-title">
               <span>{{ problemData.problem.title }}</span><br>
               <span><el-tag v-for="tag in problemData.tags" :key="tag" effect="plain" size="small" style="margin-right:10px;">{{ tag }}</el-tag></span>
                 <div class="problem-menu">
-                  <span v-if="!this.contestID"> <el-link type="primary" :underline="false"><i class="fa fa-home" aria-hidden="true"></i> Contest</el-link></span>
                   <span> <el-link type="primary" :underline="false" @click="graphVisible = !graphVisible"><i class="fa fa-pie-chart" aria-hidden="true"></i> Statistic</el-link></span>
-                  <span> <el-link type="primary" :underline="false"><i class="fa fa-bars" aria-hidden="true"></i> Submissions</el-link></span>
+                  <span> <el-link type="primary" :underline="false" @click="goProblemSubmission"><i class="fa fa-bars" aria-hidden="true"></i> Submissions</el-link></span>
                 </div>
               <div class="question-intr">
                 <span>Time Limit：{{problemData.problem.timeLimit}}MS</span><br>
@@ -78,8 +77,8 @@
             </div>
           </el-card>
         </el-col>
-        <el-col :sm="24" :md="12" :lg="12" class="submit-detail">
-          <el-card :padding="20" id="submit-code" shadow="always">
+        <el-col :sm="24" :md="24" :lg="12" class="submit-detail">
+          <el-card :padding="10" id="submit-code" shadow="always">
             <CodeMirror
               :value.sync="code"
               :languages="problemData.problem.languages"
@@ -91,6 +90,11 @@
             ></CodeMirror>
             <el-row>
               <el-col :sm="24" :md="10" :lg="10" style="margin-top:4px;">
+                <div v-if="!isAuthenticated">
+                  <el-alert type="info" show-icon effect="dark" :closable="false"
+                    >Please login first</el-alert
+                  >
+                </div>
                 <div class="status" v-if="statusVisible">
                   <template v-if="!this.contestID ||(this.contestID && OIContestRealTimePermission)">
                     <span>Status:</span>
@@ -333,6 +337,20 @@ export default {
       this.largePie.series[0].data = largePieData
     },
 
+    goProblemSubmission(){
+      if(this.contestID){
+        this.$router.push({
+          name:"contestSubmissionList",
+          params:{contestID:this.contestID},
+          query:{problemID:this.problemID}
+        })
+      }else{
+        this.$router.push({
+          name:"SubmissionList",
+          query:{problemID:this.problemID}
+        })
+      }
+    },
 
     handleRoute(route) {
       this.$router.push(route);
@@ -514,6 +532,11 @@ export default {
     $route() {
       this.init();
     },
+    isAuthenticated (newVal) {
+        if (newVal === true) {
+          this.init()
+        }
+    }
   },
 };
 </script>
@@ -543,8 +566,17 @@ export default {
   margin-bottom: 10px;
   font-size: 14px;
 }
+
+.submit-detail{
+  height:100%
+}
+
 @media screen and (min-width: 768px) {
   .problem-detail {
+    height: 672px;
+    overflow-y: auto;
+  }
+  .submit-detail{
     height: 672px;
     overflow-y: auto;
   }
@@ -555,8 +587,14 @@ export default {
     margin-top: 6px;
   }
 }
-.submit-detail{
-  height:100%
+
+@media screen and (max-width: 1080px) {
+  .submit-detail{
+    padding-top:20px;
+  }
+  .submit-detail{
+    height:100%
+  }
 }
 /deep/ .el-card__header {
   border-bottom: 0px;
@@ -611,7 +649,7 @@ p.content {
   background: transparent;
 }
 #submit-code{
-  height: 670px;
+  height: auto;
 }
 #submit-code .status {
   float: left;

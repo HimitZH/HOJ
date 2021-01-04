@@ -7,7 +7,7 @@
         :default-active="currentPath"
       >
         <div class="logo">
-          <img src="@/assets/logo.png" alt="oj admin" />
+          <img src="@/assets/backstage.png" alt="oj admin" />
         </div>
         <el-menu-item index="/admin/">
           <i class="fa fa-tachometer" aria-hidden="true"></i>Dashboard
@@ -353,10 +353,9 @@ export default {
 }
 .vertical_menu .logo img {
   background-color: #fff;
-  border-radius: 50%;
   border: 3px solid #fff;
-  width: 75px;
-  height: 75px;
+  width: 110px;
+  height: 110px;
 }
 .fa {
   margin-right: 5px;

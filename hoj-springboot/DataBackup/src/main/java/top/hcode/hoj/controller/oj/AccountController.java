@@ -242,8 +242,12 @@ public class AccountController {
      */
     @PostMapping("/login")
     public CommonResult login(@Validated @RequestBody LoginDto loginDto, HttpServletResponse response, HttpServletRequest request) {
+        // 去掉账号密码首尾的空格
+        loginDto.setPassword(loginDto.getPassword().trim());
+        loginDto.setUsername(loginDto.getUsername().trim());
+
         UserRolesVo userRoles = userRoleDao.getUserRoles(null, loginDto.getUsername());
-        Assert.notNull(userRoles, "用户名不存在");
+        Assert.notNull(userRoles, "用户名不存在，请注意大小写！");
         if (!userRoles.getPassword().equals(SecureUtil.md5(loginDto.getPassword()))) {
             return CommonResult.errorResponse("密码不正确");
         }

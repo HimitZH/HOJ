@@ -12,6 +12,7 @@
           prefix-icon="el-icon-user-solid"
           placeholder="Username"
           width="100%"
+          @keyup.enter.native="handleLogin"
         ></el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -20,6 +21,7 @@
           prefix-icon="el-icon-lock"
           placeholder="Password"
           type="password"
+          @keyup.enter.native="handleLogin"
         ></el-input>
       </el-form-item>
     </el-form>

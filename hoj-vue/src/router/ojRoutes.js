@@ -58,7 +58,7 @@ const ojRoutes = [
     path: '/submission-detail/:submitID',
     name: 'SubmissionDeatil',
     component: SubmissionDetails,
-    meta: { title: 'Submission Deatil' }
+    meta: {title: 'Submission Deatil' }
   },
   {
     path: '/acm-rank',

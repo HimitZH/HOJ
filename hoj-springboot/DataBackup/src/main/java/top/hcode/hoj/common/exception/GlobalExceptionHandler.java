@@ -7,6 +7,7 @@ import org.apache.shiro.ShiroException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.ExpiredCredentialsException;
 import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.authz.UnauthenticatedException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -51,6 +52,20 @@ public class GlobalExceptionHandler {
         httpResponse.setHeader("Url-Type", httpRequest.getHeader("Url-Type")); // 为了前端能区别请求来源
         log.error("登录认证异常-------------->{}", e.getMessage());
         return CommonResult.errorResponse(e.getMessage(), CommonResult.STATUS_ACCESS_DENIED);
+    }
+
+    /**
+     * 401 -UnAuthorized UnauthenticatedException,token相关异常 即是认证出错 可能无法处理！
+     *  没有登录（没有token），访问有@RequiresAuthentication的请求路径会报这个异常
+     */
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(value = UnauthenticatedException.class)
+    public CommonResult handleUnauthenticatedException(UnauthenticatedException e,
+                                                      HttpServletRequest httpRequest,
+                                                      HttpServletResponse httpResponse) {
+        httpResponse.setHeader("Url-Type", httpRequest.getHeader("Url-Type")); // 为了前端能区别请求来源
+        log.error("登录认证失败异常-------------->{}", e.getMessage());
+        return CommonResult.errorResponse("请您先登录！", CommonResult.STATUS_ACCESS_DENIED);
     }
 
     /**

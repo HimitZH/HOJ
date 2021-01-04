@@ -57,7 +57,8 @@ public class AdminJudgeController {
         if(columnName!=null) {
             UpdateWrapper<ProblemCount> problemCountUpdateWrapper = new UpdateWrapper<>();
             // 重判需要减掉之前的判题结果
-            problemCountUpdateWrapper.setSql(columnName+"=" +columnName+ "-1").eq("pid", judge.getPid());
+            problemCountUpdateWrapper.setSql(columnName+"=" +columnName+ "-1,total=total-1")
+                    .eq("pid", judge.getPid());
             problemCountService.update(problemCountUpdateWrapper);
         }
         // 如果该题已经是AC通过状态，更新该题目的用户ac做题表 user_acproblem

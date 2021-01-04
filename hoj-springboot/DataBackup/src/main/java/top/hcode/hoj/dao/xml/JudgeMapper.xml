@@ -12,6 +12,9 @@
                     AND j.cpid = #{pid}
                 </if>
             </if>
+            <if test="cid==null">
+                AND j.cid = 0 AND j.cpid = 0
+            </if>
             <if test="pid!=null and cid == null">
                 AND j.pid = #{pid}
             </if>
@@ -29,7 +32,7 @@
                 AND j.uid = #{uid}
             </if>
         </where>
-        order by j.submit_time,j.submit_id DESC
+        order by j.submit_time DESC,j.submit_id DESC
     </select>
 
     <select id="getTodayJudgeNum" resultType="int">

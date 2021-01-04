@@ -10,6 +10,7 @@
           v-model="registerForm.username"
           prefix-icon="el-icon-user-solid"
           placeholder="Please Enter Username"
+          @keyup.enter.native="handleRegister"
           width="100%"
         ></el-input>
       </el-form-item>
@@ -18,6 +19,7 @@
           v-model="registerForm.nickname"
           prefix-icon="el-icon-user"
           placeholder="Please Enter Nickname"
+          @keyup.enter.native="handleRegister"
         ></el-input>
       </el-form-item>
       <el-form-item prop="number">
@@ -25,6 +27,7 @@
           v-model="registerForm.number"
           prefix-icon="el-icon-s-grid"
           placeholder="Please Enter Student Number"
+          @keyup.enter.native="handleRegister"
         ></el-input>
       </el-form-item>
       <el-form-item prop="password">
@@ -32,6 +35,7 @@
           v-model="registerForm.password"
           prefix-icon="el-icon-lock"
           placeholder="Please Enter Password"
+          @keyup.enter.native="handleRegister"
           type="password"
         ></el-input>
       </el-form-item>
@@ -40,6 +44,7 @@
           v-model="registerForm.passwordAgain"
           prefix-icon="el-icon-lock"
           placeholder="Please Enter Password Again"
+          @keyup.enter.native="handleRegister"
           type="password"
         ></el-input>
       </el-form-item>
@@ -48,6 +53,7 @@
           v-model="registerForm.email"
           prefix-icon="el-icon-message"
           placeholder="Please Enter Email"
+          @keyup.enter.native="handleRegister"
         >
           <el-button slot="append" icon="el-icon-message" type="primary" @click="sendRegisterEmail" :loading="btnEmailLoading">
             <span v-show="btnEmailLoading" >{{countdownNum}}</span>
@@ -59,6 +65,7 @@
           v-model="registerForm.code"
           prefix-icon="el-icon-s-check"
           placeholder="Please enter the captcha from the email"
+          @keyup.enter.native="handleRegister"
         ></el-input>
       </el-form-item>
     </el-form>

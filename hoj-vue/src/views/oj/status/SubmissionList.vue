@@ -146,7 +146,7 @@
 
           <vxe-table-column field="language" title="Language" min-width="100">
             <template v-slot="{ row }">
-              <span v-if="!row.share&&row.uid!=userInfo.uid&&!isAuthenticated">{{row.language}}</span>
+              <span v-if="!row.share&&row.uid!=userInfo.uid">{{row.language}}</span>
               <el-tooltip
                 class="item"
                 effect="dark"
@@ -203,7 +203,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import api from "@/common/api";
 import { JUDGE_STATUS, USER_TYPE,JUDGE_STATUS_RESERVE } from "@/common/constants";
 import utils from "@/common/utils";
@@ -473,7 +473,14 @@ export default {
       this.currentPage = 1;
       this.changeRoute();
     },
+    ...mapActions(["changeModalStatus"]),
+
     showSubmitDetail(row) {
+      if(!this.isAuthenticated){
+        this.changeModalStatus({ mode: 'Login', visible: true })
+        myMessage.warning("请先登录后再查看代码！")
+        return;
+      }
       this.$router.push({
         name:"SubmissionDeatil",
         params:{submitID:row.submitId}
