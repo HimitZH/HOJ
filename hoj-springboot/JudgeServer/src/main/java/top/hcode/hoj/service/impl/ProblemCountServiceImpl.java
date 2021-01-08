@@ -1,6 +1,7 @@
 package top.hcode.hoj.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -8,10 +9,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.dao.ProblemCountMapper;
+import top.hcode.hoj.pojo.entity.Judge;
 import top.hcode.hoj.pojo.entity.ProblemCount;
+import top.hcode.hoj.pojo.entity.UserRecord;
 import top.hcode.hoj.service.ProblemCountService;
 import top.hcode.hoj.util.Constants;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -29,38 +33,50 @@ public class ProblemCountServiceImpl extends ServiceImpl<ProblemCountMapper, Pro
     @Autowired
     private ProblemCountMapper problemCountMapper;
 
+    @Autowired
+    private UserRecordServiceImpl userRecordService;
+
+    @Autowired
+    private JudgeServiceImpl judgeService;
+
     // 默认的事务隔离等级可重复读会产生幻读，读不到新的version数据，所以需要更换等级为读已提交
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
     @Async
-    public void updateCount(int status, long pid) {
+    public void updateCount(int status, Judge judge) {
+
+        // 更新problem_count 表
         QueryWrapper<ProblemCount> problemCountQueryWrapper = new QueryWrapper<ProblemCount>();
-        problemCountQueryWrapper.eq("pid", pid);
+        problemCountQueryWrapper.eq("pid", judge.getPid());
         ProblemCount problemCount = problemCountMapper.selectOne(problemCountQueryWrapper);
         ProblemCount newProblemCount = getNewProblemCount(status, problemCount);
         newProblemCount.setVersion(problemCount.getVersion());
         int num = problemCountMapper.updateById(newProblemCount);
+
+
         if (num == 1) {
             return;
         } else {
             // 进行重试操作
-            tryAgainUpdate(status,pid);
+            tryAgainUpdate(status,judge);
         }
 
     }
 
-    public boolean tryAgainUpdate(int status,long pid) {
+    @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
+    public boolean tryAgainUpdate(int status,Judge judge) {
         boolean retryable;
         int attemptNumber = 0;
         do {
             // 查询最新版本号
             QueryWrapper<ProblemCount> problemCountQueryWrapper = new QueryWrapper<ProblemCount>();
-            problemCountQueryWrapper.eq("pid", pid);
+            problemCountQueryWrapper.eq("pid", judge.getPid());
             ProblemCount problemCount = problemCountMapper.selectOne(problemCountQueryWrapper);
 
             // 更新
             ProblemCount newProblemCount = getNewProblemCount(status, problemCount);
             newProblemCount.setVersion(problemCount.getVersion());
             boolean success = problemCountMapper.updateById(newProblemCount) == 1;
+
 
             if (success) {
                 return true;

@@ -1,9 +1,6 @@
 package top.hcode.hoj.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -41,6 +38,13 @@ public class UserRecord implements Serializable {
     @ApiModelProperty(value = "cf得分")
     @TableField("rating")
     private Integer rating;
+
+    @ApiModelProperty(value = "IO题目总得分")
+    private Integer totalScore;
+
+    @ApiModelProperty(value = "乐观锁")
+    @Version
+    private Integer version;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;

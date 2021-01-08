@@ -259,7 +259,9 @@ export default {
   methods: {
     ...mapActions(["changeDomTitle"]),
     init() {
-      this.contestID = this.$route.params.contestID;
+      if(this.$route.params.contestID){
+        this.contestID = this.$route.params.contestID;
+      }
       this.problemID = this.$route.params.problemID;
       let func =this.$route.name === "problemDetails"
           ? "getProblem"

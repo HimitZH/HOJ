@@ -1,9 +1,11 @@
 package top.hcode.hoj.controller.oj;
 
+import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Isolation;
@@ -21,6 +23,7 @@ import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.JudgeService;
 import top.hcode.hoj.service.ProblemService;
 import top.hcode.hoj.service.ToJudgeService;
+import top.hcode.hoj.service.impl.ContestProblemServiceImpl;
 import top.hcode.hoj.service.impl.JudgeServiceImpl;
 import top.hcode.hoj.service.impl.UserInfoServiceImpl;
 import top.hcode.hoj.service.impl.UserRecordServiceImpl;
@@ -63,6 +66,9 @@ public class JudgeController {
     @Autowired
     private UserRecordServiceImpl userRecordService;
 
+    @Autowired
+    private ContestProblemServiceImpl contestProblemService;
+
 //    @Autowired
 //    private RestTemplate restTemplate;
 
@@ -93,11 +99,10 @@ public class JudgeController {
         // 将提交先写入数据库，准备调用判题服务器
         Judge judge = new Judge();
         judge.setShare(false) // 默认设置代码为单独自己可见
-                .setCid(judgeDto.getCid())
                 .setCode(judgeDto.getCode())
+                .setCid(judgeDto.getCid())
                 .setLanguage(judgeDto.getLanguage())
                 .setLength(judgeDto.getCode().length())
-                .setPid(judgeDto.getPid())
                 .setUid(userRolesVo.getUid())
                 .setUsername(userRolesVo.getUsername())
                 .setStatus(Constants.Judge.STATUS_PENDING.getStatus()) // 开始进入判题队列
@@ -105,14 +110,30 @@ public class JudgeController {
                 .setVersion(0)
                 .setIp(IpUtils.getUserIpAddr(request));
 
+        boolean update = true;
+        // 如果比赛id不等于0，则说明为比赛提交，需要查询对应的contest_problem的主键
+        if (judgeDto.getCid().intValue()!=0){
+            // 查询获取对应的pid和cpid
+            QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
+            contestProblemQueryWrapper.eq("cid", judgeDto.getCid()).eq("display_id", judgeDto.getPid());
+            ContestProblem contestProblem = contestProblemService.getOne(contestProblemQueryWrapper);
+            judge.setCpid(contestProblem.getId()).setPid(contestProblem.getPid());
+
+        }else{ // 如果不是比赛提交，需要将题号转为long类型
+            if(NumberUtil.isNumber(judgeDto.getPid())) {
+                judge.setCpid(0L).setPid(Long.valueOf(judgeDto.getPid()));
+            }else{
+                return CommonResult.errorResponse("参数错误！提交评测失败！",CommonResult.STATUS_ERROR);
+            }
+
+            // 更新一下user_record表
+            UpdateWrapper<UserRecord> userRecordUpdateWrapper = new UpdateWrapper<>();
+            userRecordUpdateWrapper.setSql("submissions=submissions+1").eq("uid", judge.getUid());
+            update = userRecordService.update(userRecordUpdateWrapper);
+        }
 
         // 将新提交数据插入数据库
         int result = judgeMapper.insert(judge);
-
-        // 更新一下user_record表
-        UpdateWrapper<UserRecord> userRecordUpdateWrapper = new UpdateWrapper<>();
-        userRecordUpdateWrapper.setSql("submissions=submissions+1").eq("uid", judge.getUid());
-        boolean update = userRecordService.update(userRecordUpdateWrapper);
 
         if (result !=1 || !update){
             return CommonResult.errorResponse("数据提交失败",CommonResult.STATUS_ERROR);
@@ -139,11 +160,16 @@ public class JudgeController {
             return CommonResult.errorResponse("获取提交数据失败！");
         }
 
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        // 超级管理员与管理员有权限查看代码
         // 如果不是本人或者并未分享代码，则不可查看
         // 当此次提交代码不共享
-        if(!judge.getShare()){
-            HttpSession session = request.getSession();
-            UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        boolean root = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
+        boolean admin = SecurityUtils.getSubject().hasRole("admin");// 是否为管理员
+
+        if(!judge.getShare()&&!root&&!admin){
             if (userRolesVo!=null){ // 当前是登陆状态
                 // 需要判断是否为当前登陆用户自己的提交代码
                 if(!judge.getUid().equals(userRolesVo.getUid())){

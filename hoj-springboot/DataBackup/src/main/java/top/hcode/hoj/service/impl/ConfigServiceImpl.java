@@ -42,7 +42,7 @@ public class ConfigServiceImpl implements ConfigService {
     @Autowired
     private DiscoveryClient discoveryClient;
 
-    private static final String NACOS_URL = "http://localhost:8848";
+    private static final String NACOS_URL = "http://129.204.177.72:8848";
     private static final String DATA_ID = "hoj-data-backup-dev.yml";
     private static final String GROUP = "DEFAULT_GROUP";
     private static final String TYPE = "yaml";

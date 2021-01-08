@@ -97,43 +97,43 @@ const ojRoutes = [
     meta: { requireAuth: true, title: 'Logout' }
   },
   {
-    name: 'contestDetails',
+    name: 'ContestDetails',
     path: '/contest/:contestID/',
     component:ContestDetails,
     meta: {title: 'Contest Details'},
     children: [
       {
-        name: 'contestSubmissionList',
+        name: 'ContestSubmissionList',
         path: 'submissions',
         component: SubmissionList,
         meta: { title: 'Contest Submission' }
       },
       {
-        name: 'contestProblemList',
+        name: 'ContestProblemList',
         path: 'problems',
         component: ContestProblemList,
         meta: { title: 'Contest Problem' }
       },
       {
-        name: 'contestProblemDetails',
+        name: 'ContestProblemDetails',
         path: 'problem/:problemID/',
         component: Problem,
         meta: { title: 'Contest Problem Details' }
       },
       {
-        name: 'contestAnnouncementList',
+        name: 'ContestAnnouncementList',
         path: 'announcements',
         component: Announcements,
         meta: { title: 'Contest Announcement' }
       },
       {
-        name: 'contestRank',
+        name: 'ContestRank',
         path: 'rank',
         component: ContestRank,
         meta: { title: 'Contest Rank' }
       },
       {
-        name: 'contestACInfo',
+        name: 'ContestACInfo',
         path: 'ac-info',
         component: ACMInfoAdmin,
         meta: { title: 'Contest AC Info' }

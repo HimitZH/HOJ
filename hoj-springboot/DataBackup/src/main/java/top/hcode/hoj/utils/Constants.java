@@ -59,4 +59,28 @@ public class Constants {
             return null;
         }
     }
+
+    /**
+     * @Description 比赛相关的常量
+     * @Since 2021/1/7
+     */
+    public enum Contest{
+        TYPE_ACM(0,"ACM"),
+        TYPE_OI(1,"OI");
+
+        private final Integer code;
+        private final String name;
+        Contest(Integer code,String name){
+            this.code = code;
+            this.name = name;
+        }
+
+        public Integer getCode() {
+            return code;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
 }

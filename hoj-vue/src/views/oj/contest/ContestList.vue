@@ -5,7 +5,7 @@
         <div slot="header">
           <span class="panel-title"
             >{{
-              query.rule_type === "" ? "All" : query.rule_type
+              query.type === "" ? "All" : parseContestType(query.type)
             }}
             Contests</span
           >
@@ -18,20 +18,20 @@
                 class="drop-menu"
               >
                 <span class="el-dropdown-link">
-                  {{ query.rule_type === "" ? "Rule" : query.rule_type }}
+                  {{ query.type == "" ? "Rule" : parseContestType(query.type) }}
                   <i class="el-icon-caret-bottom"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item command="">All</el-dropdown-item>
-                  <el-dropdown-item command="OI">OI</el-dropdown-item>
-                  <el-dropdown-item command="ACM">ACM</el-dropdown-item>
+                  <el-dropdown-item command="0">ACM</el-dropdown-item>
+                  <el-dropdown-item command="1">OI</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </span>
 
             <span>
               <el-dropdown
-                @on-click="onStatusChange"
+                @command="onStatusChange"
                 placement="bottom"
                 trigger="hover"
                 class="drop-menu"
@@ -40,15 +40,15 @@
                   {{
                     query.status === ""
                       ? "Status"
-                      : CONTEST_STATUS_REVERSE[query.status].name
+                      : CONTEST_STATUS_REVERSE[query.status]['name']
                   }}
                   <i class="el-icon-caret-bottom"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item command="">All</el-dropdown-item>
+                  <el-dropdown-item command="-1">Scheduled</el-dropdown-item>
                   <el-dropdown-item command="0">Running</el-dropdown-item>
-                  <el-dropdown-item command="1">Scheduled</el-dropdown-item>
-                  <el-dropdown-item command="-1">Ended</el-dropdown-item>
+                  <el-dropdown-item command="1">Ended</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </span>
@@ -59,7 +59,8 @@
                 placeholder="Enter keyword"
                 type="search"
                 size="medium"
-                @search-click="filterByKeyword"
+                @keyup.enter.native="filterByChange"
+                @search-click="filterByChange"
               ></vxe-input>
             </span>
           </div>
@@ -69,16 +70,19 @@
           <li v-for="contest in contests" :key="contest.title" :style="getborderColor(contest)">
             <el-row type="flex" justify="space-between" align="middle">
               <el-col :xs="10" :sm="4" :md="3" :lg="2">
-                <img v-show="contest.rule_type == 'ACM'" class="trophy" :src="acmSrc" width="95px"/>
-                <img v-show="contest.rule_type == 'OI'" class="trophy" :src="oiSrc" width="95px" />
+                <img v-show="contest.type == 0" class="trophy" :src="acmSrc" width="95px"/>
+                <img v-show="contest.type == 1" class="trophy" :src="oiSrc" width="95px" />
               </el-col>
               <el-col :xs="10" :sm="16" :md="19" :lg="20" class="contest-main">
                 <p class="title">
                   <a class="entry" @click.stop="toContest(contest)">
                     {{ contest.title }}
                   </a>
-                  <template v-if="contest.auth != 0">
-                    <i class="el-icon-lock" size="20"></i>
+                  <template v-if="contest.auth == 1">
+                    <i class="el-icon-lock" size="20" style="color:#d9534f"></i>
+                  </template>
+                  <template v-if="contest.auth == 2">
+                    <i class="el-icon-lock" size="20" style="color:#f0ad4e"></i>
                   </template>
                 </p>
                 <ul class="detail">
@@ -88,7 +92,7 @@
                       aria-hidden="true"
                       style="color: #3091f2"
                     ></i>
-                    {{ contest.start_time | localtime }}
+                    {{ contest.startTime | localtime }}
                   </li>
                   <li>
                     <i
@@ -96,23 +100,23 @@
                       aria-hidden="true"
                       style="color: #3091f2"
                     ></i>
-                    {{ getDuration(contest.start_time, contest.end_time) }}
+                    {{ getDuration(contest.startTime,contest.endTime) }}
                   </li>
                   <li>
                     <el-button
                       size="mini"
                       round
-                      @click="onRuleChange(contest.rule_type)"
+                      @click="onRuleChange(contest.type)"
                     >
-                      {{ contest.rule_type }}
+                      {{ contest.type |parseContestType }}
                     </el-button>
                   </li>
                   <li>
                     <el-tooltip :content="CONTEST_TYPE_REVERSE[contest.auth].tips" placement="top" effect="light">
                       <el-tag
-                          :type="CONTEST_TYPE_REVERSE[contest.auth].color"
+                          :type="CONTEST_TYPE_REVERSE[contest.auth]['color']"
                           effect="plain">
-                          {{CONTEST_TYPE_REVERSE[contest.auth].name}}
+                          {{CONTEST_TYPE_REVERSE[contest.auth]['name']}}
                         </el-tag>
                     </el-tooltip>
                   </li>
@@ -121,14 +125,14 @@
               <el-col :xs="4" :sm="4" :md="2" :lg="2" style="text-align: center">
                 <el-tag
                   effect="dark"
-                  :color="CONTEST_STATUS_REVERSE[contest.status].color"
+                  :color="CONTEST_STATUS_REVERSE[contest.status]['color']"
                   size="medium"
                 >
                   <i
                     class="fa fa-circle"
                     aria-hidden="true"
                   ></i>
-                  {{ CONTEST_STATUS_REVERSE[contest.status].name }}
+                  {{ CONTEST_STATUS_REVERSE[contest.status]['name'] }}
                 </el-tag>
               </el-col>
             </el-row>
@@ -139,7 +143,7 @@
         :total="total"
         :pageSize="limit"
         @on-change="getContestList"
-        :current.sync="page"
+        :current.sync="currentPage"
       ></Pagination>
     </el-col>
   </el-row>
@@ -152,6 +156,7 @@ import utils from "@/common/utils";
 import Pagination from "@/components/oj/common/Pagination";
 import time from "@/common/time";
 import { CONTEST_STATUS_REVERSE, CONTEST_TYPE,CONTEST_TYPE_REVERSE } from "@/common/constants";
+import myMessage from '@/common/message'
 
 const limit = 10;
 
@@ -162,136 +167,91 @@ export default {
   },
   data() {
     return {
-      page: 1,
+      currentPage: 1,
       query: {
         status: "",
         keyword: "",
-        rule_type: "",
+        type: "",
       },
       limit: limit,
       total: 0,
       rows: "",
-      contests: [
-        {
-          title: "测试比赛",
-          status: 0,
-          start_time: "2020-11-08T05:00:00Z",
-          end_time: "2020-11-08T08:00:00Z",
-          rule_type: "ACM",
-          auth: 1,
-        },
-        {
-          title: "测试比赛",
-          status: 0,
-          start_time: "2020-11-08T05:00:00Z",
-          end_time: "2020-11-08T08:00:00Z",
-          rule_type: "ACM",
-          auth: 2,
-        },
-        {
-          title: "测试比赛",
-          status: -1,
-          start_time: "2020-11-08T05:00:00Z",
-          end_time: "2020-11-08T08:00:00Z",
-          rule_type: "ACM",
-          auth: 0,
-        },
-        {
-          title: "测试比赛",
-          status: 1,
-          start_time: "2020-11-08T05:00:00Z",
-          end_time: "2020-11-08T08:00:00Z",
-          rule_type: "ACM",
-          auth: 0,
-        },
-        {
-          title: "测试比赛",
-          status: 0,
-          start_time: "2020-11-08T05:00:00Z",
-          end_time: "2020-11-08T08:00:00Z",
-          rule_type: "OI",
-          auth: 0,
-        },
-      ],
-      CONTEST_STATUS_REVERSE: CONTEST_STATUS_REVERSE,
-      //      for password modal use
-      cur_contest_id: "",
+      contests: [],
+      CONTEST_STATUS_REVERSE:{},
       CONTEST_TYPE_REVERSE:CONTEST_TYPE_REVERSE,
       acmSrc: require("@/assets/acm.jpg"),
       oiSrc: require("@/assets/oi.jpg"),
     };
   },
-  // beforeRouteEnter(to, from, next) {
-  //   // api.getContestList(0, limit).then(
-  //   //   (res) => {
-  //   //     next((vm) => {
-  //   //       vm.contests = res.data.data.results;
-  //   //       vm.total = res.data.data.total;
-  //   //     });
-  //   //   },
-  //   //   (res) => {
-  //   //     next();
-  //   //   }
-  //   // );
-  // },
+  mounted(){
+    this.CONTEST_STATUS_REVERSE = Object.assign({},CONTEST_STATUS_REVERSE)
+    this.CONTEST_TYPE_REVERSE = Object.assign({},CONTEST_TYPE_REVERSE)
+    this.init()
+  },
   methods: {
     init() {
       let route = this.$route.query;
       this.query.status = route.status || "";
-      this.query.rule_type = route.rule_type || "";
+      this.query.type = route.type || "";
       this.query.keyword = route.keyword || "";
-      this.page = parseInt(route.page) || 1;
+      this.currentPage = parseInt(route.currentPage) || 1;
       this.getContestList();
     },
     getContestList(page = 1) {
-      let offset = (page - 1) * this.limit;
-      api.getContestList(offset, this.limit, this.query).then((res) => {
-        this.contests = res.data.data.results;
+      api.getContestList(page, this.limit, this.query).then((res) => {
+        this.contests = res.data.data.records;
         this.total = res.data.data.total;
       });
     },
-    filterByKeyword() {
+    filterByChange() {
       let query = Object.assign({}, this.query);
-      query.page = this.page;
+      query.currentPage = this.currentPage;
       this.$router.push({
-        name: "contest-list",
+        name: "ContestList",
         query: utils.filterEmptyValue(query),
       });
     },
+
+    parseContestType(type){
+      if(type==0){
+        return 'ACM'
+      }else if(type==1){
+        return 'OI'
+      }
+    },
     onRuleChange(rule) {
-      this.query.rule_type = rule;
-      this.page = 1;
-      this.changeRoute();
+      this.query.type = rule;
+      this.currentPage = 1;
+      this.filterByChange();
     },
     onStatusChange(status) {
       this.query.status = status;
-      this.page = 1;
-      this.changeRoute();
+      this.currentPage = 1;
+      this.filterByChange();
     },
     toContest(contest) {
-      this.cur_contest_id = contest.id;
       if (
-        contest.contest_type !== CONTEST_TYPE.PUBLIC &&
+        contest.type !== CONTEST_TYPE.PUBLIC &&
         !this.isAuthenticated
       ) {
-        this.$error("请先登录");
+        myMessage.warning("请先登录");
         this.$store.dispatch("changeModalStatus", { visible: true });
       } else {
         this.$router.push({
-          name: "contest-details",
+          name: "ContestDetails",
           params: { contestID: contest.id },
         });
       }
     },
-    getDuration(startTime, endTime) {
-      return time.duration(startTime, endTime);
+    getDuration(startTime,endTime) {
+      return time.duration(startTime,endTime);
     },
     getborderColor(contest){
-      return "border-left: 4px solid "+CONTEST_STATUS_REVERSE[contest.status].color;
+      return "border-left: 4px solid "+CONTEST_STATUS_REVERSE[contest.status]['color'];
     }
   },
   computed: {
-    ...mapGetters(["isAuthenticated", "user"]),
+    ...mapGetters(["isAuthenticated", "userInfo"]),
   },
   watch: {
     $route(newVal, oldVal) {

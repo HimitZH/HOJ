@@ -14,6 +14,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2020-10-23
  */
 public interface ContestService extends IService<Contest> {
-    Page<ContestVo> getContestList(int limit, int currentPage);
+    Page<ContestVo> getContestList(Integer limit, Integer currentPage,Integer type,Integer status,String keyword);
     ContestVo getContestInfoById(long cid);
 }

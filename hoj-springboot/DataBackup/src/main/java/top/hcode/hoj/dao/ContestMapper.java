@@ -21,7 +21,8 @@ import java.util.List;
 @Mapper
 @Repository
 public interface ContestMapper extends BaseMapper<Contest> {
-    List<ContestVo> getContestList(IPage page);
+    List<ContestVo> getContestList(IPage page,@Param("type") Integer type,
+                                   @Param("status")Integer status,@Param("keyword")String keyword);
     ContestVo getContestInfoById(@Param("cid")long cid);
     List<ContestVo> getWithinNext14DaysContests();
 }

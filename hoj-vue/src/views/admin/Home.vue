@@ -58,7 +58,8 @@
           </el-col>
           <el-col :span="4" v-show="isAuthenticated">
             <i class="fa fa-font katex-editor" @click="katexVisible = true"></i>
-            <el-dropdown @command="handleCommand">
+            <avatar :username="userInfo.username" :inline="true" :size="30" color="#FFF" :src="userInfo.avatar" class="drop-avatar"></avatar>
+            <el-dropdown @command="handleCommand" style="vertical-align: middle;">
               <span
                 >{{ userInfo.username
                 }}<i class="el-icon-caret-bottom el-icon--right"></i
@@ -277,7 +278,7 @@ import { mapGetters } from "vuex";
 import KatexEditor from "@/components/admin/KatexEditor.vue";
 import api from "@/common/api";
 import mMessage from '@/common/message'
-
+import Avatar from 'vue-avatar'
 export default {
   name: "app",
   mounted() {
@@ -301,6 +302,7 @@ export default {
   },
   components: {
     KatexEditor,
+    Avatar
   },
   methods: {
     handleCommand(command) {
@@ -434,6 +436,12 @@ img {
 .katex-editor {
   margin-right: 5px;
   cursor: pointer;
+  vertical-align: middle;
   /*font-size: 18px;*/
+  margin-right: 10px;
+}
+.drop-avatar{
+  vertical-align: middle;
+  margin-right: 10px;
 }
 </style>

@@ -11,14 +11,23 @@
       <vxe-table-column type="seq" min-width="50"></vxe-table-column>
       <vxe-table-column field="username" title="User" min-width="150">
          <template v-slot="{ row }">
-          <a :href="getInfoByUsername(row.username)" style="color:rgb(87, 163, 243);">{{row.username}}</a>
+          <a @click="getInfoByUsername(row.uid,row.username)" style="color:rgb(87, 163, 243);">{{row.username}}</a>
         </template>
       </vxe-table-column>
       <vxe-table-column field="nickname" title="Nickname" min-width="180"></vxe-table-column>
       <vxe-table-column field="signature" title="Mood" min-width="180"></vxe-table-column>
-      <vxe-table-column field="ac" title="AC" min-width="80"></vxe-table-column>
+      <vxe-table-column field="solved" title="Solved" min-width="80"></vxe-table-column>
+      <vxe-table-column title="AC" min-width="80">
+        <template v-slot="{ row }">
+          <a @click="goUserACStatus(row.username)" style="color:rgb(87, 163, 243);">{{row.ac}}</a>
+        </template>
+      </vxe-table-column>
       <vxe-table-column field="total" title="Total" min-width="80"></vxe-table-column>
-      <vxe-table-column field="rating" title="Rating" min-width="80"></vxe-table-column>
+      <vxe-table-column title="Rating" min-width="80">
+        <template v-slot="{row}">
+          <span>{{getACRate(row.ac,row.total)}}</span>
+        </template>
+      </vxe-table-column>
     </vxe-table>
     
     <Pagination :total="total" :page-size.sync="limit" :current.sync="page"
@@ -101,6 +110,9 @@
               name: 'AC',
               type: 'bar',
               data: [0],
+              itemStyle: {
+                color:'#91c7ae'
+              },
               markPoint: {
                 data: [
                   {type: 'max', name: 'max'}
@@ -111,6 +123,9 @@
               name: 'Total',
               type: 'bar',
               data: [0],
+              itemStyle:{
+                color:'#6ab0b8'
+              },
               markPoint: {
                 data: [
                   {type: 'max', name: 'max'}
@@ -122,36 +137,20 @@
       }
     },
     mounted () {
-      // this.getRankData(1)
-      let dataRank = [
-                    {username:'20180308010541111',nickname:'Himit_ZHsssssssssssssssss我说你啵啵啵啵啵啵',signature:'Show me your code',ac:9999,total:9999,rating:'99.99%'},
-                    {username:'测试名字为什么要那么长的呢',nickname:'图sddddddddd',signature:'Show me your code',ac:100,total:100,rating:'100%'},
-                    {username:'20180308010541111',nickname:'Himit_ZH',signature:'Show me your code',ac:100,total:100,rating:'100%'},
-                    {username:'测试名字为什么要那么长你有病啊',nickname:'Himit_ZH',signature:'Show me your code',ac:100,total:100,rating:'100%'},
-                    {username:'测试名字为什么要那么长',nickname:'Himit_ZH',signature:'Show me your code',ac:100,total:100,rating:'100%'},
-                    {username:'root',nickname:'Himit_ZH',signature:'Show me your code',ac:100,total:100,rating:'100%'},
-                    {username:'root',nickname:'Himit_ZH',signature:'Show me your code',ac:100,total:100,rating:'100%'},
-                    {username:'root',nickname:'Himit_ZH',signature:'Show me your code',ac:100,total:100,rating:'100%'},
-                    {username:'root',nickname:'Himit_ZH',signature:'Show me your code',ac:100,total:100,rating:'100%'},
-                    {username:'root',nickname:'Himit_ZH',signature:'Show me your code',ac:100,total:100,rating:'100%'},
-        
-                  ];
-      this.dataRank = dataRank;
-      this.changeCharts(dataRank);
+      this.getRankData(1)
     },
     methods: {
       getRankData (page) {
-        let offset = (page - 1) * this.limit
         let bar = this.$refs.chart
         bar.showLoading({maskColor: 'rgba(250, 250, 250, 0.8)'})
         this.loadingTable = true
-        api.getUserRank(offset, this.limit, RULE_TYPE.ACM).then(res => {
+        api.getUserRank(page, this.limit, RULE_TYPE.ACM).then(res => {
           this.loadingTable = false
           if (page === 1) {
-            this.changeCharts(res.data.data.results.slice(0, 10))
+            this.changeCharts(res.data.data.records.slice(0, 10))
           }
           this.total = res.data.data.total
-          this.dataRank = res.data.data.results
+          this.dataRank = res.data.data.records
           bar.hideLoading()
         }).catch(() => {
           this.loadingTable = false
@@ -169,18 +168,24 @@
         this.options.series[0].data = acData
         this.options.series[1].data = totalData
       },
-      getInfoByUsername(username){
-        return '/user-home/'+username;
+      getInfoByUsername(uid,username){
+        this.$router.push({
+          path: '/user-home',
+          query: {uid,username},
+        });
+      },
+      goUserACStatus(username){
+        this.$router.push({
+          path: '/status',
+          query: {username,status:0},
+        });
+      },
+      getACRate(ac,total){
+        return utils.getACRate(ac,total)
       }
     },
     computed:{
-      getFontSize(res){
-        let docEl = document.documentElement,
-          clientWidth = window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth;
-        if (!clientWidth) return;
-        let fontSize = 100 * (clientWidth / 1920);
-        return res*fontSize;
-      }
+
     }
   }
 </script>

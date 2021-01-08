@@ -1,8 +1,10 @@
 package top.hcode.hoj.service;
 
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.hcode.hoj.pojo.entity.Judge;
-import top.hcode.hoj.pojo.entity.ProblemCount;
+import top.hcode.hoj.pojo.entity.UserRecord;
+
 
 /**
  * <p>
@@ -12,8 +14,6 @@ import top.hcode.hoj.pojo.entity.ProblemCount;
  * @author Himit_ZH
  * @since 2020-10-23
  */
-public interface ProblemCountService extends IService<ProblemCount> {
-
-    void updateCount(int status, Judge judge);
-
+public interface UserRecordService extends IService<UserRecord> {
+    void updateRecord(Judge judge);
 }

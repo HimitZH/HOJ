@@ -38,6 +38,9 @@ public class UserAcproblem implements Serializable {
     @ApiModelProperty(value = "ac的题目id")
     private Long pid;
 
+    @ApiModelProperty(value = "提交的id")
+    private Long submitId;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 
