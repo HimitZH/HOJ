@@ -83,4 +83,24 @@ public class Constants {
             return name;
         }
     }
+    
+    /**
+     * @Description 账户相关常量
+     * @Since 2021/1/8
+     */
+    
+    public enum Account{
+        CODE_CHANGE_PASSWORD_FAIL("change-password-fail:"),
+        CODE_CHANGE_PASSWORD_LOCK("change-password-lock:"),
+        CODE_ACCOUNT_LOCK("account-lock:");
+
+        private final String code;
+        Account(String code){
+            this.code =code;
+        }
+
+        public String getCode() {
+            return code;
+        }
+    }
 }

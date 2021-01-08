@@ -7,16 +7,13 @@
                 <p class="section-title">Change Password</p>
                 <el-form class="setting-content" ref="formPassword" :model="formPassword" :rules="rulePassword">
                 <el-form-item label="Old Password" prop="old_password">
-                    <el-input v-model="formPassword.old_password" type="password"/>
+                    <el-input v-model="formPassword.oldPassword" type="password"/>
                 </el-form-item>
                 <el-form-item label="New Password" prop="new_password">
-                    <el-input v-model="formPassword.new_password" type="password"/>
+                    <el-input v-model="formPassword.newPassword" type="password"/>
                 </el-form-item>
                 <el-form-item label="Confirm New Password" prop="again_password">
-                    <el-input  v-model="formPassword.again_password" type="password"/>
-                </el-form-item>
-                <el-form-item v-if="visible.tfaRequired" label="Two Factor Auth" prop="tfa_code">
-                    <el-input v-model="formPassword.tfa_code"/>
+                    <el-input  v-model="formPassword.againPassword" type="password"/>
                 </el-form-item>
                 <el-form-item v-if="visible.passwordAlert">
                     <el-alert type="success">You will need to login again after 5 seconds..</el-alert>
@@ -90,13 +87,11 @@
           tfaRequired: false
         },
         formPassword: {
-          tfa_code: '',
-          old_password: '',
-          new_password: '',
-          again_password: ''
+          oldPassword: '',
+          newPassword: '',
+          againPassword: ''
         },
         formEmail: {
-          tfa_code: '',
           password: '',
           old_email: '',
           new_email: ''

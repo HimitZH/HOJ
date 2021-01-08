@@ -27,6 +27,7 @@ import top.hcode.hoj.service.UserInfoService;
 import top.hcode.hoj.service.impl.EmailServiceImpl;
 import top.hcode.hoj.service.impl.UserAcproblemServiceImpl;
 import top.hcode.hoj.service.impl.UserRecordServiceImpl;
+import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.JwtUtils;
 import top.hcode.hoj.utils.RedisUtils;
@@ -329,4 +330,63 @@ public class AccountController {
         userHomeInfo.setSolvedList(pidList);
         return CommonResult.successResponse(userHomeInfo,"查询成功！");
     }
+
+
+    /**
+     * @MethodName changePassword
+     * @Params  * @param null
+     * @Description 修改密码的操作，连续半小时内修改密码错误5次，则需要半个小时后才可以再次尝试修改密码
+     * @Return
+     * @Since 2021/1/8
+     */
+
+    @PostMapping("/change-password")
+    @RequiresAuthentication
+    public CommonResult changePassword(@RequestBody Map params,HttpServletRequest request){
+        String oldPassword = (String) params.get("oldPassword");
+        String newPassword = (String) params.get("newPassword");
+
+        // 数据可用性判断
+        if (StringUtils.isEmpty(oldPassword)||StringUtils.isEmpty(newPassword)){
+            return CommonResult.errorResponse("请求参数不能为空！");
+        }
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        // 如果已经被锁定半小时不能修改
+        String lockKey = Constants.Account.CODE_CHANGE_PASSWORD_LOCK+userRolesVo.getUid();
+        if (redisUtils.hasKey(lockKey)){
+            long expire = redisUtils.getExpire(lockKey);
+            long minute = expire/60;
+            long second = expire%60;
+            return CommonResult.errorResponse("由于您多次修改密码失败，修改密码功能已锁定，请在"+minute+"分"+second+"秒后再进行尝试！");
+        }
+
+        // 与当前登录用户的密码进行比较判断
+        if(userRolesVo.getPassword().equals(oldPassword)){ // 如果相同，则进行修改密码操作
+            UpdateWrapper<UserInfo> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.set("password", SecureUtil.md5(newPassword))// 数据库用户密码全部用md5加密
+                    .eq("uuid", userRolesVo.getUid());
+            boolean result = userInfoDao.update(updateWrapper);
+            if (result){
+                return CommonResult.successResponse(null,"修改密码成功！");
+            }else{
+                return CommonResult.errorResponse("修改密码失败！",CommonResult.STATUS_ERROR);
+            }
+        }else{ // 如果不同，则进行记录，当失败次数达到5次，半个小时后才可重试
+            String countKey = Constants.Account.CODE_CHANGE_PASSWORD_FAIL+userRolesVo.getUid();
+            Integer count  = (Integer) redisUtils.get(countKey);
+            if (count==null){
+                redisUtils.set(countKey,1, 60*30); // 三十分钟不尝试，该限制会自动清空消失
+            }else if(count<5){
+                redisUtils.incr(countKey, 1);
+            }
+            else{
+                redisUtils.set(lockKey, "lock", 60*30);
+            }
+            return CommonResult.errorResponse("原始密码错误！修改密码失败！");
+        }
+   }
+
 }
