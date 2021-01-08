@@ -21,9 +21,12 @@ import top.hcode.hoj.pojo.dto.RegisterDto;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.pojo.vo.ConfigVo;
+import top.hcode.hoj.pojo.vo.UserHomeVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.UserInfoService;
 import top.hcode.hoj.service.impl.EmailServiceImpl;
+import top.hcode.hoj.service.impl.UserAcproblemServiceImpl;
+import top.hcode.hoj.service.impl.UserRecordServiceImpl;
 import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.JwtUtils;
 import top.hcode.hoj.utils.RedisUtils;
@@ -31,6 +34,7 @@ import top.hcode.hoj.utils.RedisUtils;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +42,7 @@ import java.util.Map;
 /**
  * @Author: Himit_ZH
  * @Date: 2020/10/23 12:00
- * @Description:账户处理控制类，负责处理登录请求和注册请求
+ * @Description:账户处理控制类，负责处理登录请求和注册请求等有关账号的操作
  */
 @RestController
 @RequestMapping("/api")
@@ -61,6 +65,9 @@ public class AccountController {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private UserAcproblemServiceImpl userAcproblemService;
 
     @Autowired
     private SessionMapper sessionDao;
@@ -190,8 +197,6 @@ public class AccountController {
     }
 
 
-
-
     /**
      * @MethodName register
      * @Params * @param RegisterDto
@@ -296,5 +301,32 @@ public class AccountController {
     public CommonResult logout() {
         SecurityUtils.getSubject().logout();
         return CommonResult.successResponse(null, "登出成功！");
+    }
+
+
+    /**
+     * @MethodName getUserHomeInfo
+     * @Params * @param uid
+     * @Description 前端userHome用户个人主页的数据请求，主要是返回解决题目数，AC的题目列表，提交总数，AC总数，Rating分，
+     * @Return CommonResult
+     * @Since 2021/01/07
+     */
+    @GetMapping("/get-user-home-info")
+    @RequiresAuthentication
+    public CommonResult getUserHomeInfo(@RequestParam(value = "uid",required = false)String uid,HttpServletRequest request){
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        // 如果没有uid，默认查询当前登录用户的
+        if (uid==null){
+            uid = userRolesVo.getUid();
+        }
+        UserHomeVo userHomeInfo = userRecordDao.getUserHomeInfo(uid);
+        QueryWrapper<UserAcproblem> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("uid", uid).select("distinct pid");
+        List<Long> pidList = new LinkedList<>();
+        List<UserAcproblem> acProblemList = userAcproblemService.list(queryWrapper);
+        acProblemList.forEach(acProblem->{pidList.add(acProblem.getPid());});
+        userHomeInfo.setSolvedList(pidList);
+        return CommonResult.successResponse(userHomeInfo,"查询成功！");
     }
 }

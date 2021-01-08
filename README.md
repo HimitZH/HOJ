@@ -19,6 +19,7 @@
 | 2020-12-01 | 前端管理端基本完成，准备开始前后端接口对接与测试             | Himit_ZH |
 | 2020-12-21 | 管理端前后端接口对接基本完成，准备客户端接口对接             | Himit_ZH |
 | 2021-01-04 | 客户端首页，题目，提交模块的接口对接完毕                     | Himit_ZH |
+| 2021-01-08 | 比赛列表页，排行榜，用户主页的接口对接完毕                   | Himit_ZH |
 
 # 二、系统架构
 
@@ -157,6 +158,7 @@ role_auth表
 | id           | long         | primary key | auto_increment             |
 | uid          | String       | 外键        | 用户id                     |
 | submissions  | int          |             | 总提交数                   |
+| total_score  | int          |             | 总OI题目得分               |
 | rating       | int          |             | Cf得分，未参加过默认为1500 |
 | gmt_create   | datetime     |             | 创建时间                   |
 | gmt_modified | datetime     |             | 修改时间                   |
@@ -165,11 +167,14 @@ role_auth表
 
 user_acproblem表
 
-| 列名   | 实体属性类型 | 键          | 备注           |
-| ------ | ------------ | ----------- | -------------- |
-| id     | long         | primary key | auto_increment |
-| userId | String       | 外键        | 用户id         |
-| pid    | int          | 外键        | Ac的题目id     |
+| 列名         | 实体属性类型 | 键          | 备注           |
+| ------------ | ------------ | ----------- | -------------- |
+| id           | long         | primary key | auto_increment |
+| uid          | String       | 外键        | 用户id         |
+| pid          | long         | 外键        | Ac的题目id     |
+| subimit_id   | long         | 外键        | 提交的id       |
+| gmt_create   | datetime     |             | 创建时间       |
+| gmt_modified | datetime     |             | 修改时间       |
 
  
 

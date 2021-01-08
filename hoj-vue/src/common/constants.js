@@ -153,8 +153,8 @@ export const CONTEST_STATUS_REVERSE = {
 }
 
 export const RULE_TYPE = {
-  ACM: 'ACM',
-  OI: 'OI'
+  ACM: 0,
+  OI: 1
 }
 
 export const CONTEST_TYPE_REVERSE = {

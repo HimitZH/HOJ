@@ -6,7 +6,7 @@
         <span class="panel-title home-title">Contest List</span>
         <div class="filter-row">
             <span>
-            <vxe-input v-model="keyword" placeholder="Enter keyword" type="search" size="medium" @search-click="filterByKeyword"></vxe-input>
+            <vxe-input v-model="keyword" placeholder="Enter keyword" type="search" size="medium" @search-click="filterByKeyword" @keyup.enter.native="filterByKeyword"></vxe-input>
             </span>
         </div>
       </div>

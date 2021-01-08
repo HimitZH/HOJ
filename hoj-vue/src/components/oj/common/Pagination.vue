@@ -6,9 +6,8 @@
           :page-size="pageSize"
           @current-change="onChange"
           @size-change="onPageSizeChange"
-          :show-sizer="showSizer"
           layout="prev, pager, next"
-          :page-sizes="[20, 30, 50, 100, 200]"
+          :page-sizes="[10, 30, 50, 100, 200]"
           :current-page="current"></el-pagination>
   </div>
 </template>
@@ -46,8 +45,8 @@
       onPageSizeChange (pageSize) {
         this.$emit('update:pageSize', pageSize)
         this.$emit('on-page-size-change', pageSize)
-      }
-    }
+      },
+    },
   }
 </script>
 

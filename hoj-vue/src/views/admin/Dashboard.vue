@@ -135,9 +135,9 @@
           <vxe-table-column title="Healthy" min-width="100">
             <template v-slot="{ row }">
               <el-tag effect="dark" color="#19be6b" v-if="row.metadata['nacos.healthy']=='true'"
-                >healthy</el-tag
+                >Healthy</el-tag
               >
-              <el-tag effect="dark" color="#f90" v-else>unhealthy</el-tag>
+              <el-tag effect="dark" color="#f90" v-else>Unhealthy</el-tag>
             </template>
           </vxe-table-column>
         </vxe-table>
@@ -207,9 +207,9 @@
           <vxe-table-column  title="Healthy" min-width="100">
             <template v-slot="{ row }">
               <el-tag effect="dark" color="#19be6b" v-if="row.service.metadata['nacos.healthy']=='true'"
-                >healthy</el-tag
+                >Healthy</el-tag
               >
-              <el-tag effect="dark" color="#f90" v-else>unhealthy</el-tag>
+              <el-tag effect="dark" color="#f90" v-else>Unhealthy</el-tag>
             </template>
           </vxe-table-column>
         </vxe-table>

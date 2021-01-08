@@ -31,7 +31,7 @@
             p.auth = 1
             <if test="keyword != null and keyword != ''">
                 and (
-                p.title = #{keyword}
+                p.title like concat('%',#{keyword},'%')
                 <if test="pid != null and pid != ''">
                     or p.id = #{pid}
                 </if>

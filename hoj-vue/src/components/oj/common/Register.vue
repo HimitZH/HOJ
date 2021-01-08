@@ -36,7 +36,7 @@
           prefix-icon="el-icon-lock"
           placeholder="Please Enter Password"
           @keyup.enter.native="handleRegister"
-          type="password"
+         
         ></el-input>
       </el-form-item>
       <el-form-item prop="passwordAgain">

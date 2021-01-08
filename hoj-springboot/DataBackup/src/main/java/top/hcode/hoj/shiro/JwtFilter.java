@@ -1,20 +1,17 @@
 package top.hcode.hoj.shiro;
 
-import cn.hutool.json.JSONObject;
+
 import cn.hutool.json.JSONUtil;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import io.jsonwebtoken.Claims;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.ExpiredCredentialsException;
 import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.UserInfo;
 import top.hcode.hoj.service.impl.UserInfoServiceImpl;
 import top.hcode.hoj.utils.JwtUtils;
 import top.hcode.hoj.utils.RedisUtils;
@@ -24,7 +21,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**

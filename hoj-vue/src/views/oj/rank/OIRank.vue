@@ -11,15 +11,23 @@
       <vxe-table-column type="seq" min-width="50"></vxe-table-column>
       <vxe-table-column field="username" title="User" min-width="150">
          <template v-slot="{ row }">
-          <a :href="getInfoByUsername(row.username)" style="color:rgb(87, 163, 243);">{{row.username}}</a>
+          <a @click="getInfoByUsername(row.uid,row.username)" style="color:rgb(87, 163, 243);">{{row.username}}</a>
         </template>
       </vxe-table-column>
       <vxe-table-column field="nickname" title="Nickname" min-width="180"></vxe-table-column>
       <vxe-table-column field="signature" title="Mood" min-width="180"></vxe-table-column>
       <vxe-table-column field="score" title="Score" min-width="80"></vxe-table-column>
-      <vxe-table-column field="ac" title="AC" min-width="80"></vxe-table-column>
+      <vxe-table-column title="AC" min-width="80">
+        <template v-slot="{ row }">
+          <a @click="goUserACStatus(row.username)" style="color:rgb(87, 163, 243);">{{row.ac}}</a>
+        </template>
+      </vxe-table-column>
       <vxe-table-column field="total" title="Total" min-width="80"></vxe-table-column>
-      <vxe-table-column field="rating" title="Rating" min-width="80"></vxe-table-column>
+      <vxe-table-column title="Rating" min-width="80">
+        <template v-slot="{row}">
+          <span>{{getACRate(row.ac,row.total)}}</span>
+        </template>
+      </vxe-table-column>
     </vxe-table>
     <Pagination :total="total" :page-size.sync="limit" :current.sync="page"
                 @on-change="getRankData"
@@ -45,6 +53,7 @@
         limit: 30,
         total: 0,
         dataRank:[],
+        loadingTable:false,
         options: {
           tooltip: {
             trigger: 'axis'
@@ -116,33 +125,23 @@
       }
     },
     mounted () {
-      // this.getRankData(1)
-      let data =  [
-          {username:'root111',nickname:'Himit_ZH',signature:'Show me your code',score:100000,ac:100,total:100,rating:'100%'},
-          {username:'测试一下不会真的有人取那么长的名字吧',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
-          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
-          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
-          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
-          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
-          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
-          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
-          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
-          {username:'root',nickname:'Himit_ZH',signature:'Show me your code',score:10000,ac:100,total:100,rating:'100%'},
-        ];
-      this.dataRank = data;
-      this.changeCharts(data);
+      this.getRankData(1)
     },
     methods: {
       getRankData (page) {
-        let offset = (page - 1) * this.limit
         let bar = this.$refs.chart
         bar.showLoading({maskColor: 'rgba(250, 250, 250, 0.8)'})
-        api.getUserRank(offset, this.limit, RULE_TYPE.OI).then(res => {
+        this.loadingTable = true
+        api.getUserRank(page, this.limit, RULE_TYPE.OI).then(res => {
           if (page === 1) {
-            this.changeCharts(res.data.data.results.slice(0, 10))
+            this.changeCharts(res.data.data.records.slice(0, 10))
           }
           this.total = res.data.data.total
-          this.dataRank = res.data.data.results
+          this.dataRank = res.data.data.records
+          this.loadingTable  = false
+          bar.hideLoading()
+        },err=>{
+          this.loadingTable  = false
           bar.hideLoading()
         })
       },
@@ -155,8 +154,20 @@
         this.options.xAxis[0].data = usernames
         this.options.series[0].data = scores
       },
-      getInfoByUsername(username){
-        return '/user-home/'+username;
+      getInfoByUsername(uid,username){
+        this.$router.push({
+          path: '/user-home',
+          query: {uid,username},
+        });
+      },
+      goUserACStatus(username){
+        this.$router.push({
+          path: '/status',
+          query: {username,status:0},
+        });
+      },
+      getACRate(ac,total){
+        return utils.getACRate(ac,total)
       }
     }
   }

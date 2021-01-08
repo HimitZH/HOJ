@@ -27,7 +27,7 @@
           </el-dropdown>
           </el-col>
           <el-col :xs="14" :sm="7" :md="7" :lg="5">
-            <vxe-input v-model="query.keyword" placeholder="Enter keyword" type="search" size="medium" @search-click="filterByKeyword"></vxe-input>
+            <vxe-input v-model="query.keyword" placeholder="Enter keyword" type="search" size="medium" @search-click="filterByKeyword" @keyup.enter.native="filterByKeyword"></vxe-input>
         </el-col>
         <el-col  :sm="4" :md="4" :lg="3" class="hidden-xs-only">
           <el-button type="primary"  size="small" icon="el-icon-refresh" round @click="onReset">Reset</el-button>
@@ -309,7 +309,7 @@
       pickone () {
         api.pickone().then(res => {
           myMessage.success("随机题目获取成功，祝你好运")
-          this.$router.push({name: 'problem-details', params: {problemID: res.data.data.pid}})
+          this.$router.push({name: 'problemDetails', params: {problemID: res.data.data.pid}})
         })
       },
       getProblemUri(pid){

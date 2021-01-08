@@ -62,6 +62,7 @@
             trigger="click"
           >
             <span class="el-dropdown-link">
+
               {{ userInfo.username }}<i class="el-icon-caret-bottom"></i>
             </span>
 
@@ -79,6 +80,7 @@
               >
             </el-dropdown-menu>
           </el-dropdown>
+          <avatar :username="userInfo.username" :inline="true" :size="30" color="#FFF" :src="userInfo.avatar" class="drop-avatar"></avatar>
         </template>
       </el-menu>
     </div>
@@ -221,11 +223,14 @@ import Register from "@/components/oj/common/Register";
 import ResetPwd from "@/components/oj/common/ResetPassword";
 import { mapGetters, mapActions } from "vuex";
 import api from "@/common/api";
+import Avatar from 'vue-avatar'
+
 export default {
   components: {
     Login,
     Register,
     ResetPwd,
+    Avatar
   },
   mounted() {
     window.onresize = () => {
@@ -241,6 +246,7 @@ export default {
       openusermenu:false,
       openSideMenu:'',
       imgUrl: require("@/assets/logo.png"),
+      avatarStyle:'display: inline-flex;width: 30px;height: 30px;border-radius: 50%;align-items: center;justify-content: center;text-align: center;user-select: none;'
     };
   },
   methods: {
@@ -365,6 +371,12 @@ export default {
   right: 10px;
   margin-top: 18px;
   font-size: 18px;
+}
+.drop-avatar{
+  float: right;
+  margin-right: 15px;
+  position: relative;
+  margin-top: 16px;
 }
 .btn-menu {
   font-size: 16px;

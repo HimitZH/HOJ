@@ -15,6 +15,7 @@
             <el-input
               v-model="formResetPassword.password"
               prefix-icon="el-icon-lock"
+              type="password"
               placeholder="Please Enter New Password"
             ></el-input>
           </el-form-item>
@@ -22,6 +23,7 @@
             <el-input
               v-model="formResetPassword.passwordAgain"
               prefix-icon="el-icon-lock"
+              type="password"
               placeholder="Please Enter New Password Again"
             ></el-input>
           </el-form-item>

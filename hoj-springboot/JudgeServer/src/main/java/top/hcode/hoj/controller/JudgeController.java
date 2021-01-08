@@ -13,6 +13,7 @@ import top.hcode.hoj.pojo.entity.UserAcproblem;
 import top.hcode.hoj.service.impl.JudgeServiceImpl;
 import top.hcode.hoj.service.impl.ProblemCountServiceImpl;
 import top.hcode.hoj.service.impl.UserAcproblemServiceImpl;
+import top.hcode.hoj.service.impl.UserRecordServiceImpl;
 import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.IpUtils;
 
@@ -35,6 +36,9 @@ public class JudgeController {
 
     @Autowired
     private UserAcproblemServiceImpl userAcproblemService;
+
+    @Autowired
+    private UserRecordServiceImpl userRecordService;
 
     @PostMapping(value = "/judge") // 待定，到时再添加服务熔断兜底方法
     public CommonResult submitProblemJudge(@RequestBody Judge judge) {
@@ -63,19 +67,22 @@ public class JudgeController {
         judgeService.updateById(judge);
         // 如果是AC,就更新user_acproblem表
         if(judge.getStatus().intValue()==Constants.Judge.STATUS_ACCEPTED.getStatus()){
-            QueryWrapper<UserAcproblem> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("pid", judge.getPid()).eq("uid", judge.getUid());
-            UserAcproblem userAcproblem = userAcproblemService.getOne(queryWrapper);
-            // 该题未做就插入新数据
-            if (userAcproblem==null) {
                 userAcproblemService.saveOrUpdate(new UserAcproblem()
                         .setPid(judge.getPid())
                         .setUid(judge.getUid())
+                        .setSubmitId(judge.getSubmitId())
                 );
-            }
         }
-        // 更新该提交对应题目的数据
-        problemCountService.updateCount(Constants.Judge.STATUS_ACCEPTED.getStatus(),judge.getPid());
+
+        // 比赛的提交不纳入，更新该提交对应题目的数据
+        if (judge.getCid()==0) {
+            problemCountService.updateCount(Constants.Judge.STATUS_ACCEPTED.getStatus(), judge);
+        }
+
+        // 如果是非比赛提交，且为OI题目的提交，需要判断是否更新用户得分
+        if (judge.getCid()==0 && judge.getScore()!=null) {
+            userRecordService.updateRecord(judge);
+        }
         return CommonResult.successResponse(judge,"判题机评测完成！");
     }
 

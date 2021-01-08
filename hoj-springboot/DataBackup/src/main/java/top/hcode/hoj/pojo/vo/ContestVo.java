@@ -27,11 +27,11 @@ public class ContestVo implements Serializable {
     @ApiModelProperty(value = "比赛标题")
     private String title;
 
-    @ApiModelProperty(value = "比赛说明")
-    private String description;
-
     @ApiModelProperty(value = "0为acm赛制，1为比分赛制")
     private Integer type;
+
+    @ApiModelProperty(value = "-1为未开始，0为进行中，1为已结束")
+    private Integer status;
 
     @ApiModelProperty(value = "比赛来源，原创为0，克隆赛为比赛id")
     private Integer source;

@@ -22,6 +22,7 @@ import top.hcode.hoj.service.ContestService;
 import top.hcode.hoj.service.impl.AnnouncementServiceImpl;
 import top.hcode.hoj.service.impl.ContestProblemServiceImpl;
 import top.hcode.hoj.service.impl.ContestRegisterServiceImpl;
+import top.hcode.hoj.service.impl.ContestServiceImpl;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ import java.util.List;
 public class ContestController {
 
     @Autowired
-    private ContestService contestService;
+    private ContestServiceImpl contestService;
 
     @Autowired
     private ContestRecordService contestRecordService;
@@ -58,16 +59,19 @@ public class ContestController {
      */
     @GetMapping("/get-contest-list")
     public CommonResult getContestList(@RequestParam(value = "limit", required = false) Integer limit,
-                                       @RequestParam(value = "currentPage", required = false) Integer currentPage){
+                                       @RequestParam(value = "currentPage", required = false) Integer currentPage,
+                                       @RequestParam(value = "status",required = false)Integer status,
+                                       @RequestParam(value = "type",required = false)Integer type,
+                                       @RequestParam(value = "keyword",required = false)String keyword){
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
 
-        if (limit == null || limit < 1) limit = 30;
+        if (limit == null || limit < 1) limit = 10;
 
-        Page<ContestVo> contestList = contestService.getContestList(limit, currentPage);
+        Page<ContestVo> contestList = contestService.getContestList(limit, currentPage,type,status,keyword);
 
         if (contestList.getTotal() == 0) {
-            return CommonResult.errorResponse("暂无数据", CommonResult.STATUS_NOT_FOUND);
+            return CommonResult.successResponse(contestList,"暂无数据");
         } else {
             return CommonResult.successResponse(contestList, "获取成功");
         }

@@ -12,6 +12,14 @@ import 'nprogress/nprogress.css' // nprogress样式
 NProgress.configure({ ease: 'ease', speed: 1000,showSpinner: false })
 
 Vue.use(VueRouter)
+
+//获取原型对象上的push函数
+const originalPush = VueRouter.prototype.push
+//修改原型对象中的push方法
+VueRouter.prototype.push = function push(location) {
+   return originalPush.call(this, location).catch(err => err)
+}
+
 let routes = new Set([...ojRoutes, ...adminRoutes]);
 const router = new VueRouter({
   mode: 'history',

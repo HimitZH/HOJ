@@ -24,11 +24,11 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
     private ContestMapper contestMapper;
 
     @Override
-    public Page<ContestVo> getContestList(int limit, int currentPage) {
+    public Page<ContestVo> getContestList(Integer limit, Integer currentPage,Integer type,Integer status,String keyword) {
         //新建分页
         Page<ContestVo> page =new Page<>(currentPage,limit);
 
-        return page.setRecords(contestMapper.getContestList(page));
+        return page.setRecords(contestMapper.getContestList(page,type,status,keyword));
     }
 
     @Override

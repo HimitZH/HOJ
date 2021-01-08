@@ -56,6 +56,7 @@
                 placeholder="Enter Problem ID"
                 type="search"
                 size="medium"
+                @keyup.enter.native="handleQueryChange"
                 @search-click="handleQueryChange"
               ></vxe-input>
             </el-col>
@@ -66,6 +67,7 @@
                 placeholder="Enter Author"
                 type="search"
                 size="medium"
+                @keyup.enter.native="handleQueryChange"
                 @search-click="handleQueryChange"
               ></vxe-input>
             </el-col>
@@ -146,7 +148,7 @@
 
           <vxe-table-column field="language" title="Language" min-width="100">
             <template v-slot="{ row }">
-              <span v-if="!row.share&&row.uid!=userInfo.uid">{{row.language}}</span>
+              <span v-if="!row.share&&row.uid!=userInfo.uid&&!isAdminRole">{{row.language}}</span>
               <el-tooltip
                 class="item"
                 effect="dark"
@@ -414,7 +416,7 @@ export default {
     goUserHome(username,uid){
       this.$router.push({
         path: '/user-home',
-        query: {username,uid},
+        query: {uid,username},
       });
     },
     handleStatusChange(status) {
@@ -499,7 +501,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["isAuthenticated", "userInfo","isSuperAdmin"]),
+    ...mapGetters(["isAuthenticated", "userInfo","isSuperAdmin","isAdminRole"]),
     title() {
       if (!this.contestID) {
         return "Status";

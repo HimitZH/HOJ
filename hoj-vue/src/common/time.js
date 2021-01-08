@@ -16,6 +16,14 @@ function duration (startTime, endTime) {
   return Math.abs(duration.asHours().toFixed(1)) + ' hours'
 }
 
+function formatDuration(time){
+  let duration = moment.duration(time)
+  if (duration.days() !== 0) {
+    return duration.humanize()
+  }
+  return Math.abs(duration.asHours().toFixed(1)) + ' hours'
+}
+
 function secondFormat (time) {
   let m = moment.duration(time, 'seconds')
   let seconds =  m.seconds()>=10?m.seconds():'0'+m.seconds();
@@ -34,4 +42,5 @@ export default {
   duration: duration,
   secondFormat: secondFormat,
   durationMs:durationMs,
+  formatDuration:formatDuration
 }
