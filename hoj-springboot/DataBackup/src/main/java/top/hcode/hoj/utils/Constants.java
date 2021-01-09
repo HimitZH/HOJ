@@ -92,7 +92,9 @@ public class Constants {
     public enum Account{
         CODE_CHANGE_PASSWORD_FAIL("change-password-fail:"),
         CODE_CHANGE_PASSWORD_LOCK("change-password-lock:"),
-        CODE_ACCOUNT_LOCK("account-lock:");
+        CODE_ACCOUNT_LOCK("account-lock:"),
+        CODE_CHANGE_EMAIL_FAIL("change-email-fail:"),
+        CODE_CHANGE_EMAIL_LOCK("change-email-lock:");
 
         private final String code;
         Account(String code){

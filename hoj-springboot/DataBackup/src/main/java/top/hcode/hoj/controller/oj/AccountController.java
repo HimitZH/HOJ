@@ -406,4 +406,77 @@ public class AccountController {
         }
     }
 
+    /**
+     * @MethodName changeEmail
+     * @Params * @param null
+     * @Description 修改邮箱的操作，连续半小时内密码错误5次，则需要半个小时后才可以再次尝试修改
+     * @Return
+     * @Since 2021/1/9
+     */
+    @PostMapping("/change-email")
+    @RequiresAuthentication
+    public CommonResult changeEmail(@RequestBody Map params, HttpServletRequest request) {
+        String password = (String) params.get("password");
+        String oldEmail = (String) params.get("oldEmail");
+        String newEmail = (String) params.get("newEmail");
+        // 数据可用性判断
+        if (StringUtils.isEmpty(password) || StringUtils.isEmpty(newEmail) || StringUtils.isEmpty(oldEmail)) {
+            return CommonResult.errorResponse("请求参数不能为空！");
+        }
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        // 如果已经被锁定半小时不能修改
+        String lockKey = Constants.Account.CODE_CHANGE_EMAIL_LOCK + userRolesVo.getUid();
+        // 统计失败的key
+        String countKey = Constants.Account.CODE_CHANGE_EMAIL_FAIL + userRolesVo.getUid();
+
+        HashMap<String, Object> resp = new HashMap<>();
+        if (redisUtils.hasKey(lockKey)) {
+            long expire = redisUtils.getExpire(lockKey);
+            Date now = new Date();
+            long minute = expire / 60;
+            long second = expire % 60;
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            resp.put("code", 403);
+            Date afterDate = new Date(now.getTime() + expire * 1000);
+            String msg = "由于您多次修改邮箱失败，修改邮箱功能已锁定，请在" + minute + "分" + second + "秒后(" + formatter.format(afterDate) + ")再进行尝试！";
+            resp.put("msg", msg);
+            return CommonResult.successResponse(resp, "修改邮箱失败！");
+        }
+        // 与当前登录用户的密码进行比较判断
+        if (userRolesVo.getPassword().equals(SecureUtil.md5(password))) { // 如果相同，则进行修改操作
+            UpdateWrapper<UserInfo> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.set("email", newEmail)
+                    .eq("uuid", userRolesVo.getUid());
+            boolean result = userInfoDao.update(updateWrapper);
+            if (result) {
+                resp.put("code", 200);
+                resp.put("msg", "修改邮箱成功！您将于5秒钟后退出进行重新登录操作！");
+                // 清空记录
+                redisUtils.del(countKey);
+                return CommonResult.successResponse(resp, "修改邮箱成功！");
+            } else {
+                return CommonResult.errorResponse("系统错误：修改邮箱失败！", CommonResult.STATUS_ERROR);
+            }
+        } else { // 如果不同，则进行记录，当失败次数达到5次，半个小时后才可重试
+            Integer count = (Integer) redisUtils.get(countKey);
+            if (count == null) {
+                redisUtils.set(countKey, 1, 60 * 30); // 三十分钟不尝试，该限制会自动清空消失
+                count = 0;
+            } else if (count < 5) {
+                redisUtils.incr(countKey, 1);
+            }
+            count++;
+            if (count == 5) {
+                redisUtils.del(countKey); // 清空统计
+                redisUtils.set(lockKey, "lock", 60 * 30); // 设置锁定更改
+            }
+            resp.put("code", 400);
+            resp.put("msg", "原始密码错误！您已累计修改失败" + count + "次...");
+            return CommonResult.successResponse(resp, "修改邮箱失败！");
+        }
+    }
+
 }
