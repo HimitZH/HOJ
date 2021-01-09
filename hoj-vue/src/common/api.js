@@ -310,6 +310,12 @@ const ojApi = {
     return ajax("/api/get-user-home-info",'get',{
       params:{uid}
     })
+  },
+  // setting页的请求
+  changePassword(data){
+    return ajax("/api/change-password",'post',{
+      data
+    })
   }
 }
 

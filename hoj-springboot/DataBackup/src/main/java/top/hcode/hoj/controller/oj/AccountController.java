@@ -36,9 +36,8 @@ import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @Author: Himit_ZH
@@ -85,7 +84,7 @@ public class AccountController {
      */
     @RequestMapping(value = "/get-register-code", method = RequestMethod.GET)
     public CommonResult getRegisterCode(@RequestParam(value = "email", required = true) String email) throws MessagingException {
-        if(!configVo.getRegister()){ // 需要判断一下网站是否开启注册
+        if (!configVo.getRegister()) { // 需要判断一下网站是否开启注册
             return CommonResult.errorResponse("对不起！本站暂未开启注册功能！", CommonResult.STATUS_ACCESS_DENIED);
         }
         String numbers = RandomUtil.randomNumbers(6); // 随机生成6位数字的组合
@@ -99,7 +98,7 @@ public class AccountController {
 
     /**
      * @MethodName checkUsernameOrEmail
-     * @Params  * @param null
+     * @Params * @param null
      * @Description 检验用户名和邮箱是否存在
      * @Return
      * @Since 2020/11/5
@@ -109,7 +108,7 @@ public class AccountController {
     public CommonResult checkUsernameOrEmail(@RequestBody Map<String, Object> data) throws MessagingException {
         String email = (String) data.get("email");
         String username = (String) data.get("username");
-        boolean rightEmail=false;
+        boolean rightEmail = false;
         boolean rightUsername = false;
         if (!StringUtils.isEmpty(email)) {
             boolean isEmail = Validator.isEmail(email);
@@ -135,13 +134,13 @@ public class AccountController {
             }
         }
         return CommonResult.successResponse(MapUtil.builder().put("email", rightEmail)
-            .put("username", rightUsername).map(),"检验成功"
+                .put("username", rightUsername).map(), "检验成功"
         );
     }
 
     /**
      * @MethodName applyResetPassword
-     * @Params  * @param null
+     * @Params * @param null
      * @Description 发送重置密码的链接邮件
      * @Return
      * @Since 2020/11/6
@@ -150,12 +149,12 @@ public class AccountController {
     public CommonResult applyResetPassword(@RequestBody Map<String, Object> data) throws MessagingException {
         String email = (String) data.get("email");
         String username = (String) data.get("username");
-        if(StringUtils.isEmpty(email)||StringUtils.isEmpty(username)){
+        if (StringUtils.isEmpty(email) || StringUtils.isEmpty(username)) {
             return CommonResult.errorResponse("用户名或邮箱不能为空");
         }
         QueryWrapper<UserInfo> wrapper = new QueryWrapper<UserInfo>().eq("email", email).eq("username", username);
         UserInfo user = userInfoDao.getOne(wrapper);
-        if (user == null){
+        if (user == null) {
             return CommonResult.errorResponse("用户名和该邮箱不匹配");
         }
         String code = IdUtil.simpleUUID().substring(0, 21); // 随机生成20位数字与字母的组合
@@ -167,18 +166,18 @@ public class AccountController {
 
     /**
      * @MethodName resetPassword
-     * @Params  * @param null
+     * @Params * @param null
      * @Description 用户重置密码
      * @Return
      * @Since 2020/11/6
      */
 
     @PostMapping("/reset-password")
-    public CommonResult resetPassword(@RequestBody Map<String, Object> data){
+    public CommonResult resetPassword(@RequestBody Map<String, Object> data) {
         String username = (String) data.get("username");
         String password = (String) data.get("password");
         String code = (String) data.get("code");
-        if(StringUtils.isEmpty(password)||StringUtils.isEmpty(username)||StringUtils.isEmpty(code)){
+        if (StringUtils.isEmpty(password) || StringUtils.isEmpty(username) || StringUtils.isEmpty(code)) {
             return CommonResult.errorResponse("用户名,新密码或验证码不能为空");
         }
         if (!redisUtils.hasKey(username)) {
@@ -190,8 +189,8 @@ public class AccountController {
 
         boolean result = userInfoDao.update(new UserInfo().setPassword(SecureUtil.md5(password)),
                 new UpdateWrapper<UserInfo>().eq("username", username));
-        if (!result){
-            return CommonResult.errorResponse("重置密码失败",CommonResult.STATUS_ERROR);
+        if (!result) {
+            return CommonResult.errorResponse("重置密码失败", CommonResult.STATUS_ERROR);
         }
         redisUtils.del(username);
         return CommonResult.successResponse(null, "重置密码成功");
@@ -209,7 +208,7 @@ public class AccountController {
     @Transactional
     public CommonResult register(@Validated @RequestBody RegisterDto registerDto) {
 
-        if(!configVo.getRegister()){ // 需要判断一下网站是否开启注册
+        if (!configVo.getRegister()) { // 需要判断一下网站是否开启注册
             return CommonResult.errorResponse("对不起！本站暂未开启注册功能！", CommonResult.STATUS_ACCESS_DENIED);
         }
 
@@ -236,7 +235,6 @@ public class AccountController {
             return CommonResult.errorResponse("注册失败！", CommonResult.STATUS_ERROR); // 插入数据库失败，返回500
         }
     }
-
 
 
     /**
@@ -279,10 +277,10 @@ public class AccountController {
                 .put("nickname", userRoles.getNickname())
                 .put("avatar", userRoles.getAvatar())
                 .put("email", userRoles.getEmail())
-                .put("number",userRoles.getNumber())
-                .put("school",userRoles.getSchool())
-                .put("course",userRoles.getCourse())
-                .put("signature",userRoles.getSignature())
+                .put("number", userRoles.getNumber())
+                .put("school", userRoles.getSchool())
+                .put("course", userRoles.getCourse())
+                .put("signature", userRoles.getSignature())
                 .put("realname", userRoles.getRealname())
                 .put("roleList", rolesList)
                 .map(), "登录成功！"
@@ -314,11 +312,11 @@ public class AccountController {
      */
     @GetMapping("/get-user-home-info")
     @RequiresAuthentication
-    public CommonResult getUserHomeInfo(@RequestParam(value = "uid",required = false)String uid,HttpServletRequest request){
+    public CommonResult getUserHomeInfo(@RequestParam(value = "uid", required = false) String uid, HttpServletRequest request) {
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
         // 如果没有uid，默认查询当前登录用户的
-        if (uid==null){
+        if (uid == null) {
             uid = userRolesVo.getUid();
         }
         UserHomeVo userHomeInfo = userRecordDao.getUserHomeInfo(uid);
@@ -326,15 +324,17 @@ public class AccountController {
         queryWrapper.eq("uid", uid).select("distinct pid");
         List<Long> pidList = new LinkedList<>();
         List<UserAcproblem> acProblemList = userAcproblemService.list(queryWrapper);
-        acProblemList.forEach(acProblem->{pidList.add(acProblem.getPid());});
+        acProblemList.forEach(acProblem -> {
+            pidList.add(acProblem.getPid());
+        });
         userHomeInfo.setSolvedList(pidList);
-        return CommonResult.successResponse(userHomeInfo,"查询成功！");
+        return CommonResult.successResponse(userHomeInfo, "查询成功！");
     }
 
 
     /**
      * @MethodName changePassword
-     * @Params  * @param null
+     * @Params * @param null
      * @Description 修改密码的操作，连续半小时内修改密码错误5次，则需要半个小时后才可以再次尝试修改密码
      * @Return
      * @Since 2021/1/8
@@ -342,12 +342,12 @@ public class AccountController {
 
     @PostMapping("/change-password")
     @RequiresAuthentication
-    public CommonResult changePassword(@RequestBody Map params,HttpServletRequest request){
+    public CommonResult changePassword(@RequestBody Map params, HttpServletRequest request) {
         String oldPassword = (String) params.get("oldPassword");
         String newPassword = (String) params.get("newPassword");
 
         // 数据可用性判断
-        if (StringUtils.isEmpty(oldPassword)||StringUtils.isEmpty(newPassword)){
+        if (StringUtils.isEmpty(oldPassword) || StringUtils.isEmpty(newPassword)) {
             return CommonResult.errorResponse("请求参数不能为空！");
         }
         // 获取当前登录的用户
@@ -355,38 +355,55 @@ public class AccountController {
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
         // 如果已经被锁定半小时不能修改
-        String lockKey = Constants.Account.CODE_CHANGE_PASSWORD_LOCK+userRolesVo.getUid();
-        if (redisUtils.hasKey(lockKey)){
-            long expire = redisUtils.getExpire(lockKey);
-            long minute = expire/60;
-            long second = expire%60;
-            return CommonResult.errorResponse("由于您多次修改密码失败，修改密码功能已锁定，请在"+minute+"分"+second+"秒后再进行尝试！");
-        }
+        String lockKey = Constants.Account.CODE_CHANGE_PASSWORD_LOCK + userRolesVo.getUid();
+        // 统计失败的key
+        String countKey = Constants.Account.CODE_CHANGE_PASSWORD_FAIL + userRolesVo.getUid();
 
+        HashMap<String, Object> resp = new HashMap<>();
+        if (redisUtils.hasKey(lockKey)) {
+            long expire = redisUtils.getExpire(lockKey);
+            Date now = new Date();
+            long minute = expire / 60;
+            long second = expire % 60;
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            resp.put("code", 403);
+            Date afterDate = new Date(now.getTime() + expire * 1000);
+            String msg = "由于您多次修改密码失败，修改密码功能已锁定，请在" + minute + "分" + second + "秒后(" + formatter.format(afterDate) + ")再进行尝试！";
+            resp.put("msg", msg);
+            return CommonResult.successResponse(resp, "修改密码失败！");
+        }
         // 与当前登录用户的密码进行比较判断
-        if(userRolesVo.getPassword().equals(oldPassword)){ // 如果相同，则进行修改密码操作
+        if (userRolesVo.getPassword().equals(SecureUtil.md5(oldPassword))) { // 如果相同，则进行修改密码操作
             UpdateWrapper<UserInfo> updateWrapper = new UpdateWrapper<>();
             updateWrapper.set("password", SecureUtil.md5(newPassword))// 数据库用户密码全部用md5加密
                     .eq("uuid", userRolesVo.getUid());
             boolean result = userInfoDao.update(updateWrapper);
-            if (result){
-                return CommonResult.successResponse(null,"修改密码成功！");
-            }else{
-                return CommonResult.errorResponse("修改密码失败！",CommonResult.STATUS_ERROR);
+            if (result) {
+                resp.put("code", 200);
+                resp.put("msg", "修改密码成功！您将于5秒钟后退出进行重新登录操作！");
+                // 清空记录
+                redisUtils.del(countKey);
+                return CommonResult.successResponse(resp, "修改密码成功！");
+            } else {
+                return CommonResult.errorResponse("系统错误：修改密码失败！", CommonResult.STATUS_ERROR);
             }
-        }else{ // 如果不同，则进行记录，当失败次数达到5次，半个小时后才可重试
-            String countKey = Constants.Account.CODE_CHANGE_PASSWORD_FAIL+userRolesVo.getUid();
-            Integer count  = (Integer) redisUtils.get(countKey);
-            if (count==null){
-                redisUtils.set(countKey,1, 60*30); // 三十分钟不尝试，该限制会自动清空消失
-            }else if(count<5){
+        } else { // 如果不同，则进行记录，当失败次数达到5次，半个小时后才可重试
+            Integer count = (Integer) redisUtils.get(countKey);
+            if (count == null) {
+                redisUtils.set(countKey, 1, 60 * 30); // 三十分钟不尝试，该限制会自动清空消失
+                count = 0;
+            } else if (count < 5) {
                 redisUtils.incr(countKey, 1);
             }
-            else{
-                redisUtils.set(lockKey, "lock", 60*30);
+            count++;
+            if (count == 5) {
+                redisUtils.del(countKey); // 清空统计
+                redisUtils.set(lockKey, "lock", 60 * 30); // 设置锁定更改
             }
-            return CommonResult.errorResponse("原始密码错误！修改密码失败！");
+            resp.put("code", 400);
+            resp.put("msg", "原始密码错误！您已累计修改失败" + count + "次...");
+            return CommonResult.successResponse(resp, "修改密码失败！");
         }
-   }
+    }
 
 }
