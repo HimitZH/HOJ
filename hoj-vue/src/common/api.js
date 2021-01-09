@@ -177,16 +177,6 @@ const ojApi = {
       data
     })
   },
-  changePassword (data) {
-    return ajax('change_password', 'post', {
-      data
-    })
-  },
-  changeEmail (data) {
-    return ajax('change_email', 'post', {
-      data
-    })
-  },
   // Problem List页的相关请求
   getProblemTagList () {
     return ajax('/api/get-all-problem-tags', 'get')
@@ -314,6 +304,11 @@ const ojApi = {
   // setting页的请求
   changePassword(data){
     return ajax("/api/change-password",'post',{
+      data
+    })
+  },
+  changeEmail(data){
+    return ajax("/api/change-email",'post',{
       data
     })
   }

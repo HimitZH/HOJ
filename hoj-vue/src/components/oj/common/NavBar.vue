@@ -62,7 +62,6 @@
             trigger="click"
           >
             <span class="el-dropdown-link">
-
               {{ userInfo.username }}<i class="el-icon-caret-bottom"></i>
             </span>
 
@@ -80,7 +79,14 @@
               >
             </el-dropdown-menu>
           </el-dropdown>
-          <avatar :username="userInfo.username" :inline="true" :size="30" color="#FFF" :src="userInfo.avatar" class="drop-avatar"></avatar>
+          <avatar
+            :username="userInfo.username"
+            :inline="true"
+            :size="30"
+            color="#FFF"
+            :src="userInfo.avatar"
+            class="drop-avatar"
+          ></avatar>
         </template>
       </el-menu>
     </div>
@@ -90,15 +96,29 @@
         <mu-button icon slot="left" @click="opendrawer = !opendrawer">
           <i class="el-icon-s-unfold"></i>
         </mu-button>
-        HOJ
-        <mu-button flat slot="right" @click="handleBtnClick('Login')"  v-show="!isAuthenticated"
+        {{
+          websiteConfig.shortName ? websiteConfig.shortName.toUpperCase() : 'OJ'
+        }}
+        <mu-button
+          flat
+          slot="right"
+          @click="handleBtnClick('Login')"
+          v-show="!isAuthenticated"
           >Login</mu-button
         >
-        <mu-button flat slot="right" @click="handleBtnClick('Register')" v-show="!isAuthenticated && websiteConfig.register"
+        <mu-button
+          flat
+          slot="right"
+          @click="handleBtnClick('Register')"
+          v-show="!isAuthenticated && websiteConfig.register"
           >Register</mu-button
         >
 
-        <mu-menu slot="right" v-show="isAuthenticated" :open.sync="openusermenu">
+        <mu-menu
+          slot="right"
+          v-show="isAuthenticated"
+          :open.sync="openusermenu"
+        >
           <mu-button flat>
             {{ userInfo.username }}<i class="el-icon-caret-bottom"></i>
           </mu-button>
@@ -120,7 +140,7 @@
               </mu-list-item-content>
             </mu-list-item>
 
-             <mu-list-item button value="/admin">
+            <mu-list-item button value="/admin">
               <mu-list-item-content>
                 <mu-list-item-title>Management</mu-list-item-title>
               </mu-list-item-content>
@@ -136,73 +156,139 @@
         </mu-menu>
       </mu-appbar>
 
-      <mu-appbar style="width: 100%;"> <!--占位，刚好占领导航栏的高度-->
-    </mu-appbar>
+      <mu-appbar style="width: 100%;">
+        <!--占位，刚好占领导航栏的高度-->
+      </mu-appbar>
 
       <mu-drawer :open.sync="opendrawer" :docked="false" :right="false">
         <mu-list toggle-nested>
-          <mu-list-item button to="/home" @click="opendrawer =!opendrawer" active-class="mobile-menu-active">
+          <mu-list-item
+            button
+            to="/home"
+            @click="opendrawer = !opendrawer"
+            active-class="mobile-menu-active"
+          >
             <mu-list-item-action>
               <mu-icon value="home" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>Home</mu-list-item-title>
           </mu-list-item>
 
-          <mu-list-item button to="/problem" @click="opendrawer =!opendrawer" active-class="mobile-menu-active">
+          <mu-list-item
+            button
+            to="/problem"
+            @click="opendrawer = !opendrawer"
+            active-class="mobile-menu-active"
+          >
             <mu-list-item-action>
               <mu-icon value=":el-icon-s-grid" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>Problem</mu-list-item-title>
           </mu-list-item>
 
-          <mu-list-item button to="/contest" @click="opendrawer =!opendrawer" active-class="mobile-menu-active">
+          <mu-list-item
+            button
+            to="/contest"
+            @click="opendrawer = !opendrawer"
+            active-class="mobile-menu-active"
+          >
             <mu-list-item-action>
               <mu-icon value=":el-icon-trophy" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>Contest</mu-list-item-title>
           </mu-list-item>
 
-          <mu-list-item button to="/status" @click="opendrawer =!opendrawer" active-class="mobile-menu-active">
+          <mu-list-item
+            button
+            to="/status"
+            @click="opendrawer = !opendrawer"
+            active-class="mobile-menu-active"
+          >
             <mu-list-item-action>
               <mu-icon value=":el-icon-s-marketing" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>Status</mu-list-item-title>
           </mu-list-item>
-          
-          <mu-list-item button :ripple="false"
-           nested :open="openSideMenu === 'rank'" @toggle-nested="openSideMenu = arguments[0] ? 'rank' : ''" >
+
+          <mu-list-item
+            button
+            :ripple="false"
+            nested
+            :open="openSideMenu === 'rank'"
+            @toggle-nested="openSideMenu = arguments[0] ? 'rank' : ''"
+          >
             <mu-list-item-action>
               <mu-icon value=":el-icon-s-data" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>Rank</mu-list-item-title>
             <mu-list-item-action>
-              <mu-icon class="toggle-icon" size="24" value="keyboard_arrow_down"></mu-icon>
+              <mu-icon
+                class="toggle-icon"
+                size="24"
+                value="keyboard_arrow_down"
+              ></mu-icon>
             </mu-list-item-action>
-            <mu-list-item button :ripple="false" slot="nested" to="/acm-rank" @click="opendrawer =!opendrawer" active-class="mobile-menu-active">
+            <mu-list-item
+              button
+              :ripple="false"
+              slot="nested"
+              to="/acm-rank"
+              @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
+            >
               <mu-list-item-title>ACM Rank</mu-list-item-title>
             </mu-list-item>
-            <mu-list-item button :ripple="false" slot="nested" to="/oi-rank" @click="opendrawer =!opendrawer" active-class="mobile-menu-active">
+            <mu-list-item
+              button
+              :ripple="false"
+              slot="nested"
+              to="/oi-rank"
+              @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
+            >
               <mu-list-item-title>OI Rank</mu-list-item-title>
             </mu-list-item>
           </mu-list-item>
 
-          <mu-list-item button :ripple="false" 
-          nested :open="openSideMenu === 'about'" @toggle-nested="openSideMenu = arguments[0] ? 'about' : ''">
+          <mu-list-item
+            button
+            :ripple="false"
+            nested
+            :open="openSideMenu === 'about'"
+            @toggle-nested="openSideMenu = arguments[0] ? 'about' : ''"
+          >
             <mu-list-item-action>
               <mu-icon value=":el-icon-info" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>About</mu-list-item-title>
             <mu-list-item-action>
-              <mu-icon class="toggle-icon" size="24" value="keyboard_arrow_down"></mu-icon>
+              <mu-icon
+                class="toggle-icon"
+                size="24"
+                value="keyboard_arrow_down"
+              ></mu-icon>
             </mu-list-item-action>
-            <mu-list-item button :ripple="false" slot="nested" to="/introduction" @click="opendrawer =!opendrawer" active-class="mobile-menu-active">
+            <mu-list-item
+              button
+              :ripple="false"
+              slot="nested"
+              to="/introduction"
+              @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
+            >
               <mu-list-item-title>Introduction</mu-list-item-title>
             </mu-list-item>
-            <mu-list-item button :ripple="false" slot="nested" to="/developer" @click="opendrawer =!opendrawer" active-class="mobile-menu-active">
+            <mu-list-item
+              button
+              :ripple="false"
+              slot="nested"
+              to="/developer"
+              @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
+            >
               <mu-list-item-title>Developer</mu-list-item-title>
             </mu-list-item>
           </mu-list-item>
-
         </mu-list>
       </mu-drawer>
     </div>
@@ -218,19 +304,19 @@
   </div>
 </template>
 <script>
-import Login from "@/components/oj/common/Login";
-import Register from "@/components/oj/common/Register";
-import ResetPwd from "@/components/oj/common/ResetPassword";
-import { mapGetters, mapActions } from "vuex";
-import api from "@/common/api";
-import Avatar from 'vue-avatar'
+import Login from '@/components/oj/common/Login';
+import Register from '@/components/oj/common/Register';
+import ResetPwd from '@/components/oj/common/ResetPassword';
+import { mapGetters, mapActions } from 'vuex';
+import api from '@/common/api';
+import Avatar from 'vue-avatar';
 
 export default {
   components: {
     Login,
     Register,
     ResetPwd,
-    Avatar
+    Avatar,
   },
   mounted() {
     window.onresize = () => {
@@ -242,15 +328,16 @@ export default {
     return {
       centerDialogVisible: false,
       mobileNar: false,
-      opendrawer:false,
-      openusermenu:false,
-      openSideMenu:'',
-      imgUrl: require("@/assets/logo.png"),
-      avatarStyle:'display: inline-flex;width: 30px;height: 30px;border-radius: 50%;align-items: center;justify-content: center;text-align: center;user-select: none;'
+      opendrawer: false,
+      openusermenu: false,
+      openSideMenu: '',
+      imgUrl: require('@/assets/logo.png'),
+      avatarStyle:
+        'display: inline-flex;width: 30px;height: 30px;border-radius: 50%;align-items: center;justify-content: center;text-align: center;user-select: none;',
     };
   },
   methods: {
-    ...mapActions(["changeModalStatus"]),
+    ...mapActions(['changeModalStatus']),
     page_width() {
       let screenWidth = window.screen.width;
       if (screenWidth < 1080) {
@@ -267,33 +354,33 @@ export default {
     },
     handleRoute(route) {
       //电脑端导航栏路由跳转事件
-      if (route && route.indexOf("admin") < 0) {
+      if (route && route.indexOf('admin') < 0) {
         this.$router.push(route);
       } else {
-        window.open("/admin/");
+        window.open('/admin/');
       }
     },
     handleCommand(route) {
       // 移动端导航栏路由跳转事件
       this.openusermenu = false;
-      if (route && route.indexOf("admin") < 0) {
+      if (route && route.indexOf('admin') < 0) {
         this.$router.push(route);
       } else {
-        window.open("/admin/");
+        window.open('/admin/');
       }
     },
   },
   computed: {
     ...mapGetters([
-      "modalStatus",
-      "userInfo",
-      "isAuthenticated",
-      "isAdminRole",
-      "token",
-      "websiteConfig"
+      'modalStatus',
+      'userInfo',
+      'isAuthenticated',
+      'isAdminRole',
+      'token',
+      'websiteConfig',
     ]),
-    activeMenuName () {
-        return '/' + this.$route.path.split('/')[1]
+    activeMenuName() {
+      return '/' + this.$route.path.split('/')[1];
     },
     modalVisible: {
       get() {
@@ -305,10 +392,10 @@ export default {
     },
     title: {
       get() {
-        if (this.modalStatus.mode == "ResetPwd") {
-          return "Reset Password - HOJ";
+        if (this.modalStatus.mode == 'ResetPwd') {
+          return 'Reset Password - HOJ';
         } else {
-          return this.modalStatus.mode + " - HOJ";
+          return this.modalStatus.mode + ' - HOJ';
         }
       },
     },
@@ -342,10 +429,8 @@ export default {
   bottom: 0px;
   z-index: 1000;
   width: 100%;
-   box-shadow: 00px 0px 00px rgb(255, 255, 255),
-    0px 0px 10px rgb(255, 255, 255),
-     0px 0px 0px rgb(255, 255, 255),
-     1px 1px 0px rgb(218, 218, 218);
+  box-shadow: 00px 0px 00px rgb(255, 255, 255), 0px 0px 10px rgb(255, 255, 255),
+    0px 0px 0px rgb(255, 255, 255), 1px 1px 0px rgb(218, 218, 218);
 }
 
 .logo {
@@ -372,7 +457,7 @@ export default {
   margin-top: 18px;
   font-size: 18px;
 }
-.drop-avatar{
+.drop-avatar {
   float: right;
   margin-right: 15px;
   position: relative;

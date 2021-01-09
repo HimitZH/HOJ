@@ -3,6 +3,7 @@ package top.hcode.hoj.controller.oj;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -262,10 +263,6 @@ public class AccountController {
         String jwt = jwtUtils.generateToken(userRoles.getUid());
         response.setHeader("Authorization", jwt); //放到信息头部
         response.setHeader("Access-Control-Expose-Headers", "Authorization");
-        // 查询角色列表
-        List<String> rolesList = new LinkedList<>();
-        userRoles.getRoles()
-                .forEach(role -> rolesList.add(role.getRole()));
 
         // 会话记录
         sessionDao.insert(new Session().setUid(userRoles.getUid())
@@ -282,7 +279,8 @@ public class AccountController {
                 .put("course", userRoles.getCourse())
                 .put("signature", userRoles.getSignature())
                 .put("realname", userRoles.getRealname())
-                .put("roleList", rolesList)
+                .put("cfUsername", userRoles.getCfUsername())
+                .put("roleList", userRoles.getRoles().stream().map(Role::getRole))
                 .map(), "登录成功！"
         );
     }
@@ -401,7 +399,7 @@ public class AccountController {
                 redisUtils.set(lockKey, "lock", 60 * 30); // 设置锁定更改
             }
             resp.put("code", 400);
-            resp.put("msg", "原始密码错误！您已累计修改失败" + count + "次...");
+            resp.put("msg", "原始密码错误！您已累计修改秘密失败" + count + "次...");
             return CommonResult.successResponse(resp, "修改密码失败！");
         }
     }
@@ -416,12 +414,16 @@ public class AccountController {
     @PostMapping("/change-email")
     @RequiresAuthentication
     public CommonResult changeEmail(@RequestBody Map params, HttpServletRequest request) {
+
         String password = (String) params.get("password");
         String oldEmail = (String) params.get("oldEmail");
         String newEmail = (String) params.get("newEmail");
         // 数据可用性判断
         if (StringUtils.isEmpty(password) || StringUtils.isEmpty(newEmail) || StringUtils.isEmpty(oldEmail)) {
             return CommonResult.errorResponse("请求参数不能为空！");
+        }
+        if (!Validator.isEmail(newEmail)){
+            return CommonResult.errorResponse("邮箱格式错误！");
         }
         // 获取当前登录的用户
         HttpSession session = request.getSession();
@@ -453,7 +455,21 @@ public class AccountController {
             boolean result = userInfoDao.update(updateWrapper);
             if (result) {
                 resp.put("code", 200);
-                resp.put("msg", "修改邮箱成功！您将于5秒钟后退出进行重新登录操作！");
+                resp.put("msg", "修改邮箱成功！");
+                resp.put("userInfo", MapUtil.builder()
+                        .put("uid", userRolesVo.getUid())
+                        .put("username", userRolesVo.getUsername())
+                        .put("nickname", userRolesVo.getNickname())
+                        .put("avatar", userRolesVo.getAvatar())
+                        .put("email", newEmail)
+                        .put("number", userRolesVo.getNumber())
+                        .put("school", userRolesVo.getSchool())
+                        .put("course", userRolesVo.getCourse())
+                        .put("signature", userRolesVo.getSignature())
+                        .put("realname", userRolesVo.getRealname())
+                        .put("cfUsername", userRolesVo.getCfUsername())
+                        .put("roleList", userRolesVo.getRoles().stream().map(Role::getRole))
+                        .map());
                 // 清空记录
                 redisUtils.del(countKey);
                 return CommonResult.successResponse(resp, "修改邮箱成功！");
@@ -474,7 +490,7 @@ public class AccountController {
                 redisUtils.set(lockKey, "lock", 60 * 30); // 设置锁定更改
             }
             resp.put("code", 400);
-            resp.put("msg", "原始密码错误！您已累计修改失败" + count + "次...");
+            resp.put("msg", "密码错误！您已累计修改邮箱失败" + count + "次...");
             return CommonResult.successResponse(resp, "修改邮箱失败！");
         }
     }

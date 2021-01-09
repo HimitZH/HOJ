@@ -2,12 +2,14 @@ import { USER_TYPE, PROBLEM_PERMISSION } from '@/common/constants'
 import storage from '@/common/storage'
 const state = {
   userInfo:  storage.get('userInfo'),
-  token: localStorage.getItem('token')
+  token: localStorage.getItem('token'),
+  loginFailNum:0,
 }
 
 const getters = {
   userInfo: state => state.userInfo || {},
   token: state => state.token ||'',
+  loginFailNum:state=>state.loginFailNum || 0,
   isAuthenticated: (state, getters) => {
     return !!getters.token
   },
@@ -37,9 +39,18 @@ const mutations = {
     state.token = token
     localStorage.setItem("token",token)
   },
+  incrLoginFailNum(state,{success}){
+    if(!success){
+      state.loginFailNum +=1
+    }else{
+      state.loginFailNum = 0
+    }
+  },
+  
   clearUserInfoAndToken(state){
     state.token = ''
     state.userInfo = {}
+    state.loginFailNum = 0
     storage.clear()
   }
 }
@@ -49,6 +60,9 @@ const actions = {
       commit('changeUserInfo', {
         userInfo: userInfo
       })
+  },
+  incrLoginFailNum({commit},success){
+    commit('incrLoginFailNum',{success:success})
   },
   clearUserInfoAndToken ({commit}) {
     commit('clearUserInfoAndToken')

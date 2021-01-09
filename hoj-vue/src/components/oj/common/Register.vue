@@ -165,14 +165,14 @@ export default {
         number: [
           {
             required: true,
-            message: 'Student number is required',
+            message: 'The student number is required',
             trigger: 'blur',
           },
         ],
         email: [
           {
             required: true,
-            message: 'Email is required',
+            message: 'The email is required',
             trigger: 'blur',
           },
           {
@@ -189,7 +189,7 @@ export default {
         password: [
           {
             required: true,
-            message: 'Password is required',
+            message: 'The password is required',
             trigger: 'blur',
           },
           {
@@ -203,7 +203,7 @@ export default {
         passwordAgain: [
           {
             required: true,
-            message: 'Password again is required',
+            message: 'The password again is required',
             trigger: 'blur',
           },
           { validator: CheckAgainPassword, trigger: 'change' },
@@ -211,13 +211,13 @@ export default {
         code: [
           {
             required: true,
-            message: 'Captcha must be six digits',
+            message: 'The captcha must be six digits',
             trigger: 'blur',
           },
           {
             min: 6,
             max: 6,
-            message: 'Captcha must be six digits',
+            message: 'The captcha must be six digits',
             trigger: 'blur',
           },
         ],

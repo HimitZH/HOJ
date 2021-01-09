@@ -58,8 +58,18 @@
           </el-col>
           <el-col :span="4" v-show="isAuthenticated">
             <i class="fa fa-font katex-editor" @click="katexVisible = true"></i>
-            <avatar :username="userInfo.username" :inline="true" :size="30" color="#FFF" :src="userInfo.avatar" class="drop-avatar"></avatar>
-            <el-dropdown @command="handleCommand" style="vertical-align: middle;">
+            <avatar
+              :username="userInfo.username"
+              :inline="true"
+              :size="30"
+              color="#FFF"
+              :src="userInfo.avatar"
+              class="drop-avatar"
+            ></avatar>
+            <el-dropdown
+              @command="handleCommand"
+              style="vertical-align: middle;"
+            >
               <span
                 >{{ userInfo.username
                 }}<i class="el-icon-caret-bottom el-icon--right"></i
@@ -78,7 +88,11 @@
         <mu-button icon slot="left" @click="opendrawer = !opendrawer">
           <i class="el-icon-s-unfold"></i>
         </mu-button>
-        HOJ Admin
+        {{
+          websiteConfig.shortName
+            ? websiteConfig.shortName.toUpperCase() + ' ADMIN'
+            : 'OJ ADMIN'
+        }}
         <mu-menu slot="right" v-show="isAuthenticated">
           <mu-button flat @click="katexVisible = true">
             <i class="fa fa-font katex-editor"></i>
@@ -119,7 +133,7 @@
           </mu-list-item>
 
           <mu-list-item
-           v-if="isSuperAdmin"
+            v-if="isSuperAdmin"
             button
             :ripple="false"
             nested
@@ -274,13 +288,13 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import KatexEditor from "@/components/admin/KatexEditor.vue";
-import api from "@/common/api";
-import mMessage from '@/common/message'
-import Avatar from 'vue-avatar'
+import { mapGetters } from 'vuex';
+import KatexEditor from '@/components/admin/KatexEditor.vue';
+import api from '@/common/api';
+import mMessage from '@/common/message';
+import Avatar from 'vue-avatar';
 export default {
-  name: "app",
+  name: 'app',
   mounted() {
     this.currentPath = this.$route.path;
     this.getBreadcrumb();
@@ -292,24 +306,24 @@ export default {
   data() {
     return {
       openusermenu: false,
-      openSideMenu: "",
+      openSideMenu: '',
       katexVisible: false,
       opendrawer: false,
       mobileNar: false,
-      currentPath: "",
+      currentPath: '',
       routeList: [],
     };
   },
   components: {
     KatexEditor,
-    Avatar
+    Avatar,
   },
   methods: {
     handleCommand(command) {
-      if (command === "logout") {
+      if (command === 'logout') {
         api.admin_logout().then((res) => {
-          this.$router.push({ path: "/admin/login" });
-          mMessage.success(res.data.msg)
+          this.$router.push({ path: '/admin/login' });
+          mMessage.success(res.data.msg);
           this.$store.commit('clearUserInfoAndToken');
         });
       }
@@ -328,7 +342,12 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["userInfo", "isSuperAdmin","isAuthenticated"]),
+    ...mapGetters([
+      'userInfo',
+      'isSuperAdmin',
+      'isAuthenticated',
+      'websiteConfig',
+    ]),
   },
   watch: {
     $route() {
@@ -440,7 +459,7 @@ img {
   /*font-size: 18px;*/
   margin-right: 10px;
 }
-.drop-avatar{
+.drop-avatar {
   vertical-align: middle;
   margin-right: 10px;
 }

@@ -33,16 +33,16 @@
   </div>
 </template>
 <script>
-import { mapGetters, mapActions } from "vuex";
-import api from "@/common/api";
-import mMessage from "@/common/message";
+import { mapGetters, mapActions } from 'vuex';
+import api from '@/common/api';
+import mMessage from '@/common/message';
 export default {
   data() {
     const CheckUsernameNotExist = (rule, value, callback) => {
       api.checkUsernameOrEmail(value, undefined).then(
         (res) => {
           if (res.data.data.username === false) {
-            callback(new Error("The username does not exist"));
+            callback(new Error('The username does not exist'));
           } else {
             callback();
           }
@@ -54,7 +54,7 @@ export default {
       api.checkUsernameOrEmail(undefined, value).then(
         (res) => {
           if (res.data.data.email === false) {
-            callback(new Error("The email does not exist"));
+            callback(new Error('The email does not exist'));
           } else {
             callback();
           }
@@ -63,31 +63,35 @@ export default {
       );
     };
     return {
-      resetText: "发送重置密码的邮件",
+      resetText: '发送重置密码的邮件',
       btnResetPwdLoading: false,
       formResetPassword: {
-        username: "",
-        email: "",
+        username: '',
+        email: '',
       },
       rules: {
         username: [
-          { required: true, message: "Username is required", trigger: "blur" },
-          { validator: CheckUsernameNotExist, trigger: "blur" },
+          {
+            required: true,
+            message: 'The username is required',
+            trigger: 'blur',
+          },
+          { validator: CheckUsernameNotExist, trigger: 'blur' },
         ],
         email: [
           {
             required: true,
-            message: "Email is required",
-            type: "email",
-            trigger: "blur",
+            message: 'The email is required',
+            type: 'email',
+            trigger: 'blur',
           },
-          { validator: CheckEmailNotExist, trigger: "blur" },
+          { validator: CheckEmailNotExist, trigger: 'blur' },
         ],
       },
     };
   },
   methods: {
-    ...mapActions(["changeModalStatus","changeResetTimeOut","startTimeOut"]),
+    ...mapActions(['changeModalStatus', 'changeResetTimeOut', 'startTimeOut']),
     switchMode(mode) {
       this.changeModalStatus({
         mode,
@@ -96,36 +100,40 @@ export default {
     },
     countDown() {
       let i = this.time;
-      this.resetText = i + "秒后，可重新发送重置密码的邮件...";
+      this.resetText = i + '秒后，可重新发送重置密码的邮件...';
       if (i == 0) {
         this.btnResetPwdLoading = false;
-        this.resetText = "发送重置密码的邮件";
+        this.resetText = '发送重置密码的邮件';
         return;
       }
-      setTimeout(()=>{this.countDown()},1000);  
+      setTimeout(() => {
+        this.countDown();
+      }, 1000);
     },
     handleResetPwd() {
-      this.$refs["formResetPassword"].validate((valid) => {
-        this.resetText = "正在发送...";
-        mMessage.info("请稍后...系统正在向您的邮箱发送重置确认邮件");
-        this.btnResetPwdLoading = true;
-        api.applyResetPassword(this.formResetPassword).then(
-          (res) => {
-            mMessage.success(res.data.msg);
-            this.successApply = true;
-            this.countDown();
-            this.startTimeOut({name:'resetTimeOut'});
-          },
-          (_) => {
-            this.btnResetPwdLoading = false;
-            this.resetText = "重新发送";
-          }
-        );
+      this.$refs['formResetPassword'].validate((valid) => {
+        if (valid) {
+          this.resetText = '正在发送...';
+          mMessage.info('请稍后...系统正在向您的邮箱发送重置确认邮件');
+          this.btnResetPwdLoading = true;
+          api.applyResetPassword(this.formResetPassword).then(
+            (res) => {
+              mMessage.success(res.data.msg);
+              this.successApply = true;
+              this.countDown();
+              this.startTimeOut({ name: 'resetTimeOut' });
+            },
+            (_) => {
+              this.btnResetPwdLoading = false;
+              this.resetText = '重新发送';
+            }
+          );
+        }
       });
     },
   },
   computed: {
-    ...mapGetters(["resetTimeOut","modalStatus"]),
+    ...mapGetters(['resetTimeOut', 'modalStatus']),
     time: {
       get() {
         return this.resetTimeOut;
@@ -135,12 +143,12 @@ export default {
       },
     },
   },
-  created(){
-    if(this.time!=90&&this.time!=0){
+  created() {
+    if (this.time != 90 && this.time != 0) {
       this.btnResetPwdLoading = true;
-      this.countDown()
+      this.countDown();
     }
-  }
+  },
 };
 </script>
 <style scoped>

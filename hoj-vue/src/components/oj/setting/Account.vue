@@ -23,13 +23,14 @@
           <el-popover
             placement="top"
             width="350"
-            v-model="visible.slideBlock"
+            v-model="visible.passwordSlideBlock"
             trigger="click"
           >
             <el-button
               type="primary"
               slot="reference"
               :loading="loading.btnPassword"
+              :disabled="disabled.btnPassword"
               >Update Password</el-button
             >
             <slide-verify
@@ -39,9 +40,9 @@
               :h="100"
               :accuracy="3"
               @success="changePassword"
-              @again="onAgain"
+              @again="onAgain('password')"
               slider-text="请向右滑动验证"
-              ref="slideblock"
+              ref="passwordSlideBlock"
               v-show="!verify.passwordSuccess"
             >
             </slide-verify>
@@ -86,23 +87,61 @@
               <el-input v-model="formEmail.password" type="password" />
             </el-form-item>
             <el-form-item label="Old Email">
-              <el-input v-model="formEmail.old_email" disabled />
+              <el-input v-model="formEmail.oldEmail" disabled />
             </el-form-item>
-            <el-form-item label="New Email" prop="new_email">
-              <el-input v-model="formEmail.new_email" />
+            <el-form-item label="New Email" prop="newEmail">
+              <el-input v-model="formEmail.newEmail" />
             </el-form-item>
-            <el-form-item
-              v-if="visible.tfaRequired"
-              label="Two Factor Auth"
-              prop="tfa_code"
-            >
-              <el-input v-model="formEmail.tfa_code" />
-            </el-form-item>
-            <el-button type="primary" @click="changeEmail"
-              >Change Email</el-button
-            >
           </el-form>
+          <el-popover
+            placement="top"
+            width="350"
+            v-model="visible.emailSlideBlock"
+            trigger="click"
+          >
+            <el-button
+              type="primary"
+              slot="reference"
+              :loading="loading.btnEmailLoading"
+              :disabled="disabled.btnEmail"
+              >Update Email</el-button
+            >
+            <slide-verify
+              :l="42"
+              :r="10"
+              :w="325"
+              :h="100"
+              :accuracy="3"
+              @success="changeEmail"
+              @again="onAgain('email')"
+              slider-text="请向右滑动验证"
+              ref="emailSlideBlock"
+              v-show="!verify.emailSuccess"
+            >
+            </slide-verify>
+            <el-alert
+              title="验证成功"
+              type="success"
+              :description="verify.emailMsg"
+              v-show="verify.emailSuccess"
+              :center="true"
+              :closable="false"
+              show-icon
+            >
+            </el-alert>
+          </el-popover>
         </div>
+        <el-alert
+          v-show="visible.emailAlert.show"
+          :title="visible.emailAlert.title"
+          :type="visible.emailAlert.type"
+          :description="visible.emailAlert.description"
+          :closable="false"
+          effect="dark"
+          style="margin-top:15px"
+          show-icon
+        >
+        </el-alert>
       </el-col>
     </el-row>
   </div>
@@ -144,8 +183,20 @@ export default {
       }
       callback();
     };
+    const CheckEmail = (rule, value, callback) => {
+      if (this.formEmail.oldEmail !== '') {
+        if (this.formEmail.oldEmail === this.formEmail.newEmail) {
+          callback(new Error("The new email doesn't change"));
+        }
+      }
+      callback();
+    };
     return {
       loading: {
+        btnPassword: false,
+        btnEmail: false,
+      },
+      disabled: {
         btnPassword: false,
         btnEmail: false,
       },
@@ -168,7 +219,8 @@ export default {
           title: '',
           description: '',
         },
-        slideBlock: false,
+        passwordSlideBlock: false,
+        emailSlideBlock: false,
       },
       formPassword: {
         oldPassword: '',
@@ -177,8 +229,8 @@ export default {
       },
       formEmail: {
         password: '',
-        old_email: '',
-        new_email: '',
+        oldEmail: '',
+        newEmail: '',
       },
       rulePassword: {
         oldPassword: oldPasswordCheck,
@@ -207,12 +259,24 @@ export default {
       },
       ruleEmail: {
         password: oldPasswordCheck,
-        new_email: [{ required: true, type: 'email', trigger: 'change' }],
+        newEmail: [
+          {
+            required: true,
+            message: 'The new email is required',
+            trigger: 'blur',
+          },
+          {
+            type: 'email',
+            trigger: 'change',
+            message: 'The email format is incorrect',
+          },
+          { validator: CheckEmail, trigger: 'blur' },
+        ],
       },
     };
   },
   mounted() {
-    this.formEmail.old_email = this.$store.getters.userInfo.email || '';
+    this.formEmail.oldEmail = this.$store.getters.userInfo.email || '';
   },
   methods: {
     changePassword(times) {
@@ -220,21 +284,20 @@ export default {
       let time = (times / 1000).toFixed(1);
       this.verify.passwordMsg = '本次耗时' + time + 's';
       setTimeout(() => {
-        this.visible.slideBlock = false;
+        this.visible.passwordSlideBlock = false;
         this.verify.passwordSuccess = false;
         // 无论后续成不成功，验证码滑动都要刷新
-        this.$refs.slideblock.reset();
+        this.$refs.passwordSlideBlock.reset();
       }, 1000);
 
       this.$refs['formPassword'].validate((valid) => {
         if (valid) {
           this.loading.btnPassword = true;
           let data = Object.assign({}, this.formPassword);
-          delete data.again_password;
+          delete data.againPassword;
           api.changePassword(data).then(
             (res) => {
               this.loading.btnPassword = false;
-              this.visible.passwordAlert = true;
               if (res.data.data.code == 200) {
                 myMessage.success(res.data.msg);
                 this.visible.passwordAlert = {
@@ -257,6 +320,7 @@ export default {
                 };
                 if (res.data.data.code == 403) {
                   this.visible.passwordAlert.type = 'error';
+                  this.disabled.btnPassword = true;
                 }
               }
             },
@@ -267,27 +331,62 @@ export default {
         }
       });
     },
-    changeEmail() {
-      this.validateForm('formEmail').then((valid) => {
-        this.loading.btnEmail = true;
-        let data = Object.assign({}, this.formEmail);
-        api.changeEmail(data).then(
-          (res) => {
-            this.loading.btnEmail = false;
-            this.visible.emailAlert = true;
-            this.$success('Change email successfully');
-            this.$refs.formEmail.resetFields();
-          },
-          (err) => {
-            if (res.data.data === 'tfa_required') {
-              this.visible.tfaRequired = true;
+    changeEmail(times) {
+      this.verify.emailSuccess = true;
+      let time = (times / 1000).toFixed(1);
+      this.verify.emailMsg = '本次耗时' + time + 's';
+      setTimeout(() => {
+        this.visible.emailSlideBlock = false;
+        this.verify.emailSuccess = false;
+        // 无论后续成不成功，验证码滑动都要刷新
+        this.$refs.emailSlideBlock.reset();
+      }, 1000);
+      this.$refs['formEmail'].validate((valid) => {
+        if (valid) {
+          this.loading.btnEmail = true;
+          let data = Object.assign({}, this.formEmail);
+          api.changeEmail(data).then(
+            (res) => {
+              this.loading.btnEmail = false;
+              if (res.data.data.code == 200) {
+                myMessage.success(res.data.msg);
+                this.visible.emailAlert = {
+                  show: true,
+                  title: '修改成功',
+                  type: 'success',
+                  description: res.data.data.msg,
+                };
+                // 更新本地缓存
+                this.$store.dispatch('setUserInfo', res.data.data.userInfo);
+                this.$refs['formEmail'].resetFields();
+                this.formEmail.oldEmail = res.data.data.userInfo.email;
+              } else {
+                myMessage.error(res.data.msg);
+                this.visible.emailAlert = {
+                  show: true,
+                  title: '修改失败',
+                  type: 'warning',
+                  description: res.data.data.msg,
+                };
+                if (res.data.data.code == 403) {
+                  this.visible.emailAlert.type = 'error';
+                  this.disabled.btnEmail = true;
+                }
+              }
+            },
+            (err) => {
+              this.loading.btnEmail = false;
             }
-          }
-        );
+          );
+        }
       });
     },
-    onAgain() {
-      this.$refs.slideblock.reset();
+    onAgain(type) {
+      if ((type = 'password')) {
+        this.$refs.passwordSlideBlock.reset();
+      } else {
+        this.$refs.emailSlideBlock.reset();
+      }
       myMessage.warning('速度过快，可能为机器操作！请重新验证！');
     },
   },

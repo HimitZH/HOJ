@@ -1,231 +1,250 @@
 <template>
-<div>
-  <el-row :gutter="20">
-    <el-col :xs="24" :md="10" :lg="8">
-      <el-card class="admin-info">
-        <div slot="header">
-          <el-row :gutter="10">
-            <el-col :span="10">
-              <img class="avatar" :src="userInfo.avatar" />
-            </el-col>
-            <el-col :span="14">
-              <span class="panel-title admin-info-name">{{
-                userInfo.username
-              }}</span>
-              <p>{{ isSuperAdmin==true?'超级管理员':'管理员'}}</p>
-            </el-col>
-          </el-row>
-        </div>
-        <div class="last-info">
-          <p class="last-info-title home-title">Last Login</p>
-          <el-form label-width="80px" class="last-info-body">
-            <el-form-item label="Time:">
-              <span>{{ session.gmtCreate | localtime }}</span>
-            </el-form-item>
-            <el-form-item label="IP:">
-              <span>{{ session.ip }}</span>
-            </el-form-item>
-            <el-form-item label="OS:">
-              <span>{{ os }}</span>
-            </el-form-item>
-            <el-form-item label="Browser:">
-              <span>{{ browser }}</span>
-            </el-form-item>
-          </el-form>
-        </div>
-      </el-card>
-    </el-col>
+  <div>
+    <el-row :gutter="20">
+      <el-col :xs="24" :md="10" :lg="8">
+        <el-card class="admin-info">
+          <div slot="header">
+            <el-row :gutter="10">
+              <el-col :span="10">
+                <img class="avatar" :src="userInfo.avatar" />
+              </el-col>
+              <el-col :span="14">
+                <span class="panel-title admin-info-name">{{
+                  userInfo.username
+                }}</span>
+                <p>{{ isSuperAdmin == true ? '超级管理员' : '管理员' }}</p>
+              </el-col>
+            </el-row>
+          </div>
+          <div class="last-info">
+            <p class="last-info-title home-title">Last Login</p>
+            <el-form label-width="80px" class="last-info-body">
+              <el-form-item label="Time:">
+                <span>{{ session.gmtCreate | localtime }}</span>
+              </el-form-item>
+              <el-form-item label="IP:">
+                <span>{{ session.ip }}</span>
+              </el-form-item>
+              <el-form-item label="OS:">
+                <span>{{ os }}</span>
+              </el-form-item>
+              <el-form-item label="Browser:">
+                <span>{{ browser }}</span>
+              </el-form-item>
+            </el-form>
+          </div>
+        </el-card>
+      </el-col>
 
-    <!-- <el-col :md="14" :lg="16" v-if="isSuperAdmin"> -->
-    <el-col :xs="24" :md="14" :lg="16">
-      <div class="info-container">
-        <info-card
-          color="#909399"
-          icon="fa fa-users"
-          message="Total Users"
-          iconSize="30px"
-          class="info-item"
-          :value="infoData.userNum"
-        ></info-card>
-        <info-card
-          color="#67C23A"
-          icon="fa fa-list"
-          message="Today Submissions"
-          class="info-item"
-          :value="infoData.todayJudgeNum"
-        ></info-card>
-        <info-card
-          color="#409EFF"
-          icon="fa fa-trophy"
-          message="Recent 14 Days Contests"
-          class="info-item"
-          :value="infoData.recentContestNum"
-        ></info-card>
-      </div>
-      <!-- <el-card title="System_Overview" v-if="isSuperAdmin"> -->
-      <el-card>
+      <!-- <el-col :md="14" :lg="16" v-if="isSuperAdmin"> -->
+      <el-col :xs="24" :md="14" :lg="16">
+        <div class="info-container">
+          <info-card
+            color="#909399"
+            icon="fa fa-users"
+            message="Total Users"
+            iconSize="30px"
+            class="info-item"
+            :value="infoData.userNum"
+          ></info-card>
+          <info-card
+            color="#67C23A"
+            icon="fa fa-list"
+            message="Today Submissions"
+            class="info-item"
+            :value="infoData.todayJudgeNum"
+          ></info-card>
+          <info-card
+            color="#409EFF"
+            icon="fa fa-trophy"
+            message="Recent 14 Days Contests"
+            class="info-item"
+            :value="infoData.recentContestNum"
+          ></info-card>
+        </div>
+        <!-- <el-card title="System_Overview" v-if="isSuperAdmin"> -->
+        <el-card>
           <div slot="header">
             <span class="panel-title home-title">General System</span>
           </div>
           <el-row>
             <el-col :xs="24" :md="8">
-              <span>HOJ Server Num：
-                <el-tag effect="dark" color="#2d8cf0" size="mini">{{ generalInfo.nacos.instanceCount }}</el-tag>
+              <span
+                >HOJ Server Num：
+                <el-tag effect="dark" color="#2d8cf0" size="mini">{{
+                  generalInfo.nacos.instanceCount
+                }}</el-tag>
               </span>
             </el-col>
             <el-col :xs="24" :md="8">
-            <span>Nacos Status：
-              <el-tag effect="dark" color="#19be6b" size="mini" v-if="generalInfo.nacos.status=='UP'">{{generalInfo.nacos.status}}</el-tag>
-              <el-tag effect="dark" color="#f90" size="mini" v-else>{{generalInfo.nacos.status}}</el-tag>
-            </span>
+              <span
+                >Nacos Status：
+                <el-tag
+                  effect="dark"
+                  color="#19be6b"
+                  size="mini"
+                  v-if="generalInfo.nacos.status == 'UP'"
+                  >{{ generalInfo.nacos.status }}</el-tag
+                >
+                <el-tag effect="dark" color="#f90" size="mini" v-else>{{
+                  generalInfo.nacos.status
+                }}</el-tag>
+              </span>
             </el-col>
             <el-col :xs="24" :md="8">
-            <span>Https Status：
-                <el-tag :type="https ? 'success' : 'danger'" size="small" effect="dark"> 
-              {{ https ? "Enabled" : "Disabled" }}
-            </el-tag>
-            </span>
+              <span
+                >Https Status：
+                <el-tag
+                  :type="https ? 'success' : 'danger'"
+                  size="small"
+                  effect="dark"
+                >
+                  {{ https ? 'Enabled' : 'Disabled' }}
+                </el-tag>
+              </span>
             </el-col>
           </el-row>
           <h2 class="home-title">Backup Service</h2>
-          <vxe-table stripe auto-resize :data="generalInfo.backupService" align="center">
-          <vxe-table-column
-            title="Name"
-            min-width="130"
+          <vxe-table
+            stripe
+            auto-resize
+            :data="generalInfo.backupService"
+            align="center"
           >
+            <vxe-table-column title="Name" min-width="130">
+              <template v-slot="{ row }">
+                <span>{{ row['serviceId'] }}</span>
+              </template>
+            </vxe-table-column>
+            <vxe-table-column
+              field="host"
+              title="Host"
+              min-width="110"
+            ></vxe-table-column>
+            <vxe-table-column
+              field="port"
+              title="Port"
+              min-width="80"
+            ></vxe-table-column>
+            <vxe-table-column
+              min-width="80"
+              field="backupCores"
+              title="CPU Core"
+            >
+            </vxe-table-column>
+
+            <vxe-table-column
+              min-width="100"
+              field="backupPercentCpuLoad"
+              title="CPU Usage"
+            >
+            </vxe-table-column>
+
+            <vxe-table-column
+              min-width="100"
+              field="backupPercentMemoryLoad"
+              title="Mem Usage"
+            >
+            </vxe-table-column>
+            <vxe-table-column field="secure" title="Secure" min-width="80">
+              <template v-slot="{ row }">
+                <el-tooltip content="是否触发保护阈值" placement="top">
+                  <el-tag effect="dark" color="#ed3f14" v-if="row.secure"
+                    >True</el-tag
+                  >
+                  <el-tag effect="dark" color="#2d8cf0" v-else>False</el-tag>
+                </el-tooltip>
+              </template>
+            </vxe-table-column>
+            <vxe-table-column title="Healthy" min-width="100">
+              <template v-slot="{ row }">
+                <el-tag
+                  effect="dark"
+                  color="#19be6b"
+                  v-if="row.metadata['nacos.healthy'] == 'true'"
+                  >Healthy</el-tag
+                >
+                <el-tag effect="dark" color="#f90" v-else>Unhealthy</el-tag>
+              </template>
+            </vxe-table-column>
+          </vxe-table>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <el-card style="margin-top:10px">
+      <div slot="header">
+        <span class="panel-title home-title">Judger Service</span>
+      </div>
+      <vxe-table stripe auto-resize :data="judgeInfo" align="center">
+        <vxe-table-column type="seq" width="50"></vxe-table-column>
+        <vxe-table-column title="Name" min-width="150">
           <template v-slot="{ row }">
-            <span>{{row['serviceId']}}</span> 
+            <span>{{ row.service['serviceId'] }}</span>
           </template>
-          </vxe-table-column>
-          <vxe-table-column
-            field="host"
-            title="Host"
-            min-width="110"
-          ></vxe-table-column>
-          <vxe-table-column
-            field="port"
-            title="Port"
-            min-width="80"
-          ></vxe-table-column>
-           <vxe-table-column
-           min-width="80"
-           field="backupCores"
-          title="CPU Core">
+        </vxe-table-column>
+        <vxe-table-column title="Host" min-width="80">
+          <template v-slot="{ row }">
+            <span>{{ row.service.host }}</span>
+          </template>
+        </vxe-table-column>
+        <vxe-table-column title="Port" min-width="80">
+          <template v-slot="{ row }">
+            <span>{{ row.service.port }}</span>
+          </template>
         </vxe-table-column>
 
-        <vxe-table-column
-          min-width="100"
-          field="backupPercentCpuLoad"
-          title="CPU Usage">
-        </vxe-table-column>
-
-        <vxe-table-column
-          min-width="100"
-          field="backupPercentMemoryLoad"
-          title="Mem Usage">
-        </vxe-table-column>
-          <vxe-table-column field="secure" title="Secure" min-width="80">
-            <template v-slot="{ row }">
-             <el-tooltip content="是否触发保护阈值" placement="top">
-               <el-tag effect="dark" color="#ed3f14" v-if="row.secure">True</el-tag>
-              <el-tag effect="dark" color="#2d8cf0" v-else>False</el-tag>
-             </el-tooltip>
-            </template>
-          </vxe-table-column>
-          <vxe-table-column title="Healthy" min-width="100">
-            <template v-slot="{ row }">
-              <el-tag effect="dark" color="#19be6b" v-if="row.metadata['nacos.healthy']=='true'"
-                >Healthy</el-tag
-              >
-              <el-tag effect="dark" color="#f90" v-else>Unhealthy</el-tag>
-            </template>
-          </vxe-table-column>
-        </vxe-table>
-
-
-      </el-card>
-    </el-col>
-  </el-row>
-
-   <el-card style="margin-top:10px">
-        <div slot="header">
-          <span class="panel-title home-title">Judger Service</span>
-        </div>
-        <vxe-table stripe auto-resize :data="judgeInfo" align="center">
-          <vxe-table-column type="seq" width="50"></vxe-table-column>
-          <vxe-table-column
-            title="Name"
-            min-width="150"
-          >
-          <template v-slot="{ row }">
-            <span>{{row.service['serviceId']}}</span> 
-          </template>
-          </vxe-table-column>
-          <vxe-table-column
-            title="Host"
-            min-width="80"
-          >
-          <template v-slot="{ row }">
-          <span>{{row.service.host}}</span> 
-          </template>
-          </vxe-table-column>
-          <vxe-table-column
-            title="Port"
-            min-width="80"
-          >
-          <template v-slot="{ row }">
-            <span>{{row.service.port}}</span> 
-          </template>
-          </vxe-table-column>
-
-           <vxe-table-column
-           min-width="80"
-          field="cpuCores"
-          title="CPU Core">
+        <vxe-table-column min-width="80" field="cpuCores" title="CPU Core">
         </vxe-table-column>
 
         <vxe-table-column
           min-width="100"
           field="percentCpuLoad"
-          title="CPU Usage">
+          title="CPU Usage"
+        >
         </vxe-table-column>
 
         <vxe-table-column
           min-width="110"
           field="percentMemoryLoad"
-          title="Memory Usage">
+          title="Memory Usage"
+        >
         </vxe-table-column>
 
-          <vxe-table-column  title="Secure" min-width="80">
-            <template v-slot="{ row }">
-             <el-tooltip content="是否触发保护阈值" placement="top">
-               <el-tag effect="dark" color="#ed3f14" v-if="row.service.secure">True</el-tag>
-              <el-tag effect="dark" color="#2d8cf0" v-else>False</el-tag>
-             </el-tooltip>
-            </template>
-          </vxe-table-column>
-          <vxe-table-column  title="Healthy" min-width="100">
-            <template v-slot="{ row }">
-              <el-tag effect="dark" color="#19be6b" v-if="row.service.metadata['nacos.healthy']=='true'"
-                >Healthy</el-tag
+        <vxe-table-column title="Secure" min-width="80">
+          <template v-slot="{ row }">
+            <el-tooltip content="是否触发保护阈值" placement="top">
+              <el-tag effect="dark" color="#ed3f14" v-if="row.service.secure"
+                >True</el-tag
               >
-              <el-tag effect="dark" color="#f90" v-else>Unhealthy</el-tag>
-            </template>
-          </vxe-table-column>
-        </vxe-table>
-      </el-card>
-      </div>
+              <el-tag effect="dark" color="#2d8cf0" v-else>False</el-tag>
+            </el-tooltip>
+          </template>
+        </vxe-table-column>
+        <vxe-table-column title="Healthy" min-width="100">
+          <template v-slot="{ row }">
+            <el-tag
+              effect="dark"
+              color="#19be6b"
+              v-if="row.service.metadata['nacos.healthy'] == 'true'"
+              >Healthy</el-tag
+            >
+            <el-tag effect="dark" color="#f90" v-else>Unhealthy</el-tag>
+          </template>
+        </vxe-table-column>
+      </vxe-table>
+    </el-card>
+  </div>
 </template>
 
-
 <script>
-import { mapGetters } from "vuex";
-import browserDetector from "browser-detect";
-import InfoCard from "@/components/admin/infoCard.vue";
-import api from "@/common/api";
+import { mapGetters } from 'vuex';
+import browserDetector from 'browser-detect';
+import InfoCard from '@/components/admin/infoCard.vue';
+import api from '@/common/api';
 
 export default {
-  name: "dashboard",
+  name: 'dashboard',
   components: {
     InfoCard,
   },
@@ -236,76 +255,85 @@ export default {
         recentContestNum: 0,
         todayJudgeNum: 0,
       },
-      generalInfo:{
+      generalInfo: {
         backupCores: 0,
         backupPercentCpuLoad: '0%',
         backupPercentMemoryLoad: '0%',
-        backupService:[],
-        nacos:{}
+        backupService: [],
+        nacos: {},
       },
-      judgeInfo: [
-      ],
+      judgeInfo: [],
       session: {},
     };
   },
   mounted() {
-    // this.refreshJudgeServerList()
-    // this.intervalId = setInterval(() => {
-    //     this.refreshJudgeServerList()
-    // }, 5000)
-    api.admin_getGeneralSystemInfo().then(
-      (res)=>{
-        this.generalInfo = res.data.data
-        this.generalInfo.backupService[0]['backupCores'] = this.generalInfo.backupCores;
-        this.generalInfo.backupService[0]['backupPercentCpuLoad'] = this.generalInfo.backupPercentCpuLoad;
-        this.generalInfo.backupService[0]['backupPercentMemoryLoad'] = this.generalInfo.backupPercentMemoryLoad;
-      },
-      ()=>{}
-    )
+    this.refreshJudgeServerList();
+    this.refreshGeneralSystemInfo();
+    // 每5秒刷新判题机服务和后台服务的情况
+    this.intervalId = setInterval(() => {
+      this.refreshJudgeServerList();
+      this.refreshGeneralSystemInfo();
+    }, 5000);
     api.admin_getDashboardInfo().then(
       (resp) => {
         this.infoData = resp.data.data;
       },
       () => {}
     );
-    
+
     api.getSessions(this.userInfo.uid).then(
       (resp) => {
-        this.session = resp.data.data
+        this.session = resp.data.data;
       },
       () => {}
     );
-    this.refreshJudgeServerList()
   },
   methods: {
-    refreshJudgeServerList () {
-        api.getJudgeServer().then(res => {
-          this.judgeInfo = res.data.data
-        })
+    refreshJudgeServerList() {
+      api.getJudgeServer().then((res) => {
+        this.judgeInfo = res.data.data;
+      });
+    },
+    refreshGeneralSystemInfo() {
+      api.admin_getGeneralSystemInfo().then(
+        (res) => {
+          this.generalInfo = res.data.data;
+          this.generalInfo.backupService[0][
+            'backupCores'
+          ] = this.generalInfo.backupCores;
+          this.generalInfo.backupService[0][
+            'backupPercentCpuLoad'
+          ] = this.generalInfo.backupPercentCpuLoad;
+          this.generalInfo.backupService[0][
+            'backupPercentMemoryLoad'
+          ] = this.generalInfo.backupPercentMemoryLoad;
+        },
+        () => {}
+      );
     },
   },
   computed: {
-    ...mapGetters(["userInfo", "isSuperAdmin"]),
+    ...mapGetters(['userInfo', 'isSuperAdmin']),
     https() {
-      return document.URL.slice(0, 5) === "https";
+      return document.URL.slice(0, 5) === 'https';
     },
     browser() {
       let b = browserDetector(this.session.userAgent);
       if (b.name && b.version) {
-        return b.name + " " + b.version;
+        return b.name + ' ' + b.version;
       } else {
-        return "Unknown";
+        return 'Unknown';
       }
     },
     os() {
       let b = browserDetector(this.session.userAgent);
-      return b.os ? b.os : "Unknown";
+      return b.os ? b.os : 'Unknown';
     },
   },
-  //  beforeRouteLeave (to, from, next) {
-  //     clearInterval(this.intervalId)
-  //     next()
-  //   }
+  beforeRouteLeave(to, from, next) {
+    clearInterval(this.intervalId);
+    next();
+  },
 };
 </script>
 
@@ -342,10 +370,9 @@ export default {
   margin-bottom: 10px;
 }
 /deep/ .el-tag--dark {
-   border-color: #fff; 
+  border-color: #fff;
 }
 /deep/.el-card__header {
   padding-bottom: 0;
 }
-
 </style>
