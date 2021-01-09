@@ -40,6 +40,7 @@ import 'echarts/lib/component/toolbox'
 import 'echarts/lib/component/markPoint'
 
 import VueParticles from 'vue-particles'
+import SlideVerify from 'vue-monoplasty-slide-verify'
 
 
 Object.keys(filters).forEach(key => {   // 注册全局过滤器
@@ -54,6 +55,8 @@ Vue.use(Element)
 Vue.use(MuseUI) // 移动端导航栏需要该组件
 Vue.use(VueCropper)
 Vue.use(Message, { name: 'msg' }) // `Vue.prototype.$msg` 全局消息提示
+
+Vue.use(SlideVerify) // 滑动验证码组件
 
 Vue.component('ECharts', ECharts)
 Vue.prototype.$axios = axios

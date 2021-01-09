@@ -30,6 +30,7 @@
     "vue-cropper": "^0.5.5",
     "vue-echarts": "^5.0.0-beta.0",
     "vue-m-message": "^3.0.0",
+    "vue-monoplasty-slide-verify": "^1.1.3",
     "vue-particles": "^1.0.9",
     "vue-router": "^3.2.0",
     "vue-template-compiler": "^2.6.12",

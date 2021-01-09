@@ -1,53 +1,48 @@
 <template>
-<el-card class="box-card">
+  <el-card class="box-card">
     <el-collapse v-model="activeName" accordion>
-  <el-collapse-item name="Account">
-    <template slot="title">
-     <i class="fa fa-gear"> Account Setting</i>
-    </template>
-    <component :is="Account"></component>
-  </el-collapse-item>
-  <el-collapse-item name="UserInfo">
-    <template slot="title">
-      <i class="fa fa-gear"> UserInfo Setting</i>
-    </template>
-    <component :is="UserInfo"></component>
-  </el-collapse-item>
-</el-collapse>
-</el-card>
+      <el-collapse-item name="Account">
+        <template slot="title">
+          <i class="fa fa-gear"> Account Setting</i>
+        </template>
+        <component :is="Account"></component>
+      </el-collapse-item>
+      <el-collapse-item name="UserInfo">
+        <template slot="title">
+          <i class="fa fa-gear"> UserInfo Setting</i>
+        </template>
+        <component :is="UserInfo"></component>
+      </el-collapse-item>
+    </el-collapse>
+  </el-card>
 </template>
 <script>
-import Account from "@/components/oj/setting/Account";
-import UserInfo from "@/components/oj/setting/UserInfo"
+import Account from '@/components/oj/setting/Account';
+import UserInfo from '@/components/oj/setting/UserInfo';
 export default {
-  components:{
+  components: {
     Account,
-    UserInfo
+    UserInfo,
   },
-  data(){
-      return{
-          Account:'Account',
-          UserInfo:'UserInfo',
-          activeName:'Account'
-      }
-  }
-}
+  data() {
+    return {
+      Account: 'Account',
+      UserInfo: 'UserInfo',
+      activeName: 'Account',
+    };
+  },
+};
 </script>
 <style scoped>
 @media screen and (min-width: 1200px) {
-  .box-card{
-  margin-left: 10%;
-  margin-right: 10%;
+  .box-card {
+    margin-left: 10%;
+    margin-right: 10%;
   }
 }
-@media screen and (max-width: 1200px) {
-  .box-card{
-    margin-top: 30%;
-  }
-}
-/deep/ .el-collapse-item__header{
+/deep/ .el-collapse-item__header {
   border-radius: 4px;
   font-size: 18px;
-  color: skyblue;
+  color: #409eff;
 }
 </style>
