@@ -26,16 +26,10 @@ public class RegisterDto implements Serializable {
     @NotBlank(message = "密码不能为空")
     private String password;
 
-    @NotBlank(message = "昵称不能为空")
-    private String nickname;
-
     @NotBlank(message = "邮箱不能为空")
     @Email(message = "邮箱格式错误")
     private String email;
 
     @NotBlank(message = "验证码不能为空")
     private String code;
-
-    @NotBlank(message = "学号不能为空")
-    private String number;
 }

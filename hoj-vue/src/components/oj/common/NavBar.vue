@@ -84,7 +84,7 @@
             :inline="true"
             :size="30"
             color="#FFF"
-            :src="userInfo.avatar"
+            :src="avatar"
             class="drop-avatar"
           ></avatar>
         </template>
@@ -294,7 +294,7 @@
     </div>
     <el-dialog
       :visible.sync="modalVisible"
-      width="400px"
+      width="370px"
       class="dialog"
       :title="title"
     >
@@ -379,6 +379,9 @@ export default {
       'token',
       'websiteConfig',
     ]),
+    avatar() {
+      return this.$store.getters.userInfo.avatar;
+    },
     activeMenuName() {
       return '/' + this.$route.path.split('/')[1];
     },

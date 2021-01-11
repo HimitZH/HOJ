@@ -88,13 +88,19 @@ public class AccountController {
         if (!configVo.getRegister()) { // 需要判断一下网站是否开启注册
             return CommonResult.errorResponse("对不起！本站暂未开启注册功能！", CommonResult.STATUS_ACCESS_DENIED);
         }
+        QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("email", email);
+        UserInfo userInfo = userInfoDao.getOne(queryWrapper);
+        if(userInfo!=null){
+            return CommonResult.errorResponse("对不起！该邮箱已被注册，请更换新的邮箱！");
+        }
         String numbers = RandomUtil.randomNumbers(6); // 随机生成6位数字的组合
         redisUtils.set(email, numbers, 5 * 60);//默认验证码有效5分钟
         emailService.sendCode(email, numbers);
         return CommonResult.successResponse(MapUtil.builder()
                 .put("email", email)
                 .put("expire", 5 * 60)
-                .map(), "验证码已发送至指定邮箱");
+                .map(), "验证码已发送至指定邮箱！");
     }
 
     /**
@@ -279,6 +285,8 @@ public class AccountController {
                 .put("course", userRoles.getCourse())
                 .put("signature", userRoles.getSignature())
                 .put("realname", userRoles.getRealname())
+                .put("github", userRoles.getGithub())
+                .put("blog", userRoles.getBlog())
                 .put("cfUsername", userRoles.getCfUsername())
                 .put("roleList", userRoles.getRoles().stream().map(Role::getRole))
                 .map(), "登录成功！"
@@ -399,7 +407,7 @@ public class AccountController {
                 redisUtils.set(lockKey, "lock", 60 * 30); // 设置锁定更改
             }
             resp.put("code", 400);
-            resp.put("msg", "原始密码错误！您已累计修改秘密失败" + count + "次...");
+            resp.put("msg", "原始密码错误！您已累计修改密码失败" + count + "次...");
             return CommonResult.successResponse(resp, "修改密码失败！");
         }
     }
@@ -467,6 +475,8 @@ public class AccountController {
                         .put("course", userRolesVo.getCourse())
                         .put("signature", userRolesVo.getSignature())
                         .put("realname", userRolesVo.getRealname())
+                        .put("github", userRolesVo.getGithub())
+                        .put("blog", userRolesVo.getBlog())
                         .put("cfUsername", userRolesVo.getCfUsername())
                         .put("roleList", userRolesVo.getRoles().stream().map(Role::getRole))
                         .map());
@@ -493,6 +503,50 @@ public class AccountController {
             resp.put("msg", "密码错误！您已累计修改邮箱失败" + count + "次...");
             return CommonResult.successResponse(resp, "修改邮箱失败！");
         }
+    }
+
+    @PostMapping("/change-userInfo")
+    @RequiresAuthentication
+    public CommonResult changeEmail(@RequestBody HashMap<String,Object> params, HttpServletRequest request) {
+
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUuid(userRolesVo.getUid())
+                .setCfUsername((String) params.get("cfUsername"))
+                .setRealname((String) params.get("realname"))
+                .setNickname((String) params.get("nickname"))
+                .setSignature((String) params.get("signature"))
+                .setBlog((String) params.get("blog"))
+                .setGithub((String) params.get("github"))
+                .setSchool((String) params.get("school"))
+                .setNumber((String) params.get("number"));
+
+        boolean result = userInfoDao.updateById(userInfo);
+
+        if (result){
+            return CommonResult.successResponse(MapUtil.builder()
+                    .put("uid", userRolesVo.getUid())
+                    .put("username", userRolesVo.getUsername())
+                    .put("nickname", userInfo.getNickname())
+                    .put("avatar", userRolesVo.getAvatar())
+                    .put("email", userRolesVo.getEmail())
+                    .put("number", userInfo.getNumber())
+                    .put("school", userInfo.getSchool())
+                    .put("course", userRolesVo.getCourse())
+                    .put("signature", userInfo.getSignature())
+                    .put("realname", userInfo.getRealname())
+                    .put("github", userInfo.getGithub())
+                    .put("blog", userInfo.getBlog())
+                    .put("cfUsername", userInfo.getCfUsername())
+                    .put("roleList", userRolesVo.getRoles().stream().map(Role::getRole))
+                    .map(), "更新个人信息成功！");
+        }else{
+            return CommonResult.errorResponse("更新个人信息失败！");
+        }
+
     }
 
 }

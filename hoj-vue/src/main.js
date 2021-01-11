@@ -13,7 +13,6 @@ import 'font-awesome/css/font-awesome.min.css'
 import 'default-passive-events'
 import Message from 'vue-m-message'
 import 'vue-m-message/dist/index.css'
-import VueCropper from 'vue-cropper'
 import axios from 'axios'
 
 import 'xe-utils'
@@ -23,9 +22,11 @@ import 'vxe-table/lib/style.css'
 import Katex from '@/common/katex'
 
 import VueClipboard from 'vue-clipboard2'
+
 import highlight from '@/common/highlight'
 
 import filters from '@/common/filters.js'
+import VueCropper from 'vue-cropper'
 
 import ECharts from 'vue-echarts/components/ECharts.vue'
 import 'echarts/lib/chart/bar'
@@ -53,7 +54,7 @@ Vue.use(VueClipboard) // 剪贴板
 Vue.use(highlight) // 代码高亮
 Vue.use(Element)
 Vue.use(MuseUI) // 移动端导航栏需要该组件
-Vue.use(VueCropper)
+Vue.use(VueCropper) // 图像剪切
 Vue.use(Message, { name: 'msg' }) // `Vue.prototype.$msg` 全局消息提示
 
 Vue.use(SlideVerify) // 滑动验证码组件

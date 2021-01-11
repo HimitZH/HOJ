@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Vue from 'vue'
 import mMessage from '@/common/message'
 import router from '@/router'
 import store from "@/store"
@@ -8,6 +9,7 @@ import utils from '@/common/utils'
 
 // // 配置NProgress进度条选项  —— 动画效果
 // NProgress.configure({ ease: 'ease', speed: 1000,showSpinner: false})
+Vue.prototype.$http = axios
 
 // 环境的切换
 if (process.env.NODE_ENV == 'development') {
@@ -309,6 +311,11 @@ const ojApi = {
   },
   changeEmail(data){
     return ajax("/api/change-email",'post',{
+      data
+    })
+  },
+  changeUserInfo(data){
+    return ajax("/api/change-userInfo",'post',{
       data
     })
   }
