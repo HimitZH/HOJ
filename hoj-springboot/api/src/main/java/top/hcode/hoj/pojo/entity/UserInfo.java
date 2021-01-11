@@ -56,6 +56,12 @@ public class UserInfo implements Serializable {
     @ApiModelProperty(value = "cf的username")
     private String cfUsername;
 
+    @ApiModelProperty(value = "github地址")
+    private String github;
+
+    @ApiModelProperty(value = "博客地址")
+    private String blog;
+
     @ApiModelProperty(value = "邮箱")
     private String email;
 

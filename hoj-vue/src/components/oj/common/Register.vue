@@ -10,28 +10,14 @@
           width="100%"
         ></el-input>
       </el-form-item>
-      <el-form-item prop="nickname">
-        <el-input
-          v-model="registerForm.nickname"
-          prefix-icon="el-icon-user"
-          placeholder="Please Enter Nickname"
-          @keyup.enter.native="handleRegister"
-        ></el-input>
-      </el-form-item>
-      <el-form-item prop="number">
-        <el-input
-          v-model="registerForm.number"
-          prefix-icon="el-icon-s-grid"
-          placeholder="Please Enter Student Number"
-          @keyup.enter.native="handleRegister"
-        ></el-input>
-      </el-form-item>
+
       <el-form-item prop="password">
         <el-input
           v-model="registerForm.password"
           prefix-icon="el-icon-lock"
           placeholder="Please Enter Password"
           @keyup.enter.native="handleRegister"
+          type="password"
         ></el-input>
       </el-form-item>
       <el-form-item prop="passwordAgain">
@@ -54,7 +40,7 @@
             slot="append"
             icon="el-icon-message"
             type="primary"
-            @click="sendRegisterEmail"
+            @click.native="sendRegisterEmail"
             :loading="btnEmailLoading"
           >
             <span v-show="btnEmailLoading">{{ countdownNum }}</span>
@@ -136,10 +122,10 @@ export default {
         username: '',
         password: '',
         passwordAgain: '',
-        number: '',
         email: '',
         code: '',
       },
+      sendEmailError: false,
       rules: {
         username: [
           { required: true, message: 'Username is required', trigger: 'blur' },
@@ -154,21 +140,7 @@ export default {
             trigger: 'blur',
           },
         ],
-        nickname: [
-          { required: true, message: 'Nickname is required', trigger: 'blur' },
-          {
-            max: 25,
-            message: 'The longest length of a nickname is 25',
-            trigger: 'blur',
-          },
-        ],
-        number: [
-          {
-            required: true,
-            message: 'The student number is required',
-            trigger: 'blur',
-          },
-        ],
+
         email: [
           {
             required: true,
@@ -254,9 +226,9 @@ export default {
         return;
       }
       this.btnEmailLoading = true;
-      this.countdownNum = '正在发送...';
+      this.countdownNum = '正在处理...';
       if (this.registerForm.email) {
-        mMessage.info('请稍后...系统正在向您的邮箱发送验证码');
+        mMessage.info('请稍后...系统正在处理中...');
         api.getRegisterEmail(this.registerForm.email).then(
           (res) => {
             if (res.data.msg != null) {

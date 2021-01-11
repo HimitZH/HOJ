@@ -105,4 +105,26 @@ public class Constants {
             return code;
         }
     }
+
+
+    /**
+     * @Description 文件操作的一些常量
+     * @Since 2021/1/10
+     */
+    public enum File{
+
+        USER_FILE_HOST("http://localhost:9010"),
+        USER_AVATAR_FOLDER("E://avatar/"),
+        USER_AVATAR_API("/public/img/");
+
+        private final String path;
+
+        File(String path){
+            this.path = path;
+        }
+
+        public String getPath() {
+            return path;
+        }
+    }
 }

@@ -17,7 +17,7 @@
     </select>
 
     <select id="getUserHomeInfo" resultType="top.hcode.hoj.pojo.vo.UserHomeVo" >
-        SELECT u.username,u.signature,u.school,u.avatar,ur.submissions as total,ur.rating,
+        SELECT u.username,u.signature,u.school,u.github,u.blog,u.avatar,ur.submissions as total,ur.rating,
         ur.total_score as score
         FROM user_info u,user_record ur WHERE u.uuid = ur.uid AND u.status = 0 AND u.uuid = #{uid}
     </select>
