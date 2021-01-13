@@ -132,9 +132,9 @@ export const PROBLEM_LEVEL_RESERVE={
 
 
 export const CONTEST_STATUS = {
-  'SCHEDULED': '1',
+  'SCHEDULED': '-1',
   'RUNNING': '0',
-  'ENDED': '-1'
+  'ENDED': '1'
 }
 
 export const CONTEST_STATUS_REVERSE = {
@@ -182,9 +182,9 @@ export const CONTEST_TYPE_REVERSE = {
 }
 
 export const CONTEST_TYPE = {
-  PUBLIC: 'Public',
-  PRIVATE: 'Password Protected',
-  PROTECT: 'Submit Protected'
+  PUBLIC: 0,
+  PRIVATE: 1,
+  PROTECT: 2
 }
 
 export const USER_TYPE = {
@@ -192,7 +192,6 @@ export const USER_TYPE = {
   ADMIN: 'admin',
   SUPER_ADMIN: 'root'
 }
-
 
 
 export const STORAGE_KEY = {

@@ -283,6 +283,28 @@ const ojApi = {
       params: params
     })
   },
+
+  // 比赛详情的请求
+  getContest(cid){
+    return ajax('/api/get-contest-info','get',{
+      params: {cid}
+    })
+  },
+  // 注册私有比赛权限
+  registerContest(cid,password){
+    return ajax('/api/register-contest','post',{
+      data:{
+        cid,
+        password
+      }
+    })
+  },
+  // 获取注册比赛权限
+  getContestAccess(cid){
+    return ajax('/api/get-contest-access','get',{
+      params: {cid}
+    })
+  },
   // ACM赛制排行榜
   getUserRank(currentPage,limit,type){
     return ajax('/api/get-rank-list','get',{

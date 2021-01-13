@@ -4,79 +4,88 @@ import { CONTEST_STATUS, USER_TYPE, CONTEST_TYPE } from '@/common/constants'
 
 const state = {
   now: moment(),
-  access: false,
+  intoAccess: false, // 私有比赛进入权限
+  submitAccess:false, // 保护比赛的提交权限
   rankLimit: 30,
   forceUpdate: false,
   contest: {
-    created_by: {},
-    contest_type: CONTEST_TYPE.PUBLIC
+    type: CONTEST_TYPE.PUBLIC
   },
   contestProblems: [],
   itemVisible: {
     menu: true,
     chart: true,
     realName: false
-  }
+  },
 }
 
 const getters = {
-  // contest 是否加载完成
-  contestLoaded: (state) => {
-    return !!state.contest.status
-  },
   contestStatus: (state, getters) => {
-    if (!getters.contestLoaded) return null
-    let startTime = moment(state.contest.start_time)
-    let endTime = moment(state.contest.end_time)
-    let now = state.now
-
-    if (startTime > now) {
-      return CONTEST_STATUS.NOT_START
-    } else if (endTime < now) {
-      return CONTEST_STATUS.ENDED
-    } else {
-      return CONTEST_STATUS.UNDERWAY
-    }
+    return state.contest.status;
   },
   contestRuleType: (state) => {
     return state.contest.type || null
   },
   isContestAdmin: (state, getters, _, rootGetters) => {
     return rootGetters.isAuthenticated &&
-      (state.contest.created_by.id === rootGetters.user.id || rootGetters.user.admin_type === USER_TYPE.SUPER_ADMIN)
+      (state.contest.author === rootGetters.userInfo.author || rootGetters.isSuperAdmin)
   },
   contestMenuDisabled: (state, getters) => {
+    // 比赛创建者或者超级管理员可以直接查看
     if (getters.isContestAdmin) return false
-    if (state.contest.contest_type === CONTEST_TYPE.PUBLIC) {
-      return getters.contestStatus === CONTEST_STATUS.NOT_START
+    // 公开和保护赛可以查看
+    if (state.contest.type === CONTEST_TYPE.PUBLIC||state.contest.type===CONTEST_TYPE.PROTECT) {
+      // 未开始不可查看
+      return getters.contestStatus === CONTEST_STATUS.SCHEDULED
     }
-    return !state.access
+    // 私有赛需要通过验证密码方可查看比赛
+    return !state.intoAccess
   },
-  OIContestRealTimePermission: (state, getters, _, rootGetters) => {
-    if (getters.contestRuleType === 0 || getters.contestStatus === CONTEST_STATUS.ENDED) {
-      return true
-    }
-    return state.contest.real_time_rank === true || getters.isContestAdmin
-  },
-  problemSubmitDisabled: (state, getters, _, rootGetters) => {
+  // 榜单是否实时刷新
+  ContestRealTimePermission: (state, getters, _, rootGetters) => {
+    // 比赛若是已结束，便是最后榜单
     if (getters.contestStatus === CONTEST_STATUS.ENDED) {
       return true
-    } else if (getters.contestStatus === CONTEST_STATUS.NOT_START) {
+    }
+    // 比赛管理员直接可看到实时榜单
+    if(getters.isContestAdmin){
+      return true
+    }
+    // 比赛是否开启
+    if(state.contest.sealRank === true){
+      // 当前时间在封榜时间之后，即不刷新榜单
+      return now.isAfter(moment(state.contest.sealRankTime))
+    }else{
+      return true
+    }
+  },
+  problemSubmitDisabled: (state, getters, _, rootGetters) => {
+    // 比赛结束不可交题
+    if (getters.contestStatus === CONTEST_STATUS.ENDED) {
+      return true
+
+      // 比赛未开始不可交题，除非是比赛管理者
+    } else if (getters.contestStatus === CONTEST_STATUS.SCHEDULED) {
       return !getters.isContestAdmin
     }
+    // 未登录不可交题
     return !rootGetters.isAuthenticated
   },
+  // 是否需要显示密码验证框
   passwordFormVisible: (state, getters) => {
-    return state.contest.contest_type !== CONTEST_TYPE.PUBLIC && !state.access && !getters.isContestAdmin
+    // 如果是公开赛，保护赛，或已注册过，管理员都不用再显示
+    return state.contest.type !== CONTEST_TYPE.PUBLIC &&state.contest.type !== CONTEST_TYPE.PROTECT &&!state.intoAccess && !getters.isContestAdmin 
   },
   contestStartTime: (state) => {
-    return moment(state.contest.start_time)
+    return moment(state.contest.startTime)
   },
   contestEndTime: (state) => {
-    return moment(state.contest.end_time)
+    return moment(state.contest.endTime)
   },
+  // 比赛计时文本显示
   countdown: (state, getters) => {
-    if (getters.contestStatus === CONTEST_STATUS.NOT_START) {
+    // 还未开始的显示
+    if (getters.contestStatus === CONTEST_STATUS.SCHEDULED) {
       let duration = moment.duration(getters.contestStartTime.diff(state.now, 'seconds'), 'seconds')
       // time is too long
       if (duration.weeks() > 0) {
@@ -84,14 +93,36 @@ const getters = {
       }
       let texts = [Math.floor(duration.asHours()), duration.minutes(), duration.seconds()]
       return '-' + texts.join(':')
-    } else if (getters.contestStatus === CONTEST_STATUS.UNDERWAY) {
+      // 比赛进行中的显示
+    } else if (getters.contestStatus === CONTEST_STATUS.RUNNING) {
       let duration = moment.duration(getters.contestEndTime.diff(state.now, 'seconds'), 'seconds')
+      // 倒计时文本显示
       let texts = [Math.floor(duration.asHours()), duration.minutes(), duration.seconds()]
       return '-' + texts.join(':')
     } else {
       return 'Ended'
     }
-  }
+  },
+  // 比赛开始到现在经过的秒数
+  BeginToNowDuration:(state,getters)=>{
+    return moment.duration(state.now.diff(getters.contestStartTime, 'seconds'), 'seconds')
+  },
+
+  // 比赛进度条显示
+  progressValue:(state,getters)=>{
+      // 还未开始的显示
+    if (getters.contestStatus === CONTEST_STATUS.SCHEDULED) {
+      return 0;
+      // 比赛进行中的显示
+    } else if (getters.contestStatus === CONTEST_STATUS.RUNNING) {
+      // 获取比赛开始到现在经过的秒数
+      let duration = getters.BeginToNowDuration
+      // 消耗时间除以整体时间
+      return (duration / state.contest.duration)*100
+    }else{
+      return 100;
+    }
+  },
 }
 
 const mutations = {
@@ -110,13 +141,17 @@ const mutations = {
   changeContestRankLimit(state, payload) {
     state.rankLimit = payload.rankLimit
   },
-  contestAccess(state, payload) {
-    state.access = payload.access
+  contestIntoAccess(state, payload) {
+    state.intoAccess = payload.intoAccess
+  },
+  contestSubmitAccess(state, payload) {
+    state.submitAccess = payload.submitAccess
   },
   clearContest (state) {
-    state.contest = {created_by: {}}
+    state.contest = {}
     state.contestProblems = []
-    state.access = false
+    state.intoAccess = false
+    state.submitAccess = false
     state.itemVisible = {
       menu: true,
       chart: true,
@@ -140,8 +175,10 @@ const actions = {
         let contest = res.data.data
         commit('changeContest', {contest: contest})
         commit('now', {now: moment(contest.now)})
-        if (contest.contest_type === CONTEST_TYPE.PRIVATE) {
-          dispatch('getContestAccess')
+        if (contest.type === CONTEST_TYPE.PRIVATE) {
+          dispatch('getContestAccess',{type:CONTEST_TYPE.PRIVATE})
+        }else if(contest.type ===CONTEST_TYPE.PROTECT){
+          dispatch('getContestAccess',{type:CONTEST_TYPE.PROTECT})
         }
       }, err => {
         reject(err)
@@ -166,10 +203,14 @@ const actions = {
       })
     })
   },
-  getContestAccess ({commit, rootState}) {
+  getContestAccess ({commit, rootState},contestType) {
     return new Promise((resolve, reject) => {
       api.getContestAccess(rootState.route.params.contestID).then(res => {
-        commit('contestAccess', {access: res.data.data.access})
+        if(contestType.type ===CONTEST_TYPE.PRIVATE){
+          commit('contestIntoAccess', {intoAccess: res.data.data.access})
+        }else{
+          commit('contestSubmitAccess', {submitAccess: res.data.data.access})
+        }
         resolve(res)
       }).catch()
     })
