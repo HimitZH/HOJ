@@ -30,6 +30,9 @@ public class ContestVo implements Serializable {
     @ApiModelProperty(value = "0为acm赛制，1为比分赛制")
     private Integer type;
 
+    @ApiModelProperty(value = "比赛说明")
+    private String description;
+
     @ApiModelProperty(value = "-1为未开始，0为进行中，1为已结束")
     private Integer status;
 
@@ -39,6 +42,9 @@ public class ContestVo implements Serializable {
     @ApiModelProperty(value = "0为公开赛，1为私有赛（有密码），2为保护赛")
     private Integer auth;
 
+    @ApiModelProperty("当前服务器系统时间，为了前端统一时间")
+    private Date now;
+
     @ApiModelProperty(value = "开始时间")
     private Date startTime;
 
@@ -47,4 +53,10 @@ public class ContestVo implements Serializable {
 
     @ApiModelProperty(value = "比赛时长（秒）")
     private Integer duration;
+
+    @ApiModelProperty(value = "是否开启封榜")
+    private Boolean sealRank;
+
+    @ApiModelProperty(value = "封榜起始时间，一直到比赛结束，不刷新榜单")
+    private Date sealRankTime;
 }
