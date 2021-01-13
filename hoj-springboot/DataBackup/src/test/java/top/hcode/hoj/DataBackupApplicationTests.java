@@ -98,5 +98,9 @@ public class DataBackupApplicationTests {
 //        System.out.println(withinNext14DaysContests);
 
     }
+    @Test
+    public void Test5() {
+        System.out.println(System.getProperty("os.name"));
+    }
 
 }
