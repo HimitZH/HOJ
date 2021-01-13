@@ -114,7 +114,7 @@ public class Constants {
     public enum File{
 
         USER_FILE_HOST("http://localhost:9010"),
-        USER_AVATAR_FOLDER("E://avatar/"),
+        USER_AVATAR_FOLDER("D:\\avatar\\"),
         USER_AVATAR_API("/public/img/");
 
         private final String path;

@@ -5,12 +5,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * @Author: Himit_ZH
  * @Date: 2020/10/22 23:25
  * @Description:
  */
+@EnableScheduling
 @EnableDiscoveryClient // 开启注册发现
 @SpringBootApplication
 @EnableFeignClients // 开启feign

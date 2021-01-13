@@ -7,6 +7,8 @@ import top.hcode.hoj.dao.FileMapper;
 import top.hcode.hoj.pojo.entity.File;
 import top.hcode.hoj.service.FileService;
 
+import java.util.List;
+
 /**
  * @Author: Himit_ZH
  * @Date: 2021/1/11 14:05
@@ -20,5 +22,10 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     @Override
     public int updateFileToDeleteByUidAndType(String uid, String type) {
         return fileMapper.updateFileToDeleteByUidAndType(uid, type);
+    }
+
+    @Override
+    public List<File> queryDeleteAvatarList() {
+        return fileMapper.queryDeleteAvatarList();
     }
 }
