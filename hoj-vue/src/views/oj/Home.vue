@@ -91,6 +91,7 @@
             align="center"
             :data="recentUserACRecord"
             max-height="470px"
+            :loading="loading.recent7ACRankLoading"
           >
             <vxe-table-column type="seq" min-width="30">
               <template v-slot="{ rowIndex }">
@@ -128,6 +129,7 @@
           <vxe-table
             border="inner"
             stripe
+            :loading="loading.recentOtherContestsLoading"
             auto-resize
             :data="otherContests"
             @cell-click="goOtherOJContest"
@@ -185,6 +187,10 @@ export default {
       CONTEST_STATUS_REVERSE: {},
       contests: [],
       index: 0,
+      loading: {
+        recent7ACRankLoading: false,
+        recentOtherContestsLoading: false,
+      },
     };
   },
   mounted() {
@@ -200,14 +206,28 @@ export default {
       });
     },
     getRecentOtherContests() {
-      api.getRecentOtherContests().then((res) => {
-        this.otherContests = res.data.data;
-      });
+      this.loading.recentOtherContestsLoading = true;
+      api.getRecentOtherContests().then(
+        (res) => {
+          this.otherContests = res.data.data;
+          this.loading.recentOtherContestsLoading = false;
+        },
+        (err) => {
+          this.loading.recentOtherContestsLoading = false;
+        }
+      );
     },
     getRecent7ACRank() {
-      api.getRecent7ACRank().then((res) => {
-        this.recentUserACRecord = res.data.data;
-      });
+      this.loading.recent7ACRankLoading = true;
+      api.getRecent7ACRank().then(
+        (res) => {
+          this.recentUserACRecord = res.data.data;
+          this.loading.recent7ACRankLoading = false;
+        },
+        (err) => {
+          this.loading.recent7ACRankLoading = false;
+        }
+      );
     },
     goContest() {
       this.$router.push({
