@@ -153,6 +153,10 @@ const ojApi = {
       }
     })
   },
+  // 获取验证码
+  getCaptcha(){
+    return ajax('/api/captcha', 'get')
+  },
   // 注册
   register(data) {
     return ajax('/api/register', 'post', {

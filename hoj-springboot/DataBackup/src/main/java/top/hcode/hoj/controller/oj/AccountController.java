@@ -95,7 +95,7 @@ public class AccountController {
             return CommonResult.errorResponse("对不起！该邮箱已被注册，请更换新的邮箱！");
         }
         String numbers = RandomUtil.randomNumbers(6); // 随机生成6位数字的组合
-        redisUtils.set(email, numbers, 5 * 60);//默认验证码有效5分钟
+        redisUtils.set(Constants.Email.REGISTER_KEY_PREFIX.getValue()+email, numbers, 5 * 60);//默认验证码有效5分钟
         emailService.sendCode(email, numbers);
         return CommonResult.successResponse(MapUtil.builder()
                 .put("email", email)
@@ -153,20 +153,26 @@ public class AccountController {
      * @Since 2020/11/6
      */
     @PostMapping("/apply-reset-password")
-    public CommonResult applyResetPassword(@RequestBody Map<String, Object> data) throws MessagingException {
+    public CommonResult applyResetPassword(@RequestBody Map<String, Object> data) {
+        String captcha = (String) data.get("captcha");
+        String captchaKey = (String) data.get("captchaKey");
         String email = (String) data.get("email");
-        String username = (String) data.get("username");
-        if (StringUtils.isEmpty(email) || StringUtils.isEmpty(username)) {
-            return CommonResult.errorResponse("用户名或邮箱不能为空");
+        if (StringUtils.isEmpty(captcha) || StringUtils.isEmpty(email) || StringUtils.isEmpty(captchaKey)) {
+            return CommonResult.errorResponse("邮箱或验证码不能为空");
         }
-        QueryWrapper<UserInfo> wrapper = new QueryWrapper<UserInfo>().eq("email", email).eq("username", username);
-        UserInfo user = userInfoDao.getOne(wrapper);
-        if (user == null) {
-            return CommonResult.errorResponse("用户名和该邮箱不匹配");
+        // 获取redis中的验证码
+        String redisCode = (String) redisUtils.get(captchaKey);
+        // 判断验证码
+        if (!redisCode.equals(captcha.trim().toLowerCase())) {
+            return CommonResult.errorResponse("验证码不正确");
         }
+        QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
+        userInfoQueryWrapper.eq("email", email.trim());
+        UserInfo userInfo = userInfoDao.getOne(userInfoQueryWrapper);
         String code = IdUtil.simpleUUID().substring(0, 21); // 随机生成20位数字与字母的组合
-        redisUtils.set(username, code, 10 * 60);//默认链接有效10分钟
-        emailService.sendResetPassword(username, code, email);
+        redisUtils.set(Constants.Email.RESET_PASSWORD_KEY_PREFIX.getValue()+userInfo.getUsername(), code, 10 * 60);//默认链接有效10分钟
+        // 发送邮件
+        emailService.sendResetPassword(userInfo.getUsername(), code, email.trim());
         return CommonResult.successResponse(null, "重置密码邮件已发送至指定邮箱，请稍稍等待一会。");
     }
 
@@ -187,10 +193,12 @@ public class AccountController {
         if (StringUtils.isEmpty(password) || StringUtils.isEmpty(username) || StringUtils.isEmpty(code)) {
             return CommonResult.errorResponse("用户名,新密码或验证码不能为空");
         }
-        if (!redisUtils.hasKey(username)) {
+        String codeKey = Constants.Email.RESET_PASSWORD_KEY_PREFIX.getValue()+username;
+
+        if (!redisUtils.hasKey(codeKey)) {
             return CommonResult.errorResponse("重置密码链接不存在或已过期，请重新发送重置邮件");
         }
-        if (!redisUtils.get(username).equals(code)) { //验证码判断
+        if (!redisUtils.get(codeKey).equals(code)) { //验证码判断
             return CommonResult.errorResponse("重置密码的链接验证码不正确，请重新发送重置邮件");
         }
 
@@ -218,11 +226,11 @@ public class AccountController {
         if (!configVo.getRegister()) { // 需要判断一下网站是否开启注册
             return CommonResult.errorResponse("对不起！本站暂未开启注册功能！", CommonResult.STATUS_ACCESS_DENIED);
         }
-
-        if (!redisUtils.hasKey(registerDto.getEmail())) {
+        String codeKey = Constants.Email.REGISTER_KEY_PREFIX.getValue()+registerDto.getEmail();
+        if (!redisUtils.hasKey(codeKey)) {
             return CommonResult.errorResponse("验证码不存在或已过期");
         }
-        if (!redisUtils.get(registerDto.getEmail()).equals(registerDto.getCode())) { //验证码判断
+        if (!redisUtils.get(codeKey).equals(registerDto.getCode())) { //验证码判断
             return CommonResult.errorResponse("验证码不正确");
         }
         String uuid = IdUtil.simpleUUID();

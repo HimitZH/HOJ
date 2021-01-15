@@ -127,4 +127,28 @@ public class Constants {
             return path;
         }
     }
+
+    /**
+     * @Description 邮件任务的一些常量
+     * @Since 2021/1/14
+     */
+
+    public enum Email{
+        OJ_URL("http://localhost:8080"),
+        OJ_NAME("Hcode Online Judge"),
+        OJ_SHORT_NAME("HOJ"),
+        EMAIL_FROM("oj.hcode@qq.com"),
+        EMAIL_BACKGROUND_IMG("https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/HCODE.png"),
+        REGISTER_KEY_PREFIX("register-user:"),
+        RESET_PASSWORD_KEY_PREFIX("reset-password:");
+        private String value;
+
+        Email(String value){
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 }
