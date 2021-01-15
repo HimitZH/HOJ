@@ -24,6 +24,8 @@ import java.util.List;
 @Repository
 public interface UserRecordMapper extends BaseMapper<UserRecord> {
     List<ACMRankVo> getACMRankList(IPage page);
+    List<ACMRankVo> getRecent7ACRank();
     List<OIRankVo> getOIRankList(IPage page);
     UserHomeVo getUserHomeInfo(@Param("uid") String uid);
+
 }

@@ -132,9 +132,9 @@ export const PROBLEM_LEVEL_RESERVE={
 
 
 export const CONTEST_STATUS = {
-  'SCHEDULED': '-1',
-  'RUNNING': '0',
-  'ENDED': '1'
+  'SCHEDULED': -1,
+  'RUNNING': 0,
+  'ENDED': 1
 }
 
 export const CONTEST_STATUS_REVERSE = {

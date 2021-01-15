@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.ContestMapper;
+import top.hcode.hoj.pojo.vo.ACMRankVo;
 import top.hcode.hoj.pojo.vo.AnnouncementVo;
 import top.hcode.hoj.pojo.vo.ConfigVo;
 import top.hcode.hoj.pojo.vo.ContestVo;
 import top.hcode.hoj.service.impl.AnnouncementServiceImpl;
+import top.hcode.hoj.service.impl.UserRecordServiceImpl;
 
 import java.util.List;
 
@@ -33,6 +35,9 @@ public class HomeController {
 
     @Autowired
     private AnnouncementServiceImpl announcementDao;
+
+    @Autowired
+    private UserRecordServiceImpl userRecordService;
     
     /**
      * @MethodName getRecentContest
@@ -47,7 +52,22 @@ public class HomeController {
         List<ContestVo> contests = contestDao.getWithinNext14DaysContests();
         return CommonResult.successResponse(contests);
     }
-    
+
+
+    /**
+     * @MethodName getRecentSevenACRank
+     * @Params  * @param null
+     * @Description 获取最近7天用户做题榜单
+     * @Return
+     * @Since 2021/1/15
+     */
+    @GetMapping("/get-recent-seven-ac-rank")
+    public CommonResult getRecentSevenACRank(){
+        List<ACMRankVo> recent7ACRank = userRecordService.getRecent7ACRank();
+
+        return CommonResult.successResponse(recent7ACRank,"获取成功！");
+    }
+
     
     /**
      * @MethodName getCommonAnnouncement

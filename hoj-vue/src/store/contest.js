@@ -1,7 +1,7 @@
 import moment from 'moment'
 import api from '@/common/api'
 import { CONTEST_STATUS, USER_TYPE, CONTEST_TYPE } from '@/common/constants'
-
+import time from '@/common/time'
 const state = {
   now: moment(),
   intoAccess: false, // 私有比赛进入权限
@@ -86,19 +86,21 @@ const getters = {
   countdown: (state, getters) => {
     // 还未开始的显示
     if (getters.contestStatus === CONTEST_STATUS.SCHEDULED) {
-      let duration = moment.duration(getters.contestStartTime.diff(state.now, 'seconds'), 'seconds')
+
+      let durationMs = getters.contestStartTime.diff(state.now, 'seconds')
+
+      let duration = moment.duration(durationMs, 'seconds')
       // time is too long
       if (duration.weeks() > 0) {
         return 'Start At ' + duration.humanize()
       }
-      let texts = [Math.floor(duration.asHours()), duration.minutes(), duration.seconds()]
-      return '-' + texts.join(':')
+      let texts = time.secondFormat(durationMs)
+      return '-' + texts
       // 比赛进行中的显示
     } else if (getters.contestStatus === CONTEST_STATUS.RUNNING) {
-      let duration = moment.duration(getters.contestEndTime.diff(state.now, 'seconds'), 'seconds')
       // 倒计时文本显示
-      let texts = [Math.floor(duration.asHours()), duration.minutes(), duration.seconds()]
-      return '-' + texts.join(':')
+      let texts = time.secondFormat(getters.contestEndTime.diff(state.now, 'seconds'))
+      return '-' + texts
     } else {
       return 'Ended'
     }
