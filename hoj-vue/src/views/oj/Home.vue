@@ -95,18 +95,18 @@ export default {
   },
   mounted(){
     this.getRecentContests()
-    // this.getRecentOtherContests()
+    this.getRecentOtherContests()
   },
   methods: {
 
     getRecentContests(){
       api.getRecentContests().then(res=>{
-        this.contests = res.data.data
+        this.contests = res.data.data;
       })
     },
     getRecentOtherContests(){
       api.getRecentOtherContests().then(res=>{
-        this.otherContests = res.data.data
+        this.otherContests = res.data.data;
       })
     },
 
