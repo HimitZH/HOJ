@@ -1,12 +1,9 @@
 package top.hcode.hoj.service.impl;
 
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,7 +14,6 @@ import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.JsoupUtils;
 import top.hcode.hoj.utils.RedisUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -114,7 +110,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 
     /**
-     * 获取其他OJ的比赛列表，并保存在redis里
+     * 每两小时获取其他OJ的比赛列表，并保存在redis里
      * 保存格式：
      * oj: "Codeforces",
      * title: "Codeforces Round #680 (Div. 1, based on VK Cup 2020-2021 - Final)",
@@ -139,6 +135,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 // 把比赛列表信息添加在List里
                 contestsList.add(MapUtil.builder(new HashMap<String, Object>())
                         .put("oj", "Codeforces")
+                        .put("url", "https://codeforces.com/contest/"+contest.getStr("id"))
                         .put("title", contest.getStr("name"))
                         .put("beginTime", new Date(contest.getLong("startTimeSeconds") * 1000L))
                         .put("endTime", new Date((contest.getLong("startTimeSeconds") + contest.getLong("durationSeconds")) * 1000L)).map());
