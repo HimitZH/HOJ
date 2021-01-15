@@ -1,21 +1,29 @@
 <template>
   <div>
     <el-form :model="formResetPassword" :rules="rules" ref="formResetPassword">
-      <el-form-item prop="username">
-        <el-input
-          v-model="formResetPassword.username"
-          prefix-icon="el-icon-user-solid"
-          placeholder="Please Enter Your Username"
-          width="100%"
-        ></el-input>
-      </el-form-item>
       <el-form-item prop="email">
         <el-input
           v-model="formResetPassword.email"
-          prefix-icon="el-icon-s-promotion"
+          prefix-icon="el-icon-message"
           placeholder="Please Enter Your Email"
         >
         </el-input>
+      </el-form-item>
+      <el-form-item prop="captcha">
+        <div id="captcha">
+          <div id="captchaCode">
+            <el-input
+              v-model="formResetPassword.captcha"
+              prefix-icon="el-icon-s-check"
+              placeholder="Please Enter the captcha"
+            ></el-input>
+          </div>
+          <div id="captchaImg">
+            <el-tooltip content="Click to refresh" placement="top">
+              <img :src="captchaSrc" @click="getCaptcha" />
+            </el-tooltip>
+          </div>
+        </div>
       </el-form-item>
     </el-form>
     <div class="footer">
@@ -23,6 +31,7 @@
         type="primary"
         @click="handleResetPwd"
         :loading="btnResetPwdLoading"
+        :disabled="btnResetPwdDisabled"
       >
         {{ resetText }}
       </el-button>
@@ -38,18 +47,6 @@ import api from '@/common/api';
 import mMessage from '@/common/message';
 export default {
   data() {
-    const CheckUsernameNotExist = (rule, value, callback) => {
-      api.checkUsernameOrEmail(value, undefined).then(
-        (res) => {
-          if (res.data.data.username === false) {
-            callback(new Error('The username does not exist'));
-          } else {
-            callback();
-          }
-        },
-        (_) => callback()
-      );
-    };
     const CheckEmailNotExist = (rule, value, callback) => {
       api.checkUsernameOrEmail(undefined, value).then(
         (res) => {
@@ -65,18 +62,22 @@ export default {
     return {
       resetText: '发送重置密码的邮件',
       btnResetPwdLoading: false,
+      btnResetPwdDisabled: false,
+      captchaSrc: '',
       formResetPassword: {
-        username: '',
+        captcha: '',
         email: '',
+        captchaKey: '',
       },
       rules: {
-        username: [
+        captcha: [
           {
             required: true,
-            message: 'The username is required',
+            message: 'The captcha is required',
             trigger: 'blur',
+            min: 1,
+            max: 8,
           },
-          { validator: CheckUsernameNotExist, trigger: 'blur' },
         ],
         email: [
           {
@@ -90,8 +91,17 @@ export default {
       },
     };
   },
+  mounted() {
+    this.getCaptcha();
+  },
   methods: {
     ...mapActions(['changeModalStatus', 'changeResetTimeOut', 'startTimeOut']),
+    getCaptcha() {
+      api.getCaptcha().then((res) => {
+        this.captchaSrc = res.data.data.img;
+        this.formResetPassword.captchaKey = res.data.data.captchaKey;
+      });
+    },
     switchMode(mode) {
       this.changeModalStatus({
         mode,
@@ -102,7 +112,7 @@ export default {
       let i = this.time;
       this.resetText = i + '秒后，可重新发送重置密码的邮件...';
       if (i == 0) {
-        this.btnResetPwdLoading = false;
+        this.btnResetPwdDisabled = false;
         this.resetText = '发送重置密码的邮件';
         return;
       }
@@ -113,19 +123,27 @@ export default {
     handleResetPwd() {
       this.$refs['formResetPassword'].validate((valid) => {
         if (valid) {
-          this.resetText = '正在发送...';
-          mMessage.info('请稍后...系统正在向您的邮箱发送重置确认邮件');
+          this.resetText = '正在处理...';
+          mMessage.info('请稍后...系统正在处理中...');
           this.btnResetPwdLoading = true;
+          this.btnResetPwdDisabled = true;
           api.applyResetPassword(this.formResetPassword).then(
             (res) => {
               mMessage.success(res.data.msg);
-              this.successApply = true;
               this.countDown();
               this.startTimeOut({ name: 'resetTimeOut' });
-            },
-            (_) => {
               this.btnResetPwdLoading = false;
+              this.formResetPassword.captcha = '';
+              this.formResetPassword.captchaKey = '';
+              this.getCaptcha();
+            },
+            (err) => {
+              this.formResetPassword.captcha = '';
+              this.formResetPassword.captchaKey = '';
+              this.btnResetPwdLoading = false;
+              this.btnResetPwdDisabled = false;
               this.resetText = '重新发送';
+              this.getCaptcha();
             }
           );
         }
@@ -145,13 +163,29 @@ export default {
   },
   created() {
     if (this.time != 90 && this.time != 0) {
-      this.btnResetPwdLoading = true;
+      this.btnResetPwdDisabled = true;
       this.countDown();
     }
   },
 };
 </script>
 <style scoped>
+#captcha {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  width: 100%;
+  height: 36px;
+}
+#captchaCode {
+  flex: auto;
+}
+#captchaImg {
+  margin-left: 10px;
+  padding: 3px;
+  flex: initial;
+}
+
 .footer {
   overflow: auto;
   margin-top: 20px;

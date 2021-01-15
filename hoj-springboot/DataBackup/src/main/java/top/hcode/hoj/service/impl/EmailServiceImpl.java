@@ -2,13 +2,17 @@ package top.hcode.hoj.service.impl;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 import top.hcode.hoj.service.EmailService;
+import top.hcode.hoj.utils.Constants;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -18,234 +22,135 @@ import java.util.Date;
 /**
  * @Author: Himit_ZH
  * @Date: 2020/10/24 13:21
- * @Description:
+ * @Description: 异步发送邮件的任务
  */
 @Service
 @Async
+@Slf4j
 public class EmailServiceImpl implements EmailService {
 
     @Autowired
-    JavaMailSender mailSender;
+    private JavaMailSender mailSender;
 
+    @Autowired
+    private TemplateEngine templateEngine;
+
+    /**
+     * @param email 用户邮箱
+     * @param code  生成的六位随机数字验证码
+     * @MethodName sendCode
+     * @Description 为正在注册的用户发送一份注册验证码。
+     * @Return
+     * @Since 2021/1/14
+     */
     @Override
-    public void sendCode(String email, String code) throws MessagingException {
-        DateTime dateTime = DateUtil.offsetMinute(new Date(), 5);
+    public void sendCode(String email, String code) {
+        DateTime expireTime = DateUtil.offsetMinute(new Date(), 10);
         MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,
-                true);
-        mimeMessageHelper.setSubject("HOJ的注册邮件");
-        mimeMessageHelper.setText("<div style=\"background: white;\n" +
-                "\t\t      width: 100%;\n" +
-                "\t\t      max-width: 800px;\n" +
-                "\t\t      margin: auto auto;\n" +
-                "\t\t      border-radius: 5px;\n" +
-                "\t\t      border:#1bc3fb 1px solid;\n" +
-                "\t\t      overflow: hidden;\n" +
-                "\t\t      -webkit-box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.12);\n" +
-                "\t\t      box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.18);\">\n" +
-                "\t\t\t\t<header style=\"overflow: hidden;\">\n" +
-                "\t\t\t\t\t<center>\n" +
-                "\t\t\t\t\t\t<img style=\"width:100%;HEz-index: 666;\" src=\"https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/HCODE.png\">\n" +
-                "\t\t\t\t\t</center>\n" +
-                "\t\t\t\t</header>\n" +
-                "\t\t\t\t<div style=\"padding: 5px 20px;\">\n" +
-                "\t\t\t\t\t<p style=\"position: relative;\n" +
-                "\t\t        color: white;\n" +
-                "\t\t        float: left;\n" +
-                "\t\t        z-index: 999;\n" +
-                "\t\t        background: #1bc3fb;\n" +
-                "\t\t        padding: 5px 30px;\n" +
-                "\t\t        margin: -25px auto 0 ;\n" +
-                "\t\t        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.30)\">\n" +
-                "\t\t\t\t\t\tDear New HOJer\n" +
-                "\t\t\t\t\t</p>\n" +
-                "\t\t\t\t\t<br>\n" +
-                "\t\t\t\t\t<center>\n" +
-                "\t\t\t\t\t\t<h3>\n" +
-                "\t\t\t\t\t\t\t来自 <span style=\"text-decoration: none;color: #FF779A; \">HOJ</span> 邮件提醒\n" +
-                "\t\t\t\t\t\t</h3>\n" +
-                "\t\t\t\t\t<p style=\"text-indent:2em; \">\n" +
-                "\t\t\t\t\t\t您收到这封电子邮件是因为您 (也可能是某人冒充您的名义) 在<a style=\"text-decoration: none;color: #1bc3fb \" target=\"_blank\" href=\"${POST_URL}\" rel=\"noopener\">&nbsp;HOJ&nbsp;</a>上进行注册。假如这不是您本人所申请, 请不用理会这封电子邮件, 但是如果您持续收到这类的信件骚扰, 请您尽快联络管理员。\n" +
-                "\t\t\t\t\t</p>\n" +
-                "\t\t\t\t\t<div style=\"background: #fafafa repeating-linear-gradient(-45deg,#fff,#fff 1.125rem,transparent 1.125rem,transparent 2.25rem);box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);margin:20px 0px;padding:15px;border-radius:5px;font-size:14px;color:#555555;text-align: center;\">\n" +
-                "\t\t\t\t\t\t请使用以下验证码完成后续注册流程：<br>\n" +
-                "\t\t\t\t\t\t <span style=\"color: #FF779A;font-weight: bolder;font-size: 25px;\">"+code+"</span><br>\n" +
-                "\t\t\t\t\t\t 注意:请您在收到邮件5分钟内("+dateTime.toString()+"前)使用，否则该验证码将会失效。\n" +
-                "\t\t\t\t\t\t</div>\n" +
-                "\t\t\t\t\t&nbsp; &nbsp;\n" +
-                "\n" +
-                "\t\t\t\t\t<br>\n" +
-                "\t\t\t\t\t<div style=\"text-align: center;\">\n" +
-                "\t\t\t\t\t\t<a style=\"text-transform: uppercase;\n" +
-                "\t\t                      text-decoration: none;\n" +
-                "\t\t                      font-size: 14px;\n" +
-                "\t\t                      background: #FF779A;\n" +
-                "\t\t                      color: #FFFFFF;\n" +
-                "\t\t                      padding: 10px;\n" +
-                "\t\t                      display: inline-block;\n" +
-                "\t\t                      border-radius: 5px;\n" +
-                "\t\t                      margin: 10px auto 0; \"\n" +
-                "\t\t\t\t\t\t target=\"_blank\" href=\"oj.hcode.top\" rel=\"noopener\">HOJ｜传送门\uD83D\uDEAA</a>\n" +
-                "\t\t\t\t\t</div>\n" +
-                "\t\t\t\t\t<p style=\"font-size: 12px;text-align: center;color: #999;\">\n" +
-                "\t\t\t\t\t\t欢迎常来访问！<br>\n" +
-                "\t\t\t\t\t\t© 2020 <a style=\"text-decoration:none; color:#1bc3fb\" href=\"${SITE_URL}\" rel=\"noopener\" target=\"_blank\">\n" +
-                "\t\t\t\t\t\t\tHODE-OJ </a>\n" +
-                "\t\t\t\t\t</p>\n" +
-                "\t\t\t\t\t<p></p>\n" +
-                "\t\t\t\t</div>\n" +
-                "\t\t\t</div>",true);
+        try {
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,
+                    true);
+            // 设置渲染到html页面对应的值
+            Context context = new Context();
+            context.setVariable(Constants.Email.OJ_NAME.name(), Constants.Email.OJ_NAME.getValue());
+            context.setVariable(Constants.Email.OJ_SHORT_NAME.name(), Constants.Email.OJ_SHORT_NAME.getValue());
+            context.setVariable(Constants.Email.OJ_URL.name(), Constants.Email.OJ_URL.getValue());
+            context.setVariable(Constants.Email.EMAIL_BACKGROUND_IMG.name(), Constants.Email.EMAIL_BACKGROUND_IMG.getValue());
+            context.setVariable("CODE", code);
+            context.setVariable("EXPIRE_TIME", expireTime.toString());
 
-
-        mimeMessageHelper.setTo(email);
-        mimeMessageHelper.setFrom("oj.hcode@qq.com");
-        mailSender.send(mimeMessage);
+            //利用模板引擎加载html文件进行渲染并生成对应的字符串
+            String emailContent = templateEngine.process("emailTemplate_registerCode", context);
+            // 设置邮件标题
+            mimeMessageHelper.setSubject("HOJ的注册邮件");
+            mimeMessageHelper.setText(emailContent, true);
+            // 收件人
+            mimeMessageHelper.setTo(email);
+            // 发送人
+            mimeMessageHelper.setFrom(Constants.Email.EMAIL_FROM.getValue());
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            log.error("用户注册的邮件任务发生异常------------>{}", e.getMessage());
+        }
     }
 
+
+    /**
+     * @param username 需要重置密码的用户名
+     * @param email 用户邮箱
+     * @param code  随机生成20位数字与字母的组合
+     * @MethodName sendResetPassword
+     * @Description 给指定的邮箱的用户发送重置密码链接的邮件。
+     * @Return
+     * @Since 2021/1/14
+     */
     @Override
-    public void sendResetPassword(String username, String code, String email) throws MessagingException {
-        DateTime dateTime = DateUtil.offsetMinute(new Date(), 10);
+    public void sendResetPassword(String username, String code, String email) {
+        DateTime expireTime = DateUtil.offsetMinute(new Date(), 10);
         MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,
-                true);
-        mimeMessageHelper.setSubject("HOJ的重置密码邮件");
-        mimeMessageHelper.setText("<div style=\"background: white;\n" +
-                "\t\t      width: 100%;\n" +
-                "\t\t      max-width: 800px;\n" +
-                "\t\t      margin: auto auto;\n" +
-                "\t\t      border-radius: 5px;\n" +
-                "\t\t      border:#1bc3fb 1px solid;\n" +
-                "\t\t      overflow: hidden;\n" +
-                "\t\t      -webkit-box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.12);\n" +
-                "\t\t      box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.18);\">\n" +
-                "\t\t\t\t<header style=\"overflow: hidden;\">\n" +
-                "\t\t\t\t\t<center>\n" +
-                "\t\t\t\t\t\t<img style=\"width:100%;HEz-index: 666;\" src=\"https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/HCODE.png\">\n" +
-                "\t\t\t\t\t</center>\n" +
-                "\t\t\t\t</header>\n" +
-                "\t\t\t\t<div style=\"padding: 5px 20px;\">\n" +
-                "\t\t\t\t\t<p style=\"position: relative;\n" +
-                "\t\t        color: white;\n" +
-                "\t\t        float: left;\n" +
-                "\t\t        z-index: 999;\n" +
-                "\t\t        background: #1bc3fb;\n" +
-                "\t\t        padding: 5px 30px;\n" +
-                "\t\t        margin: -25px auto 0 ;\n" +
-                "\t\t        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.30)\">\n" +
-                "\t\t\t\t\t\tDear "+username+"\n" +
-                "\t\t\t\t\t</p>\n" +
-                "\t\t\t\t\t<br>\n" +
-                "\t\t\t\t\t<center>\n" +
-                "\t\t\t\t\t\t<h3>\n" +
-                "\t\t\t\t\t\t\t来自 <span style=\"text-decoration: none;color: #FF779A; \">HOJ</span> 邮件提醒\n" +
-                "\t\t\t\t\t\t</h3>\n" +
-                "\t\t\t\t\t<p style=\"text-indent:2em; \">\n" +
-                "\t\t\t\t\t\t您收到这封电子邮件是因为您 (也可能是某人冒充您的名义) 在<a style=\"text-decoration: none;color: #1bc3fb \" target=\"_blank\" href=\"${POST_URL}\" rel=\"noopener\">&nbsp;HOJ&nbsp;</a>上进行密码重置操作。假如这不是您本人所申请, 请不用理会这封电子邮件, 但是如果您持续收到这类的信件骚扰, 请您尽快联络管理员。\n" +
-                "\t\t\t\t\t</p>\n" +
-                "\t\t\t\t\t<div style=\"background: #fafafa repeating-linear-gradient(-45deg,#fff,#fff 1.125rem,transparent 1.125rem,transparent 2.25rem);box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);margin:20px 0px;padding:15px;border-radius:5px;font-size:14px;color:#555555;text-align: center;\">\n" +
-                "\t\t\t\t\t\t请点击下面的链接完成后续重置密码的流程：<br>\n" +
-                "\t\t\t\t\t\t <a href=\"http://localhost:8080/reset-password?username="+username+"&code="+code+"\"  style=\"color: #FF779A;font-weight: bolder;font-size: 25px;text-decoration: none;\">CLICK HERE</a><br>\n" +
-                "\t\t\t\t\t\t 注意:请您在收到邮件10分钟内("+dateTime.toString()+"前)使用，否则该链接将会失效。\n" +
-                "\t\t\t\t\t\t</div>\n" +
-                "\t\t\t\t\t&nbsp; &nbsp;\n" +
-                "\n" +
-                "\t\t\t\t\t<br>\n" +
-                "\t\t\t\t\t<div style=\"text-align: center;\">\n" +
-                "\t\t\t\t\t\t<a style=\"text-transform: uppercase;\n" +
-                "\t\t                      text-decoration: none;\n" +
-                "\t\t                      font-size: 14px;\n" +
-                "\t\t                      background: #FF779A;\n" +
-                "\t\t                      color: #FFFFFF;\n" +
-                "\t\t                      padding: 10px;\n" +
-                "\t\t                      display: inline-block;\n" +
-                "\t\t                      border-radius: 5px;\n" +
-                "\t\t                      margin: 10px auto 0; \"\n" +
-                "\t\t\t\t\t\t target=\"_blank\" href=\"oj.hcode.top\" rel=\"noopener\">HOJ｜传送门\uD83D\uDEAA</a>\n" +
-                "\t\t\t\t\t</div>\n" +
-                "\t\t\t\t\t<p style=\"font-size: 12px;text-align: center;color: #999;\">\n" +
-                "\t\t\t\t\t\t欢迎常来访问！<br>\n" +
-                "\t\t\t\t\t\t© 2020 <a style=\"text-decoration:none; color:#1bc3fb\" href=\"${SITE_URL}\" rel=\"noopener\" target=\"_blank\">\n" +
-                "\t\t\t\t\t\t\tHODE-OJ </a>\n" +
-                "\t\t\t\t\t</p>\n" +
-                "\t\t\t\t\t<p></p>\n" +
-                "\t\t\t\t</div>\n" +
-                "\t\t\t</div>",true);
+        try {
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,
+                    true);
+            // 设置渲染到html页面对应的值
+            Context context = new Context();
+            context.setVariable(Constants.Email.OJ_NAME.name(), Constants.Email.OJ_NAME.getValue());
+            context.setVariable(Constants.Email.OJ_SHORT_NAME.name(), Constants.Email.OJ_SHORT_NAME.getValue());
+            context.setVariable(Constants.Email.OJ_URL.name(), Constants.Email.OJ_URL.getValue());
+            context.setVariable(Constants.Email.EMAIL_BACKGROUND_IMG.name(), Constants.Email.EMAIL_BACKGROUND_IMG.getValue());
+            context.setVariable("RESET_URL", Constants.Email.OJ_URL.getValue() + "/reset-password?username=" + username + "&code=" + code);
+            context.setVariable("EXPIRE_TIME", expireTime.toString());
+            context.setVariable("USERNAME", username);
 
+            //利用模板引擎加载html文件进行渲染并生成对应的字符串
+            String emailContent = templateEngine.process("emailTemplate_resetPassword", context);
 
-        mimeMessageHelper.setTo(email);
-        mimeMessageHelper.setFrom("oj.hcode@qq.com");
-        mailSender.send(mimeMessage);
+            mimeMessageHelper.setSubject("HOJ的重置密码邮件");
+
+            mimeMessageHelper.setText(emailContent, true);
+            // 收件人
+            mimeMessageHelper.setTo(email);
+            // 发送人
+            mimeMessageHelper.setFrom(Constants.Email.EMAIL_FROM.getValue());
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            log.error("用户重置密码的邮件任务发生异常------------>{}", e.getMessage());
+        }
     }
 
-    @Override
-    public void testEmail(String email) throws MessagingException {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,
-                true);
-        mimeMessageHelper.setSubject("HOJ的测试邮件");
-        mimeMessageHelper.setText("<div style=\"background: white;\n" +
-                "\t\t      width: 100%;\n" +
-                "\t\t      max-width: 800px;\n" +
-                "\t\t      margin: auto auto;\n" +
-                "\t\t      border-radius: 5px;\n" +
-                "\t\t      border:#1bc3fb 1px solid;\n" +
-                "\t\t      overflow: hidden;\n" +
-                "\t\t      -webkit-box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.12);\n" +
-                "\t\t      box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.18);\">\n" +
-                "\t\t\t\t<header style=\"overflow: hidden;\">\n" +
-                "\t\t\t\t\t<center>\n" +
-                "\t\t\t\t\t\t<img style=\"width:100%;HEz-index: 666;\" src=\"https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/HCODE.png\">\n" +
-                "\t\t\t\t\t</center>\n" +
-                "\t\t\t\t</header>\n" +
-                "\t\t\t\t<div style=\"padding: 5px 20px;\">\n" +
-                "\t\t\t\t\t<p style=\"position: relative;\n" +
-                "\t\t        color: white;\n" +
-                "\t\t        float: left;\n" +
-                "\t\t        z-index: 999;\n" +
-                "\t\t        background: #1bc3fb;\n" +
-                "\t\t        padding: 5px 30px;\n" +
-                "\t\t        margin: -25px auto 0 ;\n" +
-                "\t\t        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.30)\">\n" +
-                "\t\t\t\t\t\tDear 超级管理员\n" +
-                "\t\t\t\t\t</p>\n" +
-                "\t\t\t\t\t<br>\n" +
-                "\t\t\t\t\t<center>\n" +
-                "\t\t\t\t\t\t<h3>\n" +
-                "\t\t\t\t\t\t\t来自 <span style=\"text-decoration: none;color: #FF779A; \">HOJ</span> 邮件提醒\n" +
-                "\t\t\t\t\t\t</h3>\n" +
-                "\t\t\t\t\t<p style=\"text-indent:2em; \">\n" +
-                "\t\t\t\t\t\t您收到这封电子邮件是因为您在<a style=\"text-decoration: none;color: #1bc3fb \" target=\"_blank\" href=\"${POST_URL}\" rel=\"noopener\">&nbsp;HOJ&nbsp;</a>上进行邮箱配置更新，然后进行邮箱可行性的测试。\n" +
-                "\t\t\t\t\t</p>\n" +
-                "\t\t\t\t\t<div style=\"background: #fafafa repeating-linear-gradient(-45deg,#fff,#fff 1.125rem,transparent 1.125rem,transparent 2.25rem);box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);margin:20px 0px;padding:15px;border-radius:5px;font-size:14px;color:#555555;text-align: center;\">\n" +
-                "\t\t\t\t\t\t经过本邮件的接收，可证实：<br>\n" +
-                "\t\t\t\t\t\t <span style=\"color: #FF779A;font-weight: bolder;font-size: 25px;text-decoration: none;\">测试成功</span><br>\n" +
-                "\t\t\t\t\t\t</div>\n" +
-                "\t\t\t\t\t&nbsp; &nbsp;\n" +
-                "\n" +
-                "\t\t\t\t\t<br>\n" +
-                "\t\t\t\t\t<div style=\"text-align: center;\">\n" +
-                "\t\t\t\t\t\t<a style=\"text-transform: uppercase;\n" +
-                "\t\t                      text-decoration: none;\n" +
-                "\t\t                      font-size: 14px;\n" +
-                "\t\t                      background: #FF779A;\n" +
-                "\t\t                      color: #FFFFFF;\n" +
-                "\t\t                      padding: 10px;\n" +
-                "\t\t                      display: inline-block;\n" +
-                "\t\t                      border-radius: 5px;\n" +
-                "\t\t                      margin: 10px auto 0; \"\n" +
-                "\t\t\t\t\t\t target=\"_blank\" href=\"oj.hcode.top\" rel=\"noopener\">HOJ｜传送门\uD83D\uDEAA</a>\n" +
-                "\t\t\t\t\t</div>\n" +
-                "\t\t\t\t\t<p style=\"font-size: 12px;text-align: center;color: #999;\">\n" +
-                "\t\t\t\t\t\t欢迎常来访问！<br>\n" +
-                "\t\t\t\t\t\t© 2020 <a style=\"text-decoration:none; color:#1bc3fb\" href=\"${SITE_URL}\" rel=\"noopener\" target=\"_blank\">\n" +
-                "\t\t\t\t\t\t\tHODE-OJ </a>\n" +
-                "\t\t\t\t\t</p>\n" +
-                "\t\t\t\t\t<p></p>\n" +
-                "\t\t\t\t</div>\n" +
-                "\t\t\t</div>",true);
 
-        mimeMessageHelper.setTo(email);
-        mimeMessageHelper.setFrom("oj.hcode@qq.com");
-        mailSender.send(mimeMessage);
+    /**
+     * @param email 用户邮箱
+     * @MethodName testEmail
+     * @Description 超级管理员后台修改邮件系统配置后发送的测试邮箱可用性的测试邮件。
+     * @Return
+     * @Since 2021/1/14
+     */
+    @Override
+    public void testEmail(String email) {
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        try {
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,
+                    true);
+            // 设置渲染到html页面对应的值
+            Context context = new Context();
+            context.setVariable(Constants.Email.OJ_NAME.name(), Constants.Email.OJ_NAME.getValue());
+            context.setVariable(Constants.Email.OJ_SHORT_NAME.name(), Constants.Email.OJ_SHORT_NAME.getValue());
+            context.setVariable(Constants.Email.OJ_URL.name(), Constants.Email.OJ_URL.getValue());
+            context.setVariable(Constants.Email.EMAIL_BACKGROUND_IMG.name(), Constants.Email.EMAIL_BACKGROUND_IMG.getValue());
+
+            //利用模板引擎加载html文件进行渲染并生成对应的字符串
+            String emailContent = templateEngine.process("emailTemplate_testEmail", context);
+
+            mimeMessageHelper.setSubject("HOJ的测试邮件");
+
+            mimeMessageHelper.setText(emailContent, true);
+            // 收件人
+            mimeMessageHelper.setTo(email);
+            // 发送人
+            mimeMessageHelper.setFrom(Constants.Email.EMAIL_FROM.getValue());
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            log.error("超级管理员重置邮件系统配置的测试邮箱可用性的任务发生异常------------>{}", e.getMessage());
+        }
     }
 }

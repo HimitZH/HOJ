@@ -21,7 +21,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Autowired
     private FileServiceImpl fileService;
 
-    @Scheduled(cron = "0/5 * * * * *")
+    // 每天3：00执行一次
+    @Scheduled(cron = "0 0 3 * * *")
     @Override
     public void deleteAvatar() {
         List<File> files = fileService.queryDeleteAvatarList();
