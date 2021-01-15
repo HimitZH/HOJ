@@ -77,7 +77,6 @@ public class HomeController {
         return CommonResult.successResponse(recent7ACRank, "获取成功！");
     }
 
-    
 
 
     /**
@@ -96,13 +95,8 @@ public class HomeController {
         contestsList = (ArrayList<HashMap<String, Object>>) redisUtils.get(redisKey);
 
         HashMap<String, Object> resp = new HashMap<>();
-        // 比赛列表为空，传入空列表，以免前端出错
-        if (contestsList == null) {
-            resp.put("data", "");
-            return CommonResult.successResponse(resp);
-        }
-        resp.put("data", contestsList);
-        return CommonResult.successResponse(resp);
+
+        return CommonResult.successResponse(contestsList,"获取其它OJ最近比赛列表成功");
     }
 
 

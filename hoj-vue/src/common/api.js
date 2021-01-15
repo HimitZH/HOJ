@@ -117,6 +117,10 @@ const ojApi = {
     return ajax('/api/get-recent-contest', 'get', {
     })
   },
+  getRecentOtherContests(){
+    return ajax('/api/get-recent-other-contest', 'get', {
+    })
+  },
   getAnnouncementList(currentPage, limit) {
     let params = {
       currentPage: currentPage,
@@ -128,10 +132,6 @@ const ojApi = {
   },
   getRecent7ACRank(){
     return ajax('/api/get-recent-seven-ac-rank', 'get', {
-    })
-  },
-  getRecentOtherContests(){
-    return ajax('/api/get-recent-other-contest', 'get', {
     })
   },
 

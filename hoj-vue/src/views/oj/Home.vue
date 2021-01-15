@@ -20,7 +20,7 @@
           </div>
           <el-carousel
             indicator-position="outside"
-            height="430px"
+            height="443px"
             :interval="interval"
             v-model="index"
           >
@@ -90,14 +90,25 @@
             auto-resize
             align="center"
             :data="recentUserACRecord"
-            max-height="460px"
+            max-height="470px"
           >
-            <vxe-table-column type="seq" min-width="30"></vxe-table-column>
-            <vxe-table-column
-              field="username"
-              title="Username"
-              min-width="130"
-            ></vxe-table-column>
+            <vxe-table-column type="seq" min-width="30">
+              <template v-slot="{ rowIndex }">
+                <span :class="getRankTagClass(rowIndex)"
+                  >{{ rowIndex + 1 }}
+                </span>
+                <span :class="'cite no' + rowIndex"></span>
+              </template>
+            </vxe-table-column>
+            <vxe-table-column field="username" title="Username" min-width="130">
+              <template v-slot="{ row }">
+                <a
+                  @click="goUserHome(row.username, row.uid)"
+                  style="color: rgb(87, 163, 243)"
+                  >{{ row.username }}</a
+                >
+              </template>
+            </vxe-table-column>
             <vxe-table-column field="ac" title="AC" min-width="30">
             </vxe-table-column>
             <vxe-table-column field="solved" title="Solved" min-width="30">
@@ -114,7 +125,13 @@
               >Other Online Judge Contest</span
             >
           </div>
-          <vxe-table border="inner" stripe auto-resize :data="otherContests">
+          <vxe-table
+            border="inner"
+            stripe
+            auto-resize
+            :data="otherContests"
+            @cell-click="goOtherOJContest"
+          >
             <vxe-table-column
               field="oj"
               title="OJ"
@@ -163,15 +180,7 @@ export default {
   data() {
     return {
       interval: 6000,
-      otherContests: [
-        {
-          oj: 'Codeforces',
-          title:
-            'Codeforces Round #680 (Div. 1, based on VK Cup 2020-2021 - Final)',
-          beginTime: '2020-11-08T05:00:00Z',
-          endTime: '2020-11-08T08:00:00Z',
-        },
-      ],
+      otherContests: [],
       recentUserACRecord: [],
       CONTEST_STATUS_REVERSE: {},
       contests: [],
@@ -182,7 +191,7 @@ export default {
     this.CONTEST_STATUS_REVERSE = Object.assign({}, CONTEST_STATUS_REVERSE);
     this.getRecentContests();
     this.getRecent7ACRank();
-    this.getRecentOtherContests()
+    this.getRecentOtherContests();
   },
   methods: {
     getRecentContests() {
@@ -206,8 +215,20 @@ export default {
         params: { contestID: this.contests[this.index].id },
       });
     },
+    goOtherOJContest(event) {
+      window.open(event.row.url);
+    },
+    goUserHome(username, uid) {
+      this.$router.push({
+        path: '/user-home',
+        query: { uid, username },
+      });
+    },
     getDuration(startTime, endTime) {
       return time.duration(startTime, endTime);
+    },
+    getRankTagClass(rowIndex) {
+      return 'rank-tag no' + (rowIndex + 1);
     },
   },
   computed: {
@@ -271,5 +292,49 @@ export default {
 }
 .contest .contest-description {
   margin-top: 25px;
+}
+span.rank-tag.no1 {
+  line-height: 24px;
+  background: #bf2c24;
+}
+
+span.rank-tag.no2 {
+  line-height: 24px;
+  background: #e67225;
+}
+
+span.rank-tag.no3 {
+  line-height: 24px;
+  background: #e6bf25;
+}
+
+span.rank-tag {
+  font: 16px/22px FZZCYSK;
+  min-width: 14px;
+  height: 22px;
+  padding: 0 4px;
+  text-align: center;
+  color: #fff;
+  background: #000;
+  background: rgba(0, 0, 0, 0.6);
+}
+.cite {
+  display: block;
+  width: 14px;
+  height: 0;
+  margin: 0 auto;
+  margin-top: -3px;
+  border-right: 11px solid transparent;
+  border-bottom: 0 none;
+  border-left: 11px solid transparent;
+}
+.cite.no0 {
+  border-top: 5px solid #bf2c24;
+}
+.cite.no1 {
+  border-top: 5px solid #e67225;
+}
+.cite.no2 {
+  border-top: 5px solid #e6bf25;
 }
 </style>
