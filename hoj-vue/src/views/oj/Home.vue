@@ -182,7 +182,7 @@ export default {
     this.CONTEST_STATUS_REVERSE = Object.assign({}, CONTEST_STATUS_REVERSE);
     this.getRecentContests();
     this.getRecent7ACRank();
-    // this.getRecentOtherContests()
+    this.getRecentOtherContests()
   },
   methods: {
     getRecentContests() {

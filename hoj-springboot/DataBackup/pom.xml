@@ -151,6 +151,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- jsoup 爬虫库 @ https://jsoup.org/ -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.13.1</version>
+        </dependency>
     </dependencies>
 
 </project>

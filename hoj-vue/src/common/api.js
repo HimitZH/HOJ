@@ -24,13 +24,13 @@ if (process.env.NODE_ENV == 'development') {
 axios.defaults.timeout = 15000;
 
 axios.interceptors.request.use(
-  
+
   config => {
-    
+
     // NProgress.start();
-    // 每次发送请求之前判断vuex中是否存在token        
+    // 每次发送请求之前判断vuex中是否存在token
     // 如果存在，则统一在http请求的header都加上token，这样后台根据token判断你的登录情况
-    // 即使本地存在token，也有可能token是过期的，所以在响应拦截器中要对返回状态进行判断 
+    // 即使本地存在token，也有可能token是过期的，所以在响应拦截器中要对返回状态进行判断
     const token = localStorage.getItem('token')
     token && (config.headers.Authorization = token);
     let type = config.url.split("/")[1];
@@ -39,7 +39,7 @@ axios.interceptors.request.use(
     }else{
       config.headers['Url-Type'] = 'general'
     }
-    
+
     return config;
   },
   error => {
@@ -54,26 +54,26 @@ axios.interceptors.response.use(
     // NProgress.done();
     if(response.headers['refresh-token']){ // token续约！
       store.commit('changeUserToken',response.headers['authorization'])
-    } 
+    }
     if (response.data.status === 200 || response.data.status==undefined) {
       return Promise.resolve(response);
     } else {
       mMessage.error(response.data.msg);
       return Promise.reject(response);
     }
-   
+
   },
-  // 服务器状态码不是200的情况    
+  // 服务器状态码不是200的情况
   error => {
     // NProgress.done();
     if (error.response) {
       if(error.response.headers['refresh-token']){ // token续约！！
         store.commit('changeUserToken',error.response.headers['authorization'])
-      } 
+      }
       switch (error.response.status) {
-        // 401: 未登录 token过期               
-        // 未登录则跳转登录页面，并携带当前页面的路径                
-        // 在登录成功后返回当前页面，这一步需要在登录页操作。                
+        // 401: 未登录 token过期
+        // 未登录则跳转登录页面，并携带当前页面的路径
+        // 在登录成功后返回当前页面，这一步需要在登录页操作。
         case 401:
           mMessage.error(error.response.data.msg);
           if(error.response.config.headers['Url-Type'] === 'admin'){
@@ -83,16 +83,16 @@ axios.interceptors.response.use(
           }
           store.commit('clearUserInfoAndToken');
           break;
-        // 403                               
-        // 无权限访问或操作的请求             
+        // 403
+        // 无权限访问或操作的请求
         case 403:
           mMessage.error(error.response.data.msg);
           break;
-        // 404请求不存在                
+        // 404请求不存在
         case 404:
           mMessage.error('查询错误，找不到要请求的资源！');
           break;
-        // 其他错误，直接抛出错误提示                
+        // 其他错误，直接抛出错误提示
         default:
           mMessage.error( error.response.data.msg);
           break;
@@ -131,7 +131,8 @@ const ojApi = {
     })
   },
   getRecentOtherContests(){
-
+    return ajax('/api/get-recent-other-contest', 'get', {
+    })
   },
 
   // 用户账户的相关请求
@@ -265,7 +266,7 @@ const ojApi = {
       params
     })
   },
-  
+
   submissionRejudge (submitId) {
     return ajax('/admin/judge/rejudge', 'get', {
       params: {
@@ -550,7 +551,7 @@ const adminApi = {
       data
     })
   },
-  
+
   admin_getContestProblemInfo(pid,cid) {
     return ajax('/admin/contest/contest-problem', 'get', {
       params: {
@@ -606,7 +607,7 @@ const adminApi = {
       data
     })
   },
-  
+
   exportProblems (data) {
     return ajax('export_problem', 'post', {
       data
@@ -667,7 +668,7 @@ const adminApi = {
   },
 }
 
-// 集中导出oj前台的api和admin管理端的api 
+// 集中导出oj前台的api和admin管理端的api
 let api = Object.assign(ojApi,adminApi)
 export default api
 /**
