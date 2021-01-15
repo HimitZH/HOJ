@@ -11,6 +11,8 @@ import top.hcode.hoj.service.UserRecordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务实现类
@@ -32,6 +34,11 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
         Page<ACMRankVo> page =new Page<>(currentPage,limit);
 
         return page.setRecords(userRecordMapper.getACMRankList(page));
+    }
+
+    @Override
+    public List<ACMRankVo> getRecent7ACRank() {
+        return userRecordMapper.getRecent7ACRank();
     }
 
     @Override

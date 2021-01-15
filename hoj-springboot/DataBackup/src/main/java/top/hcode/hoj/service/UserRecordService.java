@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import top.hcode.hoj.pojo.vo.OIRankVo;
 import top.hcode.hoj.pojo.vo.UserHomeVo;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务类
@@ -18,6 +20,8 @@ import top.hcode.hoj.pojo.vo.UserHomeVo;
 public interface UserRecordService extends IService<UserRecord> {
 
     Page<ACMRankVo> getACMRankList(int limit, int currentPage);
+
+    List<ACMRankVo> getRecent7ACRank();
 
     Page<OIRankVo> getOIRankList(int limit, int currentPage);
 

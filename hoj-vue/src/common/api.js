@@ -126,6 +126,10 @@ const ojApi = {
       params
     })
   },
+  getRecent7ACRank(){
+    return ajax('/api/get-recent-seven-ac-rank', 'get', {
+    })
+  },
   getRecentOtherContests(){
 
   },

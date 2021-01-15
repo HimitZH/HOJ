@@ -15,15 +15,15 @@
                 and c.type = #{type}
             </if>
         </where>
-        order by c.gmt_create DESC
+        order by c.start_time DESC
     </select>
     <select id="getContestInfoById" resultType="top.hcode.hoj.pojo.vo.ContestVo" useCache="true">
         select c.id,c.author,c.title,c.type,c.status,c.description,c.seal_rank,c.seal_rank_time,c.source,c.auth,c.start_time,c.end_time,c.duration
         from contest c where c.id = #{cid}
     </select>
     <select id="getWithinNext14DaysContests" resultType="top.hcode.hoj.pojo.vo.ContestVo">
-        SELECT c.id,c.author,c.title,c.type,c.source,c.auth,c.status,c.start_time,c.end_time,c.duration
-        FROM contest c WHERE DATE_ADD(CURDATE(), INTERVAL 14 DAY) >= DATE(start_time) AND STATUS != 1
+        SELECT c.id,c.author,c.title,c.type,c.source,c.auth,c.status,c.description,c.start_time,c.end_time,c.duration
+        FROM contest c WHERE DATE_ADD(CURDATE(), INTERVAL 14 DAY) >= DATE(start_time) AND c.status != 1
         order by c.start_time ASC
     </select>
 </mapper>

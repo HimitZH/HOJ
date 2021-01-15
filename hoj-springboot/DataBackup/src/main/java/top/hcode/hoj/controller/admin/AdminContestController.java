@@ -58,16 +58,17 @@ public class AdminContestController {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;
         IPage<Contest> iPage = new Page<>(currentPage,limit);
-        IPage<Contest> contestList = null;
+        QueryWrapper<Contest> queryWrapper = new QueryWrapper<>();
+
         if (!StringUtils.isEmpty(keyword)) {
-            QueryWrapper<Contest> queryWrapper = new QueryWrapper<>();
             queryWrapper
                     .like("title", keyword).or()
-                    .like("id", keyword).orderByDesc("gmt_create");
-            contestList = contestService.page(iPage, queryWrapper);
-        }else{
-            contestList = contestService.page(iPage);
+                    .like("id", keyword);
         }
+
+        queryWrapper.orderByDesc("start_time");
+
+        IPage<Contest> contestList = contestService.page(iPage, queryWrapper);
         if (contestList.getTotal() == 0) { // 未查询到一条数据
             return CommonResult.successResponse(contestList,"暂无数据");
         } else {
