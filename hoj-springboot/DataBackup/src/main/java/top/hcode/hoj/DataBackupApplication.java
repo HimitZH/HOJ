@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @Date: 2020/10/22 23:25
  * @Description:
  */
-@EnableScheduling
+@EnableScheduling // 开启定时任务
 @EnableDiscoveryClient // 开启注册发现
 @SpringBootApplication
 @EnableFeignClients // 开启feign

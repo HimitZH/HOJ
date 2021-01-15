@@ -10,25 +10,24 @@ public class Constants {
      * @Description 提交评测结果的状态码
      * @Since 2021/1/1
      */
-    public enum Judge{
-        STATUS_NOT_SUBMITTED (-10,"Not Submitted",null),
-        STATUS_PRESENTATION_ERROR (-3,"Presentation Error","pe"),
-        STATUS_COMPILE_ERROR (-2,"Compile Error","ce"),
-        STATUS_WRONG_ANSWER (-1,"Wrong Answer","wa"),
-        STATUS_ACCEPTED (0,"Accepted","ac"),
-        STATUS_CPU_TIME_LIMIT_EXCEEDED (1,"CPU Time Limit Exceeded","tle"),
-        STATUS_REAL_TIME_LIMIT_EXCEEDED (2,"Real Time Limit Exceeded","tle"),
-        STATUS_MEMORY_LIMIT_EXCEEDED (3,"Memory Limit Exceeded","mle"),
-        STATUS_RUNTIME_ERROR (4,"Runtime Error","re"),
-        STATUS_SYSTEM_ERROR (5,"System Error","se"),
-        STATUS_PENDING (6,"Pending",null),
-        STATUS_JUDGING (7,"Judging",null),
-        STATUS_PARTIAL_ACCEPTED (8,"Partial Accepted","pa"),
-        STATUS_SUBMITTING (9,"Submitting",null);
+    public enum Judge {
+        STATUS_NOT_SUBMITTED(-10, "Not Submitted", null),
+        STATUS_PRESENTATION_ERROR(-3, "Presentation Error", "pe"),
+        STATUS_COMPILE_ERROR(-2, "Compile Error", "ce"),
+        STATUS_WRONG_ANSWER(-1, "Wrong Answer", "wa"),
+        STATUS_ACCEPTED(0, "Accepted", "ac"),
+        STATUS_CPU_TIME_LIMIT_EXCEEDED(1, "CPU Time Limit Exceeded", "tle"),
+        STATUS_REAL_TIME_LIMIT_EXCEEDED(2, "Real Time Limit Exceeded", "tle"),
+        STATUS_MEMORY_LIMIT_EXCEEDED(3, "Memory Limit Exceeded", "mle"),
+        STATUS_RUNTIME_ERROR(4, "Runtime Error", "re"),
+        STATUS_SYSTEM_ERROR(5, "System Error", "se"),
+        STATUS_PENDING(6, "Pending", null),
+        STATUS_JUDGING(7, "Judging", null),
+        STATUS_PARTIAL_ACCEPTED(8, "Partial Accepted", "pa"),
+        STATUS_SUBMITTING(9, "Submitting", null);
 
 
-
-        private Judge(Integer status, String name,String columnName) {
+        private Judge(Integer status, String name, String columnName) {
             this.status = status;
             this.name = name;
             this.columnName = columnName;
@@ -50,9 +49,9 @@ public class Constants {
             return columnName;
         }
 
-        public static String getTableColumnNameByStatus(int status){
-            for(Judge judge:Judge.values()){
-                if (judge.getStatus()==status){
+        public static String getTableColumnNameByStatus(int status) {
+            for (Judge judge : Judge.values()) {
+                if (judge.getStatus() == status) {
                     return judge.getColumnName();
                 }
             }
@@ -64,13 +63,14 @@ public class Constants {
      * @Description 比赛相关的常量
      * @Since 2021/1/7
      */
-    public enum Contest{
-        TYPE_ACM(0,"ACM"),
-        TYPE_OI(1,"OI");
+    public enum Contest {
+        TYPE_ACM(0, "ACM"),
+        TYPE_OI(1, "OI");
 
         private final Integer code;
         private final String name;
-        Contest(Integer code,String name){
+
+        Contest(Integer code, String name) {
             this.code = code;
             this.name = name;
         }
@@ -83,13 +83,13 @@ public class Constants {
             return name;
         }
     }
-    
+
     /**
      * @Description 账户相关常量
      * @Since 2021/1/8
      */
-    
-    public enum Account{
+
+    public enum Account {
         CODE_CHANGE_PASSWORD_FAIL("change-password-fail:"),
         CODE_CHANGE_PASSWORD_LOCK("change-password-lock:"),
         CODE_ACCOUNT_LOCK("account-lock:"),
@@ -97,8 +97,9 @@ public class Constants {
         CODE_CHANGE_EMAIL_LOCK("change-email-lock:");
 
         private final String code;
-        Account(String code){
-            this.code =code;
+
+        Account(String code) {
+            this.code = code;
         }
 
         public String getCode() {
@@ -111,7 +112,7 @@ public class Constants {
      * @Description 文件操作的一些常量
      * @Since 2021/1/10
      */
-    public enum File{
+    public enum File {
 
         USER_FILE_HOST("http://localhost:9010"),
         USER_AVATAR_FOLDER("D:\\avatar\\"),
@@ -119,7 +120,7 @@ public class Constants {
 
         private final String path;
 
-        File(String path){
+        File(String path) {
             this.path = path;
         }
 
@@ -128,12 +129,13 @@ public class Constants {
         }
     }
 
+
     /**
      * @Description 邮件任务的一些常量
      * @Since 2021/1/14
      */
 
-    public enum Email{
+    public enum Email {
         OJ_URL("http://localhost:8080"),
         OJ_NAME("Hcode Online Judge"),
         OJ_SHORT_NAME("HOJ"),
@@ -143,12 +145,27 @@ public class Constants {
         RESET_PASSWORD_KEY_PREFIX("reset-password:");
         private String value;
 
-        Email(String value){
+        Email(String value) {
             this.value = value;
         }
 
         public String getValue() {
             return value;
+        }
+    }
+
+    public enum Schedule {
+        RECENT_OTHER_CONTEST("recent-other-contest");
+
+        private final String code;
+
+        Schedule(String code) {
+            this.code = code;
+        }
+
+        public String getCode() {
+            return code;
+
         }
     }
 }

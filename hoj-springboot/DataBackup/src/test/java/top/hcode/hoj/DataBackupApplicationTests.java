@@ -1,11 +1,15 @@
 package top.hcode.hoj;
 
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mysql.cj.protocol.PacketReceivedTimeHolder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.*;
 import top.hcode.hoj.pojo.entity.Contest;
 import top.hcode.hoj.pojo.entity.Role;
@@ -20,10 +24,13 @@ import top.hcode.hoj.service.UserRoleService;
 import top.hcode.hoj.service.impl.AnnouncementServiceImpl;
 import top.hcode.hoj.service.impl.UserInfoServiceImpl;
 import top.hcode.hoj.service.impl.UserRoleServiceImpl;
+import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
+import top.hcode.hoj.utils.JsoupUtils;
+import top.hcode.hoj.utils.RedisUtils;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * @Author: Himit_ZH
@@ -54,8 +61,9 @@ public class DataBackupApplicationTests {
 
     @Autowired
     private AnnouncementServiceImpl announcementService;
+
     @Test
-    public void Test1(){
+    public void Test1() {
 //        UserRolesVo roles = userRoleMapper.getUserRoles("c5ddbe4b38d641bea7d87ae0e102260d",null);
 //        System.out.println(roles);
 //        IPage<UserRolesVo> admin = userRoleService.getUserList(10, 1, "admin");
@@ -81,26 +89,54 @@ public class DataBackupApplicationTests {
     }
 
     @Test
-    public void Test2(){
+    public void Test2() {
         RoleAuthsVo roleAuths = roleAuthMapper.getRoleAuths(1000L);
         System.out.println(roleAuths);
     }
 
     @Test
-    public void Test3(){
+    public void Test3() {
         String serviceIp = IpUtils.getServiceIp();
         System.out.println(serviceIp);
     }
+
     @Test
-    public void Test4(){
+    public void Test4() {
 ////        int todayJudgeNum = judgeMapper.getTodayJudgeNum();
 //        List<ContestVo> withinNext14DaysContests = contestMapper.getWithinNext14DaysContests();
 //        System.out.println(withinNext14DaysContests);
 
     }
+
     @Test
-    public void Test5() {
-        System.out.println(System.getProperty("os.name"));
+    public void Test5() throws IOException {
+        String codeforcesContestAPI = "https://codeforces.com/api/contest.list";
+        JSONObject resultObject = JsoupUtils.getJsonFromConnection(JsoupUtils.getConnectionFromUrl(codeforcesContestAPI, null, null));
+        JSONArray contestsArray = resultObject.getJSONArray("result");
+        for (int i = 0; i < contestsArray.size(); i++) {
+            JSONObject contest = contestsArray.getJSONObject(i);
+            // 如果比赛已经结束了，则停止获取
+            if ("FINISHED".equals(contest.getStr("phase", "FINISHED"))) {
+                break;
+            }
+            System.out.println(contest.getStr("name"));
+            System.out.println(new Date(contest.getLong("startTimeSeconds") * 1000));
+            System.out.println(new Date((contest.getLong("startTimeSeconds") + contest.getLong("durationSeconds")) * 1000));
+
+        }
     }
+
+    @Autowired
+    RedisUtils redisUtils;
+
+    @Test
+    public void Test6() {
+
+        String redisKey = Constants.Schedule.RECENT_OTHER_CONTEST.getCode();
+        List<HashMap<String, Object>> contestsList;
+        contestsList = (ArrayList<HashMap<String, Object>>) redisUtils.get(redisKey);
+        System.out.println(contestsList);
+    }
+
 
 }
