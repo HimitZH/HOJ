@@ -185,8 +185,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     /**
      * 每天3点获取codeforces的rating分数
      */
-//    @Scheduled(cron = "0 0 3 * * *")
-    @Scheduled(cron = "0/5 * * * * *")
+    @Scheduled(cron = "0 0 3 * * *")
+//    @Scheduled(cron = "0/5 * * * * *")
     @Override
     public void getCodeforcesRating() {
         String codeforcesUserInfoAPI = "https://codeforces.com/api/user.info?handles=%s";
