@@ -6,6 +6,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -13,7 +14,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.pojo.entity.File;
 import top.hcode.hoj.pojo.entity.UserInfo;
+import top.hcode.hoj.pojo.entity.UserRecord;
 import top.hcode.hoj.service.ScheduleService;
+import top.hcode.hoj.service.UserInfoService;
+import top.hcode.hoj.service.UserRecordService;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.JsoupUtils;
 import top.hcode.hoj.utils.RedisUtils;
@@ -53,7 +57,10 @@ public class ScheduleServiceImpl implements ScheduleService {
     private FileServiceImpl fileService;
     @Autowired
     private RedisUtils redisUtils;
-
+    @Autowired
+    private UserInfoService userInfoDao;
+    @Autowired
+    private UserRecordService userRecordDao;
 
     /**
      * @MethodName deleteAvatar
@@ -178,11 +185,48 @@ public class ScheduleServiceImpl implements ScheduleService {
     /**
      * 每天3点获取codeforces的rating分数
      */
-    @Scheduled(cron = "0 0 3 * * *")
+//    @Scheduled(cron = "0 0 3 * * *")
+    @Scheduled(cron = "0/5 * * * * *")
     @Override
     public void getCodeforcesRating() {
-        String codeforcesUserInfoAPI = "https://codeforces.com/api/user.info?";
+        String codeforcesUserInfoAPI = "https://codeforces.com/api/user.info?handles=%s";
         QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
+        // 查询cf_username不为空的数据
+        userInfoQueryWrapper.isNotNull("cf_username");
+        List<UserInfo> userInfoList = userInfoDao.list(userInfoQueryWrapper);
+        for (UserInfo userInfo : userInfoList) {
+            // 获取cf名字
+            String cfUsername = userInfo.getCfUsername();
+            // 获取uuid
+            String uuid = userInfo.getUuid();
+            // 格式化api
+            String ratingAPI = String.format(codeforcesUserInfoAPI, cfUsername);
+            try {
+                // 连接api，获取json格式对象
+                JSONObject resultObject = JsoupUtils.getJsonFromConnection(JsoupUtils.getConnectionFromUrl(ratingAPI, null, null));
+                // 获取状态码
+                String status = resultObject.getStr("status");
+                // 如果查无此用户，则跳过
+                if ("FAILED".equals(status)) {
+                    continue;
+                }
+                // 用户信息存放在result列表中的第0个
+                JSONObject cfUserInfo = resultObject.getJSONArray("result").getJSONObject(0);
+                // 获取cf的分数
+                int cfRating = cfUserInfo.getInt("rating");
+                UpdateWrapper<UserRecord> userRecordUpdateWrapper = new UpdateWrapper<>();
+                // 将对应的cf分数修改
+                userRecordUpdateWrapper.eq("uid", uuid).set("rating", cfRating);
+                boolean result = userRecordDao.update(userRecordUpdateWrapper);
+                if (!result) {
+                    log.error("插入UserRecord表失败------------------------------->");
+                }
+
+            } catch (Exception e) {
+                log.error("爬虫爬取Codeforces Rating分数异常----------------------->{}", e.getMessage());
+            }
+        }
+        log.info("获取Codeforces Rating成功！");
     }
 
 
