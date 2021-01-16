@@ -1,14 +1,18 @@
 package top.hcode.hoj.service.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import top.hcode.hoj.pojo.entity.ContestProblem;
 import top.hcode.hoj.dao.ContestProblemMapper;
+import top.hcode.hoj.pojo.vo.ContestProblemVo;
 import top.hcode.hoj.service.ContestProblemService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author Himit_ZH
@@ -17,4 +21,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class ContestProblemServiceImpl extends ServiceImpl<ContestProblemMapper, ContestProblem> implements ContestProblemService {
 
+    @Autowired
+    private ContestProblemMapper contestProblemMapper;
+
+    @Override
+    public List<ContestProblemVo> getContestProblemList(Long cid) {
+        return contestProblemMapper.getContestProblemList(cid);
+    }
 }

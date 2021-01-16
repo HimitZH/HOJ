@@ -65,8 +65,8 @@ public class JudgeController {
                 .setMemory(1);
         // 更新该次提交
         judgeService.updateById(judge);
-        // 如果是AC,就更新user_acproblem表
-        if(judge.getStatus().intValue()==Constants.Judge.STATUS_ACCEPTED.getStatus()){
+        // 如果是AC,就更新user_acproblem表,比赛提交不纳入
+        if(judge.getStatus().intValue()==Constants.Judge.STATUS_ACCEPTED.getStatus()&&judge.getCid()==0){
                 userAcproblemService.saveOrUpdate(new UserAcproblem()
                         .setPid(judge.getPid())
                         .setUid(judge.getUid())
