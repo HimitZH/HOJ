@@ -5,6 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mysql.cj.protocol.PacketReceivedTimeHolder;
@@ -112,28 +113,22 @@ public class DataBackupApplicationTests {
 
     @Test
     public void Test5() throws IOException {
-        String codeforcesContestAPI = "https://codeforces.com/api/contest.list";
-        JSONObject resultObject = JsoupUtils.getJsonFromConnection(JsoupUtils.getConnectionFromUrl(codeforcesContestAPI, null, null));
-        JSONArray contestsArray = resultObject.getJSONArray("result");
-        for (int i = 0; i < contestsArray.size(); i++) {
-            JSONObject contest = contestsArray.getJSONObject(i);
-            // 如果比赛已经结束了，则停止获取
-            if ("FINISHED".equals(contest.getStr("phase", "FINISHED"))) {
-                break;
-            }
-            System.out.println(contest.getStr("name"));
-            System.out.println(new Date(contest.getLong("startTimeSeconds") * 1000));
-            System.out.println(new Date((contest.getLong("startTimeSeconds") + contest.getLong("durationSeconds")) * 1000));
 
-        }
     }
 
     @Autowired
-    RedisUtils redisUtils;
+    private RedisUtils redisUtils;
+    @Autowired
+    private UserInfoMapper userInfoMapper;
 
     @Test
     public void Test6() {
-
+        QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
+        userInfoQueryWrapper.isNotNull("cf_username");
+        List<UserInfo> userInfoList = userInfoMapper.selectList(userInfoQueryWrapper);
+        for (UserInfo userInfo : userInfoList) {
+            System.out.println(userInfo.getCfUsername());
+        }
     }
 
 
