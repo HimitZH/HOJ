@@ -1,7 +1,6 @@
 <template>
   <div class="problem-list">
     <vxe-table
-      v-if="contestRuleType == 'ACM' || OIContestRealTimePermission"
       border="inner"
       stripe
       auto-resize
@@ -9,59 +8,94 @@
       :data="problems"
       @cell-click="goContestProblem"
     >
-      <vxe-table-column field="status" title="" width="50">
+      <!-- OI赛制的最近提交显示 -->
+      <vxe-table-column
+        field="status"
+        title=""
+        width="50"
+        v-if="
+          isAuthenticated && isGetStatusOk && contestRuleType == RULE_TYPE.OI
+        "
+      >
         <template v-slot="{ row }">
-          <el-tooltip :content="JUDGE_STATUS[row.status].name" placement="top">
-            <i
-              class="el-icon-check"
-              :style="getIconColor(row.status)"
-              v-if="row.status == 0"
-            ></i>
+          <span :class="getScoreColor(row.score)" v-if="row.score != null">{{
+            row.score
+          }}</span>
+          <el-tooltip
+            :content="JUDGE_STATUS[row.myStatus].name"
+            placement="top"
+            v-else
+          >
             <i
               class="el-icon-minus"
-              :style="getIconColor(row.status)"
-              v-else-if="row.status != -10"
+              :style="getIconColor(row.myStatus)"
+              v-if="row.myStatus != -10"
             ></i>
           </el-tooltip>
         </template>
       </vxe-table-column>
-      <vxe-table-column field="id" width="80" title="#"></vxe-table-column>
+
+      <!-- ACM赛制的最近提交显示 -->
       <vxe-table-column
-        field="title"
+        field="status"
+        title=""
+        width="50"
+        v-if="
+          isAuthenticated && isGetStatusOk && contestRuleType == RULE_TYPE.ACM
+        "
+      >
+        <template v-slot="{ row }">
+          <el-tooltip
+            :content="JUDGE_STATUS[row.myStatus].name"
+            placement="top"
+          >
+            <i
+              class="el-icon-check"
+              :style="getIconColor(row.myStatus)"
+              v-if="row.myStatus == 0"
+            ></i>
+            <i
+              class="el-icon-minus"
+              :style="getIconColor(row.myStatus)"
+              v-else-if="row.myStatus != -10"
+            ></i>
+          </el-tooltip>
+        </template>
+      </vxe-table-column>
+      <vxe-table-column
+        field="displayId"
+        width="80"
+        title="#"
+      ></vxe-table-column>
+      <vxe-table-column
+        field="displayTitle"
         title="Title"
         min-width="350"
       ></vxe-table-column>
-      <vxe-table-column field="ac" title="AC" min-width="80"></vxe-table-column>
+
+      <!-- 以下列只有在实时刷新榜单的情况下才显示 -->
+      <vxe-table-column
+        field="ac"
+        title="AC"
+        min-width="80"
+        v-if="ContestRealTimePermission"
+      ></vxe-table-column>
       <vxe-table-column
         field="total"
         title="Total"
         min-width="80"
+        v-if="ContestRealTimePermission"
       ></vxe-table-column>
       <vxe-table-column
         field="ACRating"
         title="AC Rate"
         min-width="80"
-      ></vxe-table-column>
-    </vxe-table>
-    <vxe-table
-      v-else
-      border="inner"
-      stripe
-      auto-resize
-      :data="problems"
-      @cell-click="goContestProblem"
-    >
-      <vxe-table-column field="status" title="" width="50">
+        v-if="ContestRealTimePermission"
+      >
         <template v-slot="{ row }">
-          <span :class="getScoreColor(row.score)" v-if="row.score != -1"></span>
+          <span>{{ getACRate(row.ac, row.total) }}</span>
         </template>
       </vxe-table-column>
-      <vxe-table-column field="id" width="80" title="#"></vxe-table-column>
-      <vxe-table-column
-        field="title"
-        title="Title"
-        min-width="350"
-      ></vxe-table-column>
     </vxe-table>
   </div>
 </template>
@@ -69,65 +103,53 @@
 <script>
 import { mapState, mapGetters } from 'vuex';
 import utils from '@/common/utils';
-import { JUDGE_STATUS } from '@/common/constants';
+import { JUDGE_STATUS, RULE_TYPE } from '@/common/constants';
+import api from '@/common/api';
 export default {
   name: 'ContestProblemList',
   data() {
     return {
-      contestRuleType: 'ACM',
-      JUDGE_STATUS: JUDGE_STATUS,
-      problems: [
-        {
-          status: 0,
-          id: 'A',
-          title: '测试题目AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-          ac: 766,
-          total: 1000,
-          ACRating: '76.6%',
-        },
-        {
-          status: 1,
-          id: 'B',
-          title: '测试题目AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-          ac: 766,
-          total: 1000,
-          ACRating: '76.6%',
-        },
-      ],
-      // OITableColumns: [
-      //   {
-      //     title: '#',
-      //     key: '_id',
-      //     width: 150
-      //   },
-      //   {
-      //     title: this.$i18n.t('m.Title'),
-      //     key: 'title'
-      //   }
-      // ]
+      JUDGE_STATUS: {},
+      RULE_TYPE: {},
+      isGetStatusOk: false,
     };
   },
   mounted() {
-    // this.getContestProblems()
+    this.RULE_TYPE = Object.assign({}, RULE_TYPE);
+    this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
+    this.getContestProblems();
   },
   methods: {
     getContestProblems() {
       this.$store.dispatch('getContestProblems').then((res) => {
         if (this.isAuthenticated) {
-          if (this.contestRuleType === 'ACM') {
-            this.addStatusColumn(this.ACMTableColumns, res.data.data);
-          } else if (this.OIContestRealTimePermission) {
-            this.addStatusColumn(this.ACMTableColumns, res.data.data);
+          let isContestProblemList = true;
+          // 如果已登录，则需要查询对当前页面题目列表中各个题目的提交情况
+          let pidList = [];
+          for (let index = 0; index < this.problems.length; index++) {
+            pidList.push(this.problems[index].pid);
           }
+          api
+            .getUserProblemStatus(pidList, isContestProblemList)
+            .then((res) => {
+              let result = res.data.data;
+              for (let index = 0; index < this.problems.length; index++) {
+                this.problems[index]['myStatus'] =
+                  result[this.problems[index].pid]['status'];
+                this.problems[index]['score'] =
+                  result[this.problems[index].pid]['score'];
+              }
+              this.isGetStatusOk = true;
+            });
         }
       });
     },
     goContestProblem(event) {
       this.$router.push({
-        name: 'contest-problem-details',
+        name: 'ContestProblemDetails',
         params: {
           contestID: this.$route.params.contestID,
-          problemID: event.row.id,
+          problemID: event.row.displayId,
         },
       });
     },
@@ -150,10 +172,14 @@ export default {
     },
   },
   computed: {
-    // ...mapState({
-    //   problems: state => state.contest.contestProblems
-    // }),
-    // ...mapGetters(['isAuthenticated', 'contestRuleType', 'OIContestRealTimePermission'])
+    ...mapState({
+      problems: (state) => state.contest.contestProblems,
+    }),
+    ...mapGetters([
+      'isAuthenticated',
+      'contestRuleType',
+      'ContestRealTimePermission',
+    ]),
   },
 };
 </script>

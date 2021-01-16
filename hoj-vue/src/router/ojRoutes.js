@@ -38,7 +38,7 @@ const ojRoutes = [
   },
   {
     path: '/problem/:problemID',
-    name: 'problemDetails',
+    name: 'ProblemDetails',
     component: Problem,
     meta: { title: 'Problem Details' }
   },

@@ -23,13 +23,14 @@ const getters = {
   contestStatus: (state, getters) => {
     return state.contest.status;
   },
-  contestRuleType: (state) => {
-    return state.contest.type || null
+  contestRuleType: (state,getters) => {
+    return state.contest.type;
   },
   isContestAdmin: (state, getters, _, rootGetters) => {
     return rootGetters.isAuthenticated &&
       (state.contest.author === rootGetters.userInfo.author || rootGetters.isSuperAdmin)
   },
+  
   contestMenuDisabled: (state, getters) => {
     // 比赛创建者或者超级管理员可以直接查看
     if (getters.isContestAdmin) return false
@@ -41,6 +42,7 @@ const getters = {
     // 私有赛需要通过验证密码方可查看比赛
     return !state.intoAccess
   },
+
   // 榜单是否实时刷新
   ContestRealTimePermission: (state, getters, _, rootGetters) => {
     // 比赛若是已结束，便是最后榜单
@@ -54,7 +56,7 @@ const getters = {
     // 比赛是否开启
     if(state.contest.sealRank === true){
       // 当前时间在封榜时间之后，即不刷新榜单
-      return now.isAfter(moment(state.contest.sealRankTime))
+      return !now.isAfter(moment(state.contest.sealRankTime))
     }else{
       return true
     }
@@ -190,25 +192,18 @@ const actions = {
   getContestProblems ({commit, rootState}) {
     return new Promise((resolve, reject) => {
       api.getContestProblemList(rootState.route.params.contestID).then(res => {
-        res.data.data.sort((a, b) => {
-          if (a._id === b._id) {
-            return 0
-          } else if (a._id > b._id) {
-            return 1
-          }
-          return -1
-        })
-        commit('changeContestProblems', {contestProblems: res.data.data})
         resolve(res)
-      }, () => {
+        commit('changeContestProblems', {contestProblems: res.data.data})
+      }, (err) => {
         commit('changeContestProblems', {contestProblems: []})
+        reject(err)
       })
     })
   },
   getContestAccess ({commit, rootState},contestType) {
     return new Promise((resolve, reject) => {
       api.getContestAccess(rootState.route.params.contestID).then(res => {
-        if(contestType.type ===CONTEST_TYPE.PRIVATE){
+        if(contestType.type === CONTEST_TYPE.PRIVATE){
           commit('contestIntoAccess', {intoAccess: res.data.data.access})
         }else{
           commit('contestSubmitAccess', {submitAccess: res.data.data.access})

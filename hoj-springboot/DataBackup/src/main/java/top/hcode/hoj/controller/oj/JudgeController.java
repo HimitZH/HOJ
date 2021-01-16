@@ -23,10 +23,7 @@ import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.JudgeService;
 import top.hcode.hoj.service.ProblemService;
 import top.hcode.hoj.service.ToJudgeService;
-import top.hcode.hoj.service.impl.ContestProblemServiceImpl;
-import top.hcode.hoj.service.impl.JudgeServiceImpl;
-import top.hcode.hoj.service.impl.UserInfoServiceImpl;
-import top.hcode.hoj.service.impl.UserRecordServiceImpl;
+import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
 
@@ -69,6 +66,9 @@ public class JudgeController {
     @Autowired
     private ContestProblemServiceImpl contestProblemService;
 
+    @Autowired
+    private ContestServiceImpl contestService;
+
 //    @Autowired
 //    private RestTemplate restTemplate;
 
@@ -82,20 +82,19 @@ public class JudgeController {
 
     /**
      * @MethodName submitProblemJudge
-     * @Params  * @param null
+     * @Params * @param null
      * @Description 核心方法 判题通过openfeign调用判题系统服务
      * @Return CommonResult
      * @Since 2020/10/30
      */
     @RequiresAuthentication
-    @RequestMapping(value = "/submit-problem-judge",method = RequestMethod.POST)
+    @RequestMapping(value = "/submit-problem-judge", method = RequestMethod.POST)
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
-    public CommonResult submitProblemJudge(@RequestBody ToJudgeDto judgeDto, HttpServletRequest request){
+    public CommonResult submitProblemJudge(@RequestBody ToJudgeDto judgeDto, HttpServletRequest request) {
 
         // 需要获取一下该token对应用户的数据
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-
         // 将提交先写入数据库，准备调用判题服务器
         Judge judge = new Judge();
         judge.setShare(false) // 默认设置代码为单独自己可见
@@ -112,18 +111,30 @@ public class JudgeController {
 
         boolean update = true;
         // 如果比赛id不等于0，则说明为比赛提交，需要查询对应的contest_problem的主键
-        if (judgeDto.getCid().intValue()!=0){
+        if (judgeDto.getCid() != 0) {
+
+            // 首先判断一下比赛的状态是否是正在进行，结束状态都不能提交，比赛前比赛管理员可以提交
+            Contest contest = contestService.getById(judgeDto.getCid());
+            if (contest.getStatus().intValue() == Constants.Contest.STATUS_ENDED.getCode()) {
+                return CommonResult.errorResponse("比赛已结束，不可再提交！");
+            }
+            // 是否为超级管理员或者该比赛的创建者，则为比赛管理者
+            boolean root = SecurityUtils.getSubject().hasRole("root");
+            if(!root&&!contest.getUid().equals(userRolesVo.getUid())){
+                return CommonResult.errorResponse("比赛已结束，不可再提交！");
+            }
+
             // 查询获取对应的pid和cpid
             QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
             contestProblemQueryWrapper.eq("cid", judgeDto.getCid()).eq("display_id", judgeDto.getPid());
             ContestProblem contestProblem = contestProblemService.getOne(contestProblemQueryWrapper);
             judge.setCpid(contestProblem.getId()).setPid(contestProblem.getPid());
 
-        }else{ // 如果不是比赛提交，需要将题号转为long类型
-            if(NumberUtil.isNumber(judgeDto.getPid())) {
+        } else { // 如果不是比赛提交，需要将题号转为long类型
+            if (NumberUtil.isNumber(judgeDto.getPid())) {
                 judge.setCpid(0L).setPid(Long.valueOf(judgeDto.getPid()));
-            }else{
-                return CommonResult.errorResponse("参数错误！提交评测失败！",CommonResult.STATUS_ERROR);
+            } else {
+                return CommonResult.errorResponse("参数错误！提交评测失败！", CommonResult.STATUS_ERROR);
             }
 
             // 更新一下user_record表
@@ -135,8 +146,8 @@ public class JudgeController {
         // 将新提交数据插入数据库
         int result = judgeMapper.insert(judge);
 
-        if (result !=1 || !update){
-            return CommonResult.errorResponse("数据提交失败",CommonResult.STATUS_ERROR);
+        if (result != 1 || !update) {
+            return CommonResult.errorResponse("数据提交失败", CommonResult.STATUS_ERROR);
         }
         // 异步调用判题机
         toJudgeService.submitProblemJudge(judge);
@@ -147,16 +158,16 @@ public class JudgeController {
 
     /**
      * @MethodName getSubmission
-     * @Params  * @param null
+     * @Params * @param null
      * @Description 获取单个提交记录的详情
      * @Return CommonResult
      * @Since 2021/1/2
      */
     @GetMapping("/submission")
     @RequiresAuthentication
-    public CommonResult getSubmission(@RequestParam(value = "submitId", required = true)Long submitId,HttpServletRequest request ){
+    public CommonResult getSubmission(@RequestParam(value = "submitId", required = true) Long submitId, HttpServletRequest request) {
         Judge judge = judgeService.getById(submitId);
-        if (judge==null) {
+        if (judge == null) {
             return CommonResult.errorResponse("获取提交数据失败！");
         }
 
@@ -169,19 +180,19 @@ public class JudgeController {
         boolean root = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
         boolean admin = SecurityUtils.getSubject().hasRole("admin");// 是否为管理员
 
-        if(!judge.getShare()&&!root&&!admin){
-            if (userRolesVo!=null){ // 当前是登陆状态
+        if (!judge.getShare() && !root && !admin) {
+            if (userRolesVo != null) { // 当前是登陆状态
                 // 需要判断是否为当前登陆用户自己的提交代码
-                if(!judge.getUid().equals(userRolesVo.getUid())){
+                if (!judge.getUid().equals(userRolesVo.getUid())) {
                     return CommonResult.errorResponse("对不起！该提交并未分享，您无权查看！");
                 }
-            }else{ // 不是登陆状态，就直接无权限
+            } else { // 不是登陆状态，就直接无权限
                 return CommonResult.errorResponse("对不起！该提交并未分享，您无权查看！");
             }
         }
 
         Problem problem = problemService.getById(judge.getPid());
-        HashMap<String,Object> result = new HashMap<>();
+        HashMap<String, Object> result = new HashMap<>();
         result.put("submission", judge);
         result.put("codeShare", problem.getCodeShare());
 
@@ -191,21 +202,21 @@ public class JudgeController {
 
     @PutMapping("/submission")
     @RequiresAuthentication
-    public CommonResult updateSubmission(@RequestBody Judge judge, HttpServletRequest request){
+    public CommonResult updateSubmission(@RequestBody Judge judge, HttpServletRequest request) {
         // 需要获取一下该token对应用户的数据
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-        if(!userRolesVo.getUid().equals(judge.getUid())){ // 判断该提交是否为当前用户的
+        if (!userRolesVo.getUid().equals(judge.getUid())) { // 判断该提交是否为当前用户的
             return CommonResult.errorResponse("对不起，您不能修改他人的代码分享权限！");
         }
         boolean result = judgeService.updateById(judge);
-        if (result){
-            if(judge.getShare()) {
+        if (result) {
+            if (judge.getShare()) {
                 return CommonResult.successResponse(null, "设置代码公开成功！");
-            }else{
+            } else {
                 return CommonResult.successResponse(null, "设置代码隐藏成功！");
             }
-        }else{
+        } else {
             return CommonResult.errorResponse("修改代码权限失败！");
         }
     }
@@ -217,7 +228,7 @@ public class JudgeController {
      * @Return CommonResult
      * @Since 2020/10/29
      */
-    @RequestMapping(value = "/submissions",method = RequestMethod.GET)
+    @RequestMapping(value = "/submissions", method = RequestMethod.GET)
     public CommonResult getJudgeList(@RequestParam(value = "limit", required = false) Integer limit,
                                      @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                      @RequestParam(value = "onlyMine", required = false) Boolean onlyMine,
@@ -232,25 +243,25 @@ public class JudgeController {
 
         String uid = null;
         // 只查看当前用户的提交
-        if (onlyMine){
+        if (onlyMine) {
             // 需要获取一下该token对应用户的数据（有token便能获取到）
             HttpSession session = request.getSession();
             UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-            if (userRolesVo==null){
-                return CommonResult.errorResponse("当前用户数据为空，请您重新登陆！",CommonResult.STATUS_ACCESS_DENIED);
+            if (userRolesVo == null) {
+                return CommonResult.errorResponse("当前用户数据为空，请您重新登陆！", CommonResult.STATUS_ACCESS_DENIED);
             }
             uid = userRolesVo.getUid();
         }
-        if (searchStatus!=null&&searchStatus==2){ // 默认搜索cpu超时，真实时间超时都一起。
+        if (searchStatus != null && searchStatus == 2) { // 默认搜索cpu超时，真实时间超时都一起。
             searchStatus = 1;
         }
 
         IPage<JudgeVo> commonJudgeList = judgeService.getCommonJudgeList(limit, currentPage, searchPid,
-                searchStatus, searchUsername, searchCid,uid);
+                searchStatus, searchUsername, searchCid, uid);
 
         if (commonJudgeList.getTotal() == 0) { // 未查询到一条数据
-            return CommonResult.successResponse(null,"暂无数据");
+            return CommonResult.successResponse(null, "暂无数据");
         } else {
             return CommonResult.successResponse(commonJudgeList, "获取成功");
         }
@@ -259,22 +270,22 @@ public class JudgeController {
 
     /**
      * @MethodName checkJudgeResult
-     * @Params  * @param null
+     * @Params * @param null
      * @Description 对提交列表状态为Pending和Judging的提交进行更新检查
      * @Return
      * @Since 2021/1/3
      */
-    @RequestMapping(value = "/check-submissions-status",method = RequestMethod.POST)
-    public CommonResult checkJudgeResult(@RequestBody SubmitIdListDto submitIdListDto ){
+    @RequestMapping(value = "/check-submissions-status", method = RequestMethod.POST)
+    public CommonResult checkJudgeResult(@RequestBody SubmitIdListDto submitIdListDto) {
         QueryWrapper<Judge> queryWrapper = new QueryWrapper<>();
         // lambada表达式过滤掉code
-        queryWrapper.select(Judge.class, info ->!info.getColumn().equals("code")).in("submit_id", submitIdListDto.getSubmitIds());
+        queryWrapper.select(Judge.class, info -> !info.getColumn().equals("code")).in("submit_id", submitIdListDto.getSubmitIds());
         List<Judge> judgeList = judgeService.list(queryWrapper);
-        HashMap<Long,Object> result = new HashMap<>();
-        for (Judge judge:judgeList){
+        HashMap<Long, Object> result = new HashMap<>();
+        for (Judge judge : judgeList) {
             result.put(judge.getSubmitId(), judge);
         }
-        return CommonResult.successResponse(result,"获取最新判题数据成功！");
+        return CommonResult.successResponse(result, "获取最新判题数据成功！");
     }
 
     /**
@@ -292,7 +303,7 @@ public class JudgeController {
         // 如果该题目是还属于比赛期间的题目，则禁止查看测试样例！
         Problem problem = problemService.getById(pid);
 
-        if (problem.getAuth() ==3){ // 3为比赛期间的题目
+        if (problem.getAuth() == 3) { // 3为比赛期间的题目
             return CommonResult.errorResponse("对不起，该题测试样例不能查看！", CommonResult.STATUS_ACCESS_DENIED);
         }
 

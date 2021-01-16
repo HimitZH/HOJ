@@ -27,6 +27,7 @@ import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.UserInfoService;
 import top.hcode.hoj.service.impl.EmailServiceImpl;
 import top.hcode.hoj.service.impl.UserAcproblemServiceImpl;
+import top.hcode.hoj.service.impl.UserInfoServiceImpl;
 import top.hcode.hoj.service.impl.UserRecordServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
@@ -56,7 +57,7 @@ public class AccountController {
     private RedisUtils redisUtils;
 
     @Autowired
-    private UserInfoService userInfoDao;
+    private UserInfoServiceImpl userInfoDao;
 
     @Autowired
     private UserRoleMapper userRoleDao;

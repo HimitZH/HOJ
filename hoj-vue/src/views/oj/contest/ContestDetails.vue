@@ -12,14 +12,14 @@
             <el-col :span="12" class="text-align:left">
               <el-tooltip
                 v-if="contest.auth != null"
-                :content="CONTEST_TYPE_REVERSE[contest.auth].tips"
+                :content="CONTEST_TYPE_REVERSE[contest.auth]['tips']"
                 placement="top"
               >
                 <el-tag
-                  :type="CONTEST_TYPE_REVERSE[contest.auth].color"
+                  :type="CONTEST_TYPE_REVERSE[contest.auth]['color']"
                   effect="plain"
                 >
-                  {{ CONTEST_TYPE_REVERSE[contest.auth].name }}
+                  {{ CONTEST_TYPE_REVERSE[contest.auth]['name'] }}
                 </el-tag>
               </el-tooltip>
             </el-col>
@@ -90,14 +90,19 @@
         >
       </el-card>
 
-      <el-tabs v-else @tab-click="tabClick" v-model="route_name" :lazy="true">
-        <el-tab-pane name="ContestDetails">
+      <el-tabs v-else @tab-click="tabClick" v-model="route_name">
+        <el-tab-pane name="ContestDetails" lazy>
           <span slot="label"><i class="el-icon-s-home"></i>&nbsp;Overview</span>
           <el-card class="box-card">
             <div v-html="contest.description" class="markdown-body"></div>
           </el-card>
         </el-tab-pane>
-        <el-tab-pane name="ContestProblemList">
+
+        <el-tab-pane
+          name="ContestProblemList"
+          lazy
+          :disabled="contestMenuDisabled"
+        >
           <span slot="label"
             ><i class="fa fa-list" aria-hidden="true"></i>&nbsp;Problems</span
           >
@@ -105,13 +110,19 @@
             <router-view></router-view>
           </transition>
         </el-tab-pane>
-        <el-tab-pane name="ContestSubmissionList">
+
+        <el-tab-pane
+          name="ContestSubmissionList"
+          lazy
+          :disabled="contestMenuDisabled"
+        >
           <span slot="label"><i class="el-icon-menu"></i>&nbsp;Status</span>
           <transition name="el-zoom-in-bottom">
             <router-view></router-view>
           </transition>
         </el-tab-pane>
-        <el-tab-pane name="ContestRank">
+
+        <el-tab-pane name="ContestRank" lazy :disabled="contestMenuDisabled">
           <span slot="label"
             ><i class="fa fa-bar-chart" aria-hidden="true"></i>&nbsp;Rank</span
           >
@@ -119,7 +130,12 @@
             <router-view></router-view>
           </transition>
         </el-tab-pane>
-        <el-tab-pane name="ContestAnnouncementList">
+
+        <el-tab-pane
+          name="ContestAnnouncementList"
+          lazy
+          :disabled="contestMenuDisabled"
+        >
           <span slot="label"
             ><i class="fa fa-bullhorn" aria-hidden="true"></i
             >&nbsp;Announcements</span
@@ -128,7 +144,8 @@
             <router-view></router-view>
           </transition>
         </el-tab-pane>
-        <el-tab-pane>
+
+        <el-tab-pane name="ContestComment" lazy :disabled="contestMenuDisabled">
           <span slot="label"
             ><i class="fa fa-commenting" aria-hidden="true"></i
             >&nbsp;Comments</span
@@ -137,7 +154,8 @@
             <router-view></router-view>
           </transition>
         </el-tab-pane>
-        <el-tab-pane name="ContestACInfo">
+
+        <el-tab-pane name="ContestACInfo" lazy :disabled="contestMenuDisabled">
           <span slot="label"
             ><i class="el-icon-s-help" aria-hidden="true"></i>&nbsp;AC
             Info</span
@@ -159,6 +177,7 @@ import {
   CONTEST_STATUS_REVERSE,
   CONTEST_STATUS,
   CONTEST_TYPE_REVERSE,
+  RULE_TYPE,
 } from '@/common/constants';
 import myMessage from '@/common/message';
 export default {
@@ -170,6 +189,7 @@ export default {
       CONTEST_STATUS: {},
       CONTEST_STATUS_REVERSE: {},
       CONTEST_TYPE_REVERSE: {},
+      RULE_TYPE: {},
       btnLoading: false,
       contestPassword: '',
     };
@@ -177,9 +197,13 @@ export default {
   mounted() {
     this.contestID = this.$route.params.contestID;
     this.route_name = this.$route.name;
+    if (this.route_name == 'ContestProblemDetails') {
+      this.route_name = 'ContestProblemList';
+    }
     this.CONTEST_STATUS = Object.assign({}, CONTEST_STATUS);
     this.CONTEST_STATUS_REVERSE = Object.assign({}, CONTEST_STATUS_REVERSE);
     this.CONTEST_TYPE_REVERSE = Object.assign({}, CONTEST_TYPE_REVERSE);
+    this.RULE_TYPE = Object.assign({}, RULE_TYPE);
     this.$store.dispatch('getContest').then((res) => {
       this.changeDomTitle({ title: res.data.data.title });
       let data = res.data.data;
@@ -261,12 +285,15 @@ export default {
       }
     },
     showAdminHelper() {
-      return this.isContestAdmin && this.contestRuleType === 'ACM';
+      return this.isContestAdmin && this.contestRuleType === RULE_TYPE.ACM;
     },
   },
   watch: {
     $route(newVal) {
       this.route_name = newVal.name;
+      if (newVal.name == 'ContestProblemDetails') {
+        this.route_name = 'ContestProblemList';
+      }
       this.contestID = newVal.params.contestID;
       this.changeDomTitle({ title: this.contest.title });
     },
@@ -280,7 +307,7 @@ export default {
 <style scoped>
 @media screen and (min-width: 768px) {
   .contest-body {
-    padding: 0 8%;
+    padding: 0 3%;
   }
   .contest-time .left {
     text-align: left;

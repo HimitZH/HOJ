@@ -14,6 +14,7 @@ import top.hcode.hoj.pojo.vo.ProblemInfoVo;
 import top.hcode.hoj.pojo.vo.ProblemVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.impl.*;
+import top.hcode.hoj.utils.Constants;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -128,22 +129,47 @@ public class ProblemController {
         HashMap<Long,Object> result = new HashMap<>();
         // 先查询判断该用户对于这些题是否已经通过，若已通过，则无论后续再提交结果如何，该题都标记为通过
         QueryWrapper<Judge> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("distinct pid,status,gmt_create").in("pid", pidListDto.getPidList())
+        queryWrapper.select("distinct pid,status,gmt_create,score").in("pid", pidListDto.getPidList())
+                // 如果是比赛的提交记录需要判断cid和cpid不为0
+                .ne(pidListDto.getIsContestProblemList(),"cid",0)
+                .ne(pidListDto.getIsContestProblemList(),"cpid", 0)
                 .eq("uid", userRolesVo.getUid()).orderByDesc("gmt_create");
         List<Judge> judges = judgeService.list(queryWrapper);
 
         for (Judge judge:judges){
-            if (judge.getStatus()==0){ // 如果该题目已通过，则强制写为通过（0）
-                result.put(judge.getPid(), 0);
-            }else if (!result.containsKey(judge.getPid())){ // 还未写入，则使用最新一次提交的结果
-                result.put(judge.getPid(),judge.getStatus());
+
+            // 如果是比赛的题目列表状态
+            if (pidListDto.getIsContestProblemList()){
+                HashMap<String,Object> temp = new HashMap<>();
+                temp.put("score", judge.getScore());
+                temp.put("status", judge.getStatus());
+                result.put(judge.getPid(),temp);
+
+            }else{ // 不是比赛题目
+                if (judge.getStatus().intValue()== Constants.Judge.STATUS_ACCEPTED.getStatus()){ // 如果该题目已通过，则强制写为通过（0）
+                    result.put(judge.getPid(), Constants.Judge.STATUS_ACCEPTED.getStatus());
+                }else if (!result.containsKey(judge.getPid())){ // 还未写入，则使用最新一次提交的结果
+                    result.put(judge.getPid(),judge.getStatus());
+                }
             }
         }
 
+
         // 再次检查，应该可能从未提交过该题，则状态写为-10
         for (Long pid:pidListDto.getPidList()){
-            if(!result.containsKey(pid)){
-                result.put(pid, -10);
+
+            // 如果是比赛的题目列表状态
+            if (pidListDto.getIsContestProblemList()) {
+                if (!result.containsKey(pid)) {
+                    HashMap<String, Object> temp = new HashMap<>();
+                    temp.put("score", null);
+                    temp.put("status", -10);
+                    result.put(pid, temp);
+                }
+            }else {
+                if (!result.containsKey(pid)) {
+                    result.put(pid, -10);
+                }
             }
         }
         return CommonResult.successResponse(result,"查询成功");

@@ -128,6 +128,7 @@
           </div>
           <vxe-table
             border="inner"
+            highlight-hover-row
             stripe
             :loading="loading.recentOtherContestsLoading"
             auto-resize
@@ -267,9 +268,7 @@ export default {
 .el-carousel__item:nth-child(n) {
   background-color: #fff;
 }
-.el-carousel__item {
-  overflow-y: auto !important;
-}
+
 .content-center {
   text-align: center;
 }

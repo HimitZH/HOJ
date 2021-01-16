@@ -207,10 +207,11 @@ const ojApi = {
   },
 
   // 查询当前登录用户对题目的提交状态
-  getUserProblemStatus(pidList){
+  getUserProblemStatus(pidList,isContestProblemList){
     return ajax("/api/get-user-problem-status",'post',{
       data:{
-        pidList
+        pidList,
+        isContestProblemList
       }
     })
   },
@@ -312,6 +313,18 @@ const ojApi = {
   getContestAccess(cid){
     return ajax('/api/get-contest-access','get',{
       params: {cid}
+    })
+  },
+  // 获取比赛题目列表
+  getContestProblemList(cid){
+    return ajax('/api/get-contest-problem','get',{
+      params: {cid}
+    })
+  },
+  // 获取比赛题目详情
+  getContestProblem(displayId,cid){
+    return ajax('/api/get-contest-problem-details','get',{
+      params: {displayId,cid}
     })
   },
   // ACM赛制排行榜
