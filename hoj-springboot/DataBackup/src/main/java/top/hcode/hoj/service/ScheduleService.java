@@ -4,4 +4,6 @@ public interface ScheduleService {
     void deleteAvatar();
 
     void getOjContestsList();
+
+    void getCodeforcesRating();
 }

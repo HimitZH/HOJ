@@ -5,12 +5,14 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.pojo.entity.File;
+import top.hcode.hoj.pojo.entity.UserInfo;
 import top.hcode.hoj.service.ScheduleService;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.JsoupUtils;
@@ -136,8 +138,8 @@ public class ScheduleServiceImpl implements ScheduleService {
         for (int offsetMonth = 0; offsetMonth <= 2; offsetMonth++) {
             // 月份增加i个月
             DateTime newDate = DateUtil.offsetMonth(dateTime, offsetMonth);
-            // 格式化API
-            String contestAPI = String.format(nowcoderContestAPI, newDate.year(), newDate.month());
+            // 格式化API 月份从0-11，所以要加一
+            String contestAPI = String.format(nowcoderContestAPI, newDate.year(), newDate.month() + 1);
             try {
                 // 连接api，获取json格式对象
                 JSONObject resultObject = JsoupUtils.getJsonFromConnection(JsoupUtils.getConnectionFromUrl(contestAPI, null, null));
@@ -171,5 +173,17 @@ public class ScheduleServiceImpl implements ScheduleService {
         // 增加log提示
         log.info("获取牛客API的比赛列表成功！共获取数据" + contestsList.size() + "条");
     }
+
+
+    /**
+     * 每天3点获取codeforces的rating分数
+     */
+    @Scheduled(cron = "0 0 3 * * *")
+    @Override
+    public void getCodeforcesRating() {
+        String codeforcesUserInfoAPI = "https://codeforces.com/api/user.info?";
+        QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
+    }
+
 
 }

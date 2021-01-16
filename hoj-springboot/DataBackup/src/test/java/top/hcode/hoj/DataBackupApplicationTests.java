@@ -133,11 +133,7 @@ public class DataBackupApplicationTests {
 
     @Test
     public void Test6() {
-        DateTime dateTime = DateUtil.date();
-        for (int i = 0; i <= 2; i++) {
-            dateTime = DateUtil.offsetMonth(dateTime, 1);
-            System.out.println(dateTime.year() + "-" + (dateTime.month() + 1));
-        }
+
     }
 
 
