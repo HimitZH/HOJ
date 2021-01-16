@@ -1,5 +1,7 @@
 package top.hcode.hoj;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -131,11 +133,11 @@ public class DataBackupApplicationTests {
 
     @Test
     public void Test6() {
-
-        String redisKey = Constants.Schedule.RECENT_OTHER_CONTEST.getCode();
-        List<HashMap<String, Object>> contestsList;
-        contestsList = (ArrayList<HashMap<String, Object>>) redisUtils.get(redisKey);
-        System.out.println(contestsList);
+        DateTime dateTime = DateUtil.date();
+        for (int i = 0; i <= 2; i++) {
+            dateTime = DateUtil.offsetMonth(dateTime, 1);
+            System.out.println(dateTime.year() + "-" + (dateTime.month() + 1));
+        }
     }
 
 
