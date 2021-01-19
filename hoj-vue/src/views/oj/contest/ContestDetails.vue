@@ -9,10 +9,13 @@
             </div>
           </div>
           <el-row>
-            <el-col :span="12" class="text-align:left">
+            <el-col
+              :span="12"
+              class="text-align:left"
+              v-if="contest.auth != null"
+            >
               <el-tooltip
-                v-if="contest.auth != null"
-                :content="CONTEST_TYPE_REVERSE[contest.auth]['tips']"
+                :content="CONTEST_TYPE_REVERSE[contest['auth']]['tips']"
                 placement="top"
               >
                 <el-tag
@@ -107,7 +110,9 @@
             ><i class="fa fa-list" aria-hidden="true"></i>&nbsp;Problems</span
           >
           <transition name="el-zoom-in-bottom">
-            <router-view></router-view>
+            <router-view
+              v-if="route_name === 'ContestProblemList'"
+            ></router-view>
           </transition>
         </el-tab-pane>
 
@@ -118,7 +123,9 @@
         >
           <span slot="label"><i class="el-icon-menu"></i>&nbsp;Status</span>
           <transition name="el-zoom-in-bottom">
-            <router-view></router-view>
+            <router-view
+              v-if="route_name === 'ContestSubmissionList'"
+            ></router-view>
           </transition>
         </el-tab-pane>
 
@@ -127,7 +134,7 @@
             ><i class="fa fa-bar-chart" aria-hidden="true"></i>&nbsp;Rank</span
           >
           <transition name="el-zoom-in-bottom">
-            <router-view></router-view>
+            <router-view v-if="route_name === 'ContestRank'"></router-view>
           </transition>
         </el-tab-pane>
 
@@ -141,7 +148,9 @@
             >&nbsp;Announcements</span
           >
           <transition name="el-zoom-in-bottom">
-            <router-view></router-view>
+            <router-view
+              v-if="route_name === 'ContestAnnouncementList'"
+            ></router-view>
           </transition>
         </el-tab-pane>
 
@@ -151,17 +160,39 @@
             >&nbsp;Comments</span
           >
           <transition name="el-zoom-in-bottom">
-            <router-view></router-view>
+            <router-view v-if="route_name === 'ContestComment'"></router-view>
           </transition>
         </el-tab-pane>
 
-        <el-tab-pane name="ContestACInfo" lazy :disabled="contestMenuDisabled">
+        <el-tab-pane
+          name="ContestACInfo"
+          lazy
+          :disabled="contestMenuDisabled"
+          v-if="showAdminHelper"
+        >
           <span slot="label"
             ><i class="el-icon-s-help" aria-hidden="true"></i>&nbsp;AC
             Info</span
           >
           <transition name="el-zoom-in-bottom">
-            <router-view></router-view>
+            <router-view v-if="route_name === 'ContestACInfo'"></router-view>
+          </transition>
+        </el-tab-pane>
+
+        <el-tab-pane
+          name="ContestRejudgeAdmin"
+          lazy
+          :disabled="contestMenuDisabled"
+          v-if="isSuperAdmin"
+        >
+          <span slot="label"
+            ><i class="el-icon-refresh" aria-hidden="true"></i
+            >&nbsp;Rejudge</span
+          >
+          <transition name="el-zoom-in-bottom">
+            <router-view
+              v-if="route_name === 'ContestRejudgeAdmin'"
+            ></router-view>
           </transition>
         </el-tab-pane>
       </el-tabs>
@@ -266,6 +297,7 @@ export default {
       'countdown',
       'BeginToNowDuration',
       'isContestAdmin',
+      'isSuperAdmin',
       'ContestRealTimePermission',
       'passwordFormVisible',
     ]),

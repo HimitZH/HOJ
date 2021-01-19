@@ -23,6 +23,10 @@ import java.util.List;
 @Repository
 public interface JudgeMapper extends BaseMapper<Judge> {
     IPage<JudgeVo> getCommonJudgeList(Page<JudgeVo> page, @Param("pid") Long pid, @Param("status") Integer status,
-                                     @Param("username") String username, @Param("cid") Long cid,@Param("uid")String uid);
+                                      @Param("username") String username, @Param("uid") String uid);
+
+    IPage<JudgeVo> getContestJudgeList(Page<JudgeVo> page, @Param("displayId") String displayId, @Param("cid") Long cid, @Param("status") Integer status,
+                                       @Param("username") String username, @Param("uid") String uid, @Param("beforeContestSubmit") Boolean beforeContestSubmit);
+
     int getTodayJudgeNum();
 }

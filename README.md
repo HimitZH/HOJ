@@ -21,6 +21,8 @@
 | 2021-01-04 | 客户端首页，题目，提交模块的接口对接完毕                     | Himit_ZH        |
 | 2021-01-08 | 比赛列表页，排行榜，用户主页的接口对接完毕                   | Himit_ZH        |
 | 2021-01-11 | 个人设置页，用户信息更新，头像上传，登录优化                 | Himit_ZH、Howie |
+| 2021-01-16 | 比赛首页，比赛题目列表，比赛题目详情等接口对接完毕，定时爬取其它oj比赛及rating分完成 | Himit_ZH、Howie |
+| 2021-01-19 | 比赛排行榜，比赛题目对应提交重判，比赛AC助手完成             | Himit_ZH        |
 
 # 二、系统架构
 
@@ -501,11 +503,17 @@ contest_record表 比赛记录表
 | id           | long         | 主键 | auto_increment                                               |
 | cid          | int          | 外键 | 比赛id                                                       |
 | uid          | String       | 外键 | 用户id                                                       |
-| pid          | int          |      | 题目id                                                       |
-| cpid         | int          | 外键 | 比赛中的题目顺序id                                           |
+| pid          | int          | 外键 | 题目id                                                       |
+| cpid         | int          | 外键 | 比赛中的题目id                                               |
 | submit_id    | int          | 外键 | 提交id，用于可重判                                           |
+| display_id   | String       |      | 比赛展示的id                                                 |
+| username     | String       |      | 用户名                                                       |
+| realname     | String       |      | 真实姓名                                                     |
 | status       | String       |      | 提交结果，0表示未AC通过不罚时，1表示AC通过，-1为未AC通过算罚时 |
 | time         | int          |      | 提交时间，为提交时间减去比赛时间，时间戳                     |
+| score        | int          |      | OI比赛得分                                                   |
+| first_blood  | Boolean      |      | 是否为一血AC                                                 |
+| checked      | Boolean      |      | AC是否已校验                                                 |
 | gmt_create   | datetime     |      | 创建时间                                                     |
 | gmt_modified | datetime     |      | 修改时间                                                     |
 

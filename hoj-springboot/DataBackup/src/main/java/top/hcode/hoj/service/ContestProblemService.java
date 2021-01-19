@@ -4,6 +4,7 @@ import top.hcode.hoj.pojo.entity.ContestProblem;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.hcode.hoj.pojo.vo.ContestProblemVo;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -15,5 +16,5 @@ import java.util.List;
  * @since 2020-10-23
  */
 public interface ContestProblemService extends IService<ContestProblem> {
-    List<ContestProblemVo> getContestProblemList(Long cid);
+    List<ContestProblemVo> getContestProblemList(Long cid, Date startTime);
 }

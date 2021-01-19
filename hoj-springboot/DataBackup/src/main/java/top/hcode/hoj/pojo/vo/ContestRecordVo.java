@@ -24,13 +24,13 @@ public class ContestRecordVo implements Serializable {
     @ApiModelProperty(value = "用户名")
     private String username;
 
-    @ApiModelProperty(value = "用户昵称")
-    private String nickname;
+    @ApiModelProperty(value = "用户真实名字")
+    private String realname;
 
     @ApiModelProperty(value = "题目id")
     private Long pid;
 
-    @ApiModelProperty(value = "比赛中的题目顺序id")
+    @ApiModelProperty(value = "比赛中的题目id")
     private Long cpid;
 
     @ApiModelProperty(value = "提交id，用于可重判")

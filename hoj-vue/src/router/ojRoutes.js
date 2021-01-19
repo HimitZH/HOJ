@@ -15,6 +15,7 @@ import ContestProblemList from "@/views/oj/contest/children/ContestProblemList.v
 import ContestRank from "@/views/oj/contest/children/ContestRank.vue"
 import ACMInfoAdmin from "@/views/oj/contest/children/ACMInfoAdmin.vue"
 import Announcements from "@/components/oj/common/Announcements.vue"
+import ContestRejudgeAdmin from "@/views/oj/contest/children/ContestRejudgeAdmin.vue"
 import Introduction from "@/views/oj/about/Introduction.vue"
 import NotFound from "@/views/404.vue"
 const ojRoutes = [
@@ -100,7 +101,7 @@ const ojRoutes = [
     name: 'ContestDetails',
     path: '/contest/:contestID/',
     component:ContestDetails,
-    meta: {title: 'Contest Details'},
+    meta: {title: 'Contest Details',requireAuth:true},
     children: [
       {
         name: 'ContestSubmissionList',
@@ -136,7 +137,13 @@ const ojRoutes = [
         name: 'ContestACInfo',
         path: 'ac-info',
         component: ACMInfoAdmin,
-        meta: { title: 'Contest AC Info' }
+        meta: { title: 'Contest AC Info',requireAdmin: true}
+      },
+      {
+        name:'ContestRejudgeAdmin',
+        path:'rejudge',
+        component:ContestRejudgeAdmin,
+        meta: { title: 'Contest Rejudge',requireSuperAdmin:true }
       }
     ]
   },

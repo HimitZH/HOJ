@@ -91,7 +91,7 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
                 attemptNumber++;
                 retryable = attemptNumber < 8;
                 if (attemptNumber == 8) {
-                    log.error("超过最大重试次数");
+                    log.error("更新user_record表超过最大重试次数");
                     break;
                 }
                 try {

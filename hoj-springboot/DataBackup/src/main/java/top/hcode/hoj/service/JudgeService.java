@@ -10,6 +10,8 @@ import top.hcode.hoj.pojo.entity.Judge;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 
+import java.util.List;
+
 
 /**
  * <p>
@@ -22,6 +24,11 @@ import top.hcode.hoj.pojo.vo.JudgeVo;
 
 public interface JudgeService extends IService<Judge> {
     IPage<JudgeVo> getCommonJudgeList(Integer limit, Integer currentPage, Long pid, Integer status, String username,
-                                      Long cid,String uid);
+                                      String uid);
 
+    IPage<JudgeVo> getContestJudgeList(Integer limit, Integer currentPage, String displayId, Long cid, Integer status, String username,
+                                       String uid, Boolean beforeContestSubmit);
+
+
+    void rejudgeContestProblem(List<Judge> judgeList);
 }

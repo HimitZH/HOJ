@@ -7,6 +7,7 @@ import top.hcode.hoj.pojo.entity.ContestProblem;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import top.hcode.hoj.pojo.vo.ContestProblemVo;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -20,5 +21,5 @@ import java.util.List;
 @Mapper
 @Repository
 public interface ContestProblemMapper extends BaseMapper<ContestProblem> {
-    List<ContestProblemVo> getContestProblemList(@Param("cid")Long cid);
+    List<ContestProblemVo> getContestProblemList(@Param("cid")Long cid, @Param("startTime")Date startTime);
 }

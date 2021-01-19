@@ -1,5 +1,7 @@
 package top.hcode.hoj.controller.oj;
 
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -42,8 +44,6 @@ import java.util.List;
 @RequestMapping("/api")
 public class JudgeController {
 
-    @Autowired
-    private UserInfoServiceImpl userInfoService;
 
     @Autowired
     private JudgeServiceImpl judgeService;
@@ -68,6 +68,9 @@ public class JudgeController {
 
     @Autowired
     private ContestServiceImpl contestService;
+
+    @Autowired
+    private ContestRecordServiceImpl contestRecordService;
 
 //    @Autowired
 //    private RestTemplate restTemplate;
@@ -109,19 +112,26 @@ public class JudgeController {
                 .setVersion(0)
                 .setIp(IpUtils.getUserIpAddr(request));
 
-        boolean update = true;
+        boolean updateUserRecord = true;
+        boolean updateContestRecord = true;
+        int result = 0;
         // 如果比赛id不等于0，则说明为比赛提交，需要查询对应的contest_problem的主键
         if (judgeDto.getCid() != 0) {
 
             // 首先判断一下比赛的状态是否是正在进行，结束状态都不能提交，比赛前比赛管理员可以提交
             Contest contest = contestService.getById(judgeDto.getCid());
+
+            if (contest == null) {
+                return CommonResult.errorResponse("对不起，该比赛不存在！");
+            }
+
             if (contest.getStatus().intValue() == Constants.Contest.STATUS_ENDED.getCode()) {
                 return CommonResult.errorResponse("比赛已结束，不可再提交！");
             }
             // 是否为超级管理员或者该比赛的创建者，则为比赛管理者
             boolean root = SecurityUtils.getSubject().hasRole("root");
-            if(!root&&!contest.getUid().equals(userRolesVo.getUid())){
-                return CommonResult.errorResponse("比赛已结束，不可再提交！");
+            if (!root && !contest.getUid().equals(userRolesVo.getUid())) {
+                return CommonResult.errorResponse("比赛未开始，不可提交！");
             }
 
             // 查询获取对应的pid和cpid
@@ -129,6 +139,42 @@ public class JudgeController {
             contestProblemQueryWrapper.eq("cid", judgeDto.getCid()).eq("display_id", judgeDto.getPid());
             ContestProblem contestProblem = contestProblemService.getOne(contestProblemQueryWrapper);
             judge.setCpid(contestProblem.getId()).setPid(contestProblem.getPid());
+
+            // 将新提交数据插入数据库
+            result = judgeMapper.insert(judge);
+
+            // 管理员比赛前的提交不纳入记录
+            if (contest.getStatus().intValue() == Constants.Contest.STATUS_SCHEDULED.getCode()) {
+                // 先查询是否为首次可能AC提交
+                QueryWrapper<ContestRecord> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("cid", judge.getCid())
+                        .eq("status", Constants.Contest.RECORD_AC.getCode())
+                        .eq("uid", judge.getUid())
+                        .eq("pid", judge.getPid())
+                        .eq("cpid", judge.getCpid());
+
+                boolean FirstACAttempt = contestRecordService.count(queryWrapper) == 0;
+
+                // 同时初始化写入contest_record表
+                ContestRecord contestRecord = new ContestRecord();
+                contestRecord.setDisplayId(judgeDto.getPid())
+                        .setCpid(contestProblem.getPid())
+                        .setSubmitId(judge.getSubmitId())
+                        .setPid(judge.getPid())
+                        .setUsername(userRolesVo.getUsername())
+                        .setRealname(userRolesVo.getRealname())
+                        .setUid(userRolesVo.getUid())
+                        .setCid(judge.getCid())
+                        .setSubmitTime(judge.getSubmitTime())
+                        // 设置比赛开始时间到提交时间之间的秒数
+                        .setTime(DateUtil.between(contest.getStartTime(), judge.getSubmitTime(), DateUnit.SECOND));
+                if (FirstACAttempt) {
+                    contestRecord.setFirstBlood(true);
+                } else {
+                    contestRecord.setFirstBlood(false);
+                }
+                updateContestRecord = contestRecordService.save(contestRecord);
+            }
 
         } else { // 如果不是比赛提交，需要将题号转为long类型
             if (NumberUtil.isNumber(judgeDto.getPid())) {
@@ -140,13 +186,12 @@ public class JudgeController {
             // 更新一下user_record表
             UpdateWrapper<UserRecord> userRecordUpdateWrapper = new UpdateWrapper<>();
             userRecordUpdateWrapper.setSql("submissions=submissions+1").eq("uid", judge.getUid());
-            update = userRecordService.update(userRecordUpdateWrapper);
+            updateUserRecord = userRecordService.update(userRecordUpdateWrapper);
+            // 将新提交数据插入数据库
+            result = judgeMapper.insert(judge);
         }
 
-        // 将新提交数据插入数据库
-        int result = judgeMapper.insert(judge);
-
-        if (result != 1 || !update) {
+        if (result != 1 || !updateContestRecord || !updateUserRecord) {
             return CommonResult.errorResponse("数据提交失败", CommonResult.STATUS_ERROR);
         }
         // 异步调用判题机
@@ -209,6 +254,9 @@ public class JudgeController {
         if (!userRolesVo.getUid().equals(judge.getUid())) { // 判断该提交是否为当前用户的
             return CommonResult.errorResponse("对不起，您不能修改他人的代码分享权限！");
         }
+        if (judge.getCid() == 0) { // 如果是比赛提交，不可分享！
+            return CommonResult.errorResponse("对不起，您不能分享比赛题目的提交代码！");
+        }
         boolean result = judgeService.updateById(judge);
         if (result) {
             if (judge.getShare()) {
@@ -235,7 +283,6 @@ public class JudgeController {
                                      @RequestParam(value = "problemID", required = false) Long searchPid,
                                      @RequestParam(value = "status", required = false) Integer searchStatus,
                                      @RequestParam(value = "username", required = false) String searchUsername,
-                                     @RequestParam(value = "contestID", required = false) Long searchCid,
                                      HttpServletRequest request) {
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
@@ -258,7 +305,7 @@ public class JudgeController {
         }
 
         IPage<JudgeVo> commonJudgeList = judgeService.getCommonJudgeList(limit, currentPage, searchPid,
-                searchStatus, searchUsername, searchCid, uid);
+                searchStatus, searchUsername, uid);
 
         if (commonJudgeList.getTotal() == 0) { // 未查询到一条数据
             return CommonResult.successResponse(null, "暂无数据");

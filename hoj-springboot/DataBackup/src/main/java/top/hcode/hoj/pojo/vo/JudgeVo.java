@@ -30,6 +30,9 @@ public class JudgeVo {
     @ApiModelProperty(value = "题目id")
     private Long pid;
 
+    @ApiModelProperty(value = "比赛display_id")
+    private String displayId;
+
     @ApiModelProperty(value = "结果码具体参考文档")
     private Date submitTime;
 
