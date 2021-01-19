@@ -3,12 +3,16 @@ package top.hcode.hoj.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import top.hcode.hoj.pojo.entity.Judge;
 import top.hcode.hoj.dao.JudgeMapper;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.service.JudgeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import top.hcode.hoj.service.ToJudgeService;
+
+import java.util.List;
 
 /**
  * <p>
@@ -24,12 +28,31 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     @Autowired
     private JudgeMapper judgeMapper;
 
+    @Autowired
+    private ToJudgeService toJudgeService;
+
     @Override
     public IPage<JudgeVo> getCommonJudgeList(Integer limit, Integer currentPage, Long pid, Integer status, String username,
-                                             Long cid,String uid) {
+                                             String uid) {
         //新建分页
         Page<JudgeVo> page = new Page<>(currentPage, limit);
 
-        return judgeMapper.getCommonJudgeList(page, pid, status, username, cid,uid);
+        return judgeMapper.getCommonJudgeList(page, pid, status, username, uid);
+    }
+
+    @Override
+    public IPage<JudgeVo> getContestJudgeList(Integer limit, Integer currentPage, String displayId, Long cid, Integer status, String username, String uid, Boolean beforeContestSubmit) {
+        //新建分页
+        Page<JudgeVo> page = new Page<>(currentPage, limit);
+
+        return judgeMapper.getContestJudgeList(page, displayId, cid, status, username, uid, beforeContestSubmit);
+    }
+
+    @Override
+    @Async
+    public void rejudgeContestProblem(List<Judge> judgeList) {
+        for (Judge judge : judgeList) {
+            toJudgeService.submitProblemJudge(judge);
+        }
     }
 }

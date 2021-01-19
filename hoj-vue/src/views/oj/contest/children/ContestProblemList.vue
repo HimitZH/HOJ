@@ -22,7 +22,7 @@
             row.score
           }}</span>
           <el-tooltip
-            :content="JUDGE_STATUS[row.myStatus].name"
+            :content="JUDGE_STATUS[row.myStatus]['name']"
             placement="top"
             v-else
           >
@@ -46,7 +46,7 @@
       >
         <template v-slot="{ row }">
           <el-tooltip
-            :content="JUDGE_STATUS[row.myStatus].name"
+            :content="JUDGE_STATUS[row.myStatus]['name']"
             placement="top"
           >
             <i
@@ -70,7 +70,7 @@
       <vxe-table-column
         field="displayTitle"
         title="Title"
-        min-width="350"
+        min-width="200"
       ></vxe-table-column>
 
       <!-- 以下列只有在实时刷新榜单的情况下才显示 -->

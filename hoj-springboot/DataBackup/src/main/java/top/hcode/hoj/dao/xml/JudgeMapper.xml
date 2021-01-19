@@ -6,16 +6,8 @@
         j.time,j.memory,j.length,j.language,j.cid,j.cpid,j.ip,j.judger
         from judge j
         <where>
-            <if test="cid!=null">
-                j.cid = #{cid}
-                <if test="pid!=null">
-                    AND j.cpid = #{pid}
-                </if>
-            </if>
-            <if test="cid==null">
-                AND j.cid = 0 AND j.cpid = 0
-            </if>
-            <if test="pid!=null and cid == null">
+            j.cid = 0 AND j.cpid = 0
+            <if test="pid!=null">
                 AND j.pid = #{pid}
             </if>
             <if test="username!='' and username!=null">
@@ -30,6 +22,42 @@
             </if>
             <if test="uid!=null and uid!=''">
                 AND j.uid = #{uid}
+            </if>
+        </where>
+        order by j.submit_time DESC,j.submit_id DESC
+    </select>
+
+
+    <select id="getContestJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="false">
+        select  j.uid,j.submit_id,j.submit_time,j.uid,j.username,j.uid,cp.display_id,
+        j.status,j.share,j.time,j.memory,j.length,j.language,j.cid,j.cpid,j.ip,j.judger
+        from judge j,contest_problem cp
+        <where>
+            j.pid=cp.pid
+            <if test="cid!=null">
+               AND j.cid = #{cid}
+            </if>
+            <if test="displayId!=null and displayId!=''">
+                AND cp.display_id like concat('%',#{displayId},'%')
+            </if>
+            <if test="username!='' and username!=null">
+                AND j.username like concat('%',#{username},'%')
+            </if>
+            <if test="status!=null">
+                AND (j.status = #{status}
+                <if test="status==1">
+                    OR j.status = 2
+                </if>
+                )
+            </if>
+            <if test="uid!=null and uid!=''">
+                AND j.uid = #{uid}
+            </if>
+            <if test="beforeContestSubmit!=null and beforeContestSubmit=true">
+                AND (select start_time from contest where id = #{cid}) > j.submit_time
+            </if>
+            <if test="beforeContestSubmit!=null and beforeContestSubmit=false">
+                AND j.submit_time >= (select start_time from contest where id = #{cid})
             </if>
         </where>
         order by j.submit_time DESC,j.submit_id DESC

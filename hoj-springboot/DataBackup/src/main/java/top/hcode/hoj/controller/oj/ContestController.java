@@ -3,27 +3,22 @@ package top.hcode.hoj.controller.oj;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.dao.AnnouncementMapper;
-import top.hcode.hoj.dao.ContestRegisterMapper;
+import top.hcode.hoj.pojo.dto.CheckACDto;
 import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.pojo.vo.*;
-import top.hcode.hoj.dao.ContestProblemMapper;
-import top.hcode.hoj.service.AnnouncementService;
 import top.hcode.hoj.service.ContestRecordService;
-import top.hcode.hoj.service.ContestService;
 import top.hcode.hoj.service.impl.*;
+import top.hcode.hoj.utils.Constants;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -67,6 +62,9 @@ public class ContestController {
 
     @Autowired
     private ProblemCountServiceImpl problemCountService;
+
+    @Autowired
+    private JudgeServiceImpl judgeService;
 
 
     /**
@@ -184,6 +182,7 @@ public class ContestController {
         return CommonResult.successResponse(request);
     }
 
+
     /**
      * @MethodName getContestProblem
      * @Params * @param null
@@ -193,13 +192,28 @@ public class ContestController {
      */
     @GetMapping("/get-contest-problem")
     @RequiresAuthentication
-    public CommonResult getContestProblem(@RequestParam(value = "cid", required = true) Long cid) {
+    public CommonResult getContestProblem(@RequestParam(value = "cid", required = true) Long cid, HttpServletRequest request) {
+
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        // 获取本场比赛的状态
+        Contest contest = contestService.getById(cid);
+
+        // 超级管理员或者该比赛的创建者，则为比赛管理者
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         /**
-         *  待续....需要对该比赛做判断，是否处于开始或结束状态才可以获取题目，以及比赛管理员包括超级管理员可以直接获取。
+         *  需要对该比赛做判断，是否处于开始或结束状态才可以获取题目列表，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
          */
+        CommonResult commonResult = contestService.checkContestAuth(contest, userRolesVo, isRoot);
 
-        List<ContestProblemVo> contestProblemList = contestProblemService.getContestProblemList(cid);
+        if (commonResult != null) {
+            return commonResult;
+        }
+
+        List<ContestProblemVo> contestProblemList = contestProblemService.getContestProblemList(cid, contest.getStartTime());
 
         if (contestProblemList.size() == 0) {
             return CommonResult.successResponse(null, "暂无数据");
@@ -211,7 +225,28 @@ public class ContestController {
     @GetMapping("/get-contest-problem-details")
     @RequiresAuthentication
     public CommonResult getContestProblemDetails(@RequestParam(value = "cid", required = true) Long cid,
-                                                 @RequestParam(value = "displayId", required = true) String displayId) {
+                                                 @RequestParam(value = "displayId", required = true) String displayId,
+                                                 HttpServletRequest request) {
+
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        // 获取本场比赛的状态
+        Contest contest = contestService.getById(cid);
+
+        // 是否为超级管理员或者该比赛的创建者，则为比赛管理者
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        /**
+         *  需要对该比赛做判断，是否处于开始或结束状态才可以获取题目，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
+         */
+        CommonResult commonResult = contestService.checkContestAuth(contest, userRolesVo, isRoot);
+
+        if (commonResult != null) {
+            return commonResult;
+        }
+
         // 根据cid和displayId获取pid
         QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
         contestProblemQueryWrapper.eq("cid", cid).eq("display_id", displayId);
@@ -257,6 +292,60 @@ public class ContestController {
     }
 
 
+    @GetMapping("/contest-submissions")
+    @RequiresAuthentication
+    public CommonResult getContestSubmissions(@RequestParam(value = "limit", required = false) Integer limit,
+                                              @RequestParam(value = "currentPage", required = false) Integer currentPage,
+                                              @RequestParam(value = "onlyMine", required = false) Boolean onlyMine,
+                                              @RequestParam(value = "problemID", required = false) String displayId,
+                                              @RequestParam(value = "status", required = false) Integer searchStatus,
+                                              @RequestParam(value = "username", required = false) String searchUsername,
+                                              @RequestParam(value = "contestID", required = true) Long searchCid,
+                                              @RequestParam(value = "beforeContestSubmit", required = true) Boolean beforeContestSubmit,
+                                              HttpServletRequest request) {
+
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        // 获取本场比赛的状态
+        Contest contest = contestService.getById(searchCid);
+
+        // 是否为超级管理员或者该比赛的创建者，则为比赛管理者
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        /**
+         *  需要对该比赛做判断，是否处于开始或结束状态才可以获取题目，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
+         */
+        CommonResult commonResult = contestService.checkContestAuth(contest, userRolesVo, isRoot);
+
+        if (commonResult != null) {
+            return commonResult;
+        }
+
+        // 页数，每页题数若为空，设置默认值
+        if (currentPage == null || currentPage < 1) currentPage = 1;
+        if (limit == null || limit < 1) limit = 30;
+
+        String uid = null;
+        // 只查看当前用户的提交
+        if (onlyMine) {
+            // 需要获取一下该token对应用户的数据（有token便能获取到）
+            uid = userRolesVo.getUid();
+        }
+        if (searchStatus != null && searchStatus == 2) { // 默认搜索cpu超时，真实时间超时都一起。
+            searchStatus = 1;
+        }
+
+        IPage<JudgeVo> commonJudgeList = judgeService.getContestJudgeList(limit, currentPage, displayId, searchCid,
+                searchStatus, searchUsername, uid, beforeContestSubmit);
+
+        if (commonJudgeList.getTotal() == 0) { // 未查询到一条数据
+            return CommonResult.successResponse(null, "暂无数据");
+        } else {
+            return CommonResult.successResponse(commonJudgeList, "获取成功");
+        }
+    }
+
+
     /**
      * @MethodName getContestRank
      * @Params * @param null
@@ -265,16 +354,68 @@ public class ContestController {
      * @Since 2020/10/28
      */
     @GetMapping("/get-contest-rank")
-    public CommonResult getContestRank(@RequestParam(value = "cid", required = true) Long cid) {
+    public CommonResult getContestRank(@RequestParam(value = "cid", required = true) Long cid,
+                                       @RequestParam(value = "limit", required = false) Integer limit,
+                                       @RequestParam(value = "currentPage", required = false) Integer currentPage,
+                                       @RequestParam(value = "forceRefresh") Boolean forceRefresh,
+                                       HttpServletRequest request) {
 
-        QueryWrapper<ContestProblem> wrapper = new QueryWrapper<ContestProblem>().eq("cid", cid).groupBy();
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        List<ContestRecordVo> contestRecordList = contestRecordService.getContestRecord(cid);
-        if (contestRecordList.size() == 0) {
-            return CommonResult.errorResponse("暂无数据", CommonResult.STATUS_NOT_FOUND);
+        // 获取本场比赛的状态
+        Contest contest = contestService.getById(cid);
+
+        // 超级管理员或者该比赛的创建者，则为比赛管理者
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        /**
+         *  需要对该比赛做判断，是否处于开始或结束状态才可以获取，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
+         */
+        CommonResult commonResult = contestService.checkContestAuth(contest, userRolesVo, isRoot);
+
+        if (commonResult != null) {
+            return commonResult;
+        }
+
+        // 校验该比赛是否开启了封榜模式
+        boolean isOpenSealRank = false;
+
+        // 如果是管理员同时选择强制刷新榜单，则封榜无效
+        if (forceRefresh && (isRoot || userRolesVo.getUid().equals(contest.getUid()))) {
+            isOpenSealRank = false;
+        } else if (contest.getSealRank() && contest.getSealRankTime() != null) {
+            Date now = new Date();
+            // 如果现在时间处于封榜开始到比赛结束之间，不可刷新榜单
+            if (now.after(contest.getSealRankTime()) && now.before(contest.getEndTime())) {
+                isOpenSealRank = true;
+            }
+        }
+        IPage resultList;
+        if (contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) { // ACM比赛
+
+            QueryWrapper<ContestRecord> wrapper = new QueryWrapper<ContestRecord>().eq("cid", cid)
+                    .isNotNull("status")
+                    // 如果已经开启了封榜模式
+                    .notBetween(isOpenSealRank, "submit_time", contest.getSealRankTime(), contest.getEndTime())
+                    .orderByAsc("time");
+
+            List<ContestRecord> contestRecordList = contestRecordService.list(wrapper);
+
+            // 进行排行榜计算以及排名分页
+            resultList = contestRecordService.getContestACMRank(contestRecordList, currentPage, limit);
+
+        } else { //OI比赛：以最后一次提交得分作为该题得分
+
+            resultList = contestRecordService.getContestOIRank(cid, isOpenSealRank, contest.getSealRankTime(),
+                    contest.getEndTime(), currentPage, limit);
+        }
+
+        if (resultList == null || resultList.getSize() == 0) {
+            return CommonResult.successResponse(resultList, "暂无数据");
         } else {
-
-            return CommonResult.successResponse(contestRecordList, "获取成功");
+            return CommonResult.successResponse(resultList, "获取成功");
         }
     }
 
@@ -289,16 +430,108 @@ public class ContestController {
     @GetMapping("/get-contest-announcement")
     public CommonResult getContestAnnouncement(@RequestParam(value = "cid", required = true) Long cid,
                                                @RequestParam(value = "limit", required = false) Integer limit,
-                                               @RequestParam(value = "currentPage", required = false) Integer currentPage) {
+                                               @RequestParam(value = "currentPage", required = false) Integer currentPage,
+                                               HttpServletRequest request) {
+
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        // 获取本场比赛的状态
+        Contest contest = contestService.getById(cid);
+
+        // 超级管理员或者该比赛的创建者，则为比赛管理者
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        /**
+         *  需要对该比赛做判断，是否处于开始或结束状态才可以获取题目，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
+         */
+        CommonResult commonResult = contestService.checkContestAuth(contest, userRolesVo, isRoot);
+
+        if (commonResult != null) {
+            return commonResult;
+        }
+
+
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;
 
         IPage<AnnouncementVo> contestAnnouncementList = announcementService.getContestAnnouncement(cid, true, limit, currentPage);
         if (contestAnnouncementList.getTotal() == 0) {
-            return CommonResult.errorResponse("暂无数据", CommonResult.STATUS_NOT_FOUND);
+            return CommonResult.successResponse(contestAnnouncementList, "暂无数据");
         } else {
             return CommonResult.successResponse(contestAnnouncementList, "获取成功");
         }
+    }
+
+    /**
+     * @MethodName getContestACInfo
+     * @Params * @param null
+     * @Description 获取各个用户的ac情况，仅限于比赛管理者可查看
+     * @Return
+     * @Since 2021/1/17
+     */
+    @GetMapping("/get-contest-ac-info")
+    @RequiresAuthentication
+    public CommonResult getContestACInfo(@RequestParam("cid") Long cid,
+                                         @RequestParam(value = "currentPage", required = false) Integer currentPage,
+                                         @RequestParam(value = "limit", required = false) Integer limit,
+                                         HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        // 获取本场比赛的状态
+        Contest contest = contestService.getById(cid);
+
+        // 超级管理员或者该比赛的创建者，则为比赛管理者
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        if (!isRoot && !contest.getUid().equals(userRolesVo.getUid())) {
+            return CommonResult.errorResponse("对不起，你无权查看！", CommonResult.STATUS_FORBIDDEN);
+        }
+
+        if (currentPage == null || currentPage < 1) currentPage = 1;
+        if (limit == null || limit < 1) limit = 30;
+
+
+        // 获取当前比赛的，状态为ac，未被校验的排在签名
+        IPage<ContestRecord> contestRecords = contestRecordService.getACInfo(currentPage,
+                limit, Constants.Contest.RECORD_AC.getCode(), cid);
+
+        return CommonResult.successResponse(contestRecords, "查询成功");
+    }
+
+
+    /**
+     * @MethodName checkContestACInfo
+     * @Params * @param null
+     * @Description 比赛管理员确定该次提交的ac情况
+     * @Return
+     * @Since 2021/1/17
+     */
+    @PutMapping("/check-contest-ac-info")
+    @RequiresAuthentication
+    public CommonResult checkContestACInfo(@RequestBody CheckACDto checkACDto,
+                                           HttpServletRequest request) {
+
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        // 获取本场比赛的状态
+        Contest contest = contestService.getById(checkACDto.getCid());
+
+        // 超级管理员或者该比赛的创建者，则为比赛管理者
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        if (!isRoot && !contest.getUid().equals(userRolesVo.getUid())) {
+            return CommonResult.errorResponse("对不起，你无权操作！", CommonResult.STATUS_FORBIDDEN);
+        }
+
+        boolean result = contestRecordService.updateById(
+                new ContestRecord().setChecked(checkACDto.getChecked()).setId(checkACDto.getId()));
+
+        if (result) {
+            return CommonResult.successResponse(null, "修改校验确定成功！");
+        } else {
+            return CommonResult.errorResponse("修改校验确定失败！");
+        }
+
     }
 
 }

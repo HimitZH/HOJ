@@ -8,6 +8,7 @@ import top.hcode.hoj.service.ContestProblemService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ public class ContestProblemServiceImpl extends ServiceImpl<ContestProblemMapper,
     private ContestProblemMapper contestProblemMapper;
 
     @Override
-    public List<ContestProblemVo> getContestProblemList(Long cid) {
-        return contestProblemMapper.getContestProblemList(cid);
+    public List<ContestProblemVo> getContestProblemList(Long cid, Date startTime) {
+        return contestProblemMapper.getContestProblemList(cid, startTime);
     }
 }

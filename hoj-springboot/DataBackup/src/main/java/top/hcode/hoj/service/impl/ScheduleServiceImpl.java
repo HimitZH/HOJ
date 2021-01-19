@@ -55,10 +55,13 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Autowired
     private FileServiceImpl fileService;
+
     @Autowired
     private RedisUtils redisUtils;
+
     @Autowired
     private UserInfoService userInfoDao;
+
     @Autowired
     private UserRecordService userRecordDao;
 
@@ -228,6 +231,5 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
         log.info("获取Codeforces Rating成功！");
     }
-
 
 }

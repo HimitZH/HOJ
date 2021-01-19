@@ -1,19 +1,31 @@
 <template>
   <el-row type="flex" justify="space-around">
     <el-col :span="22" id="status">
-      <el-alert :type="status.type" show-icon :closable="false" effect="dark" :class="getbackgroudColor(submission.status)"
-        style="padding: 18px;">
+      <el-alert
+        :type="status.type"
+        show-icon
+        :closable="false"
+        effect="dark"
+        :class="getbackgroudColor(submission.status)"
+        style="padding: 18px;"
+      >
         <template slot="title">
           <span class="title">{{ status.statusName }}</span>
         </template>
         <template slot>
-          <div v-if="isCE"  class="content">
+          <div v-if="isCE" class="content">
             <pre>{{ submission.errorMessage }}</pre>
           </div>
-          <div v-else  class="content">
-            <span class="span-row">Time: {{ submissionTimeFormat(submission.time) }}</span>
-            <span class="span-row">Memory: {{ submissionMemoryFormat(submission.memory) }}</span>
-            <span class="span-row">Length: {{ submissionLengthFormat(submission.length) }}</span>
+          <div v-else class="content">
+            <span class="span-row"
+              >Time: {{ submissionTimeFormat(submission.time) }}</span
+            >
+            <span class="span-row"
+              >Memory: {{ submissionMemoryFormat(submission.memory) }}</span
+            >
+            <span class="span-row"
+              >Length: {{ submissionLengthFormat(submission.length) }}</span
+            >
             <span class="span-row">Language: {{ submission.language }}</span>
             <span class="span-row">Author: {{ submission.username }}</span>
           </div>
@@ -21,16 +33,24 @@
       </el-alert>
     </el-col>
 
-    <el-col v-if="tableData&& !isCE" :span="22">
-      <vxe-table align="center" :data="tableData" stripe auto-resize style="padding-top: 13px;" :loading="loadingTable">
-        <vxe-table-column field="submitId" title="ID"  min-width="100"></vxe-table-column>
+    <el-col v-if="tableData && !isCE" :span="22">
+      <vxe-table
+        align="center"
+        :data="tableData"
+        stripe
+        auto-resize
+        style="padding-top: 13px;"
+        :loading="loadingTable"
+      >
         <vxe-table-column
-          title="Submit time"
-          min-width="150"
-        >
-         <template v-slot="{ row }">
-           <span>{{row.submitTime | localtime}}</span>
-         </template>
+          field="submitId"
+          title="ID"
+          min-width="100"
+        ></vxe-table-column>
+        <vxe-table-column title="Submit time" min-width="150">
+          <template v-slot="{ row }">
+            <span>{{ row.submitTime | localtime }}</span>
+          </template>
         </vxe-table-column>
         <vxe-table-column field="pid" title="Problem ID" min-width="100">
           <template v-slot="{ row }">
@@ -48,33 +68,25 @@
             }}</span>
           </template>
         </vxe-table-column>
-        <vxe-table-column
-          title="Time"
-          min-width="64"
-        >
-        <template v-slot="{ row }">
-           <span>{{submissionTimeFormat(row.time)}}</span>
-         </template>
+        <vxe-table-column title="Time" min-width="64">
+          <template v-slot="{ row }">
+            <span>{{ submissionTimeFormat(row.time) }}</span>
+          </template>
         </vxe-table-column>
-        <vxe-table-column
-          title="Memory"
-          min-width="96"
-        >
-        <template v-slot="{ row }">
-           <span>{{submissionMemoryFormat(row.memory)}}</span>
-         </template>
+        <vxe-table-column title="Memory" min-width="96">
+          <template v-slot="{ row }">
+            <span>{{ submissionMemoryFormat(row.memory) }}</span>
+          </template>
+        </vxe-table-column>
+
+        <vxe-table-column title="Length" min-width="60">
+          <template v-slot="{ row }">
+            <span>{{ submissionLengthFormat(row.length) }}</span>
+          </template>
         </vxe-table-column>
 
         <vxe-table-column
-          title="Length"
-          min-width="60"
-        >
-        <template v-slot="{ row }">
-           <span>{{submissionLengthFormat(row.length)}}</span>
-         </template>
-        </vxe-table-column>
-
-        <vxe-table-column v-if="isIOProblem"
+          v-if="isIOProblem"
           field="score"
           title="Score"
           min-width="96"
@@ -89,64 +101,73 @@
         :border-color="status.color"
       ></Highlight>
     </el-col>
-    <el-col v-if="codeShare" :span="22">
+    <el-col :span="22">
       <div id="share-btn">
-        <el-button type="primary" icon="el-icon-document-copy" size="large" @click="doCopy" v-if="submission.code">Copy</el-button>
         <el-button
-          v-if="submission.share&&isAuthenticated&&isMeSubmisson"
-          type="warning"
-          size="large"
-          icon="el-icon-circle-close"
-          @click="shareSubmission(false)"
-        >
-          Unshared
-        </el-button>
-        <el-button
-          v-else-if="isAuthenticated&&!submission.share&&isMeSubmisson"
           type="primary"
+          icon="el-icon-document-copy"
           size="large"
-          icon="el-icon-share"
-          @click="shareSubmission(true)"
+          @click="doCopy"
+          v-if="submission.code"
+          >Copy</el-button
         >
-          Shared
-        </el-button>
+        <template v-if="codeShare">
+          <el-button
+            v-if="submission.share && isAuthenticated && isMeSubmisson"
+            type="warning"
+            size="large"
+            icon="el-icon-circle-close"
+            @click="shareSubmission(false)"
+          >
+            Unshared
+          </el-button>
+          <el-button
+            v-else-if="isAuthenticated && !submission.share && isMeSubmisson"
+            type="primary"
+            size="large"
+            icon="el-icon-share"
+            @click="shareSubmission(true)"
+          >
+            Shared
+          </el-button>
+        </template>
       </div>
     </el-col>
   </el-row>
 </template>
 
 <script>
-import api from "@/common/api";
-import { JUDGE_STATUS } from "@/common/constants";
-import utils from "@/common/utils";
-import Highlight from "@/components/oj/common/Highlight";
-import myMessage from '@/common/message'
+import api from '@/common/api';
+import { JUDGE_STATUS } from '@/common/constants';
+import utils from '@/common/utils';
+import Highlight from '@/components/oj/common/Highlight';
+import myMessage from '@/common/message';
 
 export default {
-  name: "submissionDetails",
+  name: 'submissionDetails',
   components: {
     Highlight,
   },
   data() {
     return {
       submission: {
-          code:"",
-          submitId: "",
-          submitTime: "",
-          pid: "",
-          status: 0,
-          time: "",
-          memory: "",
-          language:'',
-          author: "",
-          errorMessage:'',
-          share:true
+        code: '',
+        submitId: '',
+        submitTime: '',
+        pid: '',
+        status: 0,
+        time: '',
+        memory: '',
+        language: '',
+        author: '',
+        errorMessage: '',
+        share: true,
       },
-      tableData:[],
-      codeShare:true,
+      tableData: [],
+      codeShare: true,
       isIOProblem: false,
       loadingTable: false,
-      JUDGE_STATUS:'',
+      JUDGE_STATUS: '',
     };
   },
   mounted() {
@@ -155,33 +176,36 @@ export default {
   },
   methods: {
     doCopy() {
-      this.$copyText(this.submission.code).then(function (e) {
-        myMessage.success('Code copied successfully');
-      }, function (e) {
-        myMessage.success('Code copy failed');
-      })
+      this.$copyText(this.submission.code).then(
+        function(e) {
+          myMessage.success('Code copied successfully');
+        },
+        function(e) {
+          myMessage.success('Code copy failed');
+        }
+      );
     },
 
-    submissionTimeFormat(time){
-      return utils.submissionTimeFormat(time)
+    submissionTimeFormat(time) {
+      return utils.submissionTimeFormat(time);
     },
 
-    submissionMemoryFormat(memory){
-      return utils.submissionMemoryFormat(memory)
+    submissionMemoryFormat(memory) {
+      return utils.submissionMemoryFormat(memory);
     },
 
-    submissionLengthFormat(length){
-      return utils.submissionLengthFormat(length)
+    submissionLengthFormat(length) {
+      return utils.submissionLengthFormat(length);
     },
 
     getProblemUri(pid) {
-      return "/problem/" + pid;
+      return '/problem/' + pid;
     },
     getStatusColor(status) {
-      return "el-tag el-tag--medium status-" + JUDGE_STATUS[status].color;
+      return 'el-tag el-tag--medium status-' + JUDGE_STATUS[status].color;
     },
-    getbackgroudColor(status){
-      return "status-" + JUDGE_STATUS[status].color;
+    getbackgroudColor(status) {
+      return 'status-' + JUDGE_STATUS[status].color;
     },
     getSubmission() {
       this.loadingTable = true;
@@ -189,7 +213,11 @@ export default {
         (res) => {
           this.loadingTable = false;
           let data = res.data.data;
-          if (data.submission.memory && data.submission.score && !this.isIOProblem) {
+          if (
+            data.submission.memory &&
+            data.submission.score &&
+            !this.isIOProblem
+          ) {
             // score exist means the submission is OI problem submission
             if (data.submission.score !== null) {
               this.isIOProblem = true;
@@ -197,7 +225,12 @@ export default {
           }
           this.submission = data.submission;
           this.tableData = [data.submission];
-          this.codeShare = data.codeShare;
+          if (data.submission.cid != 0) {
+            // 比赛的提交不可分享
+            this.codeShare = false;
+          } else {
+            this.codeShare = data.codeShare;
+          }
         },
         () => {
           this.loadingTable = false;
@@ -205,11 +238,15 @@ export default {
       );
     },
     shareSubmission(shared) {
-      let data = { submitId: this.submission.submitId, share: shared,uid:this.submission.uid };
+      let data = {
+        submitId: this.submission.submitId,
+        share: shared,
+        uid: this.submission.uid,
+      };
       api.updateSubmission(data).then(
         (res) => {
           this.getSubmission();
-          myMessage.success(res.data.msg)
+          myMessage.success(res.data.msg);
         },
         () => {}
       );
@@ -229,12 +266,12 @@ export default {
     isAdminRole() {
       return this.$store.getters.isAdminRole;
     },
-    isAuthenticated(){
+    isAuthenticated() {
       return this.$store.getters.isAuthenticated;
     },
-    isMeSubmisson(){
-      return this.$store.getters.userInfo.uid === this.submission.uid
-    }
+    isMeSubmisson() {
+      return this.$store.getters.userInfo.uid === this.submission.uid;
+    },
   },
 };
 </script>
@@ -250,9 +287,9 @@ export default {
 #status .content span {
   margin-right: 10px;
 }
-#status .span-row{
-  display:block;
-   float:left
+#status .span-row {
+  display: block;
+  float: left;
 }
 #status .content pre {
   white-space: pre-wrap;
@@ -265,7 +302,7 @@ export default {
   margin-top: 5px;
   margin-right: 10px;
 }
-#share-btn:nth-child(1){
+#share-btn:nth-child(1) {
   margin-right: 0px;
 }
 .el-row--flex {

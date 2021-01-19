@@ -6,16 +6,14 @@ const state = {
   now: moment(),
   intoAccess: false, // 私有比赛进入权限
   submitAccess:false, // 保护比赛的提交权限
-  rankLimit: 30,
   forceUpdate: false,
   contest: {
     type: CONTEST_TYPE.PUBLIC
   },
   contestProblems: [],
   itemVisible: {
-    menu: true,
+    table: true,
     chart: true,
-    realName: false
   },
 }
 
@@ -157,7 +155,7 @@ const mutations = {
     state.intoAccess = false
     state.submitAccess = false
     state.itemVisible = {
-      menu: true,
+      table: true,
       chart: true,
       realName: false
     }

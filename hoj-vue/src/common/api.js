@@ -260,13 +260,6 @@ const ojApi = {
       data:{submitIds}
     })
   },
-  getContestSubmissionList (offset, limit, params) {
-    params.limit = limit
-    params.offset = offset
-    return ajax('contest_submissions', 'get', {
-      params
-    })
-  },
 
   submissionRejudge (submitId) {
     return ajax('/admin/judge/rejudge', 'get', {
@@ -327,16 +320,61 @@ const ojApi = {
       params: {displayId,cid}
     })
   },
-  // ACM赛制排行榜
+  // 获取比赛提交列表
+  getContestSubmissionList (limit, params) {
+    params.limit = limit
+    return ajax('/api/contest-submissions', 'get', {
+      params
+    })
+  },
+
+  getContestRank(params){
+    return ajax('/api/get-contest-rank', 'get', {
+      params
+    })
+  },
+
+  // 获取比赛公告列表
+  getContestAnnouncementList(currentPage,limit,cid){
+    let params = {
+      currentPage,
+      limit,
+      cid
+    }
+    return ajax('/api/get-contest-announcement', 'get', {
+      params
+    })
+  },
+  // 获取acm比赛ac信息
+  getACMACInfo(params){
+    return ajax('/api/get-contest-ac-info', 'get', {
+      params
+    })
+  },
+  // 确认ac信息
+  updateACInfoCheckedStatus(data){
+    return ajax('/api/check-contest-ac-info', 'put', {
+      data
+    })
+  },
+  // 比赛题目对应的提交重判
+  ContestRejudgeProblem(params){
+    return ajax('/admin/judge/rejudge-contest-problem', 'get', {
+      params
+    })
+  },
+
+  // ACM赛制或OI赛制的排行榜
   getUserRank(currentPage,limit,type){
     return ajax('/api/get-rank-list','get',{
       params: {
-        currentPage,
+       currentPage,
         limit,
         type
       }
     })
   },
+
   // about页部分请求
   getAllLanguages(){
     return ajax("/api/languages",'get')
