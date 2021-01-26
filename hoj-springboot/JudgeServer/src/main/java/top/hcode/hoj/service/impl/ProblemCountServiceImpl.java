@@ -33,12 +33,6 @@ public class ProblemCountServiceImpl extends ServiceImpl<ProblemCountMapper, Pro
     @Autowired
     private ProblemCountMapper problemCountMapper;
 
-    @Autowired
-    private UserRecordServiceImpl userRecordService;
-
-    @Autowired
-    private JudgeServiceImpl judgeService;
-
     // 默认的事务隔离等级可重复读会产生幻读，读不到新的version数据，所以需要更换等级为读已提交
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
     @Async
