@@ -18,4 +18,9 @@ public class CloudHandler implements ToJudgeService {
     public CommonResult submitProblemJudge(Judge judge) {
         return CommonResult.errorResponse("判题机系统出错，提交进入重判队列，请等待管理员处理！", CommonResult.STATUS_ERROR);
     }
+
+    @Override
+    public CommonResult initTestCase(Long pid, Boolean isSpj) {
+        return CommonResult.errorResponse("判题机评测数据初始化失败！", CommonResult.STATUS_ERROR);
+    }
 }

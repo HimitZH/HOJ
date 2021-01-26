@@ -24,14 +24,21 @@
                     <target>8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>    <!--默认关掉单元测试 -->
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
     <!--版本控制-->
     <properties>
         <project.bulid.sourceEncoding>UTF-8</project.bulid.sourceEncoding>
-        <maven.compiler.sourse>1.8</maven.compiler.sourse>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.sourse>8</maven.compiler.sourse>
+        <maven.compiler.target>8</maven.compiler.target>
         <junit.version>4.12</junit.version>
         <lombok.version>1.16.10</lombok.version>
         <log4j.version>1.2.17</log4j.version>

@@ -1,20 +1,21 @@
 package top.hcode.hoj.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.CommonResult;
-import top.hcode.hoj.pojo.entity.Contest;
-import top.hcode.hoj.pojo.entity.Judge;
-import top.hcode.hoj.pojo.entity.UserAcproblem;
+import top.hcode.hoj.judger.JudgeStrategy;
+import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.IpUtils;
 
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+
 
 /**
  * @Author: Himit_ZH
@@ -24,8 +25,12 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @Slf4j
 public class JudgeController {
+
     @Autowired
     private JudgeServiceImpl judgeService;
+
+    @Autowired
+    private ProblemServiceImpl problemService;
 
     @Autowired
     private ProblemCountServiceImpl problemCountService;
@@ -42,6 +47,9 @@ public class JudgeController {
     @Autowired
     private ContestServiceImpl contestService;
 
+    @Autowired
+    private ProblemCaseServiceImpl problemCase;
+
     @PostMapping(value = "/judge") // 待定，到时再添加服务熔断兜底方法
     public CommonResult submitProblemJudge(@RequestBody Judge judge) {
 
@@ -55,57 +63,65 @@ public class JudgeController {
         if (!updateResult) { // 出错并不影响主要业务逻辑，可以稍微记录一下即可。
             log.error("修改Judge表失效----->{}", "修改提交评判为评测队列出错");
         }
-        /*
-         * 先空着，此部分调用判题机进行测评,所以先返回成功~
-         */
-        // 线程沉睡，模仿判题过程消耗时间
-        try {
-            TimeUnit.SECONDS.sleep(3);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        // 进行判题操作
+        Problem problem = problemService.getById(judge.getPid());
 
-        // 直接默认为通过,且说明该题已被评测过
-        judge.setStatus(Constants.Judge.STATUS_ACCEPTED.getStatus())
-                .setTime(1)
-                .setMemory(1);
+        Judge finalJudge = judgeService.Judge(problem, judge);
+
         // 更新该次提交
-        judgeService.updateById(judge);
+        judgeService.updateById(finalJudge);
 
-        if (judge.getCid() == 0) { // 非比赛提交
+        if (finalJudge.getCid() == 0) { // 非比赛提交
 
             // 如果是AC,就更新user_acproblem表,
-            if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+            if (finalJudge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
                 userAcproblemService.saveOrUpdate(new UserAcproblem()
-                        .setPid(judge.getPid())
-                        .setUid(judge.getUid())
-                        .setSubmitId(judge.getSubmitId())
+                        .setPid(finalJudge.getPid())
+                        .setUid(finalJudge.getUid())
+                        .setSubmitId(finalJudge.getSubmitId())
                 );
             }
             // 比赛的提交不纳入，更新该提交对应题目的数据
-            problemCountService.updateCount(Constants.Judge.STATUS_ACCEPTED.getStatus(), judge);
+            problemCountService.updateCount(Constants.Judge.STATUS_ACCEPTED.getStatus(), finalJudge);
 
 
             // 如果是非比赛提交，且为OI题目的提交，需要判断是否更新用户得分
-            if (judge.getScore() != null) {
-                userRecordService.updateRecord(judge);
+            if (finalJudge.getScore() != null) {
+                userRecordService.updateRecord(finalJudge);
             }
 
         } else { //如果是比赛提交
 
-            Contest contest = contestService.getById(judge.getCid());
+            Contest contest = contestService.getById(finalJudge.getCid());
             if (contest == null) {
                 log.error("判题机出错----------->{}", "该比赛不存在");
                 return CommonResult.errorResponse("该比赛不存在");
             }
             // 每个提交都得记录到contest_record里面,同时需要判断是否为比赛前的提交
             if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()) {
-                contestRecordService.UpdateContestRecord(judge);
+                contestRecordService.UpdateContestRecord(finalJudge);
             }
 
         }
-        return CommonResult.successResponse(judge, "判题机评测完成！");
+        return CommonResult.successResponse(finalJudge, "判题机评测完成！");
     }
 
+    @GetMapping("/init-test-case")
+    public CommonResult initTestCase(@RequestParam("pid")Long pid,@RequestParam("isSpj")Boolean isSpj){
+
+        QueryWrapper<ProblemCase> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("pid", pid);
+        List<ProblemCase> problemCases = problemCase.list(queryWrapper);
+
+        List<HashMap<String,Object>> testCases = new LinkedList<>();
+        for (ProblemCase problemCase:problemCases){
+            HashMap<String,Object> tmp = new HashMap<>();
+            tmp.put("input", problemCase.getInput());
+            tmp.put("output", problemCase.getOutput());
+            testCases.add(tmp);
+        }
+        JudgeStrategy.initTestCase(testCases,pid,isSpj);
+        return CommonResult.successResponse(null, "初始化评测数据到判题机成功！");
+    }
 
 }

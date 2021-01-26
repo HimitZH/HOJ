@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.service.ToJudgeService;
 import top.hcode.hoj.service.impl.*;
 
 
@@ -36,6 +37,9 @@ public class AdminProblemController {
 
     @Autowired
     private ProblemCaseServiceImpl problemCaseService;
+
+    @Autowired
+    private ToJudgeService toJudgeService;
 
     @GetMapping("/get-problem-list")
     public CommonResult getProblemList(@RequestParam(value = "limit", required = false) Integer limit,
@@ -88,6 +92,8 @@ public class AdminProblemController {
     @PostMapping("")
     public CommonResult addProblem(@RequestBody ProblemDto problemDto){
         boolean result = problemService.adminAddProblem(problemDto);
+        toJudgeService.initTestCase(problemDto.getProblem().getId(),
+                !StringUtils.isEmpty(problemDto.getProblem().getSpjCode()));
         if (result) { // 添加成功
             return CommonResult.successResponse(null,"添加成功！");
         } else {
@@ -100,6 +106,8 @@ public class AdminProblemController {
     @Transactional
     public CommonResult updateProblem(@RequestBody ProblemDto problemDto){
         boolean result = problemService.adminUpdateProblem(problemDto);
+        toJudgeService.initTestCase(problemDto.getProblem().getId(),
+                !StringUtils.isEmpty(problemDto.getProblem().getSpjCode()));
         if (result) { // 更新成功
             return CommonResult.successResponse(null,"修改成功！");
         } else {

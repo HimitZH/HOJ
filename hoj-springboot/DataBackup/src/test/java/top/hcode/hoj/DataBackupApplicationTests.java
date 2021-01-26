@@ -33,6 +33,7 @@ import top.hcode.hoj.utils.JsoupUtils;
 import top.hcode.hoj.utils.RedisUtils;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -89,6 +90,13 @@ public class DataBackupApplicationTests {
 
 //        List<AnnouncementVo> contestAnnouncement = announcementService.getContestAnnouncement(1L);
 //        System.out.println(contestAnnouncement.size());
+        String test = "{1}....{2}";
+        String command = "/usr/bin/java -cp {1} -XX:MaxRAM={2}k -Djava.security.manager -Dfile.encoding=UTF-8 -Djava.security.policy==/etc/java_policy -Djava.awt.headless=true Main";
+        String exePath = "/judge/run/32/1.exe";
+        String exeDir = "/judge/run/32";
+        int maxMemory = 1024*10;
+        List<String> commandList = Arrays.asList(MessageFormat.format(command, exePath, exeDir, (maxMemory / 1024)).split(" "));
+        System.out.println(commandList);
     }
 
     @Test
