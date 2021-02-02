@@ -42,38 +42,38 @@ export const JUDGE_STATUS = {
     rgb:'#ed3f14'
   },
   '2': {
-    name: 'Time Limit Exceeded',
-    short: 'TLE',
-    color: 'red',
-    type: 'error',
-    rgb:'#ed3f14'
-  },
-  '3': {
     name: 'Memory Limit Exceeded',
     short: 'MLE',
     color: 'red',
     type: 'error',
     rgb:'#ed3f14'
   },
-  '4': {
+  '3': {
     name: 'Runtime Error',
     short: 'RE',
     color: 'red',
     type: 'error',
     rgb:'#ed3f14'
   },
-  '5': {
+  '4': {
     name: 'System Error',
     short: 'SE',
     color: 'gray',
     type: 'info',
     rgb:'#909399'
   },
-  '6': {
+  '5': {
     name: 'Pending',
     color: 'yellow',
     type: 'warning',
     rgb:'#f90'
+  },
+  '6':{
+    name: 'Compiling',
+    short: 'CP',
+    color: 'green',
+    type: 'info',
+    rgb:'#25bb9b'
   },
   '7': {
     name: 'Judging',
@@ -97,14 +97,15 @@ export const JUDGE_STATUS = {
 }
 
 export const JUDGE_STATUS_RESERVE={
-  'pe':'-3',
-  'ce':'-2',
-  'wa':'-1',
-  'ac':'0',
-  'tle':'1',
-  'mle':'3',
-  're':'4',
-  'se':'5',
+  'pe':-3,
+  'ce':-2,
+  'wa':-1,
+  'ac':0,
+  'tle':1,
+  'mle':2,
+  're':3,
+  'se':4,
+  'Compiling':5,
   'Pending':6,
   'Judging':7
 }

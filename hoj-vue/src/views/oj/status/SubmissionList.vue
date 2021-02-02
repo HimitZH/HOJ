@@ -136,6 +136,7 @@
                   class="el-icon-loading"
                   v-if="
                     row.status == JUDGE_STATUS_RESERVE['Pending'] ||
+                      row.status == JUDGE_STATUS_RESERVE['Compiling'] ||
                       row.status == JUDGE_STATUS_RESERVE['Judging']
                   "
                 ></i>
@@ -349,6 +350,7 @@ export default {
           for (let v of data.records) {
             if (
               v.status == JUDGE_STATUS_RESERVE['Pending'] ||
+              v.status == JUDGE_STATUS_RESERVE['Compiling'] ||
               v.status == JUDGE_STATUS_RESERVE['Judging']
             ) {
               this.needCheckSubmitIds[v.submitId] = index;
@@ -400,6 +402,7 @@ export default {
 
               if (
                 result[submitId].status != JUDGE_STATUS_RESERVE['Pending'] &&
+                result[submitId].status != JUDGE_STATUS_RESERVE['Compiling'] &&
                 result[submitId].status != JUDGE_STATUS_RESERVE['Judging']
               ) {
                 delete this.needCheckSubmitIds[key];

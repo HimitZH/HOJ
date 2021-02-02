@@ -20,12 +20,12 @@ public class Constants {
         STATUS_COMPILE_ERROR(-2, "Compile Error"),
         STATUS_WRONG_ANSWER(-1, "Wrong Answer"),
         STATUS_ACCEPTED(0, "Accepted"),
-        STATUS_CPU_TIME_LIMIT_EXCEEDED(1, "CPU Time Limit Exceeded"),
-        STATUS_REAL_TIME_LIMIT_EXCEEDED(2, "Real Time Limit Exceeded"),
-        STATUS_MEMORY_LIMIT_EXCEEDED(3, "Memory Limit Exceeded"),
-        STATUS_RUNTIME_ERROR(4, "Runtime Error"),
-        STATUS_SYSTEM_ERROR(5, "System Error"),
-        STATUS_PENDING(6, "Pending"),
+        STATUS_TIME_LIMIT_EXCEEDED(1, "Time Limit Exceeded"),
+        STATUS_MEMORY_LIMIT_EXCEEDED(2, "Memory Limit Exceeded"),
+        STATUS_RUNTIME_ERROR(3, "Runtime Error"),
+        STATUS_SYSTEM_ERROR(4, "System Error"),
+        STATUS_PENDING(5, "Pending"),
+        STATUS_COMPILING(6, "Compiling"),
         STATUS_JUDGING(7, "Judging"),
         STATUS_PARTIAL_ACCEPTED(8, "Partial Accepted"),
         STATUS_SUBMITTING(9, "Submitting"),
@@ -58,59 +58,20 @@ public class Constants {
     }
 
 
-    public enum SandBoxStatus {
-        UNLIMITED(-1),
-        VERSION(0x020101),
+    public enum JudgeDir {
 
-        RESULT_SUCCESS (0),
-        RESULT_WRONG_ANSWER (-1),
-        RESULT_CPU_TIME_LIMIT_EXCEEDED (1),
-        RESULT_REAL_TIME_LIMIT_EXCEEDED (2),
-        RESULT_MEMORY_LIMIT_EXCEEDED (3),
-        RESULT_RUNTIME_ERROR (4),
-        RESULT_SYSTEM_ERROR (5),
-
-        ERROR_INVALID_CONFIG (-1),
-        ERROR_FORK_FAILED (-2),
-        ERROR_PTHREAD_FAILED (-3),
-        ERROR_WAIT_FAILED (-4),
-        ERROR_ROOT_REQUIRED (-5),
-        ERROR_LOAD_SECCOMP_FAILED (-6),
-        ERROR_SETRLIMIT_FAILED (-7),
-        ERROR_DUP2_FAILED (-8),
-        ERROR_SETUID_FAILED (-9),
-        ERROR_EXECVE_FAILED (-10),
-        ERROR_SPJ_ERROR (-11);
-
-        private Integer status;
-        SandBoxStatus(Integer status) {
-            this.status = status;
-        }
-
-        public Integer getStatus() {
-            return status;
-        }
-    }
-
-    public enum Compiler {
-
-        WORKPLACE("/judge/run"),
-
-        JUDGER_LIB_PATH("/usr/lib/judger/libjudger.so"),
-
-        COMPILE_LOG_PATH("/log/compiler.log"),
-
-        RUN_LOG_PATH("/log/judger.log"),
+        RUN_WORKPLACE_DIR("/judge/run"),
 
         TEST_CASE_DIR("/judge/test_case"),
 
-        SPJ_SRC_DIR("/judge/spj"),
+        SPJ_WORKPLACE_DIR("/judge/spj"),
 
-        SPJ_EXE_DIR("/judge/spj");
+        TMPFS_DIR("/w");
+
 
         private String content;
 
-        Compiler(String content) {
+        JudgeDir(String content) {
             this.content = content;
         }
 
@@ -119,36 +80,58 @@ public class Constants {
         }
     }
 
+    public static List<String> defaultEnv = Arrays.asList(
+            "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+            "LANG=en_US.UTF-8",
+            "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8");
+
+    public static List<String> python3Env = Arrays.asList("LANG=en_US.UTF-8",
+            "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8", "PYTHONIOENCODING=utf-8");
+
+
+    /*
+            {0} --> tmpfs_dir
+            {1} --> srcName
+            {2} --> exeName
+     */
     public enum CompileConfig {
-        C("main.c", "main", 3000L, 10000L, 256 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {0} -lm -o {1}"),
+        C("C", "main.c", "main", 3000L, 10000L, 256 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {1} -lm -o {2}", defaultEnv),
 
-        CPP("main.cpp", "main", 10000L, 20000L, 1024 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {0} -lm -o {1}"),
+        CPP("C++", "main.cpp", "main", 10000L, 20000L, 1024 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {1} -lm -o {2}", defaultEnv),
 
-        JAVA("Main.java", "Main", 5000L, 10000L, -1L, "/usr/bin/javac {0} -d {1} -encoding UTF8"),
+        JAVA("Java", "Main.java", "Main.class", 5000L, 10000L, 1024 * 1024 * 1024L, "/usr/bin/javac -d {0} -encoding utf8 ./{1}", defaultEnv),
 
-        PYTHON2("main.py", "main.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python -m py_compile {0}"),
+        PYTHON2("Python2", "main.py", "main.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python -m py_compile ./{1}", defaultEnv),
 
-        PYTHON3("main.py", "__pycache__/main.cpython-36.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python3 -m py_compile {0}"),
+        PYTHON3("Python3", "main.py", "__pycache__/main.cpython-36.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python3 -m py_compile ./{1}", defaultEnv),
 
-        SPJ_C("spj-{0}.c","spj-{0}",3000L,5000L,1024*1024*1024L,"/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c99 {0} -lm -o {1}"),
+        SPJ_C("SPJ-C", "spj.c", "spj", 3000L, 5000L, 1024 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c99 {1} -lm -o {2}", defaultEnv),
 
-        SPJ_CPP("spj-{0}.cpp","spj-{0}",10000L,20000L,1024*1024*1024L,"/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {0} -lm -o {1}");
+        SPJ_CPP("SPJ-C++", "spj.cpp", "spj", 10000L, 20000L, 1024 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {1} -lm -o {2}", defaultEnv);
 
-
+        private String language;
         private String srcName;
         private String exeName;
         private Long maxCpuTime;
         private Long maxRealTime;
         private Long maxMemory;
         private String command;
+        private List<String> envs;
 
-        CompileConfig(String srcName, String exeName, Long maxCpuTime, Long maxRealTime, Long maxMemory, String command) {
+        CompileConfig(String language, String srcName, String exeName, Long maxCpuTime, Long maxRealTime, Long maxMemory,
+                      String command, List<String> envs) {
+            this.language = language;
             this.srcName = srcName;
             this.exeName = exeName;
             this.maxCpuTime = maxCpuTime;
             this.maxRealTime = maxRealTime;
             this.maxMemory = maxMemory;
             this.command = command;
+            this.envs = envs;
+        }
+
+        public String getLanguage() {
+            return language;
         }
 
         public String getSrcName() {
@@ -174,60 +157,80 @@ public class Constants {
         public String getCommand() {
             return command;
         }
+
+        public List<String> getEnvs() {
+            return envs;
+        }
+
+        public static CompileConfig getCompilerByLanguage(String language) {
+            for (CompileConfig compileConfig : CompileConfig.values()) {
+                if (compileConfig.getLanguage().equals(language)) {
+                    return compileConfig;
+                }
+            }
+            return null;
+        }
     }
 
 
-    public static List<String> defaultEnv = Arrays.asList("LANG=en_US.UTF-8",
-            "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8");
-
-    public static List<String> python3Env = Arrays.asList("LANG=en_US.UTF-8",
-            "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8", "PYTHONIOENCODING=utf-8");
-
+    /*
+        {0} --> tmpfs_dir
+        {1} --> exeName
+        {2} --> The test case standard output file name of question
+ */
     public enum RunConfig {
-        C("{0}", "c_cpp", defaultEnv, 0),
+        C("C", "{0}/{1}", "main", defaultEnv),
 
-        CPP("{0}", "c_cpp", defaultEnv, 0),
+        CPP("C++", "{0}/{1}", "main", defaultEnv),
 
-        JAVA("/usr/bin/java -cp {1} -Djava.security.manager " +
-                "-Dfile.encoding=UTF-8 -Djava.security.policy==policy -Djava.awt.headless=true Main",
-                null, defaultEnv, 1),
+        JAVA("Java", "/usr/bin/java Main", "Main.class", defaultEnv),
 
-        PYTHON2("/usr/bin/python {0}", "general", defaultEnv, 0),
+        PYTHON2("Python2", "/usr/bin/python {1}", "main", defaultEnv),
 
 
-        PYTHON3("/usr/bin/python3 {0}", "general", python3Env, 0),
+        PYTHON3("Python3", "/usr/bin/python3 {1}", "main", python3Env),
 
-        SPJ_C("{0} {1} {2}","c_cpp",null,0),
+        SPJ_C("SPJ-C", "{0}/{1} {2}", "main", defaultEnv),
 
-        SPJ_CPP("{0} {1} {2}","c_cpp",null,0);
+        SPJ_CPP("SPJ-C++", "{0}/{1} {2}", "main", defaultEnv);
 
+        private String language;
         private String command;
-        private String seccompRule;
+        private String exeName;
         private List<String> envs;
-        private Integer memoryLimitCheckOnly;
 
-        RunConfig(String command, String seccompRule, List<String> envs, Integer memoryLimitCheckOnly) {
+        RunConfig(String language, String command, String exeName, List<String> envs) {
+            this.language = language;
             this.command = command;
-            this.seccompRule = seccompRule;
+            this.exeName = exeName;
             this.envs = envs;
-            this.memoryLimitCheckOnly = memoryLimitCheckOnly;
+        }
+
+        public String getLanguage() {
+            return language;
         }
 
         public String getCommand() {
             return command;
         }
 
-        public String getSeccompRule() {
-            return seccompRule;
+        public String getExeName() {
+            return exeName;
         }
 
         public List<String> getEnvs() {
             return envs;
         }
 
-        public Integer getMemoryLimitCheckOnly() {
-            return memoryLimitCheckOnly;
+        public static RunConfig getRunnerByLanguage(String language) {
+            for (RunConfig runConfig : RunConfig.values()) {
+                if (runConfig.getLanguage().equals(language)) {
+                    return runConfig;
+                }
+            }
+            return null;
         }
+
     }
 
 

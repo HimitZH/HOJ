@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.pojo.vo.ProblemVo;
@@ -47,7 +48,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     private ProblemCountServiceImpl problemCountService;
 
     @Override
-    public Page<ProblemVo> getProblemList(int limit, int currentPage, Long pid, String title, Integer difficulty,Long tid) {
+    public Page<ProblemVo> getProblemList(int limit, int currentPage, Long pid, String title, Integer difficulty, Long tid) {
 
         //新建分页
         Page<ProblemVo> page = new Page<>(currentPage, limit);
@@ -59,7 +60,11 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     @Transactional
     public boolean adminUpdateProblem(ProblemDto problemDto) {
         // 更新problem表
-        boolean problemUpdateResult = problemMapper.updateById(problemDto.getProblem()) == 1;
+        Problem problem = problemDto.getProblem();
+        if (!StringUtils.isEmpty(problem.getSpjLanguage())) { // 如果是特判题目，规格化特判语言 SPJ-C SPJ-C++
+            problem.setSpjLanguage("SPJ-" + problem.getSpjLanguage());
+        }
+        boolean problemUpdateResult = problemMapper.updateById(problem) == 1;
 
         // 后面许多表的更新或删除需要用到题目id
         long pid = problemDto.getProblem().getId();
@@ -195,7 +200,12 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     @Override
     @Transactional
     public boolean adminAddProblem(ProblemDto problemDto) {
-        boolean addProblemResult = problemMapper.insert(problemDto.getProblem()) == 1;
+
+        Problem problem = problemDto.getProblem();
+        if (!StringUtils.isEmpty(problem.getSpjLanguage())) { // 如果是特判题目，规格化特判语言 SPJ-C SPJ-C++
+            problem.setSpjLanguage("SPJ-" + problem.getSpjLanguage());
+        }
+        boolean addProblemResult = problemMapper.insert(problem) == 1;
         long pid = problemDto.getProblem().getId();
         // 为新的题目添加对应的language
         List<ProblemLanguage> problemLanguageList = new LinkedList<>();
@@ -223,7 +233,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         boolean initProblemCountResult = problemCountService.save(new ProblemCount().setPid(pid));
 
         if (addProblemResult && addCasesToProblemResult && addLangToProblemResult
-                && addTagsToProblemResult&&initProblemCountResult) {
+                && addTagsToProblemResult && initProblemCountResult) {
             return true;
         } else {
             return false;

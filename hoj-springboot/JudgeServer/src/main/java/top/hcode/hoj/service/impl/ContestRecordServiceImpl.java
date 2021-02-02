@@ -32,8 +32,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
     private static List<Integer> penaltyStatus = Arrays.asList(Constants.Judge.STATUS_PRESENTATION_ERROR.getStatus(),
             Constants.Judge.STATUS_WRONG_ANSWER.getStatus(),
-            Constants.Judge.STATUS_CPU_TIME_LIMIT_EXCEEDED.getStatus(),
-            Constants.Judge.STATUS_REAL_TIME_LIMIT_EXCEEDED.getStatus(),
+            Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus(),
             Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED.getStatus(),
             Constants.Judge.STATUS_RUNTIME_ERROR.getStatus());
 
