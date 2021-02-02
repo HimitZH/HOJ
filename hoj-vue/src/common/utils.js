@@ -7,8 +7,8 @@ import api from "@/common/api";
 function submissionMemoryFormat (memory) {
   if (memory === undefined || memory ===null || memory === '') return '--'
   // 1048576 = 1024 * 1024
-  let t = parseInt(memory) / 1048576
-  return String(t.toFixed(0)) + 'MB'
+  let t = parseInt(memory)
+  return String(t.toFixed(0)) + 'KB'
 }
 
 function submissionTimeFormat (time) {

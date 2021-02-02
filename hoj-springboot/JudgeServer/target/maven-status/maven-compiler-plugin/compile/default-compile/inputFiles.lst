@@ -1,4 +1,3 @@
-E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\judger\JudgePython2.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\dao\ContestRecordMapper.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\JudgeServerApplication.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\service\UserAcproblemService.java
@@ -9,6 +8,7 @@ E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\service
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\judger\SandboxRun.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\dao\JudgeCaseMapper.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\common\CommonResult.java
+E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\common\exception\SystemError.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\service\JudgeService.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\dao\UserRecordMapper.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\service\impl\UserRecordServiceImpl.java
@@ -16,17 +16,15 @@ E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\service
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\service\ProblemService.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\service\UserRecordService.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\service\impl\ProblemCountServiceImpl.java
-E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\judger\JudgeJava.java
+E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\common\exception\CompileError.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\service\impl\JudgeServiceImpl.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\controller\SystemConfigController.java
-E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\judger\JudgeC.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\judger\JudgeStrategy.java
-E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\judger\JudgeCPP.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\dao\ProblemCaseMapper.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\service\impl\ContestRecordServiceImpl.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\service\ContestRecordService.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\service\impl\ContestServiceImpl.java
-E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\judger\JudgePython3.java
+E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\common\exception\RuntimeError.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\util\IpUtils.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\dao\JudgeMapper.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\service\impl\ProblemServiceImpl.java
@@ -38,7 +36,6 @@ E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\dao\Use
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\service\impl\ProblemCaseServiceImpl.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\service\ProblemCaseService.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\config\MybatisPlusConfig.java
-E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\judger\JudgeContext.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\config\MyMetaObjectConfig.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\service\impl\JudgeCaseServiceImpl.java
 E:\code\Gitee\hoj\hoj-springboot\JudgeServer\src\main\java\top\hcode\hoj\controller\JudgeController.java

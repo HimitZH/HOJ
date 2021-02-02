@@ -300,9 +300,6 @@ public class JudgeController {
             }
             uid = userRolesVo.getUid();
         }
-        if (searchStatus != null && searchStatus == 2) { // 默认搜索cpu超时，真实时间超时都一起。
-            searchStatus = 1;
-        }
 
         IPage<JudgeVo> commonJudgeList = judgeService.getCommonJudgeList(limit, currentPage, searchPid,
                 searchStatus, searchUsername, uid);

@@ -104,10 +104,7 @@ public class ProblemCountServiceImpl extends ServiceImpl<ProblemCountMapper, Pro
             case STATUS_MEMORY_LIMIT_EXCEEDED:
                 newProblemCount.setMle(oldProblemCount.getMle() + 1);
                 break;
-            case STATUS_CPU_TIME_LIMIT_EXCEEDED:
-                newProblemCount.setTle(oldProblemCount.getTle() + 1);
-                break;
-            case STATUS_REAL_TIME_LIMIT_EXCEEDED:
+            case STATUS_TIME_LIMIT_EXCEEDED:
                 newProblemCount.setTle(oldProblemCount.getTle() + 1);
                 break;
             case STATUS_RUNTIME_ERROR:

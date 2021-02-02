@@ -248,12 +248,12 @@ export default {
     this.problemRecord = [
       { status: 0, count: 100 },
       { status: -1, count: 100 },
-      { status: 3, count: 100 },
       { status: 1, count: 100 },
-      { status: 4, count: 100 },
+      { status: 2, count: 100 },
+      { status: 3, count: 100 },
       { status: -3, count: 100 },
       { status: -2, count: 100 },
-      { status: 5, count: 100 },
+      { status: 4, count: 100 },
     ];
     this.init();
   },
@@ -314,12 +314,12 @@ export default {
         record = [
           { status: 0, count: this.getPercentage(problem.ac, problem.total) },
           { status: -1, count: this.getPercentage(problem.wa, problem.total) },
-          { status: 3, count: this.getPercentage(problem.mle, problem.total) },
           { status: 1, count: this.getPercentage(problem.tle, problem.total) },
-          { status: 4, count: this.getPercentage(problem.re, problem.total) },
+          { status: 2, count: this.getPercentage(problem.mle, problem.total) },
+          { status: 3, count: this.getPercentage(problem.re, problem.total) },
           { status: -3, count: this.getPercentage(problem.pe, problem.total) },
           { status: -2, count: this.getPercentage(problem.ce, problem.total) },
-          { status: 5, count: this.getPercentage(problem.se, problem.total) },
+          { status: 4, count: this.getPercentage(problem.se, problem.total) },
         ];
       } else {
         // OI类型题目

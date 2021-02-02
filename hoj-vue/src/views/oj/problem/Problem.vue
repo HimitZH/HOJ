@@ -483,6 +483,8 @@ export default {
                 res.data.data.submission.status !=
                   JUDGE_STATUS_RESERVE['Pending'] &&
                 res.data.data.submission.status !=
+                  JUDGE_STATUS_RESERVE['Compiling'] &&
+                res.data.data.submission.status !=
                   JUDGE_STATUS_RESERVE['Judging']
               ) {
                 this.submitting = false;

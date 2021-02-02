@@ -1,5 +1,7 @@
 package top.hcode.hoj.utils;
 
+import com.sun.org.apache.xpath.internal.objects.XNull;
+
 /**
  * @Author: Himit_ZH
  * @Date: 2021/1/1 13:00
@@ -16,16 +18,16 @@ public class Constants {
         STATUS_COMPILE_ERROR(-2, "Compile Error", "ce"),
         STATUS_WRONG_ANSWER(-1, "Wrong Answer", "wa"),
         STATUS_ACCEPTED(0, "Accepted", "ac"),
-        STATUS_CPU_TIME_LIMIT_EXCEEDED(1, "CPU Time Limit Exceeded", "tle"),
-        STATUS_REAL_TIME_LIMIT_EXCEEDED(2, "Real Time Limit Exceeded", "tle"),
-        STATUS_MEMORY_LIMIT_EXCEEDED(3, "Memory Limit Exceeded", "mle"),
-        STATUS_RUNTIME_ERROR(4, "Runtime Error", "re"),
-        STATUS_SYSTEM_ERROR(5, "System Error", "se"),
-        STATUS_PENDING(6, "Pending", null),
+        STATUS_LIMIT_EXCEEDED(1, "Time Limit Exceeded", "tle"),
+        STATUS_MEMORY_LIMIT_EXCEEDED(2, "Memory Limit Exceeded", "mle"),
+        STATUS_RUNTIME_ERROR(3, "Runtime Error", "re"),
+        STATUS_SYSTEM_ERROR(4, "System Error", "se"),
+        STATUS_PENDING(5, "Pending", null),
+        STATUS_COMPILING(6, "Compiling",null),
         STATUS_JUDGING(7, "Judging", null),
         STATUS_PARTIAL_ACCEPTED(8, "Partial Accepted", "pa"),
-        STATUS_SUBMITTING(9, "Submitting", null);
-
+        STATUS_SUBMITTING(9, "Submitting", null),
+        STATUS_NULL(10, "No Status",null);
 
         private Judge(Integer status, String name, String columnName) {
             this.status = status;

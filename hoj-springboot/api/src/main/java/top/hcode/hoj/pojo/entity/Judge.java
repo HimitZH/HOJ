@@ -55,7 +55,7 @@ public class Judge implements Serializable {
     @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Integer time;
 
-    @ApiModelProperty(value = "运行内存(b)")
+    @ApiModelProperty(value = "运行内存(kb)")
     @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Integer memory;
 
