@@ -39,10 +39,15 @@
                 >
               </div>
               <div class="question-intr">
-                <span>Time Limit：{{ problemData.problem.timeLimit }}MS</span
+                <span
+                  >Time Limit：C/C++
+                  {{ problemData.problem.timeLimit }}MS，Other
+                  {{ problemData.problem.timeLimit * 2 }}MS</span
                 ><br />
                 <span
-                  >Memory Limit：{{ problemData.problem.memoryLimit }}MB</span
+                  >Memory Limit：C/C++
+                  {{ problemData.problem.memoryLimit }}MB，Other
+                  {{ problemData.problem.memoryLimit * 2 }}MB</span
                 ><br />
                 <span
                   >Level：{{

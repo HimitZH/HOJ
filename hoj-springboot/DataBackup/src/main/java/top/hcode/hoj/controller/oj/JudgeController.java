@@ -52,7 +52,7 @@ public class JudgeController {
     private JudgeMapper judgeMapper;
 
     @Autowired
-    private JudgeCaseMapper judgeCaseMapper;
+    private JudgeCaseServiceImpl judgeCaseService;
 
     @Autowired
     private ProblemService problemService;
@@ -238,6 +238,12 @@ public class JudgeController {
 
         Problem problem = problemService.getById(judge.getPid());
         HashMap<String, Object> result = new HashMap<>();
+
+        // 只允许用户查看ce错误和se错误信息提示
+        if (judge.getStatus().intValue() != Constants.Judge.STATUS_COMPILE_ERROR.getStatus() &&
+                judge.getStatus().intValue() != Constants.Judge.STATUS_SYSTEM_ERROR.getStatus()) {
+            judge.setErrorMessage("");
+        }
         result.put("submission", judge);
         result.put("codeShare", problem.getCodeShare());
 
@@ -335,29 +341,36 @@ public class JudgeController {
     /**
      * @MethodName getJudgeCase
      * @Params * @param null
-     * @Description 获得指定提交id的测试样例，前提是不能为比赛期间的题目！
+     * @Description 获得指定提交id的测试样例结果，暂不支持查看测试数据，只可看测试点结果，时间，空间，或者IO得分
      * @Return
      * @Since 2020/10/29
      */
-    @GetMapping("/get-judge-case")
-    public CommonResult getJudgeCase(@RequestParam(value = "submitId", required = true) Long submitId,
-                                     @RequestParam(value = "pid", required = true) Long pid) {
+    @GetMapping("/get-all-case-result")
+    @RequiresAuthentication
+    public CommonResult getALLCaseResult(@RequestParam(value = "submitId", required = true) Long submitId) {
 
+        Judge judge = judgeService.getById(submitId);
 
-        // 如果该题目是还属于比赛期间的题目，则禁止查看测试样例！
-        Problem problem = problemService.getById(pid);
+        Problem problem = problemService.getById(judge.getPid());
 
-        if (problem.getAuth() == 3) { // 3为比赛期间的题目
-            return CommonResult.errorResponse("对不起，该题测试样例不能查看！", CommonResult.STATUS_ACCESS_DENIED);
+        // 如果该题不支持开放测试点结果查看
+        if (!problem.getOpenCaseResult()) {
+            return CommonResult.successResponse(null,"对不起，该题测试样例详情不支持开放！");
+        }
+
+        // 若是比赛题目，只支持IO查看测试点情况，ACM强制禁止查看
+        if (problem.getAuth() == 3 && problem.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) {
+            return CommonResult.successResponse(null,"对不起，该题测试样例详情不能查看！");
         }
 
 
         QueryWrapper<JudgeCase> wrapper = new QueryWrapper<JudgeCase>().eq("submit_id", submitId).orderByAsc("case_id");
 
-        List<JudgeCase> judgeCaseList = judgeCaseMapper.selectList(wrapper);
+        // 当前所有测试点并未记录输出输出数据，暂时只支持 空间 时间 状态码 IO得分查看而已
+        List<JudgeCase> judgeCaseList = judgeCaseService.list(wrapper);
 
         if (judgeCaseList.size() == 0) { // 未查询到一条数据
-            return CommonResult.successResponse("暂无数据");
+            return CommonResult.successResponse(null,"暂无数据");
         } else {
             return CommonResult.successResponse(judgeCaseList, "获取成功");
         }

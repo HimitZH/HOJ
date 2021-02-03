@@ -450,6 +450,25 @@
             v-model="problem.source"
           ></el-input>
         </el-form-item>
+
+        <el-form-item label="Auto Remove the Blank at the End of Code">
+          <el-switch
+            v-model="problem.isRemoveEndBlank"
+            active-text=""
+            inactive-text=""
+          >
+          </el-switch>
+        </el-form-item>
+
+        <el-form-item label="Publish the Judging Result of Test Data">
+          <el-switch
+            v-model="problem.openCaseResult"
+            active-text=""
+            inactive-text=""
+          >
+          </el-switch>
+        </el-form-item>
+
         <el-button type="primary" @click.native="submit()" size="small"
           >Save</el-button
         >

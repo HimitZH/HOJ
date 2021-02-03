@@ -83,6 +83,12 @@ public class Problem implements Serializable {
     @ApiModelProperty(value = "特判程序的语言")
     private String spjLanguage;
 
+    @ApiModelProperty(value = "是否默认去除用户代码的文末空格")
+    private Boolean isRemoveEndBlank;
+
+    @ApiModelProperty(value = "是否默认开启该题目的测试样例结果查看")
+    private Boolean openCaseResult;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 

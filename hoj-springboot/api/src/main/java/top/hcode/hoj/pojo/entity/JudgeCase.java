@@ -30,39 +30,46 @@ public class JudgeCase implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "submit_id", type = IdType.ID_WORKER)
-    private Long submitId;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
 
-    private String uid;
-
+    @ApiModelProperty(value = "题目id")
     private Long pid;
 
-    @ApiModelProperty(value = "具体看结果码")
-    private Integer status;
+    @ApiModelProperty(value = "判题id")
+    private Long submitId;
 
-    @ApiModelProperty(value = "运行时间")
-    private Integer time;
-
-    @ApiModelProperty(value = "运行内存")
-    private Integer memory;
+    @ApiModelProperty(value = "用户id")
+    private String uid;
 
     @ApiModelProperty(value = "测试样例id")
     private Long caseId;
 
-    @ApiModelProperty(value = "样例输入，比赛不可看")
+    @ApiModelProperty(value = "测试该样例所用时间ms")
+    private Integer time;
+
+    @ApiModelProperty(value = "测试该样例所用空间KB")
+    private Integer memory;
+
+    @ApiModelProperty(value = "IO得分")
+    private Integer score;
+
+    @ApiModelProperty(value = "测试该样例结果状态码")
+    private Integer status;
+
+    @ApiModelProperty(value = "样例输入，比赛不可看,暂不记录")
     private String inputData;
 
-    @ApiModelProperty(value = "样例输出，比赛不可看")
+    @ApiModelProperty(value = "样例输出，比赛不可看，暂不记录")
     private String outputData;
 
-    @ApiModelProperty(value = "用户样例输出，比赛不可看")
-    private Blob userOutput;
+    @ApiModelProperty(value = "用户样例输出，比赛不可看，暂不记录")
+    private String userOutput;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date gmtModified;
-
 
 }

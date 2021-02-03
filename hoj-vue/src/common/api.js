@@ -243,6 +243,16 @@ const ojApi = {
       }
     })
   },
+
+  // 获取单个提交的全部测试点详情
+  getAllCaseResult (submitId) {
+    return ajax('/api/get-all-case-result', 'get', {
+      params: {
+        submitId,
+      }
+    })
+  },
+
   // 更新提交详情
   updateSubmission(data){
     return ajax('/api/submission', 'put', {

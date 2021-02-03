@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.util.Constants;
 
-import java.lang.ref.PhantomReference;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -67,11 +67,11 @@ public class SandboxRun {
 
     public static final HashMap<String, Integer> RESULT_MAP_STATUS = new HashMap<>();
 
-    private static final int maxProcessNumber = 32;
+    private static final int maxProcessNumber = 64;
 
-    private static final int TIME_LIMIT_MS = 16000;
+    private static final int TIME_LIMIT_MS = 8000;
 
-    private static final int MEMORY_LIMIT_MB = 1024;
+    private static final int MEMORY_LIMIT_MB = 512;
 
     private static final int STACK_LIMIT_MB = 128;
 
@@ -81,8 +81,8 @@ public class SandboxRun {
 
     static {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(10000);
-        requestFactory.setReadTimeout(10000);
+        requestFactory.setConnectTimeout(20000);
+        requestFactory.setReadTimeout(20000);
         restTemplate = new RestTemplate(requestFactory);
     }
 
@@ -97,6 +97,40 @@ public class SandboxRun {
         RESULT_MAP_STATUS.put("Signalled", Constants.Judge.STATUS_RUNTIME_ERROR.getStatus());
     }
 
+    public static final List<String> signals = Arrays.asList(
+            "", // 0
+            "Hangup", // 1
+            "Interrupt", // 2
+            "Quit", // 3
+            "Illegal instruction", // 4
+            "Trace/breakpoint trap", // 5
+            "Aborted", // 6
+            "Bus error", // 7
+            "Floating point exception", // 8
+            "Killed", // 9
+            "User defined signal 1", // 10
+            "Segmentation fault", // 11
+            "User defined signal 2", // 12
+            "Broken pipe", // 13
+            "Alarm clock", // 14
+            "Terminated", // 15
+            "Stack fault", // 16
+            "Child exited", // 17
+            "Continued", // 18
+            "Stopped (signal)", // 19
+            "Stopped", // 20
+            "Stopped (tty input)", // 21
+            "Stopped (tty output)", // 22
+            "Urgent I/O condition", // 23
+            "CPU time limit exceeded", // 24
+            "File size limit exceeded", // 25
+            "Virtual timer expired", // 26
+            "Profiling timer expired", // 27
+            "Window changed", // 28
+            "I/O possible", // 29
+            "Power failure", // 30
+            "Bad system call" // 31
+    );
     public JSONArray run(String uri, JSONObject param) throws SystemError {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -144,18 +178,18 @@ public class SandboxRun {
 
         JSONObject stdout = new JSONObject();
         stdout.set("name", "stdout");
-        stdout.set("max", 1024 * 1024 * 32);
+        stdout.set("max", 1024 * 1024 * 16);
 
         JSONObject stderr = new JSONObject();
         stderr.set("name", "stderr");
-        stderr.set("max", 1024 * 1024 * 32);
+        stderr.set("max", 1024 * 1024 * 16);
         COMPILE_FILES.put(content);
         COMPILE_FILES.put(stdout);
         COMPILE_FILES.put(stderr);
     }
 
-    public static JSONArray compile(Long maxCpuTime,Long maxRealTime,Long maxMemory, Long maxStack,String srcName, String exeName,
-                                    List<String> args,List<String> envs, String code, Boolean needCopyOutCached,
+    public static JSONArray compile(Long maxCpuTime, Long maxRealTime, Long maxMemory, Long maxStack, String srcName, String exeName,
+                                    List<String> args, List<String> envs, String code, Boolean needCopyOutCached,
                                     Boolean needCopyOutExe, String copyOutDir) throws SystemError {
         JSONObject cmd = new JSONObject();
         cmd.set("args", args);
@@ -163,7 +197,7 @@ public class SandboxRun {
         cmd.set("files", COMPILE_FILES);
         // ms-->ns
         cmd.set("cpuLimit", maxCpuTime * 1000 * 1000L);
-        cmd.set("realCpuLimit", maxRealTime * 1000 * 1000L);
+        cmd.set("clockLimit", maxRealTime * 1000 * 1000L);
         // byte
         cmd.set("memoryLimit", maxMemory);
         cmd.set("procLimit", maxProcessNumber);
@@ -189,12 +223,14 @@ public class SandboxRun {
         param.set("cmd", new JSONArray().put(cmd));
 
         JSONArray result = instance.run("/run", param);
+        JSONObject tmp = (JSONObject)result.get(0);
+        ((JSONObject)result.get(0)).set("status",RESULT_MAP_STATUS.get(tmp.getStr("status")));
 
         return result;
     }
 
 
-    public static JSONArray testCase(List<String> args, List<String> envs, String testCasePath,
+    public static JSONArray testCase(List<String> args, List<String> envs, String testCasePath, Long maxTime, Long maxOutputSize,
                                      String exeName, String fileId) throws SystemError {
         JSONObject cmd = new JSONObject();
         cmd.set("args", args);
@@ -206,11 +242,11 @@ public class SandboxRun {
 
         JSONObject stdout = new JSONObject();
         stdout.set("name", "stdout");
-        stdout.set("max", 1024 * 1024 * 32);
+        stdout.set("max", maxOutputSize);
 
         JSONObject stderr = new JSONObject();
         stderr.set("name", "stderr");
-        stderr.set("max", 1024 * 1024 * 32);
+        stderr.set("max", 1024 * 1024 * 16);
         files.put(content);
         files.put(stdout);
         files.put(stderr);
@@ -218,8 +254,8 @@ public class SandboxRun {
         cmd.set("files", files);
 
         // ms-->ns
-        cmd.set("cpuLimit", TIME_LIMIT_MS * 1000 * 1000L);
-        cmd.set("realCpuLimit", TIME_LIMIT_MS * 1000 * 1000L * 3);
+        cmd.set("cpuLimit", maxTime * 1000 * 1000L);
+        cmd.set("clockLimit", maxTime * 1000 * 1000L * 3);
         // byte
         cmd.set("memoryLimit", MEMORY_LIMIT_MB * 1024 * 1024L);
         cmd.set("procLimit", maxProcessNumber);
@@ -238,36 +274,16 @@ public class SandboxRun {
 
         // 调用判题安全沙箱
         JSONArray result = instance.run("/run", param);
+
+        JSONObject tmp = (JSONObject)result.get(0);
+        ((JSONObject)result.get(0)).set("status",RESULT_MAP_STATUS.get(tmp.getStr("status")));
+
         return result;
     }
 
 
-    private static final JSONArray pipeMapping = new JSONArray();
-
-    /*
-        "pipeMapping": [{
-            "in" : {"index": 0, "fd": 1 },
-            "out" : {"index": 1, "fd" : 0 }
-        }]
-     */
-    static {
-        JSONObject in = new JSONObject();
-        in.set("index", 0);
-        in.set("fd", 1);
-
-        JSONObject out = new JSONObject();
-        in.set("index", 1);
-        in.set("fd", 0);
-
-        JSONObject pipe = new JSONObject();
-        pipe.set("in", in);
-        pipe.set("out", out);
-
-        pipeMapping.put(pipe);
-    }
-
     public static JSONArray spjTestCase(List<String> args, List<String> envs, String userExeName, String userFileId,
-                                        String testCasePath, String spjExeSrc, String spjExeName
+                                        String testCasePath, Long maxTime, Long maxOutputSize, String spjExeSrc, String spjExeName
     ) throws SystemError {
 
         /**
@@ -285,7 +301,7 @@ public class SandboxRun {
 
         JSONObject stderr = new JSONObject();
         stderr.set("name", "stderr");
-        stderr.set("max", 1024 * 1024 * 32);
+        stderr.set("max", 1024 * 1024 * 16);
         files.put(content);
         files.put(null);
         files.put(stderr);
@@ -293,11 +309,11 @@ public class SandboxRun {
         pipeInputCmd.set("files", files);
 
         // ms-->ns
-        pipeInputCmd.set("cpuLimit", TIME_LIMIT_MS * 1000 * 1000L);
-        pipeInputCmd.set("realCpuLimit", TIME_LIMIT_MS * 1000 * 1000L * 3);
+        pipeInputCmd.set("cpuLimit", maxTime * 1000 * 1000L);
+        pipeInputCmd.set("realCpuLimit", maxTime * 1000 * 1000L * 3);
         // byte
         pipeInputCmd.set("memoryLimit", MEMORY_LIMIT_MB * 1024 * 1024L);
-        pipeInputCmd.set("procLimit", maxProcessNumber);
+        pipeInputCmd.set("clockLimit", maxProcessNumber);
         pipeInputCmd.set("stackLimit", STACK_LIMIT_MB * 1024 * 1024L);
 
         JSONObject exeFile = new JSONObject();
@@ -318,11 +334,11 @@ public class SandboxRun {
 
         JSONObject outStdout = new JSONObject();
         outStdout.set("name", "stdout");
-        outStdout.set("max", 1024 * 1024 * 32);
+        outStdout.set("max", 1024 * 1024 * 16);
 
         JSONObject outStderr = new JSONObject();
         outStderr.set("name", "stderr");
-        outStderr.set("max", 1024 * 1024 * 32);
+        outStderr.set("max", 1024 * 1024 * 16);
         outFiles.put(null);
         outFiles.put(outStdout);
         outFiles.put(outStderr);
@@ -331,7 +347,7 @@ public class SandboxRun {
 
         // ms-->ns
         pipeOutputCmd.set("cpuLimit", TIME_LIMIT_MS * 1000 * 1000L);
-        pipeOutputCmd.set("realCpuLimit", TIME_LIMIT_MS * 1000 * 1000L * 3);
+        pipeOutputCmd.set("clockLimit", TIME_LIMIT_MS * 1000 * 1000L * 3);
         // byte
         pipeOutputCmd.set("memoryLimit", MEMORY_LIMIT_MB * 1024 * 1024L);
         pipeOutputCmd.set("procLimit", maxProcessNumber);
@@ -354,11 +370,29 @@ public class SandboxRun {
         param.set("cmd", cmdList);
 
         // 添加管道隐射管道映射
+        JSONArray pipeMapping = new JSONArray();
+
+        JSONObject in = new JSONObject();
+        in.set("index", 0);
+        in.set("fd", 1);
+        in.set("max", maxOutputSize);
+
+        JSONObject out = new JSONObject();
+        in.set("index", 1);
+        in.set("fd", 0);
+
+        JSONObject pipe = new JSONObject();
+        pipe.set("in", in);
+        pipe.set("out", out);
+
+        pipeMapping.put(pipe);
         param.set("pipeMapping", pipeMapping);
 
         // 调用判题安全沙箱
         JSONArray result = instance.run("/run", param);
 
+        JSONObject tmp = (JSONObject)result.get(0);
+        ((JSONObject)result.get(0)).set("status",RESULT_MAP_STATUS.get(tmp.getStr("status")));
         return result;
     }
 

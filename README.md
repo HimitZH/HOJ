@@ -24,6 +24,7 @@
 | 2021-01-16 | 比赛首页，比赛题目列表，比赛题目详情等接口对接完毕，定时爬取其它oj比赛及rating分完成 | Himit_ZH、Howie |
 | 2021-01-19 | 比赛排行榜，比赛题目对应提交重判，比赛AC助手完成             | Himit_ZH        |
 | 2021-02-02 | 正式加入安全沙箱，判题机服务器                               | Himit_ZH        |
+| 2021-02-04 | 完善判题机制，加入pe可选择性判断，加入测试点可选择性公开     | Himit_ZH        |
 
 # 二、系统架构
 
@@ -210,6 +211,8 @@ problem表
 | code_share | boolean | | 该题目对应的相关提交代码，用户是否可用分享 |
 | spj_code | String | | 特判程序代码 空代表非特判 |
 | spj_language | String | | 特判程序的语言 |
+| isRemoveEndBlank | boolean | | 是否默认去除用户代码的文末空格 |
+| openCaseResult | boolean | | 是否默认开启该题目的测试样例结果查看 |
 | gmt_create   | datetime     |             | 创建时间                                    |
 | gmt_modified | datetime     |             | 修改时间                                    |
 

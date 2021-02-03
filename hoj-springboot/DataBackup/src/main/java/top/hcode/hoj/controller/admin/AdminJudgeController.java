@@ -12,15 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.ContestRecord;
-import top.hcode.hoj.pojo.entity.Judge;
-import top.hcode.hoj.pojo.entity.ProblemCount;
-import top.hcode.hoj.pojo.entity.UserAcproblem;
+import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.service.ToJudgeService;
-import top.hcode.hoj.service.impl.ContestRecordServiceImpl;
-import top.hcode.hoj.service.impl.JudgeServiceImpl;
-import top.hcode.hoj.service.impl.ProblemCountServiceImpl;
-import top.hcode.hoj.service.impl.UserAcproblemServiceImpl;
+import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.utils.Constants;
 
 import java.util.LinkedList;
@@ -53,6 +47,9 @@ public class AdminJudgeController {
     @Autowired
     private ContestRecordServiceImpl contestRecordService;
 
+    @Autowired
+    private JudgeCaseServiceImpl judgeCaseService;
+
     @GetMapping("/rejudge")
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
     public CommonResult rejudge(@RequestParam("submitId") Long submitId) {
@@ -77,6 +74,11 @@ public class AdminJudgeController {
                 userAcproblemService.remove(userAcproblemQueryWrapper);
             }
         }
+
+        // 清除该提交对应的测试点结果
+        QueryWrapper<JudgeCase> judgeCaseQueryWrapper = new QueryWrapper<>();
+        judgeCaseQueryWrapper.eq("submit_id", submitId);
+        judgeCaseService.remove(judgeCaseQueryWrapper);
 
         // 设置默认值
         judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus()); // 开始进入判题队列
@@ -111,6 +113,10 @@ public class AdminJudgeController {
             submitIdList.add(judge.getSubmitId());
         }
         boolean resetJudgeResult = judgeService.updateBatchById(rejudgeList);
+        // 清除每个提交对应的测试点结果
+        QueryWrapper<JudgeCase> judgeCaseQueryWrapper = new QueryWrapper<>();
+        judgeCaseQueryWrapper.in("submit_id", submitIdList);
+        judgeCaseService.remove(judgeCaseQueryWrapper);
         // 将对应比赛记录设置成默认值
         UpdateWrapper<ContestRecord> updateWrapper = new UpdateWrapper<>();
         updateWrapper.in("submit_id", submitIdList).setSql("status=null,score=null");

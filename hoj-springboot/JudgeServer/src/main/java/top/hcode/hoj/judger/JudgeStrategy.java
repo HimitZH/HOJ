@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.CompileError;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.pojo.entity.Judge;
+import top.hcode.hoj.pojo.entity.JudgeCase;
 import top.hcode.hoj.pojo.entity.Problem;
 import top.hcode.hoj.pojo.entity.ProblemCase;
 import top.hcode.hoj.service.impl.JudgeCaseServiceImpl;
@@ -25,6 +26,7 @@ import top.hcode.hoj.service.impl.JudgeServiceImpl;
 import top.hcode.hoj.service.impl.ProblemCaseServiceImpl;
 import top.hcode.hoj.util.Constants;
 
+import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.*;
@@ -66,6 +68,9 @@ public class JudgeStrategy {
     @Autowired
     private ProblemCaseServiceImpl problemCaseService;
 
+    @Autowired
+    private JudgeCaseServiceImpl judgeCaseService;
+
 
     public void init(Problem problem, Judge judge) {
         this.testCasesDir = Constants.JudgeDir.TEST_CASE_DIR.getContent() + "/problem_" + problem.getId();
@@ -84,11 +89,12 @@ public class JudgeStrategy {
 
         HashMap<String, Object> result = new HashMap<>();
         String userFileId = null;
+
         try {
-            // 加载测试数据
-            this.testCasesInfo = loadTestCaseInfo(problem.getId(), !StringUtils.isEmpty(problem.getSpjCode()));
             // 对用户源代码进行编译 获取tmpfs中的fileId
             userFileId = compile();
+            // 加载测试数据
+            this.testCasesInfo = loadTestCaseInfo(problem.getId(), !StringUtils.isEmpty(problem.getSpjCode()));
             // 检查是否为spj，同时是否有spj编译完成的文件，若不存在，就先编译生成该spj文件。
             Boolean hasSpjOrNotSpj = checkOrCompileSpj(problem);
             // 如果该题为spj，但是没有spj程序
@@ -105,16 +111,17 @@ public class JudgeStrategy {
             judgeService.saveOrUpdate(judge);
 
             // 开始测试每个测试点
-            List<JSONObject> allCaseResultList = judgeAllCase(userFileId, problem.getTimeLimit() * 1L, problem.getMemoryLimit() * 1024L,
-                    runConfig.getExeName(), false);
+            List<JSONObject> allCaseResultList = judgeAllCase(userFileId, problem.getTimeLimit() * 1L,
+                    problem.getMemoryLimit() * 1024L,
+                    runConfig.getExeName(), false, problem.getIsRemoveEndBlank());
 
             // 对全部测试点结果进行评判,获取最终评判结果
-            HashMap<String, Object> judgeInfo = getJudgeInfo(allCaseResultList, problem.getType() == Constants.Contest.TYPE_ACM.getCode());
+            HashMap<String, Object> judgeInfo = getJudgeInfo(allCaseResultList, problem, judge);
 
             return judgeInfo;
         } catch (SystemError systemError) {
             result.put("code", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
-            result.put("errMsg", "stdout:" + systemError.getStdout() + "\nerror:" + systemError.getStderr());
+            result.put("errMsg", "Oops, something has gone wrong with the judger. Please report this to administrator.");
             result.put("time", 0L);
             result.put("memory", 0L);
             log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生系统性的异常------------------->{}",
@@ -126,7 +133,7 @@ public class JudgeStrategy {
             result.put("memory", 0L);
         } catch (Exception e) {
             result.put("code", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
-            result.put("errMsg", e.getMessage());
+            result.put("errMsg", "Oops, something has gone wrong with the judger. Please report this to administrator.");
             result.put("time", 0L);
             result.put("memory", 0L);
             log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生系统性的异常-------------------->{}", e.getMessage());
@@ -177,7 +184,7 @@ public class JudgeStrategy {
                 null
         );
         JSONObject compileResult = (JSONObject) result.get(0);
-        if (SandboxRun.RESULT_MAP_STATUS.get(compileResult.get("status")).intValue() != Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+        if (compileResult.getInt("status") != Constants.Judge.STATUS_ACCEPTED.getStatus()) {
             throw new CompileError("Compile Error.", ((JSONObject) compileResult.get("files")).getStr("stderr"), ((JSONObject) compileResult.get("files")).getStr("stderr"));
         }
 
@@ -209,7 +216,7 @@ public class JudgeStrategy {
                 Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + "/" + pid
         );
         JSONObject compileResult = (JSONObject) res.get(0);
-        if (SandboxRun.RESULT_MAP_STATUS.get(compileResult.get("status")).intValue() != Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+        if (compileResult.getInt("status") != Constants.Judge.STATUS_ACCEPTED.getStatus()) {
             throw new SystemError("Special Judge Code Compile Error.", ((JSONObject) compileResult.get("files")).getStr("stderr"),
                     ((JSONObject) compileResult.get("files")).getStr("stderr"));
         }
@@ -231,7 +238,7 @@ public class JudgeStrategy {
 
 
     public JSONObject spjJudgeOneCase(String userFileId, Integer testCaseId, String runDir, String testCaseInputFilePath,
-                                      String testCaseOutputFilePath, Long maxTime, Long maxMemory, String userExeName,
+                                      String testCaseOutputFilePath, Long maxTime, Long maxMemory, Long maxOutputSize, String userExeName,
                                       String spjExeName, Boolean getUserOutput) throws SystemError {
 
         // 对于当前测试样例，用户程序的输出对应生成的文件（正常就输出数据，错误就是输出错误信息）
@@ -245,6 +252,8 @@ public class JudgeStrategy {
                 userExeName,
                 userFileId,
                 testCaseInputFilePath,
+                maxTime,
+                maxOutputSize,
                 spjExeSrc,
                 spjExeName);
 
@@ -264,10 +273,12 @@ public class JudgeStrategy {
         long memory = userJudgeResult.getLong("memory") / 1024;
         // 获取用户程序运行时间 ns->ms
         long time = userJudgeResult.getLong("time") / 1000000;
-
+        // 用户程序的退出状态码
+        int userExitCode = userJudgeResult.getInt("exitStatus");
+        // 记录错误信息
+        StringBuffer errMsg = new StringBuffer();
         // 如果用户提交的代码运行无误
-        if (SandboxRun.RESULT_MAP_STATUS.get(userJudgeResult.get("status")).intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
-
+        if (userJudgeResult.getInt("status") == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
             // 如果运行超过题目限制时间，直接TLE
             if (time >= maxTime) {
                 result.set("status", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus());
@@ -283,11 +294,21 @@ public class JudgeStrategy {
                     throw new SystemError(spjErrOut, spjStdOut, spjErrOut);
                 }
             }
-        } else { // 其它情况根据用户程序的映射关系进行错误判断
-            result.set("status", SandboxRun.RESULT_MAP_STATUS.get(userJudgeResult.get("status")));
+        } else if (userJudgeResult.getInt("status") == Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus()) {
+            result.set("status", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus());
+        } else if (userExitCode != 0) {
+            if (userExitCode < 32) {
+                result.set("status", Constants.Judge.STATUS_RUNTIME_ERROR.getStatus());
+                errMsg.append(String.format("ExitCode: %s (%s)\n", userExitCode, SandboxRun.signals.get(userExitCode)));
+            } else {
+                errMsg.append(String.format("ExitCode: %s\n", userExitCode));
+            }
             String err = ((JSONObject) userJudgeResult.get("files")).getStr("stderr", null);
-            result.set("errMsg", err);
+            errMsg.append(err);
+            result.set("errMsg", errMsg.toString());
             fileWriter.write(err);
+        } else {
+            result.set("status", userJudgeResult.getInt("status"));
         }
         // kb
         result.set("memory", memory);
@@ -302,12 +323,14 @@ public class JudgeStrategy {
     }
 
     public JSONObject judgeOneCase(String userFileId, Integer testCaseId, String runDir, String testCasePath, Long maxTime,
-                                   Long maxMemory, Boolean getUserOutput) throws SystemError {
+                                   Long maxMemory, Long maxOutputSize, Boolean getUserOutput, Boolean isRemoveEOFBlank) throws SystemError {
 
         // 调用安全沙箱使用测试点对程序进行测试
         JSONArray judgeResultList = SandboxRun.testCase(parseRunCommand(runConfig.getCommand(), runConfig, null),
                 runConfig.getEnvs(),
                 testCasePath,
+                maxTime,
+                maxOutputSize,
                 runConfig.getExeName(),
                 userFileId);
 
@@ -319,12 +342,16 @@ public class JudgeStrategy {
         String userStdOut = ((JSONObject) judgeResult.get("files")).getStr("stdout");
         String userErrOut = ((JSONObject) judgeResult.get("files")).getStr("stderr");
 
+        StringBuffer errMsg = new StringBuffer();
+
         // 获取程序运行内存 b-->kb
         long memory = judgeResult.getLong("memory") / 1024;
         // 获取程序运行时间 ns->ms
         long time = judgeResult.getLong("time") / 1000000;
+        // 异常退出的状态码
+        int exitCode = judgeResult.getInt("exitStatus");
         // 如果测试跑题无异常
-        if (SandboxRun.RESULT_MAP_STATUS.get(judgeResult.get("status")).intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+        if (judgeResult.getInt("status") == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
 
             // 对结果的时间损耗和空间损耗与题目限制做比较，判断是否mle和tle
             if (time >= maxTime) {
@@ -333,10 +360,19 @@ public class JudgeStrategy {
                 result.set("status", Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED.getStatus());
             } else {
                 // 与原测试数据输出的md5进行对比 AC或者是WA
-                result.set("status", compareOutput(testCaseId, userStdOut));
+                result.set("status", compareOutput(testCaseId, userStdOut, isRemoveEOFBlank));
             }
-        } else { // 其它情况根据映射关系进行错误判断
-            result.set("status", SandboxRun.RESULT_MAP_STATUS.get(judgeResult.get("status")));
+        } else if (judgeResult.getInt("status") == Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus()) {
+            result.set("status", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus());
+        } else if (exitCode != 0) {
+            result.set("status", Constants.Judge.STATUS_RUNTIME_ERROR.getStatus());
+            if (exitCode < 32) {
+                errMsg.append(String.format("ExitCode: %s (%s)\n", exitCode, SandboxRun.signals.get(exitCode)));
+            } else {
+                errMsg.append(String.format("ExitCode: %s\n", exitCode));
+            }
+        } else {
+            result.set("status", judgeResult.getInt("status"));
         }
 
         // b
@@ -355,7 +391,12 @@ public class JudgeStrategy {
             FileWriter errWriter = new FileWriter(runDir + "/" + testCaseId + ".err");
             errWriter.write(userErrOut);
             // 同时记录错误信息
-            result.set("errMsg", userErrOut);
+            errMsg.append(userErrOut);
+        }
+
+        // 记录该测试点的错误信息
+        if (!StringUtils.isEmpty(errMsg.toString())) {
+            result.set("errMsg", errMsg.toString());
         }
 
         if (getUserOutput) { // 如果需要获取用户对于该题目的输出
@@ -368,7 +409,7 @@ public class JudgeStrategy {
 
 
     public List<JSONObject> judgeAllCase(String userFileId, Long maxTime, Long maxMemory, @Nullable String userExeName,
-                                         Boolean getUserOutput) throws SystemError, ExecutionException, InterruptedException {
+                                         Boolean getUserOutput, Boolean isRemoveEOFBlank) throws SystemError, ExecutionException, InterruptedException {
 
         if (testCasesInfo == null) {
             throw new SystemError("The evaluation data of the problem does not exist", null, null);
@@ -387,6 +428,9 @@ public class JudgeStrategy {
         List<FutureTask<JSONObject>> futureTasks = new ArrayList<>();
         JSONArray testcaseList = (JSONArray) testCasesInfo.get("testCases");
         Boolean isSpj = testCasesInfo.getBool("isSpj");
+        // 默认给1.5倍题目限制时间用来测评
+        Double time = maxTime * 1.5;
+        final Long testTime = time.longValue();
         // 用户输出的文件夹
         String runDir = Constants.JudgeDir.RUN_WORKPLACE_DIR.getContent() + "/" + judge.getSubmitId();
         for (int index = 0; index < testcaseList.size(); index++) {
@@ -394,11 +438,25 @@ public class JudgeStrategy {
             final int testCaseId = index;
             // 测试样例的路径
             final String testCaseInputPath = testCasesDir + "/" + ((JSONObject) testcaseList.get(index)).getStr("inputName");
+            // 数据库表的测试样例id
+            final Long caseId = ((JSONObject) testcaseList.get(index)).getLong("caseId");
+
+            final Long maxOutputSize = Math.max(((JSONObject) testcaseList.get(index)).getLong("outputSize", 0L) * 2, 16 * 1024 * 1024L);
             if (!isSpj) {
                 futureTasks.add(new FutureTask<>(new Callable<JSONObject>() {
                     @Override
                     public JSONObject call() throws SystemError {
-                        return judgeOneCase(userFileId, testCaseId, runDir, testCaseInputPath, maxTime, maxMemory, getUserOutput);
+                        JSONObject result = judgeOneCase(userFileId,
+                                testCaseId,
+                                runDir,
+                                testCaseInputPath,
+                                testTime,// 默认给1.5倍题目限制时间用来测评
+                                maxMemory,
+                                maxOutputSize,
+                                getUserOutput,
+                                isRemoveEOFBlank);
+                        result.set("caseId", caseId);
+                        return result;
                     }
                 }));
             } else {
@@ -406,8 +464,19 @@ public class JudgeStrategy {
                 futureTasks.add(new FutureTask<>(new Callable<JSONObject>() {
                     @Override
                     public JSONObject call() throws SystemError {
-                        return spjJudgeOneCase(userFileId, testCaseId, runDir, testCaseInputPath, testCaseOutputPath, maxTime,
-                                maxMemory, userExeName, runConfig.getExeName(), getUserOutput);
+                        JSONObject result = spjJudgeOneCase(userFileId,
+                                testCaseId,
+                                runDir,
+                                testCaseInputPath,
+                                testCaseOutputPath,
+                                testTime,// 默认给1.5倍题目限制时间用来测评
+                                maxMemory,
+                                maxOutputSize,
+                                userExeName,
+                                runConfig.getExeName(),
+                                getUserOutput);
+                        result.set("caseId", caseId);
+                        return result;
                     }
                 }));
             }
@@ -439,13 +508,26 @@ public class JudgeStrategy {
     }
 
     // 根据评测结果与用户程序输出的字符串MD5进行对比
-    public Integer compareOutput(int testCaseId, String userOutput) {
+    public Integer compareOutput(int testCaseId, String userOutput, Boolean isRemoveEOFBlank) {
 
-        String outputMd5 = DigestUtils.md5DigestAsHex(rtrim(userOutput).getBytes());
+
         JSONObject result = new JSONObject();
-        // 如果去掉字符串末位空格的输出完全一样，则该测试点通过
-        if (outputMd5.equals(getTestCasesInfo(testCaseId).getStr("strippedOutputMd5"))) {
-            return Constants.Judge.STATUS_ACCEPTED.getStatus();
+        // 如果当前题目选择默认去掉字符串末位空格
+        if (isRemoveEOFBlank) {
+            String userOutputMd5 = DigestUtils.md5DigestAsHex(rtrim(userOutput).getBytes());
+            if (userOutputMd5.equals(getTestCasesInfo(testCaseId).getStr("EOFStrippedOutputMd5"))) {
+                return Constants.Judge.STATUS_ACCEPTED.getStatus();
+            }
+        } else { // 不选择默认去掉文末空格 与原数据进行对比
+            String userOutputMd5 = DigestUtils.md5DigestAsHex(userOutput.getBytes());
+            if (userOutputMd5.equals(getTestCasesInfo(testCaseId).getStr("outputMd5"))) {
+                return Constants.Judge.STATUS_ACCEPTED.getStatus();
+            }
+        }
+        // 如果不AC,进行PE判断，否则为WA
+        String userOutputMd5 = DigestUtils.md5DigestAsHex(userOutput.replaceAll("\\s+", "").getBytes());
+        if (userOutputMd5.equals(getTestCasesInfo(testCaseId).getStr("allStrippedOutputMd5"))) {
+            return Constants.Judge.STATUS_PRESENTATION_ERROR.getStatus();
         } else {
             return Constants.Judge.STATUS_WRONG_ANSWER.getStatus();
         }
@@ -453,7 +535,7 @@ public class JudgeStrategy {
     }
 
     // 获取判题的运行时间，运行空间，OI得分
-    public HashMap<String, Object> computeResultInfo(List<JSONObject> testCaseResultList, Boolean isACM, Integer errorCaseNum) {
+    public HashMap<String, Object> computeResultInfo(List<JSONObject> testCaseResultList, Boolean isACM, Integer errorCaseNum, Integer totalScore) {
         HashMap<String, Object> result = new HashMap<>();
         // 用时和内存占用保存为多个测试点中最长的
         testCaseResultList.stream().max(Comparator.comparing(t -> t.getLong("time")))
@@ -464,25 +546,61 @@ public class JudgeStrategy {
 
         // OI题目计算得分
         if (!isACM) {
-            // 现在默认得分规则为 通过测试点数/总测试点数*100
-            int score = 0;
-            score = (testCaseResultList.size() - errorCaseNum) / testCaseResultList.size() * 100;
+            // 现在默认得分规则为 通过测试点数/总测试点数*该题目总分
+            double tmp = (testCaseResultList.size() - errorCaseNum)*1.0 / testCaseResultList.size();
+            int score = (int) (tmp * totalScore);
             result.put("score", score);
         }
         return result;
     }
 
     // 进行最终测试结果的判断（除编译失败外的评测状态码和时间，空间,OI题目的得分）
-    public HashMap<String, Object> getJudgeInfo(List<JSONObject> testCaseResultList, Boolean isACM) {
+    public HashMap<String, Object> getJudgeInfo(List<JSONObject> testCaseResultList, Problem problem, Judge judge) {
 
+        boolean isACM = problem.getType() == Constants.Contest.TYPE_ACM.getCode();
 
-        // 过滤出结果不是AC的测试点结果
-        List<JSONObject> errorTestCaseList = testCaseResultList.stream()
-                .filter(jsonObject -> jsonObject.getInt("status").intValue() != Constants.Judge.STATUS_ACCEPTED.getStatus())
-                .collect(Collectors.toList());
+        List<JSONObject> errorTestCaseList = new LinkedList<>();
+
+        List<JudgeCase> allCaseResList = new LinkedList<>();
+
+        // 假定是IO题目，每个测试点平均得分如下
+        int averCaseIOScore = problem.getIoScore() / testCaseResultList.size();
+
+        // 记录所有测试点的结果
+        testCaseResultList.stream().forEach(jsonObject -> {
+            Integer time = jsonObject.getLong("time").intValue();
+            Integer memory = jsonObject.getLong("memory").intValue();
+            Integer status = jsonObject.getInt("status");
+            Long caseId = jsonObject.getLong("caseId");
+            JudgeCase judgeCase = new JudgeCase();
+            judgeCase.setTime(time).setMemory(memory)
+                    .setStatus(status)
+                    .setPid(problem.getId())
+                    .setUid(judge.getUid())
+                    .setCaseId(caseId)
+                    .setSubmitId(judge.getSubmitId());
+            // 过滤出结果不是AC的测试点结果 同时如果是IO题目 则得分为0
+            if (jsonObject.getInt("status").intValue() != Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+                errorTestCaseList.add(jsonObject);
+                if (!isACM) {
+                    judgeCase.setScore(0);
+                }
+            } else { // 如果是AC同时为IO题目测试点，得分为平均分
+                if (!isACM) {
+                    judgeCase.setScore(averCaseIOScore);
+                }
+            }
+            allCaseResList.add(judgeCase);
+        });
+
+        // 更新到数据库
+        boolean addCaseRes = judgeCaseService.saveBatch(allCaseResList);
+        if (!addCaseRes){
+            log.error("题号为："+problem.getId()+"，提交id为："+judge.getSubmitId()+"的各个测试数据点的结果更新到数据库操作失败");
+        }
 
         // 获取判题的运行时间，运行空间，OI得分
-        HashMap<String, Object> result = computeResultInfo(testCaseResultList, isACM, errorTestCaseList.size());
+        HashMap<String, Object> result = computeResultInfo(testCaseResultList, isACM, errorTestCaseList.size(), problem.getIoScore());
 
         // 如果该题为ACM类型的题目，多个测试点全部正确则AC，否则取第一个错误的测试点的状态
         // 如果该题为OI类型的题目, 若多个测试点全部正确则AC，若全部错误则取第一个错误测试点状态，否则为部分正确
@@ -490,6 +608,7 @@ public class JudgeStrategy {
             result.put("code", Constants.Judge.STATUS_ACCEPTED.getStatus());
         } else if (isACM || errorTestCaseList.size() == testCaseResultList.size()) {
             result.put("code", errorTestCaseList.get(0).getInt("status"));
+            result.put("errMsg", errorTestCaseList.get(0).getStr("errMsg", ""));
         } else {
             result.put("code", Constants.Judge.STATUS_PARTIAL_ACCEPTED.getStatus());
         }
@@ -503,7 +622,7 @@ public class JudgeStrategy {
 
 
     // 初始化测试数据，写成json文件
-    public JSONObject initTestCase(List<HashMap<String, Object>> testCases, Long problemId, Boolean isSpj) throws SystemError {
+    public JSONObject initTestCase(List<HashMap<String, Object>> testCases, Long problemId, Boolean isSpj) throws SystemError, UnsupportedEncodingException {
 
         if (testCases == null || testCases.size() == 0) {
             throw new SystemError("题号为：" + problemId + "的评测数据为空！", null, "The test cases does not exist.");
@@ -520,20 +639,27 @@ public class JudgeStrategy {
         FileUtil.del(testCasesDir);
         for (int index = 0; index < testCases.size(); index++) {
             JSONObject jsonObject = new JSONObject();
-            String inputName = index + ".in";
+            String inputName = (index+1) + ".in";
+            jsonObject.set("caseId", (long) testCases.get(index).get("caseId"));
             jsonObject.set("inputName", inputName);
             // 生成对应文件
             FileWriter fileWriter = new FileWriter(testCasesDir + "/" + inputName, CharsetUtil.UTF_8);
             // 将该测试数据的输入写入到文件
             fileWriter.write((String) testCases.get(index).get("input"));
 
+            // spj是根据特判程序输出判断结果，所以无需初始化测试数据
             if (!isSpj) {
-                String outputName = index + ".out";
+                String outputName = (index+1)+ ".out";
                 jsonObject.set("outputName", outputName);
                 String outputData = (String) testCases.get(index).get("output");
+                // 原数据MD5
                 jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(outputData.getBytes()));
-                jsonObject.set("outputSize", outputData.length());
-                jsonObject.set("strippedOutputMd5", DigestUtils.md5DigestAsHex(rtrim(outputData).getBytes()));
+                // 原数据大小
+                jsonObject.set("outputSize", outputData.getBytes("utf-8").length);
+                // 去掉全部空格的MD5，用来判断pe
+                jsonObject.set("allStrippedOutputMd5", DigestUtils.md5DigestAsHex(outputData.replaceAll("\\s+", "").getBytes()));
+                // 默认去掉文末空格的MD5
+                jsonObject.set("EOFStrippedOutputMd5", DigestUtils.md5DigestAsHex(rtrim(outputData).getBytes()));
                 // 生成对应文件
                 FileWriter outFile = new FileWriter(testCasesDir + "/" + outputName, CharsetUtil.UTF_8);
                 outFile.write(outputData);
@@ -549,7 +675,7 @@ public class JudgeStrategy {
     }
 
     // 获取指定题目的info数据
-    public JSONObject loadTestCaseInfo(Long problemId, Boolean isSpj) throws SystemError {
+    public JSONObject loadTestCaseInfo(Long problemId, Boolean isSpj) throws SystemError, UnsupportedEncodingException {
         String testCasesDir = Constants.JudgeDir.TEST_CASE_DIR.getContent() + "/problem_" + problemId;
         if (FileUtil.exist(testCasesDir + "/info")) {
             FileReader fileReader = new FileReader(testCasesDir + "/info", CharsetUtil.UTF_8);
@@ -561,7 +687,7 @@ public class JudgeStrategy {
     }
 
     // 若没有测试数据，则尝试从数据库获取并且初始化到本地
-    public JSONObject tryInitTestCaseInfo(Long problemId, Boolean isSpj) throws SystemError {
+    public JSONObject tryInitTestCaseInfo(Long problemId, Boolean isSpj) throws SystemError, UnsupportedEncodingException {
         QueryWrapper<ProblemCase> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("pid", problemId);
         List<ProblemCase> problemCases = problemCaseService.list(queryWrapper);
@@ -570,6 +696,7 @@ public class JudgeStrategy {
             HashMap<String, Object> tmp = new HashMap<>();
             tmp.put("input", problemCase.getInput());
             tmp.put("output", problemCase.getOutput());
+            tmp.put("caseId", problemCase.getId());
             testCases.add(tmp);
         }
 

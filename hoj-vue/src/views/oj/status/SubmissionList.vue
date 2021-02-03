@@ -33,11 +33,11 @@
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item command="All">All</el-dropdown-item>
                   <el-dropdown-item
-                    v-for="result in Object.keys(JUDGE_STATUS)"
+                    v-for="result in Object.keys(JUDGE_STATUS_LIST)"
                     :key="result"
                     :command="result"
                   >
-                    {{ JUDGE_STATUS[result].name }}
+                    {{ JUDGE_STATUS_LIST[result].name }}
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -258,6 +258,7 @@ export default {
       contestID: '',
       routeName: '',
       JUDGE_STATUS: '',
+      JUDGE_STATUS_LIST: '',
       autoCheckOpen: false,
       JUDGE_STATUS_RESERVE: {},
       CONTEST_STATUS: {},
@@ -265,12 +266,15 @@ export default {
   },
   mounted() {
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
+    this.JUDGE_STATUS_LIST = Object.assign({}, JUDGE_STATUS);
     this.JUDGE_STATUS_RESERVE = Object.assign({}, JUDGE_STATUS_RESERVE);
     this.CONTEST_STATUS = Object.assign({}, CONTEST_STATUS);
-    // 去除submitting,Not Submitted,Time Limit Exceeded(多的)三种状态
-    delete this.JUDGE_STATUS['9'];
-    delete this.JUDGE_STATUS['-10'];
-    delete this.JUDGE_STATUS['2'];
+    // 去除下拉框选择中的submitting,Peding,Compiling,Judging,Submitting,Not Submitted,五种状态
+    delete this.JUDGE_STATUS_LIST['5'];
+    delete this.JUDGE_STATUS_LIST['6'];
+    delete this.JUDGE_STATUS_LIST['7'];
+    delete this.JUDGE_STATUS_LIST['9'];
+    delete this.JUDGE_STATUS_LIST['-10'];
     this.init();
   },
   methods: {
@@ -559,7 +563,7 @@ export default {
       }
     },
     getStatusColor(status) {
-      return 'el-tag el-tag--medium status-' + JUDGE_STATUS[status].color;
+      return 'el-tag el-tag--medium status-' + JUDGE_STATUS[status]['color'];
     },
     tableRowClassName({ row, rowIndex }) {
       if (row.username == this.userInfo.username && this.isAuthenticated) {

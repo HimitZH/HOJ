@@ -308,7 +308,6 @@ import Login from '@/components/oj/common/Login';
 import Register from '@/components/oj/common/Register';
 import ResetPwd from '@/components/oj/common/ResetPassword';
 import { mapGetters, mapActions } from 'vuex';
-import api from '@/common/api';
 import Avatar from 'vue-avatar';
 
 export default {
@@ -383,6 +382,9 @@ export default {
       return this.$store.getters.userInfo.avatar;
     },
     activeMenuName() {
+      if (this.$route.path.split('/')[1] == 'submission-detail') {
+        return '/status';
+      }
       return '/' + this.$route.path.split('/')[1];
     },
     modalVisible: {
