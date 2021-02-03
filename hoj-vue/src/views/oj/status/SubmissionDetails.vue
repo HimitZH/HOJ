@@ -13,7 +13,7 @@
           <span class="title">{{ status.statusName }}</span>
         </template>
         <template slot>
-          <div v-if="isCE" class="content">
+          <div v-if="isCE || isSE" class="content">
             <pre>{{ submission.errorMessage }}</pre>
           </div>
           <div v-else class="content">
@@ -78,7 +78,15 @@
             <span>{{ submissionMemoryFormat(row.memory) }}</span>
           </template>
         </vxe-table-column>
-
+        <vxe-table-column
+          title="Score"
+          min-width="64"
+          v-if="tableData[0].score != null"
+        >
+          <template v-slot="{ row }">
+            <span>{{ row.score }}</span>
+          </template>
+        </vxe-table-column>
         <vxe-table-column title="Length" min-width="60">
           <template v-slot="{ row }">
             <span>{{ submissionLengthFormat(row.length) }}</span>
@@ -133,12 +141,59 @@
         </template>
       </div>
     </el-col>
+
+    <el-col :span="22" v-if="testCaseResult">
+      <el-card style="margin-top: 20px;">
+        <div slot="header">
+          <span class="panel-title home-title">测试点详情</span>
+        </div>
+        <el-row :gutter="10">
+          <el-col
+            :xs="24"
+            :md="12"
+            :lg="6"
+            v-for="(item, index) in testCaseResult"
+            :key="index"
+          >
+            <div
+              class="test-detail-item"
+              :style="getTestCaseResultColor(item.status)"
+              v-if="item.status == JUDGE_STATUS_RESERVE.ac"
+            >
+              <span>Test #{{ index + 1 }}:</span
+              ><span>{{ item.time }}ms/{{ item.memory }}KB</span>
+              <span class="test-run-static" v-if="item.score != null">
+                {{ item.score }}分 <i class="el-icon-success"></i>
+              </span>
+              <span class="test-run-static" v-else>
+                <i class="el-icon-success"></i>
+              </span>
+            </div>
+
+            <div
+              class="test-detail-item"
+              :style="getTestCaseResultColor(item.status)"
+              v-else
+            >
+              <span>Test #{{ index + 1 }}:</span
+              ><span>{{ item.time }}ms/{{ item.memory }}KB</span>
+              <span class="test-run-static" v-if="item.score != null">
+                {{ item.score }}分 <i class="el-icon-error"></i>
+              </span>
+              <span class="test-run-static" v-else>
+                <i class="el-icon-error"></i>
+              </span>
+            </div>
+          </el-col>
+        </el-row>
+      </el-card>
+    </el-col>
   </el-row>
 </template>
 
 <script>
 import api from '@/common/api';
-import { JUDGE_STATUS } from '@/common/constants';
+import { JUDGE_STATUS, JUDGE_STATUS_RESERVE } from '@/common/constants';
 import utils from '@/common/utils';
 import Highlight from '@/components/oj/common/Highlight';
 import myMessage from '@/common/message';
@@ -164,15 +219,19 @@ export default {
         share: true,
       },
       tableData: [],
+      testCaseResult: [],
       codeShare: true,
       isIOProblem: false,
       loadingTable: false,
       JUDGE_STATUS: '',
+      JUDGE_STATUS_RESERVE: '',
     };
   },
   mounted() {
     this.getSubmission();
+    this.getAllCaseResult();
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
+    this.JUDGE_STATUS_RESERVE = Object.assign({}, JUDGE_STATUS_RESERVE);
   },
   methods: {
     doCopy() {
@@ -203,6 +262,15 @@ export default {
     },
     getStatusColor(status) {
       return 'el-tag el-tag--medium status-' + JUDGE_STATUS[status].color;
+    },
+    getTestCaseResultColor(status) {
+      return (
+        'color:' +
+        JUDGE_STATUS[status].rgb +
+        '!important;border-color:' +
+        JUDGE_STATUS[status].rgb +
+        '!important'
+      );
     },
     getbackgroudColor(status) {
       return 'status-' + JUDGE_STATUS[status].color;
@@ -237,6 +305,14 @@ export default {
         }
       );
     },
+
+    //首先该题必须支持开放测试点结果查看，同时若是比赛题目，只支持IO查看测试点情况，ACM强制禁止查看
+    getAllCaseResult() {
+      api.getAllCaseResult(this.$route.params.submitID).then((res) => {
+        this.testCaseResult = res.data.data;
+      });
+    },
+
     shareSubmission(shared) {
       let data = {
         submitId: this.submission.submitId,
@@ -261,7 +337,10 @@ export default {
       };
     },
     isCE() {
-      return this.submission.status === -2;
+      return this.submission.status === JUDGE_STATUS_RESERVE.ce;
+    },
+    isSE() {
+      return this.submission.status === JUDGE_STATUS_RESERVE.se;
     },
     isAdminRole() {
       return this.$store.getters.isAdminRole;
@@ -312,5 +391,27 @@ pre {
   border: none;
   background: none;
   padding-top: 13px;
+}
+.test-detail-item {
+  width: 100%;
+  padding: 15px;
+  font-size: 14px;
+  display: inline-block;
+  vertical-align: top;
+  border-radius: 3px;
+  border: 1px solid #ff431e;
+  border-left: 3px solid #ff431e;
+  color: #ff431e;
+  margin: 0 0 10px 0;
+}
+.test-detail-item > span {
+  margin-right: 10px;
+}
+.test-run-static {
+  float: right;
+}
+.test-detail-item.done {
+  border-color: #25bb9b;
+  color: #25bb9b;
 }
 </style>

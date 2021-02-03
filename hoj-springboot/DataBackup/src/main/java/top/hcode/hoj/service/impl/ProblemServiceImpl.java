@@ -12,6 +12,7 @@ import top.hcode.hoj.dao.ProblemMapper;
 import top.hcode.hoj.service.ProblemService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import top.hcode.hoj.service.ToJudgeService;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -46,6 +47,9 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
     @Autowired
     private ProblemCountServiceImpl problemCountService;
+
+    @Autowired
+    private ToJudgeService toJudgeService;
 
     @Override
     public Page<ProblemVo> getProblemList(int limit, int currentPage, Long pid, String title, Integer difficulty, Long tid) {
@@ -166,12 +170,13 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         /**
          *  处理problem_case表的增加与删除
          */
-        // 新增加的case列表
+        // 可能需要更新或新增加的case列表
         List<ProblemCase> problemCaseList = new LinkedList<>();
         // 遍历上传的case列表，如果
         for (ProblemCase problemCase : problemDto.getSamples()) {
             if (problemCase.getId() != null) { // 已存在的case
                 needDeleteProblemCases.remove(problemCase.getId());
+                problemCaseList.add(problemCase);
             } else {
                 problemCaseList.add(problemCase);
             }
@@ -182,11 +187,15 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         if (needDeleteProblemCases.size() > 0) {
             deleteCasesFromProblemResult = problemCaseService.removeByIds(needDeleteProblemCases);
         }
-        // 执行批量添加操作
+        // 执行批量添加或更新操作
         boolean addCasesToProblemResult = true;
         if (problemCaseList.size() > 0) {
             addCasesToProblemResult = problemCaseService.saveOrUpdateBatch(problemCaseList);
         }
+
+        // 评测数据有被修改则需要对判题机本地的数据进行重新初始化
+        toJudgeService.initTestCase(problemDto.getProblem().getId(),
+                !StringUtils.isEmpty(problemDto.getProblem().getSpjCode()));
 
 
         if (problemUpdateResult && deleteCasesFromProblemResult && deleteLanguagesFromProblemResult && deleteTagsFromProblemResult

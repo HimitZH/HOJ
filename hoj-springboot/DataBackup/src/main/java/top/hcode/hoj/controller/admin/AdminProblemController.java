@@ -106,8 +106,6 @@ public class AdminProblemController {
     @Transactional
     public CommonResult updateProblem(@RequestBody ProblemDto problemDto){
         boolean result = problemService.adminUpdateProblem(problemDto);
-        toJudgeService.initTestCase(problemDto.getProblem().getId(),
-                !StringUtils.isEmpty(problemDto.getProblem().getSpjCode()));
         if (result) { // 更新成功
             return CommonResult.successResponse(null,"修改成功！");
         } else {

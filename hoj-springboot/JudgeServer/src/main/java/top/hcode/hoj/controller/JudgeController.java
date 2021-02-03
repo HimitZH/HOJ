@@ -13,6 +13,7 @@ import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.IpUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -111,7 +112,7 @@ public class JudgeController {
     }
 
     @GetMapping("/init-test-case")
-    public CommonResult initTestCase(@RequestParam("pid") Long pid, @RequestParam("isSpj") Boolean isSpj) throws SystemError {
+    public CommonResult initTestCase(@RequestParam("pid") Long pid, @RequestParam("isSpj") Boolean isSpj) throws SystemError, UnsupportedEncodingException {
 
         QueryWrapper<ProblemCase> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("pid", pid);
@@ -122,6 +123,7 @@ public class JudgeController {
             HashMap<String, Object> tmp = new HashMap<>();
             tmp.put("input", problemCase.getInput());
             tmp.put("output", problemCase.getOutput());
+            tmp.put("caseId", problemCase.getId());
             testCases.add(tmp);
         }
         judgeStrategy.initTestCase(testCases, pid, isSpj);

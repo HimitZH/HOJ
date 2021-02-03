@@ -1,6 +1,7 @@
 package top.hcode.hoj.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.dao.JudgeCaseMapper;
 import top.hcode.hoj.pojo.entity.JudgeCase;

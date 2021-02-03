@@ -35,23 +35,32 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     @Override
     public Judge Judge(Problem problem, Judge judge) {
 
+        // c和c++为一倍时间和空间，其它语言为2倍时间和空间
+        if (!judge.getLanguage().equals("C++") && !judge.getLanguage().equals("C")) {
+            problem.setTimeLimit(problem.getTimeLimit() * 2);
+            problem.setMemoryLimit(problem.getMemoryLimit() * 2);
+        }
+
         HashMap<String, Object> judgeResult = judgeStrategy.judge(problem, judge);
 
+        // 如果是编译失败或者系统错误就有错误提醒
         if (judgeResult.get("code") == Constants.Judge.STATUS_COMPILE_ERROR.getStatus() ||
-                judgeResult.get("code") == Constants.Judge.STATUS_SYSTEM_ERROR.getStatus()) {
-            judge.setStatus(Constants.Judge.STATUS_COMPILE_ERROR.getStatus());
-            judge.setErrorMessage((String) judgeResult.get("errMsg"));
-        } else {
-            judge.setStatus((Integer) judgeResult.get("code"));
-            Long memory = (Long) judgeResult.get("memory");
-            judge.setMemory(memory.intValue());
-            // ms
-            Long time = (Long) judgeResult.get("time");
-            judge.setTime(time.intValue());
-            if (problem.getType() == 0) {
-                judge.setScore((Integer) judgeResult.getOrDefault("score", 0));
-            }
+                judgeResult.get("code") == Constants.Judge.STATUS_SYSTEM_ERROR.getStatus() ||
+                judgeResult.get("code") == Constants.Judge.STATUS_RUNTIME_ERROR.getStatus()) {
+            judge.setErrorMessage((String) judgeResult.getOrDefault("errMsg", ""));
         }
+        // 设置最终结果状态码
+        judge.setStatus((Integer) judgeResult.get("code"));
+        // 设置最大时间和最大空间不超过题目限制时间和空间
+        // kb
+        Long memory = (Long) judgeResult.get("memory");
+        judge.setMemory(Math.min(memory.intValue(), problem.getMemoryLimit() * 1024));
+        // ms
+        Long time = (Long) judgeResult.get("time");
+        judge.setTime(Math.min(time.intValue(), problem.getTimeLimit()));
+        // score
+        judge.setScore((Integer) judgeResult.getOrDefault("score", null));
+
         return judge;
     }
 }
