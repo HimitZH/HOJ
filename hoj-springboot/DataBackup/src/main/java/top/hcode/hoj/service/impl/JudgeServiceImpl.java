@@ -4,13 +4,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import top.hcode.hoj.judge.JudgeDispatcher;
 import top.hcode.hoj.pojo.entity.Judge;
 import top.hcode.hoj.dao.JudgeMapper;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.service.JudgeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
-import top.hcode.hoj.service.ToJudgeService;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     private JudgeMapper judgeMapper;
 
     @Autowired
-    private ToJudgeService toJudgeService;
+    private JudgeDispatcher judgeDispatcher;
 
     @Override
     public IPage<JudgeVo> getCommonJudgeList(Integer limit, Integer currentPage, Long pid, Integer status, String username,
@@ -48,11 +48,14 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
         return judgeMapper.getContestJudgeList(page, displayId, cid, status, username, uid, beforeContestSubmit);
     }
 
+
     @Override
     @Async
-    public void rejudgeContestProblem(List<Judge> judgeList) {
+    public void rejudgeContestProblem(List<Judge> judgeList, String judgeToken) {
         for (Judge judge : judgeList) {
-            toJudgeService.submitProblemJudge(judge);
+            // 进入重判队列，等待调用判题服务
+            judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getPid() == 0);
         }
     }
+
 }

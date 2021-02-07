@@ -269,7 +269,7 @@ export default {
       api.registerContest(this.contestID, this.contestPassword).then(
         (res) => {
           myMessage.success(res.data.msg);
-          this.$store.commit('contestIntoAccess', { access: true });
+          this.$store.commit('contestSubmitAccess', { access: true });
           this.btnLoading = false;
         },
         (res) => {

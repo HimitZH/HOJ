@@ -1,11 +1,13 @@
 package top.hcode.hoj.common.result;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 
 @Data
+@NoArgsConstructor
 public class CommonResult implements Serializable {
     public final static Integer STATUS_SUCCESS = 200;
     public final static Integer STATUS_FAIL = 400;

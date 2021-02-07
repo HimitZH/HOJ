@@ -3,7 +3,7 @@
 <mapper namespace="top.hcode.hoj.dao.JudgeMapper">
     <select id="getCommonJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="false">
         select j.uid,j.submit_id,j.submit_time,j.uid,j.username,j.uid,j.pid,j.status,j.share,
-        j.time,j.memory,j.length,j.language,j.cid,j.cpid,j.ip,j.judger
+        j.time,j.memory,j.length,j.language,j.cid,j.cpid,j.judger
         from judge j
         <where>
             j.cid = 0 AND j.cpid = 0
@@ -30,7 +30,7 @@
 
     <select id="getContestJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="false">
         select  j.uid,j.submit_id,j.submit_time,j.uid,j.username,j.uid,cp.display_id,
-        j.status,j.share,j.time,j.memory,j.length,j.language,j.cid,j.cpid,j.ip,j.judger
+        j.status,j.share,j.time,j.memory,j.length,j.language,j.cid,j.cpid,j.judger
         from judge j,contest_problem cp
         <where>
             j.pid=cp.pid

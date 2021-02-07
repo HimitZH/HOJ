@@ -1,5 +1,12 @@
+hoj-judger:
+  task-num: 0 #当前正在进行判题任务数
+  max-task-num: 4 # -1表示最大并行任务数为cpu核心数*2
+  ip: -1 # -1表示使用默认本地ipv4，若是部署其它服务器，务必使用公网ip
+  port: 8088
+
+
 server:
-  port: 8010
+  port: ${hoj-judger.port}
 spring:
   profiles:
     active: prod
@@ -14,6 +21,7 @@ spring:
         file-extension: yml #指定yaml格式的配置
         group: DEFAULT_GROUP  # 指定分组
         #namespace:命名空间ID  默认为public
+      url: http://129.204.177.72:8848
 
 # ${spring.application.name}-${spring.profile.active}.${spring.cloud.naces.config.file-extension}
 # hoj-judge-server-prod.yml

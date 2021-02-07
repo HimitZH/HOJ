@@ -6,25 +6,24 @@ import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.dao.JudgeCaseMapper;
 import top.hcode.hoj.dao.JudgeMapper;
+import top.hcode.hoj.judge.JudgeDispatcher;
 import top.hcode.hoj.pojo.dto.SubmitIdListDto;
 import top.hcode.hoj.pojo.dto.ToJudgeDto;
 import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.JudgeService;
+
 import top.hcode.hoj.service.ProblemService;
-import top.hcode.hoj.service.ToJudgeService;
 import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
@@ -42,6 +41,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api")
+@RefreshScope
 public class JudgeController {
 
 
@@ -58,9 +58,6 @@ public class JudgeController {
     private ProblemService problemService;
 
     @Autowired
-    private ToJudgeService toJudgeService;
-
-    @Autowired
     private UserRecordServiceImpl userRecordService;
 
     @Autowired
@@ -71,6 +68,12 @@ public class JudgeController {
 
     @Autowired
     private ContestRecordServiceImpl contestRecordService;
+
+    @Value("${hoj.judge.token}")
+    private String judgeToken;
+
+    @Autowired
+    private JudgeDispatcher judgeDispatcher;
 
 //    @Autowired
 //    private RestTemplate restTemplate;
@@ -131,7 +134,14 @@ public class JudgeController {
             // 是否为超级管理员或者该比赛的创建者，则为比赛管理者
             boolean root = SecurityUtils.getSubject().hasRole("root");
             if (!root && !contest.getUid().equals(userRolesVo.getUid())) {
-                return CommonResult.errorResponse("比赛未开始，不可提交！");
+                if (contest.getStatus().intValue() == Constants.Contest.STATUS_SCHEDULED.getCode()) {
+                    return CommonResult.errorResponse("比赛未开始，不可提交！");
+                }
+                // 需要检查是否有权限在当前比赛进行提交
+                CommonResult checkResult = contestService.checkJudgeAuth(judgeDto.getProtectContestPwd(), contest, userRolesVo.getUid());
+                if (checkResult != null) {
+                    return checkResult;
+                }
             }
 
             // 查询获取对应的pid和cpid
@@ -194,8 +204,8 @@ public class JudgeController {
         if (result != 1 || !updateContestRecord || !updateUserRecord) {
             return CommonResult.errorResponse("数据提交失败", CommonResult.STATUS_ERROR);
         }
-        // 异步调用判题机
-        toJudgeService.submitProblemJudge(judge);
+        // 将提交加入任务队列
+        judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getPid() == 0);
 
         return CommonResult.successResponse(judge, "数据提交成功！");
     }
@@ -355,12 +365,12 @@ public class JudgeController {
 
         // 如果该题不支持开放测试点结果查看
         if (!problem.getOpenCaseResult()) {
-            return CommonResult.successResponse(null,"对不起，该题测试样例详情不支持开放！");
+            return CommonResult.successResponse(null, "对不起，该题测试样例详情不支持开放！");
         }
 
         // 若是比赛题目，只支持IO查看测试点情况，ACM强制禁止查看
         if (problem.getAuth() == 3 && problem.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) {
-            return CommonResult.successResponse(null,"对不起，该题测试样例详情不能查看！");
+            return CommonResult.successResponse(null, "对不起，该题测试样例详情不能查看！");
         }
 
 
@@ -370,7 +380,7 @@ public class JudgeController {
         List<JudgeCase> judgeCaseList = judgeCaseService.list(wrapper);
 
         if (judgeCaseList.size() == 0) { // 未查询到一条数据
-            return CommonResult.successResponse(null,"暂无数据");
+            return CommonResult.successResponse(null, "暂无数据");
         } else {
             return CommonResult.successResponse(judgeCaseList, "获取成功");
         }

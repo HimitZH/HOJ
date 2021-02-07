@@ -30,12 +30,12 @@ public final class RedisUtils {
         boolean result = false;
         try {
             boolean isExist = hasKey(lockName);
-            if(!isExist){
-                set(lockName,0);
-                expire(lockName,expireTime<=0? 3600:expireTime);
+            if (!isExist) {
+                set(lockName, 0);
+                expire(lockName, expireTime <= 0 ? 3600 : expireTime);
             }
-            long reVal =  incr(lockName,1);
-            if(1==reVal){
+            long reVal = incr(lockName, 1);
+            if (1 == reVal) {
                 //获取到锁
                 result = true;
             }
@@ -44,13 +44,15 @@ public final class RedisUtils {
         }
         return result;
     }
+
     public boolean releaseLock(String lockName) {
 
-        return expire(lockName, 30);
+        return expire(lockName, 10);
     }
 
     /**
      * 指定缓存失效时间
+     *
      * @param key  键
      * @param time 时间(秒)
      */
@@ -68,6 +70,7 @@ public final class RedisUtils {
 
     /**
      * 根据key 获取过期时间
+     *
      * @param key 键 不能为null
      * @return 时间(秒) 返回0代表为永久有效
      */
@@ -77,6 +80,7 @@ public final class RedisUtils {
 
     /**
      * 判断key是否存在
+     *
      * @param key 键
      * @return true 存在 false不存在
      */
@@ -92,6 +96,7 @@ public final class RedisUtils {
 
     /**
      * 删除缓存
+     *
      * @param key 可以传一个值 或多个
      */
     @SuppressWarnings("unchecked")
@@ -110,6 +115,7 @@ public final class RedisUtils {
 
     /**
      * 普通缓存获取
+     *
      * @param key 键
      * @return 值
      */
@@ -119,6 +125,7 @@ public final class RedisUtils {
 
     /**
      * 普通缓存放入
+     *
      * @param key   键
      * @param value 值
      * @return true成功 false失败
@@ -137,6 +144,7 @@ public final class RedisUtils {
 
     /**
      * 普通缓存放入并设置时间
+     *
      * @param key   键
      * @param value 值
      * @param time  时间(秒) time要大于0 如果time小于等于0 将设置无限期
@@ -160,6 +168,7 @@ public final class RedisUtils {
 
     /**
      * 递增
+     *
      * @param key   键
      * @param delta 要增加几(大于0)
      */
@@ -173,6 +182,7 @@ public final class RedisUtils {
 
     /**
      * 递减
+     *
      * @param key   键
      * @param delta 要减少几(小于0)
      */
@@ -188,6 +198,7 @@ public final class RedisUtils {
 
     /**
      * HashGet
+     *
      * @param key  键 不能为null
      * @param item 项 不能为null
      */
@@ -197,6 +208,7 @@ public final class RedisUtils {
 
     /**
      * 获取hashKey对应的所有键值
+     *
      * @param key 键
      * @return 对应的多个键值
      */
@@ -206,6 +218,7 @@ public final class RedisUtils {
 
     /**
      * HashSet
+     *
      * @param key 键
      * @param map 对应多个键值
      */
@@ -222,6 +235,7 @@ public final class RedisUtils {
 
     /**
      * HashSet 并设置时间
+     *
      * @param key  键
      * @param map  对应多个键值
      * @param time 时间(秒)
@@ -333,6 +347,7 @@ public final class RedisUtils {
 
     /**
      * 根据key获取Set中的所有值
+     *
      * @param key 键
      */
     public Set<Object> sGet(String key) {
@@ -484,12 +499,12 @@ public final class RedisUtils {
 
 
     /**
-     * 将list放入缓存
+     * 将list右边放入缓存
      *
      * @param key   键
      * @param value 值
      */
-    public boolean lSet(String key, Object value) {
+    public boolean lrPush(String key, Object value) {
         try {
             redisTemplate.opsForList().rightPush(key, value);
             return true;
@@ -499,14 +514,30 @@ public final class RedisUtils {
         }
     }
 
+    /**
+     * 将list左边放入缓存
+     *
+     * @param key   键
+     * @param value 值
+     */
+    public boolean llPush(String key, Object value) {
+        try {
+            redisTemplate.opsForList().leftPush(key, value);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     /**
-     * 将list放入缓存
+     * 将list右边放入缓存
+     *
      * @param key   键
      * @param value 值
      * @param time  时间(秒)
      */
-    public boolean lSet(String key, Object value, long time) {
+    public boolean lrPush(String key, Object value, long time) {
         try {
             redisTemplate.opsForList().rightPush(key, value);
             if (time > 0)
@@ -527,7 +558,7 @@ public final class RedisUtils {
      * @param value 值
      * @return
      */
-    public boolean lSet(String key, List<Object> value) {
+    public boolean lrPush(String key, List<Object> value) {
         try {
             redisTemplate.opsForList().rightPushAll(key, value);
             return true;
@@ -539,6 +570,27 @@ public final class RedisUtils {
     }
 
 
+    public boolean llPush(String key, List<Object> value) {
+        try {
+            redisTemplate.opsForList().leftPushAll(key, value);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+
+    public Object lrPop(String key) {
+        try {
+            return redisTemplate.opsForList().rightPop(key, 5, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * 将list放入缓存
      *
@@ -547,7 +599,7 @@ public final class RedisUtils {
      * @param time  时间(秒)
      * @return
      */
-    public boolean lSet(String key, List<Object> value, long time) {
+    public boolean llPush(String key, List<Object> value, long time) {
         try {
             redisTemplate.opsForList().rightPushAll(key, value);
             if (time > 0)
@@ -597,5 +649,18 @@ public final class RedisUtils {
         }
 
     }
+
+
+    /**
+     * 给特定频道发布消息
+     *
+     * @param channel 管道主题
+     * @param message 消息
+     * @return
+     */
+    public void sendMessage(String channel, Object message) throws Exception {
+        redisTemplate.convertAndSend(channel, message);
+    }
+
 
 }

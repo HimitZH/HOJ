@@ -141,7 +141,7 @@ public class SandboxRun {
             return JSONUtil.parseArray(postForEntity.getBody());
         } catch (RestClientResponseException ex) {
             if (ex.getRawStatusCode() != 200) {
-                throw new SystemError("Failed to call safe sandbox.", null, ex.getResponseBodyAsString());
+                throw new SystemError("Cannot connect to sandbox service.", null, ex.getResponseBodyAsString());
             }
         }
         return null;

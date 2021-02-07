@@ -3,8 +3,8 @@ package top.hcode.hoj.util;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.*;
+import java.util.Enumeration;
 
 /**
  * @Author: Himit_ZH
@@ -58,5 +58,31 @@ public class IpUtils {
             log.error("本地ip获取异常---------->{}", e.getMessage());
         }
         return address.getHostAddress(); //返回IP地址
+    }
+
+    public static String getLocalIpv4Address() {
+        Enumeration<NetworkInterface> ifaces = null;
+        try {
+            ifaces = NetworkInterface.getNetworkInterfaces();
+        } catch (SocketException e) {
+            log.error("本地ipv4获取异常---------->{}", e.getMessage());
+        }
+        String siteLocalAddress = null;
+        while (ifaces.hasMoreElements()) {
+            NetworkInterface iface = ifaces.nextElement();
+            Enumeration<InetAddress> addresses = iface.getInetAddresses();
+            while (addresses.hasMoreElements()) {
+                InetAddress addr = addresses.nextElement();
+                String hostAddress = addr.getHostAddress();
+                if (addr instanceof Inet4Address) {
+                    if (addr.isSiteLocalAddress()) {
+                        siteLocalAddress = hostAddress;
+                    } else {
+                        return hostAddress;
+                    }
+                }
+            }
+        }
+        return siteLocalAddress == null ? "" : siteLocalAddress;
     }
 }

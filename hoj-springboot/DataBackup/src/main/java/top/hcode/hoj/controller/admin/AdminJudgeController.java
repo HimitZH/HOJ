@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.judge.JudgeDispatcher;
 import top.hcode.hoj.pojo.entity.*;
-import top.hcode.hoj.service.ToJudgeService;
 import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.utils.Constants;
 
@@ -30,10 +32,8 @@ import java.util.List;
 @RequestMapping("/admin/judge")
 @RequiresAuthentication
 @RequiresRoles("root")  // 只有超级管理员能操作
+@RefreshScope
 public class AdminJudgeController {
-
-    @Autowired
-    private ToJudgeService toJudgeService;
 
     @Autowired
     private JudgeServiceImpl judgeService;
@@ -49,6 +49,12 @@ public class AdminJudgeController {
 
     @Autowired
     private JudgeCaseServiceImpl judgeCaseService;
+
+    @Value("${hoj.judge.token}")
+    private String judgeToken;
+
+    @Autowired
+    private JudgeDispatcher judgeDispatcher;
 
     @GetMapping("/rejudge")
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
@@ -85,8 +91,8 @@ public class AdminJudgeController {
         judge.setJudger(null).setTime(null).setMemory(null).setErrorMessage(null);
         boolean result = judgeService.updateById(judge);
         if (result) {
-            // 异步调用判题机
-            toJudgeService.submitProblemJudge(judge);
+            // 调用判题服务
+            judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getPid() == 0);
             return CommonResult.successResponse(judge, "重判成功！该提交已进入判题队列！");
         } else {
             return CommonResult.successResponse(judge, "重判失败！请重新尝试！");
@@ -102,7 +108,7 @@ public class AdminJudgeController {
         queryWrapper.eq("cid", cid).eq("pid", pid);
         List<Judge> rejudgeList = judgeService.list(queryWrapper);
 
-        if (rejudgeList.size()==0) {
+        if (rejudgeList.size() == 0) {
             return CommonResult.errorResponse("当前该题目无提交，不可重判！");
         }
         List<Long> submitIdList = new LinkedList<>();
@@ -124,9 +130,9 @@ public class AdminJudgeController {
 
         if (resetContestRecordResult && resetJudgeResult) {
             // 异步调用重判服务
-            judgeService.rejudgeContestProblem(rejudgeList);
+            judgeService.rejudgeContestProblem(rejudgeList, judgeToken);
             return CommonResult.successResponse(null, "重判成功！该题目对应的全部提交已进入判题队列！");
-        }else{
+        } else {
             return CommonResult.errorResponse("重判失败！请重新尝试！");
         }
 

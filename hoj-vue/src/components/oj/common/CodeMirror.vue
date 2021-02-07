@@ -75,6 +75,7 @@
 <script>
 import utils from '@/common/utils';
 import { codemirror } from 'vue-codemirror-lite';
+import 'codemirror/mode/javascript/javascript';
 
 // 风格对应的样式
 import 'codemirror/theme/monokai.css';
@@ -112,11 +113,11 @@ export default {
     },
     language: {
       type: String,
-      default: 'C++',
+      default: 'C',
     },
     theme: {
       type: String,
-      default: 'monokai',
+      default: 'solarized',
     },
   },
   data() {
@@ -125,21 +126,20 @@ export default {
         // codemirror options
         tabSize: 4,
         mode: 'text/x-csrc',
-        theme: 'monokai',
+        theme: 'solarized',
         // 显示行号
         lineNumbers: true,
         line: true,
         // 代码折叠
         foldGutter: true,
-        matchBrackets: true, //括号匹配
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-        // 选中文本自动高亮，及高亮方式
-        styleSelectedText: true, //当前行高亮
         lineWrapping: true,
         highlightSelectionMatches: { showToken: /\w/, annotateScrollbar: true },
+        autofocus: true,
+        styleActiveLine: true,
       },
       mode: {
-        'C++': 'text/x-csrc',
+        C: 'text/x-csrc',
       },
       themes: [
         { label: 'monokai', value: 'monokai' },

@@ -263,6 +263,21 @@
         >
       </div>
     </el-dialog>
+
+    <el-dialog :visible.sync="submitPwdVisible" width="340px">
+      <el-form>
+        <el-form-item label="Please Enter the Contest Protect Password">
+          <el-input
+            placeholder="Please Enter the Contest Protect Password"
+            v-model="submitPwd"
+            show-password
+          ></el-input>
+        </el-form-item>
+        <el-button type="primary" round style="margin-left:130px">
+          OK
+        </el-button>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -302,10 +317,12 @@ export default {
       problemID: 1000,
       submitting: false,
       code: '',
-      language: 'C++',
-      theme: 'monokai',
+      language: 'C',
+      theme: 'material',
       submissionId: '',
       submitted: false,
+      submitPwdVisible: false,
+      submitPwd: '',
       result: {
         status: 9,
       },
@@ -517,6 +534,16 @@ export default {
         myMessage.error('提交的代码不能为空！');
         return;
       }
+
+      // 比赛题目需要检查是否有权限提交
+      if (!this.canSubmit && this.$route.params.contestID) {
+        // 密码为空，需要重新输入
+        if (!this.submitPwd) {
+          this.submitPwdVisible = true;
+          return;
+        }
+      }
+
       this.submissionId = '';
       this.result = { status: 9 };
       this.submitting = true;
@@ -525,6 +552,7 @@ export default {
         language: this.language,
         code: this.code,
         cid: this.contestID,
+        protectContestPwd: this.submitPwd,
       };
       if (this.captchaRequired) {
         data.captcha = this.captchaCode;
@@ -544,14 +572,18 @@ export default {
               });
               return;
             }
+            // 更新store的可提交权限
+            if (!this.canSubmit) {
+              this.$store.commit('contestIntoAccess', { access: true });
+            }
             this.submitted = true;
             this.checkSubmissionStatus();
           },
           (res) => {
-            this.getCaptchaSrc();
-            if (res.data.data.startsWith('Captcha is required')) {
-              this.captchaRequired = true;
-            }
+            // this.getCaptchaSrc();
+            // if (res.data.data.startsWith('Captcha is required')) {
+            //   this.captchaRequired = true;
+            // }
             this.submitting = false;
             this.statusVisible = false;
           }
@@ -602,6 +634,7 @@ export default {
       'ContestRealTimePermission',
       'contestStatus',
       'isAuthenticated',
+      'canSubmit',
     ]),
     contest() {
       return this.$store.state.contest.contest;

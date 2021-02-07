@@ -1,8 +1,11 @@
 package top.hcode.hoj.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.nacos.client.utils.JSONUtils;
 import com.sun.management.OperatingSystemMXBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.HttpEntity;
@@ -25,7 +28,7 @@ import java.util.List;
 /**
  * @Author: Himit_ZH
  * @Date: 2020/12/3 11:03
- * @Description:
+ * @Description: 动态修改网站配置，获取后台服务状态及判题服务器的状态
  */
 @Service
 public class ConfigServiceImpl implements ConfigService {
@@ -42,32 +45,46 @@ public class ConfigServiceImpl implements ConfigService {
     @Autowired
     private DiscoveryClient discoveryClient;
 
-    private static final String NACOS_URL = "http://129.204.177.72:8848";
-    private static final String DATA_ID = "hoj-data-backup-dev.yml";
-    private static final String GROUP = "DEFAULT_GROUP";
-    private static final String TYPE = "yaml";
-    private static OperatingSystemMXBean osmxb = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+    @Value("${service-url.name}")
+    private String judgeServiceName;
+
+    @Value("${spring.application.name}")
+    private String currentServiceName;
+
+    @Value("${spring.cloud.nacos.url}")
+    private String NACOS_URL;
+
+    @Value("${spring.cloud.nacos.config.data-id}")
+    private String DATA_ID;
+
+    @Value("${spring.cloud.nacos.config.group}")
+    private String GROUP;
+
+    @Value("${spring.cloud.nacos.config.type}")
+    private String TYPE;
+
+    private OperatingSystemMXBean osmxb = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
     @Override
     public JSONObject getServiceInfo() {
 
         JSONObject result = new JSONObject();
 
-        List<ServiceInstance> serviceInstances = discoveryClient.getInstances("hoj-data-backup");
+        List<ServiceInstance> serviceInstances = discoveryClient.getInstances(currentServiceName);
 
         // 获取nacos中心配置所在的机器环境
-        String response = restTemplate.getForObject(NACOS_URL+"/nacos/v1/ns/operator/metrics", String.class);
+        String response = restTemplate.getForObject(NACOS_URL + "/nacos/v1/ns/operator/metrics", String.class);
 
         JSONObject jsonObject = JSONObject.parseObject(response);
         // 获取当前数据后台所在机器环境
         int cores = Runtime.getRuntime().availableProcessors(); // 当前机器的cpu核数
         double cpuLoad = osmxb.getSystemCpuLoad();
-        String percentCpuLoad = String.format("%.2f", cpuLoad * 100)+"%"; // 当前服务所在机器cpu使用率
+        String percentCpuLoad = String.format("%.2f", cpuLoad * 100) + "%"; // 当前服务所在机器cpu使用率
 
         double totalVirtualMemory = osmxb.getTotalPhysicalMemorySize(); // 当前服务所在机器总内存
         double freePhysicalMemorySize = osmxb.getFreePhysicalMemorySize(); // 当前服务所在机器空闲内存
-        double value = freePhysicalMemorySize/totalVirtualMemory;
-        String percentMemoryLoad = String.format("%.2f", (1-value)*100)+"%"; // 当前服务所在机器内存使用率
+        double value = freePhysicalMemorySize / totalVirtualMemory;
+        String percentMemoryLoad = String.format("%.2f", (1 - value) * 100) + "%"; // 当前服务所在机器内存使用率
 
         result.put("nacos", jsonObject);
         result.put("backupCores", cores);
@@ -80,16 +97,15 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     public List<JSONObject> getJudgeServiceInfo() {
         List<JSONObject> serviceInfoList = new LinkedList<>();
-        List<ServiceInstance> serviceInstances = discoveryClient.getInstances("hoj-judge-server");
-        for (ServiceInstance serviceInstance:serviceInstances){
+        List<ServiceInstance> serviceInstances = discoveryClient.getInstances(judgeServiceName);
+        for (ServiceInstance serviceInstance : serviceInstances) {
             String result = restTemplate.getForObject(serviceInstance.getUri() + "/get-sys-config", String.class);
             JSONObject jsonObject = JSONObject.parseObject(result);
-            jsonObject.put("service",serviceInstance);
+            jsonObject.put("service", serviceInstance);
             serviceInfoList.add(jsonObject);
         }
         return serviceInfoList;
     }
-
 
     @Override
     public boolean setEmailConfig(HashMap<String, Object> params) {
@@ -175,7 +191,7 @@ public class ConfigServiceImpl implements ConfigService {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
         String result = restTemplate.postForObject(NACOS_URL + "/nacos/v1/cs/configs", request, String.class);
 
-        if (result.equals("true")) {
+        if (result != null && result.equals("true")) {
             return true;
         } else {
             return false;
