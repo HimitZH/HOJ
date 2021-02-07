@@ -1,6 +1,7 @@
 package top.hcode.hoj.utils;
 
 import com.sun.org.apache.xpath.internal.objects.XNull;
+import org.apache.poi.ss.formula.functions.T;
 
 /**
  * @Author: Himit_ZH
@@ -18,16 +19,17 @@ public class Constants {
         STATUS_COMPILE_ERROR(-2, "Compile Error", "ce"),
         STATUS_WRONG_ANSWER(-1, "Wrong Answer", "wa"),
         STATUS_ACCEPTED(0, "Accepted", "ac"),
-        STATUS_LIMIT_EXCEEDED(1, "Time Limit Exceeded", "tle"),
+        STATUS_TIME_LIMIT_EXCEEDED(1, "Time Limit Exceeded", "tle"),
         STATUS_MEMORY_LIMIT_EXCEEDED(2, "Memory Limit Exceeded", "mle"),
         STATUS_RUNTIME_ERROR(3, "Runtime Error", "re"),
         STATUS_SYSTEM_ERROR(4, "System Error", "se"),
         STATUS_PENDING(5, "Pending", null),
-        STATUS_COMPILING(6, "Compiling",null),
+        STATUS_COMPILING(6, "Compiling", null),
         STATUS_JUDGING(7, "Judging", null),
         STATUS_PARTIAL_ACCEPTED(8, "Partial Accepted", "pa"),
         STATUS_SUBMITTING(9, "Submitting", null),
-        STATUS_NULL(10, "No Status",null);
+        STATUS_NULL(10, "No Status", null),
+        STATUS_JUDGE_WAITING(-100, "Waiting Queue", null);
 
         private Judge(Integer status, String name, String columnName) {
             this.status = status;
@@ -69,17 +71,17 @@ public class Constants {
         TYPE_ACM(0, "ACM"),
         TYPE_OI(1, "OI"),
 
-        STATUS_SCHEDULED(-1,"Scheduled"),
-        STATUS_RUNNING(0,"Running"),
-        STATUS_ENDED(1,"Ended"),
+        STATUS_SCHEDULED(-1, "Scheduled"),
+        STATUS_RUNNING(0, "Running"),
+        STATUS_ENDED(1, "Ended"),
 
-        AUTH_PUBLIC(0,"Public"),
-        AUTH_PRIVATE(1,"Private"),
-        AUTH_PROTECT(2,"Protect"),
+        AUTH_PUBLIC(0, "Public"),
+        AUTH_PRIVATE(1, "Private"),
+        AUTH_PROTECT(2, "Protect"),
 
-        RECORD_NOT_AC_PENALTY(-1,"未AC通过算罚时"),
-        RECORD_NOT_AC_NOT_PENALTY(0,"未AC通过不罚时"),
-        RECORD_AC(1,"AC通过");
+        RECORD_NOT_AC_PENALTY(-1, "未AC通过算罚时"),
+        RECORD_NOT_AC_NOT_PENALTY(0, "未AC通过不罚时"),
+        RECORD_AC(1, "AC通过");
 
         private final Integer code;
         private final String name;
@@ -130,7 +132,11 @@ public class Constants {
 
         USER_FILE_HOST("http://localhost:9010"),
         USER_AVATAR_FOLDER("D:\\avatar\\"),
-        USER_AVATAR_API("/public/img/");
+        USER_AVATAR_API("/public/img/"),
+
+        TESTCASE_BASE_FOLDER("D:\\zip\\"),
+
+        TESTCASE_DOWNLOAD_TMP_FOLDER("D:\\zip\\download");
 
         private final String path;
 

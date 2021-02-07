@@ -48,6 +48,9 @@ public class ConfigVo {
     @Value("${hoj.jwt.checkRefreshExpire}")
     private String checkRefreshExpire;
 
+    @Value("${hoj.judge.token}")
+    private String judgeToken;
+
     // 邮箱配置
     @Value("${hoj.mail.username}")
     private String emailUsername;

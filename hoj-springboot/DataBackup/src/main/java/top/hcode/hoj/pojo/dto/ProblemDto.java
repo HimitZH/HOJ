@@ -21,6 +21,10 @@ public class ProblemDto {
 
     private List<ProblemCase> samples;
 
+    private Boolean isUploadTestCase;
+
+    private String uploadTestcaseDir;
+
     private List<Language> languages;
 
     private List<Tag> tags;

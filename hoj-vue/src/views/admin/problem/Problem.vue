@@ -211,7 +211,7 @@
                 Delete
               </el-button>
               <el-row :gutter="20">
-                <el-col :span="12">
+                <el-col :xs="24" :md="12">
                   <el-form-item label="Input Example" required>
                     <el-input
                       :rows="5"
@@ -223,7 +223,7 @@
                     </el-input>
                   </el-form-item>
                 </el-col>
-                <el-col :span="12">
+                <el-col :xs="24" :md="12">
                   <el-form-item label="Output Example" required>
                     <el-input
                       :rows="5"
@@ -246,65 +246,6 @@
             icon="el-icon-plus"
             type="small"
             >Add Example
-          </el-button>
-        </div>
-
-        <div>
-          <div class="panel-title home-title">
-            Judge Samples
-            <el-popover placement="right" trigger="hover">
-              <p>评测数据：判题机对该题目的相关提交进行评测的数据来源。</p>
-              <i slot="reference" class="el-icon-question"></i>
-            </el-popover>
-          </div>
-          <el-form-item
-            v-for="(sample, index) in problemSamples"
-            :key="'sample' + index"
-          >
-            <Accordion :title="'Sample' + (index + 1)">
-              <el-button
-                type="danger"
-                size="small"
-                icon="el-icon-delete"
-                slot="header"
-                @click="deleteSample(index)"
-              >
-                Delete
-              </el-button>
-              <el-row :gutter="20">
-                <el-col :span="12">
-                  <el-form-item label="Input Sample" required>
-                    <el-input
-                      :rows="5"
-                      type="textarea"
-                      placeholder="Input Sample"
-                      v-model="sample.input"
-                    >
-                    </el-input>
-                  </el-form-item>
-                </el-col>
-                <el-col :span="12">
-                  <el-form-item label="Output Sample" required>
-                    <el-input
-                      :rows="5"
-                      type="textarea"
-                      placeholder="Output Sample"
-                      v-model="sample.output"
-                    >
-                    </el-input>
-                  </el-form-item>
-                </el-col>
-              </el-row>
-            </Accordion>
-          </el-form-item>
-        </div>
-        <div class="add-sample-btn">
-          <el-button
-            class="add-samples"
-            @click="addSample()"
-            icon="el-icon-plus"
-            type="small"
-            >Add Sample
           </el-button>
         </div>
 
@@ -368,7 +309,7 @@
         </el-form-item>
 
         <el-row :gutter="20">
-          <el-col :span="12">
+          <el-col :span="24">
             <el-form-item label="Type">
               <el-radio-group
                 v-model="problem.type"
@@ -379,69 +320,133 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
+        </el-row>
 
-          <el-col :span="12">
-            <el-form-item
-              label="Total Score"
-              v-show="problem.type == 1"
-              :required="problem.type == 1"
-            >
-              <el-input
-                v-model="problem.ioScore"
-                placeholder="Total Score"
-              ></el-input>
-            </el-form-item>
-          </el-col>
+        <el-row :gutter="20">
+          <div class="panel-title home-title">
+            Judge Samples
+            <el-popover placement="right" trigger="hover">
+              <p>评测数据：判题机对该题目的相关提交进行评测的数据来源。</p>
+              <i slot="reference" class="el-icon-question"></i>
+            </el-popover>
+          </div>
 
-          <el-col :span="24">
-            <el-form-item label="TestCase" :error="error.testcase">
-              <el-upload
-                action="/api/admin/test_case"
-                name="file"
-                :data="{ spj: problem.spj }"
-                :show-file-list="true"
-                :on-success="uploadSucceeded"
-                :on-error="uploadFailed"
-              >
-                <el-button size="small" type="primary" icon="el-icon-upload"
-                  >Choose File</el-button
+          <el-switch
+            v-model="isUploadTestCase"
+            active-text="Use Upload File"
+            inactive-text="Use Manual Input"
+            style="margin: 10px 0"
+          >
+          </el-switch>
+
+          <div v-show="isUploadTestCase">
+            <el-col :span="24">
+              <el-form-item :error="error.testcase">
+                <el-upload
+                  :action="uploadFileUrl"
+                  name="file"
+                  :show-file-list="true"
+                  :on-success="uploadSucceeded"
+                  :on-error="uploadFailed"
                 >
-              </el-upload>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="24">
-            <vxe-table
-              stripe
-              auto-resize
-              :data="problem.test_case_score"
-              align="center"
-            >
-              <vxe-table-column
-                field="input_name"
-                title="Input"
-                min-width="100"
-              >
-              </vxe-table-column>
-              <vxe-table-column
-                field="output_name"
-                title="Output"
-                min-width="100"
-              >
-              </vxe-table-column>
-              <vxe-table-column field="score" title="Score" min-width="100">
-                <template v-slot="{ row }">
-                  <el-input
-                    size="small"
-                    placeholder="Score"
-                    v-model="row.score"
-                    :disabled="problem.type !== 'OI'"
+                  <el-button size="small" type="primary" icon="el-icon-upload"
+                    >Choose File</el-button
                   >
-                  </el-input>
-                </template>
-              </vxe-table-column>
-            </vxe-table>
-          </el-col>
+                </el-upload>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <vxe-table
+                stripe
+                auto-resize
+                :data="problem.testCaseScore"
+                align="center"
+              >
+                <vxe-table-column field="input" title="Input" min-width="100">
+                </vxe-table-column>
+                <vxe-table-column field="output" title="Output" min-width="100">
+                </vxe-table-column>
+                <vxe-table-column field="score" title="Score" min-width="100">
+                  <template v-slot="{ row }">
+                    <el-input
+                      size="small"
+                      placeholder="Score"
+                      v-model="row.score"
+                      :disabled="problem.type != 1"
+                    >
+                    </el-input>
+                  </template>
+                </vxe-table-column>
+              </vxe-table>
+            </el-col>
+          </div>
+
+          <div v-show="!isUploadTestCase">
+            <el-form-item
+              v-for="(sample, index) in problemSamples"
+              :key="'sample' + index"
+            >
+              <Accordion :title="'Sample' + (index + 1)">
+                <el-button
+                  type="danger"
+                  size="small"
+                  icon="el-icon-delete"
+                  slot="header"
+                  @click="deleteSample(index)"
+                >
+                  Delete
+                </el-button>
+                <el-row :gutter="20">
+                  <el-col :xs="24" :md="12">
+                    <el-form-item label="Input Sample" required>
+                      <el-input
+                        :rows="5"
+                        type="textarea"
+                        placeholder="Input Sample"
+                        v-model="sample.input"
+                      >
+                      </el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :xs="24" :md="12">
+                    <el-form-item label="Output Sample" required>
+                      <el-input
+                        :rows="5"
+                        type="textarea"
+                        placeholder="Output Sample"
+                        v-model="sample.output"
+                      >
+                      </el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col
+                    :span="24"
+                    v-show="problem.type == 1 && sample.score != null"
+                  >
+                    <el-form-item label="IO Score">
+                      <el-input
+                        type="number"
+                        size="small"
+                        placeholder="The score of the testcase"
+                        v-model="sample.score"
+                      >
+                      </el-input>
+                    </el-form-item>
+                  </el-col>
+                </el-row>
+              </Accordion>
+            </el-form-item>
+
+            <div class="add-sample-btn">
+              <el-button
+                class="add-samples"
+                @click="addSample()"
+                icon="el-icon-plus"
+                type="small"
+                >Add Sample
+              </el-button>
+            </div>
+          </div>
         </el-row>
 
         <el-form-item label="Source">
@@ -537,9 +542,9 @@ export default {
         spj: false,
         spjLanguage: '',
         spjCode: '',
-        spj_compile_ok: false,
-        test_case_id: '',
-        test_case_score: [],
+        spjCompileOk: false,
+        uploadTestcaseDir: '',
+        testCaseScore: [],
         type: 0,
         hint: '',
         source: '',
@@ -559,6 +564,9 @@ export default {
       spjMode: '',
       disableRuleType: false,
       routeName: '',
+      isUploadTestCase: true,
+      uploadTestcaseDir: '',
+      uploadFileUrl: '',
       error: {
         tags: '',
         spj: '',
@@ -569,6 +577,8 @@ export default {
   },
   mounted() {
     this.routeName = this.$route.name;
+    this.uploadFileUrl =
+      this.$http.defaults.baseURL + '/file/upload-testcase-zip';
     if (
       this.routeName === 'admin-edit-problem' ||
       this.routeName === 'admin-edit-contest-problem'
@@ -578,6 +588,13 @@ export default {
       this.mode = 'add';
     }
     api.getLanguages().then((res) => {
+      let allLanguage = res.data.data;
+      this.allLanguage = allLanguage;
+      for (let i = 0; i < allLanguage.length; i++) {
+        if (allLanguage[i].isSpj == true) {
+          this.allSpjLanguage.push(allLanguage[i]);
+        }
+      }
       this.problem = this.reProblem = {
         id: null,
         title: '',
@@ -593,9 +610,9 @@ export default {
         spj: false,
         spjLanguage: '',
         spjCode: '',
-        spj_compile_ok: false,
-        test_case_id: '',
-        test_case_score: [],
+        spjCompileOk: false,
+        uploadTestcaseDir: '',
+        testCaseScore: [],
         contestProblem: {},
         type: 0,
         hint: '',
@@ -614,15 +631,6 @@ export default {
         });
       }
       this.problem.spjLanguage = 'C';
-      let allLanguage = res.data.data;
-      this.allLanguage = allLanguage;
-      for (let i = 0; i < allLanguage.length; i++) {
-        if (allLanguage[i].isSpj == true) {
-          this.allSpjLanguage.push(allLanguage[i]);
-        }
-      }
-
-      // get problem after getting languages list to avoid find undefined value in `watch problemLanguages`
       this.init();
     });
   },
@@ -646,9 +654,11 @@ export default {
     },
 
     'problem.spjLanguage'(newVal) {
-      this.spjMode = this.allLanguage.find((item) => {
-        return item.name === this.problem.spjLanguage && item.isSpj == true;
-      }).content_type;
+      if (this.allSpjLanguage.length) {
+        this.spjMode = this.allSpjLanguage.find((item) => {
+          return item.name == this.problem.spjLanguage && item.isSpj == true;
+        })['contentType'];
+      }
     },
   },
   methods: {
@@ -662,9 +672,9 @@ export default {
         }[this.routeName];
         api[funcName](this.pid).then((problemRes) => {
           let data = problemRes.data.data;
-          (data.spj_compile_ok = false),
-            (data.test_case_id = ''),
-            (data.test_case_score = []);
+          (data.spjCompileOk = false),
+            (data.uploadTestcaseDir = ''),
+            (data.testCaseScore = []);
           data.spj = true;
           if (!data.spjCode) {
             data.spjCode = '';
@@ -736,8 +746,8 @@ export default {
     },
     resetTestCase() {
       this.testCaseUploaded = false;
-      this.problem.test_case_score = [];
-      this.problem.test_case_id = '';
+      this.problem.testCaseScore = [];
+      this.problem.uploadTestcaseDir = '';
     },
     selectTag(item) {
       for (var i = 0; i < this.problemTags.length; i++) {
@@ -777,7 +787,21 @@ export default {
     },
     // 添加判题机的测试样例
     addSample() {
-      this.problemSamples.push({ input: '', output: '', pid: this.pid });
+      if (this.mode === 'edit') {
+        this.problemSamples.push({
+          input: '',
+          output: '',
+          score: 0,
+          pid: this.pid,
+        });
+      } else {
+        this.problemSamples.push({
+          input: '',
+          output: '',
+          score: null,
+          pid: this.pid,
+        });
+      }
     },
     //根据下标删除特定的题目样例
     deleteExample(index) {
@@ -788,41 +812,42 @@ export default {
       this.problemSamples.splice(index, 1);
     },
     uploadSucceeded(response) {
-      if (response.error) {
-        myMessage.error(response.data);
+      if (response.status != 200) {
+        myMessage.error(response.msg);
         return;
       }
-      let fileList = response.data.info;
+      myMessage.error('上传测试数据包成功');
+      let fileList = response.data.fileList;
       for (let file of fileList) {
-        file.score = (100 / fileList.length).toFixed(0);
-        if (!file.output_name && this.problem.spj) {
-          file.output_name = '-';
+        file.score = (this.problem.ioScore / fileList.length).toFixed(0);
+        if (!file.output && this.problem.spj) {
+          file.output = '-';
         }
       }
-      this.problem.test_case_score = fileList;
+      this.problem.testCaseScore = fileList;
       this.testCaseUploaded = true;
-      this.problem.test_case_id = response.data.id;
+      this.problem.uploadTestcaseDir = response.data.fileListDir;
     },
     uploadFailed() {
-      myMessage.error('Upload failed');
+      myMessage.error('上传测试数据包失败');
     },
 
     compileSPJ() {
       let data = {
-        id: this.problem.id,
-        spjCode: this.problem.spjCode,
+        pid: this.problem.id,
+        spjSrc: this.problem.spjCode,
         spjLanguage: this.problem.spjLanguage,
       };
       this.loadingCompile = true;
       api.compileSPJ(data).then(
         (res) => {
           this.loadingCompile = false;
-          this.problem.spj_compile_ok = true;
+          this.problem.spjCompileOk = true;
           this.error.spj = '';
         },
         (err) => {
           this.loadingCompile = false;
-          this.problem.spj_compile_ok = false;
+          this.problem.spjCompileOk = false;
           const h = this.$createElement;
           this.$msgbox({
             title: 'Compile Error',
@@ -847,14 +872,57 @@ export default {
           return;
         }
       }
-      if (!this.problemSamples.length) {
-        myMessage.error('评测数据是不能为空！');
-        return;
-      }
-      for (let sample of this.problemSamples) {
-        if (!sample.input || !sample.output) {
-          myMessage.error('每一项评测数据的输入输出都不能为空！');
+
+      if (!this.isUploadTestCase) {
+        // 如果是选择手动输入评测数据
+        if (!this.problemSamples.length) {
+          myMessage.error('评测数据不能为空！请手动输入评测数据！');
           return;
+        }
+
+        for (let sample of this.problemSamples) {
+          if (!sample.input || !sample.output) {
+            myMessage.error('每一项评测数据的输入输出都不能为空！');
+            return;
+          }
+        }
+        // 如果是编辑题目，同时是io题目，则对应的每个测试样例的io得分不能为空或小于0
+        if (this.problem.type == 1) {
+          if (this.mode === 'edit') {
+            for (let item of this.problemSamples) {
+              try {
+                if (parseInt(item.score) <= 0) {
+                  myMessage.error('测评得分小于0是无效的！');
+                  return;
+                }
+              } catch (e) {
+                myMessage.error('测评得分的结果必须是数字类型！');
+                return;
+              }
+            }
+          }
+        }
+      } else {
+        if (!this.testCaseUploaded) {
+          this.error.testCase = '评测数据不能为空！请先上传评测数据！';
+          myMessage.error(this.error.testCase);
+          return;
+        }
+        if (this.mode !== 'edit') {
+          // 新建题目，且选择上传测试数据，同时是oi题目需要检查分数正常
+          if (this.problem.type == 1) {
+            for (let item of this.problem.testCaseScore) {
+              try {
+                if (parseInt(item.score) <= 0) {
+                  myMessage.error('测评得分小于0是无效的！');
+                  return;
+                }
+              } catch (e) {
+                myMessage.error('测评得分的结果必须是数字类型！');
+                return;
+              }
+            }
+          }
         }
       }
       if (!this.problemTags.length) {
@@ -867,7 +935,7 @@ export default {
         if (!this.problem.spjCode) {
           this.error.spj = '特殊判题的程序代码不能为空！';
           myMessage.error(this.error.spj);
-        } else if (!this.problem.spj_compile_ok) {
+        } else if (!this.problem.spjCompileOk) {
           this.error.spj = '特殊判题的程序没有编译成功，请重新编译！';
         }
         if (this.error.spj) {
@@ -881,25 +949,6 @@ export default {
         myMessage.error(this.error.languages);
         return;
       }
-      // if (!this.testCaseUploaded) {
-      //   this.error.testCase = "评测数据还没有成功上传！";
-      //   myMessage.error(this.error.testCase);
-      //   return;
-      // }
-
-      if (this.problem.type === 1) {
-        for (let item of this.problem.test_case_score) {
-          try {
-            if (parseInt(item.score) <= 0) {
-              myMessage.error('测评得分小于0是无效的！');
-              return;
-            }
-          } catch (e) {
-            myMessage.error('测评得分的结果必须是数字类型！');
-            return;
-          }
-        }
-      }
 
       let funcName = {
         'admin-create-problem': 'admin_createProblem',
@@ -909,7 +958,7 @@ export default {
       }[this.routeName];
       // edit contest problem 时, contest_id会被后来的请求覆盖掉
       if (funcName === 'editContestProblem') {
-        this.problem.contest_id = this.contest.id;
+        this.problem.cid = this.contest.id;
       }
       if (
         funcName === 'admin_createProblem' ||
@@ -947,7 +996,14 @@ export default {
 
       problemDto['tags'] = problemTagList;
       problemDto['languages'] = problemLanguageList;
-      problemDto['samples'] = this.problemSamples;
+      problemDto['isUploadTestCase'] = this.isUploadTestCase;
+      problemDto['uploadTestcaseDir'] = this.problem.uploadTestcaseDir;
+      // 如果选择上传文件，则使用上传后的结果
+      if (this.isUploadTestCase) {
+        problemDto['samples'] = this.problem.testCaseScore;
+      } else {
+        problemDto['samples'] = this.problemSamples;
+      }
 
       api[funcName](problemDto)
         .then((res) => {
@@ -1020,7 +1076,7 @@ export default {
 }
 .add-examples:hover {
   border: 0px;
-  background-color: #2d8cf0;
+  background-color: #2d8cf0 !important;
   color: #fff;
 }
 .add-example-btn {
@@ -1042,7 +1098,7 @@ export default {
 }
 .add-samples:hover {
   border: 0px;
-  background-color: #19be6b;
+  background-color: #19be6b !important;
   color: #fff;
 }
 .add-sample-btn {

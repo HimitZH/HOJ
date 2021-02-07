@@ -94,7 +94,7 @@ public class JudgeStrategy {
             // 对用户源代码进行编译 获取tmpfs中的fileId
             userFileId = compile();
             // 加载测试数据
-            this.testCasesInfo = loadTestCaseInfo(problem.getId(), !StringUtils.isEmpty(problem.getSpjCode()));
+            this.testCasesInfo = loadTestCaseInfo(problem.getId(), problem.getCaseVersion(), !StringUtils.isEmpty(problem.getSpjCode()));
             // 检查是否为spj，同时是否有spj编译完成的文件，若不存在，就先编译生成该spj文件。
             Boolean hasSpjOrNotSpj = checkOrCompileSpj(problem);
             // 如果该题为spj，但是没有spj程序
@@ -197,10 +197,16 @@ public class JudgeStrategy {
 
     public Boolean compileSpj(String code, Long pid, String spjLanguage) throws SystemError, CompileError {
 
-        Constants.CompileConfig spjCompiler = Constants.CompileConfig.getCompilerByLanguage(spjLanguage);
+        Constants.CompileConfig spjCompiler = Constants.CompileConfig.getCompilerByLanguage("SPJ-" + spjLanguage);
         if (spjCompiler == null) {
             throw new CompileError("Unsupported language " + spjLanguage, null, null);
         }
+
+        Boolean copyOutExe = true;
+        if (pid == null) { // 题目id为空，则不进行本地存储，可能为新建题目时测试特判程序是否正常的判断而已
+            copyOutExe = false;
+        }
+
         // 调用安全沙箱对特别判题程序进行编译
         JSONArray res = SandboxRun.compile(spjCompiler.getMaxCpuTime(),
                 spjCompiler.getMaxRealTime(),
@@ -212,7 +218,7 @@ public class JudgeStrategy {
                 spjCompiler.getEnvs(),
                 code,
                 false,
-                true,
+                copyOutExe,
                 Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + "/" + pid
         );
         JSONObject compileResult = (JSONObject) res.get(0);
@@ -440,6 +446,8 @@ public class JudgeStrategy {
             final String testCaseInputPath = testCasesDir + "/" + ((JSONObject) testcaseList.get(index)).getStr("inputName");
             // 数据库表的测试样例id
             final Long caseId = ((JSONObject) testcaseList.get(index)).getLong("caseId");
+            // 该测试点的满分
+            final Integer score = ((JSONObject) testcaseList.get(index)).getInt("score", 0);
 
             final Long maxOutputSize = Math.max(((JSONObject) testcaseList.get(index)).getLong("outputSize", 0L) * 2, 16 * 1024 * 1024L);
             if (!isSpj) {
@@ -456,6 +464,7 @@ public class JudgeStrategy {
                                 getUserOutput,
                                 isRemoveEOFBlank);
                         result.set("caseId", caseId);
+                        result.set("score", score);
                         return result;
                     }
                 }));
@@ -476,6 +485,7 @@ public class JudgeStrategy {
                                 runConfig.getExeName(),
                                 getUserOutput);
                         result.set("caseId", caseId);
+                        result.set("score", score);
                         return result;
                     }
                 }));
@@ -546,10 +556,16 @@ public class JudgeStrategy {
 
         // OI题目计算得分
         if (!isACM) {
-            // 现在默认得分规则为 通过测试点数/总测试点数*该题目总分
-            double tmp = (testCaseResultList.size() - errorCaseNum)*1.0 / testCaseResultList.size();
-            int score = (int) (tmp * totalScore);
-            result.put("score", score);
+            int score = 0;
+            // 全对的直接用总分
+            if (errorCaseNum == 0) {
+                result.put("score", totalScore);
+            } else {
+                for (JSONObject testcaseResult : testCaseResultList) {
+                    score += testcaseResult.getInt("score", 0);
+                }
+                result.put("socre", score);
+            }
         }
         return result;
     }
@@ -562,9 +578,6 @@ public class JudgeStrategy {
         List<JSONObject> errorTestCaseList = new LinkedList<>();
 
         List<JudgeCase> allCaseResList = new LinkedList<>();
-
-        // 假定是IO题目，每个测试点平均得分如下
-        int averCaseIOScore = problem.getIoScore() / testCaseResultList.size();
 
         // 记录所有测试点的结果
         testCaseResultList.stream().forEach(jsonObject -> {
@@ -585,9 +598,9 @@ public class JudgeStrategy {
                 if (!isACM) {
                     judgeCase.setScore(0);
                 }
-            } else { // 如果是AC同时为IO题目测试点，得分为平均分
+            } else { // 如果是AC同时为IO题目测试点，则获得该点的得分
                 if (!isACM) {
-                    judgeCase.setScore(averCaseIOScore);
+                    judgeCase.setScore(jsonObject.getInt("score").intValue());
                 }
             }
             allCaseResList.add(judgeCase);
@@ -595,8 +608,8 @@ public class JudgeStrategy {
 
         // 更新到数据库
         boolean addCaseRes = judgeCaseService.saveBatch(allCaseResList);
-        if (!addCaseRes){
-            log.error("题号为："+problem.getId()+"，提交id为："+judge.getSubmitId()+"的各个测试数据点的结果更新到数据库操作失败");
+        if (!addCaseRes) {
+            log.error("题号为：" + problem.getId() + "，提交id为：" + judge.getSubmitId() + "的各个测试数据点的结果更新到数据库操作失败");
         }
 
         // 获取判题的运行时间，运行空间，OI得分
@@ -622,7 +635,7 @@ public class JudgeStrategy {
 
 
     // 初始化测试数据，写成json文件
-    public JSONObject initTestCase(List<HashMap<String, Object>> testCases, Long problemId, Boolean isSpj) throws SystemError, UnsupportedEncodingException {
+    public JSONObject initTestCase(List<HashMap<String, Object>> testCases, Long problemId, String version, Boolean isSpj) throws SystemError, UnsupportedEncodingException {
 
         if (testCases == null || testCases.size() == 0) {
             throw new SystemError("题号为：" + problemId + "的评测数据为空！", null, "The test cases does not exist.");
@@ -630,6 +643,7 @@ public class JudgeStrategy {
 
         JSONObject result = new JSONObject();
         result.set("isSpj", isSpj);
+        result.set("version", version);
         result.set("testCasesSize", testCases.size());
         result.set("testCases", new JSONArray());
 
@@ -639,8 +653,9 @@ public class JudgeStrategy {
         FileUtil.del(testCasesDir);
         for (int index = 0; index < testCases.size(); index++) {
             JSONObject jsonObject = new JSONObject();
-            String inputName = (index+1) + ".in";
+            String inputName = (index + 1) + ".in";
             jsonObject.set("caseId", (long) testCases.get(index).get("caseId"));
+            jsonObject.set("score", testCases.get(index).getOrDefault("score", null));
             jsonObject.set("inputName", inputName);
             // 生成对应文件
             FileWriter fileWriter = new FileWriter(testCasesDir + "/" + inputName, CharsetUtil.UTF_8);
@@ -649,7 +664,7 @@ public class JudgeStrategy {
 
             // spj是根据特判程序输出判断结果，所以无需初始化测试数据
             if (!isSpj) {
-                String outputName = (index+1)+ ".out";
+                String outputName = (index + 1) + ".out";
                 jsonObject.set("outputName", outputName);
                 String outputData = (String) testCases.get(index).get("output");
                 // 原数据MD5
@@ -663,6 +678,7 @@ public class JudgeStrategy {
                 // 生成对应文件
                 FileWriter outFile = new FileWriter(testCasesDir + "/" + outputName, CharsetUtil.UTF_8);
                 outFile.write(outputData);
+
             }
 
             ((JSONArray) result.get("testCases")).put(index, jsonObject);
@@ -675,19 +691,24 @@ public class JudgeStrategy {
     }
 
     // 获取指定题目的info数据
-    public JSONObject loadTestCaseInfo(Long problemId, Boolean isSpj) throws SystemError, UnsupportedEncodingException {
+    public JSONObject loadTestCaseInfo(Long problemId, String version, Boolean isSpj) throws SystemError, UnsupportedEncodingException {
         String testCasesDir = Constants.JudgeDir.TEST_CASE_DIR.getContent() + "/problem_" + problemId;
         if (FileUtil.exist(testCasesDir + "/info")) {
             FileReader fileReader = new FileReader(testCasesDir + "/info", CharsetUtil.UTF_8);
             String infoStr = fileReader.readString();
-            return JSONUtil.parseObj(infoStr);
+            JSONObject testcaseInfo = JSONUtil.parseObj(infoStr);
+            // 测试样例被改动需要重新生成
+            if (!testcaseInfo.getStr("version", null).equals(version)) {
+                return tryInitTestCaseInfo(problemId, version, isSpj);
+            }
+            return testcaseInfo;
         } else {
-            return tryInitTestCaseInfo(problemId, isSpj);
+            return tryInitTestCaseInfo(problemId, version, isSpj);
         }
     }
 
     // 若没有测试数据，则尝试从数据库获取并且初始化到本地
-    public JSONObject tryInitTestCaseInfo(Long problemId, Boolean isSpj) throws SystemError, UnsupportedEncodingException {
+    public JSONObject tryInitTestCaseInfo(Long problemId, String version, Boolean isSpj) throws SystemError, UnsupportedEncodingException {
         QueryWrapper<ProblemCase> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("pid", problemId);
         List<ProblemCase> problemCases = problemCaseService.list(queryWrapper);
@@ -697,10 +718,11 @@ public class JudgeStrategy {
             tmp.put("input", problemCase.getInput());
             tmp.put("output", problemCase.getOutput());
             tmp.put("caseId", problemCase.getId());
+            tmp.put("score", problemCase.getScore());
             testCases.add(tmp);
         }
 
-        return initTestCase(testCases, problemId, isSpj);
+        return initTestCase(testCases, problemId, version, isSpj);
     }
 
     public static String rtrim(String value) {

@@ -228,12 +228,10 @@ import { mapActions, mapGetters } from 'vuex';
 import api from '@/common/api';
 import {
   JUDGE_STATUS,
-  USER_TYPE,
   CONTEST_STATUS,
   JUDGE_STATUS_RESERVE,
 } from '@/common/constants';
 import utils from '@/common/utils';
-import time from '@/common/time';
 import Pagination from '@/components/oj/common/Pagination';
 import myMessage from '@/common/message';
 export default {
@@ -257,6 +255,7 @@ export default {
       currentPage: 1,
       contestID: '',
       routeName: '',
+      checkStatusNum: 0,
       JUDGE_STATUS: '',
       JUDGE_STATUS_LIST: '',
       autoCheckOpen: false,
@@ -269,11 +268,10 @@ export default {
     this.JUDGE_STATUS_LIST = Object.assign({}, JUDGE_STATUS);
     this.JUDGE_STATUS_RESERVE = Object.assign({}, JUDGE_STATUS_RESERVE);
     this.CONTEST_STATUS = Object.assign({}, CONTEST_STATUS);
-    // 去除下拉框选择中的submitting,Peding,Compiling,Judging,Submitting,Not Submitted,五种状态
+    // 去除下拉框选择中的Compiling,Judging,Submitting,Not Submitted,四种状态（pending为了管理员易筛选用来重判失败提交重新进入判题队列）
     delete this.JUDGE_STATUS_LIST['5'];
     delete this.JUDGE_STATUS_LIST['6'];
     delete this.JUDGE_STATUS_LIST['7'];
-    delete this.JUDGE_STATUS_LIST['9'];
     delete this.JUDGE_STATUS_LIST['-10'];
     this.init();
   },
@@ -412,10 +410,15 @@ export default {
                 delete this.needCheckSubmitIds[key];
               }
             }
-            if (Object.keys(this.needCheckSubmitIds).length == 0) {
+            // 当前提交列表的提交都判题结束或者检查结果60s（2s*30）还没判题结束，为了避免无用请求加重服务器负担，直接停止检查的请求。
+            if (
+              Object.keys(this.needCheckSubmitIds).length == 0 ||
+              this.checkStatusNum == 30
+            ) {
               clearTimeout(this.refreshStatus);
               this.autoCheckOpen = false;
             } else {
+              this.checkStatusNum += 1;
               this.refreshStatus = setTimeout(checkStatus, 2000);
             }
           },
@@ -426,6 +429,7 @@ export default {
         );
       };
       // 设置每2秒检查一下提交结果
+      this.checkStatusNum += 1;
       this.refreshStatus = setTimeout(checkStatus, 2000);
       this.autoCheckOpen = true;
     },

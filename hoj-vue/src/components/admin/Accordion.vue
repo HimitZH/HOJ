@@ -2,22 +2,26 @@
   <div class="accordion">
     <header>
       <span class="title">{{ title }}</span>
-      <div class="header_right">
+      <span class="header_right">
         <slot name="header"></slot>
-      </div>
+      </span>
     </header>
     <div class="body" v-show="isOpen">
       <slot></slot>
     </div>
     <footer @click="isOpen = !isOpen">
-      <i :class="{ rotate: !isOpen }" class="el-icon-caret-top"></i>
+      <i
+        :class="{ rotate: !isOpen }"
+        class="el-icon-caret-top"
+        style="color:#2d8cf0"
+      ></i>
     </footer>
   </div>
 </template>
 
 <script>
 export default {
-  name: "Accordion",
+  name: 'Accordion',
   props: {
     title: {
       type: String,
@@ -33,8 +37,7 @@ export default {
 </script>
 
 <style scoped>
-.tit
-.accordion {
+.tit .accordion {
   border: 1px solid #eaeefb;
 }
 .accordion header {
@@ -48,6 +51,7 @@ export default {
 .header_right {
   float: right;
 }
+
 .body {
   background-color: #f9fafc;
   border-top: 1px solid #eaeefb;

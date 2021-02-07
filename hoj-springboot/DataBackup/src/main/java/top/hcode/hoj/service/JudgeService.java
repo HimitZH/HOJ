@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import top.hcode.hoj.pojo.entity.Judge;
 import com.baomidou.mybatisplus.extension.service.IService;
+import top.hcode.hoj.pojo.entity.ToJudge;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 
 import java.util.List;
@@ -30,5 +31,6 @@ public interface JudgeService extends IService<Judge> {
                                        String uid, Boolean beforeContestSubmit);
 
 
-    void rejudgeContestProblem(List<Judge> judgeList);
+    void rejudgeContestProblem(List<Judge> judgeList, String judgeToken);
+
 }

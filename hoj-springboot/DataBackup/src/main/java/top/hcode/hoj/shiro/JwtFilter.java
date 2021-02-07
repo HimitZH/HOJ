@@ -93,7 +93,7 @@ public class JwtFilter extends AuthenticatingFilter {
      * @return
      */
     private void refreshToken(HttpServletRequest request,HttpServletResponse response,String userId) throws IOException {
-            boolean lock = redisUtils.getLock(TOKEN_LOCK + userId, 60);// 获取锁60s
+            boolean lock = redisUtils.getLock(TOKEN_LOCK + userId, 20);// 获取锁20s
             if (lock) {
                 String newToken = jwtUtils.generateToken(userId);
                 response.setHeader("Access-Control-Allow-Credentials", "true");

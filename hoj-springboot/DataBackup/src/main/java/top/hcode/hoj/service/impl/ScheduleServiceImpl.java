@@ -2,6 +2,7 @@ package top.hcode.hoj.service.impl;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -121,6 +122,24 @@ public class ScheduleServiceImpl implements ScheduleService {
             if (process != null) {
                 process.destroy();
             }
+        }
+    }
+
+
+    /**
+     * @MethodName deleteTestCase
+     * @Params * @param null
+     * @Description 每天3点定时删除指定文件夹的上传测试数据
+     * @Return
+     * @Since 2021/2/7
+     */
+    @Scheduled(cron = "0 0 3 * * *")
+//    @Scheduled(cron = "0/5 * * * * *")
+    @Override
+    public void deleteTestCase() {
+        boolean result = FileUtil.del(Constants.File.TESTCASE_BASE_FOLDER.getPath());
+        if (!result){
+            log.error("每日定时任务异常------------------------>{}","清除本地的题目测试数据失败!");
         }
     }
 

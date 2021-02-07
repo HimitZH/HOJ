@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import top.hcode.hoj.common.exception.CompileError;
+import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.dao.JudgeMapper;
 import top.hcode.hoj.judger.*;
 import top.hcode.hoj.pojo.entity.Judge;
@@ -62,5 +64,9 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
         judge.setScore((Integer) judgeResult.getOrDefault("score", null));
 
         return judge;
+    }
+
+    public Boolean compileSpj(String code,Long pid,String spjLanguage) throws CompileError, SystemError {
+        return judgeStrategy.compileSpj(code, pid, spjLanguage);
     }
 }

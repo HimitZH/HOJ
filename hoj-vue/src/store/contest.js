@@ -28,12 +28,14 @@ const getters = {
     return rootGetters.isAuthenticated &&
       (state.contest.author === rootGetters.userInfo.author || rootGetters.isSuperAdmin)
   },
-  
+  canSubmit:(state, getters)=>{
+     return state.intoAccess||state.submitAccess || state.contest.type === CONTEST_TYPE.PUBLIC
+  },
   contestMenuDisabled: (state, getters) => {
     // 比赛创建者或者超级管理员可以直接查看
     if (getters.isContestAdmin) return false
     // 公开和保护赛可以查看
-    if (state.contest.type === CONTEST_TYPE.PUBLIC||state.contest.type===CONTEST_TYPE.PROTECT) {
+    if (state.contest.type === CONTEST_TYPE.PUBLIC||state.contest.type === CONTEST_TYPE.PROTECT) {
       // 未开始不可查看
       return getters.contestStatus === CONTEST_STATUS.SCHEDULED
     }
@@ -144,10 +146,10 @@ const mutations = {
     state.rankLimit = payload.rankLimit
   },
   contestIntoAccess(state, payload) {
-    state.intoAccess = payload.intoAccess
+    state.intoAccess = payload.access
   },
   contestSubmitAccess(state, payload) {
-    state.submitAccess = payload.submitAccess
+    state.submitAccess = payload.access
   },
   clearContest (state) {
     state.contest = {}

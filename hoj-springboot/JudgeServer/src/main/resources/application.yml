@@ -35,6 +35,12 @@ mybatis-plus:
   mapper-locations: classpath*:top/hcode/hoj/dao/xml/**Mapper.xml
   type-aliases-package: top.hcode.hoj.pojo.entity
 
+
+logging:
+  level:
+    com:
+      alibaba:
+        nacos: warn
 # 暴露监控
 management:
   endpoints:

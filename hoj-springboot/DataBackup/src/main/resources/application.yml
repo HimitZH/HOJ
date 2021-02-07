@@ -5,7 +5,8 @@ spring:
 ---
 # 消费者将要去访问的微服务名称（注册成功进入nacos的微服务提供者）
 service-url:
-  hoj-judge-server: http://hoj-judge-server
+  hoj-judge-server: http://hoj-judge-server # 服务访问base_url
+  name: hoj-judge-server # 服务名
 
 
 #激活Sentinel对Feign的支持
@@ -28,12 +29,13 @@ spring:
   redis:
     host: ${hoj.redis.host}
     port: ${hoj.redis.port}
-    timeout: 6000
+    timeout: 60000
     jedis:
       pool:
-        min-idle: 10
-        max-idle: 20
-        max-active: 50
+        min-idle: 10 #连接池中的最小空闲连接
+        max-idle: 50 #连接池中的最大空闲连接
+        max-active: 100 #连接池最大连接数（使用负值表示没有限制）
+        max-wait: -1 #连接池最大阻塞等待时间（使用负值表示没有限制）
   datasource:
     username: ${hoj.db.username}
     password: ${hoj.db.password}
@@ -73,3 +75,18 @@ shiro-redis:
   enabled: true
   redis-manager:
     host: ${hoj.redis.host}:${hoj.redis.port}
+
+
+ribbon:
+  # 指的是建立连接所用的时间，适用于网络状况正常的情况下，俩端连接所用的时间 单位是秒
+  ReadTimeout: 6000
+  # 指的是建立连接后从服务器读取到可用资源的时间
+  ConnectTimeout: 5000
+
+logging:
+  level:
+    com:
+      alibaba:
+        nacos:
+          client:
+            naming: error

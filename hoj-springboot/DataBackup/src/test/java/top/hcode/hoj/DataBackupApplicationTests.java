@@ -5,13 +5,20 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
+import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.NamingService;
+import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mysql.cj.protocol.PacketReceivedTimeHolder;
+import com.netflix.loadbalancer.DynamicServerListLoadBalancer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.client.RestTemplate;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.*;
 import top.hcode.hoj.pojo.entity.Contest;
@@ -33,6 +40,7 @@ import top.hcode.hoj.utils.JsoupUtils;
 import top.hcode.hoj.utils.RedisUtils;
 
 import java.io.IOException;
+import java.net.*;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -99,10 +107,23 @@ public class DataBackupApplicationTests {
         System.out.println(commandList);
     }
 
+    @Autowired
+    private NacosDiscoveryProperties discoveryProperties;
     @Test
     public void Test2() {
-        RoleAuthsVo roleAuths = roleAuthMapper.getRoleAuths(1000L);
-        System.out.println(roleAuths);
+        String clusterName = discoveryProperties.getClusterName();
+        System.out.println(clusterName);
+        // 获取该微服务的所有健康实例
+        // 获取服务发现的相关API
+        NamingService namingService = discoveryProperties.namingServiceInstance();
+        try {
+            // 获取该微服务的所有健康实例
+            List<Instance> instances = namingService.selectInstances("hoj-judge-server", true);
+            System.out.println(instances);
+        } catch (NacosException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Test
@@ -111,17 +132,43 @@ public class DataBackupApplicationTests {
         System.out.println(serviceIp);
     }
 
+
+    @Autowired
+    private RestTemplate restTemplate;
     @Test
     public void Test4() {
 ////        int todayJudgeNum = judgeMapper.getTodayJudgeNum();
 //        List<ContestVo> withinNext14DaysContests = contestMapper.getWithinNext14DaysContests();
 //        System.out.println(withinNext14DaysContests);
-
+        String result = restTemplate.getForObject("http://129.204.177.72:8848/nacos/v1/ns/instance?ip=192.168.226.1&port=8010&serviceName=hoj-judge-server&metadata=%7B%22maxTaskNum%22%3A8%2C%22currentTaskNum%22%3A1%7D", String.class);
+        System.out.println(result);
     }
 
     @Test
     public void Test5() throws IOException {
+        Enumeration<NetworkInterface> ifaces = null;
+        try {
+            ifaces = NetworkInterface.getNetworkInterfaces();
+        } catch (SocketException e) {
 
+        }
+        String siteLocalAddress = null;
+        while (ifaces.hasMoreElements()) {
+            NetworkInterface iface = ifaces.nextElement();
+            Enumeration<InetAddress> addresses = iface.getInetAddresses();
+            while (addresses.hasMoreElements()) {
+                InetAddress addr = addresses.nextElement();
+                String hostAddress = addr.getHostAddress();
+                if (addr instanceof Inet4Address) {
+                    if (addr.isSiteLocalAddress()) {
+                        siteLocalAddress = hostAddress;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+       System.out.println(siteLocalAddress == null ? "" : siteLocalAddress);
     }
 
     @Autowired
