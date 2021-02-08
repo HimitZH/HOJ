@@ -1,10 +1,10 @@
 hoj:
   judge:
     db:
-      username: root
-      password: Hzh&hy2020
-      host: 129.204.177.72
-      port: 3306
+      username: your_mysql_username
+      password: your_mysql_password
+      host: your_mysql_host
+      port: your_mysql_port
       name: hoj
     # 调用判题服务器的token，与数据服务后台必须一致！
     token: zsc-acm-hoj-judge-server

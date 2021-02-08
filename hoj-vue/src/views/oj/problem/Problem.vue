@@ -273,7 +273,12 @@
             show-password
           ></el-input>
         </el-form-item>
-        <el-button type="primary" round style="margin-left:130px">
+        <el-button
+          type="primary"
+          round
+          style="margin-left:130px"
+          @click="submitCode"
+        >
           OK
         </el-button>
       </el-form>
