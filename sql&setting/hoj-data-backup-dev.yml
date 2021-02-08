@@ -2,26 +2,27 @@ hoj:
   jwt:
     # 加密秘钥
     secret: zsc-acm-hoj
-    # token有效时长，1小时，单位秒
+    # token有效时长，24小时，单位秒
     expire: 86400
+    # 6小时内还有请求，可进行刷新
     checkRefreshExpire: 21600
     header: token
   judge:
     # 调用判题服务器的token
     token: zsc-acm-hoj-judge-server
   db:
-    host: 129.204.177.72
-    port: 3306
+    host: your_mysql_host
+    port: your_mysql_port
     name: hoj
-    username: root
-    password: Hzh&hy2020
+    username: your_mysql_username
+    password: your_mysql_password
   mail:
     ssl: true
-    username: 372347736@qq.com
-    password: hhaociozbzklbigh
-    host: smtp.qq.com
+    username: your_email_username
+    password: your_email_password
+    host: your_email_host
   redis:
-    host: 129.204.177.72
+    host: your_redis_host
     port: 6371
   web-config:
     base-url: http://localhost:9010
