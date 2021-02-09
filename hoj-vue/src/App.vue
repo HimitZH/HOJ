@@ -1,33 +1,40 @@
 <template>
-  <div v-if="!isAdminView">
-    <NavBar></NavBar>
-    <div id="oj-content">
-      <transition name="el-zoom-in-bottom">
-        <router-view></router-view>
-      </transition>
+  <div>
+    <el-backtop :right="10"></el-backtop>
+    <div v-if="!isAdminView">
+      <NavBar></NavBar>
+      <div id="oj-content">
+        <transition name="el-zoom-in-bottom">
+          <router-view></router-view>
+        </transition>
+      </div>
+      <div class="footer">
+        <a style="color:#1E9FFF" :href="websiteConfig.recordUrl">{{
+          websiteConfig.recordName
+        }}</a>
+        <p>
+          Powered by
+          <a :href="websiteConfig.projectUrl" style="color:#1E9FFF">{{
+            websiteConfig.projectName
+          }}</a>
+        </p>
+      </div>
     </div>
-    <div class="footer">
-      <a style="color:#1E9FFF" :href="websiteConfig.recordUrl">{{websiteConfig.recordName}}</a>
-      <p>
-        Powered by <a :href="websiteConfig.projectUrl" style="color:#1E9FFF">{{websiteConfig.projectName}}</a>
-      </p>
-    </div>
-   
-  </div>
-  <div v-else>
-    <div id="admin-content">
-      <transition name="el-zoom-in-bottom">
-        <router-view></router-view>
-      </transition>
+    <div v-else>
+      <div id="admin-content">
+        <transition name="el-zoom-in-bottom">
+          <router-view></router-view>
+        </transition>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import NavBar from "@/components/oj/common/NavBar";
-import { mapActions, mapState } from "vuex";
+import NavBar from '@/components/oj/common/NavBar';
+import { mapActions, mapState } from 'vuex';
 export default {
-  name: "app-content",
+  name: 'app-content',
   components: {
     NavBar,
   },
@@ -37,33 +44,33 @@ export default {
     };
   },
   methods: {
-      ...mapActions(['changeDomTitle','getWebsiteConfig'])
+    ...mapActions(['changeDomTitle', 'getWebsiteConfig']),
   },
   watch: {
     $route() {
       this.changeDomTitle();
     },
-    'websiteConfig' () {
+    websiteConfig() {
       this.changeDomTitle();
     },
   },
   computed: {
-      ...mapState(['websiteConfig'])
+    ...mapState(['websiteConfig']),
   },
-  created: function () {
+  created: function() {
     try {
-      document.body.removeChild(document.getElementById("app-loader"));
+      document.body.removeChild(document.getElementById('app-loader'));
     } catch (e) {
       console.log(e);
     }
-    if (this.$route.path.split("/")[1] != "admin") {
+    if (this.$route.path.split('/')[1] != 'admin') {
       this.isAdminView = false;
     } else {
       this.isAdminView = true;
     }
   },
-  mounted () {
-    this.getWebsiteConfig()
+  mounted() {
+    this.getWebsiteConfig();
   },
 };
 </script>
@@ -88,25 +95,25 @@ pre,
 samp {
   font-family: Consolas, Menlo, Courier, monospace;
 }
-#admin-content{
-  background-color: #1E9FFF;
-  position:absolute;
+#admin-content {
+  background-color: #1e9fff;
+  position: absolute;
   top: 0;
   bottom: 0;
   width: 100%;
 }
-.mobile-menu-active{
-  background-color: rgba(0,0,0,.1);
+.mobile-menu-active {
+  background-color: rgba(0, 0, 0, 0.1);
 }
-.mobile-menu-active .mu-item-title{
-  color: #2d8cf0!important;
+.mobile-menu-active .mu-item-title {
+  color: #2d8cf0 !important;
 }
-.mobile-menu-active .mu-icon{
-  color: #2d8cf0!important;
+.mobile-menu-active .mu-icon {
+  color: #2d8cf0 !important;
 }
-#particles-js{
-  position:fixed;
-  z-index:0;
+#particles-js {
+  position: fixed;
+  z-index: 0;
   top: 0;
   left: 0;
   right: 0;
@@ -121,7 +128,7 @@ a {
   transition: color 0.2s ease;
 }
 a:hover {
-  color: #2196f3!important;
+  color: #2196f3 !important;
 }
 .panel-title {
   font-size: 21px;
@@ -181,9 +188,9 @@ a:hover {
   font-size: 12px !important;
   font-weight: 500 !important;
 }
-.row--hover{
+.row--hover {
   cursor: pointer;
-  background-color: #ebf7ff!important;
+  background-color: #ebf7ff !important;
 }
 .vxe-table .vxe-body--column:not(.col--ellipsis),
 .vxe-table .vxe-footer--column:not(.col--ellipsis),
@@ -198,8 +205,8 @@ a:hover {
     margin-top: 80px;
     padding: 0 4%;
   }
-  .vxe-table--body-wrapper{
-    overflow-x: hidden!important;
+  .vxe-table--body-wrapper {
+    overflow-x: hidden !important;
   }
 }
 .markdown-body img {
@@ -250,11 +257,11 @@ a:hover {
   min-width: 120px !important;
   text-align: center;
 }
-.panel-options{
-  margin-top:10px;
+.panel-options {
+  margin-top: 10px;
   text-align: center;
 }
-.el-tag--dark{
-  border-color: #FFF!important;
+.el-tag--dark {
+  border-color: #fff !important;
 }
 </style>

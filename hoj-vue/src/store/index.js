@@ -9,7 +9,12 @@ const rootState = {
     mode: 'Login', // or 'register',
     visible: false
   },
-  websiteConfig:{},
+  websiteConfig:{
+    recordName:'粤ICP备×××××××号-1',
+    projectName:'HOJ',
+    recordUrl:'#',
+    projectUrl:'#'
+  },
   registerTimeOut: 60,
   resetTimeOut: 90,
 }

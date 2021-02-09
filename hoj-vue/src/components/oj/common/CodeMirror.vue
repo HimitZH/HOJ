@@ -239,7 +239,7 @@ export default {
   height: auto !important;
 }
 .CodeMirror-scroll {
-  min-height: 520px;
-  max-height: 520px;
+  min-height: 549px;
+  max-height: 1000px;
 }
 </style>

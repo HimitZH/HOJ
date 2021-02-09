@@ -3,8 +3,8 @@
     <div id="problem-main">
       <!--problem main-->
       <el-row>
-        <el-col :sm="24" :md="24" :lg="12" class="problem-detail">
-          <el-card :padding="10" shadow>
+        <el-col :sm="24" :md="24" :lg="12">
+          <el-card :padding="10" shadow class="problem-detail">
             <div slot="header" class="panel-title">
               <span>{{ problemData.problem.title }}</span
               ><br />
@@ -124,8 +124,13 @@
             </div>
           </el-card>
         </el-col>
-        <el-col :sm="24" :md="24" :lg="12" class="submit-detail">
-          <el-card :padding="10" id="submit-code" shadow="always">
+        <el-col :sm="24" :md="24" :lg="12">
+          <el-card
+            :padding="10"
+            id="submit-code"
+            shadow="always"
+            class="submit-detail"
+          >
             <CodeMirror
               :value.sync="code"
               :languages="problemData.problem.languages"
@@ -725,11 +730,11 @@ export default {
 
 @media screen and (min-width: 768px) {
   .problem-detail {
-    height: 672px;
+    height: 700px !important;
     overflow-y: auto;
   }
   .submit-detail {
-    height: 672px;
+    height: 700px !important;
     overflow-y: auto;
   }
   .problem-menu span {
