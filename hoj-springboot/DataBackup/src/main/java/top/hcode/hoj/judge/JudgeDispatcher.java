@@ -11,9 +11,7 @@ import top.hcode.hoj.dao.JudgeMapper;
 import top.hcode.hoj.pojo.entity.ContestRecord;
 import top.hcode.hoj.pojo.entity.Judge;
 import top.hcode.hoj.pojo.entity.ProblemCount;
-import top.hcode.hoj.pojo.entity.ToJudge;
 import top.hcode.hoj.service.impl.ContestRecordServiceImpl;
-import top.hcode.hoj.service.impl.JudgeServiceImpl;
 import top.hcode.hoj.service.impl.ProblemCountServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
@@ -21,7 +19,7 @@ import top.hcode.hoj.utils.RedisUtils;
 /**
  * @Author: Himit_ZH
  * @Date: 2021/2/5 16:44
- * @Description:
+ * @Description: 判题信息的发布者，通过主题发布到特定频道内
  */
 @Component
 @Slf4j
@@ -51,7 +49,6 @@ public class JudgeDispatcher {
             redisUtils.sendMessage(Constants.Judge.STATUS_JUDGE_WAITING.getName(), JSONUtil.toJsonStr(task));
         } catch (Exception e) {
             log.error("调用redis消息发布异常,此次判题任务判为系统错误--------------->{}", e.getMessage());
-
             UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
             judgeUpdateWrapper.eq("submit_id", submitId)
                     .set("error_message", "The something has gone wrong with the data Backup server. Please report this to administrator.")

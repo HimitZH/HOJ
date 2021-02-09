@@ -19,6 +19,9 @@ import top.hcode.hoj.service.impl.JudgeServiceImpl;
  * @Author: Himit_ZH
  * @Date: 2021/2/5 16:43
  * @Description:
+ * 1. 判题信息的接受者，调用判题服务，对提交代码进行判断，
+ * 2. 若无空闲判题服务器，会自动进入熔断机制，重新将该判题信息发布到频道内，
+ * 3. 再次接受到信息，再次查询是否有空闲判题服务器，若有则进行判题，否则回到2
  */
 @Component
 public class JudgeReceiver implements MessageListener {

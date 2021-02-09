@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @Author: Himit_ZH
  * @Date: 2020/10/30 10:21
- * @Description:
+ * @Description: 调用判题服务器的方法的容错机制，调用失败会走到以下方法进行执行
  */
 @Component
 @RefreshScope
@@ -34,9 +34,9 @@ public class CloudHandler implements ToJudgeService {
     @Override
     public CommonResult submitProblemJudge(ToJudge toJudge) {
 
-        // 线程沉睡两秒，再将任务重新发布，避免过快问题，同时判题服务过多，导致的失败
+        // 线程沉睡一秒，再将任务重新发布，避免过快问题，同时判题服务过多，导致的失败
         try {
-            TimeUnit.SECONDS.sleep(2);
+            TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
