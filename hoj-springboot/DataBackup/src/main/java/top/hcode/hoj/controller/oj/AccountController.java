@@ -271,8 +271,9 @@ public class AccountController {
         if (!userRoles.getPassword().equals(SecureUtil.md5(loginDto.getPassword()))) {
             return CommonResult.errorResponse("密码不正确");
         }
+
         if (userRoles.getStatus() != 0) {
-            return CommonResult.errorResponse("该账户已被封禁，请联系管理员进行处理。");
+            return CommonResult.errorResponse("该账户已被封禁，请联系管理员进行处理！");
         }
 
         String jwt = jwtUtils.generateToken(userRoles.getUid());

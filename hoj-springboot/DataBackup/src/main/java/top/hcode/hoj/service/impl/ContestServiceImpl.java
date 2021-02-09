@@ -16,6 +16,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.utils.Constants;
 
+import java.util.Date;
+
 /**
  * <p>
  * 服务实现类
@@ -84,6 +86,21 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
     }
 
     @Override
+    public Boolean isSealRank(String uid, Contest contest, Boolean forceRefresh, Boolean isRoot) {
+        // 如果是管理员同时选择强制刷新榜单，则封榜无效
+        if (forceRefresh && (isRoot || uid.equals(contest.getUid()))) {
+            return false;
+        } else if (contest.getSealRank() && contest.getSealRankTime() != null) { // 该比赛开启封榜模式
+            Date now = new Date();
+            // 如果现在时间处于封榜开始到比赛结束之间，不可刷新榜单
+            if (now.after(contest.getSealRankTime()) && now.before(contest.getEndTime())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
     public CommonResult checkJudgeAuth(String protectContestPwd, Contest contest, String uid) {
 
         if (contest.getAuth().intValue() == Constants.Contest.AUTH_PRIVATE.getCode() ||
@@ -94,11 +111,13 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
             // 如果还没注册
             if (register == null) {
                 // 如果提交附带密码不为空，且跟当前比赛的密码相等，则进行注册，并且此次提交可以提交,同时注册到数据库
-                if (!StringUtils.isEmpty(protectContestPwd) && contest.getPwd().equals(protectContestPwd)) {
+                if (!StringUtils.isEmpty(protectContestPwd)) {
+                    return CommonResult.errorResponse("对不起，提交失败！请您先成功注册该比赛！", CommonResult.STATUS_ACCESS_DENIED);
+                } else if (contest.getPwd().equals(protectContestPwd)) {
                     contestRegisterService.saveOrUpdate(new ContestRegister().setUid(uid).setCid(contest.getId()));
                     return null;
                 } else {
-                    return CommonResult.errorResponse("对不起，提交失败！请您先成功注册该比赛！", CommonResult.STATUS_ACCESS_DENIED);
+                    return CommonResult.errorResponse("对不起，比赛密码错误，提交代码失败！", CommonResult.STATUS_FAIL);
                 }
             }
         }

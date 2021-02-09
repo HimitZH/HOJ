@@ -70,6 +70,9 @@ axios.interceptors.response.use(
       if(error.response.headers['refresh-token']){ // token续约！！
         store.commit('changeUserToken',error.response.headers['authorization'])
       }
+      if(error.response.data instanceof Blob){ // 如果是文件操作的返回，由后续进行处理
+        return Promise.resolve(error.response);
+      }
       switch (error.response.status) {
         // 401: 未登录 token过期
         // 未登录则跳转登录页面，并携带当前页面的路径
@@ -94,7 +97,9 @@ axios.interceptors.response.use(
           break;
         // 其他错误，直接抛出错误提示
         default:
-          mMessage.error( error.response.data.msg);
+          if(error.response.data){
+            mMessage.error(error.response.data.msg);
+          }
           break;
       }
       return Promise.reject(error);

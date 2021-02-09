@@ -7,9 +7,11 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ZipUtil;
 import cn.hutool.core.io.file.FileWriter;
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -20,14 +22,12 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.ProblemCase;
-import top.hcode.hoj.pojo.entity.Role;
-import top.hcode.hoj.pojo.entity.UserInfo;
+import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.pojo.vo.ACMContestRankVo;
 import top.hcode.hoj.pojo.vo.ExcelUserVo;
+import top.hcode.hoj.pojo.vo.OIContestRankVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.impl.FileServiceImpl;
-import top.hcode.hoj.service.impl.ProblemCaseServiceImpl;
-import top.hcode.hoj.service.impl.UserInfoServiceImpl;
+import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
@@ -35,8 +35,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.io.File;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * @Author: Himit_ZH
@@ -59,6 +64,18 @@ public class FileController {
 
     @Autowired
     private ProblemCaseServiceImpl problemCaseService;
+
+    @Autowired
+    private ContestServiceImpl contestService;
+
+    @Autowired
+    private ContestRecordServiceImpl contestRecordService;
+
+    @Autowired
+    private ContestProblemServiceImpl contestProblemService;
+
+    @Autowired
+    private JudgeServiceImpl judgeService;
 
     @RequestMapping("/generate-user-excel")
     @RequiresAuthentication
@@ -225,11 +242,12 @@ public class FileController {
     @GetMapping("/download-testcase")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
-    public void downloadTestcase(@RequestParam("pid") Long pid, HttpServletResponse response) throws IOException {
+    public void downloadTestcase(@RequestParam("pid") Long pid, HttpServletResponse response) {
         QueryWrapper<ProblemCase> problemCaseQueryWrapper = new QueryWrapper<>();
         problemCaseQueryWrapper.eq("pid", pid);
         List<ProblemCase> problemCaseList = problemCaseService.list(problemCaseQueryWrapper);
         Assert.notEmpty(problemCaseList, "对不起，该题目的评测数据为空！");
+
         String workDir = Constants.File.TESTCASE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + IdUtil.simpleUUID();
         FileUtil.mkdir(workDir);
         // 写入本地
@@ -242,29 +260,259 @@ public class FileController {
             FileWriter outfileWriter = new FileWriter(outputName);
             outfileWriter.write(problemCaseList.get(i).getOutput());
         }
-        String fileName = "problem_" + pid + "_testcase_"+System.currentTimeMillis()+".zip";
+        String fileName = "problem_" + pid + "_testcase_" + System.currentTimeMillis() + ".zip";
         // 将对应文件夹的文件压缩成zip
         ZipUtil.zip(workDir, Constants.File.TESTCASE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
         // 将zip变成io流返回给前端
         FileReader fileReader = new FileReader(Constants.File.TESTCASE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
         BufferedInputStream bins = new BufferedInputStream(fileReader.getInputStream());//放到缓冲流里面
-        OutputStream outs = response.getOutputStream();//获取文件输出IO流
-        BufferedOutputStream bouts = new BufferedOutputStream(outs);
-        response.setContentType("application/x-download");
-        response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
-        int bytesRead = 0;
-        byte[] buffer = new byte[8192];
-        //开始向网络传输文件流
-        while ((bytesRead = bins.read(buffer, 0, 8192)) != -1) {
-            bouts.write(buffer, 0, bytesRead);
+        OutputStream outs = null;//获取文件输出IO流
+        BufferedOutputStream bouts = null;
+        try {
+            outs = response.getOutputStream();
+            bouts = new BufferedOutputStream(outs);
+            response.setContentType("application/x-download");
+            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+            int bytesRead = 0;
+            byte[] buffer = new byte[1024 * 10];
+            //开始向网络传输文件流
+            while ((bytesRead = bins.read(buffer, 0, 1024 * 10)) != -1) {
+                bouts.write(buffer, 0, bytesRead);
+            }
+            bouts.flush();
+        } catch (IOException e) {
+            log.error("下载题目测试数据的压缩文件异常------------>{}", e.getMessage());
+            response.reset();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            Map<String, Object> map = new HashMap<>();
+            map.put("status", CommonResult.STATUS_ERROR);
+            map.put("msg", "下载文件失败，请重新尝试！");
+            map.put("data", null);
+            try {
+                response.getWriter().println(JSON.toJSONString(map));
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        } finally {
+            try {
+                bins.close();
+                if (outs != null) {
+                    outs.close();
+                }
+                if (bouts != null) {
+                    bouts.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // 清空临时文件
+            FileUtil.del(workDir);
+            FileUtil.del(Constants.File.TESTCASE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
         }
-        bouts.flush();
-        bins.close();
-        outs.close();
-        bouts.close();
-        // 清空临时文件
-        FileUtil.del(workDir);
-        FileUtil.del(Constants.File.TESTCASE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
+    }
+
+
+    @GetMapping("/download-contest-rank")
+    @RequiresAuthentication
+    public void downloadContestRank(@RequestParam("cid") Long cid,
+                                    @RequestParam("forceRefresh") Boolean forceRefresh,
+                                    HttpServletRequest request,
+                                    HttpServletResponse response) throws IOException {
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        // 获取本场比赛的状态
+        Contest contest = contestService.getById(cid);
+
+        // 是否为超级管理员
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        // 检查比赛权限
+        CommonResult commonResult = contestService.checkContestAuth(contest, userRolesVo, isRoot);
+
+        // 不为空表示权限不足
+        if (commonResult != null) {
+            throw new IllegalArgumentException("对不起，你现在没有权限下载该比赛排行榜数据！");
+        }
+
+        // 检查是否需要开启封榜模式
+        Boolean isOpenSealRank = contestService.isSealRank(userRolesVo.getUid(), contest, forceRefresh, isRoot);
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding("utf-8");
+        // 这里URLEncoder.encode可以防止中文乱码
+        String fileName = URLEncoder.encode("contest_" + contest.getId() + "_rank", "UTF-8");
+        response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
+        response.setHeader("Content-Type", "application/xlsx");
+
+        // 获取题目displayID列表
+        QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
+        contestProblemQueryWrapper.eq("cid", contest.getId()).select("display_id");
+        List<String> contestProblemDisplayIDList = contestProblemService.list(contestProblemQueryWrapper)
+                .stream().map(ContestProblem::getDisplayId).collect(Collectors.toList());
+
+        if (contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) { // ACM比赛
+
+            QueryWrapper<ContestRecord> wrapper = new QueryWrapper<ContestRecord>().eq("cid", cid)
+                    .isNotNull("status")
+                    // 如果已经开启了封榜模式
+                    .notBetween(isOpenSealRank, "submit_time", contest.getSealRankTime(), contest.getEndTime())
+                    .orderByAsc("time");
+            List<ContestRecord> contestRecordList = contestRecordService.list(wrapper);
+            Assert.notEmpty(contestRecordList, "比赛暂无排行榜记录！");
+            List<ACMContestRankVo> acmContestRankVoList = contestRecordService.calcACMRank(contestRecordList);
+            EasyExcel.write(response.getOutputStream())
+                    .head(fileService.getContestRankExcelHead(contestProblemDisplayIDList, true))
+                    .sheet("rank")
+                    .doWrite(fileService.changeACMContestRankToExcelRowList(acmContestRankVoList, contestProblemDisplayIDList));
+        } else {
+            List<ContestRecord> oiContestRecord = contestRecordService.getOIContestRecord(cid, isOpenSealRank, contest.getSealRankTime(), contest.getEndTime());
+            Assert.notEmpty(oiContestRecord, "比赛暂无排行榜记录！");
+            List<OIContestRankVo> oiContestRankVoList = contestRecordService.calcOIRank(oiContestRecord);
+            EasyExcel.write(response.getOutputStream())
+                    .head(fileService.getContestRankExcelHead(contestProblemDisplayIDList, false))
+                    .sheet("rank")
+                    .doWrite(fileService.changOIContestRankToExcelRowList(oiContestRankVoList, contestProblemDisplayIDList));
+        }
+    }
+
+    @GetMapping("/download-contest-ac-submission")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    public void downloadContestACSubmission(@RequestParam("cid") Long cid,
+                                            @RequestParam(value = "excludeAdmin", defaultValue = "false") Boolean excludeAdmin,
+                                            HttpServletResponse response) {
+
+        Contest contest = contestService.getById(cid);
+        boolean isACM = contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode();
+
+        // cpid-->displayId
+        QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
+        contestProblemQueryWrapper.eq("cid", contest.getId());
+        List<ContestProblem> contestProblemList = contestProblemService.list(contestProblemQueryWrapper);
+        HashMap<Long, String> cpIdMap = new HashMap<>();
+        for (ContestProblem contestProblem : contestProblemList) {
+            cpIdMap.put(contestProblem.getId(), contestProblem.getDisplayId());
+        }
+
+        QueryWrapper<Judge> judgeQueryWrapper = new QueryWrapper<>();
+        judgeQueryWrapper.eq("cid", cid)
+                .eq(isACM, "status", Constants.Judge.STATUS_ACCEPTED.getStatus())
+                .isNotNull(!isACM, "score") // OI模式取得分不为null的
+                .between("submit_time", contest.getStartTime(), contest.getEndTime())
+                .ne(excludeAdmin, "uid", contest.getUid())
+                .orderByDesc("submit_time");
+
+        List<Judge> judgeList = judgeService.list(judgeQueryWrapper);
+
+        List<String> usernameList = judgeList.stream()
+                .filter(distinctByKey(Judge::getUsername)) // 根据用户名过滤唯一
+                .map(Judge::getUsername).collect(Collectors.toList()); // 映射出用户名列表
+
+
+        // 打包文件的临时路径 -> username为文件夹名字
+        String tmpFilesDir = Constants.File.CONTEST_AC_SUBMISSION_TMP_FOLDER.getPath() + File.separator + IdUtil.fastSimpleUUID();
+        FileUtil.mkdir(tmpFilesDir);
+        for (String username : usernameList) {
+            // 对于每个用户生成对应的文件夹
+            String userDir = tmpFilesDir + File.separator + username;
+            FileUtil.mkdir(userDir);
+            // 如果是ACM模式，则所有提交代码都要生成，如果同一题多次提交AC，加上提交时间秒后缀 ---> /A_666666.c
+            // 如果是OI模式就生成最近一次提交即可，且带上分数 ---> A_666666_100.c
+            List<Judge> userSubmissionList = judgeList.stream()
+                    .filter(judge -> judge.getUsername().equals(username)) // 过滤出对应用户的提交
+                    .sorted(Comparator.comparing(Judge::getSubmitTime).reversed()) // 根据提交时间进行降序
+                    .collect(Collectors.toList());
+            for (Judge judge : userSubmissionList) {
+                String filePath = userDir + File.separator + "_" + cpIdMap.getOrDefault(judge.getCpid(), "null")
+                        + "_" + judge.getSubmitTime().getTime();
+                // OI模式只取最后一次提交
+                if (!isACM) {
+                    filePath += "_" + judge.getScore() + "." + languageToFileSuffix(judge.getLanguage());
+                    FileWriter fileWriter = new FileWriter(filePath);
+                    fileWriter.write(judge.getCode());
+                    break;
+                } else {
+                    filePath += "." + languageToFileSuffix(judge.getLanguage());
+                    FileWriter fileWriter = new FileWriter(filePath);
+                    fileWriter.write(judge.getCode());
+                }
+
+            }
+        }
+        String zipFileName = contest.getTitle() + "_" + System.currentTimeMillis() + ".zip";
+        String zipPath = Constants.File.CONTEST_AC_SUBMISSION_TMP_FOLDER.getPath() + File.separator + zipFileName;
+        ZipUtil.zip(tmpFilesDir, zipPath);
+        // 将zip变成io流返回给前端
+        FileReader zipFileReader = new FileReader(zipPath);
+        BufferedInputStream bins = new BufferedInputStream(zipFileReader.getInputStream());//放到缓冲流里面
+        OutputStream outs = null;//获取文件输出IO流
+        BufferedOutputStream bouts = null;
+        try {
+            outs = response.getOutputStream();
+            bouts = new BufferedOutputStream(outs);
+            response.setContentType("application/x-download");
+            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(zipFileName, "UTF-8"));
+            int bytesRead = 0;
+            byte[] buffer = new byte[1024 * 10];
+            //开始向网络传输文件流
+            while ((bytesRead = bins.read(buffer, 0, 1024 * 10)) != -1) {
+                bouts.write(buffer, 0, bytesRead);
+            }
+            // 刷新缓存
+            bouts.flush();
+        } catch (IOException e) {
+            log.error("下载比赛AC提交代码的压缩文件异常------------>{}", e.getMessage());
+            response.reset();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            Map<String, Object> map = new HashMap<>();
+            map.put("status", CommonResult.STATUS_ERROR);
+            map.put("msg", "下载文件失败，请重新尝试！");
+            map.put("data", null);
+            try {
+                response.getWriter().println(JSON.toJSONString(map));
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        } finally {
+            try {
+                bins.close();
+                if (outs != null) {
+                    outs.close();
+                }
+                if (bouts != null) {
+                    bouts.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        FileUtil.del(tmpFilesDir);
+        FileUtil.del(zipPath);
+
+    }
+
+    private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+    }
+
+    private static String languageToFileSuffix(String language) {
+        switch (language) {
+            case "C":
+                return "c";
+            case "C++":
+                return "cpp";
+            case "Python2":
+            case "Python3":
+                return "py";
+            case "Java":
+                return "java";
+        }
+        return "txt";
     }
 
 }

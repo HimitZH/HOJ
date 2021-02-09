@@ -30,8 +30,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/judge")
-@RequiresAuthentication
-@RequiresRoles("root")  // 只有超级管理员能操作
 @RefreshScope
 public class AdminJudgeController {
 
@@ -57,6 +55,8 @@ public class AdminJudgeController {
     private JudgeDispatcher judgeDispatcher;
 
     @GetMapping("/rejudge")
+    @RequiresAuthentication
+    @RequiresRoles("root")  // 只有超级管理员能操作
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
     public CommonResult rejudge(@RequestParam("submitId") Long submitId) {
         Judge judge = judgeService.getById(submitId);
@@ -100,6 +100,8 @@ public class AdminJudgeController {
     }
 
     @GetMapping("/rejudge-contest-problem")
+    @RequiresAuthentication
+    @RequiresRoles("root")  // 只有超级管理员能操作
     @Transactional
     public CommonResult rejudgeContestProblem(@RequestParam("cid") Long cid, @RequestParam("pid") Long pid) {
 

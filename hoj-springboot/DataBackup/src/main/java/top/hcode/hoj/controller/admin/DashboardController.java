@@ -29,8 +29,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/admin/dashboard")
-@RequiresAuthentication
-@RequiresRoles(value = {"root","admin"},logical = Logical.OR)
 public class DashboardController {
 
     @Autowired
@@ -46,6 +44,8 @@ public class DashboardController {
     private SessionMapper sessionDao;
 
     @PostMapping("/get-sessions")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     public CommonResult getSessions(HttpServletRequest request){
 
         // 需要获取一下该token对应用户的数据
@@ -62,6 +62,8 @@ public class DashboardController {
     }
 
     @GetMapping("/get-dashboard-info")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     public CommonResult getDashboardInfo(){
         int userNum = userInfoDao.count();
         int recentContestNum = contestDao.getWithinNext14DaysContests().size();

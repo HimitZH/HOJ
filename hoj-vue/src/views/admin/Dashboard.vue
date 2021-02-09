@@ -290,9 +290,14 @@ export default {
   },
   methods: {
     refreshJudgeServerList() {
-      api.getJudgeServer().then((res) => {
-        this.judgeInfo = res.data.data;
-      });
+      api.getJudgeServer().then(
+        (res) => {
+          this.judgeInfo = res.data.data;
+        },
+        (err) => {
+          clearInterval(this.intervalId);
+        }
+      );
     },
     refreshGeneralSystemInfo() {
       api.admin_getGeneralSystemInfo().then(
@@ -308,7 +313,9 @@ export default {
             'backupPercentMemoryLoad'
           ] = this.generalInfo.backupPercentMemoryLoad;
         },
-        () => {}
+        () => {
+          clearInterval(this.intervalId);
+        }
       );
     },
   },

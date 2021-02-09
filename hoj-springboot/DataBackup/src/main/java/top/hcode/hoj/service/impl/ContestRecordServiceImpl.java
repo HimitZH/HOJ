@@ -37,9 +37,67 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         return contestRecordMapper.getACInfo(page, status, cid);
     }
 
+
     @Override
     public IPage<ACMContestRankVo> getContestACMRank(List<ContestRecord> contestRecordList, int currentPage, int limit) {
 
+        // 进行排序计算
+        List<ACMContestRankVo> orderResultList = calcACMRank(contestRecordList);
+
+        // 计算好排行榜，然后进行分页
+        Page<ACMContestRankVo> page = new Page<>(currentPage, limit);
+        int count = orderResultList.size();
+        List<ACMContestRankVo> pageList = new ArrayList<>();
+        //计算当前页第一条数据的下标
+        int currId = currentPage > 1 ? (currentPage - 1) * limit : 0;
+        for (int i = 0; i < limit && i < count - currId; i++) {
+            pageList.add(orderResultList.get(currId + i));
+        }
+        page.setSize(limit);
+        page.setCurrent(currentPage);
+        page.setTotal(count);
+        //计算分页总页数
+        page.setPages(count % 10 == 0 ? count / 10 : count / 10 + 1);
+        page.setRecords(pageList);
+
+        return page;
+    }
+
+
+    @Override
+    public IPage<OIContestRankVo> getContestOIRank(Long cid, Boolean isOpenSealRank, Date sealTime, Date endTime, int currentPage, int limit) {
+
+        // 获取每个用户每道题最近一次提交
+        List<ContestRecord> oiContestRecord = contestRecordMapper.getOIContestRecord(cid, isOpenSealRank, sealTime, endTime);
+
+        // 计算排名
+        List<OIContestRankVo> orderResultList = calcOIRank(oiContestRecord);
+
+        // 计算好排行榜，然后进行分页
+        Page<OIContestRankVo> page = new Page<>(currentPage, limit);
+        int count = orderResultList.size();
+        List<OIContestRankVo> pageList = new ArrayList<>();
+        //计算当前页第一条数据的下标
+        int currId = currentPage > 1 ? (currentPage - 1) * limit : 0;
+        for (int i = 0; i < limit && i < count - currId; i++) {
+            pageList.add(orderResultList.get(currId + i));
+        }
+        page.setSize(limit);
+        page.setCurrent(currentPage);
+        page.setTotal(count);
+        //计算分页总页数
+        page.setPages(count % 10 == 0 ? count / 10 : count / 10 + 1);
+        page.setRecords(pageList);
+
+        return page;
+    }
+
+    @Override
+    public List<ContestRecord> getOIContestRecord(Long cid, Boolean isOpenSealRank, Date sealTime, Date endTime) {
+        return contestRecordMapper.getOIContestRecord(cid, isOpenSealRank, sealTime, endTime);
+    }
+
+    public List<ACMContestRankVo> calcACMRank(List<ContestRecord> contestRecordList) {
         List<ACMContestRankVo> result = new ArrayList<>();
 
         HashMap<String, Integer> uidMapIndex = new HashMap<>();
@@ -106,34 +164,10 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                 .thenComparing(ACMContestRankVo::getTotalTime) //再以总耗时升序
         ).collect(Collectors.toList());
 
-
-        // 计算好排行榜，然后进行分页
-        Page<ACMContestRankVo> page = new Page<>(currentPage, limit);
-        int count = orderResultList.size();
-        List<ACMContestRankVo> pageList = new ArrayList<>();
-        //计算当前页第一条数据的下标
-        int currId = currentPage > 1 ? (currentPage - 1) * limit : 0;
-        for (int i = 0; i < limit && i < count - currId; i++) {
-            pageList.add(orderResultList.get(currId + i));
-        }
-        page.setSize(limit);
-        page.setCurrent(currentPage);
-        page.setTotal(count);
-        //计算分页总页数
-        page.setPages(count % 10 == 0 ? count / 10 : count / 10 + 1);
-        page.setRecords(pageList);
-
-        return page;
+        return orderResultList;
     }
 
-
-    @Override
-    public IPage<OIContestRankVo> getContestOIRank(Long cid, Boolean isOpenSealRank, Date sealTime, Date endTime, int currentPage, int limit) {
-
-        // 获取每个用户每道题最近一次提交
-        List<ContestRecord> oiContestRecord = contestRecordMapper.getOIContestRecord(cid, isOpenSealRank, sealTime, endTime);
-
-
+    public List<OIContestRankVo> calcOIRank(List<ContestRecord> oiContestRecord) {
         List<OIContestRankVo> result = new ArrayList<>();
 
         HashMap<String, Integer> uidMapIndex = new HashMap<>();
@@ -174,24 +208,6 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         List<OIContestRankVo> orderResultList = result.stream()
                 .sorted(Comparator.comparing(OIContestRankVo::getTotalScore, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
-
-
-        // 计算好排行榜，然后进行分页
-        Page<OIContestRankVo> page = new Page<>(currentPage, limit);
-        int count = orderResultList.size();
-        List<OIContestRankVo> pageList = new ArrayList<>();
-        //计算当前页第一条数据的下标
-        int currId = currentPage > 1 ? (currentPage - 1) * limit : 0;
-        for (int i = 0; i < limit && i < count - currId; i++) {
-            pageList.add(orderResultList.get(currId + i));
-        }
-        page.setSize(limit);
-        page.setCurrent(currentPage);
-        page.setTotal(count);
-        //计算分页总页数
-        page.setPages(count % 10 == 0 ? count / 10 : count / 10 + 1);
-        page.setRecords(pageList);
-
-        return page;
+        return orderResultList;
     }
 }

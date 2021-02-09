@@ -24,7 +24,7 @@ public class OIContestRankVo {
     @ApiModelProperty(value = "用户真实姓名")
     private String realname;
 
-    @ApiModelProperty(value = "提交总罚时")
+    @ApiModelProperty(value = "提交总得分")
     private Integer totalScore;
 
     @ApiModelProperty(value = "OI的题对应提交得分")

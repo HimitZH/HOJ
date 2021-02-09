@@ -30,8 +30,6 @@ import java.util.*;
 @RestController
 @RefreshScope
 @RequestMapping("/admin/problem")
-@RequiresAuthentication
-@RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
 public class AdminProblemController {
 
     @Autowired
@@ -48,6 +46,8 @@ public class AdminProblemController {
 
 
     @GetMapping("/get-problem-list")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
     public CommonResult getProblemList(@RequestParam(value = "limit", required = false) Integer limit,
                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                        @RequestParam(value = "keyword", required = false) String keyword) {
@@ -73,6 +73,8 @@ public class AdminProblemController {
     }
 
     @GetMapping("")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
     public CommonResult getProblem(@Valid @RequestParam("id") Long id) {
         Problem problem = problemService.getById(id);
         if (problem != null) { // 查询成功
@@ -83,6 +85,8 @@ public class AdminProblemController {
     }
 
     @DeleteMapping("")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
     public CommonResult deleteProblem(@Valid @RequestParam("id") Long id) {
         boolean result = problemService.removeById(id);
         /*
@@ -96,6 +100,8 @@ public class AdminProblemController {
     }
 
     @PostMapping("")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
     public CommonResult addProblem(@RequestBody ProblemDto problemDto) {
         boolean result = problemService.adminAddProblem(problemDto);
         if (result) { // 添加成功
@@ -107,6 +113,8 @@ public class AdminProblemController {
     }
 
     @PutMapping("")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
     @Transactional
     public CommonResult updateProblem(@RequestBody ProblemDto problemDto) {
         boolean result = problemService.adminUpdateProblem(problemDto);
@@ -118,6 +126,8 @@ public class AdminProblemController {
     }
 
     @GetMapping("/get-problem-cases")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
     public CommonResult getProblemCases(@Valid @RequestParam("pid") Long pid) {
         Map<String, Object> map = new HashMap<>();
         map.put("pid", pid);
@@ -131,6 +141,8 @@ public class AdminProblemController {
     }
 
     @PostMapping("/compile-spj")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
     public CommonResult compileSpj(@RequestBody CompileSpj compileSpj) {
 
         if (StringUtils.isEmpty(compileSpj.getSpjSrc()) ||

@@ -106,7 +106,7 @@
             </el-tooltip>
             <el-tooltip
               effect="dark"
-              content="下载通过的提交列表"
+              content="下载通过的提交代码"
               placement="top"
             >
               <el-button
@@ -208,8 +208,7 @@ export default {
       this.currentId = contestId;
     },
     downloadSubmissions() {
-      let excludeAdmin = this.excludeAdmin ? '1' : '0';
-      let url = `/admin/download_submissions?contest_id=${this.currentId}&exclude_admin=${excludeAdmin}`;
+      let url = `/file/download-contest-ac-submission?cid=${this.currentId}&excludeAdmin=${this.excludeAdmin}`;
       utils.downloadFile(url);
     },
     goEdit(contestId) {
