@@ -6,8 +6,6 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,6 @@ import top.hcode.hoj.pojo.entity.UserRole;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.UserInfoService;
 import top.hcode.hoj.service.UserRecordService;
-import top.hcode.hoj.service.UserRoleService;
 import top.hcode.hoj.service.impl.UserRoleServiceImpl;
 import top.hcode.hoj.utils.RedisUtils;
 
@@ -33,9 +30,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/admin/user")
-@RequiresAuthentication
-@RequiresRoles("root")  // 只有超级管理员能操作
-public class UserController {
+public class AdminUserController {
 
     @Autowired
     private UserRoleServiceImpl userRoleService;
@@ -50,6 +45,8 @@ public class UserController {
     private RedisUtils redisUtils;
 
     @GetMapping("/get-user-list")
+    @RequiresAuthentication
+    @RequiresRoles("root")  // 只有超级管理员能操作
     public CommonResult getUserList(@RequestParam(value = "limit", required = false) Integer limit,
                                     @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                     @RequestParam(value = "keyword", required = false) String keyword){
@@ -65,6 +62,8 @@ public class UserController {
     }
 
     @PutMapping("/edit-user")
+    @RequiresRoles("root")  // 只有超级管理员能操作
+    @RequiresAuthentication
     @Transactional
     public CommonResult editUser(@RequestBody Map<String, Object> params){
         String username = (String) params.get("username");
@@ -96,6 +95,8 @@ public class UserController {
     }
 
     @DeleteMapping("/delete-user")
+    @RequiresRoles("root")  // 只有超级管理员能操作
+    @RequiresAuthentication
     public CommonResult deleteUser(@RequestBody Map<String, Object> params){
         List<String> deleteUserIds = (List<String>) params.get("ids");
         boolean result = userInfoService.removeByIds(deleteUserIds);
@@ -107,6 +108,8 @@ public class UserController {
     }
 
     @PostMapping("/insert-batch-user")
+    @RequiresRoles("root")  // 只有超级管理员能操作
+    @RequiresAuthentication
     @Transactional
     public CommonResult insertBatchUser(@RequestBody Map<String, Object> params){
         List<List<String>> users = (List<List<String>>) params.get("users");
@@ -140,6 +143,8 @@ public class UserController {
     }
 
     @PostMapping("/generate-user")
+    @RequiresRoles("root")  // 只有超级管理员能操作
+    @RequiresAuthentication
     @Transactional
     public CommonResult generateUser(@RequestBody Map<String, Object> params){
         String prefix = (String) params.getOrDefault("prefix","");

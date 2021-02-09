@@ -380,18 +380,9 @@ public class ContestController {
         }
 
         // 校验该比赛是否开启了封榜模式
-        boolean isOpenSealRank = false;
+        boolean isOpenSealRank = contestService.isSealRank(userRolesVo.getUid(), contest, forceRefresh, isRoot);
 
-        // 如果是管理员同时选择强制刷新榜单，则封榜无效
-        if (forceRefresh && (isRoot || userRolesVo.getUid().equals(contest.getUid()))) {
-            isOpenSealRank = false;
-        } else if (contest.getSealRank() && contest.getSealRankTime() != null) {
-            Date now = new Date();
-            // 如果现在时间处于封榜开始到比赛结束之间，不可刷新榜单
-            if (now.after(contest.getSealRankTime()) && now.before(contest.getEndTime())) {
-                isOpenSealRank = true;
-            }
-        }
+
         IPage resultList;
         if (contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) { // ACM比赛
 

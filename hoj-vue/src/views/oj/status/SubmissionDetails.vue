@@ -78,11 +78,7 @@
             <span>{{ submissionMemoryFormat(row.memory) }}</span>
           </template>
         </vxe-table-column>
-        <vxe-table-column
-          title="Score"
-          min-width="64"
-          v-if="tableData[0].score != null"
-        >
+        <vxe-table-column title="Score" min-width="64" v-if="isIOProblem">
           <template v-slot="{ row }">
             <span>{{ row.score }}</span>
           </template>
@@ -92,13 +88,6 @@
             <span>{{ submissionLengthFormat(row.length) }}</span>
           </template>
         </vxe-table-column>
-
-        <vxe-table-column
-          v-if="isIOProblem"
-          field="score"
-          title="Score"
-          min-width="96"
-        ></vxe-table-column>
       </vxe-table>
     </el-col>
 

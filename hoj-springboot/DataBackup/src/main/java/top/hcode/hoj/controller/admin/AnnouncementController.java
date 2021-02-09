@@ -20,13 +20,13 @@ import java.util.Map;
  */
 @RestController
 @RequiresAuthentication
-@RequiresRoles("root")  // 只有超级管理员能操作
 public class AnnouncementController {
 
     @Autowired
     private AnnouncementServiceImpl announcementDao;
 
     @GetMapping("/admin/announcement")
+    @RequiresRoles("root")  // 只有超级管理员能操作
     public CommonResult getAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
                                             @RequestParam(value = "currentPage", required = false) Integer currentPage){
         if (currentPage == null || currentPage < 1) currentPage = 1;
@@ -40,6 +40,7 @@ public class AnnouncementController {
     }
 
     @DeleteMapping("/admin/announcement")
+    @RequiresRoles("root")  // 只有超级管理员能操作
     public CommonResult deleteAnnouncement(@Valid @RequestParam("aid")long aid){
         boolean result = announcementDao.removeById(aid);
         if (result) { // 删除成功
@@ -50,6 +51,7 @@ public class AnnouncementController {
     }
 
     @PostMapping("/admin/announcement")
+    @RequiresRoles("root")  // 只有超级管理员能操作
     public CommonResult addAnnouncement(@RequestBody Announcement announcement){
         boolean result = announcementDao.save(announcement);
         if (result) { // 添加成功
@@ -60,6 +62,7 @@ public class AnnouncementController {
     }
 
     @PutMapping("/admin/announcement")
+    @RequiresRoles("root")  // 只有超级管理员能操作
     public CommonResult updateAnnouncement(@RequestBody Announcement announcement){
         boolean result = announcementDao.saveOrUpdate(announcement);
         if (result) { // 更新成功

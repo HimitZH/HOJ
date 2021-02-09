@@ -58,13 +58,11 @@ function downloadFile (url) {
         let fr = new window.FileReader()
         if (resp.data.error) {
           myMessage.error(resp.data.error)
-        } else {
-          myMessage.error('Invalid file format')
         }
         fr.onload = (event) => {
           let data = JSON.parse(event.target.result)
-          if (data.error) {
-            myMessage.error(data.data)
+          if (data.msg) {
+            myMessage.error(data.msg)
           } else {
             myMessage.error('Invalid file format')
           }
@@ -77,7 +75,6 @@ function downloadFile (url) {
       link.href = window.URL.createObjectURL(new window.Blob([resp.data], {type: headers['content-type']}))
       link.download = (headers['content-disposition'] || '').split('filename=')[1]
       document.body.appendChild(link)
-      console.log(link)
       link.click()
       link.remove()
       resolve()

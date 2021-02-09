@@ -1,8 +1,5 @@
 package top.hcode.hoj.utils;
 
-import com.sun.org.apache.xpath.internal.objects.XNull;
-import org.apache.poi.ss.formula.functions.T;
-
 /**
  * @Author: Himit_ZH
  * @Date: 2021/1/1 13:00
@@ -136,7 +133,9 @@ public class Constants {
 
         TESTCASE_BASE_FOLDER("D:\\zip\\"),
 
-        TESTCASE_DOWNLOAD_TMP_FOLDER("D:\\zip\\download");
+        TESTCASE_DOWNLOAD_TMP_FOLDER("D:\\zip\\download"),
+
+        CONTEST_AC_SUBMISSION_TMP_FOLDER("D:\\zip\\contest_ac");
 
         private final String path;
 

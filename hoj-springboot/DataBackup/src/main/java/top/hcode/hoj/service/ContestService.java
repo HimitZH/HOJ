@@ -23,5 +23,7 @@ public interface ContestService extends IService<Contest> {
 
     CommonResult checkContestAuth(Contest contest, UserRolesVo userRolesVo, Boolean isRoot);
 
+    Boolean isSealRank(String uid, Contest contest, Boolean forceRefresh, Boolean isRoot);
+
     CommonResult checkJudgeAuth(String protectContestPwd, Contest contest, String uid);
 }

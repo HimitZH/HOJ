@@ -379,7 +379,7 @@ public class JudgeController {
         // 当前所有测试点并未记录输出输出数据，暂时只支持 空间 时间 状态码 IO得分查看而已
         List<JudgeCase> judgeCaseList = judgeCaseService.list(wrapper);
 
-        if (judgeCaseList.size() == 0) { // 未查询到一条数据
+        if (judgeCaseList.isEmpty()) { // 未查询到一条数据
             return CommonResult.successResponse(null, "暂无数据");
         } else {
             return CommonResult.successResponse(judgeCaseList, "获取成功");

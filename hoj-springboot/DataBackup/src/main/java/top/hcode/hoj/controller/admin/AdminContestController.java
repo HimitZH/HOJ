@@ -31,8 +31,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/admin/contest")
-@RequiresAuthentication
-@RequiresRoles(value = {"root","admin"},logical = Logical.OR)
 public class AdminContestController {
 
     @Autowired
@@ -51,6 +49,8 @@ public class AdminContestController {
     private AnnouncementServiceImpl announcementService;
 
     @GetMapping("/get-contest-list")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     public CommonResult getContestList(@RequestParam(value = "limit", required = false) Integer limit,
                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                        @RequestParam(value = "keyword", required = false) String keyword){
@@ -77,6 +77,8 @@ public class AdminContestController {
     }
 
     @GetMapping("")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     public CommonResult getContest(@Valid @RequestParam("cid")Long cid){
         Contest contest = contestService.getById(cid);
         if (contest !=null) { // 查询成功
@@ -87,6 +89,8 @@ public class AdminContestController {
     }
 
     @DeleteMapping("")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     public CommonResult deleteContest(@Valid @RequestParam("cid")Long cid){
         boolean result = contestService.removeById(cid);
         /*
@@ -100,6 +104,8 @@ public class AdminContestController {
     }
 
     @PostMapping("")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     public CommonResult addContest(@RequestBody Contest contest){
         boolean result = contestService.save(contest);
         if (result) { // 添加成功
@@ -110,6 +116,8 @@ public class AdminContestController {
     }
 
     @PutMapping("")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     public CommonResult updateContest(@RequestBody Contest contest){
         boolean result = contestService.saveOrUpdate(contest);
         if (result) { // 添加成功
@@ -124,6 +132,8 @@ public class AdminContestController {
      */
 
     @GetMapping("/get-problem-list")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     @Transactional
     public CommonResult getProblemList(@RequestParam(value = "limit", required = false) Integer limit,
                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
@@ -180,6 +190,8 @@ public class AdminContestController {
     }
 
     @GetMapping("/problem")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     public CommonResult getProblem(@Valid @RequestParam("id")Long pid){
         Problem problem = problemService.getById(pid);
         if (problem !=null) { // 查询成功
@@ -190,6 +202,8 @@ public class AdminContestController {
     }
 
     @DeleteMapping("/problem")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     public CommonResult deleteProblem(@Valid @RequestParam("pid")Long pid){
         boolean result = problemService.removeById(pid);
         /*
@@ -203,6 +217,8 @@ public class AdminContestController {
     }
 
     @PostMapping("/problem")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     @Transactional
     public CommonResult addProblem(@RequestBody ProblemDto problemDto){
         boolean result = problemService.adminAddProblem(problemDto);
@@ -216,6 +232,8 @@ public class AdminContestController {
     }
 
     @PutMapping("/problem")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     @Transactional
     public CommonResult updateProblem(@RequestBody ProblemDto problemDto){
         boolean result = problemService.adminUpdateProblem(problemDto);
@@ -227,6 +245,8 @@ public class AdminContestController {
     }
 
     @GetMapping("/contest-problem")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     public CommonResult getContestProblem(@RequestParam(value = "cid", required = true) Long cid,
                                           @RequestParam(value = "pid", required = true) Long pid){
         QueryWrapper<ContestProblem> queryWrapper = new QueryWrapper<>();
@@ -240,6 +260,8 @@ public class AdminContestController {
     }
 
     @PutMapping("/contest-problem")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     public CommonResult setContestProblem(@RequestBody ContestProblem contestProblem){
         boolean result = contestProblemService.saveOrUpdate(contestProblem);
         if (result){
@@ -250,6 +272,8 @@ public class AdminContestController {
     }
 
     @PutMapping("/change-problem-auth")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     public CommonResult changeProblemAuth(@RequestBody Problem problem){
         boolean result = problemService.saveOrUpdate(problem);
         if (result) { // 更新成功
@@ -260,6 +284,8 @@ public class AdminContestController {
     }
 
     @PostMapping("/add-problem-from-public")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     public CommonResult addProblemFromPublic(@RequestBody HashMap<String,String> params){
 
         String pidStr = params.get("pid");
@@ -290,6 +316,8 @@ public class AdminContestController {
      */
 
     @GetMapping("/announcement")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     public CommonResult getAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
                                             @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                             @RequestParam(value = "cid", required = true) Long cid){
@@ -305,6 +333,8 @@ public class AdminContestController {
     }
 
     @DeleteMapping("/announcement")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     public CommonResult deleteAnnouncement(@Valid @RequestParam("aid")Long aid){
         boolean result = announcementService.removeById(aid);
         if (result) { // 删除成功
@@ -315,6 +345,8 @@ public class AdminContestController {
     }
 
     @PostMapping("/announcement")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     @Transactional
     public CommonResult addAnnouncement(@RequestBody AnnouncementDto announcementDto){
         boolean result1 = announcementService.save(announcementDto.getAnnouncement());
@@ -328,6 +360,8 @@ public class AdminContestController {
     }
 
     @PutMapping("/announcement")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
     public CommonResult updateAnnouncement(@RequestBody AnnouncementDto announcementDto){
         boolean result = announcementService.saveOrUpdate(announcementDto.getAnnouncement());
         if (result) { // 更新成功

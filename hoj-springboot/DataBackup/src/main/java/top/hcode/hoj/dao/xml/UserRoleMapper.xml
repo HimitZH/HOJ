@@ -20,18 +20,21 @@
         <result column="gmt_create" property="gmtCreate"></result>
         <result column="gmt_modified" property="gmtModified"></result>
         <collection property="roles" ofType="top.hcode.hoj.pojo.entity.Role">
-            <id column="id" property="id"></id>
+            <id column="role_id" property="id"></id>
             <result column="role" property="role"></result>
             <result column="description" property="description"></result>
-            <result column="status" property="status"></result>
-            <result column="gmt_create" property="gmtCreate"></result>
-            <result column="gmt_modified" property="gmtModified"></result>
+            <result column="role_status" property="status"></result>
+            <result column="role_gmt_create" property="gmtCreate"></result>
+            <result column="role_gmt_modified" property="gmtModified"></result>
         </collection>
     </resultMap>
 
     <select id="getUserRoles" resultMap="map_UserRoles">
-       SELECT r.*,u.* FROM user_info u
-       LEFT OUTER JOIN user_role ur ON u.uuid=ur.uid LEFT JOIN role r ON ur.role_id = r.id
+        SELECT r.id as role_id,r.role as role,r.description as description,r.status as role_status, r.gmt_create as
+        role_gmt_create,
+        r.gmt_modified as role_gmt_modified,
+        u.* FROM user_info u
+        LEFT OUTER JOIN user_role ur ON u.uuid=ur.uid LEFT JOIN role r ON ur.role_id = r.id
         <where>
             <if test="uid != null and uid != ''">
                 u.uuid = #{uid}

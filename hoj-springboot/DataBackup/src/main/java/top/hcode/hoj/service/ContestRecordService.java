@@ -25,4 +25,6 @@ public interface ContestRecordService extends IService<ContestRecord> {
 
     IPage<OIContestRankVo> getContestOIRank(Long cid, Boolean isOpenSealRank, Date sealTime, Date endTime, int currentPage, int limit);
 
+    List<ContestRecord> getOIContestRecord(Long cid, Boolean isOpenSealRank, Date sealTime, Date endTime);
+
 }

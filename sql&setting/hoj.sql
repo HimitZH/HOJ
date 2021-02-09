@@ -526,7 +526,7 @@ CREATE TABLE `user_info` (
   `uuid` varchar(32) NOT NULL,
   `username` varchar(100) NOT NULL COMMENT '用户名',
   `password` varchar(100) NOT NULL COMMENT '密码',
-  `nickname` varchar(100) NOT NULL COMMENT '昵称',
+  `nickname` varchar(100) DEFAULT NULL COMMENT '昵称',
   `school` varchar(100) DEFAULT NULL COMMENT '学校',
   `course` varchar(100) DEFAULT NULL COMMENT '专业',
   `number` varchar(20) DEFAULT NULL COMMENT '学号',
