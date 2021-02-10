@@ -1,8 +1,7 @@
 package top.hcode.hoj.util;
 
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author: Himit_ZH
@@ -56,6 +55,43 @@ public class Constants {
             return STATUS_NULL;
         }
     }
+
+    public enum RemoteJudge {
+        HDU_JUDGE("HDU"),
+        NULL_JUDGE("null");
+        private String remoteJudgeName;
+
+        RemoteJudge(String remoteJudgeName) {
+            this.remoteJudgeName = remoteJudgeName;
+        }
+
+        public static RemoteJudge getTypeByName(String judgeName) {
+            for (RemoteJudge remoteJudge : RemoteJudge.values()) {
+                if (remoteJudge.getName().equals(judgeName)) {
+                    return remoteJudge;
+                }
+            }
+            return NULL_JUDGE;
+        }
+
+        public String getName() {
+            return remoteJudgeName;
+        }
+    }
+//    public enum JudgeServer {
+//        HDU_JUDGE("HDU", "hdu.com");
+//        private String judgeName;
+//        private final String judgeHost;
+//
+//        JudgeServer(String judgeName, String judgeHost) {
+//            this.judgeName = judgeName;
+//            this.judgeHost = judgeHost;
+//        }
+//
+//        public final String getName() {
+//            return judgeName;
+//        }
+//    }
 
 
     public enum JudgeDir {
