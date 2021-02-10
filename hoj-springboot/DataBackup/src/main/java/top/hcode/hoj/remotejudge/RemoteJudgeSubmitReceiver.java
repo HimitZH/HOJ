@@ -11,7 +11,7 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RemoteJudgeReceiver implements MessageListener {
+public class RemoteJudgeSubmitReceiver implements MessageListener {
 
     @Override
     public void onMessage(Message message, byte[] bytes) {
@@ -22,6 +22,7 @@ public class RemoteJudgeReceiver implements MessageListener {
         jackson2JsonRedisSerializer.setObjectMapper(om);
         String taskJson = (String) jackson2JsonRedisSerializer.deserialize(message.getBody());
         JSONObject task = JSONUtil.parseObj(taskJson);
-
+        Long submitId = task.getLong("submitId");
+        String remoteJudge = task.getStr("remoteJudge");
     }
 }

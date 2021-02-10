@@ -7,13 +7,12 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
-import top.hcode.hoj.judge.JudgeReceiver;
 import top.hcode.hoj.utils.Constants;
 
 
 @Configuration
-@AutoConfigureAfter({RemoteJudgeReceiver.class})
-public class RemoteJudgeSubscriberConfig {
+@AutoConfigureAfter({RemoteJudgeSubmitReceiver.class})
+public class RemoteJudgeSubmitSubscriberConfig {
 
 
     /**
@@ -23,7 +22,7 @@ public class RemoteJudgeSubscriberConfig {
      * @return
      */
     @Bean
-    public MessageListenerAdapter getMessageListenerAdapter(RemoteJudgeReceiver receiver) {
+    public MessageListenerAdapter getMessageListenerAdapter(RemoteJudgeSubmitReceiver receiver) {
         return new MessageListenerAdapter(receiver); //当没有继承MessageListener时需要写方法名字
     }
 
@@ -39,7 +38,7 @@ public class RemoteJudgeSubscriberConfig {
         RedisMessageListenerContainer redisMessageListenerContainer = new RedisMessageListenerContainer();
         redisMessageListenerContainer.setConnectionFactory(redisConnectionFactory);
         // 添加频道名字
-        redisMessageListenerContainer.addMessageListener(messageListenerAdapter, new PatternTopic(Constants.RemoteJudge.STATUS_JUDGE_WAITING.getName()));
+        redisMessageListenerContainer.addMessageListener(messageListenerAdapter, new PatternTopic(Constants.RemoteJudge.STATUS_JUDGE_WAITING_SUBMIT.getName()));
         return redisMessageListenerContainer;
     }
 

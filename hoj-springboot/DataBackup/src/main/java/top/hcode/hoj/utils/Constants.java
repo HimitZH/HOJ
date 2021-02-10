@@ -61,12 +61,14 @@ public class Constants {
     }
 
     public enum RemoteJudge {
-        STATUS_JUDGE_WAITING(-100, "Remote Waiting Queue", null);
+        STATUS_JUDGE_WAITING_SUBMIT(-100, "Remote Waiting Submit Queue", null),
+        STATUS_JUDGE_WAITING_RESULT(-200, "Remote Waiting Result Queue", null);
+
         private final Integer status;
         private final String name;
         private final String columnName;
 
-        private RemoteJudge(Integer status, String name, String columnName) {
+        RemoteJudge(Integer status, String name, String columnName) {
             this.status = status;
             this.name = name;
             this.columnName = columnName;
@@ -93,6 +95,8 @@ public class Constants {
             return null;
         }
     }
+
+
 
     /**
      * @Description 比赛相关的常量
