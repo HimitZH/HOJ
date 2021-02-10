@@ -8,3 +8,6 @@ hoj:
       name: hoj
     # 调用判题服务器的token，与数据服务后台必须一致！
     token: zsc-acm-hoj-judge-server
+  redis:
+    host: your_redis_host
+    port: your_redis_port

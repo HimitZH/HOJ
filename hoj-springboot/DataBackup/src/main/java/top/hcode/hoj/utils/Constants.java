@@ -26,7 +26,8 @@ public class Constants {
         STATUS_PARTIAL_ACCEPTED(8, "Partial Accepted", "pa"),
         STATUS_SUBMITTING(9, "Submitting", null),
         STATUS_NULL(10, "No Status", null),
-        STATUS_JUDGE_WAITING(-100, "Waiting Queue", null);
+        STATUS_JUDGE_WAITING(-100, "Waiting Queue", null),
+        STATUS_REMOTE_JUDGE_WAITING_HANDLE(-200, "Remote Waiting Handle Queue", null);
 
         private Judge(Integer status, String name, String columnName) {
             this.status = status;
@@ -59,43 +60,6 @@ public class Constants {
             return null;
         }
     }
-
-    public enum RemoteJudge {
-        STATUS_JUDGE_WAITING_SUBMIT(-100, "Remote Waiting Submit Queue", null),
-        STATUS_JUDGE_WAITING_RESULT(-200, "Remote Waiting Result Queue", null);
-
-        private final Integer status;
-        private final String name;
-        private final String columnName;
-
-        RemoteJudge(Integer status, String name, String columnName) {
-            this.status = status;
-            this.name = name;
-            this.columnName = columnName;
-        }
-
-        public Integer getStatus() {
-            return status;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getColumnName() {
-            return columnName;
-        }
-
-        public static String getTableColumnNameByStatus(int status) {
-            for (Judge judge : Judge.values()) {
-                if (judge.getStatus() == status) {
-                    return judge.getColumnName();
-                }
-            }
-            return null;
-        }
-    }
-
 
 
     /**

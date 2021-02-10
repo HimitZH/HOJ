@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.judge.JudgeDispatcher;
+import top.hcode.hoj.judge.self.JudgeDispatcher;
 import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.utils.Constants;

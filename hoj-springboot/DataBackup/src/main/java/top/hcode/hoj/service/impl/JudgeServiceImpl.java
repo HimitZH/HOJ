@@ -1,16 +1,21 @@
 package top.hcode.hoj.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import top.hcode.hoj.judge.JudgeDispatcher;
+import top.hcode.hoj.judge.self.JudgeDispatcher;
+import top.hcode.hoj.pojo.entity.ContestRecord;
 import top.hcode.hoj.pojo.entity.Judge;
 import top.hcode.hoj.dao.JudgeMapper;
+import top.hcode.hoj.pojo.entity.ProblemCount;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.service.JudgeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import top.hcode.hoj.utils.Constants;
 
 import java.util.List;
 
@@ -30,6 +35,12 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
 
     @Autowired
     private JudgeDispatcher judgeDispatcher;
+
+    @Autowired
+    private ProblemCountServiceImpl problemCountService;
+
+    @Autowired
+    private ContestRecordServiceImpl contestRecordService;
 
     @Override
     public IPage<JudgeVo> getCommonJudgeList(Integer limit, Integer currentPage, Long pid, Integer status, String username,
@@ -55,6 +66,30 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
         for (Judge judge : judgeList) {
             // 进入重判队列，等待调用判题服务
             judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getPid() == 0);
+        }
+    }
+
+    @Override
+    public void failToUseRedisPublishJudge(Long submitId, Long pid, Boolean isContest) {
+        UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
+        judgeUpdateWrapper.eq("submit_id", submitId)
+                .set("error_message", "The something has gone wrong with the data Backup server. Please report this to administrator.")
+                .set("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
+        judgeMapper.update(null, judgeUpdateWrapper);
+        // 更新problem_count 表
+        if (!isContest) {
+            QueryWrapper<ProblemCount> problemCountQueryWrapper = new QueryWrapper<ProblemCount>();
+            problemCountQueryWrapper.eq("pid", pid);
+            ProblemCount problemCount = problemCountService.getOne(problemCountQueryWrapper);
+            problemCount.setSe(problemCount.getSe() + 1);
+            problemCountService.saveOrUpdate(problemCount);
+        } else {
+            // 更新contest_record表
+            UpdateWrapper<ContestRecord> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("submit_id", submitId) // submit_id一定只有一个
+                    .set("first_blood", false)
+                    .set("status", Constants.Contest.RECORD_NOT_AC_NOT_PENALTY.getCode());
+            contestRecordService.update(updateWrapper);
         }
     }
 

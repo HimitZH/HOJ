@@ -342,7 +342,8 @@ CREATE TABLE `problem` (
   `input` longtext COMMENT '输入描述',
   `output` longtext COMMENT '输出描述',
   `examples` longtext COMMENT '题面样例',
-  `source` varchar(255) DEFAULT NULL COMMENT '题目来源',
+  `is_remote` tinyint(1) DEFAULT '0' COMMENT '是否为vj判题，为真时source字段为oj名-题号',
+  `source` varchar(255) DEFAULT NULL COMMENT '题目来源（vj判题时例如HDU-1000）',
   `difficulty` int(11) DEFAULT '0' COMMENT '题目难度,0简单，1中等，2困难',
   `hint` longtext COMMENT '备注,提醒',
   `auth` int(11) DEFAULT '1' COMMENT '默认为1公开，2为私有，3为比赛题目',
@@ -482,7 +483,7 @@ CREATE TABLE `session` (
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`),
   CONSTRAINT `session_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=124 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=129 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `tag` */
 

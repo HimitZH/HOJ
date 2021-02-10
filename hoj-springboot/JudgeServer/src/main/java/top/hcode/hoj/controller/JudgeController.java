@@ -1,7 +1,6 @@
 package top.hcode.hoj.controller;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,16 +9,10 @@ import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.CommonResult;
 import top.hcode.hoj.common.exception.CompileError;
 import top.hcode.hoj.common.exception.SystemError;
-import top.hcode.hoj.judger.JudgeStrategy;
 import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.IpUtils;
-
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 
 /**
@@ -150,5 +143,10 @@ public class JudgeController {
         }
     }
 
-
+    @PostMapping(value = "/remote-judge")
+    public CommonResult remoteJudge(@RequestBody ToJudge toJudge){
+        /**
+         * 在此调用远程判题
+         */
+    }
 }

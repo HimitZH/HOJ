@@ -3,7 +3,7 @@ package top.hcode.hoj.config;
 import com.netflix.loadbalancer.IRule;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
-import top.hcode.hoj.judge.JudgeChooseRule;
+import top.hcode.hoj.judge.self.JudgeChooseRule;
 
 /**
  * @Author: Himit_ZH

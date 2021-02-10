@@ -328,6 +328,8 @@ export default {
       submitting: false,
       code: '',
       language: 'C',
+      isRemote: false,
+
       theme: 'material',
       submissionId: '',
       submitted: false,
@@ -408,6 +410,7 @@ export default {
             result.problem.examples
           );
           this.problemData = result;
+          this.isRemote = result.problem.isRemote;
           this.changePie(result.problemCount);
 
           // 在beforeRouteEnter中修改了, 说明本地有code,不用更改配置
@@ -563,6 +566,8 @@ export default {
         code: this.code,
         cid: this.contestID,
         protectContestPwd: this.submitPwd,
+        isRemote: this.isRemote,
+        source: this.problemData.problem.source,
       };
       if (this.captchaRequired) {
         data.captcha = this.captchaCode;

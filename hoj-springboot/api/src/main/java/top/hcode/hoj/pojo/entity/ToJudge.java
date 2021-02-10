@@ -27,6 +27,9 @@ public class ToJudge implements Serializable {
     @ApiModelProperty("验证的token")
     private String token;
 
+    @ApiModelProperty("远程判题不为空，hoj判题为null，例如HDU-1000")
+    private String remoteJudge;
+
 //    @ApiModelProperty("重新尝试的次数,三次重新调用判题机依旧失败，直接判为系统错误！")
 //    private Integer tryAgainNum;
 
