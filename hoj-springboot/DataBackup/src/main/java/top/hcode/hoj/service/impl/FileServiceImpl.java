@@ -89,9 +89,9 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
                     boolean isAC = (boolean) problemInfo.getOrDefault("isAC", false);
                     String info;
                     if (isAC) {
-                        info = "AC(" + problemInfo.getOrDefault("errorNum", 0) + ")";
+                        info = "AC(-" + problemInfo.getOrDefault("errorNum", 0) + ")";
                     } else {
-                        info = "WA(" + problemInfo.getOrDefault("errorNum", 0) + ")";
+                        info = "WA(-" + problemInfo.getOrDefault("errorNum", 0) + ")";
                     }
                     rowData.add(info);
                 } else {

@@ -56,13 +56,19 @@ public class Constants {
         }
     }
 
+
     public enum RemoteJudge {
+
+        STATUS_JUDGE_WAITING_SUBMIT("Remote Waiting Submit Queue"),
+        STATUS_JUDGE_WAITING_RESULT("Remote Waiting Result Queue"),
+
         HDU_JUDGE("HDU"),
         NULL_JUDGE("null");
-        private String remoteJudgeName;
+
+        private String name;
 
         RemoteJudge(String remoteJudgeName) {
-            this.remoteJudgeName = remoteJudgeName;
+            this.name = remoteJudgeName;
         }
 
         public static RemoteJudge getTypeByName(String judgeName) {
@@ -75,7 +81,7 @@ public class Constants {
         }
 
         public String getName() {
-            return remoteJudgeName;
+            return name;
         }
     }
 //    public enum JudgeServer {

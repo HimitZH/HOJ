@@ -28,7 +28,16 @@ spring:
     filters: stat,wall,log4j #数据库日志
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
 
-
+  redis:
+    host: ${hoj.redis.host}
+    port: ${hoj.redis.port}
+    timeout: 60000
+    jedis:
+      pool:
+        min-idle: 10 #连接池中的最小空闲连接
+        max-idle: 50 #连接池中的最大空闲连接
+        max-active: 100 #连接池最大连接数（使用负值表示没有限制）
+        max-wait: -1 #连接池最大阻塞等待时间（使用负值表示没有限制）
 
 
 mybatis-plus:

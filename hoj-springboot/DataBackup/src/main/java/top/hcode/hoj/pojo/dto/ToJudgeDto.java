@@ -1,9 +1,7 @@
 package top.hcode.hoj.pojo.dto;
-
-import io.swagger.annotations.ApiModelProperty;
+;
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotBlank;
 
@@ -28,5 +26,9 @@ public class ToJudgeDto {
     private Long cid;
 
     private String protectContestPwd;
+
+    private Boolean isRemote;
+
+    private String source;
 
 }

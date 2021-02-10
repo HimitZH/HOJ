@@ -16,7 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.JudgeMapper;
-import top.hcode.hoj.judge.JudgeDispatcher;
+import top.hcode.hoj.judge.remote.RemoteJudgeDispatcher;
+import top.hcode.hoj.judge.self.JudgeDispatcher;
 import top.hcode.hoj.pojo.dto.SubmitIdListDto;
 import top.hcode.hoj.pojo.dto.ToJudgeDto;
 import top.hcode.hoj.pojo.entity.*;
@@ -74,6 +75,9 @@ public class JudgeController {
 
     @Autowired
     private JudgeDispatcher judgeDispatcher;
+
+    @Autowired
+    private RemoteJudgeDispatcher remoteJudgeDispatcher;
 
 //    @Autowired
 //    private RestTemplate restTemplate;
@@ -204,8 +208,13 @@ public class JudgeController {
         if (result != 1 || !updateContestRecord || !updateUserRecord) {
             return CommonResult.errorResponse("数据提交失败", CommonResult.STATUS_ERROR);
         }
+
         // 将提交加入任务队列
-        judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getPid() == 0);
+        if (judgeDto.getIsRemote()) { // 如果是远程oj判题
+            remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judgeDto.getSource(), judge.getPid() == 0);
+        } else {
+            judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getPid() == 0);
+        }
 
         return CommonResult.successResponse(judge, "数据提交成功！");
     }

@@ -59,7 +59,10 @@ public class Problem implements Serializable {
     @ApiModelProperty(value = "题面样例")
     private String examples;
 
-    @ApiModelProperty(value = "题目来源")
+    @ApiModelProperty(value = "是否为vj判题，为真时source字段为oj名-题号")
+    private Boolean isRemote;
+
+    @ApiModelProperty(value = "题目来源（vj判题时例如HDU-1000）")
     private String source;
 
     @ApiModelProperty(value = "题目难度")

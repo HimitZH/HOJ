@@ -23,4 +23,7 @@ public interface ToJudgeService {
 
     @PostMapping(value = "/compile-spj")
     public CommonResult compileSpj(@RequestBody CompileSpj compileSpj);
+
+    @PostMapping(value = "/remote-judge")
+    public CommonResult remoteJudge(@RequestBody ToJudge toJudge);
 }
