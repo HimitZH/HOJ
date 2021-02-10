@@ -60,6 +60,40 @@ public class Constants {
         }
     }
 
+    public enum RemoteJudge {
+        STATUS_JUDGE_WAITING(-100, "Remote Waiting Queue", null);
+        private final Integer status;
+        private final String name;
+        private final String columnName;
+
+        private RemoteJudge(Integer status, String name, String columnName) {
+            this.status = status;
+            this.name = name;
+            this.columnName = columnName;
+        }
+
+        public Integer getStatus() {
+            return status;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getColumnName() {
+            return columnName;
+        }
+
+        public static String getTableColumnNameByStatus(int status) {
+            for (Judge judge : Judge.values()) {
+                if (judge.getStatus() == status) {
+                    return judge.getColumnName();
+                }
+            }
+            return null;
+        }
+    }
+
     /**
      * @Description 比赛相关的常量
      * @Since 2021/1/7
