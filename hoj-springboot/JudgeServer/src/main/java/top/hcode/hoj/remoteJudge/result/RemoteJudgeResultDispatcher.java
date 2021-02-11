@@ -15,16 +15,13 @@ public class RemoteJudgeResultDispatcher {
     @Autowired
     private RedisUtils redisUtils;
 
-    public void sendTask(Long submitId, Long pid, String remoteJudge, Boolean isContest) {
+    public void sendTask(String remoteJudge, Long submitId) throws Exception {
         JSONObject task = new JSONObject();
         task.set("submitId", submitId);
-        task.set("pid", pid);
         task.set("remoteJudge", remoteJudge);
-        task.set("isContest", isContest);
-        try {
-            redisUtils.sendMessage(Constants.RemoteJudge.STATUS_JUDGE_WAITING_RESULT.getName(), JSONUtil.toJsonStr(task));
-        } catch (Exception e) {
-
-        }
+        // 提醒判题机有待查询结果题目
+        redisUtils.sendMessage(Constants.RemoteJudge.JUDGE_RESULT_HANDLER.getName(), "New Result Query Added");
+        // 队列中插入待判ID和题库名称
+        redisUtils.lrPush(Constants.RemoteJudge.JUDGE_WAITING_RESULT_QUEUE.getName(), JSONUtil.toJsonStr(task));
     }
 }

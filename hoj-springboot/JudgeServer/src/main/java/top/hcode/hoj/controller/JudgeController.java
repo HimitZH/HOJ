@@ -10,6 +10,7 @@ import top.hcode.hoj.common.CommonResult;
 import top.hcode.hoj.common.exception.CompileError;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.remoteJudge.submit.RemoteJudgeSubmitDispatcher;
 import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.IpUtils;
@@ -48,6 +49,9 @@ public class JudgeController {
 
     @Autowired
     private SystemConfigServiceImpl systemConfigService;
+
+    @Autowired
+    private RemoteJudgeSubmitDispatcher remoteJudgeSubmitDispatcher;
 
     @Value("${hoj.judge.token}")
     private String judgeToken;
@@ -144,9 +148,22 @@ public class JudgeController {
     }
 
     @PostMapping(value = "/remote-judge")
-    public CommonResult remoteJudge(@RequestBody ToJudge toJudge){
+    public CommonResult remoteJudge(@RequestBody ToJudge toJudge) {
         /**
-         * 在此调用远程判题
+         * TODO 在此调用远程判题
          */
+        // 发送消息
+        try {
+            String[] source = toJudge.getRemoteJudge().split("-");
+            Long pid = Long.valueOf(source[1]);
+            String remoteJudge = source[0];
+            String userCode = toJudge.getJudge().getCode();
+            String language = toJudge.getJudge().getLanguage();
+            remoteJudgeSubmitDispatcher.sendTask(remoteJudge, pid, language, userCode);
+            return CommonResult.successResponse(null, "提交成功");
+        } catch (Exception e) {
+            log.error("调用redis消息发布异常,此次远程判题任务判为系统错误--------------->{}", e.getMessage());
+            return CommonResult.errorResponse(e.getMessage(), CommonResult.STATUS_ERROR);
+        }
     }
 }

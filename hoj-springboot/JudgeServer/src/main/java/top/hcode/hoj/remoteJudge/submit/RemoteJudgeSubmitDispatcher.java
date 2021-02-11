@@ -15,16 +15,14 @@ public class RemoteJudgeSubmitDispatcher {
     @Autowired
     private RedisUtils redisUtils;
 
-    public void sendTask(Long submitId, Long pid, String remoteJudge, Boolean isContest) {
+
+    public void sendTask(String remoteJudge, Long pid, String language, String userCode) throws Exception {
         JSONObject task = new JSONObject();
-        task.set("submitId", submitId);
         task.set("pid", pid);
         task.set("remoteJudge", remoteJudge);
-        task.set("isContest", isContest);
-        try {
-            redisUtils.sendMessage(Constants.RemoteJudge.STATUS_JUDGE_WAITING_RESULT.getName(), JSONUtil.toJsonStr(task));
-        } catch (Exception e) {
-
-        }
+        task.set("userCode", userCode);
+        task.set("language", language);
+        redisUtils.sendMessage(Constants.RemoteJudge.JUDGE_SUBMIT_HANDLER.getName(), "New Problem Added");
+        redisUtils.lrPush(Constants.RemoteJudge.JUDGE_WAITING_SUBMIT_QUEUE.getName(), JSONUtil.toJsonStr(task));
     }
 }

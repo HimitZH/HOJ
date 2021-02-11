@@ -14,6 +14,7 @@ public class Constants {
      * @Since 2021/1/1
      */
     public enum Judge {
+        // 提交失败
         STATUS_NOT_SUBMITTED(-10, "Not Submitted"),
         STATUS_PRESENTATION_ERROR(-3, "Presentation Error"),
         STATUS_COMPILE_ERROR(-2, "Compile Error"),
@@ -25,6 +26,7 @@ public class Constants {
         STATUS_SYSTEM_ERROR(4, "System Error"),
         STATUS_PENDING(5, "Pending"),
         STATUS_COMPILING(6, "Compiling"),
+        // 正在等待结果
         STATUS_JUDGING(7, "Judging"),
         STATUS_PARTIAL_ACCEPTED(8, "Partial Accepted"),
         STATUS_SUBMITTING(9, "Submitting"),
@@ -59,11 +61,27 @@ public class Constants {
 
     public enum RemoteJudge {
 
-        STATUS_JUDGE_WAITING_SUBMIT("Remote Waiting Submit Queue"),
-        STATUS_JUDGE_WAITING_RESULT("Remote Waiting Result Queue"),
+        /**
+         * 提交问题队列
+         */
+        JUDGE_WAITING_SUBMIT_QUEUE("Remote Waiting Submit Queue"),
 
-        HDU_JUDGE("HDU"),
-        NULL_JUDGE("null");
+        /**
+         * 等待结果队列
+         */
+        JUDGE_WAITING_RESULT_QUEUE("Remote Waiting Result Queue"),
+
+        /**
+         * 提交消息通知
+         */
+        JUDGE_SUBMIT_HANDLER("Remote Submit Handler"),
+
+        /**
+         * 查询结果通知
+         */
+        JUDGE_RESULT_HANDLER("Remote Result Handler"),
+
+        HDU_JUDGE("HDU");
 
         private String name;
 
@@ -72,12 +90,13 @@ public class Constants {
         }
 
         public static RemoteJudge getTypeByName(String judgeName) {
+            if (judgeName == null) return null;
             for (RemoteJudge remoteJudge : RemoteJudge.values()) {
                 if (remoteJudge.getName().equals(judgeName)) {
                     return remoteJudge;
                 }
             }
-            return NULL_JUDGE;
+            return null;
         }
 
         public String getName() {
