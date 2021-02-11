@@ -1,7 +1,7 @@
 package top.hcode.hoj.remoteJudge.task;
 
 
-import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -11,8 +11,17 @@ public interface RemoteJudgeStrategy {
 
     /**
      * @param problemId 提交的题目id
+     * @param userCode  用户代码
+     * @return 返回对应题库的提交Id
+     */
+    Long submit(Long problemId, String language, String userCode);
+
+    /**
+     * @param submitId 题库的提交ID
      * @return 返回结果
      */
-    HashMap<String, Object> judge(Long problemId);
+    String result(Long submitId);
+
+    Map<String, String> getLoginCookie();
 
 }
