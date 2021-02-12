@@ -257,7 +257,14 @@ const ojApi = {
       }
     })
   },
-
+  // 远程虚拟判题失败进行重新提交
+  reSubmitRemoteJudge(submitId){
+    return ajax("/api/resubmit",'get',{
+      params:{
+        submitId,
+      }
+    })
+  },
   // 更新提交详情
   updateSubmission(data){
     return ajax('/api/submission', 'put', {

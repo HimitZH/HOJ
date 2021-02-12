@@ -36,11 +36,11 @@ public class ProblemCountServiceImpl extends ServiceImpl<ProblemCountMapper, Pro
     // 默认的事务隔离等级可重复读会产生幻读，读不到新的version数据，所以需要更换等级为读已提交
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
     @Async
-    public void updateCount(int status, Judge judge) {
+    public void updateCount(int status, Long pid) {
 
         // 更新problem_count 表
         QueryWrapper<ProblemCount> problemCountQueryWrapper = new QueryWrapper<ProblemCount>();
-        problemCountQueryWrapper.eq("pid", judge.getPid());
+        problemCountQueryWrapper.eq("pid", pid);
         ProblemCount problemCount = problemCountMapper.selectOne(problemCountQueryWrapper);
         ProblemCount newProblemCount = getNewProblemCount(status, problemCount);
         newProblemCount.setVersion(problemCount.getVersion());
@@ -51,19 +51,19 @@ public class ProblemCountServiceImpl extends ServiceImpl<ProblemCountMapper, Pro
             return;
         } else {
             // 进行重试操作
-            tryAgainUpdate(status,judge);
+            tryAgainUpdate(status, pid);
         }
 
     }
 
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
-    public boolean tryAgainUpdate(int status,Judge judge) {
+    public boolean tryAgainUpdate(int status, Long pid) {
         boolean retryable;
         int attemptNumber = 0;
         do {
             // 查询最新版本号
             QueryWrapper<ProblemCount> problemCountQueryWrapper = new QueryWrapper<ProblemCount>();
-            problemCountQueryWrapper.eq("pid", judge.getPid());
+            problemCountQueryWrapper.eq("pid", pid);
             ProblemCount problemCount = problemCountMapper.selectOne(problemCountQueryWrapper);
 
             // 更新

@@ -25,7 +25,8 @@ public class Constants {
         STATUS_JUDGING(7, "Judging", null),
         STATUS_PARTIAL_ACCEPTED(8, "Partial Accepted", "pa"),
         STATUS_SUBMITTING(9, "Submitting", null),
-        STATUS_NULL(10, "No Status", null),
+        STATUS_SUBMITTED_FAILED(10,"Submitted Failed",null),
+        STATUS_NULL(15, "No Status", null),
         STATUS_JUDGE_WAITING(-100, "Waiting Queue", null),
         STATUS_REMOTE_JUDGE_WAITING_HANDLE(-200, "Remote Waiting Handle Queue", null);
 

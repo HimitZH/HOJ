@@ -12,14 +12,19 @@ import top.hcode.hoj.util.RedisUtils;
 @Component
 @Slf4j
 public class RemoteJudgeSubmitDispatcher {
+
     @Autowired
     private RedisUtils redisUtils;
 
 
-    public void sendTask(String remoteJudge, Long pid, String language, String userCode) throws Exception {
+    public void sendTask(String remoteJudge, Long remotePid, Long submitId, String uid, Long cid, Long pid, String language, String userCode) throws Exception {
         JSONObject task = new JSONObject();
+        task.set("submitId", submitId);
+        task.set("uid", uid);
+        task.set("cid", cid);
         task.set("pid", pid);
         task.set("remoteJudge", remoteJudge);
+        task.set("remotePid", remotePid);
         task.set("userCode", userCode);
         task.set("language", language);
         redisUtils.sendMessage(Constants.RemoteJudge.JUDGE_SUBMIT_HANDLER.getName(), "New Problem Added");

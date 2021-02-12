@@ -30,7 +30,8 @@ public class Constants {
         STATUS_JUDGING(7, "Judging"),
         STATUS_PARTIAL_ACCEPTED(8, "Partial Accepted"),
         STATUS_SUBMITTING(9, "Submitting"),
-        STATUS_NULL(10, "No Status");
+        STATUS_SUBMITTED_FAILED(10,"Submitted Failed"),
+        STATUS_NULL(15, "No Status");
 
         private final Integer status;
         private final String name;

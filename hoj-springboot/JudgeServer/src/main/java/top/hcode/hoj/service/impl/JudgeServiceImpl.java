@@ -2,14 +2,17 @@ package top.hcode.hoj.service.impl;
 
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.common.exception.CompileError;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.dao.JudgeMapper;
 import top.hcode.hoj.judge.*;
+import top.hcode.hoj.pojo.entity.Contest;
 import top.hcode.hoj.pojo.entity.Judge;
 import top.hcode.hoj.pojo.entity.Problem;
+import top.hcode.hoj.pojo.entity.UserAcproblem;
 import top.hcode.hoj.service.JudgeService;
 import top.hcode.hoj.util.Constants;
 
@@ -24,6 +27,7 @@ import java.util.HashMap;
  * @since 2020-10-23
  */
 @Service
+@Slf4j
 public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements JudgeService {
 
     public String test() {
@@ -32,6 +36,21 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
 
     @Autowired
     private JudgeStrategy judgeStrategy;
+
+    @Autowired
+    private ProblemCountServiceImpl problemCountService;
+
+    @Autowired
+    private UserAcproblemServiceImpl userAcproblemService;
+
+    @Autowired
+    private UserRecordServiceImpl userRecordService;
+
+    @Autowired
+    private ContestRecordServiceImpl contestRecordService;
+
+    @Autowired
+    private ContestServiceImpl contestService;
 
     @Override
     public Judge Judge(Problem problem, Judge judge) {
@@ -65,7 +84,42 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
         return judge;
     }
 
-    public Boolean compileSpj(String code,Long pid,String spjLanguage) throws CompileError, SystemError {
+    public Boolean compileSpj(String code, Long pid, String spjLanguage) throws CompileError, SystemError {
         return judgeStrategy.compileSpj(code, pid, spjLanguage);
+    }
+
+    @Override
+    public void updateOtherTable(Long submitId, Integer status, Long cid, String uid, Long pid, Integer score) {
+
+        if (cid == 0) { // 非比赛提交
+            // 如果是AC,就更新user_acproblem表,
+            if (status.intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+                userAcproblemService.saveOrUpdate(new UserAcproblem()
+                        .setPid(pid)
+                        .setUid(uid)
+                        .setSubmitId(submitId)
+                );
+            }
+            // 比赛的提交不纳入，更新该提交对应题目的数据
+            problemCountService.updateCount(status, pid);
+
+
+            // 如果是非比赛提交，且为OI题目的提交，需要判断是否更新用户得分
+            if (score != null) {
+                userRecordService.updateRecord(uid, score);
+            }
+
+        } else { //如果是比赛提交
+
+            Contest contest = contestService.getById(cid);
+            if (contest == null) {
+                log.error("判题机出错----------->{}", "该比赛不存在");
+            }
+            // 每个提交都得记录到contest_record里面,同时需要判断是否为比赛时的提交
+            if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()) {
+                contestRecordService.UpdateContestRecord(uid,score,status,submitId, cid);
+            }
+
+        }
     }
 }

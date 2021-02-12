@@ -32,20 +32,6 @@ public class JudgeController {
     @Autowired
     private ProblemServiceImpl problemService;
 
-    @Autowired
-    private ProblemCountServiceImpl problemCountService;
-
-    @Autowired
-    private UserAcproblemServiceImpl userAcproblemService;
-
-    @Autowired
-    private UserRecordServiceImpl userRecordService;
-
-    @Autowired
-    private ContestRecordServiceImpl contestRecordService;
-
-    @Autowired
-    private ContestServiceImpl contestService;
 
     @Autowired
     private SystemConfigServiceImpl systemConfigService;
@@ -92,38 +78,14 @@ public class JudgeController {
         // 更新该次提交
         judgeService.updateById(finalJudge);
 
-        if (finalJudge.getCid() == 0) { // 非比赛提交
+        // 更新其它表
+        judgeService.updateOtherTable(finalJudge.getSubmitId(),
+                finalJudge.getStatus(),
+                finalJudge.getCid(),
+                finalJudge.getUid(),
+                finalJudge.getPid(),
+                finalJudge.getScore());
 
-            // 如果是AC,就更新user_acproblem表,
-            if (finalJudge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
-                userAcproblemService.saveOrUpdate(new UserAcproblem()
-                        .setPid(finalJudge.getPid())
-                        .setUid(finalJudge.getUid())
-                        .setSubmitId(finalJudge.getSubmitId())
-                );
-            }
-            // 比赛的提交不纳入，更新该提交对应题目的数据
-            problemCountService.updateCount(finalJudge.getStatus(), finalJudge);
-
-
-            // 如果是非比赛提交，且为OI题目的提交，需要判断是否更新用户得分
-            if (finalJudge.getScore() != null) {
-                userRecordService.updateRecord(finalJudge);
-            }
-
-        } else { //如果是比赛提交
-
-            Contest contest = contestService.getById(finalJudge.getCid());
-            if (contest == null) {
-                log.error("判题机出错----------->{}", "该比赛不存在");
-                return CommonResult.errorResponse("该比赛不存在");
-            }
-            // 每个提交都得记录到contest_record里面,同时需要判断是否为比赛时的提交
-            if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()) {
-                contestRecordService.UpdateContestRecord(finalJudge);
-            }
-
-        }
         // 当前判题任务数-1
         systemConfigService.updateJudgeTaskNum(false);
         return CommonResult.successResponse(finalJudge, "判题机评测完成！");
@@ -149,16 +111,38 @@ public class JudgeController {
 
     @PostMapping(value = "/remote-judge")
     public CommonResult remoteJudge(@RequestBody ToJudge toJudge) {
+
+        if (!toJudge.getToken().equals(judgeToken)) {
+            return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", CommonResult.STATUS_ACCESS_DENIED);
+        }
+
+        Long submitId = toJudge.getJudge().getSubmitId();
+        String uid = toJudge.getJudge().getUid();
+        Long cid = toJudge.getJudge().getCid();
+        Long pid = toJudge.getJudge().getPid();
         // 发送消息
         try {
             String[] source = toJudge.getRemoteJudge().split("-");
-            Long pid = Long.valueOf(source[1]);
+            Long remotePid = Long.valueOf(source[1]);
             String remoteJudge = source[0];
             String userCode = toJudge.getJudge().getCode();
             String language = toJudge.getJudge().getLanguage();
-            remoteJudgeSubmitDispatcher.sendTask(remoteJudge, pid, language, userCode);
+            remoteJudgeSubmitDispatcher.sendTask(remoteJudge, remotePid, submitId, uid, cid, pid, language, userCode);
             return CommonResult.successResponse(null, "提交成功");
         } catch (Exception e) {
+            // TODO 如果为了测试是否可行，请把数据库更新注释掉，若正常运行，则需要保证数据一致性
+            Judge judge = new Judge();
+            judge.setSubmitId(submitId)
+                    .setStatus(Constants.Judge.STATUS_SYSTEM_ERROR.getStatus())
+                    .setErrorMessage("Oops, something has gone wrong with the judgeServer. Please report this to administrator.");
+            judgeService.updateById(judge);
+            // 更新其它表
+            judgeService.updateOtherTable(submitId,
+                    Constants.Judge.STATUS_SYSTEM_ERROR.getStatus(),
+                    cid,
+                    uid,
+                    pid,
+                    null);
             log.error("调用redis消息发布异常,此次远程判题任务判为系统错误--------------->{}", e.getMessage());
             return CommonResult.errorResponse(e.getMessage(), CommonResult.STATUS_ERROR);
         }

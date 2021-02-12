@@ -211,12 +211,45 @@ public class JudgeController {
 
         // 将提交加入任务队列
         if (judgeDto.getIsRemote()) { // 如果是远程oj判题
-            remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judgeDto.getSource(), judge.getPid() == 0);
+            remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judgeDto.getSource(), judge.getCid() == 0);
         } else {
-            judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getPid() == 0);
+            judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getCid() == 0);
         }
 
         return CommonResult.successResponse(judge, "数据提交成功！");
+    }
+
+
+    /**
+     * @MethodName resubmit
+     * @Params  * @param null
+     * @Description 远程虚拟判题的提交失败后，用户点击按钮重新提交判题进入的方法
+     * @Return
+     * @Since 2021/2/12
+     */
+    @RequiresAuthentication
+    @GetMapping(value = "/resubmit")
+    public CommonResult resubmit(@RequestParam("submitId")Long submitId,
+                                 HttpServletRequest request){
+
+        Judge judge = judgeService.getById(submitId);
+        if (judge == null) {
+            return CommonResult.errorResponse("此提交数据不存在！");
+        }
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        if (!judge.getUid().equals(userRolesVo.getUid())){ // 不是本人无法重新提交
+            return CommonResult.errorResponse("对不起！您并非提交数据的本人，无法重新提交！");
+        }
+        Problem problem = problemService.getById(judge.getPid());
+        // 重新进入等待队列
+        judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus());
+        judge.setErrorMessage(null);
+        judgeService.updateById(judge);
+        // 调用判题服务
+        remoteJudgeDispatcher.sendTask(judge.getSubmitId(), problem.getId(), judgeToken, problem.getSource(), judge.getCid() == 0);
+        return CommonResult.successResponse(judge, "重新提交成功！");
     }
 
 
@@ -232,7 +265,7 @@ public class JudgeController {
     public CommonResult getSubmission(@RequestParam(value = "submitId", required = true) Long submitId, HttpServletRequest request) {
         Judge judge = judgeService.getById(submitId);
         if (judge == null) {
-            return CommonResult.errorResponse("获取提交数据失败！");
+            return CommonResult.errorResponse("此提交数据不存在！");
         }
 
         HttpSession session = request.getSession();
