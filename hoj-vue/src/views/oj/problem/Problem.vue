@@ -152,6 +152,22 @@
                   >
                 </div>
                 <div class="status" v-if="statusVisible">
+                  <template v-if="result.status == JUDGE_STATUS_RESERVE['sf']">
+                    <span>Status:</span>
+                    <el-tag
+                      effect="dark"
+                      :color="submissionStatus.color"
+                      @click.native="
+                        handleRoute('/submission-detail/' + submissionId)
+                      "
+                    >
+                      <i
+                        class="el-icon-refresh"
+                        @click="reSubmit(submissionId)"
+                      ></i>
+                      {{ submissionStatus.text }}
+                    </el-tag>
+                  </template>
                   <template
                     v-if="
                       !this.contestID ||
@@ -190,7 +206,9 @@
                     >
                   </template>
                 </div>
-                <div v-else-if="problemData.myStatus == 0">
+                <div
+                  v-else-if="problemData.myStatus == JUDGE_STATUS_RESERVE.ac"
+                >
                   <el-alert
                     type="success"
                     show-icon
@@ -635,6 +653,23 @@ export default {
         submitFunc(data, true);
       }
     },
+
+    reSubmit(submitId) {
+      this.result = { status: 9 };
+      this.submitting = true;
+      api.reSubmitRemoteJudge(submitId).then(
+        (res) => {
+          myMessage.success(res.data.msg);
+          this.submitted = true;
+          this.checkSubmissionStatus();
+        },
+        (err) => {
+          this.submitting = false;
+          this.statusVisible = false;
+        }
+      );
+    },
+
     onCopy(event) {
       myMessage.success('Sample copied successfully');
     },
