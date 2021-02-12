@@ -42,10 +42,15 @@ public class RemoteJudgeSubmitReceiver implements MessageListener {
             log.error("暂不支持该{}题库---------------->请求失败", remoteJudge);
             return;
         }
-        Long submitId = remoteJudgeStrategy.submit(pid, language, userCode);
-        // TODO 提交失败 修改状态 STATUS_NOT_SUBMITTED
+        Long submitId = -1L;
+        try {
+            submitId = remoteJudgeStrategy.submit(pid, language, userCode);
+        } catch (Exception e) {
+            log.error("网络错误，提交失败");
+        }
+        // TODO 提交失败 前端手动按按钮再次提交 修改状态 STATUS_NOT_SUBMITTED
         if (submitId < 0) {
-            log.error("提交失败---------------->获取不到提交ID");
+            log.error("网络错误---------------->获取不到提交ID");
             return;
         }
         try {
