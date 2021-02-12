@@ -17,6 +17,10 @@ import top.hcode.hoj.pojo.entity.Problem;
  */
 public interface JudgeService extends IService<Judge> {
     String test();
+
     Judge Judge(Problem problem, Judge judge);
-    Boolean compileSpj(String code,Long pid,String spjLanguage) throws CompileError, SystemError;
+
+    Boolean compileSpj(String code, Long pid, String spjLanguage) throws CompileError, SystemError;
+
+    void updateOtherTable(Long submitId, Integer status, Long cid, String uid, Long pid, Integer score);
 }

@@ -6,7 +6,7 @@ import top.hcode.hoj.pojo.entity.ProblemCount;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author Himit_ZH
@@ -14,6 +14,6 @@ import top.hcode.hoj.pojo.entity.ProblemCount;
  */
 public interface ProblemCountService extends IService<ProblemCount> {
 
-    void updateCount(int status, Judge judge);
+    void updateCount(int status, Long pid);
 
 }

@@ -1,7 +1,5 @@
 package top.hcode.hoj.remoteJudge.task;
 
-
-import java.io.IOException;
 import java.util.Map;
 
 

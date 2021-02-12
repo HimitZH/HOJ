@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @Slf4j
-public final class RedisUtils {
+public class RedisUtils {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;

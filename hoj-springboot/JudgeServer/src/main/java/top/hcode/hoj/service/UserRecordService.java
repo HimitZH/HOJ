@@ -8,12 +8,12 @@ import top.hcode.hoj.pojo.entity.UserRecord;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author Himit_ZH
  * @since 2020-10-23
  */
 public interface UserRecordService extends IService<UserRecord> {
-    void updateRecord(Judge judge);
+    void updateRecord(String uid, Integer score);
 }

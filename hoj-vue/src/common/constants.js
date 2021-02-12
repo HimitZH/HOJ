@@ -93,6 +93,13 @@ export const JUDGE_STATUS = {
     color: 'yellow',
     type: 'warning',
     rgb:'#f90'
+  },
+  '10':{
+    name:"Submitted Failed",
+    color:'gray',
+    short:'SF',
+    type: 'info',
+    rgb:'#909399',
   }
 }
 
@@ -107,7 +114,8 @@ export const JUDGE_STATUS_RESERVE={
   'se':4,
   'Compiling':5,
   'Pending':6,
-  'Judging':7
+  'Judging':7,
+  'sf':10,
 }
 
 export const PROBLEM_LEVEL={

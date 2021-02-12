@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.dao.UserRecordMapper;
 import top.hcode.hoj.pojo.entity.Judge;
-import top.hcode.hoj.pojo.entity.ProblemCount;
 import top.hcode.hoj.pojo.entity.UserRecord;
 
 import top.hcode.hoj.service.UserRecordService;
@@ -36,32 +35,32 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
     @Async
     @Override
-    public void updateRecord(Judge judge) {
+    public void updateRecord(String uid, Integer score) {
         QueryWrapper<Judge> judgeQueryWrapper = new QueryWrapper<>();
         judgeQueryWrapper.isNotNull("score").orderByDesc("score").isNull("cid") // 非比赛提交
                 .last("limit 1");
         Judge lastHighScoreJudge = judgeService.getOne(judgeQueryWrapper);
         // 之前没有提交过，那么就需要修改
         boolean result = true;
-        if (lastHighScoreJudge==null) {
+        if (lastHighScoreJudge == null) {
             UpdateWrapper<UserRecord> userRecordUpdateWrapper = new UpdateWrapper<>();
-            userRecordUpdateWrapper.set("total_score", judge.getScore()).eq("uid", judge.getUid());
-            result = userRecordMapper.update(null, userRecordUpdateWrapper)==1;
-        }else if (lastHighScoreJudge.getScore()<judge.getScore()){
+            userRecordUpdateWrapper.set("total_score", score).eq("uid", uid);
+            result = userRecordMapper.update(null, userRecordUpdateWrapper) == 1;
+        } else if (lastHighScoreJudge.getScore() < score) {
             //如果之前该题目最高得分的提交比现在得分低,也需要修改
-            int addValue = judge.getScore()-lastHighScoreJudge.getScore();
+            int addValue = score - lastHighScoreJudge.getScore();
             UpdateWrapper<UserRecord> userRecordUpdateWrapper = new UpdateWrapper<>();
-            userRecordUpdateWrapper.setSql("total_score=total_score+"+addValue).eq("uid", judge.getUid());
-            result = userRecordMapper.update(null, userRecordUpdateWrapper)==1;
+            userRecordUpdateWrapper.setSql("total_score=total_score+" + addValue).eq("uid", uid);
+            result = userRecordMapper.update(null, userRecordUpdateWrapper) == 1;
         }
-        if (result){
+        if (result) {
             return;
-        }else { // 失败则开始尝试
-            tryAgainUpdate(lastHighScoreJudge);
+        } else { // 失败则开始尝试
+            tryAgainUpdate(uid, score);
         }
     }
 
-    public boolean tryAgainUpdate(Judge judge) {
+    public boolean tryAgainUpdate(String uid, Integer score) {
         boolean retryable;
         int attemptNumber = 0;
         do {
@@ -73,16 +72,16 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
 
             // 更新
             boolean success = true;
-            if (lastHighScoreJudge==null) {
+            if (lastHighScoreJudge == null) {
                 UpdateWrapper<UserRecord> userRecordUpdateWrapper = new UpdateWrapper<>();
-                userRecordUpdateWrapper.set("total_score", judge.getScore()).eq("uid", judge.getUid());
-                success = userRecordMapper.update(null, userRecordUpdateWrapper)==1;
-            }else if (lastHighScoreJudge.getScore()<judge.getScore()){
+                userRecordUpdateWrapper.set("total_score", score).eq("uid", uid);
+                success = userRecordMapper.update(null, userRecordUpdateWrapper) == 1;
+            } else if (lastHighScoreJudge.getScore() < score) {
                 //如果之前该题目最高得分的提交比现在得分低,也需要修改
-                int addValue = judge.getScore()-lastHighScoreJudge.getScore();
+                int addValue = score - lastHighScoreJudge.getScore();
                 UpdateWrapper<UserRecord> userRecordUpdateWrapper = new UpdateWrapper<>();
-                userRecordUpdateWrapper.setSql("total_score=total_score+"+addValue).eq("uid", judge.getUid());
-                success = userRecordMapper.update(null, userRecordUpdateWrapper)==1;
+                userRecordUpdateWrapper.setSql("total_score=total_score+" + addValue).eq("uid", uid);
+                success = userRecordMapper.update(null, userRecordUpdateWrapper) == 1;
             }
 
             if (success) {

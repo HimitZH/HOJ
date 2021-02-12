@@ -78,15 +78,15 @@ public class HduJudge implements RemoteJudgeStrategy {
                 .put("status", statusType).build();
         // 获取其他信息
         String executionTime = matcher.group(3);
-        result.put("executionTime", executionTime);
+        result.put("time", executionTime);
         String executionMemory = matcher.group(4);
-        result.put("executionMemory", executionMemory);
+        result.put("memory", executionMemory);
         // 如果CE了，则还需要获得错误信息
         if (statusType == Constants.Judge.STATUS_COMPILE_ERROR) {
             connection.url(host + String.format(errorUrl, submitId));
             response = JsoupUtils.getResponse(connection, null);
             String compilationErrorInfo = ReUtil.get("(<pre>[\\s\\S]*?</pre>)", response.body(), 1);
-            result.put("compilationErrorInfo", compilationErrorInfo);
+            result.put("CEInfo", compilationErrorInfo);
         }
         return result;
     }

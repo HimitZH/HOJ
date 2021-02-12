@@ -119,7 +119,7 @@ public class JudgeStrategy {
             return judgeInfo;
         } catch (SystemError systemError) {
             result.put("code", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
-            result.put("errMsg", "Oops, something has gone wrong with the judger. Please report this to administrator.");
+            result.put("errMsg", "Oops, something has gone wrong with the judgeServer. Please report this to administrator.");
             result.put("time", 0L);
             result.put("memory", 0L);
             log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生系统性的异常------------------->{}",
@@ -131,7 +131,7 @@ public class JudgeStrategy {
             result.put("memory", 0L);
         } catch (Exception e) {
             result.put("code", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
-            result.put("errMsg", "Oops, something has gone wrong with the judger. Please report this to administrator.");
+            result.put("errMsg", "Oops, something has gone wrong with the judgeServer. Please report this to administrator.");
             result.put("time", 0L);
             result.put("memory", 0L);
             log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生系统性的异常-------------------->{}", e.getMessage());
