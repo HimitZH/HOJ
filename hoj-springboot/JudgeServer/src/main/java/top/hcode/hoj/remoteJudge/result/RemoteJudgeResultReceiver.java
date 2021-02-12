@@ -16,6 +16,8 @@ import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.RedisUtils;
 
+import java.util.Map;
+
 @Slf4j
 @Component
 public class RemoteJudgeResultReceiver implements MessageListener {
@@ -39,8 +41,12 @@ public class RemoteJudgeResultReceiver implements MessageListener {
             return;
         }
 
-        String result = remoteJudgeStrategy.result(submitId);
-        // TODO 获取对应的result ID，修改到数据库
+        // TODO 获取对应的result，修改到数据库
+        try {
+            Map<String, Object> result = remoteJudgeStrategy.result(submitId);
+        } catch (Exception e) {
+            log.error("获取结果出错------------>{}", e.getMessage());
+        }
 
     }
 }

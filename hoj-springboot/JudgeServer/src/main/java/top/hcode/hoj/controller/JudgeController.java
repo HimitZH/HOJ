@@ -149,9 +149,6 @@ public class JudgeController {
 
     @PostMapping(value = "/remote-judge")
     public CommonResult remoteJudge(@RequestBody ToJudge toJudge) {
-        /**
-         * TODO 在此调用远程判题
-         */
         // 发送消息
         try {
             String[] source = toJudge.getRemoteJudge().split("-");
