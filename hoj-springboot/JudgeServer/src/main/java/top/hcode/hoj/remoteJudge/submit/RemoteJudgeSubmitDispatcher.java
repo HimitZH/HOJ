@@ -29,5 +29,6 @@ public class RemoteJudgeSubmitDispatcher {
         task.set("language", language);
         redisUtils.sendMessage(Constants.RemoteJudge.JUDGE_SUBMIT_HANDLER.getName(), "New Problem Added");
         redisUtils.lrPush(Constants.RemoteJudge.JUDGE_WAITING_SUBMIT_QUEUE.getName(), JSONUtil.toJsonStr(task));
+        log.info("发送数据");
     }
 }
