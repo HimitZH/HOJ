@@ -97,8 +97,8 @@ public class HduJudge implements RemoteJudgeStrategy {
         Connection.Response response = JsoupUtils.postResponse(connection, MapUtil
                 .builder(new HashMap<String, String>())
                 // TODO 添加账号密码 暂时写死测试，后续将在队列中获取空闲账号
-                .put("username", "2018030402055")
-                .put("userpass", "zsqfhy0804").map());
+                .put("username", "111")
+                .put("userpass", "111").map());
         return response.cookies();
     }
 
