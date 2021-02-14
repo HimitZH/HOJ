@@ -33,12 +33,9 @@ public class RemoteJudgeSubmitReceiver implements MessageListener {
     @Override
     public void onMessage(Message message, byte[] bytes) {
 //        log.debug("RemoteJudgeSubmitReceiver获取到消息{}", Arrays.toString(message.getBody()));
-        log.info("开始竞争");
         String source = (String) redisUtils.lrPop(Constants.RemoteJudge.JUDGE_WAITING_SUBMIT_QUEUE.getName());
         // 如果竞争不到提交队列，结束
-        log.info(source);
         if (source == null) {
-            log.info("竞争不到");
             return;
         }
         JSONObject task = JSONUtil.parseObj(source);
@@ -65,19 +62,17 @@ public class RemoteJudgeSubmitReceiver implements MessageListener {
         // TODO 提交失败 前端手动按按钮再次提交 修改状态 STATUS_SUBMITTED_FAILED
         if (resultSubmitId < 0) {
             // 更新此次提交状态为提交失败！
-            log.info("查询id失败");
-//            UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
-//            judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
-//                    .eq("submit_id", submitId);
-//            judgeService.update(judgeUpdateWrapper);
+            UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
+            judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
+                    .eq("submit_id", submitId);
+            judgeService.update(judgeUpdateWrapper);
             log.error("网络错误---------------->获取不到提交ID");
             return;
         }
         // 提交成功顺便更新状态为-->STATUS_JUDGING 判题中...
-//        judgeService.updateById(new Judge().setSubmitId(submitId).setStatus(Constants.Judge.STATUS_JUDGING.getStatus()));
+        judgeService.updateById(new Judge().setSubmitId(submitId).setStatus(Constants.Judge.STATUS_JUDGING.getStatus()));
         try {
             remoteJudgeResultDispatcher.sendTask(remoteJudge, submitId, uid, cid, pid, resultSubmitId);
-            log.info("查询结果信息发送");
         } catch (Exception e) {
             log.error("调用redis消息发布异常,此次远程查询结果任务判为系统错误--------------->{}", e.getMessage());
         }

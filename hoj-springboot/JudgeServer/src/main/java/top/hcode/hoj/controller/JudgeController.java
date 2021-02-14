@@ -110,65 +110,39 @@ public class JudgeController {
     }
 
     @PostMapping(value = "/remote-judge")
-    public CommonResult remoteJudge() {
+    public CommonResult remoteJudge(@RequestBody ToJudge toJudge) {
 
-//        if (!toJudge.getToken().equals(judgeToken)) {
-//            return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", CommonResult.STATUS_ACCESS_DENIED);
-//        }
+        if (!toJudge.getToken().equals(judgeToken)) {
+            return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", CommonResult.STATUS_ACCESS_DENIED);
+        }
 
-//        Long submitId = toJudge.getJudge().getSubmitId();
-//        String uid = toJudge.getJudge().getUid();
-//        Long cid = toJudge.getJudge().getCid();
-//        Long pid = toJudge.getJudge().getPid();
-        Long submitId = 1L;
-        String uid = "1";
-        Long cid = 1L;
-        Long pid = 1L;
+        Long submitId = toJudge.getJudge().getSubmitId();
+        String uid = toJudge.getJudge().getUid();
+        Long cid = toJudge.getJudge().getCid();
+        Long pid = toJudge.getJudge().getPid();
         // 发送消息
         try {
-//            String[] source = toJudge.getRemoteJudge().split("-");
-//            Long remotePid = Long.valueOf(source[1]);
-//            String remoteJudge = source[0];
-//            String userCode = toJudge.getJudge().getCode();
-//            String language = toJudge.getJudge().getLanguage();
-            Long remotePid = 1090L;
-            String remoteJudge = "HDU";
-            String userCode = "#include<iostream>\n" +
-                    "using namespace std;\n" +
-                    "\n" +
-                    "int main()\n" +
-                    "{\n" +
-                    "\tint t;\n" +
-                    "\tcin >> t;\n" +
-                    "\twhile (t--) {\n" +
-                    "\t\tint a, b;\n" +
-                    "\t\tcin >> a >> b;\n" +
-                    "\t\tcout << a + b;\n" +
-                    "\t\tif (t == 0){\n" +
-                    "\t\t\tcout << endl;\n" +
-                    "\t\t} else {\n" +
-                    "\t\t\tcout << endl;\n" +
-                    "\t\t}\n" +
-                    "\t}\n" +
-                    "\treturn 1;\n" +
-                    "}";
-            String language = "G++";
+            String[] source = toJudge.getRemoteJudge().split("-");
+            Long remotePid = Long.valueOf(source[1]);
+            String remoteJudge = source[0];
+            String userCode = toJudge.getJudge().getCode();
+            String language = toJudge.getJudge().getLanguage();
             remoteJudgeSubmitDispatcher.sendTask(remoteJudge, remotePid, submitId, uid, cid, pid, language, userCode);
             return CommonResult.successResponse(null, "提交成功");
         } catch (Exception e) {
             // TODO 如果为了测试是否可行，请把数据库更新注释掉，若正常运行，则需要保证数据一致性
-//            Judge judge = new Judge();
-//            judge.setSubmitId(submitId)
-//                    .setStatus(Constants.Judge.STATUS_SYSTEM_ERROR.getStatus())
-//                    .setErrorMessage("Oops, something has gone wrong with the judgeServer. Please report this to administrator.");
-//            judgeService.updateById(judge);
-//            // 更新其它表
-//            judgeService.updateOtherTable(submitId,
-//                    Constants.Judge.STATUS_SYSTEM_ERROR.getStatus(),
-//                    cid,
-//                    uid,
-//                    pid,
-//                    null);
+            Judge judge = new Judge();
+            judge.setSubmitId(submitId)
+                    .setStatus(Constants.Judge.STATUS_SYSTEM_ERROR.getStatus())
+                    .setErrorMessage("Oops, something has gone wrong with the judgeServer. Please report this to administrator.");
+            judgeService.updateById(judge);
+            // 更新其它表
+            judgeService.updateOtherTable(submitId,
+                    Constants.Judge.STATUS_SYSTEM_ERROR.getStatus(),
+                    cid,
+                    uid,
+                    pid,
+                    null);
             log.error("调用redis消息发布异常,此次远程判题任务判为系统错误--------------->{}", e.getMessage());
             return CommonResult.errorResponse(e.getMessage(), CommonResult.STATUS_ERROR);
         }
