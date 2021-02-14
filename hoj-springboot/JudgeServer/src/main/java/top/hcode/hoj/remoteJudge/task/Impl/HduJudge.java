@@ -47,32 +47,27 @@ public class HduJudge implements RemoteJudgeStrategy {
                 .put("problemid", String.valueOf(problemId))
                 .put("usercode", userCode)
                 .map());
-        System.out.println("提交代码的状态码：-------" + response.statusCode());
         if (response.statusCode() != 200) {
             log.error("提交题目失败");
             return -1L;
         }
         // 获取提交的题目id
         Long maxRunId = getMaxRunId(connection, "2018030402055", problemId);
-        System.out.println(maxRunId);
         return maxRunId;
     }
 
     @Override
     public Map<String, Object> result(Long submitId) throws Exception {
         String url = host + String.format(queryUrl, submitId);
-        System.out.println(url);
         Connection connection = JsoupUtils.getConnectionFromUrl(url, null, null);
         Connection.Response response = JsoupUtils.getResponse(connection, null);
         // 1提交时间 2结果 3执行时间 4执行空间 5代码长度
         // 一般情况下 代码长度和提交时间不需要，想要也行，自行添加
         Pattern pattern = Pattern.compile(">" + submitId + "</td><td>([\\s\\S]*?)</td><td>([\\s\\S]*?)</td><td>[\\s\\S]*?</td><td>(\\d*?)MS</td><td>(\\d*?)K</td><td>(\\d*?)B</td>");
         Matcher matcher = pattern.matcher(response.body());
-//        System.out.println(response.body());
         // 找到时
         Validate.isTrue(matcher.find());
         String rawStatus = matcher.group(2).replaceAll("<[\\s\\S]*?>", "").trim();
-        System.out.println(rawStatus);
         Constants.Judge statusType = statusTypeMap.get(rawStatus);
         if (statusType == Constants.Judge.STATUS_PENDING) {
             return MapUtil.builder(new HashMap<String, Object>())
