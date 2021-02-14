@@ -55,8 +55,8 @@ public class RemoteJudgeSubscriberConfig {
         RedisMessageListenerContainer redisMessageListenerContainer = new RedisMessageListenerContainer();
         redisMessageListenerContainer.setConnectionFactory(redisConnectionFactory);
         // 添加频道名字
-        redisMessageListenerContainer.addMessageListener(toSubmitMessageListenerAdapter, new PatternTopic(Constants.RemoteJudge.JUDGE_WAITING_SUBMIT_QUEUE.getName()));
-        redisMessageListenerContainer.addMessageListener(getResultMessageListenerAdapter, new PatternTopic(Constants.RemoteJudge.JUDGE_WAITING_RESULT_QUEUE.getName()));
+        redisMessageListenerContainer.addMessageListener(toSubmitMessageListenerAdapter, new PatternTopic(Constants.RemoteJudge.JUDGE_SUBMIT_HANDLER.getName()));
+        redisMessageListenerContainer.addMessageListener(getResultMessageListenerAdapter, new PatternTopic(Constants.RemoteJudge.JUDGE_RESULT_HANDLER.getName()));
         return redisMessageListenerContainer;
     }
 

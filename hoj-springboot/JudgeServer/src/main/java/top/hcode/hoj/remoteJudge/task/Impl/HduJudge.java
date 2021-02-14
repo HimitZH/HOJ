@@ -3,6 +3,7 @@ package top.hcode.hoj.remoteJudge.task.Impl;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ReUtil;
+import cn.hutool.json.JSONUtil;
 import jdk.nashorn.internal.runtime.regexp.RegExp;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
@@ -73,14 +74,18 @@ public class HduJudge implements RemoteJudgeStrategy {
         String rawStatus = matcher.group(2).replaceAll("<[\\s\\S]*?>", "").trim();
         System.out.println(rawStatus);
         Constants.Judge statusType = statusTypeMap.get(rawStatus);
+        if (statusType == Constants.Judge.STATUS_PENDING) {
+            return MapUtil.builder(new HashMap<String, Object>())
+                    .put("status", statusType.getStatus()).build();
+        }
         // 返回的结果map
         Map<String, Object> result = MapUtil.builder(new HashMap<String, Object>())
-                .put("status", statusType).build();
+                .put("status", statusType.getStatus()).build();
         // 获取其他信息
         String executionTime = matcher.group(3);
-        result.put("time", executionTime);
+        result.put("time", Integer.parseInt(executionTime));
         String executionMemory = matcher.group(4);
-        result.put("memory", executionMemory);
+        result.put("memory", Integer.parseInt(executionMemory));
         // 如果CE了，则还需要获得错误信息
         if (statusType == Constants.Judge.STATUS_COMPILE_ERROR) {
             connection.url(host + String.format(errorUrl, submitId));
@@ -97,8 +102,8 @@ public class HduJudge implements RemoteJudgeStrategy {
         Connection.Response response = JsoupUtils.postResponse(connection, MapUtil
                 .builder(new HashMap<String, String>())
                 // TODO 添加账号密码 暂时写死测试，后续将在队列中获取空闲账号
-                .put("username", "11")
-                .put("userpass", "11").map());
+                .put("username", "2018030402055")
+                .put("userpass", "zsqfhy0804").map());
         return response.cookies();
     }
 
@@ -141,7 +146,10 @@ public class HduJudge implements RemoteJudgeStrategy {
             put("Accepted", Constants.Judge.STATUS_ACCEPTED);
             put("Wrong Answer", Constants.Judge.STATUS_WRONG_ANSWER);
             put("Compilation Error", Constants.Judge.STATUS_COMPILE_ERROR);
+            put("Queuing", Constants.Judge.STATUS_PENDING);
+            put("Compiling", Constants.Judge.STATUS_PENDING);
             put("Time Limit Exceeded", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED);
+            put("Presentation Error", Constants.Judge.STATUS_PRESENTATION_ERROR);
         }
     };
 }
