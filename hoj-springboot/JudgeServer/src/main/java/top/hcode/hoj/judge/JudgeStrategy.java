@@ -25,6 +25,7 @@ import top.hcode.hoj.service.impl.JudgeServiceImpl;
 import top.hcode.hoj.service.impl.ProblemCaseServiceImpl;
 import top.hcode.hoj.util.Constants;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.*;
@@ -34,11 +35,11 @@ import java.util.concurrent.*;
 @Component
 public class JudgeStrategy {
 
-    private static final int SPJ_WA = 1;
+    private static final int SPJ_WA = 101;
 
-    private static final int SPJ_AC = 0;
+    private static final int SPJ_AC = 100;
 
-    private static final int SPJ_ERROR = -1;
+    private static final int SPJ_ERROR = 102;
 
     private static final int cpuNum = Runtime.getRuntime().availableProcessors();
 
@@ -49,6 +50,8 @@ public class JudgeStrategy {
     private Constants.CompileConfig compileConfig;
 
     private Constants.RunConfig runConfig;
+
+    private Constants.RunConfig spjRunConfig;
 
     private String code;
 
@@ -73,10 +76,12 @@ public class JudgeStrategy {
     public void init(Problem problem, Judge judge) {
         this.testCasesDir = Constants.JudgeDir.TEST_CASE_DIR.getContent() + "/problem_" + problem.getId();
         this.runConfig = Constants.RunConfig.getRunnerByLanguage(judge.getLanguage());
+        this.spjRunConfig = Constants.RunConfig.getRunnerByLanguage("SPJ-" + problem.getSpjLanguage());
         this.compileConfig = Constants.CompileConfig.getCompilerByLanguage(judge.getLanguage());
         this.code = judge.getCode();
         this.Language = judge.getLanguage();
         this.problem = problem;
+        this.pid = problem.getId();
         this.judge = judge;
     }
 
@@ -107,12 +112,15 @@ public class JudgeStrategy {
             // 更新状态为评测数据中
             judge.setStatus(Constants.Judge.STATUS_JUDGING.getStatus());
             judgeService.saveOrUpdate(judge);
-
+            // spj程序的名字
+            String spjExeName = null;
+            if (!StringUtils.isEmpty(problem.getSpjCode())) {
+                spjExeName = Constants.RunConfig.getRunnerByLanguage("SPJ-" + problem.getSpjLanguage()).getExeName();
+            }
             // 开始测试每个测试点
             List<JSONObject> allCaseResultList = judgeAllCase(userFileId, problem.getTimeLimit() * 1L,
                     problem.getMemoryLimit() * 1024L,
-                    runConfig.getExeName(), false, problem.getIsRemoveEndBlank());
-
+                    runConfig.getExeName(), false, problem.getIsRemoveEndBlank(), spjExeName);
             // 对全部测试点结果进行评判,获取最终评判结果
             HashMap<String, Object> judgeInfo = getJudgeInfo(allCaseResultList, problem, judge);
 
@@ -123,7 +131,7 @@ public class JudgeStrategy {
             result.put("time", 0L);
             result.put("memory", 0L);
             log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生系统性的异常------------------->{}",
-                    systemError.getMessage());
+                    systemError.getMessage() + "\n" + systemError.getStderr());
         } catch (CompileError compileError) {
             result.put("code", Constants.Judge.STATUS_COMPILE_ERROR.getStatus());
             result.put("errMsg", compileError.getStderr());
@@ -153,10 +161,10 @@ public class JudgeStrategy {
         return Arrays.asList(command.split(" "));
     }
 
-    public static List<String> parseRunCommand(String command, Constants.RunConfig runConfig, String testCaseOutputFilePath) {
+    public static List<String> parseRunCommand(String command, Constants.RunConfig runConfig, String testCaseTmpName) {
 
         command = MessageFormat.format(command, Constants.JudgeDir.TMPFS_DIR.getContent(),
-                runConfig.getExeName(), testCaseOutputFilePath);
+                runConfig.getExeName(), Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + testCaseTmpName);
 
         return Arrays.asList(command.split(" "));
     }
@@ -251,14 +259,17 @@ public class JudgeStrategy {
         // 特判程序的路径
         String spjExeSrc = Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + "/" + pid + "/" + spjExeName;
 
-        JSONArray judgeResultList = SandboxRun.spjTestCase(parseRunCommand(runConfig.getCommand(), runConfig, testCaseOutputFilePath),
+        JSONArray judgeResultList = SandboxRun.spjTestCase(parseRunCommand(runConfig.getCommand(), runConfig, null),
                 runConfig.getEnvs(),
                 userExeName,
                 userFileId,
                 testCaseInputFilePath,
                 maxTime,
                 maxOutputSize,
+                parseRunCommand(spjRunConfig.getCommand(), spjRunConfig, "tmp"),
+                spjRunConfig.getEnvs(),
                 spjExeSrc,
+                testCaseOutputFilePath,
                 spjExeName);
 
         JSONObject result = new JSONObject();
@@ -413,7 +424,7 @@ public class JudgeStrategy {
 
 
     public List<JSONObject> judgeAllCase(String userFileId, Long maxTime, Long maxMemory, @Nullable String userExeName,
-                                         Boolean getUserOutput, Boolean isRemoveEOFBlank) throws SystemError, ExecutionException, InterruptedException {
+                                         Boolean getUserOutput, Boolean isRemoveEOFBlank, String spjExeName) throws SystemError, ExecutionException, InterruptedException {
 
         if (testCasesInfo == null) {
             throw new SystemError("The evaluation data of the problem does not exist", null, null);
@@ -435,6 +446,7 @@ public class JudgeStrategy {
         // 默认给1.5倍题目限制时间用来测评
         Double time = maxTime * 1.5;
         final Long testTime = time.longValue();
+
         // 用户输出的文件夹
         String runDir = Constants.JudgeDir.RUN_WORKPLACE_DIR.getContent() + "/" + judge.getSubmitId();
         for (int index = 0; index < testcaseList.size(); index++) {
@@ -480,7 +492,7 @@ public class JudgeStrategy {
                                 maxMemory,
                                 maxOutputSize,
                                 userExeName,
-                                runConfig.getExeName(),
+                                spjExeName,
                                 getUserOutput);
                         result.set("caseId", caseId);
                         result.set("score", score);
@@ -656,15 +668,19 @@ public class JudgeStrategy {
             jsonObject.set("score", testCases.get(index).getOrDefault("score", null));
             jsonObject.set("inputName", inputName);
             // 生成对应文件
-            FileWriter fileWriter = new FileWriter(testCasesDir + "/" + inputName, CharsetUtil.UTF_8);
+            FileWriter infileWriter = new FileWriter(testCasesDir + "/" + inputName, CharsetUtil.UTF_8);
             // 将该测试数据的输入写入到文件
-            fileWriter.write((String) testCases.get(index).get("input"));
+            infileWriter.write((String) testCases.get(index).get("input"));
+
+            String outputName = (index + 1) + ".out";
+            jsonObject.set("outputName", outputName);
+            // 生成对应文件
+            String outputData = (String) testCases.get(index).get("output");
+            FileWriter outFile = new FileWriter(testCasesDir + "/" + outputName, CharsetUtil.UTF_8);
+            outFile.write(outputData);
 
             // spj是根据特判程序输出判断结果，所以无需初始化测试数据
             if (!isSpj) {
-                String outputName = (index + 1) + ".out";
-                jsonObject.set("outputName", outputName);
-                String outputData = (String) testCases.get(index).get("output");
                 // 原数据MD5
                 jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(outputData.getBytes()));
                 // 原数据大小
@@ -673,10 +689,6 @@ public class JudgeStrategy {
                 jsonObject.set("allStrippedOutputMd5", DigestUtils.md5DigestAsHex(outputData.replaceAll("\\s+", "").getBytes()));
                 // 默认去掉文末空格的MD5
                 jsonObject.set("EOFStrippedOutputMd5", DigestUtils.md5DigestAsHex(rtrim(outputData).getBytes()));
-                // 生成对应文件
-                FileWriter outFile = new FileWriter(testCasesDir + "/" + outputName, CharsetUtil.UTF_8);
-                outFile.write(outputData);
-
             }
 
             ((JSONArray) result.get("testCases")).put(index, jsonObject);

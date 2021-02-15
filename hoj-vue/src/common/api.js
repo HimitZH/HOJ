@@ -620,7 +620,7 @@ const adminApi = {
     })
   },
   compileSPJ (data) {
-    return ajax('/admin/compile_spj', 'post', {
+    return ajax('/admin/problem/compile-spj', 'post', {
       data
     })
   },

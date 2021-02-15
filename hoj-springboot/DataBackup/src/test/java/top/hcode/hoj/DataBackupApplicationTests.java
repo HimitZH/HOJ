@@ -4,9 +4,11 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONNull;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
+import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
@@ -178,12 +180,11 @@ public class DataBackupApplicationTests {
 
     @Test
     public void Test6() {
-        QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
-        userInfoQueryWrapper.isNotNull("cf_username");
-        List<UserInfo> userInfoList = userInfoMapper.selectList(userInfoQueryWrapper);
-        for (UserInfo userInfo : userInfoList) {
-            System.out.println(userInfo.getCfUsername());
-        }
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.set(new JSONObject());
+        String aNull = jsonArray.toString().replace("{}", "null");
+
+        System.out.println(JSONUtil.parseArray(aNull,false));
     }
 
 

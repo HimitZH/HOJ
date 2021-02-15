@@ -105,7 +105,7 @@ public class JudgeController {
         } catch (CompileError compileError) {
             return CommonResult.errorResponse(compileError.getStderr(), CommonResult.STATUS_FAIL);
         } catch (SystemError systemError) {
-            return CommonResult.errorResponse(systemError.getMessage(), CommonResult.STATUS_ERROR);
+            return CommonResult.errorResponse(systemError.getStderr(), CommonResult.STATUS_ERROR);
         }
     }
 

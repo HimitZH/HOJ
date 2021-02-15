@@ -62,7 +62,7 @@ function downloadFile (url) {
         fr.onload = (event) => {
           let data = JSON.parse(event.target.result)
           if (data.msg) {
-            myMessage.error(data.msg)
+            myMessage.info(data.msg)
           } else {
             myMessage.error('Invalid file format')
           }

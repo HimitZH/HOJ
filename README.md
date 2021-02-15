@@ -27,6 +27,7 @@
 | 2021-02-04 | 完善判题机制，加入pe可选择性判断，加入测试点可选择性公开     | Himit_ZH        |
 | 2021-02-08 | 完善判题服务调度机制（负载均衡策略），完善题目评测数据上传与下载 | Himit_ZH        |
 | 2021-02-12 | 初始化构建HDU虚拟判题流程                                    | Howie、Himit_ZH |
+| 2021-02-16 | 完善测试特殊判题题目的操作                                   | Himit_ZH        |
 
 # 二、系统架构
 
@@ -1257,3 +1258,64 @@ data数据
 
 
 ###（二）、判题机模块
+
+##  后续再补与修改文档
+
+#### 重要的特殊判题程序例子
+
+```c++
+#include<iostream>
+#include<cstdio>
+#define AC 100
+#define WA 101
+#define ERROR 102
+using namespace std;
+
+
+int spj(int user_output, FILE *output);
+
+void close_file(FILE *f){
+    if(f != NULL){
+        fclose(f);
+    }
+}
+
+int main(int argc, char *args[]){
+    FILE *output;
+    int result;
+    if(argc != 2){
+        return ERROR;
+    }
+    int user_output;
+    cin>>user_output;
+    cout<<user_output<<endl;
+    output = fopen(args[1], "r");
+	
+    result = spj(user_output, output);
+    printf("result: %d\n", result);
+    
+    close_file(output);
+    return result;
+}
+
+int spj(int user_output, FILE *output){
+    /*
+      parameter: 
+        - output，标程输出文件的指针
+        - user_output，用户输出数据
+      return: 
+        - 如果用户答案正确，返回AC
+        - 如果用户答案错误返回WA
+        - 如果主动捕获到自己的错误，如内存分配失败，返回ERROR
+      */
+      int std_out;
+      while(fscanf(output, "%d", &std_out) != EOF){
+          if(user_output+1 != std_out){
+             cout<<user_output<<endl<<std_out;
+              return WA;
+          }
+      }
+      return AC;
+}
+```
+
