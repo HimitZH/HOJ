@@ -844,6 +844,7 @@ export default {
           this.loadingCompile = false;
           this.problem.spjCompileOk = true;
           this.error.spj = '';
+          myMessage.success(res.data.msg);
         },
         (err) => {
           this.loadingCompile = false;
@@ -852,7 +853,7 @@ export default {
           this.$msgbox({
             title: 'Compile Error',
             type: 'error',
-            message: h('pre', err.data.data),
+            message: h('pre', err.data.msg),
             showCancelButton: false,
             closeOnClickModal: false,
             customClass: 'dialog-compile-error',

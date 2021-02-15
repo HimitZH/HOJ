@@ -252,9 +252,9 @@ public class Constants {
 
         PYTHON3("Python3", "/usr/bin/python3 {1}", "main", python3Env),
 
-        SPJ_C("SPJ-C", "{0}/{1} {2}", "main", defaultEnv),
+        SPJ_C("SPJ-C", "{0}/{1} {2}", "spj", defaultEnv),
 
-        SPJ_CPP("SPJ-C++", "{0}/{1} {2}", "main", defaultEnv);
+        SPJ_CPP("SPJ-C++", "{0}/{1} {2}", "spj", defaultEnv);
 
         private String language;
         private String command;
