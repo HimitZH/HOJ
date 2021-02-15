@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Entities;
 
 import java.io.IOException;
 import java.util.Map;
@@ -46,6 +47,16 @@ public class JsoupUtils {
             connection.data(getData);
         }
         return connection.method(Connection.Method.GET).execute();
+    }
+    public static Document getDocument(Connection connection, Map<String, String> getData) throws IOException {
+        //添加参数
+        if (getData != null) {
+            connection.data(getData);
+        }
+        Document document = connection.get();
+        document.outputSettings().escapeMode(Entities.EscapeMode.xhtml);
+        document.outputSettings().prettyPrint(false);
+        return document;
     }
 
 
