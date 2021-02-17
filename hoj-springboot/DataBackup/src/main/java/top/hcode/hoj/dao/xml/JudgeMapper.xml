@@ -2,13 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.dao.JudgeMapper">
     <select id="getCommonJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="false">
-        select j.uid,j.submit_id,j.submit_time,j.uid,j.username,j.uid,j.pid,j.status,j.share,
+        select j.uid,j.submit_id,j.submit_time,j.uid,j.username,j.uid,j.pid,j.display_pid,j.status,j.share,
         j.time,j.memory,j.length,j.language,j.cid,j.cpid,j.judger
         from judge j
         <where>
             j.cid = 0 AND j.cpid = 0
-            <if test="pid!=null">
-                AND j.pid = #{pid}
+            <if test="searchPid!=null">
+                AND j.display_pid like concat('%',#{searchPid},'%')
             </if>
             <if test="username!='' and username!=null">
                 AND j.username like concat('%',#{username},'%')

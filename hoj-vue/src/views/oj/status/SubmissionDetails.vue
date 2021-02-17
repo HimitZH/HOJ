@@ -55,9 +55,9 @@
         <vxe-table-column field="pid" title="Problem ID" min-width="100">
           <template v-slot="{ row }">
             <a
-              :href="getProblemUri(row.pid)"
+              :href="getProblemUri(row.displayPid)"
               style="color: rgb(87, 163, 243)"
-              >{{ row.pid }}</a
+              >{{ row.displayPid }}</a
             >
           </template>
         </vxe-table-column>

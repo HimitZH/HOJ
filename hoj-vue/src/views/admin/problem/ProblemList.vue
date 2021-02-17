@@ -15,6 +15,13 @@
               >Create
             </el-button>
             <el-button
+              type="success"
+              size="small"
+              @click="AddRemoteOJProblemDialogVisible = true"
+              icon="el-icon-plus"
+              >Add Remote OJ Problem
+            </el-button>
+            <el-button
               v-if="contestId"
               type="primary"
               size="small"
@@ -44,7 +51,7 @@
         @row-dblclick="handleDblclick"
         align="center"
       >
-        <vxe-table-column min-width="100" field="id" title="ID">
+        <vxe-table-column min-width="100" field="problemId" title="ID">
         </vxe-table-column>
         <vxe-table-column field="title" min-width="150" title="Title">
         </vxe-table-column>
@@ -132,6 +139,38 @@
         @on-change="getProblemList"
       ></ContestAddProblem>
     </el-dialog>
+
+    <el-dialog
+      title="Add Remote OJ Problem"
+      width="350px"
+      :visible.sync="AddRemoteOJProblemDialogVisible"
+      @close-on-click-modal="false"
+    >
+      <el-form>
+        <el-form-item label="Remote OJ">
+          <el-select v-model="otherOJName" size="small">
+            <el-option
+              :label="name"
+              :value="name"
+              v-for="(name, index) in REMOTE_OJ"
+              :key="index"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Problem ID">
+          <el-input v-model="otherOJProblemId" size="small"></el-input>
+        </el-form-item>
+        <el-form-item style="text-align:center">
+          <el-button
+            type="primary"
+            icon="el-icon-plus"
+            @click="addRemoteOJProblem"
+            :loading="addRemoteOJproblemLoading"
+            >Add
+          </el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -140,6 +179,7 @@ import api from '@/common/api';
 import utils from '@/common/utils';
 import ContestAddProblem from '@/components/admin/ContestAddProblem.vue';
 import myMessage from '@/common/message';
+import { REMOTE_OJ } from '@/common/constants';
 export default {
   name: 'ProblemList',
   components: {
@@ -159,12 +199,18 @@ export default {
       currentProblemID: '',
       currentRow: {},
       addProblemDialogVisible: false,
+      AddRemoteOJProblemDialogVisible: false,
+      addRemoteOJproblemLoading: false,
+      otherOJName: 'HDU',
+      otherOJProblemId: '',
+      REMOTE_OJ: [],
     };
   },
   mounted() {
     this.routeName = this.$route.name;
     this.contestId = this.$route.params.contestId;
     this.getProblemList(this.currentPage);
+    this.REMOTE_OJ = Object.assign({}, REMOTE_OJ);
   },
   methods: {
     handleDblclick(row) {
@@ -279,6 +325,23 @@ export default {
     filterByKeyword() {
       this.currentChange(1);
       this.keyword = '';
+    },
+    addRemoteOJProblem() {
+      this.addRemoteOJproblemLoading = true;
+      api
+        .admin_addRemoteOJProblem(this.otherOJName, this.otherOJProblemId)
+        .then(
+          (res) => {
+            this.addRemoteOJproblemLoading = false;
+            this.AddRemoteOJProblemDialogVisible = false;
+            myMessage.success(res.data.msg);
+            this.currentChange(1);
+          },
+          (err) => {
+            this.addRemoteOJproblemLoading = false;
+            this.AddRemoteOJProblemDialogVisible = false;
+          }
+        );
     },
   },
   watch: {

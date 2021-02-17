@@ -15,10 +15,13 @@ import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.ToJudgeService;
 import top.hcode.hoj.service.impl.*;
 
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.*;
 
@@ -103,6 +106,14 @@ public class AdminProblemController {
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
     public CommonResult addProblem(@RequestBody ProblemDto problemDto) {
+
+        QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("problem_id", problemDto.getProblem().getProblemId());
+        Problem problem = problemService.getOne(queryWrapper);
+        if (problem != null) {
+            return CommonResult.errorResponse("该题目的展示id已存在，请更换！", CommonResult.STATUS_FAIL);
+        }
+
         boolean result = problemService.adminAddProblem(problemDto);
         if (result) { // 添加成功
             return CommonResult.successResponse(null, "添加成功！");
@@ -153,6 +164,31 @@ public class AdminProblemController {
 
         compileSpj.setToken(judgeToken);
         return toJudgeService.compileSpj(compileSpj);
+    }
+
+    @GetMapping("/import-remote-oj-problem")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    public CommonResult importRemoteOJProblem(@RequestParam("name") String name,
+                                              @RequestParam("problemId") String problemId,
+                                              HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        try {
+            Problem otherOJProblemInfo = problemService.getOtherOJProblemInfo(name.toUpperCase(), problemId, userRolesVo.getUsername());
+            System.out.println(otherOJProblemInfo);
+            if (otherOJProblemInfo != null) {
+                boolean result = problemService.save(otherOJProblemInfo);
+                if (!result) {
+                    return CommonResult.errorResponse("导入新题目失败！原因：插入数据库失败！");
+                }
+            } else {
+                return CommonResult.errorResponse("导入新题目失败！原因：获取该OJ的题目数据失败！");
+            }
+        } catch (Exception e) {
+            return CommonResult.errorResponse(e.getMessage());
+        }
+        return CommonResult.successResponse(null, "导入新题目成功！");
     }
 
 }

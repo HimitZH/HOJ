@@ -191,11 +191,11 @@ public class JudgeController {
             }
 
         } else { // 如果不是比赛提交，需要将题号转为long类型
-            if (NumberUtil.isNumber(judgeDto.getPid())) {
-                judge.setCpid(0L).setPid(Long.valueOf(judgeDto.getPid()));
-            } else {
-                return CommonResult.errorResponse("参数错误！提交评测失败！", CommonResult.STATUS_ERROR);
-            }
+
+            QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
+            problemQueryWrapper.eq("problem_id", judgeDto.getPid());
+            Problem problem = problemService.getOne(problemQueryWrapper);
+            judge.setCpid(0L).setPid(problem.getId()).setDisplayPid(problem.getProblemId());
 
             // 更新一下user_record表
             UpdateWrapper<UserRecord> userRecordUpdateWrapper = new UpdateWrapper<>();
@@ -211,7 +211,7 @@ public class JudgeController {
 
         // 将提交加入任务队列
         if (judgeDto.getIsRemote()) { // 如果是远程oj判题
-            remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judgeDto.getSource(), judge.getCid() == 0);
+            remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judgeDto.getPid(), judge.getCid() == 0);
         } else {
             judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getCid() == 0);
         }
@@ -338,7 +338,7 @@ public class JudgeController {
     public CommonResult getJudgeList(@RequestParam(value = "limit", required = false) Integer limit,
                                      @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                      @RequestParam(value = "onlyMine", required = false) Boolean onlyMine,
-                                     @RequestParam(value = "problemID", required = false) Long searchPid,
+                                     @RequestParam(value = "problemID", required = false) String searchPid,
                                      @RequestParam(value = "status", required = false) Integer searchStatus,
                                      @RequestParam(value = "username", required = false) String searchUsername,
                                      HttpServletRequest request) {

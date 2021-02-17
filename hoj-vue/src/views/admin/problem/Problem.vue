@@ -13,6 +13,20 @@
       >
         <el-row :gutter="20">
           <el-col :span="24">
+            <el-form-item prop="problemId" label="Problem ID" required>
+              <el-input
+                placeholder="Enter the display id of problem"
+                v-model="problem.problemId"
+              >
+                <template slot="prepend" v-if="mode == 'add'"
+                  >{{ OJ_NAME }}-</template
+                >
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="24">
             <el-form-item prop="title" label="Title" required>
               <el-input
                 placeholder="Enter the title of problem"
@@ -490,6 +504,7 @@ import utils from '@/common/utils';
 import { mapGetters } from 'vuex';
 import api from '@/common/api';
 import myMessage from '@/common/message';
+import { OJ_NAME } from '@/common/constants';
 export default {
   name: 'Problem',
   components: {
@@ -519,6 +534,7 @@ export default {
       loadingCompile: false,
       mode: '', // 该题目是编辑或者创建
       contest: {},
+      OJ_NAME: 'HOJ',
       pid: null, // 题目id，如果为创建模式则为null
       contestID: null, // 比赛id
       contestProblem: {
@@ -530,6 +546,7 @@ export default {
       problem: {
         id: null,
         title: '',
+        problemId: '',
         description: '',
         input: '',
         output: '',
@@ -577,6 +594,7 @@ export default {
   },
   mounted() {
     this.routeName = this.$route.name;
+    this.OJ_NAME = OJ_NAME;
     this.uploadFileUrl =
       this.$http.defaults.baseURL + '/file/upload-testcase-zip';
     if (
@@ -597,6 +615,7 @@ export default {
       }
       this.problem = this.reProblem = {
         id: null,
+        problemId: '',
         title: '',
         description: '',
         input: '',
@@ -991,6 +1010,10 @@ export default {
 
       let problemDto = {}; // 上传给后台的数据
       problemDto['problem'] = Object.assign({}, this.problem); // 深克隆
+      if (this.mode == 'add') {
+        problemDto.problem.problemId =
+          this.OJ_NAME + '-' + this.problem.problemId;
+      }
       problemDto.problem.examples = utils.examplesToString(
         this.problem.examples
       ); // 需要转换格式

@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author Himit_ZH
@@ -19,7 +19,11 @@ import java.util.List;
  */
 
 public interface ProblemService extends IService<Problem> {
-    Page<ProblemVo> getProblemList(int limit, int currentPage, Long pid, String title,Integer difficulty,Long tid);
+    Page<ProblemVo> getProblemList(int limit, int currentPage, Long pid, String title, Integer difficulty, Long tid);
+
     boolean adminUpdateProblem(ProblemDto problemDto);
+
     boolean adminAddProblem(ProblemDto problemDto);
+
+    Problem getOtherOJProblemInfo(String OJName, String problemId, String author) throws Exception;
 }
