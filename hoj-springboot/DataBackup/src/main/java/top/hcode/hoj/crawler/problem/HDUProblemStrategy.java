@@ -48,7 +48,7 @@ public class HDUProblemStrategy extends ProblemStrategy {
         info.setExamples(sb.toString());
         info.setHint(ReUtil.get("<i>Hint</i></div>([\\s\\S]*?)<br><[^<>]*?panel_title[^<>]*?>", html, 1));
         info.setIsRemote(true);
-        info.setSource(String.format("<a href='http://acm.hdu.edu.cn/showproblem.php?pid=%s'>%s</a>", problemId, JUDGE_NAME + "-" + problemId);
+        info.setSource(String.format("<a href='http://acm.hdu.edu.cn/showproblem.php?pid=%s'>%s</a>", problemId, JUDGE_NAME + "-" + problemId));
         info.setType(0).setAuth(1).setAuthor(author).setOpenCaseResult(false).setIsRemoveEndBlank(false);
         return info;
     }
