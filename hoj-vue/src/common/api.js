@@ -226,10 +226,10 @@ const ojApi = {
   },
 
   // Problem详情页的相关请求
-  getProblem(pid){
+  getProblem(problemId){
     return ajax('/api/get-problem','get',{
       params:{
-        pid
+        problemId
       }
     })
   },
@@ -576,6 +576,16 @@ const adminApi = {
       params
     })
   },
+
+  admin_addRemoteOJProblem(name,problemId){
+    return ajax("/admin/problem/import-remote-oj-problem","get",{
+      params: {
+        name,
+        problemId
+      }
+    })
+  },
+
   admin_createProblem (data) {
     return ajax('/admin/problem', 'post', {
       data

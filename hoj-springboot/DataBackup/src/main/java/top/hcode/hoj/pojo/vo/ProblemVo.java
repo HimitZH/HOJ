@@ -20,6 +20,9 @@ public class ProblemVo implements Serializable {
     @ApiModelProperty(value = "题目id")
     private Long pid;
 
+    @ApiModelProperty(value = "题目展示id")
+    private String problemId;
+
     @ApiModelProperty(value = "题目标题")
     private String title;
 

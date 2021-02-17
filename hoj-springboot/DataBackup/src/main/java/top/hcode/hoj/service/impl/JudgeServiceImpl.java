@@ -43,12 +43,12 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     private ContestRecordServiceImpl contestRecordService;
 
     @Override
-    public IPage<JudgeVo> getCommonJudgeList(Integer limit, Integer currentPage, Long pid, Integer status, String username,
+    public IPage<JudgeVo> getCommonJudgeList(Integer limit, Integer currentPage, String searchPid, Integer status, String username,
                                              String uid) {
         //新建分页
         Page<JudgeVo> page = new Page<>(currentPage, limit);
 
-        return judgeMapper.getCommonJudgeList(page, pid, status, username, uid);
+        return judgeMapper.getCommonJudgeList(page, searchPid, status, username, uid);
     }
 
     @Override

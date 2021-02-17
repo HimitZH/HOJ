@@ -93,14 +93,14 @@
             </template>
           </vxe-table-column>
           <vxe-table-column
-            field="pid"
+            field="problemId"
             title="Problem ID"
             min-width="100"
           ></vxe-table-column>
 
           <vxe-table-column field="title" title="Title" min-width="250">
             <template v-slot="{ row }">
-              <a :href="getProblemUri(row.pid)" class="title-a">{{
+              <a :href="getProblemUri(row.problemId)" class="title-a">{{
                 row.title
               }}</a>
             </template>
@@ -415,12 +415,12 @@ export default {
         myMessage.success('随机题目获取成功，祝你好运');
         this.$router.push({
           name: 'ProblemDetails',
-          params: { problemID: res.data.data.pid },
+          params: { problemID: res.data.data.problemId },
         });
       });
     },
-    getProblemUri(pid) {
-      return '/problem/' + pid;
+    getProblemUri(problemId) {
+      return '/problem/' + problemId;
     },
     getLevelColor(difficulty) {
       return 'el-tag el-tag--small status-' + PROBLEM_LEVEL[difficulty].color;

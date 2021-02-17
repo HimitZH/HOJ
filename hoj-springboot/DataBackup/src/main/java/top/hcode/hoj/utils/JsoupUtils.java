@@ -1,9 +1,10 @@
 package top.hcode.hoj.utils;
 
-import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Entities;
 
 import java.io.IOException;
 import java.util.Map;
@@ -56,5 +57,28 @@ public class JsoupUtils {
         connection.ignoreContentType(true);
         String body = connection.execute().body();
         return new JSONObject(body);
+    }
+
+    public static Connection.Response postResponse(Connection connection, Map<String, String> postData) throws IOException {
+        connection.data(postData);
+        return connection.method(Connection.Method.POST).execute();
+    }
+
+    public static Connection.Response getResponse(Connection connection, Map<String, String> getData) throws IOException {
+        //添加参数
+        if (getData != null) {
+            connection.data(getData);
+        }
+        return connection.method(Connection.Method.GET).execute();
+    }
+    public static Document getDocument(Connection connection, Map<String, String> getData) throws IOException {
+        //添加参数
+        if (getData != null) {
+            connection.data(getData);
+        }
+        Document document = connection.get();
+        document.outputSettings().escapeMode(Entities.EscapeMode.xhtml);
+        document.outputSettings().prettyPrint(false);
+        return document;
     }
 }

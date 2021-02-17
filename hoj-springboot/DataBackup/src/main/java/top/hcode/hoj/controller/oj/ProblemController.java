@@ -73,16 +73,16 @@ public class ProblemController {
 
         // 关键词查询不为空
         Long pid = null;
-        if (!StringUtils.isEmpty(keyword)){
+        if (!StringUtils.isEmpty(keyword)) {
             Pattern pattern = Pattern.compile("[0-9]*");
             Matcher isNum = pattern.matcher(keyword);
-            if (isNum.matches()){ // 利用正则表达式判断keyword是否为纯数字
+            if (isNum.matches()) { // 利用正则表达式判断keyword是否为纯数字
                 pid = Long.valueOf(keyword);
             }
         }
-        Page<ProblemVo> problemList = problemService.getProblemList(limit, currentPage, pid, keyword,difficulty, tagId);
+        Page<ProblemVo> problemList = problemService.getProblemList(limit, currentPage, pid, keyword, difficulty, tagId);
         if (problemList.getTotal() == 0) { // 未查询到一条数据
-            return CommonResult.successResponse(problemList,"暂无数据");
+            return CommonResult.successResponse(problemList, "暂无数据");
         } else {
             return CommonResult.successResponse(problemList, "获取成功");
         }
@@ -96,67 +96,67 @@ public class ProblemController {
      * @Since 2020/10/27
      */
     @GetMapping("/get-random-problem")
-    public CommonResult getRandomProblem(){
+    public CommonResult getRandomProblem() {
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         // 必须是公开题目
-        queryWrapper.select("id").eq("auth", 1);
+        queryWrapper.select("problem_id").eq("auth", 1);
         List<Problem> list = problemService.list(queryWrapper);
-        if(list.size()==0){
+        if (list.size() == 0) {
             return CommonResult.errorResponse("获取随机题目失败，本站暂无公开题目！");
         }
         Random random = new Random();
-        int index=random.nextInt(list.size());
-        Map<String,Object> result = new HashMap<>();
-        result.put("pid", list.get(index).getId());
+        int index = random.nextInt(list.size());
+        Map<String, Object> result = new HashMap<>();
+        result.put("problemId", list.get(index).getProblemId());
         return CommonResult.successResponse(result);
     }
 
     /**
      * @MethodName getUserProblemStatus
-     * @Params  * @param UidAndPidListDto
+     * @Params * @param UidAndPidListDto
      * @Description 获取用户对应该题目列表中各个题目的做题情况
      * @Return CommonResult
      * @Since 2020/12/29
      */
     @RequiresAuthentication
     @PostMapping("/get-user-problem-status")
-    public CommonResult getUserProblemStatus(@Validated @RequestBody PidListDto pidListDto, HttpServletRequest request){
+    public CommonResult getUserProblemStatus(@Validated @RequestBody PidListDto pidListDto, HttpServletRequest request) {
 
         // 需要获取一下该token对应用户的数据
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        HashMap<Long,Object> result = new HashMap<>();
+        HashMap<Long, Object> result = new HashMap<>();
         // 先查询判断该用户对于这些题是否已经通过，若已通过，则无论后续再提交结果如何，该题都标记为通过
         QueryWrapper<Judge> queryWrapper = new QueryWrapper<>();
         queryWrapper.select("distinct pid,status,gmt_create,score").in("pid", pidListDto.getPidList())
                 // 如果是比赛的提交记录需要判断cid和cpid不为0
-                .ne(pidListDto.getIsContestProblemList(),"cid",0)
-                .ne(pidListDto.getIsContestProblemList(),"cpid", 0)
+                .ne(pidListDto.getIsContestProblemList(), "cid", 0)
+                .ne(pidListDto.getIsContestProblemList(), "cpid", 0)
                 .eq("uid", userRolesVo.getUid()).orderByDesc("gmt_create");
         List<Judge> judges = judgeService.list(queryWrapper);
 
-        for (Judge judge:judges){
+        for (Judge judge : judges) {
 
             // 如果是比赛的题目列表状态
-            if (pidListDto.getIsContestProblemList()){
-                HashMap<String,Object> temp = new HashMap<>();
+            if (pidListDto.getIsContestProblemList()) {
+                HashMap<String, Object> temp = new HashMap<>();
                 temp.put("score", judge.getScore());
                 temp.put("status", judge.getStatus());
-                result.put(judge.getPid(),temp);
+                result.put(judge.getPid(), temp);
 
-            }else{ // 不是比赛题目
-                if (judge.getStatus().intValue()== Constants.Judge.STATUS_ACCEPTED.getStatus()){ // 如果该题目已通过，则强制写为通过（0）
+            } else { // 不是比赛题目
+                if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) { // 如果该题目已通过，则强制写为通过（0）
                     result.put(judge.getPid(), Constants.Judge.STATUS_ACCEPTED.getStatus());
-                }else if (!result.containsKey(judge.getPid())){ // 还未写入，则使用最新一次提交的结果
-                    result.put(judge.getPid(),judge.getStatus());
+                } else if (!result.containsKey(judge.getPid())) { // 还未写入，则使用最新一次提交的结果
+                    result.put(judge.getPid(), judge.getStatus());
                 }
             }
         }
 
 
         // 再次检查，应该可能从未提交过该题，则状态写为-10
-        for (Long pid:pidListDto.getPidList()){
+        for (Long pid : pidListDto.getPidList()) {
 
             // 如果是比赛的题目列表状态
             if (pidListDto.getIsContestProblemList()) {
@@ -166,13 +166,13 @@ public class ProblemController {
                     temp.put("status", -10);
                     result.put(pid, temp);
                 }
-            }else {
+            } else {
                 if (!result.containsKey(pid)) {
                     result.put(pid, -10);
                 }
             }
         }
-        return CommonResult.successResponse(result,"查询成功");
+        return CommonResult.successResponse(result, "查询成功");
 
     }
 
@@ -184,44 +184,50 @@ public class ProblemController {
      * @Since 2020/10/27
      */
     @RequestMapping(value = "/get-problem", method = RequestMethod.GET)
-    public CommonResult getProblemInfo(@RequestParam(value = "pid", required = true) Long pid) {
+    public CommonResult getProblemInfo(@RequestParam(value = "problemId", required = true) String problemId) {
 
-        QueryWrapper<Problem> wrapper = new QueryWrapper<Problem>().eq("id", pid);
+        QueryWrapper<Problem> wrapper = new QueryWrapper<Problem>().eq("problem_id", problemId);
 
         //查询题目详情，题目标签，题目语言，题目做题情况
         Problem problem = problemService.getOne(wrapper);
         if (problem == null) {
             return CommonResult.errorResponse("该题号对应的题目不存在", CommonResult.STATUS_NOT_FOUND);
         }
-        if (problem.getAuth()!=1){
-            return CommonResult.errorResponse("该题号对应题目并非公开题目，不支持访问！",CommonResult.STATUS_FORBIDDEN);
+        if (problem.getAuth() != 1) {
+            return CommonResult.errorResponse("该题号对应题目并非公开题目，不支持访问！", CommonResult.STATUS_FORBIDDEN);
         }
 
         QueryWrapper<ProblemTag> problemTagQueryWrapper = new QueryWrapper<>();
-        problemTagQueryWrapper.eq("pid", pid);
+        problemTagQueryWrapper.eq("pid", problem.getId());
         // 获取该题号对应的标签id
         List<Long> tidList = new LinkedList<>();
-        problemTagService.list(problemTagQueryWrapper).forEach(problemTag -> {tidList.add(problemTag.getTid());});
+        problemTagService.list(problemTagQueryWrapper).forEach(problemTag -> {
+            tidList.add(problemTag.getTid());
+        });
         List<String> tagsStr = new LinkedList<>();
-        if (tidList.size()!=0){
-            tagService.listByIds(tidList).forEach(tag -> {tagsStr.add(tag.getName());});
+        if (tidList.size() != 0) {
+            tagService.listByIds(tidList).forEach(tag -> {
+                tagsStr.add(tag.getName());
+            });
         }
         // 获取题目提交的代码支持的语言
         List<String> languagesStr = new LinkedList<>();
         QueryWrapper<ProblemLanguage> problemLanguageQueryWrapper = new QueryWrapper<>();
-        problemLanguageQueryWrapper.eq("pid", pid).select("lid");
+        problemLanguageQueryWrapper.eq("pid", problem.getId()).select("lid");
         List<Long> lidList = problemLanguageService.list(problemLanguageQueryWrapper)
                 .stream().map(ProblemLanguage::getLid).collect(Collectors.toList());
-        languageService.listByIds(lidList).forEach(language -> {languagesStr.add(language.getName());});
+        languageService.listByIds(lidList).forEach(language -> {
+            languagesStr.add(language.getName());
+        });
 
         // 获取题目的提交记录
         QueryWrapper<ProblemCount> problemCountQueryWrapper = new QueryWrapper<>();
-        problemCountQueryWrapper.eq("pid", pid);
+        problemCountQueryWrapper.eq("pid", problem.getId());
         ProblemCount problemCount = problemCountService.getOne(problemCountQueryWrapper);
 
 
         // 将数据统一写入到一个Vo返回数据实体类中
-        ProblemInfoVo problemInfoVo = new ProblemInfoVo(problem,tagsStr,languagesStr,problemCount);
+        ProblemInfoVo problemInfoVo = new ProblemInfoVo(problem, tagsStr, languagesStr, problemCount);
         return CommonResult.successResponse(problemInfoVo, "获取成功");
     }
 

@@ -32,6 +32,9 @@ public class Problem implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @ApiModelProperty(value = "题目的自定义ID 例如（HOJ-1000）")
+    private String problemId;
+
     @ApiModelProperty(value = "题目")
     private String title;
 

@@ -1,6 +1,5 @@
 package top.hcode.hoj.remoteJudge.task;
 
-import top.hcode.hoj.pojo.entity.Problem;
 
 import java.util.Map;
 
@@ -26,12 +25,5 @@ public interface RemoteJudgeStrategy {
     Map<String, String> getLoginCookie() throws Exception;
 
     String getLanguage(String language);
-
-    /**
-     * @param problemId String的原因是因为某些题库题号不是纯数字
-     * @return 返回Problem对象
-     * @throws Exception
-     */
-    Problem getProblemInfo(String problemId) throws Exception;
 
 }

@@ -197,7 +197,8 @@ problem表
 | 列名         | 实体属性类型 | 键          | 备注                                        |
 | ------------ | ------------ | ----------- | ------------------------------------------- |
 | id           | long         | primary key | auto_increment 1000开始                     |
-| title        | String       |             | 题目                                        |
+| problem_id | String |  | 题目展示id |
+| title        | String       |             | 题目标题                                      |
 | author       | String       |             | 默认可为无                                  |
 | type | int | | 题目类型 0为ACM,1为OI |
 | time_limit    | int          |             | 时间限制(ms)，默认为c/c++限制,其它语言为2倍 |
@@ -324,6 +325,7 @@ judge表
 | 列名          | 实体属性类型 | 键          | 备注                             |
 | ------------- | ------------ | ----------- | -------------------------------- |
 | submit_id     | long         | primary key | auto_increment                   |
+| display_pid   | String       |             | 题目展示id                       |
 | pid           | long         | 外键        | 题目id                           |
 | uid           | String       | 外键        | 提交用户的id                     |
 | username      | String       | 外键        | 用户名                           |

@@ -8,6 +8,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import top.hcode.hoj.crawler.problem.HDUProblemStrategy;
+import top.hcode.hoj.crawler.problem.ProblemContext;
+import top.hcode.hoj.crawler.problem.ProblemStrategy;
 import top.hcode.hoj.dao.ProblemCaseMapper;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.*;
@@ -366,4 +369,23 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             return false;
         }
     }
+
+    @Override
+    public Problem getOtherOJProblemInfo(String OJName, String problemId, String author) throws Exception {
+
+        ProblemStrategy problemStrategy;
+
+        switch (OJName) {
+            case "HDU":
+                problemStrategy = new HDUProblemStrategy();
+                break;
+            default:
+                throw new Exception("未知的OJ的名字，暂时不支持！");
+        }
+
+        ProblemContext problemContext = new ProblemContext(problemStrategy);
+        return problemContext.getProblemInfo(problemId,author);
+    }
+
+
 }

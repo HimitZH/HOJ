@@ -123,9 +123,9 @@
               </span>
               <span
                 v-else
-                @click="getProblemUri(row.pid, false)"
+                @click="getProblemUri(row.displayPid, false)"
                 style="color: rgb(87, 163, 243)"
-                >{{ row.pid }}
+                >{{ row.displayPid }}
               </span>
             </template>
           </vxe-table-column>
