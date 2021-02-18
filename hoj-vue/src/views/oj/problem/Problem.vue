@@ -119,7 +119,7 @@
 
               <div v-if="problemData.problem.source">
                 <p class="title">Source</p>
-                <p class="content">{{ problemData.problem.source }}</p>
+                <p class="content" v-html="problemData.problem.source"></p>
               </div>
             </div>
           </el-card>
@@ -133,7 +133,7 @@
           >
             <CodeMirror
               :value.sync="code"
-              :languages="problemData.problem.languages"
+              :languages="problemData.languages"
               :language="language"
               :theme="theme"
               @resetCode="onResetToTemplate"
@@ -342,7 +342,7 @@ export default {
       captchaCode: '',
       captchaSrc: '',
       contestID: 0,
-      problemID: 1000,
+      problemID: '',
       submitting: false,
       code: '',
       language: 'C',

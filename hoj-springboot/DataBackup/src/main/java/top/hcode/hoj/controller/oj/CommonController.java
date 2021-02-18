@@ -45,6 +45,8 @@ public class CommonController {
     @Autowired
     private RedisUtils redisUtil;
 
+    @Autowired
+    private ProblemServiceImpl problemService;
 
 
     @GetMapping("/captcha")
@@ -86,8 +88,21 @@ public class CommonController {
 
 
     @GetMapping("/languages")
-    public CommonResult getLanguages() {
-        List<Language> list = languageService.list();
+    public CommonResult getLanguages(@RequestParam(value = "pid", required = false) Long pid,
+                                     @RequestParam(value = "all", required = false) Boolean all) {
+
+        String OJ = "ME";
+        if (pid != null) {
+            Problem problem = problemService.getById(pid);
+            if (problem.getIsRemote()) {
+                OJ = problem.getProblemId().split("-")[0];
+            }
+        }
+
+        QueryWrapper<Language> queryWrapper = new QueryWrapper<>();
+        // 获取对应OJ支持的语言列表
+        queryWrapper.eq(all != null && !all, "oj", OJ);
+        List<Language> list = languageService.list(queryWrapper);
         if (list != null) {
             return CommonResult.successResponse(list, "获取编程语言列表成功！");
         } else {

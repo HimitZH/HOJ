@@ -398,8 +398,12 @@ const ojApi = {
   },
 
   // about页部分请求
-  getAllLanguages(){
-    return ajax("/api/languages",'get')
+  getAllLanguages(all){
+    return ajax("/api/languages",'get',{
+      params:{
+        all
+      }
+    })
   },
   // userhome页的请求
   getUserInfo(uid){
@@ -559,8 +563,13 @@ const adminApi = {
     })
   },
 
-  getLanguages () {
-    return ajax('/api/languages', 'get')
+  getLanguages (pid,all) {
+    return ajax('/api/languages', 'get',{
+      params:{
+        pid,
+        all
+      }
+    })
   },
   getProblemLanguages (pid) {
     return ajax('/api/get-Problem-languages', 'get',{
@@ -596,18 +605,18 @@ const adminApi = {
       data
     })
   },
-  admin_deleteProblem (id) {
+  admin_deleteProblem (pid) {
     return ajax('/admin/problem', 'delete', {
       params: {
-        id
+        pid
       }
     })
   },
 
-  admin_getProblem (id) {
+  admin_getProblem (pid) {
     return ajax('/admin/problem', 'get', {
       params: {
-        id
+        pid
       }
     })
   },

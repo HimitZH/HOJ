@@ -99,9 +99,11 @@ export default {
     },
   },
   beforeRouteEnter(to, from, next) {
-    utils.getLanguages().then((languages) => {
+    utils.getLanguages(true).then((languages) => {
       next((vm) => {
-        vm.languages = languages;
+        vm.languages = languages.filter(function(element, index, array) {
+          return element.oj == 'ME';
+        });
       });
     });
   },

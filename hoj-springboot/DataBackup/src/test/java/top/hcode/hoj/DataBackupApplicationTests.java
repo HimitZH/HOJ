@@ -3,6 +3,7 @@ package top.hcode.hoj;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ReUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONNull;
 import cn.hutool.json.JSONObject;
@@ -17,16 +18,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mysql.cj.protocol.PacketReceivedTimeHolder;
 import com.netflix.loadbalancer.DynamicServerListLoadBalancer;
+import org.jsoup.Connection;
+import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.client.RestTemplate;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.*;
-import top.hcode.hoj.pojo.entity.Contest;
-import top.hcode.hoj.pojo.entity.Role;
-import top.hcode.hoj.pojo.entity.Session;
-import top.hcode.hoj.pojo.entity.UserInfo;
+import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.pojo.vo.AnnouncementVo;
 import top.hcode.hoj.pojo.vo.ContestVo;
 import top.hcode.hoj.pojo.vo.RoleAuthsVo;
@@ -104,13 +104,14 @@ public class DataBackupApplicationTests {
         String command = "/usr/bin/java -cp {1} -XX:MaxRAM={2}k -Djava.security.manager -Dfile.encoding=UTF-8 -Djava.security.policy==/etc/java_policy -Djava.awt.headless=true Main";
         String exePath = "/judge/run/32/1.exe";
         String exeDir = "/judge/run/32";
-        int maxMemory = 1024*10;
+        int maxMemory = 1024 * 10;
         List<String> commandList = Arrays.asList(MessageFormat.format(command, exePath, exeDir, (maxMemory / 1024)).split(" "));
         System.out.println(commandList);
     }
 
     @Autowired
     private NacosDiscoveryProperties discoveryProperties;
+
     @Test
     public void Test2() {
         String clusterName = discoveryProperties.getClusterName();
@@ -137,6 +138,7 @@ public class DataBackupApplicationTests {
 
     @Autowired
     private RestTemplate restTemplate;
+
     @Test
     public void Test4() {
 ////        int todayJudgeNum = judgeMapper.getTodayJudgeNum();
@@ -170,7 +172,7 @@ public class DataBackupApplicationTests {
                 }
             }
         }
-       System.out.println(siteLocalAddress == null ? "" : siteLocalAddress);
+        System.out.println(siteLocalAddress == null ? "" : siteLocalAddress);
     }
 
     @Autowired
@@ -179,12 +181,24 @@ public class DataBackupApplicationTests {
     private UserInfoMapper userInfoMapper;
 
     @Test
-    public void Test6() {
-        JSONArray jsonArray = new JSONArray();
-        jsonArray.set(new JSONObject());
-        String aNull = jsonArray.toString().replace("{}", "null");
-
-        System.out.println(JSONUtil.parseArray(aNull,false));
+    public void Test6() throws IOException {
+        String JUDGE_NAME = "HDU";
+        String HOST = "http://acm.hdu.edu.cn";
+        String PROBLEM_URL = "/showproblem.php?pid=%s";
+        Problem info = new Problem();
+        String url = HOST + String.format(PROBLEM_URL, 1090);
+        Connection connection = JsoupUtils.getConnectionFromUrl(url, null, null);
+        Document document = JsoupUtils.getDocument(connection, null);
+        String html = document.html();
+        StringBuilder sb = new StringBuilder("<input>");
+        sb.append(ReUtil.get(">Sample Input</div><div .*?,monospace;\">([\\s\\S]*?)</div></pre>", html, 1));
+        sb.append("</input><output>");
+        sb.append(ReUtil.get(">Sample Output</div><div .*?monospace;\">(.*?)(<div style=.*?</div><i style=.*?</i>)*?</div></pre>", html, 1)).append("</output>");
+        info.setExamples(sb.toString());
+        info.setHint(ReUtil.get("<i>Hint</i></div>([\\s\\S]*?)</div><i .*?<br><[^<>]*?panel_title[^<>]*?>", html, 1));
+        info.setIsRemote(true);
+        System.out.println(sb.toString());
+        System.out.println(info.getHint());
     }
 
 
