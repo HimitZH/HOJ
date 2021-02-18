@@ -75,7 +75,6 @@
 <script>
 import utils from '@/common/utils';
 import { codemirror } from 'vue-codemirror-lite';
-import 'codemirror/mode/javascript/javascript';
 
 // 风格对应的样式
 import 'codemirror/theme/monokai.css';
@@ -83,8 +82,10 @@ import 'codemirror/theme/solarized.css';
 import 'codemirror/theme/material.css';
 
 // mode
+import 'codemirror/mode/javascript/javascript';
 import 'codemirror/mode/clike/clike.js';
 import 'codemirror/mode/python/python.js';
+import 'codemirror/mode/pascal/pascal.js';
 
 // active-line.js
 import 'codemirror/addon/selection/active-line.js';

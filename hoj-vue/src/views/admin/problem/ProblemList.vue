@@ -17,6 +17,7 @@
             <el-button
               type="success"
               size="small"
+              v-if="!contestId"
               @click="AddRemoteOJProblemDialogVisible = true"
               icon="el-icon-plus"
               >Add Remote OJ Problem
@@ -339,7 +340,6 @@ export default {
           },
           (err) => {
             this.addRemoteOJproblemLoading = false;
-            this.AddRemoteOJProblemDialogVisible = false;
           }
         );
     },

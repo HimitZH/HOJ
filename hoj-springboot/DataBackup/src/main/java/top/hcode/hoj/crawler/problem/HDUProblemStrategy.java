@@ -32,7 +32,6 @@ public class HDUProblemStrategy extends ProblemStrategy {
         Connection connection = JsoupUtils.getConnectionFromUrl(url, null, null);
         Document document = JsoupUtils.getDocument(connection, null);
         String html = document.html();
-        System.out.println(html);
         info.setProblemId(JUDGE_NAME + "-" + problemId);
         info.setTitle(ReUtil.get("color:#1A5CC8\">([\\s\\S]*?)</h1>", html, 1).trim());
         info.setTimeLimit(Integer.parseInt(ReUtil.get("(\\d*) MS", html, 1)));
@@ -44,12 +43,17 @@ public class HDUProblemStrategy extends ProblemStrategy {
         sb.append(ReUtil.get(">Sample Input</div><div .*?,monospace;\">([\\s\\S]*?)</div></pre>", html, 1));
         sb.append("</input><output>");
         // TODO 筛选output和hint
-        sb.append(ReUtil.get(">Sample Output</div><.*?monospace;\">(.*)(<div style=)*?", html, 1)).append("</output>");
+        sb.append(ReUtil.get(">Sample Output</div><div .*?monospace;\">([\\s\\S]*?)(<div style=.*?</div><i style=.*?</i>)*?</div></pre>", html, 1)).append("</output>");
         info.setExamples(sb.toString());
-        info.setHint(ReUtil.get("<i>Hint</i></div>([\\s\\S]*?)<br><[^<>]*?panel_title[^<>]*?>", html, 1));
+        info.setHint(ReUtil.get("<i>Hint</i></div>([\\s\\S]*?)</div><i .*?<br><[^<>]*?panel_title[^<>]*?>", html, 1));
         info.setIsRemote(true);
-        info.setSource(String.format("<a href='http://acm.hdu.edu.cn/showproblem.php?pid=%s'>%s</a>", problemId, JUDGE_NAME + "-" + problemId));
-        info.setType(0).setAuth(1).setAuthor(author).setOpenCaseResult(false).setIsRemoveEndBlank(false);
+        info.setSource(String.format("<a style='color:#1A5CC8' href='http://acm.hdu.edu.cn/showproblem.php?pid=%s'>%s</a>", problemId, JUDGE_NAME + "-" + problemId));
+        info.setType(0)
+                .setAuth(1)
+                .setAuthor(author)
+                .setOpenCaseResult(false)
+                .setIsRemoveEndBlank(false)
+                .setDifficulty(0); // 默认为简单
         return info;
     }
 }

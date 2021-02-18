@@ -71,6 +71,7 @@
                 type="Number"
                 placeholder="Enter the time limit of problem"
                 v-model="problem.timeLimit"
+                :disabled="problem.isRemote"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -80,6 +81,7 @@
                 type="Number"
                 placeholder="Enter the memory limit of problem"
                 v-model="problem.memoryLimit"
+                :disabled="problem.isRemote"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -262,61 +264,62 @@
             >Add Example
           </el-button>
         </div>
-
-        <div class="panel-title home-title">
-          Special Judge
-          <el-popover placement="right" trigger="hover">
-            <p>使用特殊判题的原因：</p>
-            <p>1. 题目要求的输出结果可能不唯一，允许不同结果存在。</p>
-            <p>
-              2.
-              题目最终要求输出一个浮点数，而且会告诉只要答案和标准答案相差不超过某个较小的数就可以。
-              例如题目要求保留几位小数，输出结果后几位小数不相同也是正确的。
-            </p>
-            <i slot="reference" class="el-icon-question"></i>
-          </el-popover>
-        </div>
-        <el-form-item label="" :error="error.spj">
-          <el-col :span="24">
-            <el-checkbox
-              v-model="problem.spj"
-              @click.native.prevent="switchSpj()"
-              >Use Special Judge</el-checkbox
-            >
-          </el-col>
-        </el-form-item>
-        <el-form-item v-if="problem.spj">
-          <Accordion title="Special Judge Code">
-            <template slot="header">
-              <span style="margin-right:5px;">SPJ language：</span>
-              <el-radio-group v-model="problem.spjLanguage">
-                <el-tooltip
-                  class="spj-radio"
-                  v-for="lang in allSpjLanguage"
-                  :key="lang.name"
-                  effect="dark"
-                  :content="lang.description"
-                  placement="top-start"
-                >
-                  <el-radio :label="lang.name">{{ lang.name }}</el-radio>
-                </el-tooltip>
-              </el-radio-group>
-              <el-button
-                type="primary"
-                size="small"
-                icon="el-icon-folder-checked"
-                @click="compileSPJ"
-                :loading="loadingCompile"
-                style="margin-left:10px"
-                >Complie
-              </el-button>
-            </template>
-            <code-mirror
-              v-model="problem.spjCode"
-              :mode="spjMode"
-            ></code-mirror>
-          </Accordion>
-        </el-form-item>
+        <template v-if="!problem.isRemote">
+          <div class="panel-title home-title">
+            Special Judge
+            <el-popover placement="right" trigger="hover">
+              <p>使用特殊判题的原因：</p>
+              <p>1. 题目要求的输出结果可能不唯一，允许不同结果存在。</p>
+              <p>
+                2.
+                题目最终要求输出一个浮点数，而且会告诉只要答案和标准答案相差不超过某个较小的数就可以。
+                例如题目要求保留几位小数，输出结果后几位小数不相同也是正确的。
+              </p>
+              <i slot="reference" class="el-icon-question"></i>
+            </el-popover>
+          </div>
+          <el-form-item label="" :error="error.spj">
+            <el-col :span="24">
+              <el-checkbox
+                v-model="problem.spj"
+                @click.native.prevent="switchSpj()"
+                >Use Special Judge</el-checkbox
+              >
+            </el-col>
+          </el-form-item>
+          <el-form-item v-if="problem.spj">
+            <Accordion title="Special Judge Code">
+              <template slot="header">
+                <span style="margin-right:5px;">SPJ language：</span>
+                <el-radio-group v-model="problem.spjLanguage">
+                  <el-tooltip
+                    class="spj-radio"
+                    v-for="lang in allSpjLanguage"
+                    :key="lang.name"
+                    effect="dark"
+                    :content="lang.description"
+                    placement="top-start"
+                  >
+                    <el-radio :label="lang.name">{{ lang.name }}</el-radio>
+                  </el-tooltip>
+                </el-radio-group>
+                <el-button
+                  type="primary"
+                  size="small"
+                  icon="el-icon-folder-checked"
+                  @click="compileSPJ"
+                  :loading="loadingCompile"
+                  style="margin-left:10px"
+                  >Complie
+                </el-button>
+              </template>
+              <code-mirror
+                v-model="problem.spjCode"
+                :mode="spjMode"
+              ></code-mirror>
+            </Accordion>
+          </el-form-item>
+        </template>
 
         <el-form-item style="margin-top: 20px" label="Hint">
           <Simditor v-model="problem.hint"></Simditor>
@@ -327,7 +330,7 @@
             <el-form-item label="Type">
               <el-radio-group
                 v-model="problem.type"
-                :disabled="disableRuleType"
+                :disabled="disableRuleType || problem.isRemote"
               >
                 <el-radio :label="0">ACM</el-radio>
                 <el-radio :label="1">OI</el-radio>
@@ -336,7 +339,7 @@
           </el-col>
         </el-row>
 
-        <el-row :gutter="20">
+        <el-row :gutter="20" v-if="!problem.isRemote">
           <div class="panel-title home-title">
             Judge Samples
             <el-popover placement="right" trigger="hover">
@@ -470,7 +473,10 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="Auto Remove the Blank at the End of Code">
+        <el-form-item
+          label="Auto Remove the Blank at the End of Code"
+          v-if="!problem.isRemote"
+        >
           <el-switch
             v-model="problem.isRemoveEndBlank"
             active-text=""
@@ -479,7 +485,10 @@
           </el-switch>
         </el-form-item>
 
-        <el-form-item label="Publish the Judging Result of Test Data">
+        <el-form-item
+          label="Publish the Judging Result of Test Data"
+          v-if="!problem.isRemote"
+        >
           <el-switch
             v-model="problem.openCaseResult"
             active-text=""
@@ -562,6 +571,7 @@ export default {
         spjCompileOk: false,
         uploadTestcaseDir: '',
         testCaseScore: [],
+        isRemote: false,
         type: 0,
         hint: '',
         source: '',
@@ -605,7 +615,7 @@ export default {
     } else {
       this.mode = 'add';
     }
-    api.getLanguages().then((res) => {
+    api.getLanguages(this.$route.params.problemId, false).then((res) => {
       let allLanguage = res.data.data;
       this.allLanguage = allLanguage;
       for (let i = 0; i < allLanguage.length; i++) {
@@ -892,18 +902,19 @@ export default {
           return;
         }
       }
-
-      if (!this.isUploadTestCase) {
-        // 如果是选择手动输入评测数据
-        if (!this.problemSamples.length) {
-          myMessage.error('评测数据不能为空！请手动输入评测数据！');
-          return;
-        }
-
-        for (let sample of this.problemSamples) {
-          if (!sample.input || !sample.output) {
-            myMessage.error('每一项评测数据的输入输出都不能为空！');
+      if (!this.problem.isRemote) {
+        if (!this.isUploadTestCase) {
+          // 如果是选择手动输入评测数据
+          if (!this.problemSamples.length) {
+            myMessage.error('评测数据不能为空！请手动输入评测数据！');
             return;
+          }
+
+          for (let sample of this.problemSamples) {
+            if (!sample.input || !sample.output) {
+              myMessage.error('每一项评测数据的输入输出都不能为空！');
+              return;
+            }
           }
         }
         // 如果是编辑题目，同时是io题目，则对应的每个测试样例的io得分不能为空或小于0
@@ -921,25 +932,25 @@ export default {
               }
             }
           }
-        }
-      } else {
-        if (!this.testCaseUploaded) {
-          this.error.testCase = '评测数据不能为空！请先上传评测数据！';
-          myMessage.error(this.error.testCase);
-          return;
-        }
-        if (this.mode !== 'edit') {
-          // 新建题目，且选择上传测试数据，同时是oi题目需要检查分数正常
-          if (this.problem.type == 1) {
-            for (let item of this.problem.testCaseScore) {
-              try {
-                if (parseInt(item.score) <= 0) {
-                  myMessage.error('测评得分小于0是无效的！');
+        } else {
+          if (!this.testCaseUploaded) {
+            this.error.testCase = '评测数据不能为空！请先上传评测数据！';
+            myMessage.error(this.error.testCase);
+            return;
+          }
+          if (this.mode !== 'edit') {
+            // 新建题目，且选择上传测试数据，同时是oi题目需要检查分数正常
+            if (this.problem.type == 1) {
+              for (let item of this.problem.testCaseScore) {
+                try {
+                  if (parseInt(item.score) <= 0) {
+                    myMessage.error('测评得分小于0是无效的！');
+                    return;
+                  }
+                } catch (e) {
+                  myMessage.error('测评得分的结果必须是数字类型！');
                   return;
                 }
-              } catch (e) {
-                myMessage.error('测评得分的结果必须是数字类型！');
-                return;
               }
             }
           }

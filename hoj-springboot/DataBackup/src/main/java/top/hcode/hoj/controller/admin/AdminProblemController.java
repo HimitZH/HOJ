@@ -42,6 +42,9 @@ public class AdminProblemController {
     private ProblemCaseServiceImpl problemCaseService;
 
     @Autowired
+    private ContestProblemServiceImpl contestProblemService;
+
+    @Autowired
     private ToJudgeService toJudgeService;
 
     @Value("${hoj.judge.token}")
@@ -57,15 +60,18 @@ public class AdminProblemController {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;
         IPage<Problem> iPage = new Page<>(currentPage, limit);
-        IPage<Problem> problemList = null;
+        IPage<Problem> problemList;
+
+        QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc("gmt_create");
         if (!StringUtils.isEmpty(keyword)) {
-            QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
             queryWrapper
                     .like("title", keyword).or()
-                    .like("author", keyword);
+                    .like("author", keyword).or()
+                    .like("problem_id", keyword);
             problemList = problemService.page(iPage, queryWrapper);
         } else {
-            problemList = problemService.page(iPage);
+            problemList = problemService.page(iPage, queryWrapper);
         }
 
         if (problemList.getTotal() == 0) { // 未查询到一条数据
@@ -78,8 +84,9 @@ public class AdminProblemController {
     @GetMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
-    public CommonResult getProblem(@Valid @RequestParam("id") Long id) {
-        Problem problem = problemService.getById(id);
+    public CommonResult getProblem(@Valid @RequestParam("pid") Long pid) {
+
+        Problem problem = problemService.getById(pid);
         if (problem != null) { // 查询成功
             return CommonResult.successResponse(problem, "查询成功！");
         } else {
@@ -90,8 +97,8 @@ public class AdminProblemController {
     @DeleteMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
-    public CommonResult deleteProblem(@Valid @RequestParam("id") Long id) {
-        boolean result = problemService.removeById(id);
+    public CommonResult deleteProblem(@Valid @RequestParam("pid") Long pid) {
+        boolean result = problemService.removeById(pid);
         /*
         problem的id为其他表的外键的表中的对应数据都会被一起删除！
          */
@@ -108,10 +115,10 @@ public class AdminProblemController {
     public CommonResult addProblem(@RequestBody ProblemDto problemDto) {
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("problem_id", problemDto.getProblem().getProblemId());
+        queryWrapper.eq("problem_id", problemDto.getProblem().getProblemId().toUpperCase());
         Problem problem = problemService.getOne(queryWrapper);
         if (problem != null) {
-            return CommonResult.errorResponse("该题目的展示id已存在，请更换！", CommonResult.STATUS_FAIL);
+            return CommonResult.errorResponse("该题目的Problem ID已存在，请更换！", CommonResult.STATUS_FAIL);
         }
 
         boolean result = problemService.adminAddProblem(problemDto);
@@ -128,6 +135,16 @@ public class AdminProblemController {
     @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
     @Transactional
     public CommonResult updateProblem(@RequestBody ProblemDto problemDto) {
+
+        QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("problem_id", problemDto.getProblem().getProblemId().toUpperCase());
+        Problem problem = problemService.getOne(queryWrapper);
+
+        // 如果problem_id不是原来的且已存在该problem_id，则修改失败！
+        if (problem != null && problem.getId().longValue() != problemDto.getProblem().getId()) {
+            return CommonResult.errorResponse("当前的Problem ID 已被使用，请重新更换新的！", CommonResult.STATUS_FAIL);
+        }
+
         boolean result = problemService.adminUpdateProblem(problemDto);
         if (result) { // 更新成功
             return CommonResult.successResponse(null, "修改成功！");
@@ -172,15 +189,22 @@ public class AdminProblemController {
     public CommonResult importRemoteOJProblem(@RequestParam("name") String name,
                                               @RequestParam("problemId") String problemId,
                                               HttpServletRequest request) {
+
+        QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("problem_id", name.toUpperCase() + "-" + problemId);
+        Problem problem = problemService.getOne(queryWrapper);
+        if (problem != null) {
+            return CommonResult.errorResponse("该题目已添加，请勿重复添加！", CommonResult.STATUS_FAIL);
+        }
+
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
         try {
             Problem otherOJProblemInfo = problemService.getOtherOJProblemInfo(name.toUpperCase(), problemId, userRolesVo.getUsername());
-            System.out.println(otherOJProblemInfo);
             if (otherOJProblemInfo != null) {
-                boolean result = problemService.save(otherOJProblemInfo);
+                boolean result = problemService.adminAddOtherOJProblem(otherOJProblemInfo, name);
                 if (!result) {
-                    return CommonResult.errorResponse("导入新题目失败！原因：插入数据库失败！");
+                    return CommonResult.errorResponse("导入新题目失败！请重新尝试！");
                 }
             } else {
                 return CommonResult.errorResponse("导入新题目失败！原因：获取该OJ的题目数据失败！");

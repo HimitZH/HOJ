@@ -26,4 +26,6 @@ public interface ProblemService extends IService<Problem> {
     boolean adminAddProblem(ProblemDto problemDto);
 
     Problem getOtherOJProblemInfo(String OJName, String problemId, String author) throws Exception;
+
+    boolean adminAddOtherOJProblem(Problem problem,String OJName);
 }

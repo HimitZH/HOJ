@@ -45,6 +45,9 @@ public class Language {
     @ApiModelProperty(value = "是否可作为特殊判题的一种语言")
     private Boolean isSpj;
 
+    @ApiModelProperty(value = "该语言属于哪个oj，自身oj用ME")
+    private String oj;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 

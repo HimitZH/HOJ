@@ -84,13 +84,13 @@ function downloadFile (url) {
   })
 }
 
-function getLanguages () {
+function getLanguages (all=true) {
   return new Promise((resolve, reject) => {
     let languages = storage.get(STORAGE_KEY.languages)
     if (languages) {
       resolve(languages)
     }else{
-      api.getAllLanguages().then(res=>{
+      api.getAllLanguages(all).then(res=>{
         let langs = res.data.data
         storage.set(STORAGE_KEY.languages,langs);
         resolve(langs);
@@ -102,7 +102,7 @@ function getLanguages () {
 }
 
 function stringToExamples(value){
-  let reg = "<input>(.+?)</input><output>(.+?)</output>";
+  let reg = "<input>([\\s\\S]+?)</input><output>([\\s\\S]+?)</output>";
   let re = RegExp(reg,"g");
   let objList = []
   let tmp;
