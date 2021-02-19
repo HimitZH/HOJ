@@ -22,6 +22,9 @@ public class RemoteJudgeReceiver implements MessageListener {
     private ToJudgeService toJudgeService;
 
     @Autowired
+    private RemoteJudgeDispatcher remoteJudgeDispatcher;
+
+    @Autowired
     private JudgeServiceImpl judgeService;
 
     @Override
@@ -35,9 +38,22 @@ public class RemoteJudgeReceiver implements MessageListener {
         JSONObject task = JSONUtil.parseObj(taskJson);
         Long submitId = task.getLong("submitId");
         String token = task.getStr("token");
+        Long pid = task.getLong("pid");
         String remoteJudge = task.getStr("remoteJudge");
+        Boolean isContest = task.getBool("isContest");
+        String username = task.getStr("username");
+        String password = task.getStr("password");
+        if (username == null || password == null) {
+            remoteJudgeDispatcher.sendTask(submitId, pid, token, remoteJudge, isContest);
+            return;
+        }
         Judge judge = judgeService.getById(submitId);
         // 调用判题服务
-        toJudgeService.submitProblemJudge(new ToJudge().setJudge(judge).setToken(token).setRemoteJudge(remoteJudge));
+        toJudgeService.remoteJudge(new ToJudge()
+                .setJudge(judge)
+                .setToken(token)
+                .setRemoteJudge(remoteJudge)
+                .setUsername(username)
+                .setPassword(password));
     }
 }

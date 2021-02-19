@@ -5,8 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import top.hcode.hoj.judge.self.JudgeDispatcher;
 import top.hcode.hoj.pojo.entity.ContestRecord;
 import top.hcode.hoj.pojo.entity.Judge;
 import top.hcode.hoj.dao.JudgeMapper;
@@ -17,7 +15,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.utils.Constants;
 
-import java.util.List;
 
 /**
  * <p>
@@ -32,9 +29,6 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
 
     @Autowired
     private JudgeMapper judgeMapper;
-
-    @Autowired
-    private JudgeDispatcher judgeDispatcher;
 
     @Autowired
     private ProblemCountServiceImpl problemCountService;
@@ -59,15 +53,6 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
         return judgeMapper.getContestJudgeList(page, displayId, cid, status, username, uid, beforeContestSubmit);
     }
 
-
-    @Override
-    @Async
-    public void rejudgeContestProblem(List<Judge> judgeList, String judgeToken) {
-        for (Judge judge : judgeList) {
-            // 进入重判队列，等待调用判题服务
-            judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getPid() == 0);
-        }
-    }
 
     @Override
     public void failToUseRedisPublishJudge(Long submitId, Long pid, Boolean isContest) {

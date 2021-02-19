@@ -31,8 +31,6 @@ public interface JudgeService extends IService<Judge> {
                                        String uid, Boolean beforeContestSubmit);
 
 
-    void rejudgeContestProblem(List<Judge> judgeList, String judgeToken);
-
     void failToUseRedisPublishJudge(Long submitId, Long pid, Boolean isContest);
 
 }

@@ -17,7 +17,7 @@ public class RemoteJudgeSubmitDispatcher {
     private RedisUtils redisUtils;
 
 
-    public void sendTask(String remoteJudge, Long remotePid, Long submitId, String uid, Long cid, Long pid, String language, String userCode) throws Exception {
+    public void sendTask(String username, String password, String remoteJudge, Long remotePid, Long submitId, String uid, Long cid, Long pid, String language, String userCode) throws Exception {
         JSONObject task = new JSONObject();
         task.set("submitId", submitId);
         task.set("uid", uid);
@@ -27,6 +27,8 @@ public class RemoteJudgeSubmitDispatcher {
         task.set("remotePid", remotePid);
         task.set("userCode", userCode);
         task.set("language", language);
+        task.set("username", username);
+        task.set("password", password);
         redisUtils.sendMessage(Constants.RemoteJudge.JUDGE_SUBMIT_HANDLER.getName(), "New Problem Added");
         redisUtils.lrPush(Constants.RemoteJudge.JUDGE_WAITING_SUBMIT_QUEUE.getName(), JSONUtil.toJsonStr(task));
     }

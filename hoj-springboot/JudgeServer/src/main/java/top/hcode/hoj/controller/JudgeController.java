@@ -1,6 +1,8 @@
 package top.hcode.hoj.controller;
 
 
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +16,9 @@ import top.hcode.hoj.remoteJudge.submit.RemoteJudgeSubmitDispatcher;
 import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.IpUtils;
+import top.hcode.hoj.util.RedisUtils;
+
+import java.util.HashMap;
 
 
 /**
@@ -32,7 +37,6 @@ public class JudgeController {
     @Autowired
     private ProblemServiceImpl problemService;
 
-
     @Autowired
     private SystemConfigServiceImpl systemConfigService;
 
@@ -45,8 +49,12 @@ public class JudgeController {
     @Value("${hoj-judger.ip}")
     private String ip;
 
+    @Autowired
+    private RedisUtils redisUtils;
+
     @PostMapping(value = "/judge")
     public CommonResult submitProblemJudge(@RequestBody ToJudge toJudge) {
+
         if (!toJudge.getToken().equals(judgeToken)) {
             return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", CommonResult.STATUS_ACCESS_DENIED);
         }
@@ -115,21 +123,30 @@ public class JudgeController {
         if (!toJudge.getToken().equals(judgeToken)) {
             return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", CommonResult.STATUS_ACCESS_DENIED);
         }
-
         Long submitId = toJudge.getJudge().getSubmitId();
         String uid = toJudge.getJudge().getUid();
         Long cid = toJudge.getJudge().getCid();
         Long pid = toJudge.getJudge().getPid();
+        String username = toJudge.getUsername();
+        String password = toJudge.getPassword();
+        String[] source = toJudge.getRemoteJudge().split("-");
+        Long remotePid = Long.valueOf(source[1]);
+        String remoteJudge = source[0];
+        String userCode = toJudge.getJudge().getCode();
+        String language = toJudge.getJudge().getLanguage();
+
         // 发送消息
         try {
-            String[] source = toJudge.getRemoteJudge().split("-");
-            Long remotePid = Long.valueOf(source[1]);
-            String remoteJudge = source[0];
-            String userCode = toJudge.getJudge().getCode();
-            String language = toJudge.getJudge().getLanguage();
-            remoteJudgeSubmitDispatcher.sendTask(remoteJudge, remotePid, submitId, uid, cid, pid, language, userCode);
+            remoteJudgeSubmitDispatcher.sendTask(username, password, remoteJudge, remotePid, submitId, uid, cid, pid, language, userCode);
             return CommonResult.successResponse(null, "提交成功");
         } catch (Exception e) {
+
+            // 将使用的账号放回对应列表
+            JSONObject account = new JSONObject();
+            account.set("username", username);
+            account.set("password", password);
+            redisUtils.llPush(Constants.RemoteJudge.getListNameByOJName(remoteJudge), JSONUtil.toJsonStr(account));
+
             // TODO 如果为了测试是否可行，请把数据库更新注释掉，若正常运行，则需要保证数据一致性
             Judge judge = new Judge();
             judge.setSubmitId(submitId)

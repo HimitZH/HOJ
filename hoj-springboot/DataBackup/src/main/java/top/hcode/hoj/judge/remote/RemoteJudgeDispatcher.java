@@ -10,6 +10,7 @@ import top.hcode.hoj.service.impl.JudgeServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
+
 @Component
 @Slf4j
 public class RemoteJudgeDispatcher {
@@ -28,6 +29,16 @@ public class RemoteJudgeDispatcher {
         task.set("token", token);
         task.set("isContest", isContest);
         try {
+            String account = (String) redisUtils.lrPop(Constants.Judge.getListNameByOJName(remoteJudge.split("-")[0]));
+            if (account != null) {
+                JSONObject accountJson = JSONUtil.parseObj(account);
+                task.set("username", accountJson.getStr("username", null));
+                task.set("password", accountJson.getStr("password", null));
+            } else {
+                task.set("username", null);
+                task.set("password", null);
+            }
+
             redisUtils.sendMessage(Constants.Judge.STATUS_REMOTE_JUDGE_WAITING_HANDLE.getName(), JSONUtil.toJsonStr(task));
         } catch (Exception e) {
             log.error("调用redis消息发布异常,此次判题任务判为系统错误--------------->{}", e.getMessage());

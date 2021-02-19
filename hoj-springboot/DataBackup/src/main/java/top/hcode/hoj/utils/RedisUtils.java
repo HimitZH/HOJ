@@ -570,7 +570,7 @@ public final class RedisUtils {
     }
 
 
-    public boolean llPush(String key, List<Object> value) {
+    public boolean llPushList(String key, List<Object> value) {
         try {
             redisTemplate.opsForList().leftPushAll(key, value);
             return true;

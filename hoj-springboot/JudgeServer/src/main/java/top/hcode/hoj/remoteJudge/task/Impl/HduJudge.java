@@ -32,11 +32,11 @@ public class HduJudge implements RemoteJudgeStrategy {
      * @return
      */
     @Override
-    public Long submit(Long problemId, String language, String userCode) throws Exception {
+    public Long submit(String username, String password, Long problemId, String language, String userCode) throws Exception {
         if (problemId == null || userCode == null) {
             return -1L;
         }
-        Map<String, String> loginCookie = getLoginCookie();
+        Map<String, String> loginCookie = getLoginCookie(username, password);
         Connection connection = JsoupUtils.getConnectionFromUrl(HOST + SUBMIT_URL, null, loginCookie);
         Connection.Response response = JsoupUtils.postResponse(connection, MapUtil
                 .builder(new HashMap<String, String>())
@@ -50,8 +50,7 @@ public class HduJudge implements RemoteJudgeStrategy {
             return -1L;
         }
         // 获取提交的题目id
-        Long maxRunId = getMaxRunId(connection, "2018030402055", problemId);
-        return maxRunId;
+        return getMaxRunId(connection, username, problemId);
     }
 
     @Override
@@ -83,7 +82,7 @@ public class HduJudge implements RemoteJudgeStrategy {
         if (statusType == Constants.Judge.STATUS_COMPILE_ERROR) {
             connection.url(HOST + String.format(ERROR_URL, submitId));
             response = JsoupUtils.getResponse(connection, null);
-            String compilationErrorInfo = ReUtil.get("(<pre>[\\s\\S]*?</pre>)", response.body(), 1);
+            String compilationErrorInfo = ReUtil.get("<pre>([\\s\\S]*?)</pre>", response.body(), 1);
             result.put("CEInfo", compilationErrorInfo);
         }
         return result;
@@ -91,13 +90,12 @@ public class HduJudge implements RemoteJudgeStrategy {
 
 
     @Override
-    public Map<String, String> getLoginCookie() throws Exception {
+    public Map<String, String> getLoginCookie(String username, String password) throws Exception {
         Connection connection = JsoupUtils.getConnectionFromUrl(HOST + LOGIN_URL, null, null);
         Connection.Response response = JsoupUtils.postResponse(connection, MapUtil
                 .builder(new HashMap<String, String>())
-                // TODO 添加账号密码 暂时写死测试，后续将在队列中获取空闲账号
-                .put("username", "111")
-                .put("userpass", "111").map());
+                .put("username", username)
+                .put("userpass", password).map());
         return response.cookies();
     }
 

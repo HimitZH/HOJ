@@ -30,7 +30,7 @@ public class Constants {
         STATUS_JUDGING(7, "Judging"),
         STATUS_PARTIAL_ACCEPTED(8, "Partial Accepted"),
         STATUS_SUBMITTING(9, "Submitting"),
-        STATUS_SUBMITTED_FAILED(10,"Submitted Failed"),
+        STATUS_SUBMITTED_FAILED(10, "Submitted Failed"),
         STATUS_NULL(15, "No Status");
 
         private final Integer status;
@@ -82,7 +82,9 @@ public class Constants {
          */
         JUDGE_RESULT_HANDLER("Remote Result Handler"),
 
-        HDU_JUDGE("HDU");
+        HDU_JUDGE("HDU"),
+
+        HDU_REMOTE_JUDGE_ACCOUNT("Hdu Remote Judge Account");
 
         private String name;
 
@@ -96,6 +98,15 @@ public class Constants {
                 if (remoteJudge.getName().equals(judgeName)) {
                     return remoteJudge;
                 }
+            }
+            return null;
+        }
+
+        public static String getListNameByOJName(String judgeName) {
+            if (judgeName == null) return null;
+            switch (judgeName) {
+                case "HDU":
+                    return RemoteJudge.HDU_REMOTE_JUDGE_ACCOUNT.getName();
             }
             return null;
         }
