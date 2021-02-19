@@ -32,8 +32,7 @@ public class JudgeServerApplicationTests {
                 "\treturn 1;\n" +
                 "}";
         try {
-            Long submit = hduJudge.submit(1090L, "G++", code);
-            System.out.println(submit);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

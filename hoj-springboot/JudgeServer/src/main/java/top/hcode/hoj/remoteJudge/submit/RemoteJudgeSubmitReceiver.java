@@ -17,6 +17,8 @@ import top.hcode.hoj.service.impl.JudgeServiceImpl;
 import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.RedisUtils;
 
+import java.util.HashMap;
+
 @Component
 @Slf4j
 public class RemoteJudgeSubmitReceiver implements MessageListener {
@@ -47,6 +49,8 @@ public class RemoteJudgeSubmitReceiver implements MessageListener {
         String remoteJudge = task.getStr("remoteJudge");
         String language = task.getStr("language");
         String userCode = task.getStr("userCode");
+        String username = task.getStr("username");
+        String password = task.getStr("password");
         RemoteJudgeStrategy remoteJudgeStrategy = RemoteJudgeFactory.selectJudge(remoteJudge);
         // 获取不到对应的题库或者题库写错了
         if (remoteJudgeStrategy == null) {
@@ -55,10 +59,17 @@ public class RemoteJudgeSubmitReceiver implements MessageListener {
         }
         Long resultSubmitId = -1L;
         try {
-            resultSubmitId = remoteJudgeStrategy.submit(remotePid, language, userCode);
+            resultSubmitId = remoteJudgeStrategy.submit(username, password, remotePid, language, userCode);
         } catch (Exception e) {
             log.error("网络错误，提交失败");
         }
+
+        // 提交成功与失败都要把账号放回list
+        JSONObject account = new JSONObject();
+        account.set("username", username);
+        account.set("password", password);
+        redisUtils.llPush(Constants.RemoteJudge.getListNameByOJName(remoteJudge), JSONUtil.toJsonStr(account));
+
         // TODO 提交失败 前端手动按按钮再次提交 修改状态 STATUS_SUBMITTED_FAILED
         if (resultSubmitId < 0) {
             // 更新此次提交状态为提交失败！
@@ -69,6 +80,8 @@ public class RemoteJudgeSubmitReceiver implements MessageListener {
             log.error("网络错误---------------->获取不到提交ID");
             return;
         }
+
+
         // 提交成功顺便更新状态为-->STATUS_JUDGING 判题中...
         judgeService.updateById(new Judge().setSubmitId(submitId).setStatus(Constants.Judge.STATUS_JUDGING.getStatus()));
         try {

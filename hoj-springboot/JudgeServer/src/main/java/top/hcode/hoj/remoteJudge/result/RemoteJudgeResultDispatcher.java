@@ -35,6 +35,7 @@ public class RemoteJudgeResultDispatcher {
         task.set("pid", pid);
         task.set("resultSubmitId", resultSubmitId);
         task.set("remoteJudge", remoteJudge);
+
         // 提醒判题机有待查询结果题目
         redisUtils.sendMessage(Constants.RemoteJudge.JUDGE_RESULT_HANDLER.getName(), "New Result Query Added");
         // 队列中插入待判ID和题库名称

@@ -23,6 +23,9 @@ public class ConfigUtils {
                 "    expire: "+configVo.getTokenExpire()+"\n" +
                 "    checkRefreshExpire: "+configVo.getCheckRefreshExpire()+"\n"+
                 "    header: token\n" +
+                "  judge:\n" +
+                "    # 调用判题服务器的token\n" +
+                "    token: "+configVo.getJudgeToken()+"\n"+
                 "  db:\n" +
                 "    host: "+configVo.getMysqlHost()+"\n" +
                 "    port: "+configVo.getMysqlPort()+"\n" +

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.judge.remote.RemoteJudgeDispatcher;
 import top.hcode.hoj.judge.self.JudgeDispatcher;
 import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.service.impl.*;
@@ -48,11 +49,17 @@ public class AdminJudgeController {
     @Autowired
     private JudgeCaseServiceImpl judgeCaseService;
 
+    @Autowired
+    private ProblemServiceImpl problemService;
+
     @Value("${hoj.judge.token}")
     private String judgeToken;
 
     @Autowired
     private JudgeDispatcher judgeDispatcher;
+
+    @Autowired
+    private RemoteJudgeDispatcher remoteJudgeDispatcher;
 
     @GetMapping("/rejudge")
     @RequiresAuthentication
@@ -92,7 +99,12 @@ public class AdminJudgeController {
         boolean result = judgeService.updateById(judge);
         if (result) {
             // 调用判题服务
-            judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getPid() == 0);
+            Problem problem = problemService.getById(judge.getPid());
+            if (problem.getIsRemote()) { // 如果是远程oj判题
+                remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, problem.getProblemId(), judge.getCid() == 0);
+            } else {
+                judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getCid() == 0);
+            }
             return CommonResult.successResponse(judge, "重判成功！该提交已进入判题队列！");
         } else {
             return CommonResult.successResponse(judge, "重判失败！请重新尝试！");
@@ -131,8 +143,20 @@ public class AdminJudgeController {
         boolean resetContestRecordResult = contestRecordService.update(updateWrapper);
 
         if (resetContestRecordResult && resetJudgeResult) {
-            // 异步调用重判服务
-            judgeService.rejudgeContestProblem(rejudgeList, judgeToken);
+            // 调用重判服务
+            Problem problem = problemService.getById(pid);
+            if (problem.getIsRemote()) { // 如果是远程oj判题
+                for (Judge judge : rejudgeList) {
+                    // 进入重判队列，等待调用判题服务
+                    remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, problem.getProblemId(), judge.getCid() == 0);
+                }
+            } else {
+                for (Judge judge : rejudgeList) {
+                    // 进入重判队列，等待调用判题服务
+                    judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getCid() == 0);
+                }
+            }
+
             return CommonResult.successResponse(null, "重判成功！该题目对应的全部提交已进入判题队列！");
         } else {
             return CommonResult.errorResponse("重判失败！请重新尝试！");

@@ -14,7 +14,7 @@ public interface RemoteJudgeStrategy {
      * @param userCode  用户代码
      * @return 返回对应题库的提交Id
      */
-    Long submit(Long problemId, String language, String userCode) throws Exception;
+    Long submit(String username, String password, Long problemId, String language, String userCode) throws Exception;
 
     /**
      * @param submitId 题库的提交ID
@@ -22,7 +22,7 @@ public interface RemoteJudgeStrategy {
      */
     Map<String, Object> result(Long submitId) throws Exception;
 
-    Map<String, String> getLoginCookie() throws Exception;
+    Map<String, String> getLoginCookie(String username, String password) throws Exception;
 
     String getLanguage(String language);
 

@@ -28,7 +28,8 @@ public class Constants {
         STATUS_SUBMITTED_FAILED(10,"Submitted Failed",null),
         STATUS_NULL(15, "No Status", null),
         STATUS_JUDGE_WAITING(-100, "Waiting Queue", null),
-        STATUS_REMOTE_JUDGE_WAITING_HANDLE(-200, "Remote Waiting Handle Queue", null);
+        STATUS_REMOTE_JUDGE_WAITING_HANDLE(-200, "Remote Waiting Handle Queue", null),
+        STATUS_HDU_REMOTE_JUDGE_ACCOUNT(-500,"Hdu Remote Judge Account",null);
 
         private Judge(Integer status, String name, String columnName) {
             this.status = status;
@@ -57,6 +58,15 @@ public class Constants {
                 if (judge.getStatus() == status) {
                     return judge.getColumnName();
                 }
+            }
+            return null;
+        }
+
+        public static String getListNameByOJName(String judgeName) {
+            if (judgeName == null) return null;
+            switch (judgeName) {
+                case "HDU":
+                    return Judge.STATUS_HDU_REMOTE_JUDGE_ACCOUNT.getName();
             }
             return null;
         }

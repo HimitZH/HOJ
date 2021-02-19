@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 
 /**
  * @Author: Himit_ZH
@@ -31,6 +33,10 @@ public class ConfigVo {
     @Value("${hoj.db.port}")
     private Integer mysqlPort;
 
+    // 判题服务token
+    @Value("${hoj.judge.token}")
+    private String judgeToken;
+
     // 缓存配置
     @Value("${hoj.redis.host}")
     private String redisHost;
@@ -47,9 +53,6 @@ public class ConfigVo {
 
     @Value("${hoj.jwt.checkRefreshExpire}")
     private String checkRefreshExpire;
-
-    @Value("${hoj.judge.token}")
-    private String judgeToken;
 
     // 邮箱配置
     @Value("${hoj.mail.username}")
@@ -88,5 +91,11 @@ public class ConfigVo {
 
     @Value("${hoj.web-config.footer.project.url}")
     private String projectUrl;
+
+    @Value("${hoj.hdu.account.username}")
+    private List<String> hduUsernameList;
+
+    @Value("${hoj.hdu.account.password}")
+    private List<String> hduPasswordList;
 
 }

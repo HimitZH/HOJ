@@ -26,7 +26,6 @@ public class JudgeDispatcher {
     private JudgeServiceImpl judgeService;
 
     public void sendTask(Long submitId, Long pid, String token, Boolean isContest) {
-
         JSONObject task = new JSONObject();
         task.set("submitId", submitId);
         task.set("pid", pid);
