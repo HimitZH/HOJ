@@ -36,3 +36,7 @@ hoj:
       project:
         name: HOJ
         url: https://gitee.com/himitzh0730/hoj
+  hdu:
+    account:
+      username: hdu账号1用户名,hdu账号2用户名
+      password: hdu账号1密码,hdu账号2密码
