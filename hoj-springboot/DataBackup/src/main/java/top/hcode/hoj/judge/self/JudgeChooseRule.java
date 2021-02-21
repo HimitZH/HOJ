@@ -38,15 +38,13 @@ public class JudgeChooseRule extends AbstractLoadBalancerRule {
 
     @Override
     public Server choose(Object key) {
-        // 获取配置文件中所配置的集群名称
-        String clusterName = discoveryProperties.getClusterName();
-
+//        // 获取配置文件中所配置的集群名称
+//        String clusterName = discoveryProperties.getClusterName();
         DynamicServerListLoadBalancer loadBalancer = (DynamicServerListLoadBalancer) getLoadBalancer();
         // 需要请求的微服务名称
         String serviceId = loadBalancer.getName();
         // 获取该微服务的所有健康实例
         List<Instance> instances = getInstances(serviceId);
-        System.out.println(instances);
         // 进行匹配筛选的实例列表
         List<Instance> metadataMatchInstances;
         // 过滤出小于或等于规定最大并发判题任务数的服务实例

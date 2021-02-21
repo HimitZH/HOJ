@@ -43,6 +43,12 @@ import 'echarts/lib/component/markPoint'
 import VueParticles from 'vue-particles'
 import SlideVerify from 'vue-monoplasty-slide-verify'
 
+//  markdown编辑器
+import mavonEditor from 'mavon-editor'  //引入markdown编辑器
+import 'mavon-editor/dist/css/index.css'
+// 前端所用markdown样式
+import '@/assets/css/maize.css'
+Vue.use(mavonEditor)
 
 Object.keys(filters).forEach(key => {   // 注册全局过滤器
   Vue.filter(key, filters[key])
@@ -61,6 +67,9 @@ Vue.use(SlideVerify) // 滑动验证码组件
 
 Vue.component('ECharts', ECharts)
 Vue.prototype.$axios = axios
+
+Vue.prototype.$markDown = mavonEditor.markdownIt
+
 Vue.config.productionTip = false
 new Vue({
   router,

@@ -97,7 +97,7 @@
         <el-tab-pane name="ContestDetails" lazy>
           <span slot="label"><i class="el-icon-s-home"></i>&nbsp;Overview</span>
           <el-card class="box-card">
-            <div v-html="contest.description" class="markdown-body"></div>
+            <div v-html="contest.description" class="maize-markdown-body"></div>
           </el-card>
         </el-tab-pane>
 

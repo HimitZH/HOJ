@@ -157,19 +157,14 @@
                     <el-tag
                       effect="dark"
                       :color="submissionStatus.color"
-                      @click.native="
-                        handleRoute('/submission-detail/' + submissionId)
-                      "
+                      @click.native="reSubmit(submissionId)"
                     >
-                      <i
-                        class="el-icon-refresh"
-                        @click="reSubmit(submissionId)"
-                      ></i>
+                      <i class="el-icon-refresh"></i>
                       {{ submissionStatus.text }}
                     </el-tag>
                   </template>
                   <template
-                    v-if="
+                    v-else-if="
                       !this.contestID ||
                         (this.contestID &&
                           ContestRealTimePermission &&
@@ -348,7 +343,7 @@ export default {
       language: 'C',
       isRemote: false,
 
-      theme: 'material',
+      theme: 'solarized',
       submissionId: '',
       submitted: false,
       submitPwdVisible: false,

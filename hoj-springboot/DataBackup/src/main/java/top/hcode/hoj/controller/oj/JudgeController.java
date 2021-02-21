@@ -211,9 +211,10 @@ public class JudgeController {
 
         // 将提交加入任务队列
         if (judgeDto.getIsRemote()) { // 如果是远程oj判题
-            remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judgeDto.getPid(), judge.getCid() == 0);
+            remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judgeDto.getPid(),
+                    judge.getCid() == 0, 1);
         } else {
-            judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getCid() == 0);
+            judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getCid() == 0, 1);
         }
 
         return CommonResult.successResponse(judge, "数据提交成功！");
@@ -222,15 +223,15 @@ public class JudgeController {
 
     /**
      * @MethodName resubmit
-     * @Params  * @param null
-     * @Description 远程虚拟判题的提交失败后，用户点击按钮重新提交判题进入的方法
+     * @Params * @param null
+     * @Description 调用判题服务器提交失败超过60s后，用户点击按钮重新提交判题进入的方法
      * @Return
      * @Since 2021/2/12
      */
     @RequiresAuthentication
     @GetMapping(value = "/resubmit")
-    public CommonResult resubmit(@RequestParam("submitId")Long submitId,
-                                 HttpServletRequest request){
+    public CommonResult resubmit(@RequestParam("submitId") Long submitId,
+                                 HttpServletRequest request) {
 
         Judge judge = judgeService.getById(submitId);
         if (judge == null) {
@@ -239,7 +240,7 @@ public class JudgeController {
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        if (!judge.getUid().equals(userRolesVo.getUid())){ // 不是本人无法重新提交
+        if (!judge.getUid().equals(userRolesVo.getUid())) { // 不是本人无法重新提交
             return CommonResult.errorResponse("对不起！您并非提交数据的本人，无法重新提交！");
         }
         Problem problem = problemService.getById(judge.getPid());
@@ -247,8 +248,14 @@ public class JudgeController {
         judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus());
         judge.setErrorMessage(null);
         judgeService.updateById(judge);
-        // 调用判题服务
-        remoteJudgeDispatcher.sendTask(judge.getSubmitId(), problem.getId(), judgeToken, problem.getSource(), judge.getCid() == 0);
+        // 将提交加入任务队列
+        if (problem.getIsRemote()) { // 如果是远程oj判题
+            remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, problem.getProblemId(),
+                    judge.getCid() == 0, 1);
+        } else {
+            judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken,
+                    judge.getCid() == 0, 1);
+        }
         return CommonResult.successResponse(judge, "重新提交成功！");
     }
 
@@ -291,9 +298,10 @@ public class JudgeController {
         Problem problem = problemService.getById(judge.getPid());
         HashMap<String, Object> result = new HashMap<>();
 
-        // 只允许用户查看ce错误和se错误信息提示
+        // 只允许用户查看ce错误,sf错误，se错误信息提示
         if (judge.getStatus().intValue() != Constants.Judge.STATUS_COMPILE_ERROR.getStatus() &&
-                judge.getStatus().intValue() != Constants.Judge.STATUS_SYSTEM_ERROR.getStatus()) {
+                judge.getStatus().intValue() != Constants.Judge.STATUS_SYSTEM_ERROR.getStatus() &&
+                judge.getStatus().intValue() != Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus()) {
             judge.setErrorMessage("");
         }
         result.put("submission", judge);

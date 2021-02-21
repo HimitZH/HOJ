@@ -142,7 +142,7 @@ public class FileController {
 
         //更新user_info里面的avatar
         UpdateWrapper<UserInfo> userInfoUpdateWrapper = new UpdateWrapper<>();
-        userInfoUpdateWrapper.set("avatar", Constants.File.USER_FILE_HOST.getPath() + Constants.File.USER_AVATAR_API.getPath() + filename)
+        userInfoUpdateWrapper.set("avatar", Constants.File.USER_FILE_HOST.getPath() + Constants.File.IMG_API.getPath() + filename)
                 .eq("uuid", userRolesVo.getUid());
         userInfoService.update(userInfoUpdateWrapper);
 
@@ -158,7 +158,7 @@ public class FileController {
                 .put("uid", userRolesVo.getUid())
                 .put("username", userRolesVo.getUsername())
                 .put("nickname", userRolesVo.getNickname())
-                .put("avatar", Constants.File.USER_FILE_HOST.getPath() + Constants.File.USER_AVATAR_API.getPath() + filename)
+                .put("avatar", Constants.File.USER_FILE_HOST.getPath() + Constants.File.IMG_API.getPath() + filename)
                 .put("email", userRolesVo.getEmail())
                 .put("number", userRolesVo.getNumber())
                 .put("school", userRolesVo.getSchool())
@@ -513,6 +513,62 @@ public class FileController {
                 return "java";
         }
         return "txt";
+    }
+
+
+    @RequestMapping(value = "/upload-md-img", method = RequestMethod.POST)
+    @RequiresAuthentication
+    @ResponseBody
+    @Transactional
+    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    public CommonResult uploadMDImg(@RequestParam("image") MultipartFile image) {
+        if (image == null) {
+            return CommonResult.errorResponse("图片为空！");
+        }
+        if (image.getSize() > 1024 * 1024 * 4) {
+            return CommonResult.errorResponse("上传的图片文件大小不能大于4M！");
+        }
+        //获取文件后缀
+        String suffix = image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf(".") + 1);
+        if (!"jpg,jpeg,gif,png,webp".toUpperCase().contains(suffix.toUpperCase())) {
+            return CommonResult.errorResponse("请选择jpg,jpeg,gif,png,webp格式的图片！");
+        }
+        File savePathFile = new File(Constants.File.MARKDOWN_IMG_FOLDER.getPath());
+        if (!savePathFile.exists()) {
+            //若不存在该目录，则创建目录
+            savePathFile.mkdir();
+        }
+        //通过UUID生成唯一文件名
+        String filename = IdUtil.simpleUUID() + "." + suffix;
+        try {
+            //将文件保存指定目录
+            image.transferTo(new File(Constants.File.MARKDOWN_IMG_FOLDER.getPath() + filename));
+        } catch (Exception e) {
+            log.error("图片文件上传异常-------------->{}", e.getMessage());
+            return CommonResult.errorResponse("服务器异常：图片文件上传失败！", CommonResult.STATUS_ERROR);
+        }
+
+        return CommonResult.successResponse(MapUtil.builder()
+                        .put("link", Constants.File.USER_FILE_HOST.getPath() + Constants.File.IMG_API.getPath() + filename)
+                        .put("filePath",Constants.File.MARKDOWN_IMG_FOLDER.getPath() + filename).map(),
+                "上传图片成功！");
+
+    }
+
+
+    @RequestMapping(value = "/delete-md-img", method = RequestMethod.GET)
+    @RequiresAuthentication
+    @ResponseBody
+    @Transactional
+    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    public CommonResult uploadMDImg(@RequestParam("filePath") String filePath) {
+        boolean result = FileUtil.del(filePath);
+        if (result){
+            return CommonResult.successResponse(null,"删除成功");
+        }else{
+            return CommonResult.errorResponse("删除失败");
+        }
+
     }
 
 }

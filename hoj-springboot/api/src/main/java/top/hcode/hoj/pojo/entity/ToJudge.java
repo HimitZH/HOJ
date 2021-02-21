@@ -36,7 +36,7 @@ public class ToJudge implements Serializable {
     @ApiModelProperty("远程判题所用密码")
     private String password;
 
-//    @ApiModelProperty("重新尝试的次数,三次重新调用判题机依旧失败，直接判为系统错误！")
-//    private Integer tryAgainNum;
+    @ApiModelProperty("重新尝试的次数,40次重新调用判题机依旧失败，直接判为提交失败！")
+    private Integer tryAgainNum;
 
 }
