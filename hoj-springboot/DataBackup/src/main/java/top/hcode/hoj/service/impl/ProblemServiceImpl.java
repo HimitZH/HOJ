@@ -223,7 +223,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                     checkProblemCase = remove && add;
                 }
 
-            } else {
+            } else if (problemDto.getSamples().size() > 0) {
                 int sumScore = 0;
                 // 新增加的case列表
                 List<ProblemCase> newProblemCaseList = new LinkedList<>();

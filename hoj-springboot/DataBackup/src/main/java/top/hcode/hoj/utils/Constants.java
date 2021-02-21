@@ -25,11 +25,11 @@ public class Constants {
         STATUS_JUDGING(7, "Judging", null),
         STATUS_PARTIAL_ACCEPTED(8, "Partial Accepted", "pa"),
         STATUS_SUBMITTING(9, "Submitting", null),
-        STATUS_SUBMITTED_FAILED(10,"Submitted Failed",null),
+        STATUS_SUBMITTED_FAILED(10, "Submitted Failed", null),
         STATUS_NULL(15, "No Status", null),
         STATUS_JUDGE_WAITING(-100, "Waiting Queue", null),
         STATUS_REMOTE_JUDGE_WAITING_HANDLE(-200, "Remote Waiting Handle Queue", null),
-        STATUS_HDU_REMOTE_JUDGE_ACCOUNT(-500,"Hdu Remote Judge Account",null);
+        STATUS_HDU_REMOTE_JUDGE_ACCOUNT(-500, "Hdu Remote Judge Account", null);
 
         private Judge(Integer status, String name, String columnName) {
             this.status = status;
@@ -141,8 +141,12 @@ public class Constants {
     public enum File {
 
         USER_FILE_HOST("http://localhost:9010"),
+
         USER_AVATAR_FOLDER("D:\\avatar\\"),
-        USER_AVATAR_API("/public/img/"),
+
+        MARKDOWN_IMG_FOLDER("D:\\md\\"),
+
+        IMG_API("/public/img/"),
 
         TESTCASE_BASE_FOLDER("D:\\zip\\"),
 

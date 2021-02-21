@@ -341,6 +341,8 @@ export default {
 
         // 加入待重判列表
         this.needCheckSubmitIds[row.submitId] = row.index;
+
+        this.checkStatusNum = 0;
         if (!this.autoCheckOpen) {
           // 如果当前未开启自动检查提交状态的定时任务，则开启
           this.checkSubmissionsStatus();
@@ -541,6 +543,7 @@ export default {
 
           // 加入待重判列表
           this.needCheckSubmitIds[row.submitId] = row.index;
+          this.checkStatusNum = 0;
           if (!this.autoCheckOpen) {
             // 如果当前未开启自动检查提交状态的定时任务，则开启
             this.checkSubmissionsStatus();

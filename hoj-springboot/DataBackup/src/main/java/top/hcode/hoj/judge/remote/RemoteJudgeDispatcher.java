@@ -21,13 +21,14 @@ public class RemoteJudgeDispatcher {
     @Autowired
     private JudgeServiceImpl judgeService;
 
-    public void sendTask(Long submitId, Long pid, String token, String remoteJudge, Boolean isContest) {
+    public void sendTask(Long submitId, Long pid, String token, String remoteJudge, Boolean isContest, Integer tryAgainNum) {
         JSONObject task = new JSONObject();
         task.set("submitId", submitId);
         task.set("pid", pid);
         task.set("remoteJudge", remoteJudge);
         task.set("token", token);
         task.set("isContest", isContest);
+        task.set("tryAgainNum", tryAgainNum);
         try {
             String account = (String) redisUtils.lrPop(Constants.Judge.getListNameByOJName(remoteJudge.split("-")[0]));
             if (account != null) {

@@ -13,7 +13,7 @@
           <span class="title">{{ status.statusName }}</span>
         </template>
         <template slot>
-          <div v-if="isCE || isSE" class="content">
+          <div v-if="isCE || isSE || isSF" class="content">
             <pre>{{ submission.errorMessage }}</pre>
           </div>
           <div v-else class="content">
@@ -330,6 +330,9 @@ export default {
     },
     isSE() {
       return this.submission.status === JUDGE_STATUS_RESERVE.se;
+    },
+    isSF() {
+      return this.submission.status === JUDGE_STATUS_RESERVE.sf;
     },
     isAdminRole() {
       return this.$store.getters.isAdminRole;

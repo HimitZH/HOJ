@@ -8,12 +8,6 @@ service-url:
   hoj-judge-server: http://hoj-judge-server # 服务访问base_url
   name: hoj-judge-server # 服务名
 
-
-#激活Sentinel对Feign的支持
-feign:
-  sentinel:
-    enabled: true
-
 spring:
   profiles: dev
   # 配置文件上传限制
@@ -79,9 +73,9 @@ shiro-redis:
 
 ribbon:
   # 指的是建立连接所用的时间，适用于网络状况正常的情况下，俩端连接所用的时间 单位是秒
-  ReadTimeout: 6000
+  ReadTimeout: 10000
   # 指的是建立连接后从服务器读取到可用资源的时间
-  ConnectTimeout: 5000
+  ConnectTimeout: 30000
 
 logging:
   level:
@@ -90,3 +84,20 @@ logging:
         nacos:
           client:
             naming: error
+
+# 开启Hystrix断路器
+feign:
+  hystrix:
+    enabled: true
+  client:
+    config:
+      default:
+        connectTimeout: 15000
+        readTimeout: 60000
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000

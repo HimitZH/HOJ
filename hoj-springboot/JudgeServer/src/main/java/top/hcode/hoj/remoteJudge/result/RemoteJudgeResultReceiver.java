@@ -67,7 +67,7 @@ public class RemoteJudgeResultReceiver implements MessageListener {
             // TODO 如果结果没出来，重新放入队列并更新状态为Waiting
             if (status.equals(Constants.Judge.STATUS_PENDING.getStatus())) {
                 try {
-                    TimeUnit.SECONDS.sleep(2);
+                    TimeUnit.SECONDS.sleep(1);
                     remoteJudgeResultDispatcher.sendTask(remoteJudge, submitId, uid, cid, pid, resultSubmitId);
                 } catch (Exception e) {
                     log.error("重新查询结果任务出错------{}", e.getMessage());

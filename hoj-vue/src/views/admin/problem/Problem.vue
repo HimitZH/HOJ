@@ -59,7 +59,7 @@
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item prop="description" label="Description" required>
-              <Simditor v-model="problem.description"></Simditor>
+              <Editor :value.sync="problem.description"></Editor>
             </el-form-item>
           </el-col>
         </el-row>
@@ -107,7 +107,7 @@
               label="Input Description"
               required
             >
-              <Simditor v-model="problem.input"></Simditor>
+              <Editor :value.sync="problem.input"></Editor>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -116,7 +116,7 @@
               label="Output Description"
               required
             >
-              <Simditor v-model="problem.output"></Simditor>
+              <Editor :value.sync="problem.output"></Editor>
             </el-form-item>
           </el-col>
         </el-row>
@@ -322,7 +322,7 @@
         </template>
 
         <el-form-item style="margin-top: 20px" label="Hint">
-          <Simditor v-model="problem.hint"></Simditor>
+          <Editor :value.sync="problem.hint"></Editor>
         </el-form-item>
 
         <el-row :gutter="20">
@@ -350,6 +350,7 @@
 
           <el-switch
             v-model="isUploadTestCase"
+            @change="changeSampleUploadMethod"
             active-text="Use Upload File"
             inactive-text="Use Manual Input"
             style="margin: 10px 0"
@@ -506,7 +507,7 @@
 </template>
 
 <script>
-import Simditor from '@/components/admin/Simditor';
+import Editor from '@/components/admin/Editor';
 import Accordion from '@/components/admin/Accordion';
 import CodeMirror from '@/components/admin/CodeMirror';
 import utils from '@/common/utils';
@@ -517,9 +518,9 @@ import { OJ_NAME } from '@/common/constants';
 export default {
   name: 'Problem',
   components: {
-    Simditor,
     Accordion,
     CodeMirror,
+    Editor,
   },
   data() {
     return {
@@ -727,9 +728,11 @@ export default {
             this.problemLanguages.push(Languages[i].name);
           }
         });
-        api.admin_getProblemCases(this.pid).then((res) => {
-          this.problemSamples = res.data.data;
-        });
+        if (!this.isUploadTestCase) {
+          api.admin_getProblemCases(this.pid).then((res) => {
+            this.problemSamples = res.data.data;
+          });
+        }
         api.admin_getProblemTags(this.pid).then((res) => {
           this.problemTags = res.data.data;
         });
@@ -738,6 +741,13 @@ export default {
         for (let item of this.allLanguage) {
           this.problemLanguages.push(item.name);
         }
+      }
+    },
+    changeSampleUploadMethod() {
+      if (!this.isUploadTestCase && this.problemSamples.length == 0) {
+        api.admin_getProblemCases(this.pid).then((res) => {
+          this.problemSamples = res.data.data;
+        });
       }
     },
     switchSpj() {
@@ -772,6 +782,9 @@ export default {
           cb(tagList);
         })
         .catch(() => {});
+    },
+    changeContent(newVal) {
+      this.announcement.content = newVal;
     },
     resetTestCase() {
       this.testCaseUploaded = false;

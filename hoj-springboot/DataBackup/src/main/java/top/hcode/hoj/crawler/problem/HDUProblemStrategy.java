@@ -36,7 +36,7 @@ public class HDUProblemStrategy extends ProblemStrategy {
         info.setTitle(ReUtil.get("color:#1A5CC8\">([\\s\\S]*?)</h1>", html, 1).trim());
         info.setTimeLimit(Integer.parseInt(ReUtil.get("(\\d*) MS", html, 1)));
         info.setMemoryLimit(Integer.parseInt(ReUtil.get("/(\\d*) K", html, 1)) / 1024);
-        info.setDescription(ReUtil.get(">Problem Description</div>\\s+<.*?>(.*?)<br></div>", html, 1));
+        info.setDescription(ReUtil.get(">Problem Description</div>\\s+<.*?>(.*?)<br></div>", html, 1).replaceAll("src=\"../../", "src=\"" + HOST + "/"));
         info.setInput(ReUtil.get(">Input</div>.*?<.*?>(.*?)<br></div>", html, 1));
         info.setOutput(ReUtil.get(">Output</div>.*?<.*?>(.*?)<br></div>", html, 1));
         StringBuilder sb = new StringBuilder("<input>");

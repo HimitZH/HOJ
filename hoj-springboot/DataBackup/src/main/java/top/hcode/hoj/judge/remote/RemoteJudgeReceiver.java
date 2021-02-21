@@ -43,8 +43,9 @@ public class RemoteJudgeReceiver implements MessageListener {
         Boolean isContest = task.getBool("isContest");
         String username = task.getStr("username");
         String password = task.getStr("password");
+        Integer tryAgainNum = task.getInt("tryAgainNum");
         if (username == null || password == null) {
-            remoteJudgeDispatcher.sendTask(submitId, pid, token, remoteJudge, isContest);
+            remoteJudgeDispatcher.sendTask(submitId, pid, token, remoteJudge, isContest, tryAgainNum);
             return;
         }
         Judge judge = judgeService.getById(submitId);
@@ -54,6 +55,7 @@ public class RemoteJudgeReceiver implements MessageListener {
                 .setToken(token)
                 .setRemoteJudge(remoteJudge)
                 .setUsername(username)
-                .setPassword(password));
+                .setPassword(password)
+                .setTryAgainNum(tryAgainNum));
     }
 }

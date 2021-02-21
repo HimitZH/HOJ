@@ -1,8 +1,8 @@
 package top.hcode.hoj.config;
 
 import com.netflix.loadbalancer.IRule;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import top.hcode.hoj.judge.self.JudgeChooseRule;
 
 /**
@@ -10,7 +10,7 @@ import top.hcode.hoj.judge.self.JudgeChooseRule;
  * @Date: 2021/2/4 23:10
  * @Description:
  */
-@Slf4j
+@Configuration
 public class RibbonConfig {
 
     @Bean

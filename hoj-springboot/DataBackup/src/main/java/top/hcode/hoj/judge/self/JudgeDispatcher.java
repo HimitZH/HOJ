@@ -25,12 +25,13 @@ public class JudgeDispatcher {
     @Autowired
     private JudgeServiceImpl judgeService;
 
-    public void sendTask(Long submitId, Long pid, String token, Boolean isContest) {
+    public void sendTask(Long submitId, Long pid, String token, Boolean isContest,Integer tryAgainNum) {
         JSONObject task = new JSONObject();
         task.set("submitId", submitId);
         task.set("pid", pid);
         task.set("token", token);
         task.set("isContest", isContest);
+        task.set("tryAgainNum", tryAgainNum);
 
         try {
             redisUtils.sendMessage(Constants.Judge.STATUS_JUDGE_WAITING.getName(), JSONUtil.toJsonStr(task));

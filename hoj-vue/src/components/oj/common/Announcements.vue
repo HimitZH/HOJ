@@ -2,7 +2,7 @@
   <el-card shadow :padding="10">
     <div slot="header">
       <span class="panel-title" v-if="isContest">{{ title }}</span>
-      <span v-else class="home-title panel-title">{{ title}}</span>
+      <span v-else class="home-title panel-title">{{ title }}</span>
       <span style="float: right">
         <el-button
           v-if="listVisible"
@@ -13,7 +13,12 @@
           :loading="btnLoading"
           >Refresh</el-button
         >
-        <el-button v-else type="primary" icon="el-icon-back" @click="goBack" size="small"
+        <el-button
+          v-else
+          type="primary"
+          icon="el-icon-back"
+          @click="goBack"
+          size="small"
           >Back</el-button
         >
       </span>
@@ -30,27 +35,23 @@
         <ul class="announcements-container" key="list">
           <li v-for="announcement in announcements" :key="announcement.title">
             <div class="flex-container">
-                <div class="title">
+              <div class="title">
                 <a class="entry" @click="goAnnouncement(announcement)">
                   {{ announcement.title }}</a
                 >
-                </div>
-               
-                <div class="info">
-                    <span class="date">
-                
-                      <i class="el-icon-edit"></i>
-                    {{ announcement.gmtCreate | localtime }}
-          
-                  </span>
-                    <span class="creator">
-                     
-                      <i class="el-icon-user"></i>
-                    {{ announcement.username }}
-          
-                    </span>
-                </div>
               </div>
+
+              <div class="info">
+                <span class="date">
+                  <i class="el-icon-edit"></i>
+                  {{ announcement.gmtCreate | localtime }}
+                </span>
+                <span class="creator">
+                  <i class="el-icon-user"></i>
+                  {{ announcement.username }}
+                </span>
+              </div>
+            </div>
           </li>
         </ul>
         <Pagination
@@ -66,9 +67,10 @@
       <template v-else>
         <div
           v-katex
+          v-highlight
           v-html="announcement.content"
           key="content"
-          class="content-container markdown-body"
+          class="content-container maize-markdown-body"
         ></div>
       </template>
     </transition-group>
@@ -76,11 +78,10 @@
 </template>
 
 <script>
-import api from "@/common/api";
-import Pagination from "@/components/oj/common/Pagination";
-
+import api from '@/common/api';
+import Pagination from '@/components/oj/common/Pagination';
 export default {
-  name: "Announcement",
+  name: 'Announcement',
   components: {
     Pagination,
   },
@@ -90,7 +91,7 @@ export default {
       total: 0,
       btnLoading: false,
       announcements: [],
-      announcement: "",
+      announcement: '',
       listVisible: true,
     };
   },
@@ -120,30 +121,37 @@ export default {
     },
     getContestAnnouncementList(page = 1) {
       this.btnLoading = true;
-      api.getContestAnnouncementList(page, this.limit,this.$route.params.contestID).then(
-        (res) => {
-          this.btnLoading = false;
-          this.announcements = res.data.data.records;
-          this.total = res.data.data.total;
-        },
-        () => {
-          this.btnLoading = false;
-        }
-      );
+      api
+        .getContestAnnouncementList(
+          page,
+          this.limit,
+          this.$route.params.contestID
+        )
+        .then(
+          (res) => {
+            this.btnLoading = false;
+            this.announcements = res.data.data.records;
+            this.total = res.data.data.total;
+          },
+          () => {
+            this.btnLoading = false;
+          }
+        );
     },
     goAnnouncement(announcement) {
       this.announcement = announcement;
+      this.announcement.content = this.$markDown.render(announcement.content);
       this.listVisible = false;
     },
     goBack() {
       this.listVisible = true;
-      this.announcement = "";
+      this.announcement = '';
     },
   },
   computed: {
     title() {
       if (this.listVisible) {
-        return this.isContest ? "Contest Announcements" : "Announcements";
+        return this.isContest ? 'Contest Announcements' : 'Announcements';
       } else {
         return this.announcement.title;
       }
@@ -165,18 +173,18 @@ export default {
   list-style: none;
   padding-bottom: 15px;
   margin-left: 20px;
-  margin-top:10px;
+  margin-top: 10px;
   font-size: 16px;
   border: 1px solid rgba(187, 187, 187, 0.5);
-  border-left: 2px solid #409EFF;
+  border-left: 2px solid #409eff;
 }
 /* .announcements-container li:last-child {
   border-bottom: none;
 } */
-.flex-container{
+.flex-container {
   text-align: center;
 }
-.flex-container .info{
+.flex-container .info {
   margin-top: 5px;
 }
 
@@ -210,8 +218,8 @@ export default {
 .announcement-animate-enter-active {
   animation: fadeIn 1s;
 }
-ul{
-  list-style-type:none;
-  padding-inline-start:0px;
+ul {
+  list-style-type: none;
+  padding-inline-start: 0px;
 }
 </style>

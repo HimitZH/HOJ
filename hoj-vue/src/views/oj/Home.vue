@@ -53,7 +53,10 @@
                   </el-button>
                 </div>
                 <div class="contest-description">
-                  <blockquote v-html="contest.description"></blockquote>
+                  <blockquote
+                    v-html="contest.description"
+                    class="maize-markdown-body"
+                  ></blockquote>
                 </div>
               </div>
             </el-carousel-item>

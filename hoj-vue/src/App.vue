@@ -80,6 +80,7 @@ export default {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
+  touch-action: none;
 }
 body {
   background-color: #eee !important;
@@ -263,5 +264,8 @@ a:hover {
 }
 .el-tag--dark {
   border-color: #fff !important;
+}
+.v-note-wrapper .v-note-panel {
+  height: 460px !important;
 }
 </style>
