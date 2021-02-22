@@ -82,7 +82,6 @@ import 'codemirror/theme/solarized.css';
 import 'codemirror/theme/material.css';
 
 // mode
-import 'codemirror/mode/javascript/javascript';
 import 'codemirror/mode/clike/clike.js';
 import 'codemirror/mode/python/python.js';
 import 'codemirror/mode/pascal/pascal.js';
@@ -135,8 +134,11 @@ export default {
         foldGutter: true,
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
         lineWrapping: true,
+        // 选中文本自动高亮，及高亮方式
+        styleSelectedText: true,
         highlightSelectionMatches: { showToken: /\w/, annotateScrollbar: true },
-        autofocus: true,
+        autoFocus: true,
+        showCursorWhenSelecting: false,
         styleActiveLine: true,
       },
       mode: {

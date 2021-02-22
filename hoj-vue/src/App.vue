@@ -80,7 +80,8 @@ export default {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  touch-action: none;
+  touch-action: none !important;
+  -ms-touch-action: none;
 }
 body {
   background-color: #eee !important;

@@ -4,10 +4,6 @@ import router from './router'
 import store from './store'
 import Element from 'element-ui'
 
-import MuseUI from 'muse-ui';
-import 'muse-ui/dist/muse-ui.css';
-
-
 import "element-ui/lib/theme-chalk/index.css"
 import 'font-awesome/css/font-awesome.min.css'
 import 'default-passive-events'
@@ -46,9 +42,17 @@ import SlideVerify from 'vue-monoplasty-slide-verify'
 //  markdown编辑器
 import mavonEditor from 'mavon-editor'  //引入markdown编辑器
 import 'mavon-editor/dist/css/index.css'
-// // 前端所用markdown样式
-// import '@/assets/css/maize.css'
 Vue.use(mavonEditor)
+
+import {Drawer,List,Menu,Icon,AppBar,Button,Divider} from 'muse-ui';
+import 'muse-ui/dist/muse-ui.css';
+Vue.use(Drawer)
+Vue.use(List)
+Vue.use(Menu)
+Vue.use(Icon)
+Vue.use(AppBar)
+Vue.use(Button)
+Vue.use(Divider)
 
 Object.keys(filters).forEach(key => {   // 注册全局过滤器
   Vue.filter(key, filters[key])
@@ -59,7 +63,7 @@ Vue.use(VXETable) // 表格组件
 Vue.use(VueClipboard) // 剪贴板
 Vue.use(highlight) // 代码高亮
 Vue.use(Element)
-Vue.use(MuseUI) // 移动端导航栏需要该组件
+
 Vue.use(VueCropper) // 图像剪切
 Vue.use(Message, { name: 'msg' }) // `Vue.prototype.$msg` 全局消息提示
 
