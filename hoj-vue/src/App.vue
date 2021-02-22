@@ -123,7 +123,7 @@ samp {
 a {
   text-decoration: none;
   background-color: transparent;
-  color: #495060;
+  color: #495060 !important;
   outline: 0;
   cursor: pointer;
   transition: color 0.2s ease;

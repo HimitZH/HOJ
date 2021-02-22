@@ -15,11 +15,11 @@
               v-if="contest.auth != null"
             >
               <el-tooltip
-                :content="CONTEST_TYPE_REVERSE[contest['auth']]['tips']"
+                :content.sync="CONTEST_TYPE_REVERSE[contest['auth']]['tips']"
                 placement="top"
               >
                 <el-tag
-                  :type="CONTEST_TYPE_REVERSE[contest.auth]['color']"
+                  :type.sync="CONTEST_TYPE_REVERSE[contest.auth]['color']"
                   effect="plain"
                 >
                   {{ CONTEST_TYPE_REVERSE[contest.auth]['name'] }}
@@ -97,7 +97,12 @@
         <el-tab-pane name="ContestDetails" lazy>
           <span slot="label"><i class="el-icon-s-home"></i>&nbsp;Overview</span>
           <el-card class="box-card">
-            <div v-html="contest.description" class="maize-markdown-body"></div>
+            <div
+              v-html="descriptionHtml"
+              v-katex
+              v-highlight
+              class="markdown-body"
+            ></div>
           </el-card>
         </el-tab-pane>
 
@@ -318,6 +323,11 @@ export default {
     },
     showAdminHelper() {
       return this.isContestAdmin && this.contestRuleType === RULE_TYPE.ACM;
+    },
+    descriptionHtml() {
+      if (this.contest.description) {
+        return this.$markDown.render(this.contest.description);
+      }
     },
   },
   watch: {

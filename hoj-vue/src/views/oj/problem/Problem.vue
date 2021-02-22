@@ -66,13 +66,21 @@
 
             <div id="problem-content" class="markdown-body" v-katex>
               <p class="title">Description</p>
-              <p class="content" v-html="problemData.problem.description"></p>
+              <p
+                class="content"
+                v-html="problemData.problem.description"
+                v-katex
+              ></p>
               <!-- {{$t('m.music')}} -->
               <p class="title">Input</p>
-              <p class="content" v-html="problemData.problem.input"></p>
+              <p class="content" v-html="problemData.problem.input" v-katex></p>
 
               <p class="title">Output</p>
-              <p class="content" v-html="problemData.problem.output"></p>
+              <p
+                class="content"
+                v-html="problemData.problem.output"
+                v-katex
+              ></p>
 
               <div
                 v-for="(example, index) of problemData.problem.examples"
@@ -113,7 +121,11 @@
               <div v-if="problemData.problem.hint">
                 <p class="title">Hint</p>
                 <el-card dis-hover>
-                  <div class="content" v-html="problemData.problem.hint"></div>
+                  <div
+                    class="content"
+                    v-html="problemData.problem.hint"
+                    v-katex
+                  ></div>
                 </el-card>
               </div>
 
@@ -422,6 +434,26 @@ export default {
           result.problem.examples = utils.stringToExamples(
             result.problem.examples
           );
+          if (result.problem.description) {
+            result.problem.description = this.$markDown.render(
+              result.problem.description.toString()
+            );
+          }
+          if (result.problem.input) {
+            result.problem.input = this.$markDown.render(
+              result.problem.input.toString()
+            );
+          }
+          if (result.problem.output) {
+            result.problem.output = this.$markDown.render(
+              result.problem.output.toString()
+            );
+          }
+          if (result.problem.hint) {
+            result.problem.hint = this.$markDown.render(
+              result.problem.hint.toString()
+            );
+          }
           this.problemData = result;
           this.isRemote = result.problem.isRemote;
           this.changePie(result.problemCount);
@@ -740,7 +772,9 @@ export default {
 .problem-menu {
   float: right;
 }
-
+a {
+  color: #3091f2 !important ;
+}
 .problem-menu span {
   margin-left: 10px;
 }
