@@ -55,6 +55,8 @@
                 <div class="contest-description">
                   <blockquote
                     v-html="contest.description"
+                    v-katex
+                    v-highlight
                     class="maize-markdown-body"
                   ></blockquote>
                 </div>
