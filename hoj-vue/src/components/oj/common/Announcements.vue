@@ -70,7 +70,7 @@
           v-highlight
           v-html="announcement.content"
           key="content"
-          class="content-container maize-markdown-body"
+          class="content-container markdown-body"
         ></div>
       </template>
     </transition-group>

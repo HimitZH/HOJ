@@ -207,6 +207,11 @@ export default {
     getRecentContests() {
       api.getRecentContests().then((res) => {
         this.contests = res.data.data;
+        for (let i = 0; i < this.contests.length; i++) {
+          this.contests[i].description = this.$markDown.render(
+            this.contests[i].description
+          );
+        }
       });
     },
     getRecentOtherContests() {
