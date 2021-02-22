@@ -146,8 +146,8 @@
             <CodeMirror
               :value.sync="code"
               :languages="problemData.languages"
-              :language="language"
-              :theme="theme"
+              :language.sync="language"
+              :theme.sync="theme"
               @resetCode="onResetToTemplate"
               @changeTheme="onChangeTheme"
               @changeLang="onChangeLang"

@@ -13,8 +13,8 @@ spring:
   # 配置文件上传限制
   servlet:
     multipart:
-      max-file-size: 3MB
-      max-request-size: 3MB
+      max-file-size: 50MB
+      max-request-size: 50MB
   mail:
     properties.mail.smtp.ssl.enable: ${hoj.mail.ssl}
     username: ${hoj.mail.username}

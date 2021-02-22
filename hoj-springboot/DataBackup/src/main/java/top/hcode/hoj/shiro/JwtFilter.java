@@ -44,39 +44,41 @@ public class JwtFilter extends AuthenticatingFilter {
 
     @Autowired
     private RedisUtils redisUtils;
+
     @Override
     protected AuthenticationToken createToken(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
         // 获取 token
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String jwt = request.getHeader("Authorization");
-        if(StringUtils.isEmpty(jwt)){
+        if (StringUtils.isEmpty(jwt)) {
             return null;
         }
         return new JwtToken(jwt);
     }
+
     @Override
     protected boolean onAccessDenied(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String token = request.getHeader("Authorization");
-        if(StringUtils.isEmpty(token)) {
+        if (StringUtils.isEmpty(token)) {
             return true;
         } else {
             // 判断是否已过期
             Claims claim = jwtUtils.getClaimByToken(token);
             HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
             HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
-            if(claim == null || jwtUtils.isTokenExpired(claim.getExpiration())) {
+            if (claim == null || jwtUtils.isTokenExpired(claim.getExpiration())) {
                 httpResponse.setContentType("application/json;charset=utf-8");
                 httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
                 httpResponse.setHeader("Url-Type", httpRequest.getHeader("Url-Type")); // 为了前端能区别请求来源
                 httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                CommonResult result = CommonResult.errorResponse("登录身份已失效，请重新登录！",CommonResult.STATUS_ACCESS_DENIED);
+                CommonResult result = CommonResult.errorResponse("登录身份已失效，请重新登录！", CommonResult.STATUS_ACCESS_DENIED);
                 String json = JSONUtil.toJsonStr(result);
                 httpResponse.getWriter().print(json);
                 return false;
             }
             String userId = claim.getSubject();
-            if (!redisUtils.hasKey(TOKEN_REFRESH+userId) && redisUtils.hasKey(TOKEN_KEY+userId)){
+            if (!redisUtils.hasKey(TOKEN_REFRESH + userId) && redisUtils.hasKey(TOKEN_KEY + userId)) {
                 //过了需更新token时间，但是还未过期，则进行token刷新
                 this.refreshToken(httpRequest, httpResponse, userId);
             }
@@ -87,22 +89,23 @@ public class JwtFilter extends AuthenticatingFilter {
 
     /**
      * 刷新Token，并更新token到前端
+     *
      * @param request
      * @param userId
      * @param response
      * @return
      */
-    private void refreshToken(HttpServletRequest request,HttpServletResponse response,String userId) throws IOException {
-            boolean lock = redisUtils.getLock(TOKEN_LOCK + userId, 20);// 获取锁20s
-            if (lock) {
-                String newToken = jwtUtils.generateToken(userId);
-                response.setHeader("Access-Control-Allow-Credentials", "true");
-                response.setHeader("Authorization", newToken); //放到信息头部
-                response.setHeader("Access-Control-Expose-Headers", "Refresh-Token,Authorization,Url-Type"); //让前端可用访问
-                response.setHeader("Url-Type", request.getHeader("Url-Type")); // 为了前端能区别请求来源
-                response.setHeader("Refresh-Token", "true"); //告知前端需要刷新token
-            }
-            redisUtils.releaseLock(TOKEN_LOCK+userId);
+    private void refreshToken(HttpServletRequest request, HttpServletResponse response, String userId) throws IOException {
+        boolean lock = redisUtils.getLock(TOKEN_LOCK + userId, 20);// 获取锁20s
+        if (lock) {
+            String newToken = jwtUtils.generateToken(userId);
+            response.setHeader("Access-Control-Allow-Credentials", "true");
+            response.setHeader("Authorization", newToken); //放到信息头部
+            response.setHeader("Access-Control-Expose-Headers", "Refresh-Token,Authorization,Url-Type"); //让前端可用访问
+            response.setHeader("Url-Type", request.getHeader("Url-Type")); // 为了前端能区别请求来源
+            response.setHeader("Refresh-Token", "true"); //告知前端需要刷新token
+        }
+        redisUtils.releaseLock(TOKEN_LOCK + userId);
     }
 
 
@@ -113,7 +116,7 @@ public class JwtFilter extends AuthenticatingFilter {
         try {
             //处理登录失败的异常
             Throwable throwable = e.getCause() == null ? e : e.getCause();
-            CommonResult result = CommonResult.errorResponse(throwable.getMessage(),CommonResult.STATUS_ACCESS_DENIED);
+            CommonResult result = CommonResult.errorResponse(throwable.getMessage(), CommonResult.STATUS_ACCESS_DENIED);
             String json = JSONUtil.toJsonStr(result);
             httpResponse.setContentType("application/json;charset=utf-8");
             httpResponse.setHeader("Access-Control-Expose-Headers", "Refresh-Token,Authorization,Url-Type"); //让前端可用访问
@@ -125,7 +128,6 @@ public class JwtFilter extends AuthenticatingFilter {
         }
         return false;
     }
-
 
 
     /**

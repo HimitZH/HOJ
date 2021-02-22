@@ -70,19 +70,20 @@
               >Welcome to HOJ</span
             >
           </div>
-          <div class="content-center">
-            <h2>
-              欢迎大家光临和使用本OJ
-            </h2>
-            <h3>
-              这是一个的前后端分离的分布式在线评测系统。
-            </h3>
-            <h3>基于Vue.js,Springboot和SpringCloud.</h3>
-            <h1>待续....</h1>
-          </div>
+          <el-carousel
+            :interval="4000"
+            :height="srcHight"
+            class="img-carousel"
+            arrow="always"
+            indicator-position="outside"
+          >
+            <el-carousel-item v-for="item in srcList" :key="item">
+              <el-image :src="item" fit="fill"></el-image>
+            </el-carousel-item>
+          </el-carousel>
         </el-card>
       </el-col>
-      <el-col :md="10" :sm="24">
+      <el-col :md="10" :sm="24" class="phone-margin">
         <el-card>
           <div slot="header" class="clearfix">
             <span class="panel-title home-title"
@@ -117,14 +118,14 @@
             </vxe-table-column>
             <vxe-table-column field="ac" title="AC" min-width="30">
             </vxe-table-column>
-            <vxe-table-column field="solved" title="Solved" min-width="30">
+            <vxe-table-column field="solved" title="Solved" min-width="50">
             </vxe-table-column>
           </vxe-table>
         </el-card>
       </el-col>
     </el-row>
-    <el-row :gutter="20" style="margin-top: 25px;">
-      <el-col :md="14" :sm="24">
+    <el-row :gutter="20">
+      <el-col :md="14" :sm="24" style="margin-top: 20px;">
         <el-card>
           <div slot="header" class="clearfix">
             <span class="panel-title home-title"
@@ -167,7 +168,7 @@
           </vxe-table>
         </el-card>
       </el-col>
-      <el-col :md="10" :sm="24">
+      <el-col :md="10" :sm="24" style="margin-top: 20px;">
         <Announcements></Announcements>
       </el-col>
     </el-row>
@@ -197,9 +198,20 @@ export default {
         recent7ACRankLoading: false,
         recentOtherContestsLoading: false,
       },
+      srcList: [
+        'https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/home1.jfif',
+        'https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/home2.jpeg',
+      ],
+      srcHight: '440px',
     };
   },
   mounted() {
+    let screenWidth = window.screen.width;
+    if (screenWidth < 1080) {
+      this.srcHight = '200px';
+    } else {
+      this.srcHight = '440px';
+    }
     this.CONTEST_STATUS_REVERSE = Object.assign({}, CONTEST_STATUS_REVERSE);
     this.getRecentContests();
     this.getRecent7ACRank();
@@ -297,11 +309,21 @@ export default {
 .contest-status {
   float: right;
 }
+.img-carousel {
+  height: 470px;
+}
 @media screen and (max-width: 1080px) {
   .contest-status {
     text-align: center;
     float: none;
     margin-top: 5px;
+  }
+  .img-carousel {
+    height: 220px;
+    overflow: hidden;
+  }
+  .phone-margin {
+    margin-top: 20px;
   }
 }
 .title .el-link {
