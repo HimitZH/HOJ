@@ -73,7 +73,7 @@
         >没有账户? 现在注册!</el-link
       >
       <el-link
-        type="danger"
+        type="primary"
         @click="switchMode('ResetPwd')"
         style="float: right"
         >忘记密码</el-link

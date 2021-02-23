@@ -114,10 +114,10 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
             Contest contest = contestService.getById(cid);
             if (contest == null) {
                 log.error("判题机出错----------->{}", "该比赛不存在");
-            }
-            // 每个提交都得记录到contest_record里面,同时需要判断是否为比赛时的提交
-            if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()) {
-                contestRecordService.UpdateContestRecord(uid,score,status,submitId, cid);
+
+            } else if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()){
+                // 比赛期间的提交才进行记录
+                contestRecordService.UpdateContestRecord(uid, score, status, submitId, cid);
             }
 
         }

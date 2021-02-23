@@ -130,7 +130,11 @@ export default {
             pidList.push(this.problems[index].pid);
           }
           api
-            .getUserProblemStatus(pidList, isContestProblemList)
+            .getUserProblemStatus(
+              pidList,
+              isContestProblemList,
+              this.$route.params.contestID
+            )
             .then((res) => {
               let result = res.data.data;
               for (let index = 0; index < this.problems.length; index++) {

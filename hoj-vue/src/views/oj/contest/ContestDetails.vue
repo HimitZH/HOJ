@@ -9,13 +9,10 @@
             </div>
           </div>
           <el-row>
-            <el-col
-              :span="12"
-              class="text-align:left"
-              v-if="contest.auth != null"
-            >
+            <el-col :span="12" class="text-align:left">
               <el-tooltip
-                :content.sync="CONTEST_TYPE_REVERSE[contest['auth']]['tips']"
+                v-if="contest.auth != null && contest.auth != undefined"
+                :content.sync="CONTEST_TYPE_REVERSE[contest.auth]['tips']"
                 placement="top"
               >
                 <el-tag
@@ -79,18 +76,20 @@
         <p class="password-form-tips">
           To enter the Private contest,please input the password!
         </p>
-        <el-input
-          v-model="contestPassword"
-          type="password"
-          placeholder="Enter the contest password"
-          @keydown.enter.native="checkPassword"
-        />
-        <el-button
-          type="primary"
-          @click="checkPassword"
-          style="float:right;margin:5px"
-          >Enter</el-button
-        >
+        <el-form>
+          <el-input
+            v-model="contestPassword"
+            type="password"
+            placeholder="Enter the contest password"
+            @keydown.enter.native="checkPassword"
+          />
+          <el-button
+            type="primary"
+            @click="checkPassword"
+            style="float:right;margin:5px"
+            >Enter</el-button
+          >
+        </el-form>
       </el-card>
 
       <el-tabs v-else @tab-click="tabClick" v-model="route_name">
@@ -159,7 +158,7 @@
           </transition>
         </el-tab-pane>
 
-        <el-tab-pane name="ContestComment" lazy :disabled="contestMenuDisabled">
+        <!-- <el-tab-pane name="ContestComment" lazy :disabled="contestMenuDisabled">
           <span slot="label"
             ><i class="fa fa-commenting" aria-hidden="true"></i
             >&nbsp;Comments</span
@@ -167,7 +166,7 @@
           <transition name="el-zoom-in-bottom">
             <router-view v-if="route_name === 'ContestComment'"></router-view>
           </transition>
-        </el-tab-pane>
+        </el-tab-pane> -->
 
         <el-tab-pane
           name="ContestACInfo"
@@ -230,15 +229,15 @@ export default {
       contestPassword: '',
     };
   },
-  mounted() {
+  created() {
     this.contestID = this.$route.params.contestID;
     this.route_name = this.$route.name;
     if (this.route_name == 'ContestProblemDetails') {
       this.route_name = 'ContestProblemList';
     }
+    this.CONTEST_TYPE_REVERSE = Object.assign({}, CONTEST_TYPE_REVERSE);
     this.CONTEST_STATUS = Object.assign({}, CONTEST_STATUS);
     this.CONTEST_STATUS_REVERSE = Object.assign({}, CONTEST_STATUS_REVERSE);
-    this.CONTEST_TYPE_REVERSE = Object.assign({}, CONTEST_TYPE_REVERSE);
     this.RULE_TYPE = Object.assign({}, RULE_TYPE);
     this.$store.dispatch('getContest').then((res) => {
       this.changeDomTitle({ title: res.data.data.title });
@@ -271,10 +270,10 @@ export default {
         return;
       }
       this.btnLoading = true;
-      api.registerContest(this.contestID, this.contestPassword).then(
+      api.registerContest(this.contestID + '', this.contestPassword).then(
         (res) => {
           myMessage.success(res.data.msg);
-          this.$store.commit('contestSubmitAccess', { access: true });
+          this.$store.commit('contestIntoAccess', { intoAccess: true });
           this.btnLoading = false;
         },
         (res) => {
@@ -291,7 +290,6 @@ export default {
   },
   computed: {
     ...mapState({
-      showMenu: (state) => state.contest.itemVisible.menu,
       contest: (state) => state.contest.contest,
       now: (state) => state.contest.now,
     }),

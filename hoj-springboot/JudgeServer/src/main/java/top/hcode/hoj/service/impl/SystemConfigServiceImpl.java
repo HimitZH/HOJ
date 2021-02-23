@@ -43,6 +43,9 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     @Value("${hoj-judger.port}")
     private Integer port;
 
+    @Value("${hoj-judger.name}")
+    private String name;
+
     @Value("${spring.application.name}")
     private String judgeServiceName;
 
@@ -97,6 +100,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
         JSONObject metaData = new JSONObject();
         metaData.set("currentTaskNum", getTaskNum());
         metaData.set("maxTaskNum", max);
+        metaData.set("judgeName", name);
         String url = nacosUrl + "/nacos/v1/ns/instance?ip=" + useIP + "&port=" + getPort() +
                 "&serviceName=" + getJudgeServiceName() + "&metadata=";
         try {
@@ -121,6 +125,7 @@ public class SystemConfigServiceImpl implements SystemConfigService {
             JSONObject metaData = new JSONObject();
             metaData.set("currentTaskNum", getTaskNum());
             metaData.set("maxTaskNum", max);
+            metaData.set("judgeName", name);
             String url = nacosUrl + "/nacos/v1/ns/instance?ip=" + useIP + "&port=" + getPort() +
                     "&serviceName=" + getJudgeServiceName() + "&metadata=" + JSONUtil.toJsonStr(metaData);
             String encodeUrl;

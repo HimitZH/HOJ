@@ -69,7 +69,7 @@
           </el-col>
 
           <el-col :md="8" :xs="24" v-if="contest.sealRank">
-            <el-form-item label="Real Time Rank">
+            <el-form-item label="Seal Time Rank">
               <el-switch
                 v-model="contest.sealRank"
                 active-color="#13ce66"
@@ -80,7 +80,7 @@
           </el-col>
 
           <el-col :md="16" :xs="24" v-else>
-            <el-form-item label="Seal Rank">
+            <el-form-item label="Real Time Rank">
               <el-switch
                 v-model="contest.sealRank"
                 active-color="#13ce66"

@@ -210,6 +210,7 @@ export default {
     downloadSubmissions() {
       let url = `/file/download-contest-ac-submission?cid=${this.currentId}&excludeAdmin=${this.excludeAdmin}`;
       utils.downloadFile(url);
+      this.downloadDialogVisible = false;
     },
     goEdit(contestId) {
       this.$router.push({ name: 'admin-edit-contest', params: { contestId } });

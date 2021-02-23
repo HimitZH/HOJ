@@ -29,6 +29,4 @@ public class ToJudgeDto {
 
     private Boolean isRemote;
 
-    private String source;
-
 }

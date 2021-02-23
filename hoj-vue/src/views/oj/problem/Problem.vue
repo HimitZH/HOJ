@@ -214,7 +214,10 @@
                   </template>
                 </div>
                 <div
-                  v-else-if="problemData.myStatus == JUDGE_STATUS_RESERVE.ac"
+                  v-else-if="
+                    !this.contestID &&
+                      problemData.myStatus == JUDGE_STATUS_RESERVE.ac
+                  "
                 >
                   <el-alert
                     type="success"
@@ -599,6 +602,8 @@ export default {
         if (!this.submitPwd) {
           this.submitPwdVisible = true;
           return;
+        } else {
+          this.submitPwdVisible = false;
         }
       }
 
@@ -612,7 +617,6 @@ export default {
         cid: this.contestID,
         protectContestPwd: this.submitPwd,
         isRemote: this.isRemote,
-        source: this.problemData.problem.source,
       };
       if (this.captchaRequired) {
         data.captcha = this.captchaCode;
@@ -631,6 +635,8 @@ export default {
                 content: '代码提交成功！',
               });
               return;
+            } else {
+              myMessage.success(res.data.msg);
             }
             // 更新store的可提交权限
             if (!this.canSubmit) {

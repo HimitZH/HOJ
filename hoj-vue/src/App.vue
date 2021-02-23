@@ -124,13 +124,26 @@ samp {
 a {
   text-decoration: none;
   background-color: transparent;
-  color: #495060 !important;
+  color: #495060;
   outline: 0;
   cursor: pointer;
   transition: color 0.2s ease;
 }
 a:hover {
   color: #2196f3 !important;
+}
+.markdown-body a {
+  color: #2196f3;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+}
+.markdown-body a:hover {
+  color: #ff5722 !important;
+  text-decoration: underline;
 }
 .panel-title {
   font-size: 21px;

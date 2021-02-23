@@ -70,7 +70,7 @@ public class CloudHandler implements ToJudgeService {
 
     @Override
     public CommonResult remoteJudge(ToJudge toJudge) {
-
+        System.out.println(toJudge.getTryAgainNum());
         // 将使用的账号放回对应列表
         JSONObject account = new JSONObject();
         account.set("username", toJudge.getUsername());

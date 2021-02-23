@@ -46,7 +46,6 @@
     <div v-show="showTable">
       <vxe-table
         round
-        border
         auto-resize
         size="mini"
         align="center"
@@ -399,6 +398,15 @@ a.emphasis {
   color: #495060 !important;
 }
 a.emphasis:hover {
-  color: #2d8cf0;
+  color: #2d8cf0 !important;
+}
+/deep/.vxe-body--column {
+  min-width: 0;
+  height: 48px;
+  box-sizing: border-box;
+  text-align: left;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  border-bottom: 1px solid #e9eaec;
 }
 </style>

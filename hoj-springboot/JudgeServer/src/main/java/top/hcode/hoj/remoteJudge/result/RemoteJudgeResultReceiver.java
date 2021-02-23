@@ -10,6 +10,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.pojo.entity.Judge;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeFactory;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
@@ -23,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
-@RefreshScope
 public class RemoteJudgeResultReceiver implements MessageListener {
     @Autowired
     private RedisUtils redisUtils;
@@ -34,10 +34,8 @@ public class RemoteJudgeResultReceiver implements MessageListener {
     @Autowired
     private JudgeServiceImpl judgeService;
 
-    @Value("${hoj-judger.ip}")
-    private String ip;
-
     @Override
+    @Transactional
     public void onMessage(Message message, byte[] bytes) {
         String source = (String) redisUtils.lrPop(Constants.RemoteJudge.JUDGE_WAITING_RESULT_QUEUE.getName());
         // 如果竞争不到查询队列，结束
@@ -81,12 +79,8 @@ public class RemoteJudgeResultReceiver implements MessageListener {
                     .setTime(time)
                     .setMemory(memory);
 
-            // 获取当前判题系统所在ip写入数据库
-            if (ip.equals("-1")) {
-                judge.setJudger(IpUtils.getLocalIpv4Address());
-            } else {
-                judge.setJudger(ip);
-            }
+            // 写入当前远程判题OJ名字
+            judge.setJudger(remoteJudge);
 
             if (status.intValue() == Constants.Judge.STATUS_COMPILE_ERROR.getStatus()) {
                 judge.setErrorMessage(CEInfo);

@@ -31,7 +31,7 @@ spring:
   redis:
     host: ${hoj.redis.host}
     port: ${hoj.redis.port}
-    timeout: 60000
+    timeout: 100000
     jedis:
       pool:
         min-idle: 10 #连接池中的最小空闲连接
