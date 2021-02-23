@@ -165,7 +165,7 @@ public class ContestController {
      */
     @RequiresAuthentication
     @GetMapping("/get-contest-access")
-    public CommonResult getContestAccess(@RequestParam(value = "cid", required = true) Long cid, HttpServletRequest request) {
+    public CommonResult getContestAccess(@RequestParam(value = "cid") Long cid, HttpServletRequest request) {
         // 获取当前登录的用户
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
@@ -174,12 +174,8 @@ public class ContestController {
         queryWrapper.eq("cid", cid).eq("uid", userRolesVo.getUid());
         ContestRegister contestRegister = contestRegisterService.getOne(queryWrapper);
         HashMap<String, Object> result = new HashMap<>();
-        if (contestRegister != null) {
-            result.put("access", true);
-        } else {
-            result.put("access", false);
-        }
-        return CommonResult.successResponse(request);
+        result.put("access", contestRegister != null);
+        return CommonResult.successResponse(result);
     }
 
 
@@ -330,9 +326,6 @@ public class ContestController {
         if (onlyMine) {
             // 需要获取一下该token对应用户的数据（有token便能获取到）
             uid = userRolesVo.getUid();
-        }
-        if (searchStatus != null && searchStatus == 2) { // 默认搜索cpu超时，真实时间超时都一起。
-            searchStatus = 1;
         }
 
         IPage<JudgeVo> commonJudgeList = judgeService.getContestJudgeList(limit, currentPage, displayId, searchCid,

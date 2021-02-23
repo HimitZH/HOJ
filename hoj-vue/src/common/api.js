@@ -212,11 +212,12 @@ const ojApi = {
   },
 
   // 查询当前登录用户对题目的提交状态
-  getUserProblemStatus(pidList,isContestProblemList){
+  getUserProblemStatus(pidList,isContestProblemList,cid){
     return ajax("/api/get-user-problem-status",'post',{
       data:{
         pidList,
-        isContestProblemList
+        isContestProblemList,
+        cid
       }
     })
   },

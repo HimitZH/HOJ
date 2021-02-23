@@ -43,7 +43,6 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
         // 进行排序计算
         List<ACMContestRankVo> orderResultList = calcACMRank(contestRecordList);
-
         // 计算好排行榜，然后进行分页
         Page<ACMContestRankVo> page = new Page<>(currentPage, limit);
         int count = orderResultList.size();

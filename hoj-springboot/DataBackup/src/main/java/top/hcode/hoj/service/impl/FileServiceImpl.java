@@ -95,7 +95,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
                     }
                     rowData.add(info);
                 } else {
-                    rowData.add("Not Submission");
+                    rowData.add("");
                 }
             }
             allRowDataList.add(rowData);

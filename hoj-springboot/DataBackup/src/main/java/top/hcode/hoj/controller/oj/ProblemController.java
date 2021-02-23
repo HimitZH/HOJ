@@ -49,6 +49,9 @@ public class ProblemController {
     private LanguageServiceImpl languageService;
 
     @Autowired
+    private ContestServiceImpl contestService;
+
+    @Autowired
     private ProblemLanguageServiceImpl problemLanguageService;
 
     @Autowired
@@ -129,21 +132,40 @@ public class ProblemController {
         HashMap<Long, Object> result = new HashMap<>();
         // 先查询判断该用户对于这些题是否已经通过，若已通过，则无论后续再提交结果如何，该题都标记为通过
         QueryWrapper<Judge> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("distinct pid,status,gmt_create,score").in("pid", pidListDto.getPidList())
-                // 如果是比赛的提交记录需要判断cid和cpid不为0
-                .ne(pidListDto.getIsContestProblemList(), "cid", 0)
-                .ne(pidListDto.getIsContestProblemList(), "cpid", 0)
-                .eq("uid", userRolesVo.getUid()).orderByDesc("gmt_create");
+        queryWrapper.select("distinct pid,status,submit_time,score").in("pid", pidListDto.getPidList())
+                // 如果是比赛的提交记录需要判断cid
+                .eq(pidListDto.getIsContestProblemList(), "cid", pidListDto.getCid())
+                .eq("uid", userRolesVo.getUid()).orderByDesc("submit_time");
         List<Judge> judges = judgeService.list(queryWrapper);
+
+        boolean isACMContest = true;
+        if (pidListDto.getIsContestProblemList()) {
+            Contest contest = contestService.getById(pidListDto.getCid());
+            isACMContest = contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode();
+        }
 
         for (Judge judge : judges) {
 
             // 如果是比赛的题目列表状态
             if (pidListDto.getIsContestProblemList()) {
                 HashMap<String, Object> temp = new HashMap<>();
-                temp.put("score", judge.getScore());
-                temp.put("status", judge.getStatus());
-                result.put(judge.getPid(), temp);
+                if (!isACMContest) {
+                    if (!result.containsKey(judge.getPid())) { // IO比赛的，如果还未写入，则使用最新一次提交的结果
+                        temp.put("status", judge.getStatus());
+                        temp.put("score", judge.getScore());
+                        result.put(judge.getPid(), temp);
+                    }
+                } else {
+                    if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) { // 如果该题目已通过，则强制写为通过（0）
+                        temp.put("status", Constants.Judge.STATUS_ACCEPTED.getStatus());
+                        temp.put("score", null);
+                        result.put(judge.getPid(), temp);
+                    } else if (!result.containsKey(judge.getPid())) { // 还未写入，则使用最新一次提交的结果
+                        temp.put("status", judge.getStatus());
+                        temp.put("score", null);
+                        result.put(judge.getPid(), temp);
+                    }
+                }
 
             } else { // 不是比赛题目
                 if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) { // 如果该题目已通过，则强制写为通过（0）

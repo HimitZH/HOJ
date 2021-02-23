@@ -70,6 +70,12 @@ public class JudgeController {
     @Autowired
     private ContestRecordServiceImpl contestRecordService;
 
+    @Autowired
+    private ProblemCountServiceImpl problemCountService;
+
+    @Autowired
+    private UserAcproblemServiceImpl userAcproblemService;
+
     @Value("${hoj.judge.token}")
     private String judgeToken;
 
@@ -152,27 +158,29 @@ public class JudgeController {
             QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
             contestProblemQueryWrapper.eq("cid", judgeDto.getCid()).eq("display_id", judgeDto.getPid());
             ContestProblem contestProblem = contestProblemService.getOne(contestProblemQueryWrapper);
-            judge.setCpid(contestProblem.getId()).setPid(contestProblem.getPid());
+            judge.setCpid(contestProblem.getId())
+                    .setPid(contestProblem.getPid());
+
+            Problem problem = problemService.getById(contestProblem.getPid());
+            judge.setDisplayPid(problem.getProblemId());
 
             // 将新提交数据插入数据库
             result = judgeMapper.insert(judge);
 
             // 管理员比赛前的提交不纳入记录
-            if (contest.getStatus().intValue() == Constants.Contest.STATUS_SCHEDULED.getCode()) {
+            if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()) {
                 // 先查询是否为首次可能AC提交
                 QueryWrapper<ContestRecord> queryWrapper = new QueryWrapper<>();
                 queryWrapper.eq("cid", judge.getCid())
                         .eq("status", Constants.Contest.RECORD_AC.getCode())
-                        .eq("uid", judge.getUid())
-                        .eq("pid", judge.getPid())
-                        .eq("cpid", judge.getCpid());
+                        .eq("pid", judge.getPid());
 
                 boolean FirstACAttempt = contestRecordService.count(queryWrapper) == 0;
 
                 // 同时初始化写入contest_record表
                 ContestRecord contestRecord = new ContestRecord();
                 contestRecord.setDisplayId(judgeDto.getPid())
-                        .setCpid(contestProblem.getPid())
+                        .setCpid(contestProblem.getId())
                         .setSubmitId(judge.getSubmitId())
                         .setPid(judge.getPid())
                         .setUsername(userRolesVo.getUsername())
@@ -187,10 +195,10 @@ public class JudgeController {
                 } else {
                     contestRecord.setFirstBlood(false);
                 }
-                updateContestRecord = contestRecordService.save(contestRecord);
+                updateContestRecord = contestRecordService.saveOrUpdate(contestRecord);
             }
 
-        } else { // 如果不是比赛提交，需要将题号转为long类型
+        } else { // 如果不是比赛提交
 
             QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
             problemQueryWrapper.eq("problem_id", judgeDto.getPid());
@@ -206,18 +214,18 @@ public class JudgeController {
         }
 
         if (result != 1 || !updateContestRecord || !updateUserRecord) {
-            return CommonResult.errorResponse("数据提交失败", CommonResult.STATUS_ERROR);
+            return CommonResult.errorResponse("代码提交失败！", CommonResult.STATUS_ERROR);
         }
 
         // 将提交加入任务队列
         if (judgeDto.getIsRemote()) { // 如果是远程oj判题
-            remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judgeDto.getPid(),
+            remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getDisplayPid(),
                     judge.getCid() == 0, 1);
         } else {
             judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getCid() == 0, 1);
         }
 
-        return CommonResult.successResponse(judge, "数据提交成功！");
+        return CommonResult.successResponse(judge, "代码提交成功！");
     }
 
 
@@ -243,6 +251,27 @@ public class JudgeController {
         if (!judge.getUid().equals(userRolesVo.getUid())) { // 不是本人无法重新提交
             return CommonResult.errorResponse("对不起！您并非提交数据的本人，无法重新提交！");
         }
+
+        // 如果是非比赛题目
+        if (judge.getCid() == 0) {
+            // 重判前，需要将该题目对应记录表一并更新
+            // 更新该题目的提交统计表problem_count
+            String columnName = Constants.Judge.getTableColumnNameByStatus(judge.getStatus()); // 获取要修改的字段名
+            if (columnName != null) {
+                UpdateWrapper<ProblemCount> problemCountUpdateWrapper = new UpdateWrapper<>();
+                // 重判需要减掉之前的判题结果
+                problemCountUpdateWrapper.setSql(columnName + "=" + columnName + "-1,total=total-1")
+                        .eq("pid", judge.getPid());
+                problemCountService.update(problemCountUpdateWrapper);
+            }
+            // 如果该题已经是AC通过状态，更新该题目的用户ac做题表 user_acproblem
+            if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus().intValue()) {
+                QueryWrapper<UserAcproblem> userAcproblemQueryWrapper = new QueryWrapper<>();
+                userAcproblemQueryWrapper.eq("pid", judge.getPid()).eq("uid", judge.getUid());
+                userAcproblemService.remove(userAcproblemQueryWrapper);
+            }
+        }
+
         Problem problem = problemService.getById(judge.getPid());
         // 重新进入等待队列
         judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus());

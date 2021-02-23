@@ -37,6 +37,9 @@ import javax.servlet.http.HttpSession;
 import java.io.*;
 import java.io.File;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -377,6 +380,13 @@ public class FileController {
         }
     }
 
+    private static final ThreadLocal<SimpleDateFormat> threadLocal = new ThreadLocal<SimpleDateFormat>() {
+        @Override
+        protected SimpleDateFormat initialValue() {
+            return new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+        }
+    };
+
     @GetMapping("/download-contest-ac-submission")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
@@ -418,30 +428,32 @@ public class FileController {
             // 对于每个用户生成对应的文件夹
             String userDir = tmpFilesDir + File.separator + username;
             FileUtil.mkdir(userDir);
-            // 如果是ACM模式，则所有提交代码都要生成，如果同一题多次提交AC，加上提交时间秒后缀 ---> /A_666666.c
-            // 如果是OI模式就生成最近一次提交即可，且带上分数 ---> A_666666_100.c
+            // 如果是ACM模式，则所有提交代码都要生成，如果同一题多次提交AC，加上提交时间秒后缀 ---> A_(666666).c
+            // 如果是OI模式就生成最近一次提交即可，且带上分数 ---> A_(666666)_100.c
             List<Judge> userSubmissionList = judgeList.stream()
                     .filter(judge -> judge.getUsername().equals(username)) // 过滤出对应用户的提交
                     .sorted(Comparator.comparing(Judge::getSubmitTime).reversed()) // 根据提交时间进行降序
                     .collect(Collectors.toList());
+
             for (Judge judge : userSubmissionList) {
-                String filePath = userDir + File.separator + "_" + cpIdMap.getOrDefault(judge.getCpid(), "null")
-                        + "_" + judge.getSubmitTime().getTime();
+                String filePath = userDir + File.separator + cpIdMap.getOrDefault(judge.getCpid(), "null")
+                        + "_(" + threadLocal.get().format(judge.getSubmitTime())+")";
+
                 // OI模式只取最后一次提交
                 if (!isACM) {
-                    filePath += "_" + judge.getScore() + "." + languageToFileSuffix(judge.getLanguage());
+                    filePath += "_" + judge.getScore() + "." + languageToFileSuffix(judge.getLanguage().toLowerCase());
                     FileWriter fileWriter = new FileWriter(filePath);
                     fileWriter.write(judge.getCode());
                     break;
                 } else {
-                    filePath += "." + languageToFileSuffix(judge.getLanguage());
+                    filePath += "." + languageToFileSuffix(judge.getLanguage().toLowerCase());
                     FileWriter fileWriter = new FileWriter(filePath);
                     fileWriter.write(judge.getCode());
                 }
 
             }
         }
-        String zipFileName = contest.getTitle() + "_" + System.currentTimeMillis() + ".zip";
+        String zipFileName = "contest_"+contest.getId() + "_" + System.currentTimeMillis() + ".zip";
         String zipPath = Constants.File.CONTEST_AC_SUBMISSION_TMP_FOLDER.getPath() + File.separator + zipFileName;
         ZipUtil.zip(tmpFilesDir, zipPath);
         // 将zip变成io流返回给前端
@@ -501,17 +513,41 @@ public class FileController {
     }
 
     private static String languageToFileSuffix(String language) {
-        switch (language) {
-            case "C":
-                return "c";
-            case "C++":
+
+        List<String> CLang = Arrays.asList("c", "gcc", "clang");
+        List<String> CPPLang = Arrays.asList("c++", "g++", "clang++");
+        List<String> PythonLang = Arrays.asList("python", "pypy");
+
+        for (String lang : CPPLang) {
+            if (language.contains(lang)) {
                 return "cpp";
-            case "Python2":
-            case "Python3":
-                return "py";
-            case "Java":
-                return "java";
+            }
         }
+
+        if (language.contains("c#")) {
+            return "cs";
+        }
+
+        for (String lang : CLang) {
+            if (language.contains(lang)) {
+                return "c";
+            }
+        }
+
+        for (String lang : PythonLang) {
+            if (language.contains(lang)) {
+                return "py";
+            }
+        }
+
+        if (language.contains("java")) {
+            return "java";
+        }
+
+        if (language.contains("pascal")) {
+            return "pas";
+        }
+
         return "txt";
     }
 
@@ -550,7 +586,7 @@ public class FileController {
 
         return CommonResult.successResponse(MapUtil.builder()
                         .put("link", Constants.File.USER_FILE_HOST.getPath() + Constants.File.IMG_API.getPath() + filename)
-                        .put("filePath",Constants.File.MARKDOWN_IMG_FOLDER.getPath() + filename).map(),
+                        .put("filePath", Constants.File.MARKDOWN_IMG_FOLDER.getPath() + filename).map(),
                 "上传图片成功！");
 
     }
@@ -563,9 +599,9 @@ public class FileController {
     @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
     public CommonResult uploadMDImg(@RequestParam("filePath") String filePath) {
         boolean result = FileUtil.del(filePath);
-        if (result){
-            return CommonResult.successResponse(null,"删除成功");
-        }else{
+        if (result) {
+            return CommonResult.successResponse(null, "删除成功");
+        } else {
             return CommonResult.errorResponse("删除失败");
         }
 

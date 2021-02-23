@@ -3,6 +3,7 @@ hoj-judger:
   max-task-num: 4 # -1表示最大并行任务数为cpu核心数*2
   ip: -1 # -1表示使用默认本地ipv4，若是部署其它服务器，务必使用公网ip
   port: 8088
+  name: hoj-judger-1
 
 
 server:

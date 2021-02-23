@@ -29,6 +29,9 @@ public class NacosConfig {
     @Value("${hoj-judger.port}")
     private Integer port;
 
+    @Value("${hoj-judger.name}")
+    private String name;
+
     /**
      * 用于改变程序自动获取的本机ip
      */
@@ -45,6 +48,7 @@ public class NacosConfig {
         }
         meta.put("maxTaskNum", String.valueOf(max));
         meta.put("currentTaskNum", "0");
+        meta.put("judgeName", name);
         nacosDiscoveryProperties.setMetadata(meta);
         if (ip.equals("-1")) {
             nacosDiscoveryProperties.setIp(IpUtils.getLocalIpv4Address());

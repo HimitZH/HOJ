@@ -60,9 +60,8 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         }
 
         updateWrapper.eq("submit_id", submitId) // submit_id一定只有一个
-                .eq("uid", uid)
-                .eq("cid", cid);
-        boolean result = contestRecordMapper.update(null, updateWrapper) > 0;
+                .eq("uid", uid);
+        boolean result = contestRecordMapper.update(null, updateWrapper) == 1;
         if (!result) {
             tryAgainUpdate(updateWrapper);
         }

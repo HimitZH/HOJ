@@ -46,8 +46,8 @@ public class JudgeController {
     @Value("${hoj.judge.token}")
     private String judgeToken;
 
-    @Value("${hoj-judger.ip}")
-    private String ip;
+    @Value("${hoj-judger.name}")
+    private String name;
 
     @Autowired
     private RedisUtils redisUtils;
@@ -68,12 +68,8 @@ public class JudgeController {
         systemConfigService.updateJudgeTaskNum(true);
 
         judge.setStatus(Constants.Judge.STATUS_COMPILING.getStatus()); // 标志该判题过程进入编译阶段
-        // 获取当前判题系统所在ip写入数据库
-        if (ip.equals("-1")) {
-            judge.setJudger(IpUtils.getLocalIpv4Address());
-        } else {
-            judge.setJudger(ip);
-        }
+        // 写入当前判题服务的名字
+        judge.setJudger(name);
         boolean updateResult = judgeService.saveOrUpdate(judge);
         if (!updateResult) { // 出错并不影响主要业务逻辑，可以稍微记录一下即可。
             log.error("修改Judge表失效--------->{}", "修改提交评判为编译中出错");
@@ -147,7 +143,6 @@ public class JudgeController {
             account.set("password", password);
             redisUtils.llPush(Constants.RemoteJudge.getListNameByOJName(remoteJudge), JSONUtil.toJsonStr(account));
 
-            // TODO 如果为了测试是否可行，请把数据库更新注释掉，若正常运行，则需要保证数据一致性
             Judge judge = new Judge();
             judge.setSubmitId(submitId)
                     .setStatus(Constants.Judge.STATUS_SYSTEM_ERROR.getStatus())

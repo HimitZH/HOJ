@@ -20,4 +20,6 @@ public class PidListDto {
 
     @NotNull(message = "是否为比赛题目提交判断不能为空")
     private Boolean isContestProblemList;
+
+    private Long cid;
 }

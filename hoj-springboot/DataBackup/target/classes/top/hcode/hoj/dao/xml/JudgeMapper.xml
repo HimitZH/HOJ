@@ -29,11 +29,11 @@
 
 
     <select id="getContestJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="false">
-        select  j.uid,j.submit_id,j.submit_time,j.uid,j.username,j.uid,cp.display_id,
+        select j.uid,j.submit_id,j.submit_time,j.uid,j.username,j.uid,cp.display_id,
         j.status,j.share,j.time,j.memory,j.length,j.language,j.cid,j.cpid,j.judger
         from judge j,contest_problem cp
         <where>
-            j.pid=cp.pid
+            j.pid=cp.pid AND j.cid = cp.cid
             <if test="cid!=null">
                AND j.cid = #{cid}
             </if>
@@ -44,19 +44,15 @@
                 AND j.username like concat('%',#{username},'%')
             </if>
             <if test="status!=null">
-                AND (j.status = #{status}
-                <if test="status==1">
-                    OR j.status = 2
-                </if>
-                )
+                AND j.status = #{status}
             </if>
             <if test="uid!=null and uid!=''">
                 AND j.uid = #{uid}
             </if>
-            <if test="beforeContestSubmit!=null and beforeContestSubmit=true">
+            <if test="beforeContestSubmit!=null and beforeContestSubmit==true">
                 AND (select start_time from contest where id = #{cid}) > j.submit_time
             </if>
-            <if test="beforeContestSubmit!=null and beforeContestSubmit=false">
+            <if test="beforeContestSubmit!=null and beforeContestSubmit==false">
                 AND j.submit_time >= (select start_time from contest where id = #{cid})
             </if>
         </where>

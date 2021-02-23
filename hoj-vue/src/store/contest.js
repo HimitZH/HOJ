@@ -4,11 +4,11 @@ import { CONTEST_STATUS, USER_TYPE, CONTEST_TYPE } from '@/common/constants'
 import time from '@/common/time'
 const state = {
   now: moment(),
-  intoAccess: false, // 私有比赛进入权限
+  intoAccess: true, // 比赛进入权限
   submitAccess:false, // 保护比赛的提交权限
   forceUpdate: false,
   contest: {
-    type: CONTEST_TYPE.PUBLIC
+    auth: CONTEST_TYPE.PUBLIC
   },
   contestProblems: [],
   itemVisible: {
@@ -29,18 +29,19 @@ const getters = {
       (state.contest.author === rootGetters.userInfo.author || rootGetters.isSuperAdmin)
   },
   canSubmit:(state, getters)=>{
-     return state.intoAccess||state.submitAccess || state.contest.type === CONTEST_TYPE.PUBLIC
+     return state.intoAccess||state.submitAccess || state.contest.auth === CONTEST_TYPE.PUBLIC ||getters.isContestAdmin
   },
   contestMenuDisabled: (state, getters) => {
     // 比赛创建者或者超级管理员可以直接查看
     if (getters.isContestAdmin) return false
-    // 公开和保护赛可以查看
-    if (state.contest.type === CONTEST_TYPE.PUBLIC||state.contest.type === CONTEST_TYPE.PROTECT) {
-      // 未开始不可查看
-      return getters.contestStatus === CONTEST_STATUS.SCHEDULED
+     // 未开始不可查看
+    if(getters.contestStatus === CONTEST_STATUS.SCHEDULED) return true
+
+    if (state.contest.auth === CONTEST_TYPE.PRIVATE) {
+     // 私有赛需要通过验证密码方可查看比赛
+      return !state.intoAccess
     }
-    // 私有赛需要通过验证密码方可查看比赛
-    return !state.intoAccess
+    
   },
 
   // 榜单是否实时刷新
@@ -56,7 +57,7 @@ const getters = {
     // 比赛是否开启
     if(state.contest.sealRank === true){
       // 当前时间在封榜时间之后，即不刷新榜单
-      return !now.isAfter(moment(state.contest.sealRankTime))
+      return !state.now.isAfter(moment(state.contest.sealRankTime))
     }else{
       return true
     }
@@ -76,7 +77,7 @@ const getters = {
   // 是否需要显示密码验证框
   passwordFormVisible: (state, getters) => {
     // 如果是公开赛，保护赛，或已注册过，管理员都不用再显示
-    return state.contest.type !== CONTEST_TYPE.PUBLIC &&state.contest.type !== CONTEST_TYPE.PROTECT &&!state.intoAccess && !getters.isContestAdmin 
+    return state.contest.auth !== CONTEST_TYPE.PUBLIC &&state.contest.auth !== CONTEST_TYPE.PROTECT &&!state.intoAccess && !getters.isContestAdmin 
   },
   contestStartTime: (state) => {
     return moment(state.contest.startTime)
@@ -96,20 +97,31 @@ const getters = {
       if (duration.weeks() > 0) {
         return 'Start At ' + duration.humanize()
       }
+
+      if(duration.asSeconds()<=0){
+        state.contest.status = CONTEST_STATUS.RUNNING
+      }
+
       let texts = time.secondFormat(durationMs)
       return '-' + texts
       // 比赛进行中的显示
     } else if (getters.contestStatus === CONTEST_STATUS.RUNNING) {
       // 倒计时文本显示
-      let texts = time.secondFormat(getters.contestEndTime.diff(state.now, 'seconds'))
-      return '-' + texts
+      if(getters.contestEndTime.diff(state.now, 'seconds')>0){
+        let texts = time.secondFormat(getters.contestEndTime.diff(state.now, 'seconds'))
+        return '-' + texts
+      }else{
+        state.contest.status = CONTEST_STATUS.ENDED
+        return "00:00:00"
+      }
+      
     } else {
       return 'Ended'
     }
   },
   // 比赛开始到现在经过的秒数
   BeginToNowDuration:(state,getters)=>{
-    return moment.duration(state.now.diff(getters.contestStartTime, 'seconds'), 'seconds')
+    return moment.duration(state.now.diff(getters.contestStartTime, 'seconds'), 'seconds').asSeconds()
   },
 
   // 比赛进度条显示
@@ -146,10 +158,10 @@ const mutations = {
     state.rankLimit = payload.rankLimit
   },
   contestIntoAccess(state, payload) {
-    state.intoAccess = payload.access
+    state.intoAccess = payload.intoAccess
   },
   contestSubmitAccess(state, payload) {
-    state.submitAccess = payload.access
+    state.submitAccess = payload.submitAccess
   },
   clearContest (state) {
     state.contest = {}
@@ -179,10 +191,10 @@ const actions = {
         let contest = res.data.data
         commit('changeContest', {contest: contest})
         commit('now', {now: moment(contest.now)})
-        if (contest.type === CONTEST_TYPE.PRIVATE) {
-          dispatch('getContestAccess',{type:CONTEST_TYPE.PRIVATE})
-        }else if(contest.type ===CONTEST_TYPE.PROTECT){
-          dispatch('getContestAccess',{type:CONTEST_TYPE.PROTECT})
+        if (contest.auth == CONTEST_TYPE.PRIVATE) {
+          dispatch('getContestAccess',{auth:CONTEST_TYPE.PRIVATE})
+        }else if(contest.auth == CONTEST_TYPE.PROTECT){
+          dispatch('getContestAccess',{auth:CONTEST_TYPE.PROTECT})
         }
       }, err => {
         reject(err)
@@ -203,7 +215,7 @@ const actions = {
   getContestAccess ({commit, rootState},contestType) {
     return new Promise((resolve, reject) => {
       api.getContestAccess(rootState.route.params.contestID).then(res => {
-        if(contestType.type === CONTEST_TYPE.PRIVATE){
+        if(contestType.auth == CONTEST_TYPE.PRIVATE){
           commit('contestIntoAccess', {intoAccess: res.data.data.access})
         }else{
           commit('contestSubmitAccess', {submitAccess: res.data.data.access})
