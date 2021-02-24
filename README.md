@@ -205,7 +205,7 @@ int spj(int user_output, FILE *output){
 
 # 五、附加：
 
-[数据库表内容及API文档]("https://gitee.com/himitzh0730/hoj/tree/master/sqlAndsetting")
+[数据库表内容及API文档](https://gitee.com/himitzh0730/hoj/tree/master/sqlAndsetting)
 
 [Go-Sanbox API文档](https://gitee.com/himitzh0730/hoj/tree/master/judger)
 
