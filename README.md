@@ -2,6 +2,18 @@
 
 基于前后端分离，分布式架构的在线测评平台（hoj）
 
+> 当前任务
+
+- [x] 测试HDU判题整套流程
+- [x] 修改前端编辑器样式以及md格式转换
+- [x] 修复代码编辑器bug
+- [x] 测试比赛相关接口，验证权限及数据计算
+- [ ] 增加codeforce的vj判题
+- [ ] 部署判题服务器到云服务器，半正式上线HOJ
+- [ ] 完善文档
+
+> 简略介绍
+
 - 前端：
   - [x] 技术以Vue为主，element-ui为主要框架，网站风格样式模仿qdoj
   - [x] 支持手机端，响应式布局
@@ -38,16 +50,6 @@
   - Mysql
 - 缓存中间件
   - Redis
-
-> 当前任务
-
-- [x] 测试HDU判题整套流程
-- [x] 修改前端编辑器样式以及md格式转换
-- [x] 修复代码编辑器bug
-- [x] 测试比赛相关接口，验证权限及数据计算
-- [ ] 增加codeforce的vj判题
-- [ ] 部署判题服务器到云服务器，半正式上线HOJ
-- [ ] 完善文档
 
 
 
@@ -123,19 +125,61 @@
 
 # 三、网站部分截图
 
+> 首页页面
+
 ![hoj1](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj1.png)
+
+
+
+> 题目列表页
 
 ![hoj2](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj2.png)
 
+
+
+> 题目详情页
+
+![hoj7](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj7.png)
+
+
+
+> 比赛列表页
+
 ![hoj3](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj3.png)
+
+
+
+> 比赛详情首页
 
 ![hoj4](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj4.png)
 
-![hoj5](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj5.png)
+
+
+> 排行榜
+
+![hoj9](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj9.png)
+
+
+
+> 个人信息页
 
 ![hoj6](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj6.png)
 
 
+
+> 个人设置页
+
+![hoj8](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj8.png)
+
+
+
+> 管理后台首页
+
+![hoj5](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj5.png)
+
+
+
+> 部分手机端显示
 
 ![hojmb1](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hojmb1.png)
 
