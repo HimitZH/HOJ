@@ -143,7 +143,7 @@
 
 ![hojmb2](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hojmb2.png)
 
-#四、特判程序例子
+# 四、特判程序例子
 
 ```c++
 #include<iostream>
