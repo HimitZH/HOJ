@@ -143,7 +143,7 @@
 
 ![hojmb2](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hojmb2.png)
 
-#四、特判程序例子
+# 四、特判程序例子
 
 ```c++
 #include<iostream>
@@ -205,7 +205,7 @@ int spj(int user_output, FILE *output){
 
 # 五、附加：
 
-[数据库表内容及API文档]("https://gitee.com/himitzh0730/hoj/tree/master/sqlAndsetting")
+[数据库表内容及API文档](https://gitee.com/himitzh0730/hoj/tree/master/sqlAndsetting)
 
 [Go-Sanbox API文档](https://gitee.com/himitzh0730/hoj/tree/master/judger)
 
