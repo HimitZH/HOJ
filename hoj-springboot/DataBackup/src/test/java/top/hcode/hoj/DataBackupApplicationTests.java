@@ -186,19 +186,17 @@ public class DataBackupApplicationTests {
         String HOST = "http://acm.hdu.edu.cn";
         String PROBLEM_URL = "/showproblem.php?pid=%s";
         Problem info = new Problem();
-        String url = HOST + String.format(PROBLEM_URL, 1090);
+        String url = HOST + String.format(PROBLEM_URL, 1016);
         Connection connection = JsoupUtils.getConnectionFromUrl(url, null, null);
         Document document = JsoupUtils.getDocument(connection, null);
         String html = document.html();
-        StringBuilder sb = new StringBuilder("<input>");
-        sb.append(ReUtil.get(">Sample Input</div><div .*?,monospace;\">([\\s\\S]*?)</div></pre>", html, 1));
-        sb.append("</input><output>");
-        sb.append(ReUtil.get(">Sample Output</div><div .*?monospace;\">(.*?)(<div style=.*?</div><i style=.*?</i>)*?</div></pre>", html, 1)).append("</output>");
-        info.setExamples(sb.toString());
-        info.setHint(ReUtil.get("<i>Hint</i></div>([\\s\\S]*?)</div><i .*?<br><[^<>]*?panel_title[^<>]*?>", html, 1));
+        info.setDescription(ReUtil.get(">Problem Description</div> <div class=.*?>([\\s\\S]*?)</div>", html, 1).replaceAll("src=\"../../", "src=\"" + HOST + "/"));
+        info.setInput(ReUtil.get(">Input</div> <div class=.*?>([\\s\\S]*?)</div>", html, 1));
+        info.setOutput(ReUtil.get(">Output</div> <div class=.*?>([\\s\\S]*?)</div>", html, 1));
         info.setIsRemote(true);
-        System.out.println(sb.toString());
-        System.out.println(info.getHint());
+        System.out.println(info.getDescription());
+        System.out.println(info.getInput());
+        System.out.println(info.getOutput());
     }
 
 

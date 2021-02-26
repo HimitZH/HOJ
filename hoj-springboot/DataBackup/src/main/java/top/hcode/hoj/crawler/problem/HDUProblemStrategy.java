@@ -36,13 +36,12 @@ public class HDUProblemStrategy extends ProblemStrategy {
         info.setTitle(ReUtil.get("color:#1A5CC8\">([\\s\\S]*?)</h1>", html, 1).trim());
         info.setTimeLimit(Integer.parseInt(ReUtil.get("(\\d*) MS", html, 1)));
         info.setMemoryLimit(Integer.parseInt(ReUtil.get("/(\\d*) K", html, 1)) / 1024);
-        info.setDescription(ReUtil.get(">Problem Description</div>\\s+<.*?>(.*?)<br></div>", html, 1).replaceAll("src=\"../../", "src=\"" + HOST + "/"));
-        info.setInput(ReUtil.get(">Input</div>.*?<.*?>(.*?)<br></div>", html, 1));
-        info.setOutput(ReUtil.get(">Output</div>.*?<.*?>(.*?)<br></div>", html, 1));
+        info.setDescription(ReUtil.get(">Problem Description</div> <div class=.*?>([\\s\\S]*?)</div>", html, 1).replaceAll("src=\"../../", "src=\"" + HOST + "/"));
+        info.setInput(ReUtil.get(">Input</div> <div class=.*?>([\\s\\S]*?)</div>", html, 1));
+        info.setOutput(ReUtil.get(">Output</div> <div class=.*?>([\\s\\S]*?)</div>", html, 1));
         StringBuilder sb = new StringBuilder("<input>");
         sb.append(ReUtil.get(">Sample Input</div><div .*?,monospace;\">([\\s\\S]*?)</div></pre>", html, 1));
         sb.append("</input><output>");
-        // TODO 筛选output和hint
         sb.append(ReUtil.get(">Sample Output</div><div .*?monospace;\">([\\s\\S]*?)(<div style=.*?</div><i style=.*?</i>)*?</div></pre>", html, 1)).append("</output>");
         info.setExamples(sb.toString());
         info.setHint(ReUtil.get("<i>Hint</i></div>([\\s\\S]*?)</div><i .*?<br><[^<>]*?panel_title[^<>]*?>", html, 1));
