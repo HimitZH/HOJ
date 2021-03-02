@@ -111,7 +111,7 @@
           :disabled="contestMenuDisabled"
         >
           <span slot="label"
-            ><i class="fa fa-list" aria-hidden="true"></i>&nbsp;Problems</span
+            ><i class="fa fa-list" aria-hidden="true"></i>&nbsp;Problem</span
           >
           <transition name="el-zoom-in-bottom">
             <router-view
@@ -149,7 +149,7 @@
         >
           <span slot="label"
             ><i class="fa fa-bullhorn" aria-hidden="true"></i
-            >&nbsp;Announcements</span
+            >&nbsp;Announcement</span
           >
           <transition name="el-zoom-in-bottom">
             <router-view
