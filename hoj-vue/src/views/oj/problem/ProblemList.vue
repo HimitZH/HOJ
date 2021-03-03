@@ -98,7 +98,7 @@
             min-width="100"
           ></vxe-table-column>
 
-          <vxe-table-column field="title" title="Title" min-width="250">
+          <vxe-table-column field="title" title="Title" min-width="180">
             <template v-slot="{ row }">
               <a :href="getProblemUri(row.problemId)" class="title-a">{{
                 row.title
@@ -114,7 +114,7 @@
             </template>
           </vxe-table-column>
 
-          <vxe-table-column field="tag" title="Tag" min-width="200">
+          <vxe-table-column field="tag" title="Tag" min-width="250">
             <template v-slot="{ row }">
               <span
                 class="el-tag el-tag--medium el-tag--light is-hit"

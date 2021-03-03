@@ -141,7 +141,10 @@ export const PROBLEM_LEVEL_RESERVE={
 
 export const OJ_NAME = 'HOJ'
 
-export const REMOTE_OJ = ['HDU']
+export const REMOTE_OJ = [
+  {name:'HDU',key:"HDU"},
+  {name:"Codeforces",key:"CF"}
+]
 
 export const CONTEST_STATUS = {
   'SCHEDULED': -1,

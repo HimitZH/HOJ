@@ -84,7 +84,16 @@ import 'codemirror/theme/material.css';
 // mode
 import 'codemirror/mode/clike/clike.js';
 import 'codemirror/mode/python/python.js';
-import 'codemirror/mode/pascal/pascal.js';
+import 'codemirror/mode/pascal/pascal.js'; //pascal
+import 'codemirror/mode/go/go.js'; //go
+import 'codemirror/mode/d/d.js'; //d
+import 'codemirror/mode/haskell/haskell.js'; //haskell
+import 'codemirror/mode/mllike/mllike.js'; //OCaml
+import 'codemirror/mode/perl/perl.js'; //perl
+import 'codemirror/mode/php/php.js'; //php
+import 'codemirror/mode/ruby/ruby.js'; //ruby
+import 'codemirror/mode/rust/rust.js'; //rust
+import 'codemirror/mode/javascript/javascript.js'; //javascript
 
 // active-line.js
 import 'codemirror/addon/selection/active-line.js';

@@ -23,6 +23,7 @@ import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.*;
@@ -34,6 +35,7 @@ import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.UserInfoService;
 import top.hcode.hoj.service.UserRoleService;
 import top.hcode.hoj.service.impl.AnnouncementServiceImpl;
+import top.hcode.hoj.service.impl.LanguageServiceImpl;
 import top.hcode.hoj.service.impl.UserInfoServiceImpl;
 import top.hcode.hoj.service.impl.UserRoleServiceImpl;
 import top.hcode.hoj.utils.Constants;
@@ -45,6 +47,7 @@ import java.io.IOException;
 import java.net.*;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * @Author: Himit_ZH
@@ -197,6 +200,107 @@ public class DataBackupApplicationTests {
         System.out.println(info.getDescription());
         System.out.println(info.getInput());
         System.out.println(info.getOutput());
+    }
+
+    @Test
+    public void Test7() throws IOException {
+        String JUDGE_NAME = "CF";
+        String HOST = "https://codeforces.com";
+        String PROBLEM_URL = "/problemset/problem/%s/%s";
+
+        String problemId = "1491F";
+        String contestId = ReUtil.get("([0-9]+)[A-Z]{1}[0-9]{0,1}", problemId, 1);
+        String problemNum = ReUtil.get("[0-9]+([A-Z]{1}[0-9]{0,1})", problemId, 1);
+
+
+        String url = HOST + String.format(PROBLEM_URL, contestId, problemNum);
+        Connection connection = JsoupUtils.getConnectionFromUrl(url, null, null);
+        Document document = JsoupUtils.getDocument(connection, null);
+        String html = document.html();
+        Problem info = new Problem();
+        info.setProblemId(JUDGE_NAME + "-" + problemId);
+
+        info.setTitle(ReUtil.get("<div class=\"title\">\\s*" + problemNum + "\\. ([\\s\\S]*?)</div>", html, 1).trim());
+
+        info.setTimeLimit(1000 * Integer.parseInt(ReUtil.get("</div>([\\d\\.]+) (seconds?|s)\\s*</div>", html, 1)));
+
+        info.setMemoryLimit(Integer.parseInt(ReUtil.get("</div>(\\d+) (megabytes|MB)\\s*</div>", html, 1)));
+
+        String tmpDesc = ReUtil.get("standard output\\s*</div></div><div>([\\s\\S]*?)</div><div class=\"input-specification",
+                html, 1);
+        if (StringUtils.isEmpty(tmpDesc)) {
+            tmpDesc = "<div>" + ReUtil.get("(<div class=\"input-file\">[\\s\\S]*?)</div><div class=\"input-specification", html, 1);
+        }
+
+        info.setDescription(tmpDesc.replaceAll("src=\"../../", "src=\"" + HOST + "/"));
+
+        info.setInput(ReUtil.get("<div class=\"section-title\">\\s*Input\\s*</div>([\\s\\S]*?)</div><div class=\"output-specification\">", html, 1));
+
+        info.setOutput(ReUtil.get("<div class=\"section-title\">\\s*Output\\s*</div>([\\s\\S]*?)</div><div class=\"sample-tests\">", html, 1));
+
+        StringBuilder sb = new StringBuilder("<input>");
+        sb.append(ReUtil.get("<div class=\"sample-test\"><div class=\"input\"><div class=\"title\">Input</div><pre>([\\s\\S]*?)</pre></div>", html, 1));
+        sb.append("</input><output>");
+        sb.append(ReUtil.get("<div class=\"output\"><div class=\"title\">Output</div><pre>([\\s\\S]*?)</pre></div></div>", html, 1)).append("</output>");
+        info.setExamples(sb.toString());
+
+        info.setHint(ReUtil.get("<div class=\"section-title\">\\s*Note\\s*</div>([\\s\\S]*?)</div></div>", html, 1));
+        info.setIsRemote(true);
+        info.setSource(String.format("<p>Problem：<a style='color:#1A5CC8' href='https://codeforces.com/problemset/problem/%s/%s'>%s</a></p><p>" +
+                        "Contest：" + ReUtil.get("(<a[^<>]+/contest/\\d+\">.+?</a>)", html, 1).replace("/contest", HOST + "/contest")
+                        .replace("color: black", "color: #009688;") + "</p>",
+                contestId, problemNum, JUDGE_NAME + "-" + problemId));
+
+        List<String> all = ReUtil.findAll(Pattern.compile("<span class=\"tag-box\" style=\"font-size:1\\.2rem;\" title=\"[\\s\\S]*?\">([\\s\\S]*?)</span>"), html, 1);
+        for (String tmp : all) {
+            System.out.println(tmp.trim());
+        }
+    }
+
+
+    @Autowired
+    private LanguageServiceImpl languageService;
+
+    @Test
+    public void Test8() throws IOException {
+        LinkedHashMap<String, String> languageList = new LinkedHashMap<>();
+        languageList.put("GNU GCC C11 5.1.0", "text/x-csrc");
+        languageList.put("Clang++17 Diagnostics", "text/x-c++src");
+        languageList.put("GNU G++11 5.1.0", "text/x-c++src");
+        languageList.put("GNU G++14 6.4.0", "text/x-c++src");
+        languageList.put("GNU G++17 7.3.0", "text/x-c++src");
+        languageList.put("Microsoft Visual C++ 2010", "text/x-c++src");
+        languageList.put("Microsoft Visual C++ 2017", "text/x-c++src");
+        languageList.put("C# Mono 5.18", "text/x-csharp");
+        languageList.put("D DMD32 v2.083.1", "text/x-d");
+        languageList.put("Go 1.11.4", "text/x-go");
+        languageList.put("Haskell GHC 8.6.3", "text/x-haskell");
+        languageList.put("Java 1.8.0_162", "text/x-java");
+        languageList.put("Kotlin 1.3.10", "text/x-java");
+        languageList.put("OCaml 4.02.1", "text/x-ocaml");
+        languageList.put("Delphi 7", "text/x-pascal");
+        languageList.put("Free Pascal 3.0.2", "text/x-pascal");
+        languageList.put("PascalABC.NET 3.4.2", "text/x-pascal");
+        languageList.put("Perl 5.20.1", "text/x-perl");
+        languageList.put("PHP 7.2.13", "text/x-php");
+        languageList.put("Python 2.7.15", "text/x-python");
+        languageList.put("Python 3.7.2", "text/x-python");
+        languageList.put("PyPy 2.7 (6.0.0)", "text/x-python");
+        languageList.put("PyPy 3.5 (6.0.0)", "text/x-python");
+        languageList.put("Ruby 2.0.0p645", "text/x-ruby");
+        languageList.put("Rust 1.31.1", "text/x-rustsrc");
+        languageList.put("Scala 2.12.8", "text/x-scala");
+        languageList.put("JavaScript V8 4.8.0", "text/javascript");
+        languageList.put("Node.js 9.4.0", "text/javascript");
+
+        List<Language> languageList1 = new LinkedList<>();
+        for (String key : languageList.keySet()) {
+            String tmp = languageList.get(key);
+            languageList1.add(new Language().setName(key).setDescription(key).setOj("CF").setIsSpj(false).setContentType(tmp));
+
+        }
+        boolean b = languageService.saveOrUpdateBatch(languageList1);
+        System.out.println(b);
     }
 
 

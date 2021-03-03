@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.crawler.problem.CFProblemStrategy;
 import top.hcode.hoj.crawler.problem.HDUProblemStrategy;
 import top.hcode.hoj.crawler.problem.ProblemContext;
 import top.hcode.hoj.crawler.problem.ProblemStrategy;
@@ -377,13 +378,16 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     }
 
     @Override
-    public Problem getOtherOJProblemInfo(String OJName, String problemId, String author) throws Exception {
+    public ProblemStrategy.RemoteProblemInfo getOtherOJProblemInfo(String OJName, String problemId, String author) throws Exception {
 
         ProblemStrategy problemStrategy;
 
         switch (OJName) {
             case "HDU":
                 problemStrategy = new HDUProblemStrategy();
+                break;
+            case "CF":
+                problemStrategy = new CFProblemStrategy();
                 break;
             default:
                 throw new Exception("未知的OJ的名字，暂时不支持！");
@@ -394,7 +398,10 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     }
 
     @Override
-    public boolean adminAddOtherOJProblem(Problem problem, String OJName) {
+    @Transactional
+    public boolean adminAddOtherOJProblem(ProblemStrategy.RemoteProblemInfo remoteProblemInfo, String OJName) {
+
+        Problem problem = remoteProblemInfo.getProblem();
         boolean addProblemResult = problemMapper.insert(problem) == 1;
         // 为新的其它oj题目添加对应的language
         QueryWrapper<Language> languageQueryWrapper = new QueryWrapper<>();
@@ -410,16 +417,32 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         // 为新的题目初始化problem_count表
         boolean initProblemCountResult = problemCountService.save(new ProblemCount().setPid(problem.getId()));
 
-        QueryWrapper<Tag> tagQueryWrapper = new QueryWrapper<>();
-        tagQueryWrapper.eq("name", OJName);
-        Tag OJNameTag = tagService.getOne(tagQueryWrapper, false);
-        if (OJNameTag == null) {
-            OJNameTag = new Tag();
-            OJNameTag.setName(OJName);
-            tagService.saveOrUpdate(OJNameTag);
+        boolean addProblemTagResult = true;
+        List<Tag> addTagList = remoteProblemInfo.getTagList();
+        if (addTagList != null && addTagList.size() > 0) {
+            List<Tag> tagList = tagService.list();
+            // 已存在的tag不进行添加
+            for (Tag hasTag:tagList){
+                addTagList.removeIf(newTag -> newTag.getName().equals(hasTag.getName()));
+            }
+            tagService.saveOrUpdateBatch(addTagList);
+            List<ProblemTag> problemTagList = new LinkedList<>();
+            for (Tag tmp : remoteProblemInfo.getTagList()) {
+                problemTagList.add(new ProblemTag().setTid(tmp.getId()).setPid(problem.getId()));
+            }
+            addProblemTagResult = problemTagService.saveOrUpdateBatch(problemTagList);
+        } else {
+            QueryWrapper<Tag> tagQueryWrapper = new QueryWrapper<>();
+            tagQueryWrapper.eq("name", OJName);
+            Tag OJNameTag = tagService.getOne(tagQueryWrapper, false);
+            if (OJNameTag == null) {
+                OJNameTag = new Tag();
+                OJNameTag.setName(OJName);
+                tagService.saveOrUpdate(OJNameTag);
+            }
+            addProblemTagResult = problemTagService.saveOrUpdate(new ProblemTag().setTid(OJNameTag.getId())
+                    .setPid(problem.getId()));
         }
-        boolean addProblemTagResult = problemTagService.saveOrUpdate(new ProblemTag().setTid(OJNameTag.getId())
-                .setPid(problem.getId()));
 
         return addProblemResult && addProblemTagResult && addProblemLanguageResult && initProblemCountResult;
     }

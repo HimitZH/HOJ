@@ -80,8 +80,6 @@ export default {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  touch-action: none !important;
-  -ms-touch-action: none;
 }
 body {
   background-color: #eee !important;
@@ -281,5 +279,97 @@ a:hover {
 }
 .v-note-wrapper .v-note-panel {
   height: 460px !important;
+}
+
+.tex-formula {
+  font-family: times new roman, sans-serif;
+  vertical-align: middle;
+  margin: 0;
+  border: medium none;
+  position: relative;
+  bottom: 2px;
+}
+
+.tex-span {
+  font-size: 125%;
+  font-family: times new roman, sans-serif;
+  white-space: nowrap;
+}
+
+.tex-font-size-tiny {
+  font-size: 70%;
+}
+
+.tex-font-size-script {
+  font-size: 75%;
+}
+
+.tex-font-size-footnotes {
+  font-size: 85%;
+}
+
+.tex-font-size-small {
+  font-size: 85%;
+}
+
+.tex-font-size-normal {
+  font-size: 100%;
+}
+
+.tex-font-size-large-1 {
+  font-size: 115%;
+}
+
+.tex-font-size-large-2 {
+  font-size: 130%;
+}
+
+.tex-font-size-large-3 {
+  font-size: 145%;
+}
+
+.tex-font-size-huge-1 {
+  font-size: 175%;
+}
+
+.tex-font-size-huge-2 {
+  font-size: 200%;
+}
+
+.tex-font-style-sf {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.tex-font-style-tt {
+  font-size: 110%;
+  font-family: courier new, monospace;
+}
+
+.tex-font-style-bf {
+  font-weight: bold;
+}
+
+.tex-font-style-it {
+  font-style: italic;
+}
+
+.tex-font-style-sl {
+  font-style: italic;
+}
+
+.tex-font-style-sc {
+  text-transform: uppercase;
+}
+
+.tex-font-style-striked {
+  text-decoration: line-through;
+}
+
+.tex-font-style-underline {
+  text-decoration: underline;
+}
+
+.tex-graphics {
+  display: block;
 }
 </style>

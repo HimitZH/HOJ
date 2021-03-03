@@ -1,6 +1,7 @@
 package top.hcode.hoj.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import top.hcode.hoj.crawler.problem.ProblemStrategy;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.vo.ProblemVo;
 import top.hcode.hoj.pojo.entity.Problem;
@@ -25,7 +26,7 @@ public interface ProblemService extends IService<Problem> {
 
     boolean adminAddProblem(ProblemDto problemDto);
 
-    Problem getOtherOJProblemInfo(String OJName, String problemId, String author) throws Exception;
+    ProblemStrategy.RemoteProblemInfo getOtherOJProblemInfo(String OJName, String problemId, String author) throws Exception;
 
-    boolean adminAddOtherOJProblem(Problem problem,String OJName);
+    boolean adminAddOtherOJProblem(ProblemStrategy.RemoteProblemInfo remoteProblemInfo,String OJName);
 }

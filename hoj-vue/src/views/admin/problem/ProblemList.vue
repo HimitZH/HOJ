@@ -151,9 +151,9 @@
         <el-form-item label="Remote OJ">
           <el-select v-model="otherOJName" size="small">
             <el-option
-              :label="name"
-              :value="name"
-              v-for="(name, index) in REMOTE_OJ"
+              :label="remoteOj.name"
+              :value="remoteOj.key"
+              v-for="(remoteOj, index) in REMOTE_OJ"
               :key="index"
             ></el-option>
           </el-select>
@@ -204,7 +204,7 @@ export default {
       addRemoteOJproblemLoading: false,
       otherOJName: 'HDU',
       otherOJProblemId: '',
-      REMOTE_OJ: [],
+      REMOTE_OJ: {},
     };
   },
   mounted() {

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.crawler.problem.ProblemStrategy;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
@@ -40,9 +41,6 @@ public class AdminProblemController {
 
     @Autowired
     private ProblemCaseServiceImpl problemCaseService;
-
-    @Autowired
-    private ContestProblemServiceImpl contestProblemService;
 
     @Autowired
     private ToJudgeService toJudgeService;
@@ -186,6 +184,7 @@ public class AdminProblemController {
     @GetMapping("/import-remote-oj-problem")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @Transactional
     public CommonResult importRemoteOJProblem(@RequestParam("name") String name,
                                               @RequestParam("problemId") String problemId,
                                               HttpServletRequest request) {
@@ -200,14 +199,14 @@ public class AdminProblemController {
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
         try {
-            Problem otherOJProblemInfo = problemService.getOtherOJProblemInfo(name.toUpperCase(), problemId, userRolesVo.getUsername());
+            ProblemStrategy.RemoteProblemInfo otherOJProblemInfo = problemService.getOtherOJProblemInfo(name.toUpperCase(), problemId, userRolesVo.getUsername());
             if (otherOJProblemInfo != null) {
                 boolean result = problemService.adminAddOtherOJProblem(otherOJProblemInfo, name);
                 if (!result) {
                     return CommonResult.errorResponse("导入新题目失败！请重新尝试！");
                 }
             } else {
-                return CommonResult.errorResponse("导入新题目失败！原因：获取该OJ的题目数据失败！");
+                return CommonResult.errorResponse("导入新题目失败！原因：获取该OJ的题目数据失败！可能是链接超时！");
             }
         } catch (Exception e) {
             return CommonResult.errorResponse(e.getMessage());
