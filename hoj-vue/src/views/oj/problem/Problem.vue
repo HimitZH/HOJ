@@ -8,7 +8,10 @@
             <div slot="header" class="panel-title">
               <span>{{ problemData.problem.title }}</span
               ><br />
-              <span
+              <span v-if="contestID && !contestEnded"
+                ><el-tag effect="plain" size="small">比赛题目</el-tag></span
+              >
+              <span v-else-if="problemData.tags.length > 0"
                 ><el-tag
                   v-for="tag in problemData.tags"
                   :key="tag"
@@ -17,6 +20,9 @@
                   style="margin-right:10px;"
                   >{{ tag }}</el-tag
                 ></span
+              >
+              <span v-else-if="problemData.tags.length == 0"
+                ><el-tag effect="plain" size="small">暂无标签</el-tag></span
               >
               <div class="problem-menu">
                 <span>
@@ -129,7 +135,7 @@
                 </el-card>
               </div>
 
-              <div v-if="problemData.problem.source">
+              <div v-if="problemData.problem.source && !contestID">
                 <p class="title">Source</p>
                 <p class="content" v-html="problemData.problem.source"></p>
               </div>

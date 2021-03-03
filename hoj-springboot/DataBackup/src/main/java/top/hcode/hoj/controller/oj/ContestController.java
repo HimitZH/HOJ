@@ -253,21 +253,27 @@ public class ContestController {
         }
 
         //查询题目详情，题目标签，题目语言，题目做题情况
+
         Problem problem = problemService.getById(contestProblem.getPid());
 
-        QueryWrapper<ProblemTag> problemTagQueryWrapper = new QueryWrapper<>();
-        problemTagQueryWrapper.eq("pid", contestProblem.getPid());
-        // 获取该题号对应的标签id
-        List<Long> tidList = new LinkedList<>();
-        problemTagService.list(problemTagQueryWrapper).forEach(problemTag -> {
-            tidList.add(problemTag.getTid());
-        });
         List<String> tagsStr = new LinkedList<>();
-        if (tidList.size() != 0) {
-            tagService.listByIds(tidList).forEach(tag -> {
-                tagsStr.add(tag.getName());
+        // 比赛结束后才开放标签和source
+        if (contest.getStatus().intValue() != Constants.Contest.STATUS_ENDED.getCode()) {
+            problem.setSource(null);
+            QueryWrapper<ProblemTag> problemTagQueryWrapper = new QueryWrapper<>();
+            problemTagQueryWrapper.eq("pid", contestProblem.getPid());
+            // 获取该题号对应的标签id
+            List<Long> tidList = new LinkedList<>();
+            problemTagService.list(problemTagQueryWrapper).forEach(problemTag -> {
+                tidList.add(problemTag.getTid());
             });
+            if (tidList.size() != 0) {
+                tagService.listByIds(tidList).forEach(tag -> {
+                    tagsStr.add(tag.getName());
+                });
+            }
         }
+
         // 获取题目提交的代码支持的语言
         List<String> languagesStr = new LinkedList<>();
         QueryWrapper<ProblemLanguage> problemLanguageQueryWrapper = new QueryWrapper<>();

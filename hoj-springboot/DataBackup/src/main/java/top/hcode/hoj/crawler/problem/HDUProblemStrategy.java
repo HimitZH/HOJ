@@ -4,6 +4,7 @@ import cn.hutool.core.util.ReUtil;
 import org.jsoup.Connection;
 import org.jsoup.helper.Validate;
 import org.jsoup.nodes.Document;
+import org.springframework.util.Assert;
 import top.hcode.hoj.pojo.entity.Problem;
 import top.hcode.hoj.utils.JsoupUtils;
 
@@ -24,9 +25,9 @@ public class HDUProblemStrategy extends ProblemStrategy {
      * @throws Exception
      */
     @Override
-    public Problem getProblemInfo(String problemId, String author) throws Exception {
+    public RemoteProblemInfo getProblemInfo(String problemId, String author) throws Exception {
         // 验证题号是否符合规范
-        Validate.isTrue(problemId.matches("[1-9]\\d*"));
+        Assert.isTrue(problemId.matches("[1-9]\\d*"),"HDU题号格式错误！");
         Problem info = new Problem();
         String url = HOST + String.format(PROBLEM_URL, problemId);
         Connection connection = JsoupUtils.getConnectionFromUrl(url, null, null);
@@ -52,7 +53,8 @@ public class HDUProblemStrategy extends ProblemStrategy {
                 .setAuthor(author)
                 .setOpenCaseResult(false)
                 .setIsRemoveEndBlank(false)
-                .setDifficulty(0); // 默认为简单
-        return info;
+                .setDifficulty(1); // 默认为简单
+
+        return new RemoteProblemInfo().setProblem(info).setTagList(null);
     }
 }

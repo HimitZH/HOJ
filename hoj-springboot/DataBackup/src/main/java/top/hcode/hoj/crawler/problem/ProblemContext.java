@@ -18,11 +18,10 @@ public class ProblemContext {
     }
 
     //上下文接口
-    public Problem getProblemInfo(String problemId, String author) {
-        Problem problem;
+    public ProblemStrategy.RemoteProblemInfo getProblemInfo(String problemId, String author) {
+
         try {
-            problem = problemStrategy.getProblemInfo(problemId, author);
-            return problem;
+            return problemStrategy.getProblemInfo(problemId, author);
         } catch (Exception e) {
             log.error("获取题目详情失败---------------->{}", e.getMessage());
         }
