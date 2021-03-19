@@ -1,8 +1,10 @@
 package top.hcode.hoj;
 
+import org.jsoup.Connection;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import top.hcode.hoj.remoteJudge.task.Impl.HduJudge;
+import top.hcode.hoj.util.JsoupUtils;
 
 import java.io.IOException;
 import java.util.Map;
@@ -36,5 +38,14 @@ public class JudgeServerApplicationTests {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    public static final String HOST = "https://codeforces.com";
+
+    @Test
+    public void test2() throws IOException {
+        Connection connection = JsoupUtils.getConnectionFromUrl(HOST, null, null);
+        Connection.Response response = JsoupUtils.getResponse(connection, null);
+        Map<String, String> cookies = response.cookies();
+        System.out.println(cookies);
     }
 }
