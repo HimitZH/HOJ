@@ -36,7 +36,8 @@ public class HduJudge implements RemoteJudgeStrategy {
         if (problemId == null || userCode == null) {
             return -1L;
         }
-        Map<String, String> loginCookie = getLoginCookie(username, password);
+        Map<String, Object> loginUtils = getLoginUtils(username, password);
+        Map<String, String> loginCookie = (Map<String, String>) loginUtils.get("cookie");
         Connection connection = JsoupUtils.getConnectionFromUrl(HOST + SUBMIT_URL, null, loginCookie);
         Connection.Response response = JsoupUtils.postResponse(connection, MapUtil
                 .builder(new HashMap<String, String>())
@@ -90,13 +91,13 @@ public class HduJudge implements RemoteJudgeStrategy {
 
 
     @Override
-    public Map<String, String> getLoginCookie(String username, String password) throws Exception {
+    public Map<String, Object> getLoginUtils(String username, String password) throws Exception {
         Connection connection = JsoupUtils.getConnectionFromUrl(HOST + LOGIN_URL, null, null);
         Connection.Response response = JsoupUtils.postResponse(connection, MapUtil
                 .builder(new HashMap<String, String>())
                 .put("username", username)
                 .put("userpass", password).map());
-        return response.cookies();
+        return MapUtil.builder(new HashMap<String, Object>()).put("cookie", response.cookies()).map();
     }
 
     @Override
