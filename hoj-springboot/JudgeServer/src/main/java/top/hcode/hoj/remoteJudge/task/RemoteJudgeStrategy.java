@@ -22,7 +22,7 @@ public interface RemoteJudgeStrategy {
      */
     Map<String, Object> result(Long submitId) throws Exception;
 
-    Map<String, String> getLoginCookie(String username, String password) throws Exception;
+    Map<String, Object> getLoginUtils(String username, String password) throws Exception;
 
     String getLanguage(String language);
 
