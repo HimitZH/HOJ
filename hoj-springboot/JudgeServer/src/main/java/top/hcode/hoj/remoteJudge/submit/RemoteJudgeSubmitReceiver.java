@@ -18,6 +18,7 @@ import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.RedisUtils;
 
 import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -41,7 +42,7 @@ public class RemoteJudgeSubmitReceiver implements MessageListener {
             return;
         }
         JSONObject task = JSONUtil.parseObj(source);
-        Long remotePid = task.getLong("remotePid");
+        String remotePid = task.getStr("remotePid");
         Long submitId = task.getLong("submitId");
         String uid = task.getStr("uid");
         Long cid = task.getLong("cid");
@@ -57,11 +58,11 @@ public class RemoteJudgeSubmitReceiver implements MessageListener {
             log.error("暂不支持该{}题库---------------->请求失败", remoteJudge);
             return;
         }
-        Long resultSubmitId = -1L;
+        Map<String, Object> submitResult = null;
         try {
-            resultSubmitId = remoteJudgeStrategy.submit(username, password, remotePid, language, userCode);
+            submitResult = remoteJudgeStrategy.submit(username, password, remotePid, language, userCode);
         } catch (Exception e) {
-            log.error("网络错误，提交失败");
+            e.printStackTrace();
         }
 
         // 提交成功与失败都要把账号放回list
@@ -71,7 +72,7 @@ public class RemoteJudgeSubmitReceiver implements MessageListener {
         redisUtils.llPush(Constants.RemoteJudge.getListNameByOJName(remoteJudge), JSONUtil.toJsonStr(account));
 
         // TODO 提交失败 前端手动按按钮再次提交 修改状态 STATUS_SUBMITTED_FAILED
-        if (resultSubmitId < 0) {
+        if (submitResult == null || (Long) submitResult.getOrDefault("runId", -1L) == -1L) {
             // 更新此次提交状态为提交失败！
             UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
             judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
@@ -85,7 +86,9 @@ public class RemoteJudgeSubmitReceiver implements MessageListener {
         // 提交成功顺便更新状态为-->STATUS_JUDGING 判题中...
         judgeService.updateById(new Judge().setSubmitId(submitId).setStatus(Constants.Judge.STATUS_JUDGING.getStatus()));
         try {
-            remoteJudgeResultDispatcher.sendTask(remoteJudge, submitId, uid, cid, pid, resultSubmitId);
+            remoteJudgeResultDispatcher.sendTask(remoteJudge, username, submitId, uid, cid, pid,
+                    (Long) submitResult.get("runId"),(String) submitResult.get("token"),
+                    (HashMap<String, String>)submitResult.get("cookies"));
         } catch (Exception e) {
             log.error("调用redis消息发布异常,此次远程查询结果任务判为系统错误--------------->{}", e.getMessage());
         }

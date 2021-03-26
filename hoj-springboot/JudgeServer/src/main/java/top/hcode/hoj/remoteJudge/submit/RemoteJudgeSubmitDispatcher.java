@@ -17,7 +17,8 @@ public class RemoteJudgeSubmitDispatcher {
     private RedisUtils redisUtils;
 
 
-    public void sendTask(String username, String password, String remoteJudge, Long remotePid, Long submitId, String uid, Long cid, Long pid, String language, String userCode) throws Exception {
+    public void sendTask(String username, String password, String remoteJudge, String remotePid, Long submitId,
+                         String uid, Long cid, Long pid, String language, String userCode) throws Exception {
         JSONObject task = new JSONObject();
         task.set("submitId", submitId);
         task.set("uid", uid);

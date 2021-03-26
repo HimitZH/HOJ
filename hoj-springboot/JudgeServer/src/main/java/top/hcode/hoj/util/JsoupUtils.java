@@ -1,7 +1,5 @@
 package top.hcode.hoj.util;
 
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,8 +22,8 @@ public class JsoupUtils {
         Connection connection = Jsoup.connect(url);
         // 设置用户代理
         connection.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36");
-        // 设置超时时间10秒
-        connection.timeout(10000);
+        // 设置超时时间40秒
+        connection.timeout(40000);
         // 设置cookie，保存信息
         if (cookies != null)
             connection.cookies(cookies);

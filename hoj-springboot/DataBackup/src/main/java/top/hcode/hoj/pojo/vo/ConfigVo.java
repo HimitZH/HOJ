@@ -98,4 +98,10 @@ public class ConfigVo {
     @Value("${hoj.hdu.account.password}")
     private List<String> hduPasswordList;
 
+    @Value("${hoj.cf.account.username}")
+    private List<String> cfUsernameList;
+
+    @Value("${hoj.cf.account.password}")
+    private List<String> cfPasswordList;
+
 }

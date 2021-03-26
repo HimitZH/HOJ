@@ -225,7 +225,7 @@ export default {
   margin-left: 5px;
 }
 .header .adjust {
-  width: 130px;
+  width: 155px;
   margin-left: 5px;
 }
 .select-row {

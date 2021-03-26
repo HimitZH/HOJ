@@ -10,6 +10,7 @@ import top.hcode.hoj.utils.JsoupUtils;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Stack;
 import java.util.regex.Pattern;
 
 /**
@@ -43,6 +44,7 @@ public class CFProblemStrategy extends ProblemStrategy {
 
         info.setTitle(ReUtil.get("<div class=\"title\">\\s*" + problemNum + "\\. ([\\s\\S]*?)</div>", html, 1).trim());
 
+
         info.setTimeLimit(1000 * Integer.parseInt(ReUtil.get("</div>([\\d\\.]+) (seconds?|s)\\s*</div>", html, 1)));
 
         info.setMemoryLimit(Integer.parseInt(ReUtil.get("</div>(\\d+) (megabytes|MB)\\s*</div>", html, 1)));
@@ -55,18 +57,25 @@ public class CFProblemStrategy extends ProblemStrategy {
 
         info.setDescription(tmpDesc.replaceAll("\\$\\$\\$","\\$").replaceAll("src=\"../../", "src=\"" + HOST + "/"));
 
+
+
         info.setInput(ReUtil.get("<div class=\"section-title\">\\s*Input\\s*</div>([\\s\\S]*?)</div><div class=\"output-specification\">", html, 1).replaceAll("\\$\\$\\$","\\$"));
 
         info.setOutput(ReUtil.get("<div class=\"section-title\">\\s*Output\\s*</div>([\\s\\S]*?)</div><div class=\"sample-tests\">", html, 1).replaceAll("\\$\\$\\$","\\$"));
 
         StringBuilder sb = new StringBuilder("<input>");
-        sb.append(ReUtil.get("<div class=\"sample-test\"><div class=\"input\"><div class=\"title\">Input</div><pre>([\\s\\S]*?)</pre></div>", html, 1));
+        sb.append(ReUtil.get("<div class=\"sample-test\"><div class=\"input\"><div class=\"title\">Input</div><pre>([\\s\\S]*?)</pre></div>", html, 1).replaceAll("<br>", ""));
         sb.append("</input><output>");
-        sb.append(ReUtil.get("<div class=\"output\"><div class=\"title\">Output</div><pre>([\\s\\S]*?)</pre></div></div>", html, 1)).append("</output>");
+        sb.append(ReUtil.get("<div class=\"output\"><div class=\"title\">Output</div><pre>([\\s\\S]*?)</pre></div></div>", html, 1).replaceAll("<br>", "")).append("</output>");
         info.setExamples(sb.toString());
 
-        info.setHint(ReUtil.get("<div class=\"section-title\">\\s*Note\\s*</div>([\\s\\S]*?)</div></div>", html, 1).replaceAll("\\$\\$\\$","\\$"));
+        String tmpHint = ReUtil.get("<div class=\"section-title\">\\s*Note\\s*</div>([\\s\\S]*?)</div></div>", html, 1);
+        if (tmpHint!=null){
+            info.setHint(tmpHint.replaceAll("\\$\\$\\$","\\$"));
+        }
+
         info.setIsRemote(true);
+
         info.setSource(String.format("<p>Problem：<a style='color:#1A5CC8' href='https://codeforces.com/problemset/problem/%s/%s'>%s</a></p><p>" +
                         "Contest：" + ReUtil.get("(<a[^<>]+/contest/\\d+\">.+?</a>)", html, 1).replace("/contest", HOST + "/contest")
                         .replace("color: black", "color: #009688;") + "</p>",
@@ -80,7 +89,6 @@ public class CFProblemStrategy extends ProblemStrategy {
                 .setDifficulty(1); // 默认为中等
 
         List<String> all = ReUtil.findAll(Pattern.compile("<span class=\"tag-box\" style=\"font-size:1\\.2rem;\" title=\"[\\s\\S]*?\">([\\s\\S]*?)</span>"), html, 1);
-
         List<Tag> tagList = new LinkedList<>();
         for (String tmp:all){
             tagList.add(new Tag().setName(tmp.trim()));

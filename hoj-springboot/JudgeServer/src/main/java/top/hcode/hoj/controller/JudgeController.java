@@ -126,7 +126,7 @@ public class JudgeController {
         String username = toJudge.getUsername();
         String password = toJudge.getPassword();
         String[] source = toJudge.getRemoteJudge().split("-");
-        Long remotePid = Long.valueOf(source[1]);
+        String remotePid = source[1];
         String remoteJudge = source[0];
         String userCode = toJudge.getJudge().getCode();
         String language = toJudge.getJudge().getLanguage();

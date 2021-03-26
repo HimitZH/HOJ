@@ -84,7 +84,11 @@ public class Constants {
 
         HDU_JUDGE("HDU"),
 
-        HDU_REMOTE_JUDGE_ACCOUNT("Hdu Remote Judge Account");
+        CF_JUDGE("CF"),
+
+        HDU_REMOTE_JUDGE_ACCOUNT("Hdu Remote Judge Account"),
+
+        CF_REMOTE_JUDGE_ACCOUNT("Codeforces Remote Judge Account");
 
         private String name;
 
@@ -107,6 +111,8 @@ public class Constants {
             switch (judgeName) {
                 case "HDU":
                     return RemoteJudge.HDU_REMOTE_JUDGE_ACCOUNT.getName();
+                case "CF":
+                    return RemoteJudge.CF_REMOTE_JUDGE_ACCOUNT.getName();
             }
             return null;
         }
