@@ -169,7 +169,7 @@
             </template>
           </vxe-table-column>
 
-          <vxe-table-column field="language" title="Language" min-width="100">
+          <vxe-table-column field="language" title="Language" min-width="130">
             <template v-slot="{ row }">
               <span
                 v-if="!row.share && row.uid != userInfo.uid && !isAdminRole"

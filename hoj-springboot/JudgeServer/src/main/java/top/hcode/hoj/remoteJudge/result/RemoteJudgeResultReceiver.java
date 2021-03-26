@@ -69,9 +69,10 @@ public class RemoteJudgeResultReceiver implements MessageListener {
             judge.setSubmitId(submitId);
             Integer status = (Integer) result.getOrDefault("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
             // TODO 如果结果没出来，重新放入队列并更新状态为Waiting
-            if (status.equals(Constants.Judge.STATUS_PENDING.getStatus())) {
+            if (status.intValue() == Constants.Judge.STATUS_PENDING.getStatus() ||
+                    status.intValue() == Constants.Judge.STATUS_JUDGING.getStatus()) {
                 try {
-                    TimeUnit.SECONDS.sleep(1);
+                    TimeUnit.SECONDS.sleep(2);
                     remoteJudgeResultDispatcher.sendTask(remoteJudge, username, submitId, uid, cid, pid, resultSubmitId, token, cookies);
                 } catch (Exception e) {
                     log.error("重新查询结果任务出错------{}", e.getMessage());
@@ -93,7 +94,7 @@ public class RemoteJudgeResultReceiver implements MessageListener {
             } else if (status.intValue() == Constants.Judge.STATUS_SYSTEM_ERROR.getStatus()) {
                 judge.setErrorMessage("There is something wrong with the " + remoteJudge + ", please try again later");
             }
-//             写回数据库
+            // 写回数据库
             judgeService.updateById(judge);
 
             /**
@@ -103,7 +104,7 @@ public class RemoteJudgeResultReceiver implements MessageListener {
             judgeService.updateOtherTable(submitId, status, cid, uid, pid, null);
 
         } catch (Exception e) {
-            log.error("获取结果出错------------>{}", e.getMessage());
+            log.error("获取结果出错------------>{}", e.getLocalizedMessage());
             // 更新此次提交状态为提交失败！
             UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
             judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())

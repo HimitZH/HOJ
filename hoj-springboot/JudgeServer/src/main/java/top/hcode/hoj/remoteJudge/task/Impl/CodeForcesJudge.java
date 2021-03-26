@@ -3,6 +3,7 @@ package top.hcode.hoj.remoteJudge.task.Impl;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.UnicodeUtil;
 import cn.hutool.core.util.ReUtil;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -122,44 +123,49 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
     @Override
     public Map<String, Object> result(Long submitId, String username, String token, HashMap<String, String> cookies) throws Exception {
         String url = HOST + String.format(SUBMISSION_RESULT_URL, username);
-        Connection connection = JsoupUtils.getConnectionFromUrl(url, headers, null);
+        Connection connection = JsoupUtils.getConnectionFromUrl(url, headers, cookies);
         connection.ignoreContentType(true);
         Connection.Response response = JsoupUtils.getResponse(connection, null);
-        Map<String, Object> json = (Map<String, Object>) JSONUtil.parseObj(response.body());
-        List<Map<String, Object>> results = (List<Map<String, Object>>) json.get("result");
-        for (Map<String, Object> result : results) {
+
+        JSONObject jsonObject = JSONUtil.parseObj(response.body());
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("status", Constants.Judge.STATUS_JUDGING.getStatus());
+
+        JSONArray results = (JSONArray) jsonObject.get("result");
+
+        for (Object tmp : results) {
+            JSONObject result = (JSONObject) tmp;
             long runId = Long.parseLong(result.get("id").toString());
-            if (runId != submitId) {
-                continue;
+            if (runId == submitId) {
+                String verdict = (String) result.get("verdict");
+                Constants.Judge statusType = statusMap.get(verdict);
+                if (statusType == Constants.Judge.STATUS_JUDGING) {
+                    return MapUtil.builder(new HashMap<String, Object>())
+                            .put("status", statusType.getStatus()).build();
+                }
+                resultMap.put("time", result.get("timeConsumedMillis"));
+                resultMap.put("memory", result.get("memoryConsumedBytes"));
+                Constants.Judge resultStatus = statusMap.get(verdict);
+                if (resultStatus == Constants.Judge.STATUS_COMPILE_ERROR) {
+
+                    Connection CEInfoConnection = JsoupUtils.getConnectionFromUrl(HOST + CE_INFO_URL, headers, cookies);
+                    CEInfoConnection.ignoreContentType(true);
+
+                    Connection.Response CEInfoResponse = JsoupUtils.postResponse(CEInfoConnection, MapUtil
+                            .builder(new HashMap<String, String>())
+                            .put("csrf_token", token)
+                            .put("submissionId", submitId.toString()).map());
+
+
+                    resultMap.put("CEInfo", UnicodeUtil.toString(CEInfoResponse.body()).replaceAll("(\\\\r)?\\\\n", "\n")
+                            .replaceAll("\\\\\\\\", "\\\\"));
+                }
+                resultMap.put("status", resultStatus.getStatus());
+                return resultMap;
             }
-            String verdict = (String) result.get("verdict");
-            Constants.Judge statusType = statusMap.get(verdict);
-            if (statusType == Constants.Judge.STATUS_JUDGING) {
-                return MapUtil.builder(new HashMap<String, Object>())
-                        .put("status", statusType.getStatus()).build();
-            }
-            Map<String, Object> resultMap = new HashMap<>();
-            resultMap.put("time", result.get("timeConsumedMillis"));
-            resultMap.put("memory", result.get("memoryConsumedBytes"));
-            Constants.Judge resultStatus = statusMap.get(verdict);
-            if (resultStatus == Constants.Judge.STATUS_COMPILE_ERROR) {
-
-                Connection CEInfoConnection = JsoupUtils.getConnectionFromUrl(HOST + CE_INFO_URL, headers, cookies);
-                CEInfoConnection.ignoreContentType(true);
-
-                Connection.Response CEInfoResponse = JsoupUtils.postResponse(CEInfoConnection, MapUtil
-                        .builder(new HashMap<String, String>())
-                        .put("csrf_token", token)
-                        .put("submissionId", submitId.toString()).map());
-
-
-                resultMap.put("CEInfo", UnicodeUtil.toString(CEInfoResponse.body()).replaceAll("(\\\\r)?\\\\n", "\n")
-                        .replaceAll("\\\\\\\\", "\\\\"));
-            }
-            resultMap.put("status", resultStatus.getStatus());
-            return resultMap;
         }
-        return null;
+        return resultMap;
     }
 
     @Override

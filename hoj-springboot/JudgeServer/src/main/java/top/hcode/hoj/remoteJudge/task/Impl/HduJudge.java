@@ -43,9 +43,10 @@ public class HduJudge implements RemoteJudgeStrategy {
                 .builder(new HashMap<String, String>())
                 .put("check", "0")
                 .put("language", getLanguage(language))
-                .put("problemid", String.valueOf(problemId))
+                .put("problemid", problemId)
                 .put("usercode", userCode)
                 .map());
+
         if (response.statusCode() != 200) {
             log.error("进行题目提交时发生错误：提交题目失败，" + HduJudge.class.getName() + "，题号:" + problemId);
             return null;

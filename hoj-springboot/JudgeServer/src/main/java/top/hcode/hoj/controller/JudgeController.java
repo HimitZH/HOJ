@@ -119,6 +119,11 @@ public class JudgeController {
         if (!toJudge.getToken().equals(judgeToken)) {
             return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", CommonResult.STATUS_ACCESS_DENIED);
         }
+
+        if (toJudge.getJudge() == null) {
+            return CommonResult.errorResponse("请求参数不能为空！");
+        }
+
         Long submitId = toJudge.getJudge().getSubmitId();
         String uid = toJudge.getJudge().getUid();
         Long cid = toJudge.getJudge().getCid();
@@ -136,13 +141,11 @@ public class JudgeController {
             remoteJudgeSubmitDispatcher.sendTask(username, password, remoteJudge, remotePid, submitId, uid, cid, pid, language, userCode);
             return CommonResult.successResponse(null, "提交成功");
         } catch (Exception e) {
-
             // 将使用的账号放回对应列表
             JSONObject account = new JSONObject();
             account.set("username", username);
             account.set("password", password);
             redisUtils.llPush(Constants.RemoteJudge.getListNameByOJName(remoteJudge), JSONUtil.toJsonStr(account));
-
             Judge judge = new Judge();
             judge.setSubmitId(submitId)
                     .setStatus(Constants.Judge.STATUS_SYSTEM_ERROR.getStatus())
