@@ -419,15 +419,27 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
         boolean addProblemTagResult = true;
         List<Tag> addTagList = remoteProblemInfo.getTagList();
+
+        List<Tag> needAddTagList = new LinkedList<>();
+
+        HashMap<String, Tag> tagFlag = new HashMap<>();
+
         if (addTagList != null && addTagList.size() > 0) {
             List<Tag> tagList = tagService.list();
             // 已存在的tag不进行添加
-            for (Tag hasTag:tagList){
-                addTagList.removeIf(newTag -> newTag.getName().equals(hasTag.getName()));
+            for (Tag hasTag : tagList) {
+                tagFlag.put(hasTag.getName(), hasTag);
             }
-            tagService.saveOrUpdateBatch(addTagList);
+            for (Tag tmp : addTagList) {
+                if (tagFlag.get(tmp.getName()) == null){
+                    needAddTagList.add(tmp);
+                }else{
+                    needAddTagList.add(tagFlag.get(tmp.getName()));
+                }
+            }
+            tagService.saveOrUpdateBatch(needAddTagList);
             List<ProblemTag> problemTagList = new LinkedList<>();
-            for (Tag tmp : remoteProblemInfo.getTagList()) {
+            for (Tag tmp : needAddTagList) {
                 problemTagList.add(new ProblemTag().setTid(tmp.getId()).setPid(problem.getId()));
             }
             addProblemTagResult = problemTagService.saveOrUpdateBatch(problemTagList);

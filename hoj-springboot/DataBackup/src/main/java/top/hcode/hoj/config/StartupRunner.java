@@ -36,7 +36,6 @@ public class StartupRunner implements CommandLineRunner {
         List<String> hduUsernameList = configVo.getHduUsernameList();
         List<String> hduPasswordList = configVo.getHduPasswordList();
         for (int i = 0; i < hduUsernameList.size(); i++) {
-            HashMap<String, Object> tmp = new HashMap<>();
             JSONObject jsonObject = new JSONObject();
             jsonObject.set("username", hduUsernameList.get(i));
             jsonObject.set("password", hduPasswordList.get(i));
@@ -46,5 +45,17 @@ public class StartupRunner implements CommandLineRunner {
             log.error("HDU判题账号注入Redis的List异常------------>{}", "请检查配置文件，然后重新启动！");
         }
 
+        redisUtils.del(Constants.Judge.STATUS_CF_REMOTE_JUDGE_ACCOUNT.getName());
+        List<String> cfUsernameList = configVo.getCfUsernameList();
+        List<String> cfPasswordList = configVo.getCfPasswordList();
+        for (int i = 0; i < cfUsernameList.size(); i++) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.set("username", cfUsernameList.get(i));
+            jsonObject.set("password", cfPasswordList.get(i));
+            redisUtils.llPush(Constants.Judge.STATUS_CF_REMOTE_JUDGE_ACCOUNT.getName(), JSONUtil.toJsonStr(jsonObject));
+        }
+        if (redisUtils.lGetListSize(Constants.Judge.STATUS_CF_REMOTE_JUDGE_ACCOUNT.getName()) != cfUsernameList.size()) {
+            log.error("CF判题账号注入Redis的List异常------------>{}", "请检查配置文件，然后重新启动！");
+        }
     }
 }

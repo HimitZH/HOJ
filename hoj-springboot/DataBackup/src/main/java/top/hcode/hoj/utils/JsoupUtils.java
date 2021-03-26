@@ -36,8 +36,8 @@ public class JsoupUtils {
         Connection connection = Jsoup.connect(url);
         // 设置用户代理
         connection.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36");
-        // 设置超时时间15秒
-        connection.timeout(15000);
+        // 设置超时时间30秒
+        connection.timeout(30000);
         // 设置请求头
         if (headers != null) {
             connection.headers(headers);

@@ -18,11 +18,11 @@ import top.hcode.hoj.pojo.entity.ToJudge;
 public interface ToJudgeService {
 
     @PostMapping(value = "/judge")
-    public CommonResult submitProblemJudge(@RequestBody ToJudge toJudge);
+    public CommonResult submitProblemJudge(ToJudge toJudge);
 
     @PostMapping(value = "/compile-spj")
-    public CommonResult compileSpj(@RequestBody CompileSpj compileSpj);
+    public CommonResult compileSpj(CompileSpj compileSpj);
 
     @PostMapping(value = "/remote-judge")
-    public CommonResult remoteJudge(@RequestBody ToJudge toJudge);
+    public CommonResult remoteJudge(ToJudge toJudge);
 }

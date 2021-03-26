@@ -206,7 +206,7 @@ public class AdminProblemController {
                     return CommonResult.errorResponse("导入新题目失败！请重新尝试！");
                 }
             } else {
-                return CommonResult.errorResponse("导入新题目失败！原因：获取该OJ的题目数据失败！可能是链接超时！");
+                return CommonResult.errorResponse("导入新题目失败！原因：可能是与该OJ链接超时或题号格式错误！");
             }
         } catch (Exception e) {
             return CommonResult.errorResponse(e.getMessage());

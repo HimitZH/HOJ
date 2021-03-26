@@ -21,7 +21,7 @@ public class HduJudge implements RemoteJudgeStrategy {
     public static final String HOST = "http://acm.hdu.edu.cn";
     public static final String LOGIN_URL = "/userloginex.php?action=login";
     public static final String SUBMIT_URL = "/submit.php?action=submit";
-    public static final String STATUS_URL = "/status.php?user=%s&pid=%d";
+    public static final String STATUS_URL = "/status.php?user=%s&pid=%s";
     public static final String QUERY_URL = "/status.php?first=%d";
     public static final String ERROR_URL = "/viewerror.php?rid=%d";
 
@@ -32,9 +32,9 @@ public class HduJudge implements RemoteJudgeStrategy {
      * @return
      */
     @Override
-    public Long submit(String username, String password, Long problemId, String language, String userCode) throws Exception {
+    public Map<String, Object> submit(String username, String password, String problemId, String language, String userCode) throws Exception {
         if (problemId == null || userCode == null) {
-            return -1L;
+            return null;
         }
         Map<String, Object> loginUtils = getLoginUtils(username, password);
         Map<String, String> loginCookie = (Map<String, String>) loginUtils.get("cookie");
@@ -47,15 +47,20 @@ public class HduJudge implements RemoteJudgeStrategy {
                 .put("usercode", userCode)
                 .map());
         if (response.statusCode() != 200) {
-            log.error("提交题目失败");
-            return -1L;
+            log.error("进行题目提交时发生错误：提交题目失败，" + HduJudge.class.getName() + "，题号:" + problemId);
+            return null;
         }
         // 获取提交的题目id
-        return getMaxRunId(connection, username, problemId);
+        Long maxRunId = getMaxRunId(connection, username, problemId);
+        return MapUtil.builder(new HashMap<String, Object>())
+                .put("token", null)
+                .put("cookies", loginCookie)
+                .put("runId", maxRunId)
+                .map();
     }
 
     @Override
-    public Map<String, Object> result(Long submitId) throws Exception {
+    public Map<String, Object> result(Long submitId, String username, String token, HashMap<String, String> cookies) throws Exception {
         String url = HOST + String.format(QUERY_URL, submitId);
         Connection connection = JsoupUtils.getConnectionFromUrl(url, null, null);
         Connection.Response response = JsoupUtils.getResponse(connection, null);
@@ -124,7 +129,7 @@ public class HduJudge implements RemoteJudgeStrategy {
     }
 
 
-    public Long getMaxRunId(Connection connection, String userName, Long problemId) throws Exception {
+    public Long getMaxRunId(Connection connection, String userName, String problemId) throws Exception {
         String url = String.format(STATUS_URL, userName, problemId);
         connection.url(HOST + url);
         Connection.Response response = JsoupUtils.getResponse(connection, null);

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.RedisUtils;
 
+import java.util.HashMap;
+
 @Component
 @Slf4j
 public class RemoteJudgeResultDispatcher {
@@ -27,14 +29,19 @@ public class RemoteJudgeResultDispatcher {
      * @Return
      * @Since 2021/2/12
      */
-    public void sendTask(String remoteJudge, Long submitId, String uid, Long cid, Long pid, Long resultSubmitId) throws Exception {
+    public void sendTask(String remoteJudge,String username, Long submitId, String uid,
+                         Long cid, Long pid, Long resultSubmitId, String token,
+                         HashMap<String, String> cookies) throws Exception {
         JSONObject task = new JSONObject();
         task.set("submitId", submitId);
+        task.set("username", username);
         task.set("uid", uid);
         task.set("cid", cid);
         task.set("pid", pid);
         task.set("resultSubmitId", resultSubmitId);
         task.set("remoteJudge", remoteJudge);
+        task.set("token", token);
+        task.set("cookies", JSONUtil.toJsonStr(cookies));
 
         // 提醒判题机有待查询结果题目
         redisUtils.sendMessage(Constants.RemoteJudge.JUDGE_RESULT_HANDLER.getName(), "New Result Query Added");

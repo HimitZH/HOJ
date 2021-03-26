@@ -44,10 +44,13 @@ public class RemoteJudgeReceiver implements MessageListener {
         String username = task.getStr("username");
         String password = task.getStr("password");
         Integer tryAgainNum = task.getInt("tryAgainNum");
+
+
         if (username == null || password == null) {
             remoteJudgeDispatcher.sendTask(submitId, pid, token, remoteJudge, isContest, tryAgainNum);
             return;
         }
+
         Judge judge = judgeService.getById(submitId);
         // 调用判题服务
         toJudgeService.remoteJudge(new ToJudge()

@@ -22,14 +22,6 @@ class CodeForcesJudgeTest {
 
     @Test
     void getLoginCookie() throws Exception {
-        CodeForcesJudge codeForcesJudge = new CodeForcesJudge();
-        Map<String, String> cookie = codeForcesJudge.getLoginCookie("xxx", "xxx");
-        System.out.println(cookie);
-        Connection connection = JsoupUtils.getConnectionFromUrl(CodeForcesJudge.HOST, MapUtil
-                .builder(new HashMap<String, String>())
-                .put("Host", "codeforces.com")
-                .map(), cookie);
-        Connection.Response response = JsoupUtils.getResponse(connection, null);;
 
     }
 

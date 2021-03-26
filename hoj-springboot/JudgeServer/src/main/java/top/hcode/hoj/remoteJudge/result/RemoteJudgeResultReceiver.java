@@ -2,6 +2,7 @@ package top.hcode.hoj.remoteJudge.result;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.IpUtils;
 import top.hcode.hoj.util.RedisUtils;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -44,11 +47,14 @@ public class RemoteJudgeResultReceiver implements MessageListener {
         }
         JSONObject task = JSONUtil.parseObj(source);
         Long resultSubmitId = task.getLong("resultSubmitId");
+        String username = task.getStr("username");  // HDU不需要，但是CF需要
         Long submitId = task.getLong("submitId");
         String uid = task.getStr("uid");
         Long cid = task.getLong("cid");
         Long pid = task.getLong("pid");
         String remoteJudge = task.getStr("remoteJudge");
+        String token = task.getStr("token");
+        HashMap<String, String> cookies = JsonObjectToHashMap(JSONUtil.parseObj(task.getStr("cookies")));
         RemoteJudgeStrategy remoteJudgeStrategy = RemoteJudgeFactory.selectJudge(remoteJudge);
         // 获取不到对应的题库或者题库写错了
         if (remoteJudgeStrategy == null) {
@@ -58,7 +64,7 @@ public class RemoteJudgeResultReceiver implements MessageListener {
 
         // TODO 获取对应的result，修改到数据库
         try {
-            Map<String, Object> result = remoteJudgeStrategy.result(resultSubmitId);
+            Map<String, Object> result = remoteJudgeStrategy.result(resultSubmitId, username, token, cookies);
             Judge judge = new Judge();
             judge.setSubmitId(submitId);
             Integer status = (Integer) result.getOrDefault("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
@@ -66,7 +72,7 @@ public class RemoteJudgeResultReceiver implements MessageListener {
             if (status.equals(Constants.Judge.STATUS_PENDING.getStatus())) {
                 try {
                     TimeUnit.SECONDS.sleep(1);
-                    remoteJudgeResultDispatcher.sendTask(remoteJudge, submitId, uid, cid, pid, resultSubmitId);
+                    remoteJudgeResultDispatcher.sendTask(remoteJudge, username, submitId, uid, cid, pid, resultSubmitId, token, cookies);
                 } catch (Exception e) {
                     log.error("重新查询结果任务出错------{}", e.getMessage());
                 }
@@ -98,7 +104,21 @@ public class RemoteJudgeResultReceiver implements MessageListener {
 
         } catch (Exception e) {
             log.error("获取结果出错------------>{}", e.getMessage());
+            // 更新此次提交状态为提交失败！
+            UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
+            judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
+                    .eq("submit_id", submitId);
+            judgeService.update(judgeUpdateWrapper);
         }
 
     }
+
+    public static HashMap<String, String> JsonObjectToHashMap(JSONObject jsonObj) {
+        HashMap<String, String> data = new HashMap<String, String>();
+        for (String key : jsonObj.keySet()) {
+            data.put(key, jsonObj.getStr(key));
+        }
+        return data;
+    }
+
 }
