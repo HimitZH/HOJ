@@ -14,6 +14,8 @@ import top.hcode.hoj.pojo.entity.Judge;
 import top.hcode.hoj.pojo.entity.ToJudge;
 import top.hcode.hoj.service.ToJudgeService;
 import top.hcode.hoj.service.impl.JudgeServiceImpl;
+import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.utils.RedisUtils;
 
 @Component
 public class RemoteJudgeReceiver implements MessageListener {
@@ -26,6 +28,9 @@ public class RemoteJudgeReceiver implements MessageListener {
 
     @Autowired
     private JudgeServiceImpl judgeService;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
     @Override
     public void onMessage(Message message, byte[] bytes) {
@@ -45,6 +50,8 @@ public class RemoteJudgeReceiver implements MessageListener {
         String password = task.getStr("password");
         Integer tryAgainNum = task.getInt("tryAgainNum");
 
+        System.out.println(username);
+        System.out.println(password);
 
         if (username == null || password == null) {
             remoteJudgeDispatcher.sendTask(submitId, pid, token, remoteJudge, isContest, tryAgainNum);
@@ -52,6 +59,7 @@ public class RemoteJudgeReceiver implements MessageListener {
         }
 
         Judge judge = judgeService.getById(submitId);
+
         // 调用判题服务
         toJudgeService.remoteJudge(new ToJudge()
                 .setJudge(judge)

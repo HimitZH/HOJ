@@ -30,6 +30,7 @@ public class RemoteJudgeDispatcher {
         task.set("isContest", isContest);
         task.set("tryAgainNum", tryAgainNum);
         try {
+            // 对应列表右边取出账号
             String account = (String) redisUtils.lrPop(Constants.Judge.getListNameByOJName(remoteJudge.split("-")[0]));
             if (account != null) {
                 JSONObject accountJson = JSONUtil.parseObj(account);

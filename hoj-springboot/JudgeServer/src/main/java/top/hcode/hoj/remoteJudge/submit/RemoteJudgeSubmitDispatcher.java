@@ -30,7 +30,7 @@ public class RemoteJudgeSubmitDispatcher {
         task.set("language", language);
         task.set("username", username);
         task.set("password", password);
-        redisUtils.sendMessage(Constants.RemoteJudge.JUDGE_SUBMIT_HANDLER.getName(), "New Problem Added");
         redisUtils.lrPush(Constants.RemoteJudge.JUDGE_WAITING_SUBMIT_QUEUE.getName(), JSONUtil.toJsonStr(task));
+        redisUtils.sendMessage(Constants.RemoteJudge.JUDGE_SUBMIT_HANDLER.getName(), "New Problem Added");
     }
 }

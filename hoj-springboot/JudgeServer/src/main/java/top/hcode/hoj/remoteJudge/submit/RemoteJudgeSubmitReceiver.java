@@ -56,20 +56,20 @@ public class RemoteJudgeSubmitReceiver implements MessageListener {
         // 获取不到对应的题库或者题库写错了
         if (remoteJudgeStrategy == null) {
             log.error("暂不支持该{}题库---------------->请求失败", remoteJudge);
-            return;
         }
+
         Map<String, Object> submitResult = null;
         try {
             submitResult = remoteJudgeStrategy.submit(username, password, remotePid, language, userCode);
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            // 将使用的账号放回对应列表
+            JSONObject account = new JSONObject();
+            account.set("username", username);
+            account.set("password", password);
+            redisUtils.llPush(Constants.RemoteJudge.getListNameByOJName(remoteJudge), JSONUtil.toJsonStr(account));
         }
-
-        // 提交成功与失败都要把账号放回list
-        JSONObject account = new JSONObject();
-        account.set("username", username);
-        account.set("password", password);
-        redisUtils.llPush(Constants.RemoteJudge.getListNameByOJName(remoteJudge), JSONUtil.toJsonStr(account));
 
         // TODO 提交失败 前端手动按按钮再次提交 修改状态 STATUS_SUBMITTED_FAILED
         if (submitResult == null || (Long) submitResult.getOrDefault("runId", -1L) == -1L) {
@@ -82,13 +82,12 @@ public class RemoteJudgeSubmitReceiver implements MessageListener {
             return;
         }
 
-
         // 提交成功顺便更新状态为-->STATUS_JUDGING 判题中...
         judgeService.updateById(new Judge().setSubmitId(submitId).setStatus(Constants.Judge.STATUS_JUDGING.getStatus()));
         try {
             remoteJudgeResultDispatcher.sendTask(remoteJudge, username, submitId, uid, cid, pid,
-                    (Long) submitResult.get("runId"),(String) submitResult.get("token"),
-                    (HashMap<String, String>)submitResult.get("cookies"));
+                    (Long) submitResult.get("runId"), (String) submitResult.get("token"),
+                    (HashMap<String, String>) submitResult.get("cookies"));
         } catch (Exception e) {
             log.error("调用redis消息发布异常,此次远程查询结果任务判为系统错误--------------->{}", e.getMessage());
         }
