@@ -167,6 +167,9 @@ public class Constants {
     public static List<String> python3Env = Arrays.asList("LANG=en_US.UTF-8",
             "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8", "PYTHONIOENCODING=utf-8");
 
+    public static List<String> golangEnv = Arrays.asList("GODEBUG=madvdontneed=1",
+            "GOCACHE=off", "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+            "LANG=en_US.UTF-8", "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8");
 
     /*
             {0} --> tmpfs_dir
@@ -183,6 +186,8 @@ public class Constants {
         PYTHON2("Python2", "main.py", "main.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python -m py_compile ./{1}", defaultEnv),
 
         PYTHON3("Python3", "main.py", "__pycache__/main.cpython-36.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python3 -m py_compile ./{1}", defaultEnv),
+
+        GOLANG("Golang", "main.go", "main", 3000L, 5000L, 1024 * 1024 * 1024L, "/usr/bin/go build -o {1} {2}", defaultEnv),
 
         SPJ_C("SPJ-C", "spj.c", "spj", 3000L, 5000L, 1024 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c99 {1} -lm -o {2}", defaultEnv),
 
@@ -266,8 +271,9 @@ public class Constants {
 
         PYTHON2("Python2", "/usr/bin/python {1}", "main", defaultEnv),
 
-
         PYTHON3("Python3", "/usr/bin/python3 {1}", "main", python3Env),
+
+        GOLANG("Golang", "{0}/{1}", "main", golangEnv),
 
         SPJ_C("SPJ-C", "{0}/{1} {2}", "spj", defaultEnv),
 
