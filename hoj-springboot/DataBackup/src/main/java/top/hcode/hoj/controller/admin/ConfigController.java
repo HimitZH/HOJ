@@ -24,7 +24,7 @@ import java.util.List;
  * @Description:
  */
 @RestController
-@RequestMapping("/admin/config")
+@RequestMapping("/api/admin/config")
 public class ConfigController {
 
     @Autowired
@@ -92,6 +92,7 @@ public class ConfigController {
                 MapUtil.builder().put("username", configVo.getEmailUsername())
                         .put("password", configVo.getEmailPassword())
                         .put("host", configVo.getEmailHost())
+                        .put("port", configVo.getEmailPort())
                         .put("ssl", configVo.getEmailSsl()).map()
         );
     }
@@ -133,6 +134,7 @@ public class ConfigController {
                 .put("dbPassword", configVo.getMysqlPassword())
                 .put("redisHost", configVo.getRedisHost())
                 .put("redisPort", configVo.getRedisPort())
+                .put("redisPassword", configVo.getRedisPassword())
                 .map()
         );
     }

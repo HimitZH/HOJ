@@ -5,7 +5,7 @@
         <div slot="header">
           <span class="panel-title"
             >{{
-              query.type === "" ? "All" : parseContestType(query.type)
+              query.type === '' ? 'All' : parseContestType(query.type)
             }}
             Contests</span
           >
@@ -18,7 +18,7 @@
                 class="drop-menu"
               >
                 <span class="el-dropdown-link">
-                  {{ query.type == "" ? "Rule" : parseContestType(query.type) }}
+                  {{ query.type == '' ? 'Rule' : parseContestType(query.type) }}
                   <i class="el-icon-caret-bottom"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
@@ -38,8 +38,8 @@
               >
                 <span class="el-dropdown-link">
                   {{
-                    query.status === ""
-                      ? "Status"
+                    query.status === ''
+                      ? 'Status'
                       : CONTEST_STATUS_REVERSE[query.status]['name']
                   }}
                   <i class="el-icon-caret-bottom"></i>
@@ -67,11 +67,25 @@
         </div>
         <p id="no-contest" v-show="contests.length == 0">暂无比赛</p>
         <ol id="contest-list">
-          <li v-for="contest in contests" :key="contest.title" :style="getborderColor(contest)">
+          <li
+            v-for="contest in contests"
+            :key="contest.title"
+            :style="getborderColor(contest)"
+          >
             <el-row type="flex" justify="space-between" align="middle">
               <el-col :xs="10" :sm="4" :md="3" :lg="2">
-                <img v-show="contest.type == 0" class="trophy" :src="acmSrc" width="95px"/>
-                <img v-show="contest.type == 1" class="trophy" :src="oiSrc" width="95px" />
+                <img
+                  v-show="contest.type == 0"
+                  class="trophy"
+                  :src="acmSrc"
+                  width="95px"
+                />
+                <img
+                  v-show="contest.type == 1"
+                  class="trophy"
+                  :src="oiSrc"
+                  width="95px"
+                />
               </el-col>
               <el-col :xs="10" :sm="16" :md="19" :lg="20" class="contest-main">
                 <p class="title">
@@ -100,7 +114,7 @@
                       aria-hidden="true"
                       style="color: #3091f2"
                     ></i>
-                    {{ getDuration(contest.startTime,contest.endTime) }}
+                    {{ getDuration(contest.startTime, contest.endTime) }}
                   </li>
                   <li>
                     <el-button
@@ -108,30 +122,38 @@
                       round
                       @click="onRuleChange(contest.type)"
                     >
-                      {{ contest.type |parseContestType }}
+                      {{ contest.type | parseContestType }}
                     </el-button>
                   </li>
                   <li>
-                    <el-tooltip :content="CONTEST_TYPE_REVERSE[contest.auth].tips" placement="top" effect="light">
+                    <el-tooltip
+                      :content="CONTEST_TYPE_REVERSE[contest.auth].tips"
+                      placement="top"
+                      effect="light"
+                    >
                       <el-tag
-                          :type="CONTEST_TYPE_REVERSE[contest.auth]['color']"
-                          effect="plain">
-                          {{CONTEST_TYPE_REVERSE[contest.auth]['name']}}
-                        </el-tag>
+                        :type="CONTEST_TYPE_REVERSE[contest.auth]['color']"
+                        effect="plain"
+                      >
+                        {{ CONTEST_TYPE_REVERSE[contest.auth]['name'] }}
+                      </el-tag>
                     </el-tooltip>
                   </li>
                 </ul>
               </el-col>
-              <el-col :xs="4" :sm="4" :md="2" :lg="2" style="text-align: center">
+              <el-col
+                :xs="4"
+                :sm="4"
+                :md="2"
+                :lg="2"
+                style="text-align: center"
+              >
                 <el-tag
                   effect="dark"
                   :color="CONTEST_STATUS_REVERSE[contest.status]['color']"
                   size="medium"
                 >
-                  <i
-                    class="fa fa-circle"
-                    aria-hidden="true"
-                  ></i>
+                  <i class="fa fa-circle" aria-hidden="true"></i>
                   {{ CONTEST_STATUS_REVERSE[contest.status]['name'] }}
                 </el-tag>
               </el-col>
@@ -150,18 +172,22 @@
 </template>
 
 <script>
-import api from "@/common/api";
-import { mapGetters } from "vuex";
-import utils from "@/common/utils";
-import Pagination from "@/components/oj/common/Pagination";
-import time from "@/common/time";
-import { CONTEST_STATUS_REVERSE, CONTEST_TYPE,CONTEST_TYPE_REVERSE } from "@/common/constants";
-import myMessage from '@/common/message'
+import api from '@/common/api';
+import { mapGetters } from 'vuex';
+import utils from '@/common/utils';
+import Pagination from '@/components/oj/common/Pagination';
+import time from '@/common/time';
+import {
+  CONTEST_STATUS_REVERSE,
+  CONTEST_TYPE,
+  CONTEST_TYPE_REVERSE,
+} from '@/common/constants';
+import myMessage from '@/common/message';
 
 const limit = 10;
 
 export default {
-  name: "contest-list",
+  name: 'contest-list',
   components: {
     Pagination,
   },
@@ -169,31 +195,31 @@ export default {
     return {
       currentPage: 1,
       query: {
-        status: "",
-        keyword: "",
-        type: "",
+        status: '',
+        keyword: '',
+        type: '',
       },
       limit: limit,
       total: 0,
-      rows: "",
+      rows: '',
       contests: [],
-      CONTEST_STATUS_REVERSE:{},
-      CONTEST_TYPE_REVERSE:CONTEST_TYPE_REVERSE,
-      acmSrc: require("@/assets/acm.jpg"),
-      oiSrc: require("@/assets/oi.jpg"),
+      CONTEST_STATUS_REVERSE: {},
+      CONTEST_TYPE_REVERSE: CONTEST_TYPE_REVERSE,
+      acmSrc: require('@/assets/acm.jpg'),
+      oiSrc: require('@/assets/oi.jpg'),
     };
   },
-  mounted(){
-    this.CONTEST_STATUS_REVERSE = Object.assign({},CONTEST_STATUS_REVERSE)
-    this.CONTEST_TYPE_REVERSE = Object.assign({},CONTEST_TYPE_REVERSE)
-    this.init()
+  mounted() {
+    this.CONTEST_STATUS_REVERSE = Object.assign({}, CONTEST_STATUS_REVERSE);
+    this.CONTEST_TYPE_REVERSE = Object.assign({}, CONTEST_TYPE_REVERSE);
+    this.init();
   },
   methods: {
     init() {
       let route = this.$route.query;
-      this.query.status = route.status || "";
-      this.query.type = route.type || "";
-      this.query.keyword = route.keyword || "";
+      this.query.status = route.status || '';
+      this.query.type = route.type || '';
+      this.query.keyword = route.keyword || '';
       this.currentPage = parseInt(route.currentPage) || 1;
       this.getContestList();
     },
@@ -207,16 +233,16 @@ export default {
       let query = Object.assign({}, this.query);
       query.currentPage = this.currentPage;
       this.$router.push({
-        name: "ContestList",
+        name: 'ContestList',
         query: utils.filterEmptyValue(query),
       });
     },
 
-    parseContestType(type){
-      if(type==0){
-        return 'ACM'
-      }else if(type==1){
-        return 'OI'
+    parseContestType(type) {
+      if (type == 0) {
+        return 'ACM';
+      } else if (type == 1) {
+        return 'OI';
       }
     },
     onRuleChange(rule) {
@@ -230,28 +256,28 @@ export default {
       this.filterByChange();
     },
     toContest(contest) {
-      if (
-        contest.type !== CONTEST_TYPE.PUBLIC &&
-        !this.isAuthenticated
-      ) {
-        myMessage.warning("请先登录");
-        this.$store.dispatch("changeModalStatus", { visible: true });
+      if (contest.type !== CONTEST_TYPE.PUBLIC && !this.isAuthenticated) {
+        myMessage.warning('请先登录');
+        this.$store.dispatch('changeModalStatus', { visible: true });
       } else {
         this.$router.push({
-          name: "ContestDetails",
+          name: 'ContestDetails',
           params: { contestID: contest.id },
         });
       }
     },
-    getDuration(startTime,endTime) {
-      return time.duration(startTime,endTime);
+    getDuration(startTime, endTime) {
+      return time.duration(startTime, endTime);
     },
-    getborderColor(contest){
-      return "border-left: 4px solid "+CONTEST_STATUS_REVERSE[contest.status]['color'];
-    }
+    getborderColor(contest) {
+      return (
+        'border-left: 4px solid ' +
+        CONTEST_STATUS_REVERSE[contest.status]['color']
+      );
+    },
   },
   computed: {
-    ...mapGetters(["isAuthenticated", "userInfo"]),
+    ...mapGetters(['isAuthenticated', 'userInfo']),
   },
   watch: {
     $route(newVal, oldVal) {
@@ -275,7 +301,7 @@ export default {
   .filter-row span {
     margin-right: 2px;
   }
-  ol{
+  ol {
     padding-inline-start: 5px;
   }
   /deep/ .el-card__header {

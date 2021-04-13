@@ -318,7 +318,7 @@ export default {
         .catch(() => {});
     },
     downloadTestCase(problemID) {
-      let url = '/file/download-testcase?pid=' + problemID;
+      let url = '/api/file/download-testcase?pid=' + problemID;
       utils.downloadFile(url).then(() => {
         this.$alert('该题目的测试样例已成功下载！', '提醒');
       });
@@ -357,6 +357,9 @@ export default {
 <style scoped>
 .filter-row {
   margin-top: 10px;
+}
+.filter-row span {
+  margin-bottom: 5px;
 }
 @media screen and (max-width: 768px) {
   .filter-row span {

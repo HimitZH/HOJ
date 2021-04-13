@@ -57,7 +57,7 @@
                     v-html="contest.description"
                     v-katex
                     v-highlight
-                    class="maize-markdown-body"
+                    class="markdown-body"
                   ></blockquote>
                 </div>
               </div>

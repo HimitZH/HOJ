@@ -4,10 +4,35 @@
       <el-card shadow>
         <div slot="header">
           <el-row :gutter="18">
-            <el-col :sm="9" :md="10" :lg="13">
+            <el-col :sm="5" :md="7" :lg="10">
               <span class="panel-title hidden-xs-only">Problem List</span>
             </el-col>
-            <el-col :xs="7" :sm="4" :md="3" :lg="3" style="padding-top: 6px;">
+            <el-col :xs="24" :sm="4" :md="3" :lg="3" style="padding-top: 6px;">
+              <el-dropdown
+                class="drop-menu"
+                @command="filterByOJ"
+                placement="bottom"
+                trigger="hover"
+              >
+                <span class="el-dropdown-link">
+                  {{ query.oj === 'HOJ' || query.oj === '' ? 'HOJ' : query.oj }}
+                  <i class="el-icon-caret-bottom"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="All">All</el-dropdown-item>
+                  <el-dropdown-item :command="OJ_NAME">{{
+                    OJ_NAME
+                  }}</el-dropdown-item>
+                  <el-dropdown-item
+                    :command="remoteOj.key"
+                    v-for="(remoteOj, index) in REMOTE_OJ"
+                    :key="index"
+                    >{{ remoteOj.name }}</el-dropdown-item
+                  >
+                </el-dropdown-menu>
+              </el-dropdown>
+            </el-col>
+            <el-col :xs="6" :sm="4" :md="3" :lg="3" style="padding-top: 6px;">
               <el-dropdown
                 class="drop-menu"
                 @command="filterByDifficulty"
@@ -17,7 +42,7 @@
                 <span class="el-dropdown-link">
                   {{
                     query.difficulty === 'All' || query.difficulty === ''
-                      ? 'Difficulty'
+                      ? 'Level'
                       : query.difficulty
                   }}
                   <i class="el-icon-caret-bottom"></i>
@@ -30,7 +55,7 @@
                 </el-dropdown-menu>
               </el-dropdown>
             </el-col>
-            <el-col :xs="14" :sm="7" :md="7" :lg="5">
+            <el-col :xs="15" :sm="7" :md="7" :lg="5">
               <vxe-input
                 v-model="query.keyword"
                 placeholder="Enter keyword"
@@ -100,7 +125,7 @@
 
           <vxe-table-column field="title" title="Title" min-width="180">
             <template v-slot="{ row }">
-              <a :href="getProblemUri(row.problemId)" class="title-a">{{
+              <a @click="getProblemUri(row.problemId)" class="title-a">{{
                 row.title
               }}</a>
             </template>
@@ -198,6 +223,8 @@ import {
   PROBLEM_LEVEL_RESERVE,
   JUDGE_STATUS,
   JUDGE_STATUS_RESERVE,
+  REMOTE_OJ,
+  OJ_NAME,
 } from '@/common/constants';
 import Pagination from '@/components/oj/common/Pagination';
 import myMessage from '@/common/message';
@@ -213,6 +240,8 @@ export default {
       PROBLEM_LEVEL_RESERVE: {},
       JUDGE_STATUS: {},
       JUDGE_STATUS_RESERVE: {},
+      REMOTE_OJ: {},
+      OJ_NAME: '',
       tagList: [],
       currentProblemTitle: '请触碰或鼠标悬浮到指定题目行即可查看提交情况',
       problemRecord: [],
@@ -234,6 +263,7 @@ export default {
       query: {
         keyword: '',
         difficulty: 'All',
+        oj: '',
         tagId: '',
         currentPage: 1,
       },
@@ -244,6 +274,8 @@ export default {
     this.PROBLEM_LEVEL_RESERVE = Object.assign({}, PROBLEM_LEVEL_RESERVE);
     this.JUDGE_STATUS_RESERVE = Object.assign({}, JUDGE_STATUS_RESERVE);
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
+    this.REMOTE_OJ = Object.assign({}, REMOTE_OJ);
+    this.OJ_NAME = OJ_NAME;
     // 初始化
     this.problemRecord = [
       { status: 0, count: 100 },
@@ -262,6 +294,7 @@ export default {
       this.routeName = this.$route.name;
       let query = this.$route.query;
       this.query.difficulty = query.difficulty || '';
+      this.query.oj = query.oj || '';
       this.query.keyword = query.keyword || '';
       this.query.tagId = query.tagId || '';
       this.query.currentPage = parseInt(query.currentPage) || 1;
@@ -274,31 +307,10 @@ export default {
       this.getProblemList();
     },
     pushRouter() {
-      let queryParams = utils.filterEmptyValue(this.query);
-      // 判断新路径请求参数与当前路径请求的参数是否一致，避免重复访问路由报错
-      let equal = true;
-      for (let key in queryParams) {
-        if (queryParams[key] != this.$route.query[key]) {
-          equal = false;
-          break;
-        }
-      }
-      if (equal) {
-        // 判断请求参数的长短
-        if (
-          Object.keys(queryParams).length !=
-          Object.keys(this.$route.query).length
-        ) {
-          equal = false;
-        }
-      }
-      if (!equal) {
-        // 避免重复同个路径请求导致报错
-        this.$router.push({
-          path: '/problem',
-          query: queryParams,
-        });
-      }
+      this.$router.push({
+        path: '/problem',
+        query: this.query,
+      });
     },
     getPercentage(partNumber, total) {
       return partNumber == 0
@@ -327,6 +339,12 @@ export default {
           { status: 0, count: this.getPercentage(problem.ac, problem.total) },
           { status: 8, count: this.getPercentage(problem.pa, problem.total) },
           { status: -1, count: this.getPercentage(problem.wa, problem.total) },
+          { status: 1, count: this.getPercentage(problem.tle, problem.total) },
+          { status: 2, count: this.getPercentage(problem.mle, problem.total) },
+          { status: 3, count: this.getPercentage(problem.re, problem.total) },
+          { status: -3, count: this.getPercentage(problem.pe, problem.total) },
+          { status: -2, count: this.getPercentage(problem.ce, problem.total) },
+          { status: 4, count: this.getPercentage(problem.se, problem.total) },
         ];
       }
 
@@ -342,6 +360,11 @@ export default {
         queryParams.difficulty = this.PROBLEM_LEVEL_RESERVE[
           queryParams.difficulty
         ]; // 需要对题目难度的显示进行转换 从字符串转为0，1，2
+      }
+      if (queryParams.oj == 'All') {
+        queryParams.oj = '';
+      } else if (!queryParams.oj) {
+        queryParams.oj = OJ_NAME;
       }
       api.getProblemList(this.limit, queryParams).then(
         (res) => {
@@ -406,6 +429,11 @@ export default {
       this.query.currentPage = 1;
       this.pushRouter();
     },
+    filterByOJ(oj) {
+      this.query.oj = oj;
+      this.query.currentPage = 1;
+      this.pushRouter();
+    },
     filterByKeyword() {
       this.query.currentPage = 1;
       this.pushRouter();
@@ -420,7 +448,12 @@ export default {
       });
     },
     getProblemUri(problemId) {
-      return '/problem/' + problemId;
+      this.$router.push({
+        name: 'ProblemDetails',
+        params: {
+          problemID: problemId,
+        },
+      });
     },
     getLevelColor(difficulty) {
       return 'el-tag el-tag--small status-' + PROBLEM_LEVEL[difficulty].color;

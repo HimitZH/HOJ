@@ -31,13 +31,14 @@ spring:
   redis:
     host: ${hoj.redis.host}
     port: ${hoj.redis.port}
-    timeout: 100000
+    timeout: 60000
     jedis:
       pool:
-        min-idle: 20 #连接池中的最小空闲连接
+        min-idle: 40 #连接池中的最小空闲连接
         max-idle: 100 #连接池中的最大空闲连接
         max-active: 200 #连接池最大连接数（使用负值表示没有限制）
         max-wait: -1 #连接池最大阻塞等待时间（使用负值表示没有限制）
+    password: ${hoj.redis.password}
 
 
 mybatis-plus:
@@ -49,7 +50,8 @@ logging:
   level:
     com:
       alibaba:
-        nacos: warn
+        nacos: error
+    root: error
 # 暴露监控
 management:
   endpoints:

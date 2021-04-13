@@ -293,7 +293,7 @@ export default {
         this.loadingUploadBtn = true;
         this.$http({
           method: 'post',
-          url: '/file/upload-avatar',
+          url: '/api/file/upload-avatar',
           data: form,
           headers: { 'content-type': 'multipart/form-data' },
         }).then(

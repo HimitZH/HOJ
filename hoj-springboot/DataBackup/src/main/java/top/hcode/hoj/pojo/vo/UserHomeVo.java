@@ -43,6 +43,6 @@ public class UserHomeVo {
     private Integer score;
 
     @ApiModelProperty(value = "已解决题目列表")
-    private List<Long> solvedList;
+    private List<String> solvedList;
 
 }

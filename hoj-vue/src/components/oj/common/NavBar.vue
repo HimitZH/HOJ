@@ -140,7 +140,7 @@
               </mu-list-item-content>
             </mu-list-item>
 
-            <mu-list-item button value="/admin">
+            <mu-list-item button value="/admin" v-show="isAdminRole">
               <mu-list-item-content>
                 <mu-list-item-title>Management</mu-list-item-title>
               </mu-list-item-content>
@@ -353,19 +353,15 @@ export default {
     },
     handleRoute(route) {
       //电脑端导航栏路由跳转事件
-      if (route && route.indexOf('admin') < 0) {
+      if (route) {
         this.$router.push(route);
-      } else {
-        window.open('/admin/');
       }
     },
     handleCommand(route) {
       // 移动端导航栏路由跳转事件
       this.openusermenu = false;
-      if (route && route.indexOf('admin') < 0) {
+      if (route) {
         this.$router.push(route);
-      } else {
-        window.open('/admin/');
       }
     },
   },
@@ -448,7 +444,7 @@ export default {
 }
 .el-dropdown-link {
   cursor: pointer;
-  color: #409eff;
+  color: #409eff !important;
 }
 .el-icon-arrow-down {
   font-size: 18px;
@@ -493,6 +489,9 @@ export default {
 }
 .is-active .el-submenu__title i,
 .is-active {
+  color: #2196f3 !important;
+}
+.el-menu-item.is-active i {
   color: #2196f3 !important;
 }
 </style>

@@ -1,0 +1,48 @@
+hoj:
+  jwt:
+    # 加密秘钥
+    secret: zsc-acm-hoj
+    # token有效时长，24小时，单位秒
+    expire: 86400
+    # 6小时内还有请求，可进行刷新
+    checkRefreshExpire: 21600
+    header: token
+  judge:
+    # 调用判题服务器的token
+    token: zsc-acm-hoj-judge-server
+  db: # mysql数据库服务配置
+    host: your_mysql_host
+    port: your_mysql_port
+    name: your_mysql_database_name # 默认hoj
+    username: your_mysql_username
+    password: your_mysql_password
+  mail: # 邮箱服务配置
+    ssl: true
+    username: your_email_username
+    password: your_email_password
+    host: your_email_host
+    port: your_email_port
+  redis: # redis服务配置
+    host: your_redis_host
+    port: 6371
+    password: your_redis_password
+  web-config:
+    base-url: http://localhost:9010                 # 后端服务地址
+    name: zsc-acm-hoj                               # 后端服务地址
+    short-name: hoj                                 # oj简写
+    register: true
+    footer:  # 网站页面底部footer配置
+      record:                                      
+        name: 浙ICP备20009096号-1                   # 网站备案
+        url: http://oj.hcode.top                    # 网站域名
+      project: # 项目                               
+        name: HOJ                                   # 项目名字
+        url: https://gitee.com/himitzh0730/hoj      # 项目地址
+  hdu:
+    account:
+      username: hdu账号1用户名,hdu账号2用户名,...
+      password: hdu账号1密码,hdu账号2密码,...
+  cf:
+    account:
+      username: cf账号1用户名,cf账号2用户名,...
+      password: cf账号1密码,cf账号2密码,...

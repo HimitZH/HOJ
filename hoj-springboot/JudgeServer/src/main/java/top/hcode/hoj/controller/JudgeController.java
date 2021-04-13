@@ -1,8 +1,7 @@
 package top.hcode.hoj.controller;
 
 
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
+import cn.hutool.core.map.MapUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,13 +11,11 @@ import top.hcode.hoj.common.CommonResult;
 import top.hcode.hoj.common.exception.CompileError;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.pojo.entity.*;
-import top.hcode.hoj.remoteJudge.submit.RemoteJudgeSubmitDispatcher;
+import top.hcode.hoj.remoteJudge.RemoteJudgeToSubmit;
 import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.util.Constants;
-import top.hcode.hoj.util.IpUtils;
-import top.hcode.hoj.util.RedisUtils;
 
-import java.util.HashMap;
+import java.util.Date;
 
 
 /**
@@ -41,16 +38,31 @@ public class JudgeController {
     private SystemConfigServiceImpl systemConfigService;
 
     @Autowired
-    private RemoteJudgeSubmitDispatcher remoteJudgeSubmitDispatcher;
+    private RemoteJudgeToSubmit remoteJudgeToSubmit;
 
     @Value("${hoj.judge.token}")
     private String judgeToken;
 
+    @Value("${hoj-judger.max-task-num}")
+    private Integer maxTaskNum;
+
     @Value("${hoj-judger.name}")
     private String name;
 
-    @Autowired
-    private RedisUtils redisUtils;
+
+    @RequestMapping("/version")
+    public CommonResult getVersion() {
+
+        return CommonResult.successResponse(MapUtil.builder()
+                        .put("version", "1.0.0")
+                        .put("currentTime", new Date())
+                        .put("judgeServerName", name)
+                        .put("cpu", Runtime.getRuntime().availableProcessors())
+                        .put("maxTaskNum", maxTaskNum)
+                        .map(),
+                "运行正常"
+        );
+    }
 
     @PostMapping(value = "/judge")
     public CommonResult submitProblemJudge(@RequestBody ToJudge toJudge) {
@@ -136,30 +148,8 @@ public class JudgeController {
         String userCode = toJudge.getJudge().getCode();
         String language = toJudge.getJudge().getLanguage();
 
-        // 发送消息
-        try {
-            remoteJudgeSubmitDispatcher.sendTask(username, password, remoteJudge, remotePid, submitId, uid, cid, pid, language, userCode);
-            return CommonResult.successResponse(null, "提交成功");
-        } catch (Exception e) {
-            // 将使用的账号放回对应列表
-            JSONObject account = new JSONObject();
-            account.set("username", username);
-            account.set("password", password);
-            redisUtils.llPush(Constants.RemoteJudge.getListNameByOJName(remoteJudge), JSONUtil.toJsonStr(account));
-            Judge judge = new Judge();
-            judge.setSubmitId(submitId)
-                    .setStatus(Constants.Judge.STATUS_SYSTEM_ERROR.getStatus())
-                    .setErrorMessage("Oops, something has gone wrong with the judgeServer. Please report this to administrator.");
-            judgeService.updateById(judge);
-            // 更新其它表
-            judgeService.updateOtherTable(submitId,
-                    Constants.Judge.STATUS_SYSTEM_ERROR.getStatus(),
-                    cid,
-                    uid,
-                    pid,
-                    null);
-            log.error("调用redis消息发布异常,此次远程判题任务判为系统错误--------------->{}", e.getMessage());
-            return CommonResult.errorResponse(e.getMessage(), CommonResult.STATUS_ERROR);
-        }
+        // 调用远程判题
+        remoteJudgeToSubmit.sendTask(username, password, remoteJudge, remotePid, submitId, uid, cid, pid, language, userCode);
+        return CommonResult.successResponse(null, "提交成功");
     }
 }

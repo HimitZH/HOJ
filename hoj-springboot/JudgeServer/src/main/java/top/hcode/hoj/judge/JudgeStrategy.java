@@ -660,6 +660,7 @@ public class JudgeStrategy {
         String testCasesDir = Constants.JudgeDir.TEST_CASE_DIR.getContent() + "/problem_" + problemId;
 
         // 无论有没有测试数据，一旦执行该函数，一律清空，重新生成该题目对应的测试数据文件
+
         FileUtil.del(testCasesDir);
         for (int index = 0; index < testCases.size(); index++) {
             JSONObject jsonObject = new JSONObject();

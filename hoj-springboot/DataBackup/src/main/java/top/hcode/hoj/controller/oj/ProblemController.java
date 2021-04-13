@@ -69,7 +69,8 @@ public class ProblemController {
                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                        @RequestParam(value = "keyword", required = false) String keyword,
                                        @RequestParam(value = "tagId", required = false) Long tagId,
-                                       @RequestParam(value = "difficulty", required = false) Integer difficulty) {
+                                       @RequestParam(value = "difficulty", required = false) Integer difficulty,
+                                       @RequestParam(value = "oj", required = false) String oj) {
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;
@@ -83,7 +84,9 @@ public class ProblemController {
                 pid = Long.valueOf(keyword);
             }
         }
-        Page<ProblemVo> problemList = problemService.getProblemList(limit, currentPage, pid, keyword, difficulty, tagId);
+
+        Page<ProblemVo> problemList = problemService.getProblemList(limit, currentPage, pid, keyword,
+                difficulty, tagId, oj);
         if (problemList.getTotal() == 0) { // 未查询到一条数据
             return CommonResult.successResponse(problemList, "暂无数据");
         } else {

@@ -7,7 +7,7 @@
         :default-active="currentPath"
       >
         <div class="logo">
-          <img src="@/assets/backstage.png" alt="oj admin" />
+          <img :src="imgUrl" alt="oj admin" />
         </div>
         <el-menu-item index="/admin/">
           <i class="fa fa-tachometer" aria-hidden="true"></i>Dashboard
@@ -312,6 +312,7 @@ export default {
       mobileNar: false,
       currentPath: '',
       routeList: [],
+      imgUrl: require('@/assets/backstage.png'),
     };
   },
   components: {

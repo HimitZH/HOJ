@@ -25,10 +25,7 @@ import top.hcode.hoj.pojo.vo.ConfigVo;
 import top.hcode.hoj.pojo.vo.UserHomeVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.UserInfoService;
-import top.hcode.hoj.service.impl.EmailServiceImpl;
-import top.hcode.hoj.service.impl.UserAcproblemServiceImpl;
-import top.hcode.hoj.service.impl.UserInfoServiceImpl;
-import top.hcode.hoj.service.impl.UserRecordServiceImpl;
+import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.JwtUtils;
@@ -72,6 +69,9 @@ public class AccountController {
     private UserAcproblemServiceImpl userAcproblemService;
 
     @Autowired
+    private ProblemServiceImpl problemService;
+
+    @Autowired
     private SessionMapper sessionDao;
 
     @Autowired
@@ -92,11 +92,11 @@ public class AccountController {
         QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("email", email);
         UserInfo userInfo = userInfoDao.getOne(queryWrapper);
-        if(userInfo!=null){
+        if (userInfo != null) {
             return CommonResult.errorResponse("对不起！该邮箱已被注册，请更换新的邮箱！");
         }
         String numbers = RandomUtil.randomNumbers(6); // 随机生成6位数字的组合
-        redisUtils.set(Constants.Email.REGISTER_KEY_PREFIX.getValue()+email, numbers, 5 * 60);//默认验证码有效5分钟
+        redisUtils.set(Constants.Email.REGISTER_KEY_PREFIX.getValue() + email, numbers, 5 * 60);//默认验证码有效5分钟
         emailService.sendCode(email, numbers);
         return CommonResult.successResponse(MapUtil.builder()
                 .put("email", email)
@@ -171,7 +171,7 @@ public class AccountController {
         userInfoQueryWrapper.eq("email", email.trim());
         UserInfo userInfo = userInfoDao.getOne(userInfoQueryWrapper);
         String code = IdUtil.simpleUUID().substring(0, 21); // 随机生成20位数字与字母的组合
-        redisUtils.set(Constants.Email.RESET_PASSWORD_KEY_PREFIX.getValue()+userInfo.getUsername(), code, 10 * 60);//默认链接有效10分钟
+        redisUtils.set(Constants.Email.RESET_PASSWORD_KEY_PREFIX.getValue() + userInfo.getUsername(), code, 10 * 60);//默认链接有效10分钟
         // 发送邮件
         emailService.sendResetPassword(userInfo.getUsername(), code, email.trim());
         return CommonResult.successResponse(null, "重置密码邮件已发送至指定邮箱，请稍稍等待一会。");
@@ -194,7 +194,7 @@ public class AccountController {
         if (StringUtils.isEmpty(password) || StringUtils.isEmpty(username) || StringUtils.isEmpty(code)) {
             return CommonResult.errorResponse("用户名,新密码或验证码不能为空");
         }
-        String codeKey = Constants.Email.RESET_PASSWORD_KEY_PREFIX.getValue()+username;
+        String codeKey = Constants.Email.RESET_PASSWORD_KEY_PREFIX.getValue() + username;
 
         if (!redisUtils.hasKey(codeKey)) {
             return CommonResult.errorResponse("重置密码链接不存在或已过期，请重新发送重置邮件");
@@ -227,7 +227,7 @@ public class AccountController {
         if (!configVo.getRegister()) { // 需要判断一下网站是否开启注册
             return CommonResult.errorResponse("对不起！本站暂未开启注册功能！", CommonResult.STATUS_ACCESS_DENIED);
         }
-        String codeKey = Constants.Email.REGISTER_KEY_PREFIX.getValue()+registerDto.getEmail();
+        String codeKey = Constants.Email.REGISTER_KEY_PREFIX.getValue() + registerDto.getEmail();
         if (!redisUtils.hasKey(codeKey)) {
             return CommonResult.errorResponse("验证码不存在或已过期");
         }
@@ -281,8 +281,10 @@ public class AccountController {
         response.setHeader("Access-Control-Expose-Headers", "Authorization");
 
         // 会话记录
-        sessionDao.insert(new Session().setUid(userRoles.getUid())
-                .setIp(IpUtils.getUserIpAddr(request)).setUserAgent(request.getHeader("User-Agent")));
+        sessionDao.insert(new Session()
+                .setUid(userRoles.getUid())
+                .setIp(IpUtils.getUserIpAddr(request))
+                .setUserAgent(request.getHeader("User-Agent")));
 
         return CommonResult.successResponse(MapUtil.builder()
                 .put("uid", userRoles.getUid())
@@ -327,7 +329,6 @@ public class AccountController {
      * @Since 2021/01/07
      */
     @GetMapping("/get-user-home-info")
-    @RequiresAuthentication
     public CommonResult getUserHomeInfo(@RequestParam(value = "uid", required = false) String uid, HttpServletRequest request) {
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
@@ -343,7 +344,19 @@ public class AccountController {
         acProblemList.forEach(acProblem -> {
             pidList.add(acProblem.getPid());
         });
-        userHomeInfo.setSolvedList(pidList);
+
+        List<String> disPlayIdList = new LinkedList<>();
+
+        if (pidList.size()>0) {
+            QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
+            problemQueryWrapper.in("id", pidList);
+            List<Problem> problems = problemService.list(problemQueryWrapper);
+            problems.forEach(problem -> {
+                disPlayIdList.add(problem.getProblemId());
+            });
+        }
+
+        userHomeInfo.setSolvedList(disPlayIdList);
         return CommonResult.successResponse(userHomeInfo, "查询成功！");
     }
 
@@ -440,7 +453,7 @@ public class AccountController {
         if (StringUtils.isEmpty(password) || StringUtils.isEmpty(newEmail) || StringUtils.isEmpty(oldEmail)) {
             return CommonResult.errorResponse("请求参数不能为空！");
         }
-        if (!Validator.isEmail(newEmail)){
+        if (!Validator.isEmail(newEmail)) {
             return CommonResult.errorResponse("邮箱格式错误！");
         }
         // 获取当前登录的用户
@@ -517,7 +530,7 @@ public class AccountController {
 
     @PostMapping("/change-userInfo")
     @RequiresAuthentication
-    public CommonResult changeEmail(@RequestBody HashMap<String,Object> params, HttpServletRequest request) {
+    public CommonResult changeEmail(@RequestBody HashMap<String, Object> params, HttpServletRequest request) {
 
         // 获取当前登录的用户
         HttpSession session = request.getSession();
@@ -536,7 +549,7 @@ public class AccountController {
 
         boolean result = userInfoDao.updateById(userInfo);
 
-        if (result){
+        if (result) {
             return CommonResult.successResponse(MapUtil.builder()
                     .put("uid", userRolesVo.getUid())
                     .put("username", userRolesVo.getUsername())
@@ -553,7 +566,7 @@ public class AccountController {
                     .put("cfUsername", userInfo.getCfUsername())
                     .put("roleList", userRolesVo.getRoles().stream().map(Role::getRole))
                     .map(), "更新个人信息成功！");
-        }else{
+        } else {
             return CommonResult.errorResponse("更新个人信息失败！");
         }
 

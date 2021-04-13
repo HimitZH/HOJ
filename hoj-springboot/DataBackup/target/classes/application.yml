@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: prod
 
 ---
 # 消费者将要去访问的微服务名称（注册成功进入nacos的微服务提供者）
@@ -9,7 +9,7 @@ service-url:
   name: hoj-judge-server # 服务名
 
 spring:
-  profiles: dev
+  profiles: prod
   # 配置文件上传限制
   servlet:
     multipart:
@@ -17,9 +17,12 @@ spring:
       max-request-size: 50MB
   mail:
     properties.mail.smtp.ssl.enable: ${hoj.mail.ssl}
+    properties.mail.smtp.starttls.enable: true
+    properties.mail.smtp.starttls.required: true
     username: ${hoj.mail.username}
     password: ${hoj.mail.password}
     host: ${hoj.mail.host}
+    port: ${hoj.mail.port}
   redis:
     host: ${hoj.redis.host}
     port: ${hoj.redis.port}
@@ -30,6 +33,7 @@ spring:
         max-idle: 200 #连接池中的最大空闲连接
         max-active: 500 #连接池最大连接数（使用负值表示没有限制）
         max-wait: -1 #连接池最大阻塞等待时间（使用负值表示没有限制）
+    password: ${hoj.redis.password}
   datasource:
     username: ${hoj.db.username}
     password: ${hoj.db.password}
@@ -69,7 +73,7 @@ shiro-redis:
   enabled: true
   redis-manager:
     host: ${hoj.redis.host}:${hoj.redis.port}
-
+    password: ${hoj.redis.password}
 
 ribbon:
   # 指的是建立连接所用的时间，适用于网络状况正常的情况下，俩端连接所用的时间 单位是秒
@@ -84,6 +88,7 @@ logging:
         nacos:
           client:
             naming: error
+    root: error
 
 # 开启Hystrix断路器
 feign:

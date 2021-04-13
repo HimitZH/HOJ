@@ -1,14 +1,12 @@
 package top.hcode.hoj.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.apache.ibatis.type.JdbcType;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -65,7 +63,7 @@ public class Problem implements Serializable {
     @ApiModelProperty(value = "是否为vj判题")
     private Boolean isRemote;
 
-    @ApiModelProperty(value = "题目来源（vj判题时例如HDU-1000）")
+    @ApiModelProperty(value = "题目来源（vj判题时例如HDU-1000的链接）")
     private String source;
 
     @ApiModelProperty(value = "题目难度")
@@ -84,9 +82,11 @@ public class Problem implements Serializable {
     private Boolean codeShare;
 
     @ApiModelProperty(value = "特判程序的代码 空代表无特判")
+    @TableField(value="spj_code",updateStrategy = FieldStrategy.IGNORED)
     private String spjCode;
 
     @ApiModelProperty(value = "特判程序的语言")
+    @TableField(value="spj_language",updateStrategy = FieldStrategy.IGNORED)
     private String spjLanguage;
 
     @ApiModelProperty(value = "是否默认去除用户代码的文末空格")

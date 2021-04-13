@@ -33,7 +33,7 @@ import java.util.*;
  */
 @RestController
 @RefreshScope
-@RequestMapping("/admin/problem")
+@RequestMapping("/api/admin/problem")
 public class AdminProblemController {
 
     @Autowired
@@ -66,7 +66,8 @@ public class AdminProblemController {
             queryWrapper
                     .like("title", keyword).or()
                     .like("author", keyword).or()
-                    .like("problem_id", keyword);
+                    .like("problem_id", keyword)
+                    .orderByAsc("gmt_create");
             problemList = problemService.page(iPage, queryWrapper);
         } else {
             problemList = problemService.page(iPage, queryWrapper);

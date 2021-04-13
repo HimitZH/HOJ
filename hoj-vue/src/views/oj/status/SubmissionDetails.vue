@@ -382,7 +382,6 @@ export default {
 pre {
   border: none;
   background: none;
-  padding-top: 13px;
 }
 .test-detail-item {
   width: 100%;

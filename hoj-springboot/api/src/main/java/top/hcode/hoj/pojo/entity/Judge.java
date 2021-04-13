@@ -80,8 +80,7 @@ public class Judge implements Serializable {
     @ApiModelProperty(value = "比赛中题目排序id，非比赛题目默认为0")
     private Long cpid;
 
-    @ApiModelProperty(value = "判题机ip")
-    @TableField(updateStrategy = FieldStrategy.IGNORED)
+    @ApiModelProperty(value = "判题机名称")
     private String judger;
 
     @ApiModelProperty(value = "提交者所在ip")

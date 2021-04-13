@@ -744,10 +744,26 @@ export default {
       }
     },
     changeSampleUploadMethod() {
-      if (!this.isUploadTestCase && this.problemSamples.length == 0) {
-        api.admin_getProblemCases(this.pid).then((res) => {
-          this.problemSamples = res.data.data;
-        });
+      if (
+        !this.isUploadTestCase &&
+        this.problemSamples.length == 0 &&
+        this.mode == 'edit'
+      ) {
+        this.$confirm(
+          '你确定要获取显示该题目的评测数据？可能评测数据量大容易导致显示错误！',
+          '注意',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+          }
+        )
+          .then(() => {
+            api.admin_getProblemCases(this.pid).then((res) => {
+              this.problemSamples = res.data.data;
+            });
+          })
+          .catch(() => {});
       }
     },
     switchSpj() {
@@ -856,9 +872,10 @@ export default {
     uploadSucceeded(response) {
       if (response.status != 200) {
         myMessage.error(response.msg);
+        this.testCaseUploaded = false;
         return;
       }
-      myMessage.error('上传测试数据包成功');
+      myMessage.success('上传测试数据包成功');
       let fileList = response.data.fileList;
       for (let file of fileList) {
         file.score = (this.problem.ioScore / fileList.length).toFixed(0);
@@ -916,24 +933,47 @@ export default {
         }
       }
       if (!this.problem.isRemote) {
+        // 选择手动输入
         if (!this.isUploadTestCase) {
-          // 如果是选择手动输入评测数据
           if (!this.problemSamples.length) {
             myMessage.error('评测数据不能为空！请手动输入评测数据！');
             return;
           }
 
           for (let sample of this.problemSamples) {
-            if (!sample.input || !sample.output) {
-              myMessage.error('每一项评测数据的输入输出都不能为空！');
+            if (!sample.input && !sample.output) {
+              myMessage.error('每一项评测数据的输入和输出都不能同时为空！');
               return;
             }
           }
-        }
-        // 如果是编辑题目，同时是io题目，则对应的每个测试样例的io得分不能为空或小于0
-        if (this.problem.type == 1) {
-          if (this.mode === 'edit') {
+
+          // 同时是oi题目，则对应的每个测试样例的io得分不能为空或小于0
+          if (this.problem.type == 1) {
             for (let item of this.problemSamples) {
+              try {
+                if (parseInt(item.score) < 0) {
+                  myMessage.error('测评得分小于0是无效的！');
+                  return;
+                }
+              } catch (e) {
+                myMessage.error('测评得分的结果必须是整数类型！');
+                return;
+              }
+            }
+          }
+        } else {
+          // 选择上传文件
+
+          // 两种情况：create模式是需要校验是否上传成功了，edit模式获取题目数据已经默认为true了，若是edit又重新上传数据，需要校验
+          if (!this.testCaseUploaded) {
+            this.error.testCase = '评测数据不能为空！请先上传评测数据！';
+            myMessage.error(this.error.testCase);
+            return;
+          }
+
+          // 如果是oi题目，需要检查上传的数据的得分
+          if (this.problem.type == 1) {
+            for (let item of this.problem.testCaseScore) {
               try {
                 if (parseInt(item.score) <= 0) {
                   myMessage.error('测评得分小于0是无效的！');
@@ -942,28 +982,6 @@ export default {
               } catch (e) {
                 myMessage.error('测评得分的结果必须是数字类型！');
                 return;
-              }
-            }
-          }
-        } else {
-          if (!this.testCaseUploaded) {
-            this.error.testCase = '评测数据不能为空！请先上传评测数据！';
-            myMessage.error(this.error.testCase);
-            return;
-          }
-          if (this.mode !== 'edit') {
-            // 新建题目，且选择上传测试数据，同时是oi题目需要检查分数正常
-            if (this.problem.type == 1) {
-              for (let item of this.problem.testCaseScore) {
-                try {
-                  if (parseInt(item.score) <= 0) {
-                    myMessage.error('测评得分小于0是无效的！');
-                    return;
-                  }
-                } catch (e) {
-                  myMessage.error('测评得分的结果必须是数字类型！');
-                  return;
-                }
               }
             }
           }
@@ -1046,6 +1064,7 @@ export default {
       problemDto['languages'] = problemLanguageList;
       problemDto['isUploadTestCase'] = this.isUploadTestCase;
       problemDto['uploadTestcaseDir'] = this.problem.uploadTestcaseDir;
+      problemDto['isSpj'] = this.problem.spj;
       // 如果选择上传文件，则使用上传后的结果
       if (this.isUploadTestCase) {
         problemDto['samples'] = this.problem.testCaseScore;

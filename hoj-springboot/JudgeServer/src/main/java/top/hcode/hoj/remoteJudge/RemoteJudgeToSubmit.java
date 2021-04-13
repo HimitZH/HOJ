@@ -1,16 +1,13 @@
-package top.hcode.hoj.remoteJudge.submit;
+package top.hcode.hoj.remoteJudge;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.Message;
-import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.pojo.entity.Judge;
-import top.hcode.hoj.remoteJudge.result.RemoteJudgeResultDispatcher;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeFactory;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.service.impl.JudgeServiceImpl;
@@ -22,48 +19,43 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public class RemoteJudgeSubmitReceiver implements MessageListener {
+public class RemoteJudgeToSubmit {
 
     @Autowired
     private RedisUtils redisUtils;
 
     @Autowired
-    private RemoteJudgeResultDispatcher remoteJudgeResultDispatcher;
+    private RemoteJudgeGetResult remoteJudgeGetResult;
 
     @Autowired
     private JudgeServiceImpl judgeService;
 
-    @Override
-    public void onMessage(Message message, byte[] bytes) {
-//        log.debug("RemoteJudgeSubmitReceiver获取到消息{}", Arrays.toString(message.getBody()));
-        String source = (String) redisUtils.lrPop(Constants.RemoteJudge.JUDGE_WAITING_SUBMIT_QUEUE.getName());
-        // 如果竞争不到提交队列，结束
-        if (source == null) {
-            return;
-        }
-        JSONObject task = JSONUtil.parseObj(source);
-        String remotePid = task.getStr("remotePid");
-        Long submitId = task.getLong("submitId");
-        String uid = task.getStr("uid");
-        Long cid = task.getLong("cid");
-        Long pid = task.getLong("pid");
-        String remoteJudge = task.getStr("remoteJudge");
-        String language = task.getStr("language");
-        String userCode = task.getStr("userCode");
-        String username = task.getStr("username");
-        String password = task.getStr("password");
+    @Value("${hoj-judger.name}")
+    private String name;
+
+
+    public void sendTask(String username, String password, String remoteJudge, String remotePid, Long submitId,
+                         String uid, Long cid, Long pid, String language, String userCode) {
+
         RemoteJudgeStrategy remoteJudgeStrategy = RemoteJudgeFactory.selectJudge(remoteJudge);
         // 获取不到对应的题库或者题库写错了
         if (remoteJudgeStrategy == null) {
             log.error("暂不支持该{}题库---------------->请求失败", remoteJudge);
+            // 更新此次提交状态为系统失败！
+            UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
+            judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus())
+                    .set("error_message", "The judge server does not support this oj:" + remoteJudge)
+                    .eq("submit_id", submitId);
+            judgeService.update(judgeUpdateWrapper);
+            return;
         }
 
         Map<String, Object> submitResult = null;
         try {
             submitResult = remoteJudgeStrategy.submit(username, password, remotePid, language, userCode);
         } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
+            log.error(remoteJudge + "的远程提交发生异常---------->{}", e.getMessage());
+        } finally {
             // 将使用的账号放回对应列表
             JSONObject account = new JSONObject();
             account.set("username", username);
@@ -78,19 +70,28 @@ public class RemoteJudgeSubmitReceiver implements MessageListener {
             judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
                     .eq("submit_id", submitId);
             judgeService.update(judgeUpdateWrapper);
+            // 更新其它表
+            judgeService.updateOtherTable(submitId,
+                    Constants.Judge.STATUS_SYSTEM_ERROR.getStatus(),
+                    cid,
+                    uid,
+                    pid,
+                    null);
             log.error("网络错误---------------->获取不到提交ID");
             return;
         }
 
         // 提交成功顺便更新状态为-->STATUS_JUDGING 判题中...
-        judgeService.updateById(new Judge().setSubmitId(submitId).setStatus(Constants.Judge.STATUS_JUDGING.getStatus()));
-        try {
-            remoteJudgeResultDispatcher.sendTask(remoteJudge, username, submitId, uid, cid, pid,
-                    (Long) submitResult.get("runId"), (String) submitResult.get("token"),
-                    (HashMap<String, String>) submitResult.get("cookies"));
-        } catch (Exception e) {
-            log.error("调用redis消息发布异常,此次远程查询结果任务判为系统错误--------------->{}", e.getMessage());
-        }
+        judgeService.updateById(new Judge()
+                .setSubmitId(submitId)
+                .setStatus(Constants.Judge.STATUS_JUDGING.getStatus())
+                .setJudger(name)
+        );
+
+        // 调用获取远程判题结果
+        remoteJudgeGetResult.sendTask(remoteJudge, username, submitId, uid, cid, pid,
+                (Long) submitResult.get("runId"), (String) submitResult.get("token"),
+                (HashMap<String, String>) submitResult.get("cookies"));
 
     }
 }

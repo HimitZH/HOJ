@@ -24,6 +24,7 @@ let routes = new Set([...ojRoutes, ...adminRoutes]);
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
+  routes,
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
       return savedPosition
@@ -31,7 +32,6 @@ const router = new VueRouter({
       return { x: 0, y: 0 }
     }
   },
-  routes
 })
 
 

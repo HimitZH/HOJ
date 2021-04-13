@@ -679,9 +679,7 @@ export default {
   padding-bottom: 0px;
   text-align: center;
 }
-/deep/ .el-button {
-  padding: 0;
-}
+
 /deep/ .el-dialog {
   border-radius: 6px !important;
   text-align: center;

@@ -220,7 +220,8 @@ public class JudgeController {
         // 将提交加入任务队列
         if (judgeDto.getIsRemote()) { // 如果是远程oj判题
             remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getDisplayPid(),
-                    judge.getCid() == 0, 1);
+                    judge.getCid() != 0, 1);
+
         } else {
             judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getCid() == 0, 1);
         }
@@ -280,10 +281,10 @@ public class JudgeController {
         // 将提交加入任务队列
         if (problem.getIsRemote()) { // 如果是远程oj判题
             remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, problem.getProblemId(),
-                    judge.getCid() == 0, 1);
+                    judge.getCid() != 0, 1);
         } else {
             judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken,
-                    judge.getCid() == 0, 1);
+                    judge.getCid() != 0, 1);
         }
         return CommonResult.successResponse(judge, "重新提交成功！");
     }
@@ -340,6 +341,14 @@ public class JudgeController {
 
     }
 
+
+    /**
+     * @MethodName updateSubmission
+     * @Params * @param null
+     * @Description 修改单个提交详情的分享权限
+     * @Return CommonResult
+     * @Since 2021/1/2
+     */
     @PutMapping("/submission")
     @RequiresAuthentication
     public CommonResult updateSubmission(@RequestBody Judge judge, HttpServletRequest request) {
@@ -349,10 +358,12 @@ public class JudgeController {
         if (!userRolesVo.getUid().equals(judge.getUid())) { // 判断该提交是否为当前用户的
             return CommonResult.errorResponse("对不起，您不能修改他人的代码分享权限！");
         }
-        if (judge.getCid() == 0) { // 如果是比赛提交，不可分享！
+        Judge judgeInfo = judgeService.getById(judge.getSubmitId());
+        if (judgeInfo.getCid() != 0) { // 如果是比赛提交，不可分享！
             return CommonResult.errorResponse("对不起，您不能分享比赛题目的提交代码！");
         }
-        boolean result = judgeService.updateById(judge);
+        judgeInfo.setShare(judge.getShare());
+        boolean result = judgeService.updateById(judgeInfo);
         if (result) {
             if (judge.getShare()) {
                 return CommonResult.successResponse(null, "设置代码公开成功！");

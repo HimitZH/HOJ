@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import top.hcode.hoj.common.result.CommonResult;
+
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -55,13 +56,13 @@ public class GlobalExceptionHandler {
 
     /**
      * 401 -UnAuthorized UnauthenticatedException,token相关异常 即是认证出错 可能无法处理！
-     *  没有登录（没有token），访问有@RequiresAuthentication的请求路径会报这个异常
+     * 没有登录（没有token），访问有@RequiresAuthentication的请求路径会报这个异常
      */
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(value = UnauthenticatedException.class)
     public CommonResult handleUnauthenticatedException(UnauthenticatedException e,
-                                                      HttpServletRequest httpRequest,
-                                                      HttpServletResponse httpResponse) {
+                                                       HttpServletRequest httpRequest,
+                                                       HttpServletResponse httpResponse) {
         httpResponse.setHeader("Url-Type", httpRequest.getHeader("Url-Type")); // 为了前端能区别请求来源
         return CommonResult.errorResponse("请您先登录！", CommonResult.STATUS_ACCESS_DENIED);
     }
@@ -195,7 +196,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = MessagingException.class)
     public CommonResult handler(MessagingException e) throws Exception {
         log.error("邮箱系统异常-------------->{}", e.getMessage());
-        return CommonResult.errorResponse(e.getMessage(), CommonResult.STATUS_ERROR);
+        return CommonResult.errorResponse("服务器异常，请稍后尝试！", CommonResult.STATUS_ERROR);
     }
 
     /**
@@ -204,7 +205,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(ServiceException.class)
     public CommonResult handleServiceException(ServiceException e) {
-        return CommonResult.errorResponse("业务逻辑异常:" + e.getCause(), CommonResult.STATUS_ERROR);
+        log.error("业务逻辑异常-------------->{}", e.getMessage());
+        return CommonResult.errorResponse("服务器异常，请稍后尝试！", CommonResult.STATUS_ERROR);
     }
 
     /**
@@ -214,7 +216,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public CommonResult handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         log.error("操作数据库出现异常-------------->{}", e.getMessage());
-        return CommonResult.errorResponse("操作数据库出现异常：字段重复、有外键关联等", CommonResult.STATUS_ERROR);
+        return CommonResult.errorResponse("服务器异常，请稍后尝试！", CommonResult.STATUS_ERROR);
     }
 
 
@@ -225,7 +227,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SQLException.class)
     public CommonResult handleSQLException(SQLException e) {
         log.error("操作数据库出现异常-------------->{}", e.getMessage());
-        return CommonResult.errorResponse("操作失败！错误提示："+e.getMessage(), CommonResult.STATUS_ERROR);
+        return CommonResult.errorResponse("操作失败！错误提示：" + e.getMessage(), CommonResult.STATUS_ERROR);
     }
 
     /**
@@ -245,6 +247,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public CommonResult handleException(Exception e) {
         log.error("系统通用异常-------------->{}", e.getMessage());
-        return CommonResult.errorResponse("系统通用异常：" + e.getCause(), CommonResult.STATUS_ERROR);
+        return CommonResult.errorResponse("服务器异常，请稍后尝试！", CommonResult.STATUS_ERROR);
     }
 }

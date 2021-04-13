@@ -30,7 +30,7 @@ import java.util.List;
  * @Description:
  */
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 public class AdminAccountController {
 
     @Autowired

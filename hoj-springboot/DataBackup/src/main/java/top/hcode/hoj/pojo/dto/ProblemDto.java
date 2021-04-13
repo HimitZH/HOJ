@@ -25,6 +25,8 @@ public class ProblemDto {
 
     private String uploadTestcaseDir;
 
+    private Boolean isSpj;
+
     private List<Language> languages;
 
     private List<Tag> tags;

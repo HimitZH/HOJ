@@ -2,18 +2,16 @@ package top.hcode.hoj.judge.self;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.Message;
-import org.springframework.data.redis.connection.MessageListener;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.Judge;
 import top.hcode.hoj.pojo.entity.ToJudge;
 import top.hcode.hoj.service.ToJudgeService;
 import top.hcode.hoj.service.impl.JudgeServiceImpl;
+import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.utils.RedisUtils;
 
 /**
  * @Author: Himit_ZH
@@ -23,26 +21,35 @@ import top.hcode.hoj.service.impl.JudgeServiceImpl;
  * 3. 再次接受到信息，再次查询是否有空闲判题服务器，若有则进行判题，否则回到2
  */
 @Component
-public class JudgeReceiver implements MessageListener {
+@Async
+public class JudgeReceiver {
 
     @Autowired
     private ToJudgeService toJudgeService;
 
     @Autowired
+    private RedisUtils redisUtils;
+
+    @Autowired
     private JudgeServiceImpl judgeService;
 
+    @Autowired
+    private JudgeDispatcher judgeDispatcher;
 
-    @Override
-    public void onMessage(Message message, byte[] bytes) {
+    public void processWaitingTask() {
+        // 如果队列中还有任务，则继续处理
+        if (redisUtils.lGetListSize(Constants.Judge.STATUS_JUDGE_WAITING.getName()) > 0) {
+            String taskJsonStr = (String) redisUtils.lrPop(Constants.Judge.STATUS_JUDGE_WAITING.getName());
+            // 再次检查
+            if (taskJsonStr != null) {
+                handleJudgeMsg(taskJsonStr);
+            }
+        }
+    }
 
-        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
-        ObjectMapper om = new ObjectMapper();
-        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-        jackson2JsonRedisSerializer.setObjectMapper(om);
+    private void handleJudgeMsg(String taskJsonStr) {
 
-        String taskJson = (String) jackson2JsonRedisSerializer.deserialize(message.getBody());
-        JSONObject task = JSONUtil.parseObj(taskJson);
+        JSONObject task = JSONUtil.parseObj(taskJsonStr);
         Long submitId = task.getLong("submitId");
         String token = task.getStr("token");
         Integer tryAgainNum = task.getInt("tryAgainNum");
@@ -53,5 +60,10 @@ public class JudgeReceiver implements MessageListener {
                 .setToken(token)
                 .setRemoteJudge(null)
                 .setTryAgainNum(tryAgainNum));
+
+        // 接着处理任务
+        processWaitingTask();
+
     }
+
 }

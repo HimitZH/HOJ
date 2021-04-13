@@ -277,7 +277,7 @@ export default {
 
     downloadRankCSV() {
       utils.downloadFile(
-        `/file/download-contest-rank?cid=${
+        `/api/file/download-contest-rank?cid=${
           this.$route.params.contestID
         }&forceRefresh=${this.forceUpdate ? true : false}`
       );

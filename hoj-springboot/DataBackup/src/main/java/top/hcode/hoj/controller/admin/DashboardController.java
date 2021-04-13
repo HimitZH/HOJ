@@ -28,7 +28,7 @@ import java.util.List;
  * @Description:
  */
 @RestController
-@RequestMapping("/admin/dashboard")
+@RequestMapping("/api/admin/dashboard")
 public class DashboardController {
 
     @Autowired
