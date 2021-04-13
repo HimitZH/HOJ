@@ -1,11 +1,53 @@
 package top.hcode.hoj.utils;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 /**
  * @Author: Himit_ZH
  * @Date: 2021/1/1 13:00
  * @Description: 常量枚举类
  */
+@Component
 public class Constants {
+
+    public static String ojAddr;
+
+    public static String ojName;
+
+    public static String ojShortName;
+
+    public static String ojEmailBg;
+
+    public static String ojEmailFrom;
+
+
+
+    @Value("${hoj-backstage.addr}")
+    public void setOjAddr(String ojAddr) {
+        Constants.ojAddr = ojAddr;
+    }
+
+    @Value("${hoj-backstage.name}")
+    public void setOjName(String ojName) {
+        Constants.ojName = ojName;
+    }
+
+    @Value("${hoj-backstage.short-name}")
+    public void setOjShortName(String ojShortName) {
+        Constants.ojShortName = ojShortName;
+    }
+
+    @Value("${hoj-backstage.email-bg}")
+    public void setOjEmailBg(String ojEmailBg) {
+        Constants.ojEmailBg = ojEmailBg;
+    }
+
+    @Value("${hoj.mail.username}")
+    public void setOjEmailFrom(String ojEmailFrom) {
+        Constants.ojEmailFrom = ojEmailFrom;
+    }
+
     /**
      * @Description 提交评测结果的状态码
      * @Since 2021/1/1
@@ -143,19 +185,19 @@ public class Constants {
      */
     public enum File {
 
-        USER_FILE_HOST("http://localhost:9010"),
+        USER_FILE_HOST(ojAddr),
 
-        USER_AVATAR_FOLDER("D:\\avatar\\"),
+        USER_AVATAR_FOLDER("/hoj/file/avatar"),
 
-        MARKDOWN_IMG_FOLDER("D:\\md\\"),
+        MARKDOWN_IMG_FOLDER("/hoj/md"),
 
-        IMG_API("/public/img/"),
+        IMG_API("/api/public/img/"),
 
-        TESTCASE_BASE_FOLDER("D:\\zip\\"),
+        TESTCASE_BASE_FOLDER("/hoj/file/zip"),
 
-        TESTCASE_DOWNLOAD_TMP_FOLDER("D:\\zip\\download"),
+        TESTCASE_DOWNLOAD_TMP_FOLDER("/hoj/file/zip/download"),
 
-        CONTEST_AC_SUBMISSION_TMP_FOLDER("D:\\zip\\contest_ac");
+        CONTEST_AC_SUBMISSION_TMP_FOLDER("/hoj/file/zip/contest_ac");
 
         private final String path;
 
@@ -175,14 +217,16 @@ public class Constants {
      */
 
     public enum Email {
-        OJ_URL("http://localhost:8080"),
-        OJ_NAME("Hcode Online Judge"),
-        OJ_SHORT_NAME("HOJ"),
-        EMAIL_FROM("oj.hcode@qq.com"),
-        EMAIL_BACKGROUND_IMG("https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/HCODE.png"),
+
+        OJ_URL(ojAddr),
+        OJ_NAME(ojName),
+        OJ_SHORT_NAME(ojShortName),
+        EMAIL_FROM(ojEmailFrom),
+        EMAIL_BACKGROUND_IMG(ojEmailBg),
         REGISTER_KEY_PREFIX("register-user:"),
         RESET_PASSWORD_KEY_PREFIX("reset-password:");
-        private String value;
+
+        private final String value;
 
         Email(String value) {
             this.value = value;

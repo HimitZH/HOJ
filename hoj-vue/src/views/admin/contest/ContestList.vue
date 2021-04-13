@@ -208,7 +208,7 @@ export default {
       this.currentId = contestId;
     },
     downloadSubmissions() {
-      let url = `/file/download-contest-ac-submission?cid=${this.currentId}&excludeAdmin=${this.excludeAdmin}`;
+      let url = `/api/file/download-contest-ac-submission?cid=${this.currentId}&excludeAdmin=${this.excludeAdmin}`;
       utils.downloadFile(url);
       this.downloadDialogVisible = false;
     },

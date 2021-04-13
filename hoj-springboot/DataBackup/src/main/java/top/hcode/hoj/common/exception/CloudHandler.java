@@ -3,7 +3,6 @@ package top.hcode.hoj.common.exception;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.judge.remote.RemoteJudgeDispatcher;
@@ -44,7 +43,7 @@ public class CloudHandler implements ToJudgeService {
     // 调度判题服务器失败，可能是判题服务器有故障，或者全部达到判题最大数，那么将该提交重新进入等待队列
     @Override
     public CommonResult submitProblemJudge(ToJudge toJudge) {
-        if (toJudge.getTryAgainNum() == 40) {
+        if (toJudge.getTryAgainNum() == 30) {
             Judge judge = toJudge.getJudge();
             judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
             judge.setErrorMessage("Failed to connect the judgeServer. Please resubmit this submission again!");
@@ -58,7 +57,7 @@ public class CloudHandler implements ToJudgeService {
             }
             Judge judge = toJudge.getJudge();
             judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), toJudge.getToken(),
-                    judge.getCid() == 0, toJudge.getTryAgainNum() + 1);
+                    judge.getCid() != 0, toJudge.getTryAgainNum() + 1);
         }
         return CommonResult.errorResponse("判题服务器繁忙或出错，提交进入重判队列，请等待管理员处理！", CommonResult.STATUS_ERROR);
     }
@@ -70,14 +69,13 @@ public class CloudHandler implements ToJudgeService {
 
     @Override
     public CommonResult remoteJudge(ToJudge toJudge) {
-        System.out.println(toJudge.getTryAgainNum());
         // 将使用的账号放回对应列表
         JSONObject account = new JSONObject();
         account.set("username", toJudge.getUsername());
         account.set("password", toJudge.getPassword());
         redisUtils.llPush(Constants.Judge.getListNameByOJName(toJudge.getRemoteJudge().split("-")[0]), JSONUtil.toJsonStr(account));
 
-        if (toJudge.getTryAgainNum() == 40) {
+        if (toJudge.getTryAgainNum() == 30) {
             Judge judge = toJudge.getJudge();
             judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
             judge.setErrorMessage("Failed to connect the judgeServer. Please resubmit this submission again!");
@@ -93,7 +91,7 @@ public class CloudHandler implements ToJudgeService {
 
             Judge judge = toJudge.getJudge();
             remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), toJudge.getToken(),
-                    toJudge.getRemoteJudge(), judge.getCid() == 0, toJudge.getTryAgainNum() + 1);
+                    toJudge.getRemoteJudge(), judge.getCid() != 0, toJudge.getTryAgainNum() + 1);
         }
 
         return CommonResult.errorResponse("判题服务器繁忙或出错，提交进入重判队列，请等待管理员处理！", CommonResult.STATUS_ERROR);

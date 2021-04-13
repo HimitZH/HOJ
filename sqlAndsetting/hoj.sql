@@ -31,7 +31,7 @@ CREATE TABLE `announcement` (
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`),
   CONSTRAINT `announcement_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `auth` */
 
@@ -97,7 +97,7 @@ CREATE TABLE `contest` (
   PRIMARY KEY (`id`,`uid`),
   KEY `uid` (`uid`),
   CONSTRAINT `contest_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1012 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `contest_announcement` */
 
@@ -114,7 +114,7 @@ CREATE TABLE `contest_announcement` (
   KEY `contest_announcement_ibfk_2` (`aid`),
   CONSTRAINT `contest_announcement_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `contest` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `contest_announcement_ibfk_2` FOREIGN KEY (`aid`) REFERENCES `announcement` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Table structure for table `contest_explanation` */
 
@@ -152,7 +152,7 @@ CREATE TABLE `contest_problem` (
   KEY `contest_problem_ibfk_2` (`pid`),
   CONSTRAINT `contest_problem_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `contest` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `contest_problem_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `contest_record` */
 
@@ -188,7 +188,7 @@ CREATE TABLE `contest_record` (
   CONSTRAINT `contest_record_ibfk_3` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `contest_record_ibfk_4` FOREIGN KEY (`cpid`) REFERENCES `contest_problem` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `contest_record_ibfk_5` FOREIGN KEY (`submit_id`) REFERENCES `judge` (`submit_id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `contest_register` */
 
@@ -206,7 +206,7 @@ CREATE TABLE `contest_register` (
   KEY `contest_register_ibfk_2` (`uid`),
   CONSTRAINT `contest_register_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `contest` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `contest_register_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Table structure for table `contest_score` */
 
@@ -243,7 +243,7 @@ CREATE TABLE `file` (
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`),
   CONSTRAINT `file_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `judge` */
 
@@ -279,7 +279,7 @@ CREATE TABLE `judge` (
   CONSTRAINT `judge_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `judge_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `judge_ibfk_3` FOREIGN KEY (`username`) REFERENCES `user_info` (`username`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=208 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `judge_case` */
 
@@ -309,7 +309,7 @@ CREATE TABLE `judge_case` (
   CONSTRAINT `judge_case_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `judge_case_ibfk_3` FOREIGN KEY (`submit_id`) REFERENCES `judge` (`submit_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `judge_case_ibfk_4` FOREIGN KEY (`case_id`) REFERENCES `problem_case` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=201 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=176 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `language` */
 
@@ -327,7 +327,7 @@ CREATE TABLE `language` (
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `problem` */
 
@@ -362,7 +362,7 @@ CREATE TABLE `problem` (
   PRIMARY KEY (`id`,`problem_id`),
   KEY `author` (`author`),
   CONSTRAINT `problem_ibfk_1` FOREIGN KEY (`author`) REFERENCES `user_info` (`username`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1034 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1053 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `problem_case` */
 
@@ -380,7 +380,7 @@ CREATE TABLE `problem_case` (
   PRIMARY KEY (`id`),
   KEY `pid` (`pid`),
   CONSTRAINT `problem_case_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `problem_count` */
 
@@ -405,7 +405,7 @@ CREATE TABLE `problem_count` (
   PRIMARY KEY (`id`,`pid`),
   UNIQUE KEY `pid` (`pid`),
   CONSTRAINT `problem_count_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `problem_language` */
 
@@ -422,7 +422,7 @@ CREATE TABLE `problem_language` (
   KEY `lid` (`lid`),
   CONSTRAINT `problem_language_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `problem_language_ibfk_2` FOREIGN KEY (`lid`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=305 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=655 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `problem_tag` */
 
@@ -439,7 +439,7 @@ CREATE TABLE `problem_tag` (
   KEY `tid` (`tid`),
   CONSTRAINT `problem_tag_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `problem_tag_ibfk_2` FOREIGN KEY (`tid`) REFERENCES `tag` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `role` */
 
@@ -479,14 +479,14 @@ DROP TABLE IF EXISTS `session`;
 CREATE TABLE `session` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `uid` varchar(255) NOT NULL,
-  `user_agent` varchar(255) DEFAULT NULL,
+  `user_agent` varchar(512) DEFAULT NULL,
   `ip` varchar(255) DEFAULT NULL,
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`),
   CONSTRAINT `session_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=154 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `tag` */
 
@@ -500,7 +500,7 @@ CREATE TABLE `tag` (
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`name`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `user_acproblem` */
 
@@ -520,7 +520,7 @@ CREATE TABLE `user_acproblem` (
   CONSTRAINT `user_acproblem_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_acproblem_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_acproblem_ibfk_3` FOREIGN KEY (`submit_id`) REFERENCES `judge` (`submit_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=189 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `user_info` */
 
@@ -565,7 +565,7 @@ CREATE TABLE `user_record` (
   PRIMARY KEY (`id`,`uid`),
   KEY `uid` (`uid`),
   CONSTRAINT `user_record_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=293 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=300 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `user_role` */
 
@@ -582,7 +582,7 @@ CREATE TABLE `user_role` (
   KEY `role_id` (`role_id`) USING BTREE,
   CONSTRAINT `user_role_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_role_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=295 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=302 DEFAULT CHARSET=utf8;
 
 /* Trigger structure for table `contest` */
 

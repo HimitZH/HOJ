@@ -62,25 +62,6 @@ public class Constants {
 
     public enum RemoteJudge {
 
-        /**
-         * 提交问题队列
-         */
-        JUDGE_WAITING_SUBMIT_QUEUE("Remote Waiting Submit Queue"),
-
-        /**
-         * 等待结果队列
-         */
-        JUDGE_WAITING_RESULT_QUEUE("Remote Waiting Result Queue"),
-
-        /**
-         * 提交消息通知
-         */
-        JUDGE_SUBMIT_HANDLER("Remote Submit Handler"),
-
-        /**
-         * 查询结果通知
-         */
-        JUDGE_RESULT_HANDLER("Remote Result Handler"),
 
         HDU_JUDGE("HDU"),
 
@@ -121,20 +102,7 @@ public class Constants {
             return name;
         }
     }
-//    public enum JudgeServer {
-//        HDU_JUDGE("HDU", "hdu.com");
-//        private String judgeName;
-//        private final String judgeHost;
-//
-//        JudgeServer(String judgeName, String judgeHost) {
-//            this.judgeName = judgeName;
-//            this.judgeHost = judgeHost;
-//        }
-//
-//        public final String getName() {
-//            return judgeName;
-//        }
-//    }
+
 
 
     public enum JudgeDir {
@@ -162,7 +130,7 @@ public class Constants {
     public static List<String> defaultEnv = Arrays.asList(
             "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
             "LANG=en_US.UTF-8",
-            "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8");
+            "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8","HOME=/w");
 
     public static List<String> python3Env = Arrays.asList("LANG=en_US.UTF-8",
             "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8", "PYTHONIOENCODING=utf-8");
@@ -185,9 +153,9 @@ public class Constants {
 
         PYTHON2("Python2", "main.py", "main.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python -m py_compile ./{1}", defaultEnv),
 
-        PYTHON3("Python3", "main.py", "__pycache__/main.cpython-36.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python3 -m py_compile ./{1}", defaultEnv),
+        PYTHON3("Python3", "main.py", "__pycache__/main.cpython-37.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python3 -m py_compile ./{1}", defaultEnv),
 
-        GOLANG("Golang", "main.go", "main", 3000L, 5000L, 1024 * 1024 * 1024L, "/usr/bin/go build -o {1} {2}", defaultEnv),
+        GOLANG("Golang", "main.go", "main", 3000L, 5000L, 1024 * 1024 * 1024L, "/usr/bin/go build -o {2} {1}", defaultEnv),
 
         SPJ_C("SPJ-C", "spj.c", "spj", 3000L, 5000L, 1024 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c99 {1} -lm -o {2}", defaultEnv),
 

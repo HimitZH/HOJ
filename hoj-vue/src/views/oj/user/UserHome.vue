@@ -109,7 +109,6 @@
 </template>
 <script>
 import { mapActions } from 'vuex';
-import time from '@/common/time';
 import api from '@/common/api';
 import myMessage from '@/common/message';
 import Avatar from 'vue-avatar';

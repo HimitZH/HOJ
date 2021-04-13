@@ -5,9 +5,10 @@ hoj:
       password: your_mysql_password
       host: your_mysql_host
       port: your_mysql_port
-      name: hoj
+      name: your_mysql_database_name # 数据库名字默认hoj
     # 调用判题服务器的token，与数据服务后台必须一致！
     token: zsc-acm-hoj-judge-server
   redis:
     host: your_redis_host
     port: your_redis_port
+    password: your_redis_password

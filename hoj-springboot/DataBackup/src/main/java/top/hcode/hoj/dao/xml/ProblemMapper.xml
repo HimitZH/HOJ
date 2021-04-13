@@ -44,8 +44,11 @@
             <if test="tid != null">
                 and pt.tid = #{tid}
             </if>
+            <if test="oj != null">
+                and p.problem_id like concat(#{oj},'%')
+            </if>
         </where>
-        order by p.problem_id asc
+        order by length(p.problem_id) asc,p.problem_id asc
     </select>
 
     <!-- 子查询 :为了防止分页总数据数出错-->

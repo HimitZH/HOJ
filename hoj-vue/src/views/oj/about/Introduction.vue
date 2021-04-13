@@ -33,6 +33,10 @@
               ：您的解答正在排队等待测评中，请等待结果...
             </li>
             <li>
+              <span :class="getStatusColor(10)">Submitted Failed</span>
+              ：您的此次提交失败，请点击按钮重新提交...
+            </li>
+            <li>
               <span :class="getStatusColor(6)">Compiling</span>
               ：正在对您的源代码进行编译中，请等待结果...
             </li>

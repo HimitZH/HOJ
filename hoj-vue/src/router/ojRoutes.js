@@ -17,6 +17,7 @@ import ACMInfoAdmin from "@/views/oj/contest/children/ACMInfoAdmin.vue"
 import Announcements from "@/components/oj/common/Announcements.vue"
 import ContestRejudgeAdmin from "@/views/oj/contest/children/ContestRejudgeAdmin.vue"
 import Introduction from "@/views/oj/about/Introduction.vue"
+import Developer from "@/views/oj/about/Developer.vue"
 import NotFound from "@/views/404.vue"
 const ojRoutes = [
   {
@@ -83,7 +84,7 @@ const ojRoutes = [
     name: 'UserHome',
     path: '/user-home',
     component: UserHome,
-    meta: { requireAuth: true, title: 'User Home' }
+    meta: { title: 'User Home' }
   },
   {
     name: 'Setting',
@@ -152,6 +153,12 @@ const ojRoutes = [
     meta: {title: 'Introduction'},
     component:Introduction,
     meta: { title: 'Introduction' }
+  },
+  {
+    path: '/developer',
+    meta: {title: 'Developer'},
+    component:Developer,
+    meta: { title: 'Developer' }
   },
   {
     path: '*',

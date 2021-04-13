@@ -30,7 +30,7 @@ import java.util.List;
  * @Description:
  */
 @RestController
-@RequestMapping("/admin/contest")
+@RequestMapping("/api/admin/contest")
 public class AdminContestController {
 
     @Autowired

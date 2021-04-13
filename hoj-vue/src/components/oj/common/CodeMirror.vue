@@ -1,7 +1,7 @@
 <template>
   <div style="margin: 0px 0px 15px 0px;font-size: 14px;">
     <el-row class="header">
-      <el-col :xs="24" :md="16" :lg="16">
+      <el-col :xs="24" :sm="14" :md="14" :lg="14">
         <div class="select-row">
           <span>Langs:</span>
           <span>
@@ -44,7 +44,7 @@
           </span>
         </div>
       </el-col>
-      <el-col :xs="24" :md="8" :lg="8">
+      <el-col :xs="24" :sm="10" :md="10" :lg="10">
         <div class="select-row fl-right">
           <span>Theme:</span>
           <el-select
@@ -81,6 +81,15 @@ import 'codemirror/theme/monokai.css';
 import 'codemirror/theme/solarized.css';
 import 'codemirror/theme/material.css';
 
+// highlightSelectionMatches
+import 'codemirror/addon/scroll/annotatescrollbar.js';
+import 'codemirror/addon/search/matchesonscrollbar.js';
+import 'codemirror/addon/dialog/dialog.js';
+import 'codemirror/addon/dialog/dialog.css';
+import 'codemirror/addon/search/searchcursor.js';
+import 'codemirror/addon/search/search.js';
+import 'codemirror/addon/search/match-highlighter.js';
+
 // mode
 import 'codemirror/mode/clike/clike.js';
 import 'codemirror/mode/python/python.js';
@@ -101,8 +110,14 @@ import 'codemirror/addon/selection/active-line.js';
 // foldGutter
 import 'codemirror/addon/fold/foldgutter.css';
 import 'codemirror/addon/fold/foldgutter.js';
+import 'codemirror/addon/edit/matchbrackets.js';
 import 'codemirror/addon/fold/brace-fold.js';
 import 'codemirror/addon/fold/indent-fold.js';
+import 'codemirror/addon/hint/show-hint.css';
+import 'codemirror/addon/hint/show-hint.js';
+import 'codemirror/addon/hint/javascript-hint.js';
+import 'codemirror/addon/hint/anyword-hint.js';
+import 'codemirror/addon/selection/mark-selection.js';
 
 export default {
   name: 'CodeMirror',
@@ -145,10 +160,18 @@ export default {
         lineWrapping: true,
         // 选中文本自动高亮，及高亮方式
         styleSelectedText: true,
+        showCursorWhenSelecting: true,
         highlightSelectionMatches: { showToken: /\w/, annotateScrollbar: true },
+        // extraKeys: { Ctrl: 'autocomplete' }, //自定义快捷键
         autoFocus: true,
         showCursorWhenSelecting: false,
+        matchBrackets: true, //括号匹配
+        indentUnit: 4, //一个块（编辑语言中的含义）应缩进多少个空格
         styleActiveLine: true,
+        hintOptions: {
+          // 当匹配只有一项的时候是否自动补全
+          completeSingle: false,
+        },
       },
       mode: {
         C: 'text/x-csrc',
@@ -170,6 +193,11 @@ export default {
       this.editor.setOption('mode', this.mode[this.language]);
     });
     this.editor.focus();
+    this.editor.on('inputRead', (instance, changeObj) => {
+      if (/\w|\./g.test(changeObj.text[0]) && changeObj.origin !== 'complete') {
+        instance.showHint();
+      }
+    });
   },
   methods: {
     onEditorCodeChange(newCode) {
@@ -225,7 +253,7 @@ export default {
   margin-left: 5px;
 }
 .header .adjust {
-  width: 155px;
+  width: 170px;
   margin-left: 5px;
 }
 .select-row {

@@ -30,7 +30,7 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/admin/judge")
+@RequestMapping("/api/admin/judge")
 @RefreshScope
 public class AdminJudgeController {
 
@@ -102,9 +102,9 @@ public class AdminJudgeController {
             Problem problem = problemService.getById(judge.getPid());
             if (problem.getIsRemote()) { // 如果是远程oj判题
                 remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, problem.getProblemId(),
-                        judge.getCid() == 0, 1);
+                        judge.getCid() != 0, 1);
             } else {
-                judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getCid() == 0, 1);
+                judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getCid() != 0, 1);
             }
             return CommonResult.successResponse(judge, "重判成功！该提交已进入判题队列！");
         } else {
@@ -150,12 +150,12 @@ public class AdminJudgeController {
                 for (Judge judge : rejudgeList) {
                     // 进入重判队列，等待调用判题服务
                     remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, problem.getProblemId(),
-                            judge.getCid() == 0, 1);
+                            judge.getCid() != 0, 1);
                 }
             } else {
                 for (Judge judge : rejudgeList) {
                     // 进入重判队列，等待调用判题服务
-                    judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getCid() == 0, 1);
+                    judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judgeToken, judge.getCid() != 0, 1);
                 }
             }
 

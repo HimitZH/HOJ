@@ -20,7 +20,8 @@ import java.util.List;
  */
 
 public interface ProblemService extends IService<Problem> {
-    Page<ProblemVo> getProblemList(int limit, int currentPage, Long pid, String title, Integer difficulty, Long tid);
+    Page<ProblemVo> getProblemList(int limit, int currentPage, Long pid, String title,
+                                   Integer difficulty, Long tid, String oj);
 
     boolean adminUpdateProblem(ProblemDto problemDto);
 
@@ -28,5 +29,5 @@ public interface ProblemService extends IService<Problem> {
 
     ProblemStrategy.RemoteProblemInfo getOtherOJProblemInfo(String OJName, String problemId, String author) throws Exception;
 
-    boolean adminAddOtherOJProblem(ProblemStrategy.RemoteProblemInfo remoteProblemInfo,String OJName);
+    boolean adminAddOtherOJProblem(ProblemStrategy.RemoteProblemInfo remoteProblemInfo, String OJName);
 }

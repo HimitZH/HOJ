@@ -29,7 +29,7 @@ import java.util.*;
  * @Description:
  */
 @RestController
-@RequestMapping("/admin/user")
+@RequestMapping("/api/admin/user")
 public class AdminUserController {
 
     @Autowired

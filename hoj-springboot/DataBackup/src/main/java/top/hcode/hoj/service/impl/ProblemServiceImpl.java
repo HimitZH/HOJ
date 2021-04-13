@@ -65,12 +65,13 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
 
     @Override
-    public Page<ProblemVo> getProblemList(int limit, int currentPage, Long pid, String title, Integer difficulty, Long tid) {
+    public Page<ProblemVo> getProblemList(int limit, int currentPage, Long pid, String title, Integer difficulty,
+                                          Long tid, String oj) {
 
         //新建分页
         Page<ProblemVo> page = new Page<>(currentPage, limit);
 
-        return page.setRecords(problemMapper.getProblemList(page, pid, title, difficulty, tid));
+        return page.setRecords(problemMapper.getProblemList(page, pid, title, difficulty, tid, oj));
     }
 
     @Override
@@ -78,6 +79,10 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     public boolean adminUpdateProblem(ProblemDto problemDto) {
 
         Problem problem = problemDto.getProblem();
+
+        if (!problemDto.getIsSpj()) {
+            problem.setSpjLanguage(null).setSpjCode(null);
+        }
         problem.setProblemId(problem.getProblemId().toUpperCase());
         // 后面许多表的更新或删除需要用到题目id
         long pid = problemDto.getProblem().getId();
@@ -300,6 +305,11 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     public boolean adminAddProblem(ProblemDto problemDto) {
 
         Problem problem = problemDto.getProblem();
+
+        if (!problemDto.getIsSpj()) {
+            problem.setSpjLanguage(null).setSpjCode(null);
+        }
+
         // 设置测试样例的版本号
         problem.setCaseVersion(String.valueOf(System.currentTimeMillis()));
         problem.setProblemId(problem.getProblemId().toUpperCase());
@@ -431,9 +441,9 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                 tagFlag.put(hasTag.getName(), hasTag);
             }
             for (Tag tmp : addTagList) {
-                if (tagFlag.get(tmp.getName()) == null){
+                if (tagFlag.get(tmp.getName()) == null) {
                     needAddTagList.add(tmp);
-                }else{
+                } else {
                     needAddTagList.add(tagFlag.get(tmp.getName()));
                 }
             }

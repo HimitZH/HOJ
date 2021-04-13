@@ -755,7 +755,10 @@ export default {
     // 防止切换组件后仍然不断请求
     clearInterval(this.refreshStatus);
     storage.set(
-      buildProblemCodeKey(this.problemData.problem.id, from.params.contestID),
+      buildProblemCodeKey(
+        this.problemData.problem.problemId,
+        from.params.contestID
+      ),
       {
         code: this.code,
         language: this.language,

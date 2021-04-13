@@ -25,7 +25,7 @@ public class AnnouncementController {
     @Autowired
     private AnnouncementServiceImpl announcementDao;
 
-    @GetMapping("/admin/announcement")
+    @GetMapping("/api/admin/announcement")
     @RequiresRoles("root")  // 只有超级管理员能操作
     public CommonResult getAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
                                             @RequestParam(value = "currentPage", required = false) Integer currentPage){
@@ -39,7 +39,7 @@ public class AnnouncementController {
         }
     }
 
-    @DeleteMapping("/admin/announcement")
+    @DeleteMapping("/api/admin/announcement")
     @RequiresRoles("root")  // 只有超级管理员能操作
     public CommonResult deleteAnnouncement(@Valid @RequestParam("aid")long aid){
         boolean result = announcementDao.removeById(aid);
@@ -50,7 +50,7 @@ public class AnnouncementController {
         }
     }
 
-    @PostMapping("/admin/announcement")
+    @PostMapping("/api/admin/announcement")
     @RequiresRoles("root")  // 只有超级管理员能操作
     public CommonResult addAnnouncement(@RequestBody Announcement announcement){
         boolean result = announcementDao.save(announcement);
@@ -61,7 +61,7 @@ public class AnnouncementController {
         }
     }
 
-    @PutMapping("/admin/announcement")
+    @PutMapping("/api/admin/announcement")
     @RequiresRoles("root")  // 只有超级管理员能操作
     public CommonResult updateAnnouncement(@RequestBody Announcement announcement){
         boolean result = announcementDao.saveOrUpdate(announcement);

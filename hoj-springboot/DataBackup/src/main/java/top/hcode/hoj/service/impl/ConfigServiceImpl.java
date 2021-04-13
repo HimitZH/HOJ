@@ -115,9 +115,14 @@ public class ConfigServiceImpl implements ConfigService {
         if (!StringUtils.isEmpty(params.get("emailPassword"))) {
             configVo.setEmailPassword((String) params.get("emailPassword"));
         }
-        if (!StringUtils.isEmpty(params.get("emailHost"))) {
-            configVo.setEmailHost((String) params.get("emailHost"));
+        if (!StringUtils.isEmpty(params.get("emailPort"))) {
+            configVo.setEmailPort((Integer) params.get("emailPort"));
         }
+
+        if (!StringUtils.isEmpty(params.get("emailUsername"))) {
+            configVo.setEmailUsername((String) params.get("emailUsername"));
+        }
+
         if (params.get("emailSsl") != null) {
             configVo.setEmailSsl((Boolean) params.get("emailSsl"));
         }
@@ -175,6 +180,9 @@ public class ConfigServiceImpl implements ConfigService {
         }
         if (params.get("redisPort") != null) {
             configVo.setRedisPort((Integer) params.get("redisPort"));
+        }
+        if (params.get("redisPassword") != null) {
+            configVo.setRedisPassword((String) params.get("redisPassword"));
         }
         return sendNewConfigToNacos();
     }

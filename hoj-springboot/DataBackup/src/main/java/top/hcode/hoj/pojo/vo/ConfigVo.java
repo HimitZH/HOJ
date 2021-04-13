@@ -44,6 +44,9 @@ public class ConfigVo {
     @Value("${hoj.redis.port}")
     private Integer redisPort;
 
+    @Value("${hoj.redis.password}")
+    private String redisPassword;
+
     // jwt配置
     @Value("${hoj.jwt.secret}")
     private String tokenSecret;
@@ -63,6 +66,9 @@ public class ConfigVo {
 
     @Value("${hoj.mail.host}")
     private String emailHost;
+
+    @Value("${hoj.mail.port}")
+    private Integer emailPort;
 
     @Value("${hoj.mail.ssl}")
     private Boolean emailSsl;

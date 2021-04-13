@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
  * @Description:
  */
 @Controller
-@RequestMapping("/file")
+@RequestMapping("/api/file")
 @Slf4j
 public class FileController {
 
@@ -120,16 +120,13 @@ public class FileController {
         if (!"jpg,jpeg,gif,png,webp".toUpperCase().contains(suffix.toUpperCase())) {
             return CommonResult.errorResponse("请选择jpg,jpeg,gif,png,webp格式的头像图片！");
         }
-        File savePathFile = new File(Constants.File.USER_AVATAR_FOLDER.getPath());
-        if (!savePathFile.exists()) {
-            //若不存在该目录，则创建目录
-            savePathFile.mkdir();
-        }
+        //若不存在该目录，则创建目录
+        FileUtil.mkdir(Constants.File.USER_AVATAR_FOLDER.getPath());
         //通过UUID生成唯一文件名
         String filename = IdUtil.simpleUUID() + "." + suffix;
         try {
             //将文件保存指定目录
-            image.transferTo(new File(Constants.File.USER_AVATAR_FOLDER.getPath() + filename));
+            image.transferTo(FileUtil.file(Constants.File.USER_AVATAR_FOLDER.getPath() + File.separator + filename));
         } catch (Exception e) {
             log.error("头像文件上传异常-------------->{}", e.getMessage());
             return CommonResult.errorResponse("服务器异常：头像上传失败！", CommonResult.STATUS_ERROR);
@@ -152,7 +149,7 @@ public class FileController {
         // 插入file表记录
         top.hcode.hoj.pojo.entity.File imgFile = new top.hcode.hoj.pojo.entity.File();
         imgFile.setName(filename).setFolderPath(Constants.File.USER_AVATAR_FOLDER.getPath())
-                .setFilePath(Constants.File.USER_AVATAR_FOLDER.getPath() + filename)
+                .setFilePath(Constants.File.USER_AVATAR_FOLDER.getPath() + File.separator + filename)
                 .setSuffix(suffix)
                 .setType("avatar")
                 .setUid(userRolesVo.getUid());
@@ -437,7 +434,7 @@ public class FileController {
 
             for (Judge judge : userSubmissionList) {
                 String filePath = userDir + File.separator + cpIdMap.getOrDefault(judge.getCpid(), "null")
-                        + "_(" + threadLocal.get().format(judge.getSubmitTime())+")";
+                        + "_(" + threadLocal.get().format(judge.getSubmitTime()) + ")";
 
                 // OI模式只取最后一次提交
                 if (!isACM) {
@@ -453,7 +450,7 @@ public class FileController {
 
             }
         }
-        String zipFileName = "contest_"+contest.getId() + "_" + System.currentTimeMillis() + ".zip";
+        String zipFileName = "contest_" + contest.getId() + "_" + System.currentTimeMillis() + ".zip";
         String zipPath = Constants.File.CONTEST_AC_SUBMISSION_TMP_FOLDER.getPath() + File.separator + zipFileName;
         ZipUtil.zip(tmpFilesDir, zipPath);
         // 将zip变成io流返回给前端
@@ -569,16 +566,15 @@ public class FileController {
         if (!"jpg,jpeg,gif,png,webp".toUpperCase().contains(suffix.toUpperCase())) {
             return CommonResult.errorResponse("请选择jpg,jpeg,gif,png,webp格式的图片！");
         }
-        File savePathFile = new File(Constants.File.MARKDOWN_IMG_FOLDER.getPath());
-        if (!savePathFile.exists()) {
-            //若不存在该目录，则创建目录
-            savePathFile.mkdir();
-        }
+
+        //若不存在该目录，则创建目录
+        FileUtil.mkdir(Constants.File.MARKDOWN_IMG_FOLDER.getPath());
+
         //通过UUID生成唯一文件名
         String filename = IdUtil.simpleUUID() + "." + suffix;
         try {
             //将文件保存指定目录
-            image.transferTo(new File(Constants.File.MARKDOWN_IMG_FOLDER.getPath() + filename));
+            image.transferTo(FileUtil.file(Constants.File.MARKDOWN_IMG_FOLDER.getPath() + File.separator + filename));
         } catch (Exception e) {
             log.error("图片文件上传异常-------------->{}", e.getMessage());
             return CommonResult.errorResponse("服务器异常：图片文件上传失败！", CommonResult.STATUS_ERROR);
@@ -586,7 +582,7 @@ public class FileController {
 
         return CommonResult.successResponse(MapUtil.builder()
                         .put("link", Constants.File.USER_FILE_HOST.getPath() + Constants.File.IMG_API.getPath() + filename)
-                        .put("filePath", Constants.File.MARKDOWN_IMG_FOLDER.getPath() + filename).map(),
+                        .put("filePath", Constants.File.MARKDOWN_IMG_FOLDER.getPath() + File.separator + filename).map(),
                 "上传图片成功！");
 
     }

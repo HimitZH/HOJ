@@ -2,14 +2,10 @@ package top.hcode.hoj.judge.remote;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.connection.Message;
-import org.springframework.data.redis.connection.MessageListener;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import top.hcode.hoj.pojo.entity.Judge;
 import top.hcode.hoj.pojo.entity.ToJudge;
 import top.hcode.hoj.service.ToJudgeService;
@@ -17,8 +13,11 @@ import top.hcode.hoj.service.impl.JudgeServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
+import java.util.concurrent.TimeUnit;
+
 @Component
-public class RemoteJudgeReceiver implements MessageListener {
+@Async
+public class RemoteJudgeReceiver {
 
     @Autowired
     private ToJudgeService toJudgeService;
@@ -32,41 +31,80 @@ public class RemoteJudgeReceiver implements MessageListener {
     @Autowired
     private RedisUtils redisUtils;
 
-    @Override
-    public void onMessage(Message message, byte[] bytes) {
-        Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
-        ObjectMapper om = new ObjectMapper();
-        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-        jackson2JsonRedisSerializer.setObjectMapper(om);
-        String taskJson = (String) jackson2JsonRedisSerializer.deserialize(message.getBody());
-        JSONObject task = JSONUtil.parseObj(taskJson);
+
+    public void processWaitingTask() {
+        // 如果队列中还有任务，则继续处理
+        if (redisUtils.lGetListSize(Constants.Judge.STATUS_REMOTE_JUDGE_WAITING_HANDLE.getName()) > 0) {
+            String taskJsonStr = (String) redisUtils.lrPop(Constants.Judge.STATUS_REMOTE_JUDGE_WAITING_HANDLE.getName());
+            // 再次检查
+            if (taskJsonStr != null) {
+                handleJudgeMsg(taskJsonStr);
+            }
+        }
+    }
+
+
+    private void handleJudgeMsg(String taskJsonStr) {
+
+        JSONObject task = JSONUtil.parseObj(taskJsonStr);
+
         Long submitId = task.getLong("submitId");
         String token = task.getStr("token");
         Long pid = task.getLong("pid");
         String remoteJudge = task.getStr("remoteJudge");
         Boolean isContest = task.getBool("isContest");
-        String username = task.getStr("username");
-        String password = task.getStr("password");
         Integer tryAgainNum = task.getInt("tryAgainNum");
 
-        System.out.println(username);
-        System.out.println(password);
+        // 如果对应远程判题oj的账号列表还有账号
+        String remoteJudgeAccountListName = Constants.Judge.getListNameByOJName(remoteJudge.split("-")[0]);
 
-        if (username == null || password == null) {
-            remoteJudgeDispatcher.sendTask(submitId, pid, token, remoteJudge, isContest, tryAgainNum);
-            return;
+        String account, username, password;
+        if (redisUtils.lGetListSize(remoteJudgeAccountListName) > 0) {
+            account = (String) redisUtils.lrPop(remoteJudgeAccountListName);
+            if (StringUtils.isEmpty(account)) {
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                remoteJudgeDispatcher.sendTask(submitId, pid, token, remoteJudge, isContest, tryAgainNum + 1);
+
+            } else {
+                JSONObject accountJson = JSONUtil.parseObj(account);
+                username = accountJson.getStr("username");
+                password = accountJson.getStr("password");
+                Judge judge = judgeService.getById(submitId);
+                // 调用判题服务
+                toJudgeService.remoteJudge(new ToJudge()
+                        .setJudge(judge)
+                        .setToken(token)
+                        .setRemoteJudge(remoteJudge)
+                        .setUsername(username)
+                        .setPassword(password)
+                        .setTryAgainNum(tryAgainNum));
+
+                // 如果队列中还有任务，则继续处理
+                processWaitingTask();
+            }
+        } else {
+
+            if (tryAgainNum >= 40) {
+                // 获取调用多次失败可能为系统忙碌，判为提交失败
+                Judge judge = new Judge();
+                judge.setSubmitId(submitId);
+                judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
+                judge.setErrorMessage("Failed to connect the judgeServer. Please resubmit this submission again!");
+                judgeService.updateById(judge);
+            } else {
+
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                remoteJudgeDispatcher.sendTask(submitId, pid, token, remoteJudge, isContest, tryAgainNum + 1);
+            }
         }
 
-        Judge judge = judgeService.getById(submitId);
-
-        // 调用判题服务
-        toJudgeService.remoteJudge(new ToJudge()
-                .setJudge(judge)
-                .setToken(token)
-                .setRemoteJudge(remoteJudge)
-                .setUsername(username)
-                .setPassword(password)
-                .setTryAgainNum(tryAgainNum));
     }
 }

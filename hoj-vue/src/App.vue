@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="app">
     <el-backtop :right="10"></el-backtop>
     <div v-if="!isAdminView">
       <NavBar></NavBar>
@@ -47,8 +47,13 @@ export default {
     ...mapActions(['changeDomTitle', 'getWebsiteConfig']),
   },
   watch: {
-    $route() {
+    $route(newVal, oldVal) {
       this.changeDomTitle();
+      if (newVal !== oldVal && newVal.path.split('/')[1] == 'admin') {
+        this.isAdminView = true;
+      } else {
+        this.isAdminView = false;
+      }
     },
     websiteConfig() {
       this.changeDomTitle();
@@ -58,11 +63,12 @@ export default {
     ...mapState(['websiteConfig']),
   },
   created: function() {
-    try {
-      document.body.removeChild(document.getElementById('app-loader'));
-    } catch (e) {
-      console.log(e);
-    }
+    this.$nextTick(function() {
+      try {
+        document.body.removeChild(document.getElementById('app-loader'));
+      } catch (e) {}
+    });
+
     if (this.$route.path.split('/')[1] != 'admin') {
       this.isAdminView = false;
     } else {
