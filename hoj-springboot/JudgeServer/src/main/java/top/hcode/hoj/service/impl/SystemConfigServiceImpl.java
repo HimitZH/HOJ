@@ -1,20 +1,14 @@
 package top.hcode.hoj.service.impl;
 
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
+
 import com.sun.management.OperatingSystemMXBean;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import top.hcode.hoj.service.SystemConfigService;
-import top.hcode.hoj.util.IpUtils;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.management.ManagementFactory;
-import java.net.URLEncoder;
 import java.util.HashMap;
 
 /**
@@ -28,29 +22,20 @@ public class SystemConfigServiceImpl implements SystemConfigService {
 
     private static final int cpuNum = Runtime.getRuntime().availableProcessors();
 
-    @Value("${hoj-judger.task-num}")
-    private Integer taskNum;
-
-    @Value("${hoj-judger.max-task-num}")
-    private Integer maxTaskNum;
-
-    @Value("${spring.cloud.nacos.url}")
-    private String nacosUrl;
-
-    @Value("${hoj-judger.ip}")
+    @Value("${hoj-judge-server.ip}")
     private String ip;
 
-    @Value("${hoj-judger.port}")
+    @Value("${hoj-judge-server.port}")
     private Integer port;
 
-    @Value("${hoj-judger.name}")
+    @Value("${hoj-judge-server.name}")
     private String name;
 
     @Value("${spring.application.name}")
     private String judgeServiceName;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private JudgeServerServiceImpl judgeServerService;
 
     private static OperatingSystemMXBean osmxb = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
@@ -72,87 +57,4 @@ public class SystemConfigServiceImpl implements SystemConfigService {
         return result;
     }
 
-    public synchronized void reduceCurrentTaskNum() {
-        int currentTaskNum = getTaskNum();
-        if (currentTaskNum >= 1) {
-            setTaskNum(currentTaskNum - 1);
-        }
-    }
-
-    public synchronized void addCurrentTaskNum() {
-        int currentTaskNum = getTaskNum();
-        setTaskNum(currentTaskNum + 1);
-    }
-
-    @Override
-    public void updateJudgeTaskNum(Boolean add) {
-        int max = cpuNum;
-        if (maxTaskNum != -1) {
-            max = getMaxTaskNum();
-        }
-        String useIP = ip.equals("-1") ? IpUtils.getLocalIpv4Address() : ip;
-        if (add) {
-            addCurrentTaskNum();
-        } else {
-            reduceCurrentTaskNum();
-        }
-
-        JSONObject metaData = new JSONObject();
-        metaData.set("currentTaskNum", getTaskNum());
-        metaData.set("maxTaskNum", max);
-        metaData.set("judgeName", name);
-        String url = nacosUrl + "/nacos/v1/ns/instance?ip=" + useIP + "&port=" + getPort() +
-                "&serviceName=" + getJudgeServiceName() + "&metadata=";
-        try {
-            String encodeMeta = URLEncoder.encode(JSONUtil.toJsonStr(metaData), "utf-8");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-            ResponseEntity<String> result = restTemplate.exchange(url + encodeMeta, HttpMethod.PUT, entity, String.class);
-            if (result.getBody() == null || !result.getBody().equals("ok")) {
-                tryAgainUpdate(max,useIP);
-            }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void tryAgainUpdate(int max,String useIP) {
-        boolean retryable;
-        int attemptNumber = 0;
-        do {
-            JSONObject metaData = new JSONObject();
-            metaData.set("currentTaskNum", getTaskNum());
-            metaData.set("maxTaskNum", max);
-            metaData.set("judgeName", name);
-            String url = nacosUrl + "/nacos/v1/ns/instance?ip=" + useIP + "&port=" + getPort() +
-                    "&serviceName=" + getJudgeServiceName() + "&metadata=" + JSONUtil.toJsonStr(metaData);
-            String encodeUrl;
-            boolean success = false;
-            try {
-                encodeUrl = URLEncoder.encode(url, "utf-8");
-                String result = restTemplate.getForObject(encodeUrl, String.class);
-                if (result == null || result.equals("ok")) {
-                    success = true;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (success) {
-                return;
-            } else {
-                attemptNumber++;
-                retryable = attemptNumber < 3;
-                if (attemptNumber == 3) {
-                    break;
-                }
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        } while (retryable);
-    }
 }

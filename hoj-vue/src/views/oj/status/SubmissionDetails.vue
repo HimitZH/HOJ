@@ -1,6 +1,6 @@
 <template>
   <el-row type="flex" justify="space-around">
-    <el-col :span="22" id="status">
+    <el-col :span="24" id="status">
       <el-alert
         :type="status.type"
         show-icon
@@ -33,7 +33,7 @@
       </el-alert>
     </el-col>
 
-    <el-col v-if="tableData && !isCE" :span="22">
+    <el-col v-if="tableData && !isCE" :span="24">
       <vxe-table
         align="center"
         :data="tableData"
@@ -54,11 +54,9 @@
         </vxe-table-column>
         <vxe-table-column field="pid" title="Problem ID" min-width="100">
           <template v-slot="{ row }">
-            <a
-              :href="getProblemUri(row.displayPid)"
-              style="color: rgb(87, 163, 243)"
-              >{{ row.displayPid }}</a
-            >
+            <a @click="getProblemUri(row)" style="color: rgb(87, 163, 243)">{{
+              row.displayPid
+            }}</a>
           </template>
         </vxe-table-column>
         <vxe-table-column field="status" title="Status" min-width="170">
@@ -91,14 +89,14 @@
       </vxe-table>
     </el-col>
 
-    <el-col :span="22">
+    <el-col :span="24">
       <Highlight
         :code="submission.code"
         :language="submission.language"
-        :border-color="status.color"
+        :border-color.sync="status.color"
       ></Highlight>
     </el-col>
-    <el-col :span="22">
+    <el-col :span="24">
       <div id="share-btn">
         <el-button
           type="primary"
@@ -131,7 +129,7 @@
       </div>
     </el-col>
 
-    <el-col :span="22" v-if="testCaseResult">
+    <el-col :span="24" v-if="testCaseResult">
       <el-card style="margin-top: 20px;">
         <div slot="header">
           <span class="panel-title home-title">测试点详情</span>
@@ -199,6 +197,8 @@ export default {
         submitId: '',
         submitTime: '',
         pid: '',
+        cid: '',
+        displayPid: '',
         status: 0,
         time: '',
         memory: '',
@@ -246,8 +246,24 @@ export default {
       return utils.submissionLengthFormat(length);
     },
 
-    getProblemUri(pid) {
-      return '/problem/' + pid;
+    getProblemUri(row) {
+      if (row.cid != 0) {
+        // 比赛题目
+        this.$router.push({
+          name: 'ContestProblemDetails',
+          params: {
+            contestID: row.cid,
+            problemID: row.displayPid,
+          },
+        });
+      } else {
+        this.$router.push({
+          name: 'ProblemDetails',
+          params: {
+            problemID: row.displayPid,
+          },
+        });
+      }
     },
     getStatusColor(status) {
       return 'el-tag el-tag--medium status-' + JUDGE_STATUS[status].color;
@@ -279,6 +295,11 @@ export default {
             if (data.submission.score !== null) {
               this.isIOProblem = true;
             }
+          }
+          // 如果是比赛 需要显示的是比赛题号
+          console.log(this.$route.params.problemID);
+          if (this.$route.params.problemID && data.submission.cid != 0) {
+            data.submission.displayPid = this.$route.params.problemID;
           }
           this.submission = data.submission;
           this.tableData = [data.submission];

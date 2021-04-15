@@ -95,6 +95,7 @@ public class AdminJudgeController {
 
         // 设置默认值
         judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus()); // 开始进入判题队列
+        judge.setVersion(judge.getVersion() + 1);
         judge.setJudger(null).setTime(null).setMemory(null).setErrorMessage(null);
         boolean result = judgeService.updateById(judge);
         if (result) {
@@ -130,6 +131,7 @@ public class AdminJudgeController {
         // 全部设置默认值
         for (Judge judge : rejudgeList) {
             judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus()); // 开始进入判题队列
+            judge.setVersion(judge.getVersion() + 1);
             judge.setJudger(null).setTime(null).setMemory(null).setErrorMessage(null);
             submitIdList.add(judge.getSubmitId());
         }

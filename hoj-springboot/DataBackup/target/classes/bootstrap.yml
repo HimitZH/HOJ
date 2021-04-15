@@ -1,6 +1,6 @@
 hoj-backstage:
   port: 6688
-  nacos-url: 172.18.0.2:8848
+  nacos-url: http://172.18.0.2:8848
   addr: http://oj.hcode.top
   name: Hcode Online Judge
   short-name: HOJ

@@ -18,9 +18,9 @@
                 placeholder="Enter the display id of problem"
                 v-model="problem.problemId"
               >
-                <template slot="prepend" v-if="mode == 'add'"
-                  >{{ OJ_NAME }}-</template
-                >
+                <template slot="prepend" v-if="mode == 'add'">{{
+                  problemIdPrex
+                }}</template>
               </el-input>
             </el-form-item>
           </el-col>
@@ -544,7 +544,7 @@ export default {
       loadingCompile: false,
       mode: '', // 该题目是编辑或者创建
       contest: {},
-      OJ_NAME: 'HOJ',
+      problemIdPrex: 'HOJ-',
       pid: null, // 题目id，如果为创建模式则为null
       contestID: null, // 比赛id
       contestProblem: {
@@ -605,7 +605,12 @@ export default {
   },
   mounted() {
     this.routeName = this.$route.name;
-    this.OJ_NAME = OJ_NAME;
+    let contestID = this.$route.params.contestId;
+    this.problemIdPrex = OJ_NAME + '-';
+    // 比赛题目HOJ-C1000
+    if (contestID) {
+      this.problemIdPrex += 'C';
+    }
     this.uploadFileUrl =
       this.$http.defaults.baseURL + '/file/upload-testcase-zip';
     if (
@@ -649,7 +654,7 @@ export default {
         source: '',
         cid: null,
       };
-      let contestID = this.$route.params.contestId;
+
       this.contestID = contestID;
       if (contestID) {
         this.problem.cid = this.reProblem.cid = contestID;
@@ -1054,7 +1059,7 @@ export default {
       problemDto['problem'] = Object.assign({}, this.problem); // 深克隆
       if (this.mode == 'add') {
         problemDto.problem.problemId =
-          this.OJ_NAME + '-' + this.problem.problemId;
+          this.problemIdPrex + this.problem.problemId;
       }
       problemDto.problem.examples = utils.examplesToString(
         this.problem.examples

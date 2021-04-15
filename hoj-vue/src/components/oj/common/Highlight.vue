@@ -28,6 +28,13 @@ export default {
       default: '#19be6b',
     },
   },
+  watch: {
+    borderColor(newval, oldval) {
+      if (newval != oldval) {
+        this.styleObject['border-left'] = '3px solid ' + newval;
+      }
+    },
+  },
 };
 </script>
 

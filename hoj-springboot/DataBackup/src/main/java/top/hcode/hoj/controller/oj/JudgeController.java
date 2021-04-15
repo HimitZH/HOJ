@@ -276,6 +276,7 @@ public class JudgeController {
         Problem problem = problemService.getById(judge.getPid());
         // 重新进入等待队列
         judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus());
+        judge.setVersion(judge.getVersion() + 1);
         judge.setErrorMessage(null);
         judgeService.updateById(judge);
         // 将提交加入任务队列
@@ -332,7 +333,7 @@ public class JudgeController {
         if (judge.getStatus().intValue() != Constants.Judge.STATUS_COMPILE_ERROR.getStatus() &&
                 judge.getStatus().intValue() != Constants.Judge.STATUS_SYSTEM_ERROR.getStatus() &&
                 judge.getStatus().intValue() != Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus()) {
-            judge.setErrorMessage("");
+            judge.setErrorMessage("The error message does not support viewing.");
         }
         result.put("submission", judge);
         result.put("codeShare", problem.getCodeShare());
@@ -450,6 +451,10 @@ public class JudgeController {
     public CommonResult getALLCaseResult(@RequestParam(value = "submitId", required = true) Long submitId) {
 
         Judge judge = judgeService.getById(submitId);
+
+        if (judge == null) {
+            return CommonResult.errorResponse("此提交数据不存在！");
+        }
 
         Problem problem = problemService.getById(judge.getPid());
 

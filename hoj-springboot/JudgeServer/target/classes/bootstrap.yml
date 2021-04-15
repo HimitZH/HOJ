@@ -1,12 +1,14 @@
-hoj-judger:
-  task-num: 0 #当前正在进行判题任务数
-  max-task-num: 4 # -1表示最大并行任务数为cpu核心数*2
+hoj-judge-server:
+  max-task-num: -1 # -1表示最大并行任务数为cpu核心数*2
   ip: 127.0.0.1 # -1表示使用默认本地ipv4，若是部署其它服务器，务必使用公网ip
   port: 8088  # 端口号
-  name: hoj-judger-1 # 判题机名字
+  name: hoj-judger-1 # 判题机名字 唯一不可重复！！！
   nacos-url: 127.0.0.1:8848  # nacos地址
+  remote-judge:
+    open: true # 当前判题服务器是否开启远程虚拟判题功能
+    max-task-num: -1 # -1表示最大并行任务数为(cpu核心数*2)*2
 server:
-  port: ${hoj-judger.port}
+  port: ${hoj-judge-server.port}
 spring:
   profiles:
     active: prod
@@ -15,13 +17,13 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: ${hoj-judger.nacos-url} #配置Nacos地址
+        server-addr: ${hoj-judge-server.nacos-url} #配置Nacos地址
       config:
-        server-addr: ${hoj-judger.nacos-url} #Nacos 作为配置中心地址
+        server-addr: ${hoj-judge-server.nacos-url} #Nacos 作为配置中心地址
         file-extension: yml #指定yaml格式的配置
         group: DEFAULT_GROUP  # 指定分组
         #namespace:命名空间ID  默认为public
-      url: http://${hoj-judger.nacos-url}
+      url: http://${hoj-judge-server.nacos-url}
 
 # ${spring.application.name}-${spring.profile.active}.${spring.cloud.naces.config.file-extension}
 # hoj-judge-server-prod.yml

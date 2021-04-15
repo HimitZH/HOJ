@@ -22,7 +22,6 @@ public class Constants {
     public static String ojEmailFrom;
 
 
-
     @Value("${hoj-backstage.addr}")
     public void setOjAddr(String ojAddr) {
         Constants.ojAddr = ojAddr;
@@ -72,8 +71,8 @@ public class Constants {
         STATUS_JUDGE_WAITING(-100, "Waiting Queue", null),
         STATUS_REMOTE_JUDGE_WAITING_HANDLE(-200, "Remote Waiting Handle Queue", null),
         STATUS_HDU_REMOTE_JUDGE_ACCOUNT(-1000, "Hdu Remote Judge Account", null),
-        STATUS_CF_REMOTE_JUDGE_ACCOUNT(-1001, "Codeforces Remote Judge Account", null);
-
+        STATUS_CF_REMOTE_JUDGE_ACCOUNT(-1001, "Codeforces Remote Judge Account", null),
+        JUDGE_SERVER_SUBMIT_PREFIX(-1002,"Judge SubmitId-ServerId:",null);
         private Judge(Integer status, String name, String columnName) {
             this.status = status;
             this.name = name;

@@ -576,10 +576,22 @@ export default {
         myMessage.warning('请先登录后再查看代码！');
         return;
       }
-      this.$router.push({
-        name: 'SubmissionDeatil',
-        params: { submitID: row.submitId },
-      });
+      if (row.cid != 0) {
+        // 比赛提交详情
+        this.$router.push({
+          name: 'ContestSubmissionDeatil',
+          params: {
+            contestID: this.$route.params.contestID,
+            problemID: row.displayId,
+            submitID: row.submitId,
+          },
+        });
+      } else {
+        this.$router.push({
+          name: 'SubmissionDeatil',
+          params: { submitID: row.submitId },
+        });
+      }
     },
     getProblemUri(pid, isContest) {
       if (isContest) {

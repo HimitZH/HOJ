@@ -111,6 +111,12 @@ const ojRoutes = [
         meta: { title: 'Contest Submission' }
       },
       {
+        name: 'ContestSubmissionDeatil',
+        path: 'problem/:problemID/submission-deatil/:submitID',
+        component: SubmissionDetails,
+        meta: { title: 'Contest Submission Deatil' }
+      },
+      {
         name: 'ContestProblemList',
         path: 'problems',
         component: ContestProblemList,

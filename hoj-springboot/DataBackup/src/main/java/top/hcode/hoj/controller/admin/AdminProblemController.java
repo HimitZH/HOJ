@@ -14,10 +14,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.crawler.problem.ProblemStrategy;
+import top.hcode.hoj.judge.JudgeServerUtils;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.ToJudgeService;
 import top.hcode.hoj.service.impl.*;
 
 
@@ -43,7 +43,7 @@ public class AdminProblemController {
     private ProblemCaseServiceImpl problemCaseService;
 
     @Autowired
-    private ToJudgeService toJudgeService;
+    private JudgeServerUtils judgeServerUtils;
 
     @Value("${hoj.judge.token}")
     private String judgeToken;
@@ -179,7 +179,7 @@ public class AdminProblemController {
         }
 
         compileSpj.setToken(judgeToken);
-        return toJudgeService.compileSpj(compileSpj);
+        return judgeServerUtils.dispatcher("compile", "/compile-spj", compileSpj);
     }
 
     @GetMapping("/import-remote-oj-problem")
