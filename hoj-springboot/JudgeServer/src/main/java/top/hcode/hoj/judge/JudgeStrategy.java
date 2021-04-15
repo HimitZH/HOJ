@@ -72,7 +72,6 @@ public class JudgeStrategy {
     @Autowired
     private JudgeCaseServiceImpl judgeCaseService;
 
-
     public void init(Problem problem, Judge judge) {
         this.testCasesDir = Constants.JudgeDir.TEST_CASE_DIR.getContent() + "/problem_" + problem.getId();
         this.runConfig = Constants.RunConfig.getRunnerByLanguage(judge.getLanguage());

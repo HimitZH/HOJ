@@ -78,6 +78,26 @@
             </li>
           </ul>
         </el-card>
+        <el-card class="container">
+          <div slot="header">
+            <span class="panel-title home-title">Compile Explanation</span>
+          </div>
+          <ul class="result">
+            <li>
+              1. __int64不是ANSI标准定义，只能在VC使用，在 GNU C++ 中应写成 long
+              long 类型， scanf和printf 请使用%lld作为格式
+            </li>
+            <li>
+              2. main() 返回值必须定义为 int ，而不是 void
+            </li>
+            <li>
+              3. i 在循环外失去定义 "for(int i=0...){...}"
+            </li>
+            <li>
+              4. itoa 不是ansi标准函数（标准 C/C++ 中无此函数）
+            </li>
+          </ul>
+        </el-card>
       </el-col>
     </el-row>
   </div>
@@ -136,7 +156,8 @@ li {
   line-height: 2;
 }
 li .title {
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 1rem;
 }
 .result li {
   list-style-type: none;

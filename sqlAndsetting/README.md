@@ -1,4 +1,4 @@
-# 1. 数据库
+1. 数据库
 
 ## 用户资料模块
 
@@ -543,6 +543,26 @@ file表
 | delete       | String       |      | 是否删除                 |
 | gmt_create   | datetime     |      | 创建时间                 |
 | gmt_modified | datetime     |      | 修改时间                 |
+
+## 判题机模块
+
+judge_server表
+
+| 列名            | 实体属性类型 | 键   | 备注                      |
+| --------------- | ------------ | ---- | ------------------------- |
+| id              | int          | 主键 | auto_increment            |
+| name            | String       |      | 判题服务名字              |
+| ip              | String       |      | 判题机ip                  |
+| port            | int          |      | 判题机端口号              |
+| url             | String       |      | ip:port                   |
+| cpu_core        | int          |      | 判题机所在服务器cpu核心数 |
+| task_number     | int          |      | 当前判题数                |
+| max_task_number | int          |      | 判题并发最大数            |
+| status          | int          |      | 0可用，1不可用            |
+| version         | long         |      | 版本控制                  |
+| is_remote       | boolean      |      | 是否为远程判题vj          |
+| gmt_create      | datetime     |      | 创建时间                  |
+| gmt_modified    | datetime     |      | 修改时间                  |
 
 
 

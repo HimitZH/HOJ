@@ -11,6 +11,7 @@ import top.hcode.hoj.pojo.vo.ConfigVo;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
+import javax.annotation.PreDestroy;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,4 +59,5 @@ public class StartupRunner implements CommandLineRunner {
             log.error("CF判题账号注入Redis的List异常------------>{}", "请检查配置文件，然后重新启动！");
         }
     }
+
 }

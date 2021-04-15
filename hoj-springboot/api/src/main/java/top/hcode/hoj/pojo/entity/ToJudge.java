@@ -21,7 +21,7 @@ public class ToJudge implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty("判题数据或特判程序编译源码")
+    @ApiModelProperty("判题数据")
     private Judge judge;
 
     @ApiModelProperty("验证的token")

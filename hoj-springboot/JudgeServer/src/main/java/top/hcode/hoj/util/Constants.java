@@ -147,19 +147,21 @@ public class Constants {
     public enum CompileConfig {
         C("C", "main.c", "main", 3000L, 10000L, 256 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {1} -lm -o {2}", defaultEnv),
 
-        CPP("C++", "main.cpp", "main", 10000L, 20000L, 1024 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {1} -lm -o {2}", defaultEnv),
+        CPP("C++", "main.cpp", "main", 10000L, 20000L, 512 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {1} -lm -o {2}", defaultEnv),
 
-        JAVA("Java", "Main.java", "Main.class", 5000L, 10000L, 1024 * 1024 * 1024L, "/usr/bin/javac -d {0} -encoding utf8 ./{1}", defaultEnv),
+        JAVA("Java", "Main.java", "Main.class", 5000L, 10000L, 512 * 1024 * 1024L, "/usr/bin/javac -d {0} -encoding utf8 ./{1}", defaultEnv),
 
         PYTHON2("Python2", "main.py", "main.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python -m py_compile ./{1}", defaultEnv),
 
         PYTHON3("Python3", "main.py", "__pycache__/main.cpython-37.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python3 -m py_compile ./{1}", defaultEnv),
 
-        GOLANG("Golang", "main.go", "main", 3000L, 5000L, 1024 * 1024 * 1024L, "/usr/bin/go build -o {2} {1}", defaultEnv),
+        GOLANG("Golang", "main.go", "main", 3000L, 5000L, 512 * 1024 * 1024L, "/usr/bin/go build -o {2} {1}", defaultEnv),
 
-        SPJ_C("SPJ-C", "spj.c", "spj", 3000L, 5000L, 1024 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c99 {1} -lm -o {2}", defaultEnv),
+        CS("C#","Main.cs","main",5000L,10000L,512 * 1024 * 1024L,"/usr/bin/mcs -optimize+ -out:{0}/{2} {0}/{1}",defaultEnv),
 
-        SPJ_CPP("SPJ-C++", "spj.cpp", "spj", 10000L, 20000L, 1024 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {1} -lm -o {2}", defaultEnv);
+        SPJ_C("SPJ-C", "spj.c", "spj", 3000L, 5000L, 512 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c99 {1} -lm -o {2}", defaultEnv),
+
+        SPJ_CPP("SPJ-C++", "spj.cpp", "spj", 10000L, 20000L, 512 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {1} -lm -o {2}", defaultEnv);
 
         private String language;
         private String srcName;
@@ -242,6 +244,8 @@ public class Constants {
         PYTHON3("Python3", "/usr/bin/python3 {1}", "main", python3Env),
 
         GOLANG("Golang", "{0}/{1}", "main", golangEnv),
+
+        CS("C#", "/usr/bin/mono {0}/{1}", "main", defaultEnv),
 
         SPJ_C("SPJ-C", "{0}/{1} {2}", "spj", defaultEnv),
 

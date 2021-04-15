@@ -60,6 +60,7 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
         }
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public boolean tryAgainUpdate(String uid, Integer score) {
         boolean retryable;
         int attemptNumber = 0;

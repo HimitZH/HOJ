@@ -6,6 +6,7 @@ import com.alibaba.cloud.nacos.ribbon.NacosServer;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.AbstractLoadBalancerRule;
 import com.netflix.loadbalancer.DynamicServerListLoadBalancer;
@@ -13,9 +14,15 @@ import com.netflix.loadbalancer.Server;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import top.hcode.hoj.pojo.entity.JudgeServer;
+import top.hcode.hoj.service.impl.JudgeServerServiceImpl;
+import top.hcode.hoj.utils.RedisUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,10 +32,20 @@ import java.util.stream.Collectors;
  * @Description: 任务调度的自定义负载均衡策略
  */
 @Slf4j
+
 public class JudgeChooseRule extends AbstractLoadBalancerRule {
 
     @Autowired
     private NacosDiscoveryProperties discoveryProperties;
+
+
+    private JudgeServerServiceImpl judgeServerService ;
+
+
+    @Autowired
+    public void setJudgeServerService (JudgeServerServiceImpl judgeServerService){
+        this.judgeServerService =  judgeServerService;
+    }
 
 
     @Override
@@ -45,24 +62,39 @@ public class JudgeChooseRule extends AbstractLoadBalancerRule {
         String serviceId = loadBalancer.getName();
         // 获取该微服务的所有健康实例
         List<Instance> instances = getInstances(serviceId);
-        // 进行匹配筛选的实例列表
-        List<Instance> metadataMatchInstances;
-        // 过滤出小于或等于规定最大并发判题任务数的服务实例
-        metadataMatchInstances = instances.stream()
-                .filter(instance ->
-                    Integer.parseInt(instance.getMetadata().getOrDefault("currentTaskNum", "0"))<=
-                            Integer.parseInt(instance.getMetadata().getOrDefault("maxTaskNum","4"))
-                ).collect(Collectors.toList());
-        // 如果为空闲判题服务器的数量为空，则该判题请求重新进入等待队列
-        if (CollectionUtils.isEmpty(metadataMatchInstances)) {
+        if (instances.size() <= 0) {
             return null;
         }
 
-        // 基于随机权重的负载均衡算法，选取其中一个实例
-        Instance instance = ExtendBalancer.getHostByRandomWeight2(metadataMatchInstances);
-        return new NacosServer(instance);
-    }
+        List<String> keyList = new ArrayList<>();
+        // 获取当前健康实例取出ip和port拼接
+        for (Instance instance : instances) {
+            keyList.add(instance.getIp() + ":" + instance.getPort());
+        }
 
+        // 过滤出小于或等于规定最大并发判题任务数的服务实例且健康的判题机
+        QueryWrapper<JudgeServer> judgeServerQueryWrapper = new QueryWrapper<>();
+        judgeServerQueryWrapper
+                .in("url", keyList)
+                .orderByAsc("task_num");
+        List<JudgeServer> judgeServerList = judgeServerService.list(judgeServerQueryWrapper);
+        System.out.println(judgeServerList);
+        // 使用乐观锁获取可用判题机
+        for (JudgeServer judgeServer : judgeServerList) {
+            if (judgeServer.getTaskNumber() <= judgeServer.getMaxTaskNumber()) {
+                judgeServer.setTaskNumber(judgeServer.getTaskNumber() + 1);
+                boolean isOk = judgeServerService.updateById(judgeServer);
+                if (isOk) {
+                    int instanceIndex = keyList.indexOf(judgeServer.getIp() + ":" + judgeServer.getPort());
+                    if (instanceIndex != -1) {
+                        return new NacosServer(instances.get(instanceIndex));
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
 
 
     private List<Instance> getInstances(String serviceId) {

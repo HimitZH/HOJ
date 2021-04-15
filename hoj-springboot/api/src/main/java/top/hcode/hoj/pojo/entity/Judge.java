@@ -86,7 +86,6 @@ public class Judge implements Serializable {
     @ApiModelProperty(value = "提交者所在ip")
     private String ip;
 
-    @Version
     @TableField(fill = FieldFill.INSERT)
     private Integer version;
 

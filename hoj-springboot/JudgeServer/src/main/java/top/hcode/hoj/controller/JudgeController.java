@@ -2,6 +2,7 @@ package top.hcode.hoj.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,21 +41,21 @@ public class JudgeController {
     @Autowired
     private RemoteJudgeToSubmit remoteJudgeToSubmit;
 
+
     @Value("${hoj.judge.token}")
     private String judgeToken;
 
-    @Value("${hoj-judger.max-task-num}")
+    @Value("${hoj-judge-server.max-task-num}")
     private Integer maxTaskNum;
 
-    @Value("${hoj-judger.name}")
+    @Value("${hoj-judge-server.name}")
     private String name;
-
 
     @RequestMapping("/version")
     public CommonResult getVersion() {
 
         return CommonResult.successResponse(MapUtil.builder()
-                        .put("version", "1.0.0")
+                        .put("version", "1.1.0")
                         .put("currentTime", new Date())
                         .put("judgeServerName", name)
                         .put("cpu", Runtime.getRuntime().availableProcessors())
@@ -72,12 +73,10 @@ public class JudgeController {
         }
 
         Judge judge = toJudge.getJudge();
-        if (judge == null || judge.getSubmitId() == null || judge.getUid() == null || judge.getPid() == null) {
-            return CommonResult.errorResponse("参数错误！");
-        }
 
-        // 当前判题任务数+1
-        systemConfigService.updateJudgeTaskNum(true);
+        if (judge == null || judge.getSubmitId() == null || judge.getUid() == null || judge.getPid() == null) {
+            return CommonResult.errorResponse("调用参数错误！请检查您的调用参数！", CommonResult.STATUS_FAIL);
+        }
 
         judge.setStatus(Constants.Judge.STATUS_COMPILING.getStatus()); // 标志该判题过程进入编译阶段
         // 写入当前判题服务的名字
@@ -102,8 +101,7 @@ public class JudgeController {
                 finalJudge.getPid(),
                 finalJudge.getScore());
 
-        // 当前判题任务数-1
-        systemConfigService.updateJudgeTaskNum(false);
+
         return CommonResult.successResponse(finalJudge, "判题机评测完成！");
     }
 

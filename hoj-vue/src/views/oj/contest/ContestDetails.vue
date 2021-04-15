@@ -235,6 +235,9 @@ export default {
     if (this.route_name == 'ContestProblemDetails') {
       this.route_name = 'ContestProblemList';
     }
+    if (this.route_name == 'ContestSubmissionDeatil') {
+      this.route_name = 'ContestSubmissionList';
+    }
     this.CONTEST_TYPE_REVERSE = Object.assign({}, CONTEST_TYPE_REVERSE);
     this.CONTEST_STATUS = Object.assign({}, CONTEST_STATUS);
     this.CONTEST_STATUS_REVERSE = Object.assign({}, CONTEST_STATUS_REVERSE);
@@ -333,6 +336,9 @@ export default {
       this.route_name = newVal.name;
       if (newVal.name == 'ContestProblemDetails') {
         this.route_name = 'ContestProblemList';
+      }
+      if (this.route_name == 'ContestSubmissionDeatil') {
+        this.route_name = 'ContestSubmissionList';
       }
       this.contestID = newVal.params.contestID;
       this.changeDomTitle({ title: this.contest.title });

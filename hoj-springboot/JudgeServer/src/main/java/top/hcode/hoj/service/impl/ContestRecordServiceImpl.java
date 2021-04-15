@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.dao.ContestRecordMapper;
 import top.hcode.hoj.pojo.entity.ContestRecord;
@@ -30,7 +31,8 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
     @Autowired
     private ContestRecordMapper contestRecordMapper;
 
-    private static List<Integer> penaltyStatus = Arrays.asList(Constants.Judge.STATUS_PRESENTATION_ERROR.getStatus(),
+    private static List<Integer> penaltyStatus = Arrays.asList(
+            Constants.Judge.STATUS_PRESENTATION_ERROR.getStatus(),
             Constants.Judge.STATUS_WRONG_ANSWER.getStatus(),
             Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus(),
             Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED.getStatus(),
@@ -39,7 +41,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
     @Override
     @Async
-    @Transactional
+    @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
     public void UpdateContestRecord(String uid, Integer score, Integer status, Long submitId, Long cid) {
         UpdateWrapper<ContestRecord> updateWrapper = new UpdateWrapper<>();
         // 如果是AC
@@ -52,6 +54,9 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
             // 需要被罚时的状态
         } else if (penaltyStatus.contains(status)) {
             updateWrapper.set("status", Constants.Contest.RECORD_NOT_AC_PENALTY.getCode())
+                    .set("first_blood", false);
+        } else {
+            updateWrapper.set("status", Constants.Contest.RECORD_NOT_AC_NOT_PENALTY.getCode())
                     .set("first_blood", false);
         }
 
@@ -67,6 +72,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         }
     }
 
+    @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
     public void tryAgainUpdate(UpdateWrapper<ContestRecord> updateWrapper) {
         boolean retryable;
         int attemptNumber = 0;

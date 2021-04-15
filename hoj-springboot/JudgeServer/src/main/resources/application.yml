@@ -41,6 +41,7 @@ spring:
     password: ${hoj.redis.password}
 
 
+
 mybatis-plus:
   mapper-locations: classpath*:top/hcode/hoj/dao/xml/**Mapper.xml
   type-aliases-package: top.hcode.hoj.pojo.entity

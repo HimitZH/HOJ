@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.pojo.entity.Judge;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeFactory;
@@ -30,7 +31,8 @@ public class RemoteJudgeToSubmit {
     @Autowired
     private JudgeServiceImpl judgeService;
 
-    @Value("${hoj-judger.name}")
+
+    @Value("${hoj-judge-server.name}")
     private String name;
 
 

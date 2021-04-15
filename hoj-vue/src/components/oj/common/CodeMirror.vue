@@ -74,7 +74,7 @@
 </template>
 <script>
 import utils from '@/common/utils';
-import { codemirror } from 'vue-codemirror-lite';
+import { codemirror, CodeMirror } from 'vue-codemirror-lite';
 
 // 风格对应的样式
 import 'codemirror/theme/monokai.css';
@@ -110,12 +110,15 @@ import 'codemirror/addon/selection/active-line.js';
 // foldGutter
 import 'codemirror/addon/fold/foldgutter.css';
 import 'codemirror/addon/fold/foldgutter.js';
+
 import 'codemirror/addon/edit/matchbrackets.js';
+import 'codemirror/addon/edit/matchtags.js';
+import 'codemirror/addon/edit/closetag.js';
+import 'codemirror/addon/edit/closebrackets.js';
 import 'codemirror/addon/fold/brace-fold.js';
 import 'codemirror/addon/fold/indent-fold.js';
 import 'codemirror/addon/hint/show-hint.css';
 import 'codemirror/addon/hint/show-hint.js';
-import 'codemirror/addon/hint/javascript-hint.js';
 import 'codemirror/addon/hint/anyword-hint.js';
 import 'codemirror/addon/selection/mark-selection.js';
 
@@ -164,10 +167,11 @@ export default {
         highlightSelectionMatches: { showToken: /\w/, annotateScrollbar: true },
         // extraKeys: { Ctrl: 'autocomplete' }, //自定义快捷键
         autoFocus: true,
-        showCursorWhenSelecting: false,
         matchBrackets: true, //括号匹配
         indentUnit: 4, //一个块（编辑语言中的含义）应缩进多少个空格
         styleActiveLine: true,
+        autoCloseBrackets: true,
+        autoCloseTags: true,
         hintOptions: {
           // 当匹配只有一项的时候是否自动补全
           completeSingle: false,
@@ -192,12 +196,16 @@ export default {
       this.mode = mode;
       this.editor.setOption('mode', this.mode[this.language]);
     });
-    this.editor.focus();
     this.editor.on('inputRead', (instance, changeObj) => {
       if (/\w|\./g.test(changeObj.text[0]) && changeObj.origin !== 'complete') {
-        instance.showHint();
+        instance.showHint({
+          hint: CodeMirror.hint.anyword,
+          completeSingle: false,
+          range: 1000, // 附近多少行代码匹配
+        });
       }
     });
+    this.editor.focus();
   },
   methods: {
     onEditorCodeChange(newCode) {
@@ -281,5 +289,14 @@ export default {
 .CodeMirror-scroll {
   min-height: 549px;
   max-height: 1000px;
+}
+.cm-s-monokai .cm-matchhighlight {
+  background-color: rgba(73, 72, 62, 0.99);
+}
+.cm-s-solarized .cm-matchhighlight {
+  background-color: #d7d4f0;
+}
+.cm-s-material .cm-matchhighlight {
+  background-color: rgba(128, 203, 196, 0.2);
 }
 </style>
