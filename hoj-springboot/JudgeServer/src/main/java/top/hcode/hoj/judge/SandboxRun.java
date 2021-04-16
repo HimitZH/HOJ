@@ -68,7 +68,7 @@ public class SandboxRun {
 
     public static final HashMap<String, Integer> RESULT_MAP_STATUS = new HashMap<>();
 
-    private static final int maxProcessNumber = 64;
+    private static final int maxProcessNumber = 128;
 
     private static final int TIME_LIMIT_MS = 8000;
 
@@ -144,6 +144,8 @@ public class SandboxRun {
             if (ex.getRawStatusCode() != 200) {
                 throw new SystemError("Cannot connect to sandbox service.", null, ex.getResponseBodyAsString());
             }
+        } catch (Exception e){
+            throw new SystemError("Call SandBox Error.", null, e.getMessage());
         }
         return null;
     }

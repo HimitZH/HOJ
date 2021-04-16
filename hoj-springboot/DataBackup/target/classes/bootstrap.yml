@@ -1,10 +1,6 @@
 hoj-backstage:
   port: 6688
-  nacos-url: http://172.18.0.2:8848
-  addr: http://oj.hcode.top
-  name: Hcode Online Judge
-  short-name: HOJ
-  email-bg: https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/HCODE.png # 邮箱系统发生邮件模板的背景图片地址
+  nacos-url: 172.18.0.2:8848
 
 server:
   port: ${hoj-backstage.port}

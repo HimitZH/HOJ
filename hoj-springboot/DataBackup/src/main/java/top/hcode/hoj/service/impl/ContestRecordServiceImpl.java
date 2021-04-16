@@ -34,7 +34,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
     @Override
     public IPage<ContestRecord> getACInfo(Integer currentPage, Integer limit, Integer status, Long cid) {
         Page<ContestRecord> page = new Page<>(currentPage, limit);
-        return contestRecordMapper.getACInfo(page, status, cid);
+        return page.setRecords(contestRecordMapper.getACInfo(page, status, cid));
     }
 
 

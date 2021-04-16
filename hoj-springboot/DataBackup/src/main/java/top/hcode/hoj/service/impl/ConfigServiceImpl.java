@@ -123,6 +123,10 @@ public class ConfigServiceImpl implements ConfigService {
             configVo.setEmailUsername((String) params.get("emailUsername"));
         }
 
+        if (!StringUtils.isEmpty(params.get("emailBGImg"))) {
+            configVo.setEmailBGImg((String) params.get("emailBGImg"));
+        }
+
         if (params.get("emailSsl") != null) {
             configVo.setEmailSsl((Boolean) params.get("emailSsl"));
         }

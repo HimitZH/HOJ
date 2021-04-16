@@ -290,8 +290,7 @@ export default {
       this.formFilter.problemID = query.problemID;
       this.formFilter.username = query.username || '';
       this.formFilter.onlyMine = query.onlyMine + '' == 'true' ? true : false; // 统一换成字符串判断
-      this.formFilter.status = query.status != '' ? parseInt(query.status) : '';
-
+      this.formFilter.status = query.status;
       if (this.formFilter.onlyMine) {
         // 当前为搜索自己的提交 那么不可搜索别人的提交
         this.formFilter.username = '';

@@ -105,7 +105,7 @@ public class JudgeController {
      */
     @RequiresAuthentication
     @RequestMapping(value = "/submit-problem-judge", method = RequestMethod.POST)
-    @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
+    @Transactional(rollbackFor = Exception.class, isolation = Isolation.REPEATABLE_READ)
     public CommonResult submitProblemJudge(@RequestBody ToJudgeDto judgeDto, HttpServletRequest request) {
 
         // 需要获取一下该token对应用户的数据
@@ -239,6 +239,7 @@ public class JudgeController {
      */
     @RequiresAuthentication
     @GetMapping(value = "/resubmit")
+    @Transactional
     public CommonResult resubmit(@RequestParam("submitId") Long submitId,
                                  HttpServletRequest request) {
 
@@ -406,6 +407,12 @@ public class JudgeController {
                 return CommonResult.errorResponse("当前用户数据为空，请您重新登陆！", CommonResult.STATUS_ACCESS_DENIED);
             }
             uid = userRolesVo.getUid();
+        }
+        if (searchPid != null) {
+            searchPid = searchPid.trim();
+        }
+        if (searchUsername != null) {
+            searchUsername = searchUsername.trim();
         }
 
         IPage<JudgeVo> commonJudgeList = judgeService.getCommonJudgeList(limit, currentPage, searchPid,

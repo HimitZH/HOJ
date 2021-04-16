@@ -73,6 +73,9 @@ public class ConfigVo {
     @Value("${hoj.mail.ssl}")
     private Boolean emailSsl;
 
+    @Value("${hoj.mail.background-img}")
+    private String emailBGImg;
+
     // 网站前端显示配置
     @Value("${hoj.web-config.base-url}")
     private String baseUrl;

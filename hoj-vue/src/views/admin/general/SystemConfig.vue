@@ -94,20 +94,23 @@
           <el-col :md="24" :xs="24">
             <el-form-item label="Host" required label-width="80px">
               <el-input
-                v-model="smtp.host"
+                v-model="smtp.emailHost"
                 placeholder="SMTP Host Address"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="24" :xs="24">
             <el-form-item label="Port" required label-width="80px">
-              <el-input v-model="smtp.port" placeholder="SMTP Port"></el-input>
+              <el-input
+                v-model="smtp.emailPort"
+                placeholder="SMTP Port"
+              ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="12" :xs="24">
             <el-form-item label="Username" required label-width="80px">
               <el-input
-                v-model="smtp.username"
+                v-model="smtp.emailUsername"
                 placeholder="Account Username"
               ></el-input>
             </el-form-item>
@@ -115,15 +118,23 @@
           <el-col :md="12" :xs="24">
             <el-form-item label="Password" label-width="80px" required>
               <el-input
-                v-model="smtp.password"
+                v-model="smtp.emailPassword"
                 type="password"
                 placeholder="SMTP Server Password"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="24" :xs="24">
+            <el-form-item label="BG IMG" label-width="80px" required>
+              <el-input
+                v-model="smtp.emailBGImg"
+                placeholder="SMTP Template Background IMG Address"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :md="24" :xs="24">
             <el-form-item label="SSL">
-              <el-switch v-model="smtp.ssl"> </el-switch>
+              <el-switch v-model="smtp.emailSsl"> </el-switch>
             </el-form-item>
           </el-col>
         </el-row>
@@ -228,11 +239,12 @@ export default {
       saved: false,
       loadingBtnTest: false,
       smtp: {
-        host: 'smtp.example.com',
-        password: '',
-        port: 587,
-        username: 'email@example.com',
-        ssl: true,
+        emailHost: 'smtp.example.com',
+        emailPassword: '',
+        emailPort: 587,
+        emailBGImg: '',
+        emailUsername: 'email@example.com',
+        emailSsl: true,
       },
       websiteConfig: {},
       databaseConfig: {},

@@ -61,6 +61,7 @@ public class AdminContestController {
         QueryWrapper<Contest> queryWrapper = new QueryWrapper<>();
 
         if (!StringUtils.isEmpty(keyword)) {
+            keyword = keyword.trim();
             queryWrapper
                     .like("title", keyword).or()
                     .like("id", keyword);

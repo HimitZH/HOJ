@@ -93,13 +93,15 @@ public class JudgeController {
         // 更新该次提交
         judgeService.updateById(finalJudge);
 
-        // 更新其它表
-        judgeService.updateOtherTable(finalJudge.getSubmitId(),
-                finalJudge.getStatus(),
-                finalJudge.getCid(),
-                finalJudge.getUid(),
-                finalJudge.getPid(),
-                finalJudge.getScore());
+        if (finalJudge.getStatus().intValue() != Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus()) {
+            // 更新其它表
+            judgeService.updateOtherTable(finalJudge.getSubmitId(),
+                    finalJudge.getStatus(),
+                    finalJudge.getCid(),
+                    finalJudge.getUid(),
+                    finalJudge.getPid(),
+                    finalJudge.getScore());
+        }
 
 
         return CommonResult.successResponse(finalJudge, "判题机评测完成！");
