@@ -89,11 +89,12 @@ public class ConfigController {
     @RequestMapping("/get-email-config")
     public CommonResult getEmailConfig() {
         return CommonResult.successResponse(
-                MapUtil.builder().put("username", configVo.getEmailUsername())
-                        .put("password", configVo.getEmailPassword())
-                        .put("host", configVo.getEmailHost())
-                        .put("port", configVo.getEmailPort())
-                        .put("ssl", configVo.getEmailSsl()).map()
+                MapUtil.builder().put("emailUsername", configVo.getEmailUsername())
+                        .put("emailPassword", configVo.getEmailPassword())
+                        .put("emailHost", configVo.getEmailHost())
+                        .put("emailPort", configVo.getEmailPort())
+                        .put("emailBGImg", configVo.getEmailBGImg())
+                        .put("emailSsl", configVo.getEmailSsl()).map()
         );
     }
 

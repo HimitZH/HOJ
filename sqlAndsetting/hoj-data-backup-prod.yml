@@ -22,6 +22,7 @@ hoj:
     password: your_email_password
     host: your_email_host
     port: your_email_port
+    background-img: https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/HCODE.png # 邮箱系统发送邮件模板的背景图片地址
   redis: # redis服务配置
     host: your_redis_host
     port: 6371

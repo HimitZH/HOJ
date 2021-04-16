@@ -63,6 +63,7 @@ public class AdminProblemController {
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc("gmt_create");
         if (!StringUtils.isEmpty(keyword)) {
+            keyword = keyword.trim();
             queryWrapper
                     .like("title", keyword).or()
                     .like("author", keyword).or()

@@ -10,6 +10,7 @@ import top.hcode.hoj.common.exception.CompileError;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.dao.JudgeMapper;
 import top.hcode.hoj.judge.*;
+import top.hcode.hoj.judge.Compiler;
 import top.hcode.hoj.pojo.entity.Contest;
 import top.hcode.hoj.pojo.entity.Judge;
 import top.hcode.hoj.pojo.entity.Problem;
@@ -64,10 +65,11 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
 
         HashMap<String, Object> judgeResult = judgeStrategy.judge(problem, judge);
 
-        // 如果是编译失败或者系统错误就有错误提醒
+        // 如果是编译失败、提交错误或者系统错误就有错误提醒
         if (judgeResult.get("code") == Constants.Judge.STATUS_COMPILE_ERROR.getStatus() ||
                 judgeResult.get("code") == Constants.Judge.STATUS_SYSTEM_ERROR.getStatus() ||
-                judgeResult.get("code") == Constants.Judge.STATUS_RUNTIME_ERROR.getStatus()) {
+                judgeResult.get("code") == Constants.Judge.STATUS_RUNTIME_ERROR.getStatus() ||
+                judgeResult.get("code") == Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus()) {
             judge.setErrorMessage((String) judgeResult.getOrDefault("errMsg", ""));
         }
         // 设置最终结果状态码
@@ -86,7 +88,7 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     }
 
     public Boolean compileSpj(String code, Long pid, String spjLanguage) throws CompileError, SystemError {
-        return judgeStrategy.compileSpj(code, pid, spjLanguage);
+        return Compiler.compileSpj(code, pid, spjLanguage);
     }
 
     @Override
@@ -116,7 +118,7 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
             if (contest == null) {
                 log.error("判题机出错----------->{}", "该比赛不存在");
 
-            } else if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()){
+            } else if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()) {
                 // 比赛期间的提交才进行记录
                 contestRecordService.UpdateContestRecord(uid, score, status, submitId, cid);
             }

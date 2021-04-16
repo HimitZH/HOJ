@@ -1,6 +1,7 @@
 package top.hcode.hoj.utils;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 
 /**
@@ -8,43 +9,13 @@ import org.springframework.stereotype.Component;
  * @Date: 2021/1/1 13:00
  * @Description: 常量枚举类
  */
-@Component
 public class Constants {
 
     public static String ojAddr;
 
-    public static String ojName;
-
-    public static String ojShortName;
-
-    public static String ojEmailBg;
-
-    public static String ojEmailFrom;
-
-
-    @Value("${hoj-backstage.addr}")
+    @Value("${hoj.web-config.base-url}")
     public void setOjAddr(String ojAddr) {
         Constants.ojAddr = ojAddr;
-    }
-
-    @Value("${hoj-backstage.name}")
-    public void setOjName(String ojName) {
-        Constants.ojName = ojName;
-    }
-
-    @Value("${hoj-backstage.short-name}")
-    public void setOjShortName(String ojShortName) {
-        Constants.ojShortName = ojShortName;
-    }
-
-    @Value("${hoj-backstage.email-bg}")
-    public void setOjEmailBg(String ojEmailBg) {
-        Constants.ojEmailBg = ojEmailBg;
-    }
-
-    @Value("${hoj.mail.username}")
-    public void setOjEmailFrom(String ojEmailFrom) {
-        Constants.ojEmailFrom = ojEmailFrom;
     }
 
     /**
@@ -217,11 +188,11 @@ public class Constants {
 
     public enum Email {
 
-        OJ_URL(ojAddr),
-        OJ_NAME(ojName),
-        OJ_SHORT_NAME(ojShortName),
-        EMAIL_FROM(ojEmailFrom),
-        EMAIL_BACKGROUND_IMG(ojEmailBg),
+        OJ_URL("OJ_UR"),
+        OJ_NAME("OJ_NAME"),
+        OJ_SHORT_NAME("OJ_SHORT_NAME"),
+        EMAIL_FROM("EMAIL_FROM"),
+        EMAIL_BACKGROUND_IMG("EMAIL_BACKGROUND_IMG"),
         REGISTER_KEY_PREFIX("register-user:"),
         RESET_PASSWORD_KEY_PREFIX("reset-password:");
 

@@ -78,6 +78,7 @@ public class ProblemController {
         // 关键词查询不为空
         Long pid = null;
         if (!StringUtils.isEmpty(keyword)) {
+            keyword = keyword.trim();
             Pattern pattern = Pattern.compile("[0-9]*");
             Matcher isNum = pattern.matcher(keyword);
             if (isNum.matches()) { // 利用正则表达式判断keyword是否为纯数字

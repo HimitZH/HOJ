@@ -3,14 +3,21 @@
 <mapper namespace="top.hcode.hoj.dao.ContestRecordMapper">
 
     <select id="getACInfo" resultType="top.hcode.hoj.pojo.entity.ContestRecord">
-        SELECT id,uid,username,display_id,cid,realname,pid,time,status,
+        SELECT id,uid,username,display_id,cid,realname,pid,time,status,checked,
         MIN(submit_id) AS submit_id,
         MIN(submit_time) AS submit_time,
-        MAX(first_blood) AS first_blood,
-        checked FROM contest_record
-        WHERE status=#{status} and cid = #{cid}
+        MAX(first_blood) AS first_blood
+        FROM contest_record
+        <where>
+            <if test="status!=null">
+                status=#{status}
+            </if>
+            <if test="cid!=null">
+                and cid = #{cid}
+            </if>
+        </where>
         GROUP BY status,uid,pid,cpid
-        ORDER BY checked DESC,submit_time DESC
+        ORDER BY checked ASC,submit_time DESC
     </select>
 
     <select id="getOIContestRecord" resultType="top.hcode.hoj.pojo.entity.ContestRecord">

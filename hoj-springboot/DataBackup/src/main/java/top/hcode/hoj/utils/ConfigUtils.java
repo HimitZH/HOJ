@@ -41,6 +41,7 @@ public class ConfigUtils {
                 "    password: " + configVo.getEmailPassword() + "\n" +
                 "    host: " + configVo.getEmailHost() + "\n" +
                 "    port: " + configVo.getEmailPort() + "\n" +
+                "    background-img: " + configVo.getEmailBGImg() + "\n" +
                 "  redis:\n" +
                 "    host: " + configVo.getRedisHost() + "\n" +
                 "    port: " + configVo.getRedisPort() + "\n" +
@@ -59,12 +60,12 @@ public class ConfigUtils {
                 "        url: " + configVo.getProjectUrl() + "\n" +
                 "  hdu:\n" +
                 "    account:\n" +
-                "      username: "+listToStr(configVo.getHduUsernameList())+ "\n" +
-                "      password: "+listToStr(configVo.getHduPasswordList())+ "\n" +
+                "      username: " + listToStr(configVo.getHduUsernameList()) + "\n" +
+                "      password: " + listToStr(configVo.getHduPasswordList()) + "\n" +
                 "  cf:\n" +
                 "    account:\n" +
-                "      username: "+listToStr(configVo.getCfUsernameList())+ "\n" +
-                "      password: "+listToStr(configVo.getCfPasswordList());
+                "      username: " + listToStr(configVo.getCfUsernameList()) + "\n" +
+                "      password: " + listToStr(configVo.getCfPasswordList());
     }
 
     private String listToStr(List<String> list) {

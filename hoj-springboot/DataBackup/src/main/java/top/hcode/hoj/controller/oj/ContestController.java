@@ -480,7 +480,6 @@ public class ContestController {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 30;
 
-
         // 获取当前比赛的，状态为ac，未被校验的排在签名
         IPage<ContestRecord> contestRecords = contestRecordService.getACInfo(currentPage,
                 limit, Constants.Contest.RECORD_AC.getCode(), cid);
