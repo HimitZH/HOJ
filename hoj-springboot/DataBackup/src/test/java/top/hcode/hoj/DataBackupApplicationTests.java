@@ -143,15 +143,6 @@ public class DataBackupApplicationTests {
     private RestTemplate restTemplate;
 
     @Test
-    public void Test4() {
-////        int todayJudgeNum = judgeMapper.getTodayJudgeNum();
-//        List<ContestVo> withinNext14DaysContests = contestMapper.getWithinNext14DaysContests();
-//        System.out.println(withinNext14DaysContests);
-        String result = restTemplate.getForObject("http://129.204.177.72:8848/nacos/v1/ns/instance?ip=192.168.226.1&port=8010&serviceName=hoj-judge-server&metadata=%7B%22maxTaskNum%22%3A8%2C%22currentTaskNum%22%3A1%7D", String.class);
-        System.out.println(result);
-    }
-
-    @Test
     public void Test5() throws IOException {
         Enumeration<NetworkInterface> ifaces = null;
         try {
@@ -208,7 +199,7 @@ public class DataBackupApplicationTests {
         String HOST = "https://codeforces.com";
         String PROBLEM_URL = "/problemset/problem/%s/%s";
 
-        String problemId = "1491F";
+        String problemId = "750A";
         String contestId = ReUtil.get("([0-9]+)[A-Z]{1}[0-9]{0,1}", problemId, 1);
         String problemNum = ReUtil.get("[0-9]+([A-Z]{1}[0-9]{0,1})", problemId, 1);
 
@@ -238,11 +229,24 @@ public class DataBackupApplicationTests {
 
         info.setOutput(ReUtil.get("<div class=\"section-title\">\\s*Output\\s*</div>([\\s\\S]*?)</div><div class=\"sample-tests\">", html, 1));
 
-        StringBuilder sb = new StringBuilder("<input>");
-        sb.append(ReUtil.get("<div class=\"sample-test\"><div class=\"input\"><div class=\"title\">Input</div><pre>([\\s\\S]*?)</pre></div>", html, 1));
-        sb.append("</input><output>");
-        sb.append(ReUtil.get("<div class=\"output\"><div class=\"title\">Output</div><pre>([\\s\\S]*?)</pre></div></div>", html, 1)).append("</output>");
+
+        List<String> inputExampleList = ReUtil.findAll(Pattern.compile("<div class=\"input\"><div class=\"title\">Input</div><pre>([\\s\\S]*?)</pre></div>"), html, 1);
+
+        List<String> outputExampleList = ReUtil.findAll(Pattern.compile("<div class=\"output\"><div class=\"title\">Output</div><pre>([\\s\\S]*?)</pre></div>"), html, 1);
+
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < inputExampleList.size() && i < outputExampleList.size(); i++) {
+            sb.append("<input>");
+            sb.append(inputExampleList.get(i).replace("<br>", "")).append("</input>");
+            sb.append("<output>");
+            sb.append(outputExampleList.get(i).replace("<br>", "")).append("</output>");
+        }
+
         info.setExamples(sb.toString());
+
+        System.out.println(info.getExamples());
 
         info.setHint(ReUtil.get("<div class=\"section-title\">\\s*Note\\s*</div>([\\s\\S]*?)</div></div>", html, 1));
         info.setIsRemote(true);
@@ -252,9 +256,6 @@ public class DataBackupApplicationTests {
                 contestId, problemNum, JUDGE_NAME + "-" + problemId));
 
         List<String> all = ReUtil.findAll(Pattern.compile("<span class=\"tag-box\" style=\"font-size:1\\.2rem;\" title=\"[\\s\\S]*?\">([\\s\\S]*?)</span>"), html, 1);
-        for (String tmp : all) {
-            System.out.println(tmp.trim());
-        }
     }
 
 
