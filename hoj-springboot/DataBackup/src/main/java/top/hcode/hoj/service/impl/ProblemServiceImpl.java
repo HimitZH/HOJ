@@ -273,12 +273,11 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                 }
                 checkProblemCase = addCasesToProblemResult && deleteCasesFromProblemResult && updateCasesToProblemResult;
 
-                // 只要有新添加，修改，删除都需要更新版本号
+                // 只要有新添加，修改，删除都需要更新版本号 同时更新测试数据
                 if (needDeleteProblemCases.size() > 0 || newProblemCaseList.size() > 0 || needUpdateProblemCaseList.size() > 0) {
                     problem.setCaseVersion(String.valueOf(System.currentTimeMillis()));
+                    initHandTestCase(problem.getSpjLanguage() != null, problem.getCaseVersion(), pid, problemDto.getSamples());
                 }
-
-                initHandTestCase(problem.getSpjLanguage() != null, problem.getCaseVersion(), pid, problemDto.getSamples());
 
             }
         }
