@@ -17,11 +17,11 @@ if (process.env.NODE_ENV == 'development') {
 } else if (process.env.NODE_ENV == 'debug') {
   axios.defaults.baseURL = "http://localhost:6688";
 } else if (process.env.NODE_ENV == 'production') {
-  axios.defaults.baseURL = 'https://www.hcode.top';
+  axios.defaults.baseURL = '你服务器的域名';
 }
 
 // 请求超时时间
-axios.defaults.timeout = 20000;
+axios.defaults.timeout = 40000;
 
 axios.interceptors.request.use(
 

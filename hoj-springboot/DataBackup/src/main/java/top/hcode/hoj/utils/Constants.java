@@ -11,13 +11,6 @@ import org.springframework.stereotype.Component;
  */
 public class Constants {
 
-    public static String ojAddr;
-
-    @Value("${hoj.web-config.base-url}")
-    public void setOjAddr(String ojAddr) {
-        Constants.ojAddr = ojAddr;
-    }
-
     /**
      * @Description 提交评测结果的状态码
      * @Since 2021/1/1
@@ -43,7 +36,8 @@ public class Constants {
         STATUS_REMOTE_JUDGE_WAITING_HANDLE(-200, "Remote Waiting Handle Queue", null),
         STATUS_HDU_REMOTE_JUDGE_ACCOUNT(-1000, "Hdu Remote Judge Account", null),
         STATUS_CF_REMOTE_JUDGE_ACCOUNT(-1001, "Codeforces Remote Judge Account", null),
-        JUDGE_SERVER_SUBMIT_PREFIX(-1002,"Judge SubmitId-ServerId:",null);
+        JUDGE_SERVER_SUBMIT_PREFIX(-1002, "Judge SubmitId-ServerId:", null);
+
         private Judge(Integer status, String name, String columnName) {
             this.status = status;
             this.name = name;
@@ -155,7 +149,6 @@ public class Constants {
      */
     public enum File {
 
-        USER_FILE_HOST(ojAddr),
 
         USER_AVATAR_FOLDER("/hoj/file/avatar"),
 
@@ -163,7 +156,9 @@ public class Constants {
 
         IMG_API("/api/public/img/"),
 
-        TESTCASE_BASE_FOLDER("/hoj/file/zip"),
+        TESTCASE_TMP_FOLDER("/hoj/file/zip"),
+
+        TESTCASE_BASE_FOLDER("/hoj/testcase/"),
 
         TESTCASE_DOWNLOAD_TMP_FOLDER("/hoj/file/zip/download"),
 

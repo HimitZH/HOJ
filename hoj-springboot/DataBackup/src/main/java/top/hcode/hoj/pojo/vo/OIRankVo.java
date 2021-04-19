@@ -26,6 +26,9 @@ public class OIRankVo {
     @ApiModelProperty(value = "个性签名")
     private String signature;
 
+    @ApiModelProperty(value = "头像地址")
+    private String avatar;
+
     @ApiModelProperty(value = "OI得分")
     private Integer score;
 

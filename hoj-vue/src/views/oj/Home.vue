@@ -20,7 +20,7 @@
           </div>
           <el-carousel
             indicator-position="outside"
-            height="443px"
+            height="460px"
             :interval="interval"
             v-model="index"
           >
@@ -96,7 +96,7 @@
             auto-resize
             align="center"
             :data="recentUserACRecord"
-            max-height="470px"
+            max-height="500px"
             :loading="loading.recent7ACRankLoading"
           >
             <vxe-table-column type="seq" min-width="30">
@@ -107,8 +107,21 @@
                 <span :class="'cite no' + rowIndex"></span>
               </template>
             </vxe-table-column>
-            <vxe-table-column field="username" title="Username" min-width="130">
+            <vxe-table-column
+              field="username"
+              title="Username"
+              min-width="130"
+              align="left"
+            >
               <template v-slot="{ row }">
+                <avatar
+                  :username="row.username"
+                  :inline="true"
+                  :size="25"
+                  color="#FFF"
+                  :src="row.avatar"
+                  class="user-avatar"
+                ></avatar>
                 <a
                   @click="goUserHome(row.username, row.uid)"
                   style="color: rgb(87, 163, 243)"
@@ -116,9 +129,14 @@
                 >
               </template>
             </vxe-table-column>
-            <vxe-table-column field="ac" title="AC" min-width="30">
+            <vxe-table-column field="ac" title="AC" min-width="30" align="left">
             </vxe-table-column>
-            <vxe-table-column field="solved" title="Solved" min-width="50">
+            <vxe-table-column
+              field="solved"
+              title="Solved"
+              min-width="50"
+              align="left"
+            >
             </vxe-table-column>
           </vxe-table>
         </el-card>
@@ -181,10 +199,12 @@ import api from '@/common/api';
 import Announcements from '@/components/oj/common/Announcements.vue';
 import { CONTEST_STATUS_REVERSE } from '@/common/constants';
 import { mapState } from 'vuex';
+import Avatar from 'vue-avatar';
 export default {
   name: 'home',
   components: {
     Announcements,
+    Avatar,
   },
   data() {
     return {
@@ -207,7 +227,7 @@ export default {
   },
   mounted() {
     let screenWidth = window.screen.width;
-    if (screenWidth < 1080) {
+    if (screenWidth < 768) {
       this.srcHight = '200px';
     } else {
       this.srcHight = '440px';
@@ -310,9 +330,9 @@ export default {
   float: right;
 }
 .img-carousel {
-  height: 470px;
+  height: 490px;
 }
-@media screen and (max-width: 1080px) {
+@media screen and (max-width: 768px) {
   .contest-status {
     text-align: center;
     float: none;
@@ -368,6 +388,10 @@ span.rank-tag {
   color: #fff;
   background: #000;
   background: rgba(0, 0, 0, 0.6);
+}
+.user-avatar {
+  margin-right: 5px !important;
+  vertical-align: middle;
 }
 .cite {
   display: block;

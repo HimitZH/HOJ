@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.common.exception.CompileError;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.dao.JudgeMapper;
@@ -76,11 +78,11 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
         judge.setStatus((Integer) judgeResult.get("code"));
         // 设置最大时间和最大空间不超过题目限制时间和空间
         // kb
-        Long memory = (Long) judgeResult.get("memory");
-        judge.setMemory(Math.min(memory.intValue(), problem.getMemoryLimit() * 1024));
+        Integer memory = (Integer) judgeResult.get("memory");
+        judge.setMemory(Math.min(memory, problem.getMemoryLimit() * 1024));
         // ms
-        Long time = (Long) judgeResult.get("time");
-        judge.setTime(Math.min(time.intValue(), problem.getTimeLimit()));
+        Integer time = (Integer) judgeResult.get("time");
+        judge.setTime(Math.min(time, problem.getTimeLimit()));
         // score
         judge.setScore((Integer) judgeResult.getOrDefault("score", null));
 
@@ -92,6 +94,7 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
     public void updateOtherTable(Long submitId, Integer status, Long cid, String uid, Long pid, Integer score) {
 
         if (cid == 0) { // 非比赛提交
@@ -109,7 +112,7 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
 
             // 如果是非比赛提交，且为OI题目的提交，需要判断是否更新用户得分
             if (score != null) {
-                userRecordService.updateRecord(uid, score);
+                userRecordService.updateRecord(uid, submitId, pid, score);
             }
 
         } else { //如果是比赛提交

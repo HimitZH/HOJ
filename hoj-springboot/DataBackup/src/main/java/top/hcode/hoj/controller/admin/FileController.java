@@ -142,7 +142,7 @@ public class FileController {
 
         //更新user_info里面的avatar
         UpdateWrapper<UserInfo> userInfoUpdateWrapper = new UpdateWrapper<>();
-        userInfoUpdateWrapper.set("avatar", Constants.File.USER_FILE_HOST.getPath() + Constants.File.IMG_API.getPath() + filename)
+        userInfoUpdateWrapper.set("avatar", Constants.File.IMG_API.getPath() + filename)
                 .eq("uuid", userRolesVo.getUid());
         userInfoService.update(userInfoUpdateWrapper);
 
@@ -158,7 +158,7 @@ public class FileController {
                 .put("uid", userRolesVo.getUid())
                 .put("username", userRolesVo.getUsername())
                 .put("nickname", userRolesVo.getNickname())
-                .put("avatar", Constants.File.USER_FILE_HOST.getPath() + Constants.File.IMG_API.getPath() + filename)
+                .put("avatar", Constants.File.IMG_API.getPath() + filename)
                 .put("email", userRolesVo.getEmail())
                 .put("number", userRolesVo.getNumber())
                 .put("school", userRolesVo.getSchool())
@@ -182,7 +182,7 @@ public class FileController {
             return CommonResult.errorResponse("请上传zip格式的测试数据压缩包！");
         }
         String fileDirId = IdUtil.simpleUUID();
-        String fileDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + fileDirId;
+        String fileDir = Constants.File.TESTCASE_TMP_FOLDER.getPath() + File.separator + fileDirId;
         String filePath = fileDir + File.separator + file.getOriginalFilename();
         // 文件夹不存在就新建
         FileUtil.mkdir(fileDir);
@@ -213,7 +213,7 @@ public class FileController {
             String tmpPreName = tmp.getName().substring(0, tmp.getName().lastIndexOf("."));
             if (tmp.getName().endsWith("in")) {
                 inputData.put(tmpPreName, tmp.getName());
-            } else if (tmp.getName().endsWith("out")) {
+            } else if (tmp.getName().endsWith("out") || tmp.getName().endsWith("ans")) {
                 outputData.put(tmpPreName, tmp.getName());
             }
         }
@@ -224,7 +224,7 @@ public class FileController {
             // 若有名字不对应，直接返回失败
             if (outputData.getOrDefault(key, null) == null) {
                 FileUtil.del(fileDir);
-                return CommonResult.errorResponse("请检查数据压缩包里面的in和out文件是否一一对应！");
+                return CommonResult.errorResponse("请检查数据压缩包里面的in和out、ans文件是否一一对应！");
             }
             HashMap<String, String> testcaseMap = new HashMap<>();
             testcaseMap.put("input", inputData.get(key));
@@ -243,23 +243,28 @@ public class FileController {
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
     public void downloadTestcase(@RequestParam("pid") Long pid, HttpServletResponse response) {
-        QueryWrapper<ProblemCase> problemCaseQueryWrapper = new QueryWrapper<>();
-        problemCaseQueryWrapper.eq("pid", pid);
-        List<ProblemCase> problemCaseList = problemCaseService.list(problemCaseQueryWrapper);
-        Assert.notEmpty(problemCaseList, "对不起，该题目的评测数据为空！");
 
-        String workDir = Constants.File.TESTCASE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + IdUtil.simpleUUID();
-        FileUtil.mkdir(workDir);
-        // 写入本地
-        for (int i = 0; i < problemCaseList.size(); i++) {
-            String filePreName = workDir + File.separator + (i + 1);
-            String inputName = filePreName + ".in";
-            String outputName = filePreName + ".out";
-            FileWriter infileWriter = new FileWriter(inputName);
-            infileWriter.write(problemCaseList.get(i).getInput());
-            FileWriter outfileWriter = new FileWriter(outputName);
-            outfileWriter.write(problemCaseList.get(i).getOutput());
+        String workDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + "problem_" + pid;
+        boolean dirEmpty = FileUtil.isDirEmpty(new File(workDir));
+        if (dirEmpty) { // 本地为空 尝试去数据库查找
+            QueryWrapper<ProblemCase> problemCaseQueryWrapper = new QueryWrapper<>();
+            problemCaseQueryWrapper.eq("pid", pid);
+            List<ProblemCase> problemCaseList = problemCaseService.list(problemCaseQueryWrapper);
+            Assert.notEmpty(problemCaseList, "对不起，该题目的评测数据为空！");
+            workDir = Constants.File.TESTCASE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + IdUtil.simpleUUID();
+            FileUtil.mkdir(workDir);
+            // 写入本地
+            for (int i = 0; i < problemCaseList.size(); i++) {
+                String filePreName = workDir + File.separator + (i + 1);
+                String inputName = filePreName + ".in";
+                String outputName = filePreName + ".out";
+                FileWriter infileWriter = new FileWriter(inputName);
+                infileWriter.write(problemCaseList.get(i).getInput());
+                FileWriter outfileWriter = new FileWriter(outputName);
+                outfileWriter.write(problemCaseList.get(i).getOutput());
+            }
         }
+
         String fileName = "problem_" + pid + "_testcase_" + System.currentTimeMillis() + ".zip";
         // 将对应文件夹的文件压缩成zip
         ZipUtil.zip(workDir, Constants.File.TESTCASE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
@@ -545,6 +550,10 @@ public class FileController {
             return "pas";
         }
 
+        if (language.contains("go")) {
+            return "go";
+        }
+
         return "txt";
     }
 
@@ -581,7 +590,7 @@ public class FileController {
         }
 
         return CommonResult.successResponse(MapUtil.builder()
-                        .put("link", Constants.File.USER_FILE_HOST.getPath() + Constants.File.IMG_API.getPath() + filename)
+                        .put("link", Constants.File.IMG_API.getPath() + filename)
                         .put("filePath", Constants.File.MARKDOWN_IMG_FOLDER.getPath() + File.separator + filename).map(),
                 "上传图片成功！");
 

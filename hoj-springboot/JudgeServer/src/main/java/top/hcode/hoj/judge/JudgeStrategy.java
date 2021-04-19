@@ -143,26 +143,26 @@ public class JudgeStrategy {
     }
 
     // 获取判题的运行时间，运行空间，OI得分
-    public HashMap<String, Object> computeResultInfo(List<JSONObject> testCaseResultList, Boolean isACM, Integer errorCaseNum, Integer totalScore) {
+    public HashMap<String, Object> computeResultInfo(List<JudgeCase> allTestCaseResultList, Boolean isACM, Integer errorCaseNum, Integer totalScore) {
         HashMap<String, Object> result = new HashMap<>();
         // 用时和内存占用保存为多个测试点中最长的
-        testCaseResultList.stream().max(Comparator.comparing(t -> t.getLong("time")))
-                .ifPresent(t -> result.put("time", t.getLong("time")));
+        allTestCaseResultList.stream().max(Comparator.comparing(t -> t.getTime()))
+                .ifPresent(t -> result.put("time", t.getTime()));
 
-        testCaseResultList.stream().max(Comparator.comparing(t -> t.getLong("memory")))
-                .ifPresent(t -> result.put("memory", t.getLong("memory")));
+        allTestCaseResultList.stream().max(Comparator.comparing(t -> t.getMemory()))
+                .ifPresent(t -> result.put("memory", t.getMemory()));
 
         // OI题目计算得分
         if (!isACM) {
-            int score = 0;
             // 全对的直接用总分
             if (errorCaseNum == 0) {
                 result.put("score", totalScore);
             } else {
-                for (JSONObject testcaseResult : testCaseResultList) {
-                    score += testcaseResult.getInt("score", 0);
+                int score = 0;
+                for (JudgeCase testcaseResult : allTestCaseResultList) {
+                    score += testcaseResult.getScore();
                 }
-                result.put("socre", score);
+                result.put("score", score);
             }
         }
         return result;
@@ -211,7 +211,7 @@ public class JudgeStrategy {
         }
 
         // 获取判题的运行时间，运行空间，OI得分
-        HashMap<String, Object> result = computeResultInfo(testCaseResultList, isACM, errorTestCaseList.size(), problem.getIoScore());
+        HashMap<String, Object> result = computeResultInfo(allCaseResList, isACM, errorTestCaseList.size(), problem.getIoScore());
 
         // 如果该题为ACM类型的题目，多个测试点全部正确则AC，否则取第一个错误的测试点的状态
         // 如果该题为OI类型的题目, 若多个测试点全部正确则AC，若全部错误则取第一个错误测试点状态，否则为部分正确

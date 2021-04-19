@@ -3,11 +3,11 @@
     <div class="intr-center">
       <paper-card type="server">
         <h1 class="text-darken">HOJ</h1>
-        <p>
+        <h1>
           <a href="https://gitee.com/himitzh0730/hoj" target="_blank"
             >Hcode Online Judge</a
           >
-        </p>
+        </h1>
         <p>
           Leader & BackEnd | FrontEnd Engineer / Himit_ZH
           <a href="https://github.com/HimitZH" class="icon" target="_blank"
@@ -17,6 +17,12 @@
         <p>
           BackEnd Engineer / Howie
           <a href="https://github.com/Huangyan0804" class="icon" target="_blank"
+            ><i class="fa fa-github"></i>
+          </a>
+        </p>
+        <p>
+          Maintainer Engineer / Alteria
+          <a href="https://github.com/HackerMac" class="icon" target="_blank"
             ><i class="fa fa-github"></i>
           </a>
         </p>

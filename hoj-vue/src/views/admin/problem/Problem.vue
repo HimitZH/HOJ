@@ -612,7 +612,7 @@ export default {
       this.problemIdPrex += 'C';
     }
     this.uploadFileUrl =
-      this.$http.defaults.baseURL + '/file/upload-testcase-zip';
+      this.$http.defaults.baseURL + '/api/file/upload-testcase-zip';
     if (
       this.routeName === 'admin-edit-problem' ||
       this.routeName === 'admin-edit-contest-problem'
@@ -755,7 +755,7 @@ export default {
         this.mode == 'edit'
       ) {
         this.$confirm(
-          '你确定要获取显示该题目的评测数据？可能评测数据量大容易导致显示错误！',
+          '你确定要获取显示该题目的评测数据？可能该题目是使用zip上传，那么数据库默认无该测试数据！',
           '注意',
           {
             confirmButtonText: '确定',
@@ -766,6 +766,7 @@ export default {
           .then(() => {
             api.admin_getProblemCases(this.pid).then((res) => {
               this.problemSamples = res.data.data;
+              myMessage.success(res.data.msg);
             });
           })
           .catch(() => {});
@@ -882,8 +883,14 @@ export default {
       }
       myMessage.success('上传测试数据包成功');
       let fileList = response.data.fileList;
+      let averSorce = null;
+      if (this.problem.ioScore) {
+        averSorce = (this.problem.ioScore / fileList.length).toFixed(0);
+      }
       for (let file of fileList) {
-        file.score = (this.problem.ioScore / fileList.length).toFixed(0);
+        if (averSorce) {
+          file.score = averSorce;
+        }
         if (!file.output && this.problem.spj) {
           file.output = '-';
         }
