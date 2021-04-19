@@ -108,7 +108,7 @@ public class ProblemTestCaseUtils {
         }
     }
 
-    // 若没有测试数据，则尝试从数据库获取并且初始化到本地
+    // 若没有测试数据，则尝试从数据库获取并且初始化到本地，如果数据库中该题目测试数据为空，rsync同步也出了问题，则直接判系统错误
     public JSONObject tryInitTestCaseInfo(Long problemId, String version, Boolean isSpj) throws SystemError, UnsupportedEncodingException {
         QueryWrapper<ProblemCase> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("pid", problemId);
@@ -122,8 +122,11 @@ public class ProblemTestCaseUtils {
             tmp.put("score", problemCase.getScore());
             testCases.add(tmp);
         }
-
-        return initTestCase(testCases, problemId, version, isSpj);
+        if (testCases.size() == 0) { // 数据库也为空的话
+            throw new SystemError("problemID:[" + problemId + "] test case has not found.", null, null);
+        } else {
+            return initTestCase(testCases, problemId, version, isSpj);
+        }
     }
 
     // 去除所有的空格换行等空白符

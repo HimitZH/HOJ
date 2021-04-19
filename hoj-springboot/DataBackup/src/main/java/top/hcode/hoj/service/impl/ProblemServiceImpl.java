@@ -2,11 +2,19 @@ package top.hcode.hoj.service.impl;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
+import cn.hutool.core.io.file.FileWriter;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.DigestUtils;
 import top.hcode.hoj.crawler.problem.CFProblemStrategy;
 import top.hcode.hoj.crawler.problem.HDUProblemStrategy;
 import top.hcode.hoj.crawler.problem.ProblemContext;
@@ -21,6 +29,7 @@ import org.springframework.stereotype.Service;
 import top.hcode.hoj.utils.Constants;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,6 +67,9 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
     @Autowired
     private ProblemCountServiceImpl problemCountService;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
 
     @Override
@@ -193,18 +205,10 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                 if (problemDto.getSamples().size() > 0) {
                     int sumScore = 0;
                     String testcaseDir = problemDto.getUploadTestcaseDir();
-                    // 此时ProblemCase里面的input和output存的是文件名字，拼接上文件路径即可访问
+                    // 将之前的临时文件夹里面的评测文件全部复制到指定文件夹(覆盖)
+                    FileUtil.copyFilesFromDir(new File(testcaseDir), new File(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid), true);
+                    // 如果是io题目统计总分
                     for (ProblemCase problemCase : problemDto.getSamples()) {
-                        FileReader infileReader = new FileReader(testcaseDir + File.separator + problemCase.getInput());
-                        String input = infileReader.readString();
-                        FileReader outfileReader = new FileReader(testcaseDir + File.separator + problemCase.getOutput());
-                        String output = outfileReader.readString();
-                        Assert.notBlank(input, problemCase.getInput() + "的评测数据为空！修改题目失败！");
-                        Assert.notBlank(output, problemCase.getInput() + "的评测数据为空！修改题目失败！");
-                        // 如果不为空，则正常将数据写入
-                        problemCase.setPid(pid);
-                        problemCase.setInput(input);
-                        problemCase.setOutput(output);
                         if (problemCase.getScore() != null) {
                             sumScore += problemCase.getScore();
                         }
@@ -214,15 +218,11 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                         problem.setIoScore(sumScore);
                     }
 
-                    // 将原先题目的评测数据清空，重新插入新的
-                    QueryWrapper<ProblemCase> problemCaseQueryWrapper = new QueryWrapper<>();
-                    problemCaseQueryWrapper.eq("pid", pid);
-
-                    boolean remove = problemCaseService.remove(problemCaseQueryWrapper);
-                    boolean add = problemCaseService.saveOrUpdateBatch(problemDto.getSamples());
                     // 设置新的测试样例版本号
-                    problem.setCaseVersion(String.valueOf(System.currentTimeMillis()));
-                    checkProblemCase = remove && add;
+                    String caseVersion = String.valueOf(System.currentTimeMillis());
+                    problem.setCaseVersion(caseVersion);
+                    // 获取代理bean对象执行异步方法===》根据测试文件初始info
+                    applicationContext.getBean(ProblemServiceImpl.class).initUploadTestCase(problem.getSpjLanguage() != null, caseVersion, pid, problemDto.getSamples());
                 }
 
             } else if (problemDto.getSamples().size() > 0) {
@@ -278,6 +278,8 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                     problem.setCaseVersion(String.valueOf(System.currentTimeMillis()));
                 }
 
+                initHandTestCase(problem.getSpjLanguage() != null, problem.getCaseVersion(), pid, problemDto.getSamples());
+
             }
         }
 
@@ -323,27 +325,20 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         if (problemDto.getIsUploadTestCase()) { // 如果是选择上传测试文件的，则需要遍历对应文件夹，读取数据，写入数据库。
             int sumScore = 0;
             String testcaseDir = problemDto.getUploadTestcaseDir();
-            // 此时ProblemCase里面的input和output存的是文件名字，拼接上文件路径即可访问
+            // 将之前的临时文件夹里面的评测文件全部复制到指定文件夹(覆盖)
+            FileUtil.copyFilesFromDir(new File(testcaseDir), new File(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid), true);
+            // 如果是io题目统计总分
             for (ProblemCase problemCase : problemDto.getSamples()) {
-                FileReader infileReader = new FileReader(testcaseDir + File.separator + problemCase.getInput());
-                String input = infileReader.readString();
-                FileReader outfileReader = new FileReader(testcaseDir + File.separator + problemCase.getOutput());
-                String output = outfileReader.readString();
-                Assert.notBlank(input, problemCase.getInput() + "的评测数据为空！新建题目失败！");
-                Assert.notBlank(output, problemCase.getInput() + "的评测数据为空！新建题目失败！");
-                // 如果不为空，则正常将数据写入
-                problemCase.setPid(pid);
-                problemCase.setInput(input);
-                problemCase.setOutput(output);
                 if (problemCase.getScore() != null) {
                     sumScore += problemCase.getScore();
                 }
             }
-            addCasesToProblemResult = problemCaseService.saveOrUpdateBatch(problemDto.getSamples());
             // 设置oi总分数，根据每个测试点的加和
             if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
                 problem.setIoScore(sumScore);
             }
+            // 获取代理bean对象执行异步方法===》根据测试文件初始info
+            applicationContext.getBean(ProblemServiceImpl.class).initUploadTestCase(problem.getSpjLanguage() != null, problem.getCaseVersion(), pid, problemDto.getSamples());
         } else {
             // oi题目需要求取平均值，给每个测试点初始oi的score值，默认总分100分
             if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
@@ -355,6 +350,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                 problemDto.getSamples().forEach(problemCase -> problemCase.setPid(pid)); // 设置好新题目的pid
                 addCasesToProblemResult = problemCaseService.saveOrUpdateBatch(problemDto.getSamples());
             }
+            initHandTestCase(problem.getSpjLanguage() != null, problem.getCaseVersion(), pid, problemDto.getSamples());
         }
 
         // 为新的题目添加对应的tag，可能tag是原表已有，也可能是新的，所以需要判断。
@@ -383,6 +379,109 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         }
     }
 
+    // 初始化上传文件的测试数据，写成json文件
+    @Async
+    public void initUploadTestCase(Boolean isSpj,
+                                   String version,
+                                   Long problemId,
+                                   List<ProblemCase> problemCaseList) {
+
+        JSONObject result = new JSONObject();
+        result.set("isSpj", isSpj);
+        result.set("version", version);
+        result.set("testCasesSize", problemCaseList.size());
+        result.set("testCases", new JSONArray());
+
+        String testCasesDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + "problem_" + problemId;
+
+
+        for (ProblemCase problemCase : problemCaseList) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.set("caseId", null);
+            jsonObject.set("score", problemCase.getScore());
+            jsonObject.set("inputName", problemCase.getInput());
+            jsonObject.set("outputName", problemCase.getOutput());
+            // 读取输出文件
+            FileReader readFile = new FileReader(testCasesDir + "/" + problemCase.getOutput(), CharsetUtil.UTF_8);
+            String output = readFile.readString();
+
+            // spj是根据特判程序输出判断结果，所以无需初始化测试数据
+            if (!isSpj) {
+                // 原数据MD5
+                jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(output.getBytes()));
+                // 原数据大小
+                jsonObject.set("outputSize", output.getBytes().length);
+                // 去掉全部空格的MD5，用来判断pe
+                jsonObject.set("allStrippedOutputMd5", DigestUtils.md5DigestAsHex(output.replaceAll("\\s+", "").getBytes()));
+                // 默认去掉文末空格的MD5
+                jsonObject.set("EOFStrippedOutputMd5", DigestUtils.md5DigestAsHex(rtrim(output).getBytes()));
+            }
+
+            ((JSONArray) result.get("testCases")).put(jsonObject);
+        }
+
+        FileWriter infoFile = new FileWriter(testCasesDir + "/info", CharsetUtil.UTF_8);
+        // 写入记录文件
+        infoFile.write(JSONUtil.toJsonStr(result));
+    }
+
+
+    // 初始化手动输入上传的测试数据，写成json文件
+    public void initHandTestCase(Boolean isSpj,
+                                 String version,
+                                 Long problemId,
+                                 List<ProblemCase> problemCaseList) {
+
+        JSONObject result = new JSONObject();
+        result.set("isSpj", isSpj);
+        result.set("version", version);
+        result.set("testCasesSize", problemCaseList.size());
+        result.set("testCases", new JSONArray());
+
+        String testCasesDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + "problem_" + problemId;
+        FileUtil.del(testCasesDir);
+        for (int index = 0; index < problemCaseList.size(); index++) {
+            JSONObject jsonObject = new JSONObject();
+            String inputName = (index + 1) + ".in";
+            jsonObject.set("caseId", problemCaseList.get(index).getId());
+            jsonObject.set("score", problemCaseList.get(index).getScore());
+            jsonObject.set("inputName", inputName);
+            // 生成对应文件
+            FileWriter infileWriter = new FileWriter(testCasesDir + "/" + inputName, CharsetUtil.UTF_8);
+            // 将该测试数据的输入写入到文件
+            infileWriter.write(problemCaseList.get(index).getInput());
+
+            String outputName = (index + 1) + ".out";
+            jsonObject.set("outputName", outputName);
+            // 生成对应文件
+            String outputData = problemCaseList.get(index).getOutput();
+            FileWriter outFile = new FileWriter(testCasesDir + "/" + outputName, CharsetUtil.UTF_8);
+            outFile.write(outputData);
+
+            // spj是根据特判程序输出判断结果，所以无需初始化测试数据
+            if (!isSpj) {
+                // 原数据MD5
+                jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(outputData.getBytes()));
+                // 原数据大小
+                try {
+                    jsonObject.set("outputSize", outputData.getBytes(CharsetUtil.UTF_8).length);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                // 去掉全部空格的MD5，用来判断pe
+                jsonObject.set("allStrippedOutputMd5", DigestUtils.md5DigestAsHex(outputData.replaceAll("\\s+", "").getBytes()));
+                // 默认去掉文末空格的MD5
+                jsonObject.set("EOFStrippedOutputMd5", DigestUtils.md5DigestAsHex(rtrim(outputData).getBytes()));
+            }
+
+            ((JSONArray) result.get("testCases")).put(index, jsonObject);
+        }
+
+        FileWriter infoFile = new FileWriter(testCasesDir + "/info", CharsetUtil.UTF_8);
+        // 写入记录文件
+        infoFile.write(JSONUtil.toJsonStr(result));
+    }
+
     @Override
     public ProblemStrategy.RemoteProblemInfo getOtherOJProblemInfo(String OJName, String problemId, String author) throws Exception {
 
@@ -402,6 +501,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         ProblemContext problemContext = new ProblemContext(problemStrategy);
         return problemContext.getProblemInfo(problemId, author);
     }
+
 
     @Override
     @Transactional
@@ -463,6 +563,12 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         }
 
         return addProblemResult && addProblemTagResult && addProblemLanguageResult && initProblemCountResult;
+    }
+
+    // 去除所有的空格换行等空白符
+    public static String rtrim(String value) {
+        if (value == null) return null;
+        return value.replaceAll("\\s+$", "");
     }
 
 }

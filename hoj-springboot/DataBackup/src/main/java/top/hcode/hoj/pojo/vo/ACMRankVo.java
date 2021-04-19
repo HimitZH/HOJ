@@ -28,6 +28,9 @@ public class ACMRankVo implements Serializable {
     @ApiModelProperty(value = "个性签名")
     private String signature;
 
+    @ApiModelProperty(value = "头像地址")
+    private String avatar;
+
     @ApiModelProperty(value = "解决问题数")
     private Integer solved;
 

@@ -36,9 +36,6 @@ public class JudgeController {
     private ProblemServiceImpl problemService;
 
     @Autowired
-    private SystemConfigServiceImpl systemConfigService;
-
-    @Autowired
     private RemoteJudgeToSubmit remoteJudgeToSubmit;
 
 

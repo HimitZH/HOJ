@@ -15,5 +15,5 @@ import top.hcode.hoj.pojo.entity.UserRecord;
  * @since 2020-10-23
  */
 public interface UserRecordService extends IService<UserRecord> {
-    void updateRecord(String uid, Integer score);
+    void updateRecord(String uid, Long submitId, Long pid, Integer score);
 }

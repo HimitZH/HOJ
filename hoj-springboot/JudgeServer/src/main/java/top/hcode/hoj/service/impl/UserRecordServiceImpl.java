@@ -35,16 +35,21 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
     @Async
     @Override
-    public void updateRecord(String uid, Integer score) {
+    public void updateRecord(String uid, Long submitId, Long pid, Integer score) {
         QueryWrapper<Judge> judgeQueryWrapper = new QueryWrapper<>();
-        judgeQueryWrapper.isNotNull("score").orderByDesc("score").isNull("cid") // 非比赛提交
+        judgeQueryWrapper.isNotNull("score")
+                .eq("cid", 0)// 非比赛提交
+                .eq("pid", pid)
+                .eq("uid", uid)
+                .ne("submit_id", submitId)
+                .orderByDesc("score")
                 .last("limit 1");
         Judge lastHighScoreJudge = judgeService.getOne(judgeQueryWrapper);
         // 之前没有提交过，那么就需要修改
         boolean result = true;
         if (lastHighScoreJudge == null) {
             UpdateWrapper<UserRecord> userRecordUpdateWrapper = new UpdateWrapper<>();
-            userRecordUpdateWrapper.set("total_score", score).eq("uid", uid);
+            userRecordUpdateWrapper.setSql("total_score=total_score+" + score).eq("uid", uid);
             result = userRecordMapper.update(null, userRecordUpdateWrapper) == 1;
         } else if (lastHighScoreJudge.getScore() < score) {
             //如果之前该题目最高得分的提交比现在得分低,也需要修改
