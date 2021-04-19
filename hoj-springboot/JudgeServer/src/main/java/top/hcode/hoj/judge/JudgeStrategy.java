@@ -64,8 +64,8 @@ public class JudgeStrategy {
             if (!hasSpjOrNotSpj) {
                 result.put("code", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
                 result.put("errMsg", "The special judge code does not exist.");
-                result.put("time", 0L);
-                result.put("memory", 0L);
+                result.put("time", 0);
+                result.put("memory", 0);
                 return result;
             }
 
@@ -99,25 +99,25 @@ public class JudgeStrategy {
         } catch (SystemError systemError) {
             result.put("code", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
             result.put("errMsg", "Oops, something has gone wrong with the judgeServer. Please report this to administrator.");
-            result.put("time", 0L);
-            result.put("memory", 0L);
+            result.put("time", 0);
+            result.put("memory", 0);
             log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生系统性的异常------------------->{}",
                     systemError.getMessage() + "\n" + systemError.getStderr());
         } catch (SubmitError submitError) {
             result.put("code", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
             result.put("errMsg", submitError.getMessage() + ":" + submitError.getStderr());
-            result.put("time", 0L);
-            result.put("memory", 0L);
+            result.put("time", 0);
+            result.put("memory", 0);
         } catch (CompileError compileError) {
             result.put("code", Constants.Judge.STATUS_COMPILE_ERROR.getStatus());
             result.put("errMsg", compileError.getStderr());
-            result.put("time", 0L);
-            result.put("memory", 0L);
+            result.put("time", 0);
+            result.put("memory", 0);
         } catch (Exception e) {
             result.put("code", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
             result.put("errMsg", "Oops, something has gone wrong with the judgeServer. Please report this to administrator.");
-            result.put("time", 0L);
-            result.put("memory", 0L);
+            result.put("time", 0);
+            result.put("memory", 0);
             log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生系统性的异常-------------------->{}", e.getMessage());
         } finally {
 
