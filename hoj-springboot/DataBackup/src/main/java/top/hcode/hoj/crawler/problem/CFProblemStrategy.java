@@ -55,23 +55,32 @@ public class CFProblemStrategy extends ProblemStrategy {
             tmpDesc = ReUtil.get("<div class=\"input-file\">([\\s\\S]*?)</div><div class=\"input-specification", html, 1);
         }
 
-        info.setDescription(tmpDesc.replaceAll("\\$\\$\\$","\\$").replaceAll("src=\"../../", "src=\"" + HOST + "/"));
+        info.setDescription(tmpDesc.replaceAll("\\$\\$\\$", "\\$").replaceAll("src=\"../../", "src=\"" + HOST + "/"));
 
 
+        info.setInput(ReUtil.get("<div class=\"section-title\">\\s*Input\\s*</div>([\\s\\S]*?)</div><div class=\"output-specification\">", html, 1).replaceAll("\\$\\$\\$", "\\$"));
 
-        info.setInput(ReUtil.get("<div class=\"section-title\">\\s*Input\\s*</div>([\\s\\S]*?)</div><div class=\"output-specification\">", html, 1).replaceAll("\\$\\$\\$","\\$"));
+        info.setOutput(ReUtil.get("<div class=\"section-title\">\\s*Output\\s*</div>([\\s\\S]*?)</div><div class=\"sample-tests\">", html, 1).replaceAll("\\$\\$\\$", "\\$"));
 
-        info.setOutput(ReUtil.get("<div class=\"section-title\">\\s*Output\\s*</div>([\\s\\S]*?)</div><div class=\"sample-tests\">", html, 1).replaceAll("\\$\\$\\$","\\$"));
+        List<String> inputExampleList = ReUtil.findAll(Pattern.compile("<div class=\"input\"><div class=\"title\">Input</div><pre>([\\s\\S]*?)</pre></div>"), html, 1);
 
-        StringBuilder sb = new StringBuilder("<input>");
-        sb.append(ReUtil.get("<div class=\"sample-test\"><div class=\"input\"><div class=\"title\">Input</div><pre>([\\s\\S]*?)</pre></div>", html, 1).replaceAll("<br>", ""));
-        sb.append("</input><output>");
-        sb.append(ReUtil.get("<div class=\"output\"><div class=\"title\">Output</div><pre>([\\s\\S]*?)</pre></div></div>", html, 1).replaceAll("<br>", "")).append("</output>");
+        List<String> outputExampleList = ReUtil.findAll(Pattern.compile("<div class=\"output\"><div class=\"title\">Output</div><pre>([\\s\\S]*?)</pre></div>"), html, 1);
+
+
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < inputExampleList.size() && i < outputExampleList.size(); i++) {
+            sb.append("<input>");
+            sb.append(inputExampleList.get(i).replace("<br>", "")).append("</input>");
+            sb.append("<output>");
+            sb.append(outputExampleList.get(i).replace("<br>", "")).append("</output>");
+        }
+
         info.setExamples(sb.toString());
 
         String tmpHint = ReUtil.get("<div class=\"section-title\">\\s*Note\\s*</div>([\\s\\S]*?)</div></div>", html, 1);
-        if (tmpHint!=null){
-            info.setHint(tmpHint.replaceAll("\\$\\$\\$","\\$"));
+        if (tmpHint != null) {
+            info.setHint(tmpHint.replaceAll("\\$\\$\\$", "\\$"));
         }
 
         info.setIsRemote(true);
@@ -90,7 +99,7 @@ public class CFProblemStrategy extends ProblemStrategy {
 
         List<String> all = ReUtil.findAll(Pattern.compile("<span class=\"tag-box\" style=\"font-size:1\\.2rem;\" title=\"[\\s\\S]*?\">([\\s\\S]*?)</span>"), html, 1);
         List<Tag> tagList = new LinkedList<>();
-        for (String tmp:all){
+        for (String tmp : all) {
             tagList.add(new Tag().setName(tmp.trim()));
         }
         return new RemoteProblemInfo().setProblem(info).setTagList(tagList);

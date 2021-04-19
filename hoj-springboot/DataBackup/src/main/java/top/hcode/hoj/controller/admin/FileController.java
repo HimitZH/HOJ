@@ -245,8 +245,8 @@ public class FileController {
     public void downloadTestcase(@RequestParam("pid") Long pid, HttpServletResponse response) {
 
         String workDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + "problem_" + pid;
-        boolean dirEmpty = FileUtil.isDirEmpty(new File(workDir));
-        if (dirEmpty) { // 本地为空 尝试去数据库查找
+        File file = new File(workDir);
+        if (!file.exists()) { // 本地为空 尝试去数据库查找
             QueryWrapper<ProblemCase> problemCaseQueryWrapper = new QueryWrapper<>();
             problemCaseQueryWrapper.eq("pid", pid);
             List<ProblemCase> problemCaseList = problemCaseService.list(problemCaseQueryWrapper);

@@ -318,6 +318,13 @@ public class AdminContestController {
         Long pid = Long.valueOf(pidStr);
         Long cid = Long.valueOf(cidStr);
 
+        QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
+        contestProblemQueryWrapper.eq("pid", pid).eq("cid", cid);
+        ContestProblem contestProblem = contestProblemService.getOne(contestProblemQueryWrapper, false);
+        if (contestProblem != null) {
+            return CommonResult.errorResponse("添加失败，该题目已经加入到此次比赛当中了，请勿重复操作！", CommonResult.STATUS_FAIL);
+        }
+
         // 比赛中题目显示默认为原标题
         String displayName = problemService.getById(pid).getTitle();
 
