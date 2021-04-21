@@ -109,7 +109,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 //    @Scheduled(cron = "0/5 * * * * *")
     @Override
     public void deleteTestCase() {
-        boolean result = FileUtil.del(Constants.File.TESTCASE_BASE_FOLDER.getPath());
+        boolean result = FileUtil.del(Constants.File.TESTCASE_TMP_FOLDER.getPath());
         if (!result){
             log.error("每日定时任务异常------------------------>{}","清除本地的题目测试数据失败!");
         }
