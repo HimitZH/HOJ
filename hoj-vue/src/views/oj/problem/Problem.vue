@@ -195,9 +195,7 @@
                     <el-tag
                       effect="dark"
                       :color="submissionStatus.color"
-                      @click.native="
-                        handleRoute('/submission-detail/' + submissionId)
-                      "
+                      @click.native="submissionRoute"
                     >
                       <i class="fa fa-circle" aria-hidden="true"></i>
                       {{ submissionStatus.text }}
@@ -739,15 +737,20 @@ export default {
     },
     submissionRoute() {
       if (this.contestID) {
-        return {
-          name: 'contest-submission-list',
-          query: { problemID: this.problemID },
-        };
+        // 比赛提交详情
+        this.$router.push({
+          name: 'ContestSubmissionDeatil',
+          params: {
+            contestID: this.contestID,
+            problemID: this.problemID,
+            submitID: this.submissionId,
+          },
+        });
       } else {
-        return {
-          name: 'submission-list',
-          query: { problemID: this.problemID },
-        };
+        this.$router.push({
+          name: 'SubmissionDeatil',
+          params: { submitID: this.submissionId },
+        });
       }
     },
   },

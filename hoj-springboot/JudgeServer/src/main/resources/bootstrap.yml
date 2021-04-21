@@ -1,9 +1,9 @@
 hoj-judge-server:
   max-task-num: -1 # -1表示最大并行任务数为cpu核心数*2
-  ip: 39.108.148.172 # -1表示使用默认本地ipv4，若是部署其它服务器，务必使用公网ip
+  ip: 127.0.0.1 # -1表示使用默认本地ipv4，若是部署其它服务器，务必使用公网ip
   port: 8088  # 端口号
   name: hoj-judger-1 # 判题机名字 唯一不可重复！！！
-  nacos-url: 129.204.177.72:8848  # nacos地址
+  nacos-url: 127.0.0.1:8848  # nacos地址
   remote-judge:
     open: true # 当前判题服务器是否开启远程虚拟判题功能
     max-task-num: -1 # -1表示最大并行任务数为(cpu核心数*2)*2

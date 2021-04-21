@@ -90,15 +90,6 @@ logging:
             naming: error
     root: error
 
-# 开启Hystrix断路器
-feign:
-  hystrix:
-    enabled: true
-  client:
-    config:
-      default:
-        connectTimeout: 15000
-        readTimeout: 60000
 hystrix:
   command:
     default:

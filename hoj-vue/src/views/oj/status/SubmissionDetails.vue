@@ -66,7 +66,7 @@
             }}</span>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="Time" min-width="64">
+        <vxe-table-column title="Time" min-width="96">
           <template v-slot="{ row }">
             <span>{{ submissionTimeFormat(row.time) }}</span>
           </template>
@@ -81,7 +81,7 @@
             <span>{{ row.score }}</span>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="Length" min-width="60">
+        <vxe-table-column title="Length" min-width="80">
           <template v-slot="{ row }">
             <span>{{ submissionLengthFormat(row.length) }}</span>
           </template>
