@@ -319,7 +319,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         }
         boolean addLangToProblemResult = problemLanguageService.saveOrUpdateBatch(problemLanguageList);
 
-        boolean addCasesToProblemResult = false;
+        boolean addCasesToProblemResult = true;
         // 为新的题目添加对应的case
         if (problemDto.getIsUploadTestCase()) { // 如果是选择上传测试文件的，则需要遍历对应文件夹，读取数据，写入数据库。
             int sumScore = 0;
