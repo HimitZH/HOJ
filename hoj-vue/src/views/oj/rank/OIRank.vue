@@ -91,6 +91,7 @@ export default {
       total: 0,
       dataRank: [],
       loadingTable: false,
+      screenWidth: 768,
       options: {
         tooltip: {
           trigger: 'axis',
@@ -126,10 +127,14 @@ export default {
               showMaxLabel: true,
               align: 'center',
               formatter: (value, index) => {
-                if (this.isAuthenticated && this.userInfo.username == value) {
-                  return utils.breakLongWords(value, 14);
+                if (this.screenWidth < 768) {
+                  if (this.isAuthenticated && this.userInfo.username == value) {
+                    return utils.breakLongWords(value, 14);
+                  } else {
+                    return '';
+                  }
                 } else {
-                  return '';
+                  return utils.breakLongWords(value, 14);
                 }
               },
             },
@@ -161,6 +166,15 @@ export default {
           },
         ],
       },
+    };
+  },
+  created() {
+    this.screenWidth = window.screen.width;
+    const that = this;
+    window.onresize = () => {
+      return (() => {
+        that.screenWidth = document.documentElement.clientWidth;
+      })();
     };
   },
   mounted() {
