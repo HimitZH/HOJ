@@ -91,6 +91,7 @@ export default {
       limit: 30,
       total: 0,
       loadingTable: false,
+      screenWidth: 768,
       dataRank: [],
       options: {
         tooltip: {
@@ -126,10 +127,14 @@ export default {
               showMaxLabel: true,
               align: 'center',
               formatter: (value, index) => {
-                if (this.isAuthenticated && this.userInfo.username == value) {
-                  return utils.breakLongWords(value, 14);
+                if (this.screenWidth < 768) {
+                  if (this.isAuthenticated && this.userInfo.username == value) {
+                    return utils.breakLongWords(value, 14);
+                  } else {
+                    return '';
+                  }
                 } else {
-                  return '';
+                  return utils.breakLongWords(value, 14);
                 }
               },
             },
@@ -171,6 +176,15 @@ export default {
           },
         ],
       },
+    };
+  },
+  created() {
+    this.screenWidth = window.screen.width;
+    const that = this;
+    window.onresize = () => {
+      return (() => {
+        that.screenWidth = document.documentElement.clientWidth;
+      })();
     };
   },
   mounted() {
