@@ -66,8 +66,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.mavonEditor {
-  height: 500px;
-}
-</style>

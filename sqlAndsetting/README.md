@@ -198,19 +198,30 @@ language表
 
 | 列名            | 实体属性类型 | 键   | 备注                         |
 | --------------- | ------------ | ---- | ---------------------------- |
-| id              | int          |      | 主键id                       |
+| id              | long         |      | 主键id                       |
 | content_type    | String       |      | 语言类型                     |
 | description     | String       |      | 语言描述                     |
 | name            | String       |      | 语言名字                     |
 | compile_command | String       |      | 编译指令                     |
-| template        | String       |      | 模板                         |
+| template        | String       |      | A+B题目模板                  |
+| code_template   | String       |      | 语言对应的代码模板           |
 | is_spj          | boolean      |      | 是否可作为特殊判题的一种语言 |
 | gmt_create      | datetime     |      | 创建时间                     |
 | gmt_modified    | datetime     |      | 修改时间                     |
 
   
 
- 
+code_template表
+
+| 列名         | 实体属性类型 | 键   | 备注     |
+| ------------ | ------------ | ---- | -------- |
+| id           | long         |      | 主键id   |
+| pid          | long         | 外键 | 题目id   |
+| lid          | long         | 外键 | 语言id   |
+| code         | String       |      | 代码模板 |
+| status       | boolean      |      | 是否启用 |
+| gmt_create   | datetime     |      | 修改时间 |
+| gmt_modified | datetime     |      | 修改时间 |
 
 ## 提交评测模块
 

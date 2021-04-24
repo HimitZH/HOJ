@@ -325,6 +325,23 @@
           <Editor :value.sync="problem.hint"></Editor>
         </el-form-item>
 
+        <el-form-item label="Code Template">
+          <el-row>
+            <el-col
+              :span="24"
+              v-for="(v, k) in codeTemplate"
+              :key="'template' + k"
+            >
+              <el-form-item>
+                <el-checkbox v-model="v.status">{{ k }}</el-checkbox>
+                <div v-if="v.status">
+                  <code-mirror v-model="v.code" :mode="v.mode"></code-mirror>
+                </div>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-form-item>
+
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="Type">
@@ -544,6 +561,7 @@ export default {
       loadingCompile: false,
       mode: '', // 该题目是编辑或者创建
       contest: {},
+      codeTemplate: {},
       problemIdPrex: 'HOJ-',
       pid: null, // 题目id，如果为创建模式则为null
       contestID: null, // 比赛id
@@ -581,6 +599,7 @@ export default {
       problemTags: [], //指定问题的标签列表
       problemLanguages: [], //指定问题的编程语言列表
       problemSamples: [], // 判题机使用的样例
+      problemCodeTemplate: [],
       reProblem: {},
       testCaseUploaded: false,
       allLanguage: [], //所有编程语言
@@ -688,6 +707,44 @@ export default {
       this.init();
     },
 
+    problemLanguages(newVal) {
+      let data = {};
+      // use deep copy to avoid infinite loop
+      let languages = JSON.parse(JSON.stringify(newVal)).sort();
+      for (let item of languages) {
+        if (this.codeTemplate[item] === undefined) {
+          let langConfig = this.allLanguage.find((lang) => {
+            return lang.name === item;
+          });
+          let codeTemp;
+          let problemCodeTemplate = this.problemCodeTemplate;
+          if (problemCodeTemplate) {
+            codeTemp = problemCodeTemplate.find((temp) => {
+              return temp.lid == langConfig.id;
+            });
+          }
+          if (codeTemp == undefined) {
+            data[item] = {
+              id: null,
+              status: false,
+              code: langConfig.codeTemplate,
+              mode: langConfig.contentType,
+            };
+          } else {
+            data[item] = {
+              id: codeTemp.id,
+              status: true,
+              code: codeTemp.code,
+              mode: langConfig.contentType,
+            };
+          }
+        } else {
+          data[item] = this.codeTemplate[item];
+        }
+      }
+      this.codeTemplate = data;
+    },
+
     'problem.spjLanguage'(newVal) {
       if (this.allSpjLanguage.length) {
         this.spjMode = this.allSpjLanguage.find((item) => {
@@ -727,12 +784,8 @@ export default {
               this.contestProblem = res.data.data;
             });
         }
-        api.getProblemLanguages(this.pid).then((res) => {
-          let Languages = res.data.data;
-          for (let i = 0; i < Languages.length; i++) {
-            this.problemLanguages.push(Languages[i].name);
-          }
-        });
+        this.getProblemCodeTemplateAndLanguage();
+
         if (!this.isUploadTestCase) {
           api.admin_getProblemCases(this.pid).then((res) => {
             this.problemSamples = res.data.data;
@@ -748,6 +801,20 @@ export default {
         }
       }
     },
+
+    async getProblemCodeTemplateAndLanguage() {
+      const that = this;
+      await api.getProblemCodeTemplate(that.pid).then((res) => {
+        that.problemCodeTemplate = res.data.data;
+      });
+      api.getProblemLanguages(that.pid).then((res) => {
+        let Languages = res.data.data;
+        for (let i = 0; i < Languages.length; i++) {
+          that.problemLanguages.push(Languages[i].name);
+        }
+      });
+    },
+
     changeSampleUploadMethod() {
       if (
         !this.isUploadTestCase &&
@@ -1051,12 +1118,22 @@ export default {
           }
         }
       }
+      this.problemCodeTemplate = [];
       let problemLanguageList = Object.assign([], this.problemLanguages); // 深克隆 防止影响
       for (let i = 0; i < problemLanguageList.length; i++) {
         problemLanguageList[i] = { name: problemLanguageList[i] };
         for (let lang of this.allLanguage) {
           if (problemLanguageList[i].name == lang.name) {
             problemLanguageList[i] = lang;
+            if (this.codeTemplate[lang.name].status) {
+              this.problemCodeTemplate.push({
+                id: this.codeTemplate[lang.name].id,
+                pid: this.pid,
+                code: this.codeTemplate[lang.name].code,
+                lid: lang.id,
+                status: this.codeTemplate[lang.name].status,
+              });
+            }
             break;
           }
         }
@@ -1072,6 +1149,7 @@ export default {
         this.problem.examples
       ); // 需要转换格式
 
+      problemDto['codeTemplates'] = this.problemCodeTemplate;
       problemDto['tags'] = problemTagList;
       problemDto['languages'] = problemLanguageList;
       problemDto['isUploadTestCase'] = this.isUploadTestCase;

@@ -5,6 +5,7 @@ import lombok.Data;
 import top.hcode.hoj.pojo.entity.Problem;
 import top.hcode.hoj.pojo.entity.ProblemCount;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -19,4 +20,5 @@ public class ProblemInfoVo {
     private List<String> tags;
     private List<String> languages;
     private ProblemCount problemCount;
+    private HashMap<String, String> codeTemplate;
 }

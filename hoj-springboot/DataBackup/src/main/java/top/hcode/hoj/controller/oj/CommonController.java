@@ -48,6 +48,9 @@ public class CommonController {
     @Autowired
     private ProblemServiceImpl problemService;
 
+    @Autowired
+    private CodeTemplateServiceImpl codeTemplateService;
+
 
     @GetMapping("/captcha")
     public CommonResult getCaptcha() {
@@ -117,10 +120,23 @@ public class CommonController {
         List<Long> idList = problemLanguageService.list(queryWrapper)
                 .stream().map(ProblemLanguage::getLid).collect(Collectors.toList());
         List<Language> languages = (List<Language>) languageService.listByIds(idList);
-        if (languages != null) {
+        if (languages != null && languages.size() > 0) {
             return CommonResult.successResponse(languages, "获取该题目的编程语言列表成功！");
         } else {
-            return CommonResult.errorResponse("获取该题目的编程语言列表失败！");
+            return CommonResult.successResponse(languages, "获取该题目的编程语言列表失败！");
         }
     }
+
+    @GetMapping("/get-problem-code-template")
+    public CommonResult getProblemCodeTemplate(@Valid @RequestParam("pid") Long pid) {
+        QueryWrapper<CodeTemplate> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("pid", pid);
+        List<CodeTemplate> codeTemplates = codeTemplateService.list(queryWrapper);
+        if (codeTemplates != null && codeTemplates.size() > 0) {
+            return CommonResult.successResponse(codeTemplates, "获取该题目的代码模板列表成功！");
+        } else {
+            return CommonResult.successResponse(codeTemplates,"获取该题目的代码模板列表失败！");
+        }
+    }
+
 }

@@ -1,10 +1,7 @@
 package top.hcode.hoj.pojo.dto;
 
 import lombok.Data;
-import top.hcode.hoj.pojo.entity.Language;
-import top.hcode.hoj.pojo.entity.Problem;
-import top.hcode.hoj.pojo.entity.ProblemCase;
-import top.hcode.hoj.pojo.entity.Tag;
+import top.hcode.hoj.pojo.entity.*;
 
 import java.util.List;
 
@@ -30,5 +27,7 @@ public class ProblemDto {
     private List<Language> languages;
 
     private List<Tag> tags;
+
+    private List<CodeTemplate> codeTemplates;
 
 }

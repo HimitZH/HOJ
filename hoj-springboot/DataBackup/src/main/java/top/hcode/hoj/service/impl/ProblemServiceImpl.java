@@ -71,6 +71,8 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     @Autowired
     private ApplicationContext applicationContext;
 
+    @Autowired
+    private CodeTemplateServiceImpl codeTemplateService;
 
     @Override
     public Page<ProblemVo> getProblemList(int limit, int currentPage, Long pid, String title, Integer difficulty,
@@ -100,9 +102,11 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         List<ProblemTag> oldProblemTags = (List<ProblemTag>) problemTagService.listByMap(map);
         List<ProblemLanguage> oldProblemLanguages = (List<ProblemLanguage>) problemLanguageService.listByMap(map);
         List<ProblemCase> oldProblemCases = (List<ProblemCase>) problemCaseService.listByMap(map);
+        List<CodeTemplate> oldProblemTemplate = (List<CodeTemplate>) codeTemplateService.listByMap(map);
 
         Map<Long, Integer> mapOldPT = new HashMap<>();
         Map<Long, Integer> mapOldPL = new HashMap<>();
+        Map<Integer, Integer> mapOldPCT = new HashMap<>();
         List<Long> needDeleteProblemCases = new LinkedList<>();
         HashMap<Long, ProblemCase> oldProblemMap = new HashMap<>();
 
@@ -113,6 +117,10 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         // 登记一下原有的language的id
         oldProblemLanguages.stream().forEach(problemLanguage -> {
             mapOldPL.put(problemLanguage.getLid(), 0);
+        });
+        // 登记一下原有的codeTemplate的id
+        oldProblemTemplate.stream().forEach(codeTemplate -> {
+            mapOldPCT.put(codeTemplate.getId(), 0);
         });
         // 登记一下原有的case的id
         oldProblemCases.stream().forEach(problemCase -> {
@@ -156,6 +164,31 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         if (problemTagList.size() > 0) {
             addTagsToProblemResult = problemTagService.saveOrUpdateBatch(problemTagList);
         }
+
+        /**
+         * 处理code_template表
+         */
+        boolean deleteTemplate = true;
+        boolean saveOrUpdateCodeTemplate = true;
+        for (CodeTemplate codeTemplate : problemDto.getCodeTemplates()) {
+            if (codeTemplate.getId() != null) {
+                mapOldPCT.put(codeTemplate.getId(), 1);
+            }
+        }
+        // 需要删除的模板
+        List<Integer> needDeleteCTs = new LinkedList<>();
+        for (Integer key : mapOldPCT.keySet()) {
+            if (mapOldPCT.get(key) == 0) {
+                needDeleteCTs.add(key);
+            }
+        }
+        if (needDeleteCTs.size() > 0) {
+            deleteTemplate = codeTemplateService.removeByIds(needDeleteCTs);
+        }
+        if (problemDto.getCodeTemplates().size()>0) {
+            saveOrUpdateCodeTemplate = codeTemplateService.saveOrUpdateBatch(problemDto.getCodeTemplates());
+        }
+
 
         /**
          *  处理problem_language表的更新与删除
@@ -286,7 +319,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         boolean problemUpdateResult = problemMapper.updateById(problem) == 1;
 
         if (problemUpdateResult && checkProblemCase && deleteLanguagesFromProblemResult && deleteTagsFromProblemResult
-                && addLanguagesToProblemResult && addTagsToProblemResult) {
+                && addLanguagesToProblemResult && addTagsToProblemResult && deleteTemplate && saveOrUpdateCodeTemplate) {
             // 修改数据库成功后，如果有进行文件上传操作，则进行删除
             if (problemDto.getIsUploadTestCase() && problemDto.getSamples().size() > 0) {
                 FileUtil.del(problemDto.getUploadTestcaseDir());
@@ -318,6 +351,16 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             problemLanguageList.add(new ProblemLanguage().setPid(pid).setLid(language.getId()));
         }
         boolean addLangToProblemResult = problemLanguageService.saveOrUpdateBatch(problemLanguageList);
+
+        // 为新的题目添加对应的codeTemplate
+        boolean addProblemCodeTemplate = true;
+        if (problemDto.getCodeTemplates() != null && problemDto.getCodeTemplates().size() > 0) {
+            for (CodeTemplate codeTemplate : problemDto.getCodeTemplates()) {
+                codeTemplate.setPid(pid);
+            }
+            addProblemCodeTemplate = codeTemplateService.saveOrUpdateBatch(problemDto.getCodeTemplates());
+        }
+
 
         boolean addCasesToProblemResult = true;
         // 为新的题目添加对应的case
@@ -367,7 +410,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
 
         if (addProblemResult && addCasesToProblemResult && addLangToProblemResult
-                && addTagsToProblemResult && initProblemCountResult) {
+                && addTagsToProblemResult && initProblemCountResult && addProblemCodeTemplate) {
             // 修改数据库成功后，如果有进行文件上传操作，则进行删除
             if (problemDto.getIsUploadTestCase()) {
                 FileUtil.del(problemDto.getUploadTestcaseDir());

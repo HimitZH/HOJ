@@ -375,6 +375,7 @@ export default {
         problemCount: {},
         tags: [],
         languages: [],
+        codeTemplate: {},
       },
       pie: pie,
       largePie: largePie,
@@ -465,11 +466,16 @@ export default {
           this.isRemote = result.problem.isRemote;
           this.changePie(result.problemCount);
 
-          // 在beforeRouteEnter中修改了, 说明本地有code,不用更改配置
+          // 在beforeRouteEnter中修改了, 说明本地有code，无需加载template
           if (this.code !== '') {
             return;
           }
+          // try to load problem template
           this.language = this.problemData.languages[0];
+          let codeTemplate = this.problemData.codeTemplate;
+          if (codeTemplate && codeTemplate[this.language]) {
+            this.code = codeTemplate[this.language];
+          }
         },
         () => {}
       );
@@ -537,19 +543,34 @@ export default {
       this.$router.push(route);
     },
     onChangeLang(newLang) {
+      if (this.code.trim() != '') {
+        if (this.code == this.problemData.codeTemplate[this.language]) {
+          //原语言模板未变化，只改变语言
+          if (this.problemData.codeTemplate[newLang]) {
+            this.code = this.problemData.codeTemplate[newLang];
+          } else {
+            this.code = '';
+          }
+        }
+      }
       this.language = newLang;
     },
     onChangeTheme(newTheme) {
       this.theme = newTheme;
     },
     onResetToTemplate() {
-      this.$confirm('你是否确定要重置你的代码？', '提示', {
+      this.$confirm('是否确定要重置代码模板？', '提示', {
         cancelButtonText: '取消',
         confirmButtonText: '确定',
         type: 'warning',
       })
         .then(() => {
-          this.code = '';
+          let codeTemplate = this.problemData.codeTemplate;
+          if (codeTemplate && codeTemplate[this.language]) {
+            this.code = codeTemplate[this.language];
+          } else {
+            this.code = '';
+          }
         })
         .catch(() => {});
     },

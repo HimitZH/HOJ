@@ -3,6 +3,7 @@ package top.hcode.hoj;
 import org.jsoup.Connection;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import top.hcode.hoj.remoteJudge.task.Impl.CodeForcesJudge;
 import top.hcode.hoj.remoteJudge.task.Impl.HduJudge;
 import top.hcode.hoj.util.JsoupUtils;
 
@@ -42,10 +43,49 @@ public class JudgeServerApplicationTests {
     public static final String HOST = "https://codeforces.com";
 
     @Test
-    public void test2() throws IOException {
-        Connection connection = JsoupUtils.getConnectionFromUrl(HOST, null, null);
-        Connection.Response response = JsoupUtils.getResponse(connection, null);
-        Map<String, String> cookies = response.cookies();
-        System.out.println(cookies);
+    public void test2() throws Exception {
+        CodeForcesJudge codeForcesJudge = new CodeForcesJudge();
+        Map<String, Object> result = codeForcesJudge.submit("Himit_ZH", "hoj123456", "750A", "GNU G++11 5.1.0", "#include <bits/stdc++.h>\n" +
+                "using namespace std;\n" +
+                "const int maxn = 105;\n" +
+                "struct node\n" +
+                "{\n" +
+                "    int l,r;\n" +
+                "    node() {}\n" +
+                "    node(int _l,int _r)\n" +
+                "    {\n" +
+                "        l = _l;\n" +
+                "        r = _r;\n" +
+                "    }\n" +
+                "};\n" +
+                "int main(void)\n" +
+                "{\n" +
+                "    int n;\n" +
+                "    scanf(\"%d\",&n);\n" +
+                "    int last = 1;\n" +
+                "    vector<node>ans;\n" +
+                "    for(int i=1;i<=n;i++)\n" +
+                "    {\n" +
+                "        int x;\n" +
+                "        scanf(\"%d\",&x);\n" +
+                "        if(x)\n" +
+                "        {\n" +
+                "            ans.push_back(node(last,i));\n" +
+                "            last = i+1;\n" +
+                "        }\n" +
+                "    }\n" +
+                "    if(ans.size())\n" +
+                "    {\n" +
+                "        puts(\"YES\");\n" +
+                "        printf(\"%d\\n\",ans.size());\n" +
+                "        for(unsigned i=0;i<ans.size()-1;i++)\n" +
+                "            printf(\"%d %d\\n\",ans[i].l,ans[i].r);\n" +
+                "        printf(\"%d %d\\n\",ans[ans.size()-1].l,n);\n" +
+                "    }\n" +
+                "    else\n" +
+                "        puts(\"NO\");\n" +
+                "    return 0;\n" +
+                "}");
+        System.out.println(result);
     }
 }
