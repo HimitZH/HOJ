@@ -17,7 +17,7 @@ if (process.env.NODE_ENV == 'development') {
 } else if (process.env.NODE_ENV == 'debug') {
   axios.defaults.baseURL = "http://localhost:6688";
 } else if (process.env.NODE_ENV == 'production') {
-  axios.defaults.baseURL = '你服务器的域名';
+  axios.defaults.baseURL = '你的域名';
 }
 
 // 请求超时时间
@@ -234,6 +234,15 @@ const ojApi = {
     return ajax('/api/get-problem','get',{
       params:{
         problemId
+      }
+    })
+  },
+
+  // 获取题目代码模板
+  getProblemCodeTemplate(pid){
+    return ajax('/api/get-problem-code-template','get',{
+      params:{
+        pid
       }
     })
   },

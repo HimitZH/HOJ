@@ -8,17 +8,64 @@
           <router-view></router-view>
         </transition>
       </div>
-      <div class="footer">
-        <a style="color:#1E9FFF" :href="websiteConfig.recordUrl">{{
-          websiteConfig.recordName
-        }}</a>
-        <p>
+      <footer>
+        <div class="mundb-footer">
+          <el-row>
+            <el-col :md="6" :xs="24">
+              <h1>HOJ</h1>
+              <p>
+                Hcode Online Judge
+              </p>
+            </el-col>
+            <el-col class="hr-none">
+              <el-divider></el-divider>
+            </el-col>
+            <el-col :md="6" :xs="24">
+              <h1>Service</h1>
+              <p><a @click="goRoute('/status')">Judging Queue</a></p>
+              <p><a @click="goRoute('/developer')">System Info</a></p>
+            </el-col>
+            <el-col class="hr-none">
+              <el-divider></el-divider>
+            </el-col>
+            <el-col :md="6" :xs="24">
+              <h1>Development</h1>
+              <p class="mb-1">
+                <a :href="websiteConfig.projectUrl" target="_blank"
+                  >Open Source</a
+                >
+              </p>
+              <p class="mb-1"><a @click="goRoute('/#')">API</a></p>
+            </el-col>
+            <el-col class="hr-none">
+              <el-divider></el-divider>
+            </el-col>
+            <el-col :md="6" :xs="24">
+              <h1>Support</h1>
+              <p>
+                <i class="fa fa-info-circle" aria-hidden="true"></i
+                ><a @click="goRoute('/introduction')"> Help</a>
+              </p>
+              <p>
+                <i class="fa fa-envelope" aria-hidden="true"></i>
+                oj.hcode@qq.com
+              </p>
+            </el-col>
+          </el-row>
+        </div>
+        <div class="mundb-footer">
+          <a style="color:#1E9FFF" :href="websiteConfig.recordUrl"
+            >© 2020-2021</a
+          >
           Powered by
-          <a :href="websiteConfig.projectUrl" style="color:#1E9FFF">{{
-            websiteConfig.projectName
-          }}</a>
-        </p>
-      </div>
+          <a
+            :href="websiteConfig.projectUrl"
+            style="color:#1E9FFF"
+            target="_blank"
+            >{{ websiteConfig.projectName }}</a
+          >
+        </div>
+      </footer>
     </div>
     <div v-else>
       <div id="admin-content">
@@ -45,6 +92,11 @@ export default {
   },
   methods: {
     ...mapActions(['changeDomTitle', 'getWebsiteConfig']),
+    goRoute(path) {
+      this.$router.push({
+        path: path,
+      });
+    },
   },
   watch: {
     $route(newVal, oldVal) {
@@ -266,12 +318,7 @@ a:hover {
   background: #f8f8f9;
   border: 1px dashed #e9eaec;
 }
-.footer {
-  margin-top: 20px;
-  margin-bottom: 10px;
-  text-align: center;
-  font-size: small;
-}
+
 .el-menu--popup {
   min-width: 120px !important;
   text-align: center;
@@ -377,5 +424,41 @@ a:hover {
 
 .tex-graphics {
   display: block;
+}
+
+footer {
+  margin-top: 2rem;
+  color: #555 !important;
+  background-color: #fff;
+  text-align: center;
+}
+footer a {
+  color: #555;
+}
+footer a:hover {
+  color: #409eff;
+  text-decoration: none;
+}
+footer h1 {
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, PingFang SC,
+    Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Helvetica, Arial,
+    sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  font-weight: 300;
+  color: #3d3d3d;
+  line-height: 1.1;
+  font-size: 1.5rem;
+}
+
+.mundb-footer {
+  padding: 1rem 2.5rem;
+  width: 100%;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1;
+}
+@media (min-width: 768px) {
+  .hr-none {
+    display: none !important;
+  }
 }
 </style>

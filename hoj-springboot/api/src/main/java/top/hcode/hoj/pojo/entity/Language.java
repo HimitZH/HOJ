@@ -39,8 +39,11 @@ public class Language {
     @ApiModelProperty(value = "编译指令")
     private String compileCommand;
 
-    @ApiModelProperty(value = "模板")
+    @ApiModelProperty(value = "A+B模板")
     private String template;
+
+    @ApiModelProperty(value = "语言默认代码模板")
+    private String codeTemplate;
 
     @ApiModelProperty(value = "是否可作为特殊判题的一种语言")
     private Boolean isSpj;

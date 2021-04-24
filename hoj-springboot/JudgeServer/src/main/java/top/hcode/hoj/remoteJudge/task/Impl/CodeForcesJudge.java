@@ -32,6 +32,8 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
     public static Map<String, String> headers = MapUtil
             .builder(new HashMap<String, String>())
             .put("Host", "codeforces.com")
+            .put("origin","https://codeforces.com")
+            .put("referer","https://codeforces.com")
             .map();
 
     private static final Map<String, Constants.Judge> statusMap = new HashMap<String, Constants.Judge>() {{
@@ -60,25 +62,22 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         if (problemId == null || userCode == null) {
             return null;
         }
-
         String contestNum = problemId.replaceAll("\\D.*", "");
         String problemNum = problemId.replaceAll("^\\d*", "");
 
         Map<String, Object> loginUtils = getLoginUtils(username, password);
         CodeForcesToken token = (CodeForcesToken) loginUtils.get("token");
-        Connection connection = JsoupUtils.getConnectionFromUrl(HOST + SUBMIT_URL, null, token.cookies);
+        Connection connection = JsoupUtils.getConnectionFromUrl(HOST + String.format(SUBMIT_URL,token.csrf_token), headers, token.cookies);
         Connection.Response response = JsoupUtils.postResponse(connection, MapUtil
                 .builder(new HashMap<String, String>())
                 .put("csrf_token", token.csrf_token)
                 .put("_tta", token._tta)
                 .put("action", "submitSolutionFormSubmitted")
                 .put("contestId", contestNum) // 比赛号
-                .put("submittedProblemIndex", problemNum) // 题号：A,B,C,D
+                .put("submittedProblemIndex", problemNum) // 题号：1A
                 .put("programTypeId", getLanguage(language)) // 语言号
                 .put("source", userCode + getRandomBlankString())
                 .put("sourceFile", "")
-                .put("sourceCodeConfirmed", "true")
-                .put("doNotShowWarningAgain", "on")
                 .map());
         if (response.statusCode() != 200) {
             log.error("进行题目提交时发生错误：提交题目失败，" + CodeForcesJudge.class.getName() + "，题号:" + problemId);
@@ -179,7 +178,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
                 .put("csrf_token", token.csrf_token)
                 .put("_tta", token._tta)
                 .put("action", "enter")
-//                .put("remember", "on") // 是否记住登录
+                .put("remember", "on") // 是否记住登录
                 .put("handleOrEmail", username)
                 .put("password", password).map());
         // 混合cookie才能确认身份

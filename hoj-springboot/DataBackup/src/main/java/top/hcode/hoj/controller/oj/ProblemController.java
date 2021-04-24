@@ -57,6 +57,9 @@ public class ProblemController {
     @Autowired
     private ProblemCountServiceImpl problemCountService;
 
+    @Autowired
+    private CodeTemplateServiceImpl codeTemplateService;
+
     /**
      * @MethodName getProblemList
      * @Params * @param null
@@ -236,6 +239,9 @@ public class ProblemController {
                 tagsStr.add(tag.getName());
             });
         }
+        // 记录 languageId对应的name
+        HashMap<Long, String> tmpMap = new HashMap<>();
+
         // 获取题目提交的代码支持的语言
         List<String> languagesStr = new LinkedList<>();
         QueryWrapper<ProblemLanguage> problemLanguageQueryWrapper = new QueryWrapper<>();
@@ -244,6 +250,7 @@ public class ProblemController {
                 .stream().map(ProblemLanguage::getLid).collect(Collectors.toList());
         languageService.listByIds(lidList).forEach(language -> {
             languagesStr.add(language.getName());
+            tmpMap.put(language.getId(), language.getName());
         });
 
         // 获取题目的提交记录
@@ -251,9 +258,18 @@ public class ProblemController {
         problemCountQueryWrapper.eq("pid", problem.getId());
         ProblemCount problemCount = problemCountService.getOne(problemCountQueryWrapper);
 
-
+        // 获取题目的代码模板
+        QueryWrapper<CodeTemplate> codeTemplateQueryWrapper = new QueryWrapper<>();
+        codeTemplateQueryWrapper.eq("pid", problem.getId()).eq("status", true);
+        List<CodeTemplate> codeTemplates = codeTemplateService.list(codeTemplateQueryWrapper);
+        HashMap<String, String> LangNameAndCode = new HashMap<>();
+        if (codeTemplates.size() > 0) {
+            for (CodeTemplate codeTemplate : codeTemplates) {
+                LangNameAndCode.put(tmpMap.get(codeTemplate.getLid()), codeTemplate.getCode());
+            }
+        }
         // 将数据统一写入到一个Vo返回数据实体类中
-        ProblemInfoVo problemInfoVo = new ProblemInfoVo(problem, tagsStr, languagesStr, problemCount);
+        ProblemInfoVo problemInfoVo = new ProblemInfoVo(problem, tagsStr, languagesStr, problemCount, LangNameAndCode);
         return CommonResult.successResponse(problemInfoVo, "获取成功");
     }
 

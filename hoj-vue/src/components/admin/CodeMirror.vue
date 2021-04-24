@@ -6,7 +6,7 @@
   ></codemirror>
 </template>
 <script>
-import { codemirror } from 'vue-codemirror-lite';
+import { codemirror, CodeMirror } from 'vue-codemirror-lite';
 import 'codemirror/mode/javascript/javascript';
 import 'codemirror/mode/clike/clike.js';
 import 'codemirror/mode/python/python.js';
@@ -66,7 +66,7 @@ export default {
   mounted() {
     this.currentValue = this.value;
     this.$refs.editor.editor.setOption('mode', this.mode);
-    this.editor.on('inputRead', (instance, changeObj) => {
+    this.$refs.editor.editor.on('inputRead', (instance, changeObj) => {
       if (/\w|\./g.test(changeObj.text[0]) && changeObj.origin !== 'complete') {
         instance.showHint({
           hint: CodeMirror.hint.anyword,

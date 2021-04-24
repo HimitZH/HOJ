@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.dao.ContestRecordMapper">
+
+    <select id="getACInfo" resultType="top.hcode.hoj.pojo.entity.ContestRecord">
+        SELECT id,uid,username,display_id,cid,realname,pid,time,status,checked,
+        MIN(submit_id) AS submit_id,
+        MIN(submit_time) AS submit_time,
+        MAX(first_blood) AS first_blood
+        FROM contest_record
+        <where>
+            <if test="status!=null">
+                status=#{status}
+            </if>
+            <if test="cid!=null">
+                and cid = #{cid}
+            </if>
+        </where>
+        GROUP BY status,uid,pid,cpid
+        ORDER BY checked ASC,submit_time DESC
+    </select>
+
+    <select id="getOIContestRecord" resultType="top.hcode.hoj.pojo.entity.ContestRecord">
+        SELECT cr.* FROM
+        (SELECT uid,pid,cpid,MAX(time) AS time FROM contest_record
+        <where>
+            cid=#{cid} AND status IS NOT NULL
+            <if test="isOpenSealRank">
+                AND submit_time NOT BETWEEN #{sealTime} AND #{endTime}
+            </if>
+        </where>
+         GROUP BY uid,pid,cpid) t
+        LEFT JOIN contest_record cr ON t.uid = cr.uid AND t.pid =cr.pid
+        AND t.cpid = cr.cpid AND t.time = cr.time
+    </select>
+</mapper>
