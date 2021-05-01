@@ -68,6 +68,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         Map<String, Object> loginUtils = getLoginUtils(username, password);
         CodeForcesToken token = (CodeForcesToken) loginUtils.get("token");
         Connection connection = JsoupUtils.getConnectionFromUrl(HOST + String.format(SUBMIT_URL,token.csrf_token), headers, token.cookies);
+        System.out.println(token.cookies);
         Connection.Response response = JsoupUtils.postResponse(connection, MapUtil
                 .builder(new HashMap<String, String>())
                 .put("csrf_token", token.csrf_token)
