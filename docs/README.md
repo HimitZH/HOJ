@@ -7,7 +7,7 @@
 1. 创建自定义网络（用于容器通讯）
 
    ```shell
-   docker network create hoj-network
+   docker network create --subnet=172.18.0.0/16 hoj-network
    ```
 
 2. 查看网络
@@ -33,6 +33,7 @@
    docker run -p 3306:3306 --name mysql -d \
    --restart=always \
    --network hoj-network \
+   --ip 172.18.0.1 \
    -v /data/mysql/conf:/etc/mysql/conf.d \
    -v /data/mysql/logs:/logs \
    -v /data/mysql/data:/data \
@@ -62,34 +63,32 @@
 2. 启动nacos
 
    ```shell
-   docker run --env MODE=standalone --network hoj-network --name nacos -d -p 8848:8848 nacos/nacos-server
+   docker run -d \
+   -e JVM_XMS=128m \
+   -e JVM_XMX=128m \
+   -e JVM_XMN=64m \
+   -e MODE=standalone \
+   -e SPRING_DATASOURCE_PLATFORM=mysql \
+   -e MYSQL_SERVICE_HOST="数据库所在服务器ip" \
+   -e MYSQL_SERVICE_PORT=3306 \
+   -e MYSQL_SERVICE_USER=root \
+   -e MYSQL_SERVICE_PASSWORD="数据库密码" \
+   -e MYSQL_SERVICE_DB_NAME=nacos \
+   -p 8848:8848 \
+   --network hoj-network \
+   --ip 172.18.0.3 \
+   --name nacos \
+   --restart=always \
+   nacos/nacos-server
    ```
 
-3. 查看自定义网络中各容器ip，一般该network的ip应该是**172.18.0.2或172.19.0.2**
+3. 查看自定义网络中各容器ip，一般该hoj-network的ip应该是**172.18.0.2或172.19.0.2**
 
    ```shell
    //查看网络
    docker network ls
    //查看网络容器
    docker network inspect hoj-network
-   ```
-
-4. 进入nacos容器修改配置
-
-   ```shell
-   // 进入容器  
-   docker exec -it nacos bash
-   // 修改容器配置
-   cd conf
-   vi application.properties
-   ```
-
-   ![在这里插入图片描述](https://img-blog.csdnimg.cn/20200411202402562.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3hpZXFpbmdfeHE=,size_16,color_FFFFFF,t_70)
-
-5. 重启容器
-
-   ```shell
-   docker restart nacos
    ```
 
 6. 连上nacos，将后端服务需要的配置添加进去
@@ -194,8 +193,11 @@ docker pull redis
 //查看本地是否有redis镜像 
 docker images
 
-//运行redis并设置密码 
-docker run -d --name redis -p 6379:6379 redis --requirepass "mypassword" --restart=always
+//运行redis并设置密码 一般运行
+docker run -d --name redis -p 6379:6379 redis --appendonly yes --requirepass "mypassword" --restart="always" --network hoj-network
+
+// 有配置文件 数据挂载的运行
+docker run -d --name redis -p 6379:6379 -v /hoj/redis/data:/data -v /hoj/redis/conf/redis.conf:/etc/redis/redis.conf --restart="always" --network hoj-network --ip 172.18.0.2 redis --requirepass "mypassword"
 ```
 
 #### 1.4 DataBackup数据后台部署

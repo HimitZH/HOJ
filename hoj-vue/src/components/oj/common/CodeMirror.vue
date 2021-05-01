@@ -3,7 +3,7 @@
     <el-row class="header">
       <el-col :xs="24" :sm="14" :md="14" :lg="14">
         <div class="select-row">
-          <span>Langs:</span>
+          <span>Lang:</span>
           <span>
             <el-select
               :value="this.language"
@@ -274,7 +274,7 @@ export default {
 }
 @media screen and (min-width: 768px) {
   .select-row span {
-    margin-right: 5px;
+    margin-right: 3px;
   }
   .fl-right {
     float: right;
