@@ -17,7 +17,7 @@ if (process.env.NODE_ENV == 'development') {
 } else if (process.env.NODE_ENV == 'debug') {
   axios.defaults.baseURL = "http://localhost:6688";
 } else if (process.env.NODE_ENV == 'production') {
-  axios.defaults.baseURL = '你网站的域名';
+  axios.defaults.baseURL = '你的域名或者ip:端口号';
 }
 
 // 请求超时时间

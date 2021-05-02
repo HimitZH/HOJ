@@ -21,7 +21,6 @@ import top.hcode.hoj.utils.RedisUtils;
  * 3. 再次接受到信息，再次查询是否有空闲判题服务器，若有则进行判题，否则回到2
  */
 @Component
-@Async
 @Slf4j
 public class JudgeReceiver {
 
@@ -34,7 +33,7 @@ public class JudgeReceiver {
     @Autowired
     private JudgeServiceImpl judgeService;
 
-
+    @Async
     public void processWaitingTask() {
         // 如果队列中还有任务，则继续处理
         if (redisUtils.lGetListSize(Constants.Judge.STATUS_JUDGE_WAITING.getName()) > 0) {

@@ -64,10 +64,10 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
 
     @Override
-    public IPage<OIContestRankVo> getContestOIRank(Long cid, Boolean isOpenSealRank, Date sealTime, Date endTime, int currentPage, int limit) {
+    public IPage<OIContestRankVo> getContestOIRank(Long cid, Boolean isOpenSealRank, Date sealTime, Date startTime, Date endTime, int currentPage, int limit) {
 
         // 获取每个用户每道题最近一次提交
-        List<ContestRecord> oiContestRecord = contestRecordMapper.getOIContestRecord(cid, isOpenSealRank, sealTime, endTime);
+        List<ContestRecord> oiContestRecord = contestRecordMapper.getOIContestRecord(cid, isOpenSealRank, sealTime, startTime, endTime);
 
         // 计算排名
         List<OIContestRankVo> orderResultList = calcOIRank(oiContestRecord);
@@ -92,8 +92,8 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
     }
 
     @Override
-    public List<ContestRecord> getOIContestRecord(Long cid, Boolean isOpenSealRank, Date sealTime, Date endTime) {
-        return contestRecordMapper.getOIContestRecord(cid, isOpenSealRank, sealTime, endTime);
+    public List<ContestRecord> getOIContestRecord(Long cid, Boolean isOpenSealRank, Date sealTime, Date startTime, Date endTime) {
+        return contestRecordMapper.getOIContestRecord(cid, isOpenSealRank, sealTime, startTime, endTime);
     }
 
     public List<ACMContestRankVo> calcACMRank(List<ContestRecord> contestRecordList) {

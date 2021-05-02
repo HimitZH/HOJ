@@ -16,7 +16,6 @@ import top.hcode.hoj.pojo.entity.Problem;
  * @since 2020-10-23
  */
 public interface JudgeService extends IService<Judge> {
-    String test();
 
     Judge Judge(Problem problem, Judge judge);
 
