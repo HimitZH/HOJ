@@ -372,7 +372,7 @@ public class FileController {
                     .sheet("rank")
                     .doWrite(fileService.changeACMContestRankToExcelRowList(acmContestRankVoList, contestProblemDisplayIDList));
         } else {
-            List<ContestRecord> oiContestRecord = contestRecordService.getOIContestRecord(cid, isOpenSealRank, contest.getSealRankTime(), contest.getEndTime());
+            List<ContestRecord> oiContestRecord = contestRecordService.getOIContestRecord(cid, isOpenSealRank, contest.getSealRankTime(),contest.getStartTime(), contest.getEndTime());
             Assert.notEmpty(oiContestRecord, "比赛暂无排行榜记录！");
             List<OIContestRankVo> oiContestRankVoList = contestRecordService.calcOIRank(oiContestRecord);
             EasyExcel.write(response.getOutputStream())

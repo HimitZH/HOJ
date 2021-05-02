@@ -34,9 +34,6 @@ import java.util.HashMap;
 @Slf4j
 public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements JudgeService {
 
-    public String test() {
-        return "test";
-    }
 
     @Autowired
     private JudgeStrategy judgeStrategy;
@@ -53,8 +50,6 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     @Autowired
     private ContestRecordServiceImpl contestRecordService;
 
-    @Autowired
-    private ContestServiceImpl contestService;
 
     @Override
     public Judge Judge(Problem problem, Judge judge) {
@@ -116,16 +111,7 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
             }
 
         } else { //如果是比赛提交
-
-            Contest contest = contestService.getById(cid);
-            if (contest == null) {
-                log.error("判题机出错----------->{}", "该比赛不存在");
-
-            } else if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()) {
-                // 比赛期间的提交才进行记录
-                contestRecordService.UpdateContestRecord(uid, score, status, submitId, cid);
-            }
-
+            contestRecordService.UpdateContestRecord(uid, score, status, submitId, cid);
         }
     }
 }

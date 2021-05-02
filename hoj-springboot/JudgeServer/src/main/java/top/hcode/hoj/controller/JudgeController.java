@@ -52,7 +52,7 @@ public class JudgeController {
     public CommonResult getVersion() {
 
         return CommonResult.successResponse(MapUtil.builder()
-                        .put("version", "1.1.0")
+                        .put("version", "1.2.0")
                         .put("currentTime", new Date())
                         .put("judgeServerName", name)
                         .put("cpu", Runtime.getRuntime().availableProcessors())

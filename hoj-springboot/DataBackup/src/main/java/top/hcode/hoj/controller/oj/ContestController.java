@@ -304,7 +304,7 @@ public class ContestController {
         }
 
         // 将数据统一写入到一个Vo返回数据实体类中
-        ProblemInfoVo problemInfoVo = new ProblemInfoVo(problem, tagsStr, languagesStr, problemCount,LangNameAndCode);
+        ProblemInfoVo problemInfoVo = new ProblemInfoVo(problem, tagsStr, languagesStr, problemCount, LangNameAndCode);
         return CommonResult.successResponse(problemInfoVo, "获取成功");
     }
 
@@ -403,7 +403,8 @@ public class ContestController {
             QueryWrapper<ContestRecord> wrapper = new QueryWrapper<ContestRecord>().eq("cid", cid)
                     .isNotNull("status")
                     // 如果已经开启了封榜模式
-                    .notBetween(isOpenSealRank, "submit_time", contest.getSealRankTime(), contest.getEndTime())
+                    .between(isOpenSealRank, "submit_time", contest.getStartTime(), contest.getSealRankTime())
+                    .between(!isOpenSealRank, "submit_time", contest.getStartTime(), contest.getEndTime())
                     .orderByAsc("time");
 
             List<ContestRecord> contestRecordList = contestRecordService.list(wrapper);
@@ -413,7 +414,7 @@ public class ContestController {
 
         } else { //OI比赛：以最后一次提交得分作为该题得分
 
-            resultList = contestRecordService.getContestOIRank(cid, isOpenSealRank, contest.getSealRankTime(),
+            resultList = contestRecordService.getContestOIRank(cid, isOpenSealRank, contest.getSealRankTime(),contest.getStartTime(),
                     contest.getEndTime(), currentPage, limit);
         }
 
