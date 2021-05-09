@@ -205,7 +205,6 @@ export default {
         });
       }
     });
-    this.editor.focus();
   },
   methods: {
     onEditorCodeChange(newCode) {

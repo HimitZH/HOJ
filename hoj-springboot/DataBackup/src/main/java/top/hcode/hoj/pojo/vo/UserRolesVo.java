@@ -18,6 +18,8 @@ import java.util.List;
 @Data
 public class UserRolesVo implements Serializable {
 
+    private static final long serialVersionUID = 10000L;
+
     @ApiModelProperty(value = "用户id")
     private String uid;
 

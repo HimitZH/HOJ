@@ -140,7 +140,7 @@ export default {
   box-sizing: border-box;
 }
 body {
-  background-color: #eee !important;
+  background-color: #eff3f5 !important;
   font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
     Microsoft YaHei, Arial, sans-serif !important;
   -webkit-font-smoothing: antialiased !important;

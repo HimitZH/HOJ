@@ -25,6 +25,15 @@
                 ><el-tag effect="plain" size="small">暂无标签</el-tag></span
               >
               <div class="problem-menu">
+                <span v-if="!contestID">
+                  <el-link
+                    type="primary"
+                    :underline="false"
+                    @click="goProblemDiscussion"
+                    ><i class="fa fa-comments" aria-hidden="true"></i>
+                    Discussion</el-link
+                  ></span
+                >
                 <span>
                   <el-link
                     type="primary"
@@ -40,7 +49,7 @@
                     :underline="false"
                     @click="goProblemSubmission"
                     ><i class="fa fa-bars" aria-hidden="true"></i>
-                    Submissions</el-link
+                    Submission</el-link
                   ></span
                 >
               </div>
@@ -537,6 +546,12 @@ export default {
           query: { problemID: this.problemID },
         });
       }
+    },
+    goProblemDiscussion() {
+      this.$router.push({
+        name: 'ProblemDiscussion',
+        params: { problemID: this.problemID },
+      });
     },
 
     handleRoute(route) {

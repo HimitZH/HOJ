@@ -89,7 +89,7 @@
       </vxe-table>
     </el-col>
 
-    <el-col :span="24">
+    <el-col :span="24" style="margin-top: 13px;">
       <Highlight
         :code="submission.code"
         :language="submission.language"
@@ -184,7 +184,7 @@ import { JUDGE_STATUS, JUDGE_STATUS_RESERVE } from '@/common/constants';
 import utils from '@/common/utils';
 import Highlight from '@/components/oj/common/Highlight';
 import myMessage from '@/common/message';
-
+import { addCodeBtn } from '@/common/codeblock';
 export default {
   name: 'submissionDetails',
   components: {
@@ -309,6 +309,10 @@ export default {
           } else {
             this.codeShare = data.codeShare;
           }
+
+          this.$nextTick((_) => {
+            addCodeBtn();
+          });
         },
         () => {
           this.loadingTable = false;
@@ -400,10 +404,7 @@ export default {
 .el-row--flex {
   flex-wrap: wrap;
 }
-pre {
-  border: none;
-  background: none;
-}
+
 .test-detail-item {
   width: 100%;
   padding: 15px;

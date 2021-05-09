@@ -2,10 +2,10 @@ hoj:
   jwt:
     # 加密秘钥
     secret: zsc-acm-hoj
-    # token有效时长，24小时，单位秒
-    expire: 86400
-    # 6小时内还有请求，可进行刷新
-    checkRefreshExpire: 21600
+    # token有效时长，3*3600*24，单位秒
+    expire: 259200
+    # 2*3600*24s内还有请求，可进行刷新
+    checkRefreshExpire: 172800
     header: token
   judge:
     # 调用判题服务器的token

@@ -158,15 +158,15 @@
           </transition>
         </el-tab-pane>
 
-        <!-- <el-tab-pane name="ContestComment" lazy :disabled="contestMenuDisabled">
+        <el-tab-pane name="ContestComment" lazy :disabled="contestMenuDisabled">
           <span slot="label"
             ><i class="fa fa-commenting" aria-hidden="true"></i
-            >&nbsp;Comments</span
+            >&nbsp;Comment</span
           >
           <transition name="el-zoom-in-bottom">
             <router-view v-if="route_name === 'ContestComment'"></router-view>
           </transition>
-        </el-tab-pane> -->
+        </el-tab-pane>
 
         <el-tab-pane
           name="ContestACInfo"
@@ -208,6 +208,7 @@ import time from '@/common/time';
 import moment from 'moment';
 import api from '@/common/api';
 import { mapState, mapGetters, mapActions } from 'vuex';
+import { addCodeBtn } from '@/common/codeblock';
 import {
   CONTEST_STATUS_REVERSE,
   CONTEST_STATUS,
@@ -253,6 +254,9 @@ export default {
           this.$store.commit('nowAdd1s');
         }, 1000);
       }
+      this.$nextTick((_) => {
+        addCodeBtn();
+      });
     });
   },
   methods: {

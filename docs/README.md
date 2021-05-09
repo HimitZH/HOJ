@@ -69,7 +69,7 @@
    -e JVM_XMN=64m \
    -e MODE=standalone \
    -e SPRING_DATASOURCE_PLATFORM=mysql \
-   -e MYSQL_SERVICE_HOST="数据库所在服务器ip" \
+   -e MYSQL_SERVICE_HOST="数据库所在服务器ip或使用容器ip（172.18.0.1）" \
    -e MYSQL_SERVICE_PORT=3306 \
    -e MYSQL_SERVICE_USER=root \
    -e MYSQL_SERVICE_PASSWORD="数据库密码" \
@@ -82,7 +82,7 @@
    nacos/nacos-server
    ```
 
-3. 查看自定义网络中各容器ip，一般该hoj-network的ip应该是**172.18.0.2或172.19.0.2**
+3. 查看自定义网络中各容器ip
 
    ```shell
    //查看网络
@@ -91,7 +91,7 @@
    docker network inspect hoj-network
    ```
 
-6. 连上nacos，将后端服务需要的配置添加进去
+4. 连上nacos，将后端服务需要的配置添加进去
 
    ```she
    http://ip:8848/nacos/index.html
@@ -106,23 +106,23 @@
 
    ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210416154647434.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
-7. hoj-data-backup-prod.yml的配置如下，请自行修改
+5. hoj-data-backup-prod.yml的配置如下，请自行修改
 
    ```yaml
    hoj:
      jwt:
        # 加密秘钥
        secret: zsc-acm-hoj
-       # token有效时长，24小时，单位秒
-       expire: 86400
-       # 6小时内还有请求，可进行刷新
-       checkRefreshExpire: 21600
+       # token有效时长，3*3600*24，单位秒
+       expire: 259200
+       # 2*3600*24s内还有请求，可进行刷新
+       checkRefreshExpire: 172800
        header: token
      judge:
        # 调用判题服务器的token
        token: zsc-acm-hoj-judge-server
      db: # mysql数据库服务配置
-       host: your_mysql_host
+       host: your_mysql_host  #如果是公用容器网络 请使用网络ip 例如1.1的172.18.0.1
        port: your_mysql_port
        name: your_mysql_database_name # 默认hoj
        username: your_mysql_username
@@ -135,7 +135,7 @@
        port: your_email_port
        background-img: https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/HCODE.png # 邮箱系统发送邮件模板的背景图片地址
      redis: # redis服务配置
-       host: your_redis_host
+       host: your_redis_host #如果是公用容器网络 请使用网络ip 例如1.3的172.18.0.2
        port: 6371
        password: your_redis_password
      web-config:
@@ -160,7 +160,7 @@
          password: cf账号1密码,cf账号2密码,...
    ```
 
-8. 添加好后点击发布，再次添加hoj-judge-server-prod.yml，流程一样
+6. 添加好后点击发布，再次添加hoj-judge-server-prod.yml，流程一样
 
    ```yaml
    hoj:
@@ -207,7 +207,7 @@ docker run -d --name redis -p 6379:6379 -v /hoj/redis/data:/data -v /hoj/redis/c
    ```yaml
    hoj-backstage:
      port: 6688
-     nacos-url: 172.18.0.2:8848  # nacos地址,如果使用了docker network 可用使用network的ip 否则请使用服务器ip
+     nacos-url: 172.18.0.3:8848  # nacos地址,如果使用了docker network 可用使用network的ip 否则请使用服务器ip
    ```
 
 2. 使用cmd打开当前JudgeServer文件夹路径，然后使用mvn命令进行打包成jar包
@@ -371,11 +371,7 @@ docker run -d --name redis -p 6379:6379 -v /hoj/redis/data:/data -v /hoj/redis/c
 
 2. 前提是本地有vue-cli4，请自行百度下载
 
-3. 进入/hoj-vue文件夹，修改生产环境下的后端服务地址
-
-   ![在这里插入图片描述](https://img-blog.csdnimg.cn/2021041616214988.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
-
-4. 然后在当前路径运行打包命令
+4. 然后在当前src路径运行打包命令
 
    ```powershell
    npm run build

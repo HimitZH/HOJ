@@ -46,7 +46,7 @@ import SlideVerify from 'vue-monoplasty-slide-verify'
 
 //  markdown编辑器
 import mavonEditor from 'mavon-editor'  //引入markdown编辑器
-import 'mavon-editor/dist/css/index.css'
+import 'mavon-editor/dist/css/index.css';
 Vue.use(mavonEditor)
 
 import {Drawer,List,Menu,Icon,AppBar,Button,Divider} from 'muse-ui';

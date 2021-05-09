@@ -47,6 +47,18 @@ CREATE TABLE `auth` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
+/*Table structure for table `category` */
+
+DROP TABLE IF EXISTS `category`;
+
+CREATE TABLE `category` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+
 /*Table structure for table `code_template` */
 
 DROP TABLE IF EXISTS `code_template`;
@@ -71,25 +83,43 @@ CREATE TABLE `code_template` (
 DROP TABLE IF EXISTS `comment`;
 
 CREATE TABLE `comment` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `uid` varchar(32) NOT NULL,
-  `title` varchar(255) NOT NULL COMMENT '讨论标题',
-  `content` longtext COMMENT '讨论详情',
-  `tid` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '标签id,0表示无',
-  `pid` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '0表示无引用题目',
-  `cid` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '0表示无引用比赛',
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `cid` bigint(20) unsigned DEFAULT NULL COMMENT 'null表示无引用比赛',
+  `did` int(11) DEFAULT NULL COMMENT 'null表示无引用讨论',
+  `content` longtext COMMENT '评论内容',
+  `from_uid` varchar(32) NOT NULL COMMENT '评论者id',
+  `from_name` varchar(255) DEFAULT NULL COMMENT '评论者用户名',
+  `from_avatar` varchar(255) DEFAULT NULL COMMENT '评论组头像地址',
+  `from_role` varchar(20) DEFAULT NULL COMMENT '评论者角色',
+  `like_num` int(11) DEFAULT '0' COMMENT '点赞数量',
+  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `uid` (`from_uid`),
+  KEY `from_avatar` (`from_avatar`),
+  KEY `comment_ibfk_7` (`did`),
+  KEY `cid` (`cid`),
+  CONSTRAINT `comment_ibfk_6` FOREIGN KEY (`from_avatar`) REFERENCES `user_info` (`avatar`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  CONSTRAINT `comment_ibfk_7` FOREIGN KEY (`did`) REFERENCES `discussion` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `comment_ibfk_8` FOREIGN KEY (`cid`) REFERENCES `contest` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+
+/*Table structure for table `comment_like` */
+
+DROP TABLE IF EXISTS `comment_like`;
+
+CREATE TABLE `comment_like` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` varchar(255) NOT NULL,
+  `cid` int(11) NOT NULL,
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`),
-  KEY `tid` (`tid`),
-  KEY `pid` (`pid`),
   KEY `cid` (`cid`),
-  CONSTRAINT `comment_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  CONSTRAINT `comment_ibfk_2` FOREIGN KEY (`tid`) REFERENCES `tag` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  CONSTRAINT `comment_ibfk_3` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  CONSTRAINT `comment_ibfk_4` FOREIGN KEY (`cid`) REFERENCES `contest` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  CONSTRAINT `comment_like_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  CONSTRAINT `comment_like_ibfk_2` FOREIGN KEY (`cid`) REFERENCES `comment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `contest` */
 
@@ -244,6 +274,55 @@ CREATE TABLE `contest_score` (
   CONSTRAINT `contest_score_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `contest` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+/*Table structure for table `discussion` */
+
+DROP TABLE IF EXISTS `discussion`;
+
+CREATE TABLE `discussion` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `category_id` int(11) NOT NULL COMMENT '分类id',
+  `title` varchar(255) DEFAULT NULL COMMENT '讨论标题',
+  `description` varchar(255) DEFAULT NULL COMMENT '讨论简介',
+  `content` longtext COMMENT '讨论内容',
+  `pid` varchar(255) DEFAULT NULL COMMENT '关联题目id',
+  `uid` varchar(32) NOT NULL COMMENT '发表者id',
+  `author` varchar(255) NOT NULL COMMENT '发表者用户名',
+  `avatar` varchar(255) DEFAULT NULL COMMENT '发表讨论者头像',
+  `role` varchar(25) DEFAULT 'user' COMMENT '发表者角色',
+  `view_num` int(11) DEFAULT '0' COMMENT '浏览数量',
+  `like_num` int(11) DEFAULT '0' COMMENT '点赞数量',
+  `top_priority` tinyint(1) DEFAULT '0' COMMENT '优先级，是否置顶',
+  `status` tinyint(1) DEFAULT '0' COMMENT '是否封禁',
+  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `category_id` (`category_id`),
+  KEY `discussion_ibfk_4` (`avatar`),
+  KEY `discussion_ibfk_1` (`uid`),
+  KEY `pid` (`pid`),
+  CONSTRAINT `discussion_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  CONSTRAINT `discussion_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  CONSTRAINT `discussion_ibfk_4` FOREIGN KEY (`avatar`) REFERENCES `user_info` (`avatar`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  CONSTRAINT `discussion_ibfk_6` FOREIGN KEY (`pid`) REFERENCES `problem` (`problem_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+
+/*Table structure for table `discussion_like` */
+
+DROP TABLE IF EXISTS `discussion_like`;
+
+CREATE TABLE `discussion_like` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` varchar(255) NOT NULL,
+  `did` int(11) NOT NULL,
+  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `did` (`did`),
+  KEY `uid` (`uid`),
+  CONSTRAINT `discussion_like_ibfk_1` FOREIGN KEY (`did`) REFERENCES `discussion` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `discussion_like_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE NO ACTION ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
 /*Table structure for table `file` */
 
 DROP TABLE IF EXISTS `file`;
@@ -298,7 +377,7 @@ CREATE TABLE `judge` (
   CONSTRAINT `judge_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `judge_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `judge_ibfk_3` FOREIGN KEY (`username`) REFERENCES `user_info` (`username`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=132 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=145 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `judge_case` */
 
@@ -327,7 +406,7 @@ CREATE TABLE `judge_case` (
   CONSTRAINT `judge_case_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `judge_case_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `judge_case_ibfk_3` FOREIGN KEY (`submit_id`) REFERENCES `judge` (`submit_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1525 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1733 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `judge_server` */
 
@@ -348,7 +427,7 @@ CREATE TABLE `judge_server` (
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=124 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=132 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `language` */
 
@@ -399,8 +478,9 @@ CREATE TABLE `problem` (
   `case_version` varchar(40) DEFAULT '0' COMMENT '题目测试数据的版本号',
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`,`problem_id`),
+  PRIMARY KEY (`id`),
   KEY `author` (`author`),
+  KEY `problem_id` (`problem_id`),
   CONSTRAINT `problem_ibfk_1` FOREIGN KEY (`author`) REFERENCES `user_info` (`username`) ON DELETE NO ACTION ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1065 DEFAULT CHARSET=utf8;
 
@@ -481,6 +561,32 @@ CREATE TABLE `problem_tag` (
   CONSTRAINT `problem_tag_ibfk_2` FOREIGN KEY (`tid`) REFERENCES `tag` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8;
 
+/*Table structure for table `reply` */
+
+DROP TABLE IF EXISTS `reply`;
+
+CREATE TABLE `reply` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `comment_id` int(11) NOT NULL COMMENT '被回复的评论id',
+  `from_uid` varchar(255) NOT NULL COMMENT '发起回复的用户id',
+  `from_name` varchar(255) NOT NULL COMMENT '发起回复的用户名',
+  `from_avatar` varchar(255) DEFAULT NULL COMMENT '发起回复的用户头像地址',
+  `from_role` varchar(255) DEFAULT NULL COMMENT '发起回复的用户角色',
+  `to_uid` varchar(255) NOT NULL COMMENT '被回复的用户id',
+  `to_name` varchar(255) NOT NULL COMMENT '被回复的用户名',
+  `to_avatar` varchar(255) DEFAULT NULL COMMENT '被回复的用户头像地址',
+  `content` longtext COMMENT '回复的内容',
+  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `comment_id` (`comment_id`),
+  KEY `from_avatar` (`from_avatar`),
+  KEY `to_avatar` (`to_avatar`),
+  CONSTRAINT `reply_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `comment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `reply_ibfk_2` FOREIGN KEY (`from_avatar`) REFERENCES `user_info` (`avatar`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `reply_ibfk_3` FOREIGN KEY (`to_avatar`) REFERENCES `user_info` (`avatar`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+
 /*Table structure for table `role` */
 
 DROP TABLE IF EXISTS `role`;
@@ -526,7 +632,7 @@ CREATE TABLE `session` (
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`),
   CONSTRAINT `session_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=93 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=118 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `tag` */
 
@@ -560,7 +666,7 @@ CREATE TABLE `user_acproblem` (
   CONSTRAINT `user_acproblem_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_acproblem_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_acproblem_ibfk_3` FOREIGN KEY (`submit_id`) REFERENCES `judge` (`submit_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=279 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=306 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `user_info` */
 
@@ -586,7 +692,8 @@ CREATE TABLE `user_info` (
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`uuid`),
   UNIQUE KEY `USERNAME_UNIQUE` (`username`),
-  UNIQUE KEY `EMAIL_UNIQUE` (`email`)
+  UNIQUE KEY `EMAIL_UNIQUE` (`email`),
+  UNIQUE KEY `avatar` (`avatar`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Table structure for table `user_record` */
@@ -605,7 +712,7 @@ CREATE TABLE `user_record` (
   PRIMARY KEY (`id`,`uid`),
   KEY `uid` (`uid`),
   CONSTRAINT `user_record_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=304 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=305 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `user_role` */
 
@@ -622,7 +729,7 @@ CREATE TABLE `user_role` (
   KEY `role_id` (`role_id`) USING BTREE,
   CONSTRAINT `user_role_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_role_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=306 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=307 DEFAULT CHARSET=utf8;
 
 /* Trigger structure for table `contest` */
 

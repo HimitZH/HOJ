@@ -30,24 +30,31 @@ public class Comment implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private Integer id;
 
-    private String uid;
+    @ApiModelProperty(value = "NULL表示无引用比赛")
+    private Long cid;
 
-    @ApiModelProperty(value = "讨论标题")
-    private String title;
+    @ApiModelProperty(value = "NULL表示无引用讨论")
+    private Integer did;
 
-    @ApiModelProperty(value = "讨论详情")
+    @ApiModelProperty(value = "评论内容")
     private String content;
 
-    @ApiModelProperty(value = "标签id,0表示无")
-    private Long tid;
+    @ApiModelProperty(value = "评论者id")
+    private String fromUid;
 
-    @ApiModelProperty(value = "0表示无引用题目")
-    private Long pid;
+    @ApiModelProperty(value = "评论者用户名")
+    private String fromName;
 
-    @ApiModelProperty(value = "0表示无引用比赛")
-    private Long cid;
+    @ApiModelProperty(value = "评论组头像地址")
+    private String fromAvatar;
+
+    @ApiModelProperty(value = "评论者角色")
+    private String fromRole;
+
+    @ApiModelProperty(value = "点赞数量")
+    private Integer likeNum;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;

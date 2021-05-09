@@ -15,7 +15,10 @@ import ContestProblemList from "@/views/oj/contest/children/ContestProblemList.v
 import ContestRank from "@/views/oj/contest/children/ContestRank.vue"
 import ACMInfoAdmin from "@/views/oj/contest/children/ACMInfoAdmin.vue"
 import Announcements from "@/components/oj/common/Announcements.vue"
+import ContestComment from "@/views/oj/contest/children/ContestComment.vue"
 import ContestRejudgeAdmin from "@/views/oj/contest/children/ContestRejudgeAdmin.vue"
+import DiscussionList from "@/views/oj/discussion/discussionList.vue"
+import Discussion from "@/views/oj/discussion/discussion.vue"
 import Introduction from "@/views/oj/about/Introduction.vue"
 import Developer from "@/views/oj/about/Developer.vue"
 import NotFound from "@/views/404.vue"
@@ -151,20 +154,42 @@ const ojRoutes = [
         path:'rejudge',
         component:ContestRejudgeAdmin,
         meta: { title: 'Contest Rejudge',requireSuperAdmin:true }
+      },
+      {
+        name: 'ContestComment',
+        path:'comment',
+        component: ContestComment,
+        meta: { title: 'Contest Comment'}
       }
     ]
+  },
+  {
+    path: '/discussion',
+    name: 'AllDiscussion',
+    meta: {title: 'Discussion'},
+    component:DiscussionList
+  },
+  {
+    path: '/discussion/:problemID',
+    name: 'ProblemDiscussion',
+    meta: {title: 'Discussion'},
+    component:DiscussionList
+  },
+  {
+    path: '/discussion-detail/:discussionID',
+    name:'DiscussionDetail',
+    meta: {title: 'Discussion Detail'},
+    component: Discussion
   },
   {
     path: '/introduction',
     meta: {title: 'Introduction'},
     component:Introduction,
-    meta: { title: 'Introduction' }
   },
   {
     path: '/developer',
     meta: {title: 'Developer'},
     component:Developer,
-    meta: { title: 'Developer' }
   },
   {
     path: '*',

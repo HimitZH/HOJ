@@ -11,14 +11,6 @@ import utils from '@/common/utils'
 // NProgress.configure({ ease: 'ease', speed: 1000,showSpinner: false})
 Vue.prototype.$http = axios
 
-// 环境的切换
-if (process.env.NODE_ENV == 'development') {
-  axios.defaults.baseURL = "http://localhost:6688";
-} else if (process.env.NODE_ENV == 'debug') {
-  axios.defaults.baseURL = "http://localhost:6688";
-} else if (process.env.NODE_ENV == 'production') {
-  axios.defaults.baseURL = '你的域名或者ip:端口号';
-}
 
 // 请求超时时间
 axios.defaults.timeout = 40000;
@@ -439,7 +431,85 @@ const ojApi = {
     return ajax("/api/change-userInfo",'post',{
       data
     })
+  },
+  
+  // 讨论页相关请求
+  getCategoryList(){
+    return ajax("/api/discussion-category",'get')
+  },
+  
+  getDiscussionList(limit,searchParams){
+    let params = {
+      limit
+    }
+    Object.keys(searchParams).forEach((element) => {
+      if (searchParams[element]!==''&&searchParams[element]!==null&&searchParams[element]!==undefined) {
+        params[element] = searchParams[element]
+      }
+    })
+    return ajax("/api/discussions",'get',{
+      params
+    })
+  },
+
+  getDiscussion(did){
+    return ajax("/api/discussion",'get',{
+      params:{
+        did
+      }
+    })
+  },
+
+  addDiscussion(data){
+    return ajax("/api/discussion",'post',{
+      data
+    })
+  },
+
+  toLikeDiscussion(did,toLike){
+    return ajax("/api/discussion-like",'get',{
+      params:{
+        did,
+        toLike
+      }
+    })
+  },
+
+  getCommentList(params){
+    return ajax("/api/comments",'get',{
+      params
+    })
+  },
+
+  addComment(data){
+    return ajax("/api/comment",'post',{
+      data
+    })
+  },
+
+  toLikeComment(cid,toLike){
+    return ajax("/api/comment-like",'get',{
+      params:{
+        cid,
+        toLike
+      }
+    })
+  },
+
+  addReply(data){
+    return ajax("/api/reply",'post',{
+      data
+    })
+  },
+
+  getAllReply(commentId){
+    return ajax("/api/reply",'get',{
+      params:{
+        commentId
+      }
+    })
   }
+  
 }
 
 // 处理admin后台管理的请求

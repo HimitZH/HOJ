@@ -2,7 +2,7 @@
 
 基于前后端分离，分布式架构的在线测评平台（hoj）
 
-在线Demo：[http://www.hcode.top](http://www.hcode.top)
+在线Demo：[https://www.hcode.top](https://www.hcode.top)
 
 > 上线日记
 
@@ -15,6 +15,7 @@
 | 2021-04-19 | 加入rsync实现评测数据同步，修复一些已知的BUG | Himit_ZH |
 | 2021-04-24 | 加入题目模板，修改页面页脚                   | Himit_ZH |
 | 2021-05-02 | 修复比赛后管理员重判题目导致排行榜失效的问题 | Himit_ZH |
+| 2021-05-09 | 添加公共讨论区，题目讨论区，比赛评论         | Himit_ZH |
 
 # 二、部署
 
@@ -35,12 +36,15 @@
   - [x] 题目支持特别判题
   - [x] 题目支持可选择性去除提交代码的末尾空白符（会影响CE判定）
   - [x] 题目支持可选择性允许用户查看各个测试点结果（状态，运行时间，运行空间，OI题目的测试点得分），暂不支持测试点数据公开。
+  - [x] 题目讨论
   - [x] 管理后台支持题目数据以ZIP上传或手动输入上传
   - [x] 管理后台支持监控服务系统的状态及各判题服务的状态
   - [x] 管理后台支持动态修改网站配置，例如邮件系统配置，数据库配置等
   - [x] 比赛支持封榜，支持ACM与OI模式
   - [x] 比赛支持私有赛（需要密码才可查看与提交），保护赛（每个用户都可查看，提交需要密码），公开赛（每个用户都可查看与提交）三种模式
   - [x] 用户提交失败时可重新提交，管理员支持提交重判与比赛题目所有提交重判
+  - [x] 公共讨论区
+  - [x] 比赛讨论
   - [ ] ......
 - 后端：
   - [x] Web框架技术以Springboot为主
@@ -111,33 +115,33 @@
 
 > 首页页面
 
-![hoj1](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj1.png)
+![首页](https://img-blog.csdnimg.cn/20210509232352226.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 
 
 > 题目列表页
 
-![hoj2](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj2.png)
+![题目列表](https://img-blog.csdnimg.cn/20210509232501952.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 
 
 > 题目详情页
 
-![hoj7](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj7.png)
-
-
+![题目详情页](https://img-blog.csdnimg.cn/20210509232609398.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 > 比赛列表页
 
-![hoj3](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj3.png)
+![比赛列表](https://img-blog.csdnimg.cn/20210509232701288.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 
 
 > 比赛详情首页
 
-![hoj4](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj4.png)
+![比赛详情](https://img-blog.csdnimg.cn/20210509232843932.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70#pic_center)
 
+> 提交列表页
 
+![提交列表](https://img-blog.csdnimg.cn/20210509232933478.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 > 排行榜
 
@@ -145,15 +149,29 @@
 
 
 
+> 公共讨论区
+
+![公共讨论区](https://img-blog.csdnimg.cn/2021050923351998.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+
+
+
+> 评论组件
+
+![评论组件](C:\Users\HZH990730\AppData\Roaming\Typora\typora-user-images\image-20210509233700989.png)
+
+
+
 > 个人信息页
 
-![hoj6](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj6.png)
+![个人信息](https://img-blog.csdnimg.cn/20210509233300701.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 
 
 > 个人设置页
 
-![hoj8](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj8.png)
+![个人设置](https://img-blog.csdnimg.cn/20210509233439791.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+
+
 
 
 
@@ -165,11 +183,15 @@
 
 > 部分手机端显示
 
-![hojmb1](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hojmb1.png)
+![](https://img-blog.csdnimg.cn/20210509233756882.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 
 
-![hojmb2](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hojmb2.png)
+![评论区](https://img-blog.csdnimg.cn/20210509233845230.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+
+
+
+
 
 # 四、特判程序例子
 
