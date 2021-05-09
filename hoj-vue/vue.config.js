@@ -56,8 +56,13 @@ module.exports={
   devServer: {
     open: true,  // npm run serve后自动打开页面
     host: '0.0.0.0',  // 匹配本机IP地址(默认是0.0.0.0)
-    port: 8080, // 开发服务器运行端口号
-    proxy: null,
+    port: 8088, // 开发服务器运行端口号
+    proxy: {
+      '/api': {                                //   以'/api'开头的请求会被代理进行转发
+        target: 'http://localhost:6688',       //   要发向的后台服务器地址  如果后台服务跑在后台开发人员的机器上，就写成 `http://ip:port` 如 `http:192.168.12.213:8081`   ip为后台服务器的ip
+        changeOrigin: true 
+      }
+    },
     disableHostCheck: true,
   },
   //去除生产环境的productionSourceMap

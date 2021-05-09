@@ -199,6 +199,7 @@ import api from '@/common/api';
 import Announcements from '@/components/oj/common/Announcements.vue';
 import { CONTEST_STATUS_REVERSE } from '@/common/constants';
 import { mapState } from 'vuex';
+import { addCodeBtn } from '@/common/codeblock';
 import Avatar from 'vue-avatar';
 export default {
   name: 'home',
@@ -245,6 +246,11 @@ export default {
           this.contests[i].description = this.$markDown.render(
             this.contests[i].description
           );
+        }
+        if (this.contests.length > 0) {
+          this.$nextTick((_) => {
+            addCodeBtn();
+          });
         }
       });
     },

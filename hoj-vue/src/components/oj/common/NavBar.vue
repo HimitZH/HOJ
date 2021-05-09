@@ -33,6 +33,10 @@
           <el-menu-item index="/oi-rank">OI Rank</el-menu-item>
         </el-submenu>
 
+        <el-menu-item index="/discussion"
+          ><i class="el-icon-s-comment"></i>Discussion</el-menu-item
+        >
+
         <el-submenu index="about">
           <template slot="title"><i class="el-icon-info"></i>About</template>
           <el-menu-item index="/introduction">Introduction</el-menu-item>
@@ -252,6 +256,18 @@
 
           <mu-list-item
             button
+            to="/discussion"
+            @click="opendrawer = !opendrawer"
+            active-class="mobile-menu-active"
+          >
+            <mu-list-item-action>
+              <mu-icon value=":fa fa-comments" size="24"></mu-icon>
+            </mu-list-item-action>
+            <mu-list-item-title>Discussion</mu-list-item-title>
+          </mu-list-item>
+
+          <mu-list-item
+            button
             :ripple="false"
             nested
             :open="openSideMenu === 'about'"
@@ -380,6 +396,8 @@ export default {
     activeMenuName() {
       if (this.$route.path.split('/')[1] == 'submission-detail') {
         return '/status';
+      } else if (this.$route.path.split('/')[1] == 'discussion-detail') {
+        return '/discussion';
       }
       return '/' + this.$route.path.split('/')[1];
     },

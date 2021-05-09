@@ -1,8 +1,10 @@
 <template>
-  <pre
-    v-highlight="code"
-    :style="styleObject"
-  ><code :class="language"></code></pre>
+  <div class="markdown-body">
+    <pre
+      v-highlight="code"
+      :style="styleObject"
+    ><code :class="language"></code></pre>
+  </div>
 </template>
 
 <script>
@@ -38,13 +40,8 @@ export default {
 };
 </script>
 
-<style scoped>
-pre {
-  padding: 0;
-  display: block;
-}
-code {
-  padding: 20px;
-  font-size: 1.1em;
+<style>
+.hljs {
+  padding: 0 !important;
 }
 </style>

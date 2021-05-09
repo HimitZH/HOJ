@@ -85,16 +85,6 @@ public class JudgeController {
     @Autowired
     private RemoteJudgeDispatcher remoteJudgeDispatcher;
 
-//    @Autowired
-//    private RestTemplate restTemplate;
-
-//    @Value("${service-url.hoj-judge-server}") // restTemplate风格调用不使用
-//    private String REST_URL_PREFIX;
-
-//    @GetMapping("/submit-problem-judge")
-//    public String list(){
-//        return restTemplate.getForObject(REST_URL_PREFIX+"/hoj-judge-server/submit-problem-judge", String.class);
-//    }
 
     /**
      * @MethodName submitProblemJudge

@@ -28,16 +28,10 @@ import org.springframework.web.client.RestTemplate;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.*;
 import top.hcode.hoj.pojo.entity.*;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
-import top.hcode.hoj.pojo.vo.ContestVo;
-import top.hcode.hoj.pojo.vo.RoleAuthsVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.*;
 import top.hcode.hoj.service.UserInfoService;
 import top.hcode.hoj.service.UserRoleService;
-import top.hcode.hoj.service.impl.AnnouncementServiceImpl;
-import top.hcode.hoj.service.impl.LanguageServiceImpl;
-import top.hcode.hoj.service.impl.UserInfoServiceImpl;
-import top.hcode.hoj.service.impl.UserRoleServiceImpl;
+import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.JsoupUtils;
@@ -79,37 +73,13 @@ public class DataBackupApplicationTests {
     @Autowired
     private AnnouncementServiceImpl announcementService;
 
+    @Autowired
+    private DiscussionServiceImpl discussionService;
+
     @Test
     public void Test1() {
-//        UserRolesVo roles = userRoleMapper.getUserRoles("c5ddbe4b38d641bea7d87ae0e102260d",null);
-//        System.out.println(roles);
-//        IPage<UserRolesVo> admin = userRoleService.getUserList(10, 1, "admin");
-//        System.out.println(admin.getPages());
-//        System.out.println(admin.getSize());
-//        System.out.println(admin.getRecords());
-//        List<String> list = new LinkedList<>();
-//        list.add("1");
-//        list.add("2");
-//        boolean b = userInfoService.removeByIds(list);
-//        System.out.println(b);
-//        UserInfo userInfo = new UserInfo().
-//                setUsername("111")
-//                .setPassword("1111")
-//                .setEmail("11111");
-//        boolean b = userInfoService.saveOrUpdate(userInfo);
-//        if (b){
-//            System.out.println(userInfo);
-//        }
-
-//        List<AnnouncementVo> contestAnnouncement = announcementService.getContestAnnouncement(1L);
-//        System.out.println(contestAnnouncement.size());
-        String test = "{1}....{2}";
-        String command = "/usr/bin/java -cp {1} -XX:MaxRAM={2}k -Djava.security.manager -Dfile.encoding=UTF-8 -Djava.security.policy==/etc/java_policy -Djava.awt.headless=true Main";
-        String exePath = "/judge/run/32/1.exe";
-        String exeDir = "/judge/run/32";
-        int maxMemory = 1024 * 10;
-        List<String> commandList = Arrays.asList(MessageFormat.format(command, exePath, exeDir, (maxMemory / 1024)).split(" "));
-        System.out.println(commandList);
+        DiscussionVo discussion = discussionService.getDiscussion(5, "c5ddbe4b38d641bea7d87ae0e102260d");
+        System.out.println(discussion);
     }
 
     @Autowired

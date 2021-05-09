@@ -79,6 +79,7 @@
 
 <script>
 import api from '@/common/api';
+import { addCodeBtn } from '@/common/codeblock';
 import Pagination from '@/components/oj/common/Pagination';
 export default {
   name: 'Announcement',
@@ -142,6 +143,9 @@ export default {
       this.announcement = announcement;
       this.announcement.content = this.$markDown.render(announcement.content);
       this.listVisible = false;
+      this.$nextTick((_) => {
+        addCodeBtn();
+      });
     },
     goBack() {
       this.listVisible = true;

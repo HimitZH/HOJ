@@ -178,7 +178,6 @@ export default {
         title: '',
         content: '',
         status: 0,
-        content: '',
         uid: '',
       },
       // 对话框标题
