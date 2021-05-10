@@ -157,7 +157,7 @@
 
 > 评论组件
 
-![评论组件](C:\Users\HZH990730\AppData\Roaming\Typora\typora-user-images\image-20210509233700989.png)
+![评论组件](https://img-blog.csdnimg.cn/20210510182414169.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70#pic_center)
 
 
 
