@@ -79,22 +79,28 @@
               </div>
             </div>
 
-            <div id="problem-content" class="markdown-body" v-katex>
+            <div id="problem-content">
               <p class="title">Description</p>
               <p
-                class="content"
+                class="content markdown-body"
                 v-html="problemData.problem.description"
                 v-katex
+                v-highlight
               ></p>
-              <!-- {{$t('m.music')}} -->
               <p class="title">Input</p>
-              <p class="content" v-html="problemData.problem.input" v-katex></p>
+              <p
+                class="content markdown-body"
+                v-html="problemData.problem.input"
+                v-katex
+                v-highlight
+              ></p>
 
               <p class="title">Output</p>
               <p
-                class="content"
+                class="content markdown-body"
                 v-html="problemData.problem.output"
                 v-katex
+                v-highlight
               ></p>
 
               <div
@@ -140,6 +146,7 @@
                     class="content"
                     v-html="problemData.problem.hint"
                     v-katex
+                    v-highlight
                   ></div>
                 </el-card>
               </div>
@@ -927,6 +934,12 @@ p.content {
   align-self: stretch;
   border-style: solid;
   background: transparent;
+  padding: 5px 10px;
+  white-space: pre-wrap;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  background: #f8f8f9;
+  border: 1px dashed #e9eaec;
 }
 #submit-code {
   height: auto;
