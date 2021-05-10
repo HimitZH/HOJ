@@ -405,6 +405,7 @@ import Avatar from 'vue-avatar';
 import { mapGetters } from 'vuex';
 import myMessage from '@/common/message';
 import api from '@/common/api';
+import { addCodeBtn } from '@/common/codeblock';
 export default {
   props: {
     did: {
@@ -477,6 +478,11 @@ export default {
         this.comments = this.comments.concat(moreCommentList);
         this.total = res.data.data.commentList.total;
         this.commentLikeMap = res.data.data.commentLikeMap;
+        if (this.comments.length > 0) {
+          this.$nextTick((_) => {
+            addCodeBtn();
+          });
+        }
       });
     },
 
@@ -523,6 +529,9 @@ export default {
         this.totalComment++;
         myMessage.success(res.data.msg);
         this.ownInputComment = '';
+        this.$nextTick((_) => {
+          addCodeBtn();
+        });
       });
     },
 
@@ -556,6 +565,9 @@ export default {
             break;
           }
         }
+        this.$nextTick((_) => {
+          addCodeBtn();
+        });
         this.totalComment++;
         myMessage.success(res.data.msg);
         this.replyInputComment = '';

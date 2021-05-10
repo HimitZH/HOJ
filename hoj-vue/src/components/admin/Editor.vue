@@ -79,7 +79,7 @@ export default {
   position: relative !important;
   overflow-y: hidden !important;
   font-size: 1rem !important;
-  background: #fff !important;
+  background: #f8f8f9 !important;
   white-space: pre !important;
 }
 .markdown-body pre code {
@@ -114,7 +114,7 @@ export default {
   right: 0;
   background-color: #2196f3;
   display: none;
-  padding: 7px;
+  padding: 5px;
   margin: 5px 5px 0 0;
   font-size: 11px;
   border-radius: inherit;
