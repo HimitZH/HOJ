@@ -33,11 +33,12 @@
    docker run -p 3306:3306 --name mysql -d \
    --restart=always \
    --network hoj-network \
-   --ip 172.18.0.1 \
-   -v /data/mysql/conf:/etc/mysql/conf.d \
+   --ip 172.18.0.4 \
+   --restart="always" \
+   -v /data/mysql/conf.d:/etc/mysql/conf.d \
    -v /data/mysql/logs:/logs \
    -v /data/mysql/data:/data \
-   -e MYSQL_ROOT_PASSWORD=admin \
+   -e MYSQL_ROOT_PASSWORD="123456" \
    mysql:5.7 
    ```
 
@@ -69,7 +70,7 @@
    -e JVM_XMN=64m \
    -e MODE=standalone \
    -e SPRING_DATASOURCE_PLATFORM=mysql \
-   -e MYSQL_SERVICE_HOST="数据库所在服务器ip或使用容器ip（172.18.0.1）" \
+   -e MYSQL_SERVICE_HOST="数据库所在服务器ip或使用容器ip（172.18.0.4）" \
    -e MYSQL_SERVICE_PORT=3306 \
    -e MYSQL_SERVICE_USER=root \
    -e MYSQL_SERVICE_PASSWORD="数据库密码" \
@@ -100,11 +101,11 @@
 
    **登陆后，点击添加**
 
-   ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210416154428657.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+   ![在这里插入图片描述](https://gitee.com/himitzh0730/hoj/tree/master/docs/img/nacos1.jpg)
 
    **依次添加后台服务的配置文件和判题服务的配置文件**
 
-   ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210416154647434.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+   ![在这里插入图片描述](https://gitee.com/himitzh0730/hoj/tree/master/docs/img/nacos2.jpg)
 
 5. hoj-data-backup-prod.yml的配置如下，请自行修改
 
@@ -122,11 +123,11 @@
        # 调用判题服务器的token
        token: zsc-acm-hoj-judge-server
      db: # mysql数据库服务配置
-       host: your_mysql_host  #如果是公用容器网络 请使用网络ip 例如1.1的172.18.0.1
-       port: your_mysql_port
-       name: your_mysql_database_name # 默认hoj
-       username: your_mysql_username
-       password: your_mysql_password
+       host: 172.18.0.4  #如果是公用容器网络 请使用网络ip 例如1.1的172.18.0.4
+       port: 3306
+       name: hoj # 默认hoj
+       username: root 
+       password: 123456 # your_mysql_password
      mail: # 邮箱服务配置
        ssl: true
        username: your_email_username
@@ -135,7 +136,7 @@
        port: your_email_port
        background-img: https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/HCODE.png # 邮箱系统发送邮件模板的背景图片地址
      redis: # redis服务配置
-       host: your_redis_host #如果是公用容器网络 请使用网络ip 例如1.3的172.18.0.2
+       host: 172.18.0.2 #your_redis_host 如果是公用容器网络 请使用网络ip 例如1.3的172.18.0.2
        port: 6371
        password: your_redis_password
      web-config:

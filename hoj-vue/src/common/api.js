@@ -474,6 +474,11 @@ const ojApi = {
       }
     })
   },
+  toReportDiscussion(data){
+    return ajax("/api/discussion-report",'post',{
+      data
+    })
+  },
 
   getCommentList(params){
     return ajax("/api/comments",'get',{
@@ -483,6 +488,12 @@ const ojApi = {
 
   addComment(data){
     return ajax("/api/comment",'post',{
+      data
+    })
+  },
+
+  deleteComment(data){
+    return ajax("/api/comment",'delete',{
       data
     })
   },
@@ -498,6 +509,12 @@ const ojApi = {
 
   addReply(data){
     return ajax("/api/reply",'post',{
+      data
+    })
+  },
+
+  deleteReply(data){
+    return ajax("/api/reply",'delete',{
       data
     })
   },

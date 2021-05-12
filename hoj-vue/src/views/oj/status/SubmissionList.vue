@@ -104,15 +104,6 @@
             title="Run ID"
             min-width="100"
           ></vxe-table-column>
-          <vxe-table-column
-            field="submitTime"
-            title="Submit time"
-            min-width="150"
-          >
-            <template v-slot="{ row }">
-              <span>{{ row.submitTime | localtime }}</span>
-            </template>
-          </vxe-table-column>
           <vxe-table-column field="pid" title="Problem ID" min-width="100">
             <template v-slot="{ row }">
               <span
@@ -200,6 +191,22 @@
                 @click="goUserHome(row.username, row.uid)"
                 style="color: rgb(87, 163, 243)"
                 >{{ row.username }}</a
+              >
+            </template>
+          </vxe-table-column>
+          <vxe-table-column
+            field="submitTime"
+            title="Submit Time"
+            min-width="96"
+          >
+            <template v-slot="{ row }">
+              <span
+                ><el-tooltip
+                  :content="row.submitTime | localtime"
+                  placement="top"
+                >
+                  <span>{{ row.submitTime | fromNow }}</span>
+                </el-tooltip></span
               >
             </template>
           </vxe-table-column>

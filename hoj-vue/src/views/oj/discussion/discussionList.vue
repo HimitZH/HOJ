@@ -102,7 +102,12 @@
               <span class="pr pl hidden-xs-only"
                 ><label class="fw"><i class="fa fa-clock-o"></i></label
                 ><span>
-                  时间：{{ discussion.gmtCreate | localtime }}</span
+                  创建时间：<el-tooltip
+                    :content="discussion.gmtCreate | localtime"
+                    placement="top"
+                  >
+                    <span>{{ discussion.gmtCreate | fromNow }}</span>
+                  </el-tooltip></span
                 ></span
               >
               <span class="pr"

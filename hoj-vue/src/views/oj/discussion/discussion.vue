@@ -36,12 +36,11 @@
             >ADM</span
           >
           <span class="c999" style="padding:0 6px;"
-            ><i class="el-icon-folder-opened"></i
+            ><i class="el-icon-folder-opened"> 分类：</i
             ><a
               class="c999"
               @click="toAllDiscussionByCid(discussion.categoryId)"
-            >
-              分类：{{ discussion.categoryName }}</a
+              >{{ discussion.categoryName }}</a
             ></span
           >
           <span class="c999"
@@ -53,7 +52,7 @@
             ><span> 浏览：{{ discussion.viewNum }}</span></span
           >
 
-          <a href="javascript:void(0);" class="report" title="举报"
+          <a @click="showReportDialog = true" class="report" title="举报"
             ><i class="fa fa-envira"></i><span>举报</span></a
           >
           <a
@@ -74,8 +73,15 @@
           >
 
           <span>
-            <i class="fa fa-clock-o"> 最后修改于：</i>
-            <span>{{ discussion.gmtModified | localtime }}</span>
+            <i class="fa fa-clock-o"> 创建时间：</i>
+            <span>
+              <el-tooltip
+                :content="discussion.gmtCreate | localtime"
+                placement="top"
+              >
+                <span>{{ discussion.gmtCreate | fromNow }}</span>
+              </el-tooltip>
+            </span>
           </span>
         </div>
       </div>
@@ -88,6 +94,37 @@
         ></div>
       </div>
     </div>
+    <el-dialog title="举报" :visible.sync="showReportDialog" width="350px">
+      <el-form label-position="top" :model="report">
+        <el-form-item label="标签" required>
+          <el-checkbox-group v-model="report.tagList">
+            <el-checkbox label="垃圾广告"></el-checkbox>
+            <el-checkbox label="违法违规"></el-checkbox>
+            <el-checkbox label="色情低俗"></el-checkbox>
+            <el-checkbox label="赌博诈骗"></el-checkbox>
+            <el-checkbox label="恶意骂战"></el-checkbox>
+            <el-checkbox label="恶意抄袭"></el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+        <el-form-item label="理由" required>
+          <el-input
+            type="textarea"
+            v-model="report.content"
+            placeholder="请写下举报的理由"
+            maxlength="200"
+            show-word-limit
+            :rows="4"
+          >
+          </el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="danger" @click.native="showReportDialog = false"
+          >取消</el-button
+        >
+        <el-button type="primary" @click.native="submitReport">提交</el-button>
+      </span>
+    </el-dialog>
     <comment :did="$route.params.discussionID"></comment>
   </div>
 </template>
@@ -116,6 +153,11 @@ export default {
         did: null,
       },
       discussionID: 0,
+      showReportDialog: false,
+      report: {
+        tagList: [],
+        content: '',
+      },
     };
   },
   mounted() {
@@ -151,6 +193,10 @@ export default {
     },
 
     toLikeDiscussion(did, toLike) {
+      if (!this.isAuthenticated) {
+        myMessage.warning('请先登录');
+        return;
+      }
       api.toLikeDiscussion(did, toLike).then((res) => {
         myMessage.success(res.data.msg);
         if (toLike) {
@@ -162,9 +208,33 @@ export default {
         }
       });
     },
+    submitReport() {
+      if (!this.isAuthenticated) {
+        myMessage.warning('请先登录');
+        return;
+      }
+      if (this.report.tagList.length == 0 && !this.report.content) {
+        myMessage.warning('举报标签和理由不能都为空');
+        return;
+      }
+      var reportMsg = '';
+      for (let i = 0; i < this.report.tagList.length; i++) {
+        reportMsg += '#' + this.report.tagList[i] + '# ';
+      }
+      reportMsg += this.report.content;
+      let discussionReport = {
+        reporter: this.userInfo.username,
+        content: reportMsg,
+        did: this.discussionID,
+      };
+      api.toReportDiscussion(discussionReport).then((res) => {
+        myMessage.success(res.data.msg);
+        this.showReportDialog = false;
+      });
+    },
   },
   computed: {
-    ...mapGetters(['isAuthenticated', 'isAdminRole']),
+    ...mapGetters(['isAuthenticated', 'isAdminRole', 'userInfo']),
     contentHtml() {
       if (this.discussion.content) {
         return this.$markDown.render(this.discussion.content);
@@ -181,6 +251,9 @@ export default {
 };
 </script>
 <style scoped>
+/deep/ .el-dialog__body {
+  padding: 0px 20px;
+}
 .container {
   box-sizing: border-box;
   background-color: #fff;

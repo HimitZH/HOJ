@@ -140,24 +140,50 @@
       <div
         class="comment"
         id="commentbox"
-        v-for="(item, index) in comments"
-        :key="index"
+        v-for="(item, commentIndex) in comments"
+        :key="commentIndex"
       >
-        <div
-          class="info"
-          @click="getInfoByUsername(item.fromUid, reply.fromName)"
-          :title="item.fromName"
-        >
-          <avatar
-            :username="item.fromName"
-            :inline="true"
-            :size="38"
-            color="#FFF"
-            :src="item.fromAvatar"
-          ></avatar>
+        <div class="info">
+          <span
+            @click="getInfoByUsername(item.fromUid, item.fromName)"
+            class="user-info"
+          >
+            <avatar
+              :username="item.fromName"
+              :inline="true"
+              :size="38"
+              color="#FFF"
+              :src="item.fromAvatar"
+              :title="item.fromName"
+            ></avatar>
+          </span>
           <div class="right">
-            <div class="name">{{ item.fromName }}</div>
-            <div class="date">{{ item.gmtCreate | localtime }}</div>
+            <div class="name">
+              <span
+                style="margin-right:3px;"
+                class="user-info"
+                @click="getInfoByUsername(item.fromUid, item.fromName)"
+                :title="item.fromName"
+                >{{ item.fromName }}</span
+              >
+              <span
+                class="role-root role"
+                title="Super Administrator"
+                v-if="item.fromRole == 'root'"
+                >SPA</span
+              >
+              <span
+                class="role-admin role"
+                title="Administrator"
+                v-if="item.fromRole == 'admin'"
+                >ADM</span
+              >
+            </div>
+            <div class="date">
+              <el-tooltip :content="item.gmtCreate | localtime" placement="top">
+                <span>{{ item.gmtCreate | fromNow }}</span>
+              </el-tooltip>
+            </div>
           </div>
         </div>
         <div class="info-bottom">
@@ -178,16 +204,27 @@
                 item.likeNum > 0 ? item.likeNum + '人赞' : '赞'
               }}</span>
             </span>
-            <span class="comment-reply" @click="showCommentInput(item)">
+            <span
+              class="comment-opt comment-reply"
+              @click="showCommentInput(item)"
+            >
               <i class="iconfont el-icon-chat-square"></i>
               <span>回复</span>
+            </span>
+            <span
+              v-if="item.fromUid == userInfo.uid || isAdminRole"
+              class="comment-opt comment-delete"
+              @click="deleteComment(item, commentIndex)"
+            >
+              <i class="iconfont el-icon-delete"></i>
+              <span>删除</span>
             </span>
           </div>
           <div class="reply">
             <div
               class="item"
-              v-for="(reply, index) in item.replyList"
-              :key="index"
+              v-for="(reply, replyIndex) in item.replyList"
+              :key="replyIndex"
             >
               <div class="reply-content">
                 <span
@@ -203,8 +240,21 @@
                     color="#FFF"
                     :src="reply.fromAvatar"
                   ></avatar>
-                  {{ reply.fromName }} </span
-                ><span class="reply-text">回复</span>
+                  {{ reply.fromName }}
+                </span>
+                <span
+                  class="role-root role"
+                  title="Super Administrator"
+                  v-if="reply.fromRole == 'root'"
+                  >SPA</span
+                >
+                <span
+                  class="role-admin role"
+                  title="Administrator"
+                  v-if="reply.fromRole == 'admin'"
+                  >ADM</span
+                >
+                <span class="reply-text">回复</span>
                 <span
                   class="to-name"
                   :title="reply.toName"
@@ -221,10 +271,27 @@
                 ></span>
               </div>
               <div class="reply-bottom">
-                <span>{{ reply.gmtCreate | localtime }}</span>
-                <span class="reply-text" @click="showCommentInput(item, reply)">
+                <el-tooltip
+                  :content="reply.gmtCreate | localtime"
+                  placement="top"
+                >
+                  <span>{{ reply.gmtCreate | fromNow }}</span>
+                </el-tooltip>
+
+                <span
+                  class="reply-opt reply-text"
+                  @click="showCommentInput(item, reply)"
+                >
                   <i class="iconfont el-icon-chat-square"></i>
                   <span>回复</span>
+                </span>
+                <span
+                  class="reply-opt reply-delete"
+                  v-if="reply.fromUid == userInfo.uid || isAdminRole"
+                  @click="deleteReply(reply, commentIndex, replyIndex)"
+                >
+                  <i class="iconfont el-icon-delete"></i>
+                  <span>删除</span>
                 </span>
               </div>
             </div>
@@ -527,6 +594,7 @@ export default {
       api.addComment(comment).then((res) => {
         this.comments = [res.data.data].concat(this.comments);
         this.totalComment++;
+        this.total++;
         myMessage.success(res.data.msg);
         this.ownInputComment = '';
         this.$nextTick((_) => {
@@ -596,6 +664,85 @@ export default {
         this.replyObj.toAvatar = item.fromAvatar;
       }
       this.showItemId = item.id;
+    },
+
+    /**
+     * 删除评论及其回复
+     */
+
+    deleteComment(comment, commentIndex) {
+      this.$confirm('此操作将删除该评论及其所有回复, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(() => {
+          let commentDeleteData = {
+            id: comment.id,
+            fromUid: comment.fromUid,
+          };
+          api.deleteComment(commentDeleteData).then((res) => {
+            this.totalComment--;
+            this.total--;
+            this.totalComment -= comment.replyList.length;
+            this.comments.splice(commentIndex, 1);
+            myMessage.success(res.data.msg);
+          });
+        })
+        .catch(() => {});
+    },
+
+    /**
+     * 删除回复
+     */
+
+    deleteReply(reply, commentIndex, replyIndex) {
+      this.$confirm('此操作将删除该回复, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+        .then(() => {
+          let replyDeleteData = {
+            id: reply.id,
+            fromUid: reply.fromUid,
+          };
+          api.deleteReply(replyDeleteData).then((res) => {
+            myMessage.success(res.data.msg);
+            if (!this.comments[commentIndex].backupReplyList) {
+              api.getAllReply(this.comments[commentIndex].id).then((res) => {
+                this.comments[commentIndex].backupReplyList = res.data.data;
+                if (res.data.data && res.data.data.length > 3) {
+                  this.comments[commentIndex].replyList = res.data.data.slice(
+                    0,
+                    3
+                  );
+                } else {
+                  this.comments[commentIndex].replyList = res.data.data;
+                }
+                this.totalComment +=
+                  res.data.data.length -
+                  this.comments[commentIndex].totalReplyNum;
+                this.comments[commentIndex].totalReplyNum =
+                  res.data.data.length;
+              });
+            } else {
+              this.comments[commentIndex].backupReplyList.splice(replyIndex, 1);
+              if (this.comments[commentIndex].backupReplyList.length > 3) {
+                this.comments[commentIndex].replyList = this.comments[
+                  commentIndex
+                ].backupReplyList.slice(0, 3);
+              } else {
+                this.comments[commentIndex].replyList = this.comments[
+                  commentIndex
+                ].backupReplyList;
+              }
+              this.comments[commentIndex].totalReplyNum--;
+              this.totalComment--;
+            }
+          });
+        })
+        .catch(() => {});
     },
 
     /**
@@ -700,7 +847,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['isAuthenticated']),
+    ...mapGetters(['isAuthenticated', 'userInfo', 'isAdminRole']),
     showloading() {
       if (this.query.currentPage * this.query.limit >= this.total) {
         return false;
@@ -712,6 +859,7 @@ export default {
   watch: {
     isAuthenticated(newVal, oldVal) {
       if (newVal != oldVal) {
+        this.comments = [];
         this.init();
       }
     },
@@ -825,6 +973,8 @@ export default {
 .container .comment .info {
   display: flex;
   align-items: center;
+}
+.container .comment .info .user-info {
   cursor: pointer;
 }
 .container .comment .info .right {
@@ -860,7 +1010,7 @@ export default {
 .container .comment .control .like {
   display: flex;
   align-items: center;
-  margin-right: 20px;
+  margin-right: 10px;
   cursor: pointer;
 }
 .container .comment .control .like.active,
@@ -869,19 +1019,25 @@ export default {
 }
 .container .comment .control .like .iconfont {
   font-size: 14px;
-  margin-right: 5px;
+  margin-right: 3px;
 }
-.container .comment .control .comment-reply {
+.container .comment .control .comment-opt {
   display: flex;
   align-items: center;
   cursor: pointer;
+  margin-right: 10px;
 }
 .container .comment .control .comment-reply:hover {
   color: #333;
 }
-.container .comment .control .comment-reply .iconfont {
+
+.container .comment .control .comment-delete:hover {
+  color: #ff503f;
+}
+
+.container .comment .control .comment-opt .iconfont {
   font-size: 16px;
-  margin-right: 5px;
+  margin-right: 3px;
 }
 .container .comment .reply {
   margin: 10px 0;
@@ -901,6 +1057,7 @@ export default {
 .container .comment .reply .item .reply-content .from-name {
   color: #409eff;
   cursor: pointer;
+  margin-right: 3px;
 }
 .container .comment .reply .item .reply-content .reply-text {
   margin-left: 5px;
@@ -920,17 +1077,20 @@ export default {
   color: #909399;
   margin-left: 34px;
 }
-.container .comment .reply .item .reply-bottom .reply-text {
+.container .comment .reply .item .reply-bottom .reply-opt {
   display: flex;
   align-items: center;
-  margin-left: 10px;
+  margin-left: 5px;
   cursor: pointer;
 }
 .container .comment .reply .item .reply-bottom .reply-text:hover {
   color: #333;
 }
-.container .comment .reply .item .reply-bottom .reply-text .icon-comment {
-  margin-right: 5px;
+.container .comment .reply .item .reply-bottom .reply-delete:hover {
+  color: #ff503f;
+}
+.container .comment .reply .item .reply-bottom .reply-opt .iconfont {
+  margin-right: 3px;
 }
 .container .comment .reply .view-more {
   font-size: 12px;

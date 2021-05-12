@@ -131,6 +131,34 @@ public class CommentController {
 
     }
 
+    @DeleteMapping("/comment")
+    @RequiresAuthentication
+    @Transactional
+    public CommonResult deleteComment(@RequestBody Comment comment, HttpServletRequest request) {
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        // 如果不是评论本人 或者不是管理员 无权限删除该评论
+        if (comment.getFromUid().equals(userRolesVo.getUid()) || SecurityUtils.getSubject().hasRole("root")
+                || SecurityUtils.getSubject().hasRole("admin")) {
+
+            // 删除该数据
+            boolean isDeleteComment = commentService.remove(new UpdateWrapper<Comment>().eq("id", comment.getId()));
+
+            // 同时需要删除该评论的回复表数据
+            replyService.remove(new UpdateWrapper<Reply>().eq("comment_id", comment.getId()));
+
+            if (isDeleteComment) {
+                return CommonResult.successResponse(null, "删除成功");
+            } else {
+                return CommonResult.errorResponse("删除失败，请重新尝试");
+            }
+
+        } else {
+            return CommonResult.errorResponse("无权删除该评论", CommonResult.STATUS_FORBIDDEN);
+        }
+    }
+
     @GetMapping("/comment-like")
     @RequiresAuthentication
     @Transactional
@@ -217,8 +245,31 @@ public class CommentController {
         } else {
             return CommonResult.errorResponse("评论失败，请重新尝试！");
         }
-
     }
 
+    @DeleteMapping("/reply")
+    @RequiresAuthentication
+    public CommonResult deleteReply(@RequestBody Reply reply, HttpServletRequest request) {
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        // 如果不是评论本人 或者不是管理员 无权限删除该评论
+        if (reply.getFromUid().equals(userRolesVo.getUid()) || SecurityUtils.getSubject().hasRole("root")
+                || SecurityUtils.getSubject().hasRole("admin")) {
+
+            // 删除该数据
+            boolean isOk = replyService.removeById(reply.getId());
+
+            if (isOk) {
+                return CommonResult.successResponse(null, "删除成功");
+            } else {
+                return CommonResult.errorResponse("删除失败，请重新尝试");
+            }
+
+        } else {
+            return CommonResult.errorResponse("无权删除该回复", CommonResult.STATUS_FORBIDDEN);
+        }
+    }
 
 }

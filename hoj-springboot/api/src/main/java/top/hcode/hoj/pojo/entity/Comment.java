@@ -1,9 +1,6 @@
 package top.hcode.hoj.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -55,6 +52,10 @@ public class Comment implements Serializable {
 
     @ApiModelProperty(value = "点赞数量")
     private Integer likeNum;
+
+    @ApiModelProperty(value = "是否封禁或删除 0正常，1封禁")
+    @TableLogic
+    private Integer status;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
