@@ -6,7 +6,7 @@
           <div slot="header">
             <span class="panel-title home-title">Compiler & Example</span>
           </div>
-          <div class="content markdown-body">
+          <div class="content">
             <ul>
               <li v-for="lang in languages" :key="lang.name">
                 {{ lang.name }} ( {{ lang.description }} )
@@ -107,6 +107,7 @@
 import utils from '@/common/utils';
 import Highlight from '@/components/oj/common/Highlight';
 import { JUDGE_STATUS } from '@/common/constants';
+import { addCodeBtn } from '@/common/codeblock';
 export default {
   components: {
     Highlight,
@@ -131,6 +132,15 @@ export default {
       });
     });
   },
+  watch: {
+    languages(newVal, oldVal) {
+      if (newVal.length > 0) {
+        this.$nextTick((_) => {
+          addCodeBtn();
+        });
+      }
+    },
+  },
 };
 </script>
 
@@ -141,6 +151,14 @@ export default {
 .container .content {
   font-size: 16px;
   margin: 0 50px 20px 50px;
+}
+.container .content pre {
+  padding: 5px 10px;
+  white-space: pre-wrap;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  background: #f8f8f9;
+  border: 1px dashed #e9eaec;
 }
 @media screen and (max-width: 768px) {
   .container .content {

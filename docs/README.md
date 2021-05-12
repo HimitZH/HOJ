@@ -20,13 +20,11 @@
 
    ```shell
    //mysql配置文件 
-   mkdir -p /data/mysql/conf
+   mkdir -p /hoj/data/mysql/conf
    //mysql数据文件路径 
-   mkdir –p /data/mysql/data
-   //日志文件路径
-   mkdir -p /data/mysql/logs 
+   mkdir –p /hoj/data/mysql/data
    ```
-
+   
 4. 启动mysql
 
    ```shell
@@ -35,13 +33,12 @@
    --network hoj-network \
    --ip 172.18.0.4 \
    --restart="always" \
-   -v /data/mysql/conf.d:/etc/mysql/conf.d \
-   -v /data/mysql/logs:/logs \
-   -v /data/mysql/data:/data \
+   -v /hoj/data/mysql/conf.d:/etc/mysql/conf.d \
+   -v /hoj/data/mysql/data:/var/lib/mysql \
    -e MYSQL_ROOT_PASSWORD="123456" \
    mysql:5.7 
    ```
-
+   
 5. 启动成功后 使用docker ps 可查看 如果正常则进行数据库创建操作
 
 6. 创建名字叫hoj的数据库，执行脚本在sqlAndSetting文件夹里面或者 [hoj.sql](https://gitee.com/himitzh0730/hoj/blob/master/sqlAndsetting/hoj.sql)、[hoj-data.sql](https://gitee.com/himitzh0730/hoj/blob/master/sqlAndsetting/hoj-data.sql)
