@@ -11,19 +11,19 @@
               <span v-if="contestID && !contestEnded"
                 ><el-tag effect="plain" size="small">比赛题目</el-tag></span
               >
-              <span v-else-if="problemData.tags.length > 0"
-                ><el-tag
+              <div v-else-if="problemData.tags.length > 0" class="problem-tag">
+                <el-tag
                   v-for="tag in problemData.tags"
                   :key="tag"
                   effect="plain"
                   size="small"
                   style="margin-right:10px;"
                   >{{ tag }}</el-tag
-                ></span
-              >
-              <span v-else-if="problemData.tags.length == 0"
-                ><el-tag effect="plain" size="small">暂无标签</el-tag></span
-              >
+                >
+              </div>
+              <div v-else-if="problemData.tags.length == 0" class="problem-tag">
+                <el-tag effect="plain" size="small">暂无标签</el-tag>
+              </div>
               <div class="problem-menu">
                 <span v-if="!contestID">
                   <el-link
@@ -49,7 +49,7 @@
                     :underline="false"
                     @click="goProblemSubmission"
                     ><i class="fa fa-bars" aria-hidden="true"></i>
-                    Submission</el-link
+                    Solution</el-link
                   ></span
                 >
               </div>
@@ -831,13 +831,13 @@ export default {
   flex: auto;
 }
 .problem-menu {
-  float: right;
+  float: left;
 }
 a {
   color: #3091f2 !important ;
 }
 .problem-menu span {
-  margin-left: 10px;
+  margin-left: 5px;
 }
 .el-link {
   font-size: 16px !important;
@@ -867,8 +867,14 @@ a {
     height: 700px !important;
     overflow-y: auto;
   }
+  .problem-tag {
+    display: inline;
+  }
+  .problem-menu {
+    float: right;
+  }
   .problem-menu span {
-    margin-left: 20px;
+    margin-left: 10px;
   }
   .question-intr {
     margin-top: 6px;
@@ -896,8 +902,8 @@ a {
   margin-top: -50px;
 }
 #problem-content .title {
-  font-size: 20px;
-  font-weight: 400;
+  font-size: 16px;
+  font-weight: 600;
   margin: 25px 0 8px 0;
   color: #3091f2;
 }
