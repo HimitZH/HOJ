@@ -101,11 +101,11 @@
 
    **登陆后，点击添加**
 
-   ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210512175956665.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70#pic_center)
+   ![nacos1]( https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/nacos1.jpg)
 
    **依次添加后台服务的配置文件和判题服务的配置文件**
 
-   ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210512180020650.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70#pic_center)
+   ![nacos2]( https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/nacos2.jpg)
 
 5. hoj-data-backup-prod.yml的配置如下，请自行修改
 
