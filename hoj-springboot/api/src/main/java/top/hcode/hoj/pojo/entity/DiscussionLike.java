@@ -26,7 +26,7 @@ public class DiscussionLike {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
+    private Integer id;
 
     @ApiModelProperty(value = "讨论id")
     private Integer did;

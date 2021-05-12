@@ -4,7 +4,7 @@ import time from './time'
 
 // 友好显示时间
 function fromNow (time) {
-  return moment(time * 3).fromNow()
+  return moment(time).fromNow()
 }
 
 function parseRole(num){

@@ -299,6 +299,9 @@ a:hover {
     padding-left: 0px !important;
     padding-right: 0px !important;
   }
+  .el-message-box {
+    width: 70% !important;
+  }
 }
 #problem-content .sample pre {
   -ms-flex: 1 1 auto;

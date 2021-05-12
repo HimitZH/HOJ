@@ -183,6 +183,18 @@ problem_count表
 
  
 
+tag表  题目表的标签
+
+| 列名         | 实体属性类型 | 键   | 备注           |
+| ------------ | ------------ | ---- | -------------- |
+| id           | long         | 主键 | auto_increment |
+| name         | String       |      | 标签名字       |
+| color        | String       |      | 标签颜色       |
+| gmt_create   | datetime     |      | 创建时间       |
+| gmt_modified | datetime     |      | 修改时间       |
+
+
+
 problem_tag表
 
 | 列名         | 实体属性类型 | 键   | 备注     |
@@ -506,37 +518,120 @@ contest_explanation表 赛后题解表**(未使用)**
 
  
 
-## 讨论模块**(未使用)**
+## 讨论模块
 
->  包括平时与比赛
+>  包括题目讨论区，公共讨论区，比赛评论
 
 
 
-comment表，只存储发布者相关题目内容，评论内容采用learncloud**(未使用)**
-
-| 列名         | 实体属性类型 | 键   | 备注             |
-| ------------ | ------------ | ---- | ---------------- |
-| id           | long         | 主键 | auto_increment   |
-| uid          | int          | 外键 | 发布讨论的用户id |
-| title        | String       | 外键 | 讨论标题         |
-| content      | String       |      | 讨论详情         |
-| tid          | String       | 外键 | 讨论标签id       |
-| pid          | int          | 外键 | 引用的题目id     |
-| cid          | int          | 外键 | 引用的比赛id     |
-| gmt_create   | datetime     |      | 创建时间         |
-| gmt_modified | datetime     |      | 修改时间         |
-
- 
-
-tag表  讨论表或者题目表的标签**(未使用)**
+category表
 
 | 列名         | 实体属性类型 | 键   | 备注           |
 | ------------ | ------------ | ---- | -------------- |
 | id           | long         | 主键 | auto_increment |
-| name         | String       |      | 标签名字       |
-| color        | String       |      | 标签颜色       |
+| name         | String       |      | 分类名字       |
 | gmt_create   | datetime     |      | 创建时间       |
 | gmt_modified | datetime     |      | 修改时间       |
+
+
+
+discussion表
+
+| 列名         | 实体属性类型 | 键   | 备注                             |
+| ------------ | ------------ | ---- | -------------------------------- |
+| id           | int          | 主键 | auto_increment                   |
+| category_id  | int          | 外键 | 分类id                           |
+| title        | String       | 外键 | 讨论标题                         |
+| content      | String       |      | 讨论详情                         |
+| description  | String       |      | 讨论描述                         |
+| pid          | String       | 外键 | 引用的题目id，默认未null则不引用 |
+| uid          | iString      | 外键 | 发布讨论的用户id                 |
+| author       | String       | 外键 | 发布讨论的用户名                 |
+| avatar       | String       | 外键 | 发布讨论的用户头像地址           |
+| role         | String       |      | 发布讨论的用户角色               |
+| view_num     | int          |      | 浏览数量                         |
+| like_num     | int          |      | 点赞数量                         |
+| top_priority | boolean      |      | 优先级，是否置顶                 |
+| status       | int          |      | 是否封禁或逻辑删除该讨论         |
+| gmt_create   | datetime     |      | 创建时间                         |
+| gmt_modified | datetime     |      | 修改时间                         |
+
+
+
+discussion_like表
+
+| 列名         | 实体属性类型 | 键   | 备注           |
+| ------------ | ------------ | ---- | -------------- |
+| id           | long         | 主键 | auto_increment |
+| did          | int          | 外键 | 讨论id         |
+| uid          | String       | 外键 | 用户id         |
+| gmt_create   | datetime     |      | 创建时间       |
+| gmt_modified | datetime     |      | 修改时间       |
+
+
+
+discussion_report表
+
+| 列名         | 实体属性类型 | 键   | 备注           |
+| ------------ | ------------ | ---- | -------------- |
+| id           | long         | 主键 | auto_increment |
+| did          | int          | 外键 | 讨论id         |
+| reporter     | String       | 外键 | 举报者的用户名 |
+| content      | String       |      | 举报内容       |
+| status       | boolean      |      | 是否已读       |
+| gmt_create   | datetime     |      | 创建时间       |
+| gmt_modified | datetime     |      | 修改时间       |
+
+
+
+comment表
+
+| 列名         | 实体属性类型 | 键   | 备注                                   |
+| ------------ | ------------ | ---- | -------------------------------------- |
+| id           | int          | 主键 | auto_increment                         |
+| cid          | long         | 外键 | 比赛id，NULL表示无引用比赛             |
+| did          | int          | 外键 | 讨论id，NULL表示无引用讨论             |
+| content      | String       |      | 评论内容                               |
+| from_uid     | String       | 外键 | 评论者id                               |
+| from_name    | String       | 外键 | 评论者用户名                           |
+| from_avatar  | String       | 外键 | 评论者头像地址                         |
+| from_role    | String       | 外键 | 评论者角色                             |
+| like_num     | int          |      | 点赞数量                               |
+| status       | int          |      | 是否封禁或逻辑删除该评论，0正常，1封禁 |
+| gmt_create   | datetime     |      | 创建时间                               |
+| gmt_modified | datetime     |      | 修改时间                               |
+
+
+
+comment_like表
+
+| 列名         | 实体属性类型 | 键   | 备注           |
+| ------------ | ------------ | ---- | -------------- |
+| id           | lint         | 主键 | auto_increment |
+| cid          | int          | 外键 | 评论id         |
+| uid          | String       | 外键 | 用户id         |
+| gmt_create   | datetime     |      | 创建时间       |
+| gmt_modified | datetime     |      | 修改时间       |
+
+
+
+reply表
+
+| 列名         | 实体属性类型 | 键   | 备注                                   |
+| ------------ | ------------ | ---- | -------------------------------------- |
+| id           | int          | 主键 | auto_increment                         |
+| comment_id   | ind          | 外键 | 评论id                                 |
+| content      | String       |      | 回复的内容                             |
+| from_uid     | String       | 外键 | 回复评论者id                           |
+| from_name    | String       | 外键 | 回复评论者用户名                       |
+| from_avatar  | String       | 外键 | 回复评论者头像地址                     |
+| from_role    | String       | 外键 | 回复评论者角色                         |
+| to_uid       | String       | 外键 | 被回复的用户id                         |
+| to_name      | String       | 外键 | 被回复的用户名                         |
+| to_avatar    | String       | 外键 | 被回复的用户头像地址                   |
+| status       | int          |      | 是否封禁或逻辑删除该回复，0正常，1封禁 |
+| gmt_create   | datetime     |      | 创建时间                               |
+| gmt_modified | datetime     |      | 修改时间                               |
 
 ## 文件模块
 

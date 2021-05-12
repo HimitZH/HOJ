@@ -1,6 +1,5 @@
 package top.hcode.hoj.controller.oj;
 
-import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -15,10 +14,12 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.Category;
 import top.hcode.hoj.pojo.entity.Discussion;
 import top.hcode.hoj.pojo.entity.DiscussionLike;
+import top.hcode.hoj.pojo.entity.DiscussionReport;
 import top.hcode.hoj.pojo.vo.DiscussionVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.impl.CategoryServiceImpl;
 import top.hcode.hoj.service.impl.DiscussionLikeServiceImpl;
+import top.hcode.hoj.service.impl.DiscussionReportServiceImpl;
 import top.hcode.hoj.service.impl.DiscussionServiceImpl;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +44,9 @@ public class DiscussionController {
 
     @Autowired
     private CategoryServiceImpl categoryService;
+
+    @Autowired
+    private DiscussionReportServiceImpl discussionReportService;
 
     @GetMapping("/discussions")
     public CommonResult getDiscussionList(@RequestParam(value = "limit", required = false, defaultValue = "15") Integer limit,
@@ -72,7 +76,8 @@ public class DiscussionController {
             discussionQueryWrapper.eq("pid", pid);
         }
 
-        discussionQueryWrapper.eq("status", false)
+        discussionQueryWrapper
+                .eq("status", 0)
                 .orderByDesc("top_priority")
                 .orderByDesc("gmt_modified")
                 .orderByDesc("like_num")
@@ -103,7 +108,11 @@ public class DiscussionController {
 
         DiscussionVo discussion = discussionService.getDiscussion(did, uid);
 
-        if (discussion.getStatus()) {
+        if (discussion == null) {
+            return CommonResult.errorResponse("对不起，该讨论不存在！", CommonResult.STATUS_NOT_FOUND);
+        }
+
+        if (discussion.getStatus() == 1) {
             return CommonResult.errorResponse("对不起，该讨论已被封禁！", CommonResult.STATUS_FORBIDDEN);
         }
 
@@ -111,7 +120,7 @@ public class DiscussionController {
         UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<>();
         discussionUpdateWrapper.setSql("view_num=view_num+1").eq("id", discussion.getId());
         discussionService.update(discussionUpdateWrapper);
-        discussion.setViewNum(discussion.getViewNum()+1);
+        discussion.setViewNum(discussion.getViewNum() + 1);
 
         return CommonResult.successResponse(discussion, "获取成功");
     }
@@ -152,8 +161,24 @@ public class DiscussionController {
 
     @DeleteMapping("/discussion")
     @RequiresAuthentication
-    public CommonResult removeDiscussion() {
-        return null;
+    public CommonResult removeDiscussion(@RequestParam("did") Integer did, HttpServletRequest request) {
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<Discussion>().eq("id", did);
+        // 如果不是是管理员,则需要附加当前用户的uid条件
+        if (!SecurityUtils.getSubject().hasRole("root")
+                && !SecurityUtils.getSubject().hasRole("admin")) {
+            discussionUpdateWrapper.eq("uid", userRolesVo.getUid());
+        }
+        boolean isOk = discussionService.remove(discussionUpdateWrapper);
+        if (isOk) {
+            return CommonResult.successResponse(null, "删除成功");
+        } else {
+            return CommonResult.errorResponse("删除失败，无权限或者该讨论不存在");
+        }
+
     }
 
     @GetMapping("/discussion-like")
@@ -204,6 +229,24 @@ public class DiscussionController {
 
         List<Category> categoryList = categoryService.list();
         return CommonResult.successResponse(categoryList, "获取成功");
+    }
+
+    /**
+     * @MethodName addDiscussionReport
+     * @Params  * @param uid content reporter
+     * @Description 添加讨论举报
+     * @Return
+     * @Since 2021/5/11
+     */
+    @PostMapping("/discussion-report")
+    @RequiresAuthentication
+    public CommonResult addDiscussionReport(@RequestBody DiscussionReport discussionReport){
+        boolean isOk = discussionReportService.saveOrUpdate(discussionReport);
+        if (isOk) {
+            return CommonResult.successResponse(null, "举报成功");
+        } else {
+            return CommonResult.errorResponse("举报失败，请重新尝试");
+        }
     }
 
 }
