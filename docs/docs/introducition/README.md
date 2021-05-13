@@ -22,33 +22,33 @@ HOJ，全称 Hcode Online Judge，是基于前后端分离，分布式架构的�
 
 > 首页页面
 
-![hoj1](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj1.png)
+![首页](https://img-blog.csdnimg.cn/20210509232352226.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 
 
 > 题目列表页
 
-![hoj2](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj2.png)
+![题目列表](https://img-blog.csdnimg.cn/20210509232501952.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 
 
 > 题目详情页
 
-![hoj7](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj7.png)
-
-
+![题目详情页](https://img-blog.csdnimg.cn/20210509232609398.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 > 比赛列表页
 
-![hoj3](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj3.png)
+![比赛列表](https://img-blog.csdnimg.cn/20210509232701288.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 
 
 > 比赛详情首页
 
-![hoj4](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj4.png)
+![比赛详情](https://img-blog.csdnimg.cn/20210509232843932.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70#pic_center)
 
+> 提交列表页
 
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210513134128914.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 > 排行榜
 
@@ -56,15 +56,29 @@ HOJ，全称 Hcode Online Judge，是基于前后端分离，分布式架构的�
 
 
 
+> 公共讨论区
+
+![公共讨论区](https://img-blog.csdnimg.cn/20210513134216723.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+
+
+
+> 评论组件
+
+![评论组件](https://img-blog.csdnimg.cn/20210513142826730.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70#pic_center)
+
+
+
 > 个人信息页
 
-![hoj6](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj6.png)
+![个人信息](https://img-blog.csdnimg.cn/20210509233300701.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 
 
 > 个人设置页
 
-![hoj8](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hoj8.png)
+![个人设置](https://img-blog.csdnimg.cn/20210509233439791.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+
+
 
 
 
@@ -76,13 +90,8 @@ HOJ，全称 Hcode Online Judge，是基于前后端分离，分布式架构的�
 
 > 部分手机端显示
 
-![hojmb1](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hojmb1.png)
+![](https://img-blog.csdnimg.cn/20210509233756882.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 
 
-![hojmb2](https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/hojmb2.png)
-
-
-
-
-
+![评论区](https://img-blog.csdnimg.cn/20210509233845230.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
