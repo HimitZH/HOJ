@@ -72,7 +72,7 @@
               <span
                 >HOJ Server Num：
                 <el-tag effect="dark" color="#2d8cf0" size="mini">{{
-                  generalInfo.nacos.instanceCount
+                  generalInfo.backupService.length
                 }}</el-tag>
               </span>
             </el-col>

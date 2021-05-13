@@ -217,8 +217,8 @@
    --restart="always" \
    --network hoj-network \
    --ip 172.18.0.3 \
-   --requirepass "mypassword" \
-   redis
+   redis \
+   --requirepass "mypassword" 
    ```
 
 6. 查看是否启动成功
@@ -301,7 +301,7 @@
 7. 启动容器
 
    ```shell
-   docker run -d -p 6688:6688 -v /hoj/file:/hoj/file -v /hoj/testcase:/hoj/testcase --name hoj --network hoj-network hoj
+   docker run -d -p 6688:6688 -v /hoj/file:/hoj/file -v /hoj/testcase:/hoj/testcase --name hoj --network hoj-network --restart=always  hoj
    ```
 
 8. 查看是否成功

@@ -630,8 +630,7 @@ export default {
     if (contestID) {
       this.problemIdPrex += 'C';
     }
-    this.uploadFileUrl =
-      this.$http.defaults.baseURL + '/api/file/upload-testcase-zip';
+    this.uploadFileUrl = '/api/file/upload-testcase-zip';
     if (
       this.routeName === 'admin-edit-problem' ||
       this.routeName === 'admin-edit-contest-problem'
