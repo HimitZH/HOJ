@@ -325,12 +325,41 @@
           <el-col :span="24">
             <el-form-item label="User Type">
               <el-select v-model="selectUser.type">
-                <el-option label="用户" :value="1002" :key="1002"></el-option>
-                <el-option label="管理员" :value="1001" :key="1001"></el-option>
                 <el-option
                   label="超级管理员"
                   :value="1000"
                   :key="1000"
+                ></el-option>
+                <el-option label="管理员" :value="1001" :key="1001"></el-option>
+                <el-option
+                  label="用户(默认)"
+                  :value="1002"
+                  :key="1002"
+                ></el-option>
+                <el-option
+                  label="用户(禁止提交)"
+                  :value="1003"
+                  :key="1003"
+                ></el-option>
+                <el-option
+                  label="用户(禁止发讨论)"
+                  :value="1004"
+                  :key="1004"
+                ></el-option>
+                <el-option
+                  label="用户(禁言)"
+                  :value="1005"
+                  :key="1005"
+                ></el-option>
+                <el-option
+                  label="用户(禁止提交&禁止发讨论)"
+                  :value="1006"
+                  :key="1006"
+                ></el-option>
+                <el-option
+                  label="用户(禁止提交&禁言)"
+                  :value="1007"
+                  :key="1007"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -529,18 +558,7 @@ export default {
       this.keyword = '';
     },
     getRole(roles) {
-      // 返回最高权限的角色
-      let role = 1000;
-      for (var item = 0; item < roles.length; item++) {
-        if (roles[item]['id'] == 1000) {
-          return 1000;
-        } else if (roles[item]['id'] == 1001) {
-          return 1001;
-        } else if (roles[item]['id'] == 1002) {
-          return 1002;
-        }
-      }
-      return role;
+      return roles[0]['id'];
     },
     // 打开用户对话框
     openUserDialog(row) {

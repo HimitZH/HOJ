@@ -63,9 +63,7 @@ public class NacosConfig {
         }
         meta.put("judgeName", name);
         nacosDiscoveryProperties.setMetadata(meta);
-        if (ip.equals("-1")) {
-            nacosDiscoveryProperties.setIp(IpUtils.getLocalIpv4Address());
-        } else {
+        if (!ip.equals("-1")) {
             nacosDiscoveryProperties.setIp(ip);
         }
         nacosDiscoveryProperties.setPort(port);

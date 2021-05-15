@@ -8,7 +8,7 @@
     <link rel="icon" href="/docs/img/favicon.ico">
     <meta name="description" content="HOJ 的开发与使用文档">
     
-    <link rel="preload" href="/docs/assets/css/0.styles.a32abeff.css" as="style"><link rel="preload" href="/docs/assets/js/app.d6b28fbe.js" as="script"><link rel="preload" href="/docs/assets/js/2.3e9bf4c9.js" as="script"><link rel="preload" href="/docs/assets/js/9.bb690007.js" as="script"><link rel="prefetch" href="/docs/assets/js/10.5e2e29c8.js"><link rel="prefetch" href="/docs/assets/js/11.aa231a55.js"><link rel="prefetch" href="/docs/assets/js/12.ce682308.js"><link rel="prefetch" href="/docs/assets/js/13.773ed911.js"><link rel="prefetch" href="/docs/assets/js/14.82ae7f11.js"><link rel="prefetch" href="/docs/assets/js/15.2b71b222.js"><link rel="prefetch" href="/docs/assets/js/16.0f6e25c5.js"><link rel="prefetch" href="/docs/assets/js/17.628dcaeb.js"><link rel="prefetch" href="/docs/assets/js/18.91479fdc.js"><link rel="prefetch" href="/docs/assets/js/19.ec6c8e0d.js"><link rel="prefetch" href="/docs/assets/js/3.18332d54.js"><link rel="prefetch" href="/docs/assets/js/4.08af6e73.js"><link rel="prefetch" href="/docs/assets/js/5.8623620a.js"><link rel="prefetch" href="/docs/assets/js/6.f86b5401.js"><link rel="prefetch" href="/docs/assets/js/7.833fd5d1.js"><link rel="prefetch" href="/docs/assets/js/8.c19cb3cc.js">
+    <link rel="preload" href="/docs/assets/css/0.styles.a32abeff.css" as="style"><link rel="preload" href="/docs/assets/js/app.b9cffd7b.js" as="script"><link rel="preload" href="/docs/assets/js/2.3e9bf4c9.js" as="script"><link rel="preload" href="/docs/assets/js/9.fe288090.js" as="script"><link rel="prefetch" href="/docs/assets/js/10.09392793.js"><link rel="prefetch" href="/docs/assets/js/11.5137e310.js"><link rel="prefetch" href="/docs/assets/js/12.41dd9918.js"><link rel="prefetch" href="/docs/assets/js/13.773ed911.js"><link rel="prefetch" href="/docs/assets/js/14.f511d09b.js"><link rel="prefetch" href="/docs/assets/js/15.8e49b205.js"><link rel="prefetch" href="/docs/assets/js/16.dd7b5c1f.js"><link rel="prefetch" href="/docs/assets/js/17.4cc1f1f6.js"><link rel="prefetch" href="/docs/assets/js/18.5d3ea194.js"><link rel="prefetch" href="/docs/assets/js/19.ec6c8e0d.js"><link rel="prefetch" href="/docs/assets/js/3.18332d54.js"><link rel="prefetch" href="/docs/assets/js/4.08af6e73.js"><link rel="prefetch" href="/docs/assets/js/5.8623620a.js"><link rel="prefetch" href="/docs/assets/js/6.f86b5401.js"><link rel="prefetch" href="/docs/assets/js/7.833fd5d1.js"><link rel="prefetch" href="/docs/assets/js/8.0289304e.js">
     <link rel="stylesheet" href="/docs/assets/css/0.styles.a32abeff.css">
   </head>
   <body>
@@ -167,8 +167,14 @@ redis <span class="token punctuation">\</span>
 docker build -t hoj <span class="token builtin class-name">.</span>
 // 查看hoj镜像是否存在
 docker images
-</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br></div></div></li> <li><p>启动容器</p> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code>docker run -d -p <span class="token number">6688</span>:6688 -v /hoj/file:/hoj/file -v /hoj/testcase:/hoj/testcase --name hoj --network hoj-network --restart<span class="token operator">=</span>always  hoj
-</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div></li> <li><p>查看是否成功</p> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code>docker <span class="token function">ps</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br></div></div></li> <li><p>启动容器</p> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code>docker run -d -p <span class="token number">6688</span>:6688 <span class="token punctuation">\</span>
+-v /hoj/file:/hoj/file <span class="token punctuation">\</span>
+-v /hoj/testcase:/hoj/testcase <span class="token punctuation">\</span>
+--name hoj <span class="token punctuation">\</span>
+--network hoj-network <span class="token punctuation">\</span>
+--restart<span class="token operator">=</span>always <span class="token punctuation">\</span>
+hoj
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br></div></div></li> <li><p>查看是否成功</p> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code>docker <span class="token function">ps</span>
 </code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div></li></ol></div> <footer class="page-edit"><!----> <!----></footer> <div class="page-nav"><p class="inner"><span class="prev">
       ←
       <a href="/docs/deploy/frontend.html" class="prev">
@@ -178,6 +184,6 @@ docker images
       </a>
       →
     </span></p></div> </main></div><div class="global-ui"></div></div>
-    <script src="/docs/assets/js/app.d6b28fbe.js" defer></script><script src="/docs/assets/js/2.3e9bf4c9.js" defer></script><script src="/docs/assets/js/9.bb690007.js" defer></script>
+    <script src="/docs/assets/js/app.b9cffd7b.js" defer></script><script src="/docs/assets/js/2.3e9bf4c9.js" defer></script><script src="/docs/assets/js/9.fe288090.js" defer></script>
   </body>
 </html>

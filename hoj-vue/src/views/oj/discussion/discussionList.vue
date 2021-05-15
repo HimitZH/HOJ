@@ -6,8 +6,8 @@
           <span style="padding: 16px;float:left;">
             <el-breadcrumb separator-class="el-icon-arrow-right">
               <template v-if="currentCategory">
-                <el-breadcrumb-item :to="{ name: routeName, query: null }"
-                  >全部</el-breadcrumb-item
+                <el-breadcrumb-item :to="{ name: routeName, query: null }">
+                  {{ query.onlyMine ? '我的' : '' }}全部</el-breadcrumb-item
                 >
                 <el-breadcrumb-item
                   >{{ currentCategory }} ( {{ total }} )</el-breadcrumb-item
@@ -15,7 +15,8 @@
               </template>
               <template v-else>
                 <el-breadcrumb-item :to="{ name: routeName }"
-                  >全部 ( {{ total }} )</el-breadcrumb-item
+                  >{{ query.onlyMine ? '我的' : '' }}全部 (
+                  {{ total }} )</el-breadcrumb-item
                 >
               </template>
             </el-breadcrumb>
@@ -123,7 +124,7 @@
                 <a
                   @click="
                     pushRouter(
-                      { cid: discussion.categoryId },
+                      { cid: discussion.categoryId, onlyMine: query.onlyMine },
                       { problemID: query.pid },
                       routeName
                     )
@@ -133,10 +134,61 @@
                 >
               </span>
 
-              <span class="pr hidden-sm-and-up" style="float:right "
-                ><label class="fw"><i class="fa fa-clock-o"></i></label
-                ><span> {{ discussion.gmtCreate | localtime }}</span></span
+              <el-dropdown
+                style="float:right;"
+                class="hidden-xs-only"
+                v-show="isAuthenticated"
+                @command="handleCommand"
               >
+                <span class="el-dropdown-link">
+                  <i class="el-icon-more"></i>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item
+                    icon="el-icon-edit-outline"
+                    :command="'edit:' + index"
+                    v-show="discussion.uid === userInfo.uid"
+                    >编辑</el-dropdown-item
+                  >
+                  <el-dropdown-item
+                    icon="el-icon-delete"
+                    :command="'delete:' + index"
+                    v-show="discussion.uid === userInfo.uid || isAdminRole"
+                    >删除</el-dropdown-item
+                  >
+                </el-dropdown-menu>
+              </el-dropdown>
+
+              <div class="hidden-sm-and-up">
+                <el-dropdown
+                  style="float:right;margin-top:10px; "
+                  v-show="isAuthenticated"
+                  @command="handleCommand"
+                >
+                  <span class="el-dropdown-link">
+                    <i class="el-icon-more"></i>
+                  </span>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item
+                      icon="el-icon-edit-outline"
+                      :command="'edit:' + index"
+                      v-show="discussion.uid === userInfo.uid"
+                      >编辑</el-dropdown-item
+                    >
+                    <el-dropdown-item
+                      icon="el-icon-delete"
+                      :command="'delete:' + index"
+                      v-show="discussion.uid === userInfo.uid || isAdminRole"
+                      >删除</el-dropdown-item
+                    >
+                  </el-dropdown-menu>
+                </el-dropdown>
+
+                <span class="pr" style="float:right;margin-top:10px; "
+                  ><label class="fw"><i class="fa fa-clock-o"></i></label
+                  ><span> {{ discussion.gmtCreate | localtime }}</span></span
+                >
+              </div>
             </div>
           </el-card>
         </div>
@@ -157,6 +209,16 @@
             {{ this.query.pid == '' ? '发布讨论' : '发布题目讨论' }}</i
           >
         </el-button>
+        <el-button
+          v-if="isAuthenticated"
+          class="btn"
+          type="danger"
+          @click="toOnlyMyDiscussion(!query.onlyMine)"
+          style="width: 100%;margin-left:0;margin-top:10px"
+          ><i class="el-icon-search">
+            {{ query.onlyMine ? '查看所有讨论' : '只看自己' }}</i
+          >
+        </el-button>
         <template v-if="this.query.pid">
           <el-button
             class="btn"
@@ -170,7 +232,11 @@
             class="btn"
             type="warning"
             @click="
-              pushRouter(null, { problemID: query.pid }, 'ProblemDetails')
+              pushRouter(
+                { onlyMine: query.onlyMine },
+                { problemID: query.pid },
+                'ProblemDetails'
+              )
             "
             style="width: 100%;margin-left:0;margin-top:10px"
             ><i class="el-icon-back"> 返回 ({{ query.pid }}) 题目</i>
@@ -178,7 +244,14 @@
         </template>
         <div class="category-body">
           <h3 class="title-sidebar">
-            <a @click="pushRouter(null, { problemID: query.pid }, routeName)"
+            <a
+              @click="
+                pushRouter(
+                  { onlyMine: query.onlyMine },
+                  { problemID: query.pid },
+                  routeName
+                )
+              "
               ><i class="el-icon-folder-opened"></i> 讨论分类</a
             >
           </h3>
@@ -193,7 +266,7 @@
               <a
                 @click="
                   pushRouter(
-                    { cid: category.id },
+                    { cid: category.id, onlyMine: query.onlyMine },
                     { problemID: query.pid },
                     routeName
                   )
@@ -297,6 +370,7 @@ export default {
         author: '',
         avatar: '',
       },
+      backupDiscussion: {}, // 临时记录
       // 对话框标题
       discussionDialogTitle: 'Edit Discussion',
       discussionList: [],
@@ -309,6 +383,7 @@ export default {
         currentPage: 1,
         limit: 15,
         pid: '',
+        onlyMine: false,
       },
       routeName: '',
     };
@@ -334,7 +409,7 @@ export default {
       this.query.keyword = query.keyword || '';
       this.query.cid = query.cid || '';
       this.query.pid = this.$route.params.problemID || '';
-
+      this.query.onlyMine = query.onlyMine + '' == 'true' ? true : false; // 统一换成字符串判断
       if (this.query.cid) {
         this.currentCategory = this.cidMapName[this.query.cid];
       } else {
@@ -371,7 +446,24 @@ export default {
         myMessage.warning('请先登录');
         this.$store.dispatch('changeModalStatus', { visible: true });
       } else {
+        this.discussionDialogTitle = 'Create Discussion';
         this.showEditDiscussionDialog = true;
+        if (this.backupDiscussion) {
+          this.discussion = this.backupDiscussion;
+        } else {
+          this.discussion = {
+            id: null,
+            pid: null,
+            title: '',
+            content: '',
+            description: '',
+            categoryId: '',
+            topPriority: false,
+            uid: '',
+            author: '',
+            avatar: '',
+          };
+        }
       }
     },
 
@@ -392,6 +484,15 @@ export default {
     toAllDiscussion() {
       this.$router.push({
         path: '/discussion',
+      });
+    },
+
+    toOnlyMyDiscussion(onlyMine) {
+      this.$router.push({
+        path: this.$route.path,
+        query: {
+          onlyMine: onlyMine,
+        },
       });
     },
 
@@ -421,14 +522,53 @@ export default {
     submitDiscussion() {
       // 默认为题目的讨论添加题号格式
       let discussion = Object.assign({}, this.discussion);
-      if (discussion.pid) {
-        discussion.title = '[' + discussion.pid + '] ' + discussion.title;
+      if (this.discussionDialogTitle == 'Create Discussion') {
+        if (discussion.pid) {
+          discussion.title = '[' + discussion.pid + '] ' + discussion.title;
+        }
+        api.addDiscussion(discussion).then((res) => {
+          myMessage.success(res.data.msg);
+          this.showEditDiscussionDialog = false;
+          this.init();
+        });
+      } else {
+        api.updateDiscussion(discussion).then((res) => {
+          myMessage.success(res.data.msg);
+          this.showEditDiscussionDialog = false;
+          this.init();
+        });
       }
-      api.addDiscussion(discussion).then((res) => {
-        myMessage.success(res.data.msg);
-        this.showEditDiscussionDialog = false;
-        this.init();
-      });
+    },
+    handleCommand(command) {
+      let tmpArr = command.split(':');
+      switch (tmpArr[0]) {
+        case 'edit':
+          this.discussionDialogTitle = 'Edit Discussion';
+          this.discussion = Object.assign(
+            {},
+            this.discussionList[parseInt(tmpArr[1])]
+          );
+          this.showEditDiscussionDialog = true;
+          break;
+        case 'delete':
+          this.$confirm(
+            '此操作将删除该讨论包括关联的评论与回复, 是否继续?',
+            '提示',
+            {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+            }
+          ).then(() => {
+            api
+              .deleteDiscussion(this.discussionList[parseInt(tmpArr[1])].id)
+              .then((res) => {
+                myMessage.success(res.data.msg);
+                this.init();
+              });
+          });
+          break;
+      }
     },
   },
 
@@ -436,6 +576,14 @@ export default {
     $route(newVal, oldVal) {
       if (newVal != oldVal) {
         this.init();
+      }
+    },
+    discussion(newVal, oldVal) {
+      if (
+        this.discussionDialogTitle == 'Create Discussion' &&
+        newVal != oldVal
+      ) {
+        this.backupDiscussion = this.discussion;
       }
     },
   },

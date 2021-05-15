@@ -46,6 +46,12 @@
    rsync --daemon --config=/etc/rsyncd/rsyncd.conf
    ```
 
+   设置开启自启动
+
+   ```shell
+   echo "/usr/bin/rsync --daemon --config=/etc/rsyncd/rsyncd.conf" >> /etc/rc.local
+   ```
+
 3. 之后在运行JudgeServer判题服务的服务器上使用rsync每60秒同步一次指定文件夹的评测数据（同步周期可自己改）
 
    新建密码配置文件，同时写入与主服务端的rsync一样的密码

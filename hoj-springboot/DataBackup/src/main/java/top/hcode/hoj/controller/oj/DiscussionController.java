@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -24,7 +25,6 @@ import top.hcode.hoj.service.impl.DiscussionServiceImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -53,7 +53,9 @@ public class DiscussionController {
                                           @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage,
                                           @RequestParam(value = "cid", required = false) Integer categoryId,
                                           @RequestParam(value = "pid", required = false) String pid,
-                                          @RequestParam(value = "keyword", required = false) String keyword) {
+                                          @RequestParam(value = "onlyMine", required = false,defaultValue = "false") Boolean onlyMine,
+                                          @RequestParam(value = "keyword", required = false) String keyword,
+                                          HttpServletRequest request){
 
         QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
 
@@ -69,6 +71,7 @@ public class DiscussionController {
 
             discussionQueryWrapper.and(wrapper -> wrapper.like("title", key).or()
                     .like("author", key).or()
+                    .like("id", key).or()
                     .like("description", key));
         }
 
@@ -82,6 +85,13 @@ public class DiscussionController {
                 .orderByDesc("gmt_modified")
                 .orderByDesc("like_num")
                 .orderByDesc("view_num");
+
+        if (onlyMine){
+            // 获取当前登录的用户
+            HttpSession session = request.getSession();
+            UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+            discussionQueryWrapper.eq("uid", userRolesVo.getUid());
+        }
 
         IPage<Discussion> discussionList = discussionService.page(iPage, discussionQueryWrapper);
 
@@ -112,7 +122,7 @@ public class DiscussionController {
             return CommonResult.errorResponse("对不起，该讨论不存在！", CommonResult.STATUS_NOT_FOUND);
         }
 
-        if (discussion.getStatus() == 1) {
+        if (discussion.getStatus() == 2) {
             return CommonResult.errorResponse("对不起，该讨论已被封禁！", CommonResult.STATUS_FORBIDDEN);
         }
 
@@ -126,6 +136,7 @@ public class DiscussionController {
     }
 
     @PostMapping("/discussion")
+    @RequiresPermissions("discussion_add")
     @RequiresAuthentication
     public CommonResult addDiscussion(@RequestBody Discussion discussion, HttpServletRequest request) {
         // 获取当前登录的用户
@@ -154,12 +165,19 @@ public class DiscussionController {
     }
 
     @PutMapping("/discussion")
+    @RequiresPermissions("discussion_edit")
     @RequiresAuthentication
-    public CommonResult updateDiscussion() {
-        return null;
+    public CommonResult updateDiscussion(@RequestBody  Discussion discussion) {
+        boolean isOk = discussionService.updateById(discussion);
+        if (isOk){
+            return CommonResult.successResponse(null, "修改成功");
+        }else{
+            return CommonResult.errorResponse("修改失败");
+        }
     }
 
     @DeleteMapping("/discussion")
+    @RequiresPermissions("discussion_del")
     @RequiresAuthentication
     public CommonResult removeDiscussion(@RequestParam("did") Integer did, HttpServletRequest request) {
         // 获取当前登录的用户

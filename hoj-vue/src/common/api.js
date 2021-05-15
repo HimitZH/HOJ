@@ -466,6 +466,20 @@ const ojApi = {
     })
   },
 
+  updateDiscussion(data){
+    return ajax("/api/discussion",'put',{
+      data
+    })
+  },
+
+  deleteDiscussion(did){
+    return ajax("/api/discussion",'delete',{
+      params:{
+        did
+      }
+    })
+  },
+
   toLikeDiscussion(did,toLike){
     return ajax("/api/discussion-like",'get',{
       params:{
@@ -850,6 +864,31 @@ const adminApi = {
       data
     })
   },
+
+  admin_updateDiscussion(data){
+    return ajax("/api/admin/discussion",'put',{
+      data
+    })
+  },
+
+  admin_deleteDiscussion(data){
+    return ajax("/api/admin/discussion",'delete',{
+      data
+    })
+  },
+  admin_getDiscussionReport(currentPage,limit){
+    return ajax("/api/admin/discussion-report",'get',{
+      params:{
+        currentPage,
+        limit
+      }
+    })
+  },
+  admin_updateDiscussionReport(data){
+    return ajax("/api/admin/discussion-report",'put',{
+      data
+    })
+  }
 }
 
 // 集中导出oj前台的api和admin管理端的api

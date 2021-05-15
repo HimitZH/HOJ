@@ -2,6 +2,7 @@ package top.hcode.hoj.controller.admin;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class AnnouncementController {
     private AnnouncementServiceImpl announcementDao;
 
     @GetMapping("/api/admin/announcement")
-    @RequiresRoles("root")  // 只有超级管理员能操作
+    @RequiresPermissions("announcement_admin")
     public CommonResult getAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
                                             @RequestParam(value = "currentPage", required = false) Integer currentPage){
         if (currentPage == null || currentPage < 1) currentPage = 1;
@@ -40,7 +41,7 @@ public class AnnouncementController {
     }
 
     @DeleteMapping("/api/admin/announcement")
-    @RequiresRoles("root")  // 只有超级管理员能操作
+    @RequiresPermissions("announcement_admin")
     public CommonResult deleteAnnouncement(@Valid @RequestParam("aid")long aid){
         boolean result = announcementDao.removeById(aid);
         if (result) { // 删除成功
@@ -52,6 +53,7 @@ public class AnnouncementController {
 
     @PostMapping("/api/admin/announcement")
     @RequiresRoles("root")  // 只有超级管理员能操作
+    @RequiresPermissions("announcement_admin")
     public CommonResult addAnnouncement(@RequestBody Announcement announcement){
         boolean result = announcementDao.save(announcement);
         if (result) { // 添加成功
@@ -62,7 +64,7 @@ public class AnnouncementController {
     }
 
     @PutMapping("/api/admin/announcement")
-    @RequiresRoles("root")  // 只有超级管理员能操作
+    @RequiresPermissions("announcement_admin")
     public CommonResult updateAnnouncement(@RequestBody Announcement announcement){
         boolean result = announcementDao.saveOrUpdate(announcement);
         if (result) { // 更新成功
