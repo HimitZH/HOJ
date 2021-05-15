@@ -13,7 +13,17 @@ function parseRole(num){
   }else if(num==1001){
     return '管理员'
   }else if(num==1002){
-    return '用户'
+    return '用户(默认)'
+  }else if(num==1003){
+    return '用户(禁止提交)'
+  }else if(num==1004){
+    return '用户(禁止发讨论)'
+  }else if(num==1005){
+    return '用户(禁言)'
+  }else if(num==1006){
+    return '用户(禁止提交&禁止发讨论)'
+  }else if(num==1007){
+    return '用户(禁止提交&禁言)'
   }
 }
 function parseContestType(num){

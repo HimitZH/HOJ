@@ -60,7 +60,7 @@ public class AccountRealm extends AuthorizingRealm {
         for (Role role:user.getRoles()) {
             roleNameList.add(role.getRole());
             for (Auth auth : roleAuthDao.getRoleAuths(role.getId()).getAuths()) {
-                permissionsNameList.add(auth.getName());
+                permissionsNameList.add(auth.getPermission());
             }
         }
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();

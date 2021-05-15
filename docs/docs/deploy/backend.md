@@ -301,7 +301,13 @@
 7. 启动容器
 
    ```shell
-   docker run -d -p 6688:6688 -v /hoj/file:/hoj/file -v /hoj/testcase:/hoj/testcase --name hoj --network hoj-network --restart=always  hoj
+   docker run -d -p 6688:6688 \
+   -v /hoj/file:/hoj/file \
+   -v /hoj/testcase:/hoj/testcase \
+   --name hoj \
+   --network hoj-network \
+   --restart=always \
+   hoj
    ```
 
 8. 查看是否成功

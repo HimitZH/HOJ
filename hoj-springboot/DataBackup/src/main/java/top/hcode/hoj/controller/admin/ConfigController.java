@@ -3,6 +3,7 @@ package top.hcode.hoj.controller.admin;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.map.MapUtil;
 import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
@@ -57,7 +58,7 @@ public class ConfigController {
         return CommonResult.successResponse(configService.getJudgeServiceInfo());
     }
 
-    @RequiresRoles({"root"})
+    @RequiresPermissions("announcement_admin")
     @RequestMapping("/get-web-config")
     public CommonResult getWebConfig() {
 
@@ -73,7 +74,7 @@ public class ConfigController {
         );
     }
 
-    @RequiresRoles({"root"})
+    @RequiresPermissions("announcement_admin")
     @RequestMapping(value = "/set-web-config",method = RequestMethod.PUT)
     public CommonResult setWebConfig(@RequestBody HashMap<String,Object> params){
 
@@ -85,7 +86,7 @@ public class ConfigController {
         }
     }
 
-    @RequiresRoles({"root"})
+    @RequiresPermissions("announcement_admin")
     @RequestMapping("/get-email-config")
     public CommonResult getEmailConfig() {
         return CommonResult.successResponse(
@@ -98,7 +99,7 @@ public class ConfigController {
         );
     }
 
-    @RequiresRoles({"root"})
+    @RequiresPermissions("announcement_admin")
     @PutMapping("/set-email-config")
     public CommonResult setEmailConfig(@RequestBody HashMap<String,Object> params) {
 
@@ -110,7 +111,7 @@ public class ConfigController {
         }
     }
 
-    @RequiresRoles({"root"})
+    @RequiresPermissions("announcement_admin")
     @PostMapping("/test-email")
     public CommonResult testEmail(@RequestBody HashMap<String,Object> params) throws MessagingException {
         String email = (String) params.get("email");
@@ -123,7 +124,7 @@ public class ConfigController {
         }
     }
 
-    @RequiresRoles({"root"})
+    @RequiresPermissions("announcement_admin")
     @RequestMapping("/get-db-and-redis-config")
     public CommonResult getDBAndRedisConfig(){
 
@@ -140,7 +141,7 @@ public class ConfigController {
         );
     }
 
-    @RequiresRoles({"root"})
+    @RequiresPermissions("announcement_admin")
     @PutMapping("/set-db-and-redis-config")
     public CommonResult setDBAndRedisConfig(@RequestBody HashMap<String,Object> params){
         boolean result = configService.setDBAndRedisConfig(params);

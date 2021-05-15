@@ -83,6 +83,12 @@
               </el-tooltip>
             </span>
           </span>
+
+          <span style="padding:0 6px;" v-show="userInfo.uid == discussion.uid"
+            ><a style="color:#8fb0c9" @click="showEditDiscussionDialog = true"
+              ><i class="el-icon-edit-outline"> 编辑</i></a
+            ></span
+          >
         </div>
       </div>
       <div class="body-article">
@@ -125,6 +131,62 @@
         <el-button type="primary" @click.native="submitReport">提交</el-button>
       </span>
     </el-dialog>
+
+    <!--编辑讨论对话框-->
+    <el-dialog
+      :title="discussionDialogTitle"
+      :visible.sync="showEditDiscussionDialog"
+      :fullscreen="true"
+      @open="onOpenEditDialog"
+    >
+      <el-form label-position="top" :model="discussion">
+        <el-form-item label="讨论标题" required>
+          <el-input
+            v-model="discussion.title"
+            placeholder="请输入讨论标题"
+            class="title-input"
+          >
+          </el-input>
+        </el-form-item>
+        <el-form-item label="讨论简介" required>
+          <el-input
+            v-model="discussion.description"
+            placeholder="请输入讨论简介"
+            class="title-input"
+          >
+          </el-input>
+        </el-form-item>
+        <el-form-item label="讨论分类" required>
+          <el-select
+            v-model="discussion.categoryId"
+            placeholder="请选择"
+            disabled
+          >
+            <el-option
+              :label="discussion.categoryName"
+              :value="discussion.categoryId"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="是否置顶" required v-if="isAdminRole">
+          <el-switch v-model="discussion.topPriority"> </el-switch>
+        </el-form-item>
+        <el-form-item label="讨论内容" required>
+          <Editor :value.sync="discussion.content"></Editor>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button
+          type="danger"
+          @click.native="showEditDiscussionDialog = false"
+          >取消</el-button
+        >
+        <el-button type="primary" @click.native="submitDiscussion"
+          >发布</el-button
+        >
+      </span>
+    </el-dialog>
     <comment :did="$route.params.discussionID"></comment>
   </div>
 </template>
@@ -136,11 +198,13 @@ import myMessage from '@/common/message';
 import { addCodeBtn } from '@/common/codeblock';
 import Avatar from 'vue-avatar';
 import { mapGetters, mapActions } from 'vuex';
+import Editor from '@/components/admin/Editor.vue';
 
 export default {
   components: {
     comment,
     Avatar,
+    Editor,
   },
   data() {
     return {
@@ -153,6 +217,8 @@ export default {
         did: null,
       },
       discussionID: 0,
+      showEditDiscussionDialog: false,
+      discussionDialogTitle: 'Edit Discussion',
       showReportDialog: false,
       report: {
         tagList: [],
@@ -206,6 +272,18 @@ export default {
           this.discussion.likeNum--;
           this.discussion.hasLike = false;
         }
+      });
+    },
+    submitDiscussion() {
+      // 默认为题目的讨论添加题号格式
+      let discussion = Object.assign({}, this.discussion);
+      // 不要影响动态数据
+      delete discussion.viewNum;
+      delete discussion.likeNum;
+      api.updateDiscussion(discussion).then((res) => {
+        myMessage.success(res.data.msg);
+        this.showEditDiscussionDialog = false;
+        this.init();
       });
     },
     submitReport() {

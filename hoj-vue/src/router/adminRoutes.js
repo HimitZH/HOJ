@@ -11,6 +11,7 @@ import Problem from '@/views/admin/problem/Problem'
 import ProblemImportAndExport from '@/views/admin/problem/ImportAndExport'
 import Contest from '@/views/admin/contest/Contest'
 import ContestList from '@/views/admin/contest/ContestList'
+import DiscussionList from '@/views/admin/discussion/Discussion'
 const adminRoutes= [
     {
       path: '/admin/login',
@@ -118,7 +119,13 @@ const adminRoutes= [
           name: 'admin-edit-contest-problem',
           component: Problem,
           meta: { title:'Edit Contest Problem'}
-        }
+        },
+        {
+          path: 'discussion',
+          name: 'admin-discussion-list',
+          component: DiscussionList,
+          meta: { title:'Discussion List'}
+        },
       ]
     },
     {

@@ -3,6 +3,7 @@ package top.hcode.hoj.controller.admin;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -64,6 +65,7 @@ public class AdminJudgeController {
     @GetMapping("/rejudge")
     @RequiresAuthentication
     @RequiresRoles("root")  // 只有超级管理员能操作
+    @RequiresPermissions("rejudge")
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
     public CommonResult rejudge(@RequestParam("submitId") Long submitId) {
         Judge judge = judgeService.getById(submitId);
@@ -116,6 +118,7 @@ public class AdminJudgeController {
     @GetMapping("/rejudge-contest-problem")
     @RequiresAuthentication
     @RequiresRoles("root")  // 只有超级管理员能操作
+    @RequiresPermissions("rejudge")
     @Transactional
     public CommonResult rejudgeContestProblem(@RequestParam("cid") Long cid, @RequestParam("pid") Long pid) {
 

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.binarywang.java.emoji.EmojiConverter;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -91,6 +92,7 @@ public class CommentController {
 
 
     @PostMapping("/comment")
+    @RequiresPermissions("comment_add")
     @RequiresAuthentication
     public CommonResult addComment(@RequestBody Comment comment, HttpServletRequest request) {
         // 获取当前登录的用户
@@ -218,6 +220,7 @@ public class CommentController {
     }
 
     @PostMapping("/reply")
+    @RequiresPermissions("reply_add")
     @RequiresAuthentication
     public CommonResult addReply(@RequestBody Reply reply, HttpServletRequest request) {
         // 获取当前登录的用户

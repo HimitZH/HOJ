@@ -62,7 +62,6 @@ public class Discussion {
     private Boolean topPriority;
 
     @ApiModelProperty(value = "是否封禁或删除 0正常，1封禁")
-    @TableLogic
     private Integer status;
 
     @TableField(fill = FieldFill.INSERT)

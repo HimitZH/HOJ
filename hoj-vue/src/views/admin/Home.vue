@@ -41,6 +41,16 @@
             >Create Contest</el-menu-item
           >
         </el-submenu>
+
+        <el-submenu index="discussion">
+          <template slot="title"
+            ><i class="fa fa-comments" aria-hidden="true"></i
+            >Discussion</template
+          >
+          <el-menu-item index="/admin/discussion"
+            >Discussion Admin</el-menu-item
+          >
+        </el-submenu>
       </el-menu>
       <div id="header">
         <el-row>
@@ -241,7 +251,7 @@
             @toggle-nested="openSideMenu = arguments[0] ? 'contest' : ''"
           >
             <mu-list-item-action>
-              <mu-icon value="assessment"></mu-icon>
+              <mu-icon value=":fa fa-trophy"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>Contest</mu-list-item-title>
             <mu-list-item-action>
@@ -270,6 +280,36 @@
               active-class="mobile-menu-active"
             >
               <mu-list-item-title>Create Contest</mu-list-item-title>
+            </mu-list-item>
+          </mu-list-item>
+
+          <mu-list-item
+            button
+            :ripple="false"
+            nested
+            :open="openSideMenu === 'discussion'"
+            @toggle-nested="openSideMenu = arguments[0] ? 'discussion' : ''"
+          >
+            <mu-list-item-action>
+              <mu-icon value=":fa fa-comments"></mu-icon>
+            </mu-list-item-action>
+            <mu-list-item-title>Discussion</mu-list-item-title>
+            <mu-list-item-action>
+              <mu-icon
+                class="toggle-icon"
+                size="24"
+                value="keyboard_arrow_down"
+              ></mu-icon>
+            </mu-list-item-action>
+            <mu-list-item
+              button
+              :ripple="false"
+              slot="nested"
+              to="/admin/discussion"
+              @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
+            >
+              <mu-list-item-title>Discussion Admin</mu-list-item-title>
             </mu-list-item>
           </mu-list-item>
         </mu-list>
