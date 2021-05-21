@@ -62,7 +62,7 @@ public class JudgeServerUtils {
         switch (type) {
             case "judge":
                 ToJudge judgeData = (ToJudge) data;
-                toJudge(path, (ToJudge) data, judgeData.getJudge().getSubmitId(), judgeData.getRemoteJudge() != null);
+                toJudge(path, judgeData, judgeData.getJudge().getSubmitId(), judgeData.getRemoteJudge() != null);
                 break;
             case "compile":
                 CompileSpj compileSpj = (CompileSpj) data;

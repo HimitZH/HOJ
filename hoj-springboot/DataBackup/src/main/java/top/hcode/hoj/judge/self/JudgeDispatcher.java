@@ -29,29 +29,27 @@ public class JudgeDispatcher {
     @Autowired
     private JudgeReceiver judgeReceiver;
 
-    public void sendTask(Long submitId, Long pid, String token, Boolean isContest, Integer tryAgainNum) {
+    public void sendTask(Judge judge, String token, Boolean isContest, Integer tryAgainNum) {
         JSONObject task = new JSONObject();
-        task.set("submitId", submitId);
-        task.set("pid", pid);
+        task.set("judge", judge);
         task.set("token", token);
         task.set("isContest", isContest);
         task.set("tryAgainNum", tryAgainNum);
-
         try {
             boolean isOk = redisUtils.llPush(Constants.Judge.STATUS_JUDGE_WAITING.getName(), JSONUtil.toJsonStr(task));
             if (!isOk) {
                 judgeService.updateById(new Judge()
-                        .setSubmitId(submitId)
+                        .setSubmitId(judge.getSubmitId())
                         .setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
                         .setErrorMessage("Please try to submit again!")
                 );
+            } else {
+                // 调用判题任务处理
+                judgeReceiver.processWaitingTask();
             }
         } catch (Exception e) {
             log.error("调用redis将判题纳入判题等待队列异常,此次判题任务判为系统错误--------------->{}", e.getMessage());
-            judgeService.failToUseRedisPublishJudge(submitId, pid, isContest);
-        } finally {
-            // 调用判题任务处理
-            judgeReceiver.processWaitingTask();
+            judgeService.failToUseRedisPublishJudge(judge.getSubmitId(), judge.getPid(), isContest);
         }
     }
 }

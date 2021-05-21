@@ -1,51 +1,16 @@
 # 后端部署
 
-### 安装MySQL
+首先 先下载[hoj-deploy](https://gitee.com/himitzh0730/hoj-deploy/tree/master)
 
-1. 创建自定义网络（用于容器通讯）
+```shell
+git clone git@gitee.com:himitzh0730/hoj-deploy.git
+```
 
-   ```shell
-   docker network create --subnet=172.18.0.0/16 hoj-network
-   ```
+###  一、MySQL部署
 
-2. 查看网络
+ 
 
-   ```shell
-   docker network ls
-   ```
-
-3. 创建挂载文件夹
-
-   ```shell
-   //mysql配置文件 
-   mkdir -p /hoj/data/mysql/conf
-   //mysql数据文件路径 
-   mkdir –p /hoj/data/mysql/data
-   ```
-   
-4. 启动mysql
-
-   `MYSQL_ROOT_PASSWORD`为mysql数据库root用户的密码，可自行修改。
-   
-   ```shell
-   docker run -p 3306:3306 --name mysql -d \
-   --restart=always \
-   --network hoj-network \
-   --ip 172.18.0.2 \
-   --restart="always" \
-   -v /hoj/data/mysql/conf.d:/etc/mysql/conf.d \
-   -v /hoj/data/mysql/data:/var/lib/mysql \
-   -e MYSQL_ROOT_PASSWORD="123456" \
-   mysql:5.7 
-   ```
-   
-5. 启动成功后 使用docker ps 可查看 如果正常则进行下面操作.
-
-6. 在本地使用链接MySQL数据库的工具例如Navicat，SQLyog等连上云服务器docker运行的MySQL，进行第6，第7步操作。
-
-7. 创建名字叫hoj的数据库，然后执行脚本在HOJ总项目的sqlAndSetting文件夹里面或者 [hoj.sql](https://gitee.com/himitzh0730/hoj/blob/master/sqlAndsetting/hoj.sql)、[hoj-data.sql](https://gitee.com/himitzh0730/hoj/blob/master/sqlAndsetting/hoj-data.sql)
-
-8. 创建名字叫nacos的数据库，然后执行脚本在HOJ总项目的sqlAndSetting文件夹里面或者 [nacos.sql](https://gitee.com/himitzh0730/hoj/blob/master/sqlAndsetting/nacos-mysql.sql)
+1. 进入到文件
 
 ### 安装Nacos
 

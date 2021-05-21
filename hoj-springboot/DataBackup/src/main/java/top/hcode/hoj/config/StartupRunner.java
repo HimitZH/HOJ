@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.pojo.entity.RemoteJudgeAccount;
 import top.hcode.hoj.pojo.vo.ConfigVo;
@@ -33,79 +35,78 @@ public class StartupRunner implements CommandLineRunner {
     @Autowired
     private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
 
-    @Value("${hoj-backstage.open-remote-judge}")
+    @Value("${OPEN_REMOTE_JUDGE:true}")
     private String openRemoteJudge;
 
     // jwt配置
-    @Value("${hoj-backstage.config.jwt.secret}")
+    @Value("${JWT_TOKEN_SECRET:default}")
     private String tokenSecret;
 
-    @Value("${hoj-backstage.config.jwt.expire}")
+    @Value("${JWT_TOKEN_EXPIRE:86400}")
     private String tokenExpire;
 
-    @Value("${hoj-backstage.config.jwt.checkRefreshExpire}")
+    @Value("${JWT_TOKEN_FRESH_EXPIRE:43200}")
     private String checkRefreshExpire;
 
     // 数据库配置
-    @Value("${hoj-backstage.config.db.username}")
+    @Value("${MYSQL_USERNAME:root}")
     private String mysqlUsername;
 
-    @Value("${hoj-backstage.config.db.password}")
+    @Value("${MYSQL_ROOT_PASSWORD:hoj123456}")
     private String mysqlPassword;
 
-    @Value("${hoj-backstage.config.db.name}")
+    @Value("${MYSQL_DATABASE_NAME:hoj}")
     private String mysqlDBName;
 
-    @Value("${hoj-backstage.config.db.host}")
+    @Value("${MYSQL_HOST:172.20.0.3}")
     private String mysqlHost;
 
-    @Value("${hoj-backstage.config.db.public-host}")
+    @Value("${MYSQL_PUBLIC_HOST:172.20.0.3}")
     private String mysqlPublicHost;
 
-    @Value("${hoj-backstage.config.db.port}")
+    @Value("${MYSQL_PORT:3306}")
     private Integer mysqlPort;
 
     // 缓存配置
-    @Value("${hoj-backstage.config.redis.host}")
+    @Value("${REDIS_HOST:172.20.0.2}")
     private String redisHost;
 
-    @Value("${hoj-backstage.config.redis.port}")
+    @Value("${REDIS_PORT:6379}")
     private Integer redisPort;
 
-    @Value("${hoj-backstage.config.redis.password}")
+    @Value("${REDIS_PASSWORD:hoj123456}")
     private String redisPassword;
     // 判题服务token
-    @Value("${hoj-backstage.config.judge.token}")
+    @Value("${JUDGE_TOKEN:default}")
     private String judgeToken;
 
     // 邮箱配置
-    @Value("${hoj-backstage.config.mail.username}")
+    @Value("${EMAIL_USERNAME:your_email_username}")
     private String emailUsername;
 
-    @Value("${hoj-backstage.config.mail.password}")
+    @Value("${EMAIL_PASSWORD:your_email_password}")
     private String emailPassword;
 
-    @Value("${hoj-backstage.config.mail.host}")
+    @Value("${EMAIL_SERVER_HOST:your_email_host}")
     private String emailHost;
 
-    @Value("${hoj-backstage.config.mail.port}")
+    @Value("${EMAIL_SERVER_PORT:465}")
     private Integer emailPort;
 
-    @Value("${hoj-backstage.config.hdu.account.username}")
+    @Value("${HDU_ACCOUNT_USERNAME_LIST:}")
     private List<String> hduUsernameList;
 
-    @Value("${hoj-backstage.config.hdu.account.password}")
+    @Value("${HDU_ACCOUNT_PASSWORD_LIST:}")
     private List<String> hduPasswordList;
 
-    @Value("${hoj-backstage.config.cf.account.username}")
+    @Value("${CF_ACCOUNT_USERNAME_LIST:}")
     private List<String> cfUsernameList;
 
-    @Value("${hoj-backstage.config.cf.account.password}")
+    @Value("${CF_ACCOUNT_PASSWORD_LIST:}")
     private List<String> cfPasswordList;
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println(openRemoteJudge);
         if (openRemoteJudge.equals("true")) {
             addRemoteJudgeAccountToRedis();
         }
