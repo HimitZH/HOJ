@@ -1,29 +1,27 @@
 package top.hcode.hoj.remoteJudge;
 
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.pojo.entity.Judge;
+import top.hcode.hoj.pojo.entity.RemoteJudgeAccount;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeFactory;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.service.impl.JudgeServiceImpl;
+import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.util.Constants;
-import top.hcode.hoj.util.RedisUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
-@Slf4j
+@Slf4j(topic = "hoj")
 public class RemoteJudgeToSubmit {
 
     @Autowired
-    private RedisUtils redisUtils;
+    private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
 
     @Autowired
     private RemoteJudgeGetResult remoteJudgeGetResult;
@@ -59,10 +57,16 @@ public class RemoteJudgeToSubmit {
             log.error(remoteJudge + "的远程提交发生异常---------->{}", e.getMessage());
         } finally {
             // 将使用的账号放回对应列表
-            JSONObject account = new JSONObject();
-            account.set("username", username);
-            account.set("password", password);
-            redisUtils.llPush(Constants.RemoteJudge.getListNameByOJName(remoteJudge), JSONUtil.toJsonStr(account));
+
+            UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
+            remoteJudgeAccountUpdateWrapper.set("status", true)
+                    .eq("username", username)
+                    .eq("password", password);
+            boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
+            if (!isOk) {
+                log.error("远程判题：修正账号为可用状态失败----------->{}", "username:" + username + ",password:" + password);
+            }
+
         }
 
         // TODO 提交失败 前端手动按按钮再次提交 修改状态 STATUS_SUBMITTED_FAILED

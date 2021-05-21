@@ -15,12 +15,10 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.CompileSpj;
-import top.hcode.hoj.pojo.entity.Judge;
-import top.hcode.hoj.pojo.entity.JudgeServer;
-import top.hcode.hoj.pojo.entity.ToJudge;
+import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.service.impl.JudgeServerServiceImpl;
 import top.hcode.hoj.service.impl.JudgeServiceImpl;
+import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 import java.util.ArrayList;
@@ -39,7 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @Description:
  */
 @Component
-@Slf4j
+@Slf4j(topic = "hoj")
 public class JudgeServerUtils {
 
     @Autowired
@@ -57,6 +55,8 @@ public class JudgeServerUtils {
     @Autowired
     private JudgeServiceImpl judgeService;
 
+    @Autowired
+    private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
 
     public CommonResult dispatcher(String type, String path, Object data) {
         switch (type) {
@@ -84,6 +84,14 @@ public class JudgeServerUtils {
                 count.getAndIncrement();
                 JudgeServer judgeServer = chooseServer(isRemote);
                 if (count.get() == 30) { // 30次失败则判为提交失败
+                    if (isRemote) { // 远程判题需要将账号归为可用
+                        UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
+                        remoteJudgeAccountUpdateWrapper
+                                .eq("username", data.getUsername())
+                                .eq("password", data.getPassword())
+                                .set("status", true);
+                        remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
+                    }
                     checkResult(null, submitId);
                     scheduler.shutdown();
                 }
@@ -196,6 +204,7 @@ public class JudgeServerUtils {
                 judgeService.updateById(judge);
             }
         }
+
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)

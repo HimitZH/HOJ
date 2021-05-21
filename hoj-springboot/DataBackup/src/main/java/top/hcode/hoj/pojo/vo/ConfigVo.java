@@ -21,7 +21,7 @@ public class ConfigVo {
     @Value("${hoj.db.username}")
     private String mysqlUsername;
 
-    @Value("${hoj.db.password}")
+    @Value("${hoj.db.password:hoj123456}")
     private String mysqlPassword;
 
     @Value("${hoj.db.name}")
@@ -29,6 +29,9 @@ public class ConfigVo {
 
     @Value("${hoj.db.host}")
     private String mysqlHost;
+
+    @Value("${hoj.db.public-host}")
+    private String mysqlPublicHost;
 
     @Value("${hoj.db.port}")
     private Integer mysqlPort;
@@ -101,16 +104,16 @@ public class ConfigVo {
     @Value("${hoj.web-config.footer.project.url}")
     private String projectUrl;
 
-    @Value("${hoj.hdu.account.username}")
+    @Value("${hoj.hdu.account.username:}")
     private List<String> hduUsernameList;
 
-    @Value("${hoj.hdu.account.password}")
+    @Value("${hoj.hdu.account.password:}")
     private List<String> hduPasswordList;
 
-    @Value("${hoj.cf.account.username}")
+    @Value("${hoj.cf.account.username:}")
     private List<String> cfUsernameList;
 
-    @Value("${hoj.cf.account.password}")
+    @Value("${hoj.cf.account.password:}")
     private List<String> cfPasswordList;
 
 }

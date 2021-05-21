@@ -8,7 +8,7 @@ import top.hcode.hoj.pojo.entity.Problem;
  * @Date: 2021/2/17 22:40
  * @Description:
  */
-@Slf4j
+@Slf4j(topic = "hoj")
 public class ProblemContext {
 
     ProblemStrategy problemStrategy;

@@ -56,7 +56,7 @@ import java.util.List;
  * copyOutMax: number; // byte
  */
 
-@Slf4j
+@Slf4j(topic = "hoj")
 public class SandboxRun {
 
     private static final RestTemplate restTemplate;
@@ -96,6 +96,14 @@ public class SandboxRun {
         RESULT_MAP_STATUS.put("Internal Error", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
         RESULT_MAP_STATUS.put("File Error", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
         RESULT_MAP_STATUS.put("Signalled", Constants.Judge.STATUS_RUNTIME_ERROR.getStatus());
+    }
+
+    public static RestTemplate getRestTemplate() {
+        return restTemplate;
+    }
+
+    public static String getSandboxBaseUrl() {
+        return SANDBOX_BASE_URL;
     }
 
     public static final List<String> signals = Arrays.asList(

@@ -17,7 +17,7 @@ import top.hcode.hoj.utils.RedisUtils;
  * @Description: 判题信息的发布者，通过主题发布到特定频道内
  */
 @Component
-@Slf4j
+@Slf4j(topic = "hoj")
 public class JudgeDispatcher {
 
     @Autowired

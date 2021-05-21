@@ -22,7 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-@Slf4j
+@Slf4j(topic = "hoj")
 public class CodeForcesJudge implements RemoteJudgeStrategy {
     public static final String HOST = "https://codeforces.com";
     public static final String LOGIN_URL = "/enter";

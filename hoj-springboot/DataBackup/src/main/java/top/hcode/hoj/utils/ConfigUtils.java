@@ -18,11 +18,15 @@ public class ConfigUtils {
 
     public String getConfigContent() {
 
+        return buildYamlStr(configVo);
+    }
+
+    public String buildYamlStr(ConfigVo configVo) {
         return "hoj:\n" +
                 "  jwt:\n" +
                 "    # 加密秘钥\n" +
                 "    secret: " + configVo.getTokenSecret() + "\n" +
-                "    # token有效时长，1小时，单位秒\n" +
+                "    # token有效时长，1天，单位秒\n" +
                 "    expire: " + configVo.getTokenExpire() + "\n" +
                 "    checkRefreshExpire: " + configVo.getCheckRefreshExpire() + "\n" +
                 "    header: token\n" +
@@ -31,6 +35,7 @@ public class ConfigUtils {
                 "    token: " + configVo.getJudgeToken() + "\n" +
                 "  db:\n" +
                 "    host: " + configVo.getMysqlHost() + "\n" +
+                "    public-host: " + configVo.getMysqlPublicHost() + "\n" +
                 "    port: " + configVo.getMysqlPort() + "\n" +
                 "    name: " + configVo.getMysqlDBName() + "\n" +
                 "    username: " + configVo.getMysqlUsername() + "\n" +

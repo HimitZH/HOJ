@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-@Slf4j
+@Slf4j(topic = "hoj")
 @Component
 public class RemoteJudgeGetResult {
 

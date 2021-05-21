@@ -50,6 +50,18 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+            <!-- 默认导入的1.1.4版本不支持鉴权-->
+            <exclusions>
+                <exclusion>
+                    <groupId>com.alibaba.nacos</groupId>
+                    <artifactId>nacos-client</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-client</artifactId>
+            <version>1.4.2</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
@@ -86,11 +98,7 @@
             <artifactId>hutool-all</artifactId>
             <version>5.3.3</version>
         </dependency>
-        <!--redis整合-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
+
         <!-- Jsoup-->
         <dependency>
             <groupId>org.jsoup</groupId>

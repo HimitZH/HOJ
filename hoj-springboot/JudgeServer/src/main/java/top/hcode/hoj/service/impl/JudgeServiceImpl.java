@@ -31,7 +31,7 @@ import java.util.HashMap;
  * @since 2020-10-23
  */
 @Service
-@Slf4j
+@Slf4j(topic = "hoj")
 public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements JudgeService {
 
 

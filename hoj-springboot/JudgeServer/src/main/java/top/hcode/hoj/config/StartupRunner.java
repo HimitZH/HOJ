@@ -1,8 +1,5 @@
 package top.hcode.hoj.config;
 
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.pojo.entity.JudgeServer;
 import top.hcode.hoj.service.impl.JudgeServerServiceImpl;
-import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.IpUtils;
-import top.hcode.hoj.util.RedisUtils;
-
-import java.util.HashMap;
 
 
 /**

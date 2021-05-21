@@ -29,7 +29,7 @@ import java.util.Date;
 @Service
 @RefreshScope
 @Async
-@Slf4j
+@Slf4j(topic = "hoj")
 public class EmailServiceImpl implements EmailService {
 
     @Autowired

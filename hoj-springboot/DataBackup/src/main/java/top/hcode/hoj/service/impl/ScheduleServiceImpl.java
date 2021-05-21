@@ -51,7 +51,7 @@ import java.util.*;
  */
 @Service
 @Async
-@Slf4j
+@Slf4j(topic = "hoj")
 public class ScheduleServiceImpl implements ScheduleService {
 
     @Autowired

@@ -4,20 +4,13 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ReUtil;
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONNull;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
+
+import cn.hutool.crypto.SecureUtil;
 import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
-import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.mysql.cj.protocol.PacketReceivedTimeHolder;
-import com.netflix.loadbalancer.DynamicServerListLoadBalancer;
+
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
@@ -25,14 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
-import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.*;
-import top.hcode.hoj.pojo.entity.*;
-import top.hcode.hoj.pojo.vo.*;
-import top.hcode.hoj.service.UserInfoService;
-import top.hcode.hoj.service.UserRoleService;
+import top.hcode.hoj.pojo.entity.Language;
+import top.hcode.hoj.pojo.entity.Problem;
+import top.hcode.hoj.pojo.vo.DiscussionVo;
 import top.hcode.hoj.service.impl.*;
-import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.JsoupUtils;
 import top.hcode.hoj.utils.RedisUtils;
@@ -78,8 +68,8 @@ public class DataBackupApplicationTests {
 
     @Test
     public void Test1() {
-        DiscussionVo discussion = discussionService.getDiscussion(5, "c5ddbe4b38d641bea7d87ae0e102260d");
-        System.out.println(discussion);
+        String hoj123456 = SecureUtil.md5("hoj123456");
+        System.out.println(hoj123456);
     }
 
     @Autowired
