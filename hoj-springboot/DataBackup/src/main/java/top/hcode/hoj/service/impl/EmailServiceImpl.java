@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import top.hcode.hoj.utils.Constants;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.Date;
+import java.util.Properties;
 
 
 /**
@@ -32,8 +34,6 @@ import java.util.Date;
 @Slf4j(topic = "hoj")
 public class EmailServiceImpl implements EmailService {
 
-    @Autowired
-    private JavaMailSender mailSender;
 
     @Autowired
     private TemplateEngine templateEngine;
@@ -53,6 +53,42 @@ public class EmailServiceImpl implements EmailService {
     @Value("${hoj.mail.username}")
     public String ojEmailFrom;
 
+    @Value("${hoj.mail.password}")
+    public String ojEmailPassword;
+
+    @Value("${hoj.mail.host}")
+    public String ojEmailHost;
+
+    @Value("${hoj.mail.port}")
+    public Integer ojEmailPort;
+
+    @Value("${hoj.mail.ssl}")
+    public String ojEmailSsl;
+
+    /**
+     * @MethodName getMailSender
+     * @Params  * @param
+     * @Description 获取邮件系统配置
+     * @Return
+     * @Since 2021/5/21
+     */
+    private JavaMailSenderImpl getMailSender() {
+
+        JavaMailSenderImpl sender = new JavaMailSenderImpl();
+        sender.setHost(ojEmailHost);
+        sender.setPort(ojEmailPort);
+        sender.setDefaultEncoding("UTF-8");
+        sender.setUsername(ojEmailFrom);
+        sender.setPassword(ojEmailPassword);
+
+        Properties p = new Properties();
+        p.setProperty("mail.smtp.ssl.enable", ojEmailSsl);
+        p.setProperty("mail.smtp.auth", "true");
+        p.setProperty("mail.smtp.starttls.enable", ojEmailSsl);
+        sender.setJavaMailProperties(p);
+        return sender;
+    }
+
     /**
      * @param email 用户邮箱
      * @param code  生成的六位随机数字验证码
@@ -64,6 +100,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendCode(String email, String code) {
         DateTime expireTime = DateUtil.offsetMinute(new Date(), 10);
+        JavaMailSenderImpl mailSender = getMailSender();
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,
@@ -79,6 +116,9 @@ public class EmailServiceImpl implements EmailService {
 
             //利用模板引擎加载html文件进行渲染并生成对应的字符串
             String emailContent = templateEngine.process("emailTemplate_registerCode", context);
+
+            JavaMailSenderImpl sender = new JavaMailSenderImpl();
+
             // 设置邮件标题
             mimeMessageHelper.setSubject("HOJ的注册邮件");
             mimeMessageHelper.setText(emailContent, true);
@@ -86,6 +126,7 @@ public class EmailServiceImpl implements EmailService {
             mimeMessageHelper.setTo(email);
             // 发送人
             mimeMessageHelper.setFrom(ojEmailFrom);
+
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
             log.error("用户注册的邮件任务发生异常------------>{}", e.getMessage());
@@ -105,6 +146,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void sendResetPassword(String username, String code, String email) {
         DateTime expireTime = DateUtil.offsetMinute(new Date(), 10);
+        JavaMailSenderImpl mailSender = getMailSender();
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,
@@ -145,6 +187,7 @@ public class EmailServiceImpl implements EmailService {
      */
     @Override
     public void testEmail(String email) {
+        JavaMailSenderImpl mailSender = getMailSender();
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage,

@@ -43,14 +43,12 @@ public class ShiroConfig {
     @Autowired
     JwtFilter jwtFilter;
 
-
     @Bean
     public SessionManager sessionManager(RedisSessionDAO redisSessionDAO) {
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
         sessionManager.setSessionDAO(redisSessionDAO);
         return sessionManager;
     }
-
 
 
     @Bean

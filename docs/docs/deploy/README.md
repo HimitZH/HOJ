@@ -1,10 +1,5 @@
 # 环境配置
 
-## 写在前面
-
-> 本次部署基于部署人员熟悉springboot与vue的打包，下次有空再将对应的前后端打包成镜像，使用docker一键部署就比较方便
-> **但目前只能"享受"一步步部署的乐趣**
-
 ## 环境说明
 
 - 后端：需要在Linux系统下部署运行，建议使用ubuntu18.04，其它版本的Linux系统也可，同时需要**Docker**辅助部署
@@ -12,38 +7,11 @@
 - 判题服务：由于判题沙盒有多操作系统版本，Linux系统或Windows都可，强烈建议Linux系统（Ubuntu）
 - 数据同步：需要运行判题服务和后端服务的服务器有rsync即可
 
-## Linux服务器环境搭建
+## Linux环境搭建
 
 > 请先准备一台 CPU: 1核 内存: 2G 硬盘: 30G的云服务器，推荐Ubuntu16.04以上的操作系统，
 >
 > HOJ使用的Ubuntu18.04版本
-
-### 安装nginx
-
-> 注意：apt下载太慢的话，建议换阿里云源，请自行百度or谷歌
-
-1. 使用apt安装
-
-   ```shell
-   sudo apt install nginx
-   ```
-
-2. 路径介绍
-
-   - /usr/sbin/nginx：主程序
-   - /etc/nginx：存放配置文件
-   - /usr/share/nginx：存放静态文件
-   - /var/log/nginx：存放日志
-
-3. 启动nginx
-
-   ```shell
-   service nginx start
-   ```
-
-4. 验证是否成功
-
-   在浏览器输入你的ip地址，如果出现Wellcome to nginx 那么就是配置成功。
 
 ### 安装docker
 
@@ -92,5 +60,101 @@
    sudo docker run hello-world
    ```
 
+### 安装docker-compose
+
+1. 下载
+
+   ```shell
+   sudo curl -L https://get.daocloud.io/docker/compose/releases/download/1.25.5/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+   ```
+
+2. 授权
+
+   ```shell
+   sudo chmod +x /usr/local/bin/docker-compose
+   ```
+
+## Windows 环境
+
+Windows 下的安装仅供体验，勿在生产环境使用。如有必要，请使用虚拟机安装 Linux 并将 OJ 安装在其中。
+
+以下教程仅适用于 Win10 x64 下的 `PowerShell`
+
+1. 安装 Windows 的 Docker 工具
+2. 右击右下角 Docker 图标，选择 Settings 进行设置
+3. 选择 `Shared Drives` 菜单，之后勾选你想安装 OJ 的盘符位置（例如勾选D盘），点击 `Apply`
+4. 输入 Windows 的账号密码进行文件共享
+5. 安装 `Python`、`pip`、`git`、`docker-compose`，安装方法自行搜索。
 
 
+
+## docker-compose开始部署
+
+1. 选择好需要安装的位置，运行下面命令
+
+   ```shell
+   git clone https://gitee.com/himitzh0730/hoj-deploy.git && cd hoj-deploy
+   ```
+
+2. 单机部署（建议服务器内存2G以上）
+
+   > 注意：以下操作建议试用，配置大部分是默认的，实际运行请修改`docker-compose.yml`文件的配置
+
+   ```shell
+   cd standAlone && docker-compose up -d
+   ```
+
+   根据网速情况，大约十到二十分钟即可安装完毕，全程无需人工干预。
+
+   等待命令执行完毕后，查看容器状态
+
+   ```shell
+   docker ps -a
+   ```
+
+   当看到所有的容器的状态status都为`UP`就代表 OJ 已经启动成功。
+
+   > 以下默认参数说明
+
+   - 默认超级管理员账号与密码：root / hoj123456
+   - 默认redis密码：hoj123456
+   - 默认mysql账号与密码：root / hoj123456
+   - 默认nacos管理员账号与密码：root / hoj123456
+   - 默认不开启https，开启需修改文件同时提供证书文件
+   - 判题并发数默认：cpu核心数*2
+   - 默认开启vj判题，需要手动修改添加账号与密码，如果不添加不能vj判题！
+   - vj判题并发数默认：cpu核心数*4
+
+   **登录root账号到后台查看服务状态以及到`http://ip/admin/conf`修改服务配置!**
+
+   <u>注意：网站的注册及用户账号相关操作需要邮件系统，所以请在系统配置中配置自己的邮件服务。</u>
+
+3. 分布式部署（默认开启rsync数据同步）
+
+   - 主服务启动，默认不提供判题服务，请修改该启动文件配置
+
+     ```shell
+     cd distributed/main
+     vim docker-compose.yml # 请根据文件内注释提示修改
+     ```
+
+     配置修改保存后，在`docker-compose.yml`当前路径下启动该服务
+
+     ```shell
+     docker-compose up -d
+     ```
+
+   - 判题服务启动，请修改该启动文件配置
+
+     ```shell
+     cd distributed/judgeserver
+     vim docker-compose.yml # 请根据文件内注释提示修改
+     ```
+
+     配置修改保存后，在`docker-compose.yml`当前路径下启动该服务
+
+     ```shell
+     docker-compose up -d
+     ```
+
+   两个服务都启动完成，在浏览器输入主服务ip或域名进行访问，登录root账号到后台查看服务状态以及到`http://ip/admin/conf`修改服务配置!

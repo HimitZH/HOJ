@@ -30,9 +30,6 @@ public class JudgeReceiver {
     @Autowired
     private RedisUtils redisUtils;
 
-    @Autowired
-    private JudgeServiceImpl judgeService;
-
     @Async
     public void processWaitingTask() {
         // 如果队列中还有任务，则继续处理
@@ -45,13 +42,12 @@ public class JudgeReceiver {
         }
     }
 
-    private void handleJudgeMsg(String taskJsonStr) {
+    public void handleJudgeMsg(String taskJsonStr) {
 
         JSONObject task = JSONUtil.parseObj(taskJsonStr);
-        Long submitId = task.getLong("submitId");
+        Judge judge = task.get("judge", Judge.class);
         String token = task.getStr("token");
         Integer tryAgainNum = task.getInt("tryAgainNum");
-        Judge judge = judgeService.getById(submitId);
 
         // 调用判题服务
         judgeServerUtils.dispatcher("judge", "/judge", new ToJudge()

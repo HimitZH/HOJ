@@ -59,9 +59,8 @@ public class RemoteJudgeReceiver {
 
         JSONObject task = JSONUtil.parseObj(taskJsonStr);
 
-        Long submitId = task.getLong("submitId");
+        Judge judge = task.get("judge", Judge.class);
         String token = task.getStr("token");
-        Long pid = task.getLong("pid");
         String remoteJudge = task.getStr("remoteJudge");
         Boolean isContest = task.getBool("isContest");
         Integer tryAgainNum = task.getInt("tryAgainNum");
@@ -88,8 +87,6 @@ public class RemoteJudgeReceiver {
             }
 
             if (account != null) { // 如果获取到账号
-
-                Judge judge = judgeService.getById(submitId);
                 // 调用判题服务
                 judgeServerUtils.dispatcher("judge", "/remote-judge", new ToJudge()
                         .setJudge(judge)
@@ -107,13 +104,11 @@ public class RemoteJudgeReceiver {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                remoteJudgeDispatcher.sendTask(submitId, pid, token, remoteJudge, isContest, tryAgainNum + 1);
+                remoteJudgeDispatcher.sendTask(judge, token, remoteJudge, isContest, tryAgainNum + 1);
             }
         } else {
             if (tryAgainNum >= 30) {
                 // 获取调用多次失败可能为系统忙碌，判为提交失败
-                Judge judge = new Judge();
-                judge.setSubmitId(submitId);
                 judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
                 judge.setErrorMessage("Failed to connect the judgeServer. Please resubmit this submission again!");
                 judgeService.updateById(judge);
@@ -124,7 +119,7 @@ public class RemoteJudgeReceiver {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                remoteJudgeDispatcher.sendTask(submitId, pid, token, remoteJudge, isContest, tryAgainNum + 1);
+                remoteJudgeDispatcher.sendTask(judge, token, remoteJudge, isContest, tryAgainNum + 1);
             }
         }
 
