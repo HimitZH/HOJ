@@ -32,7 +32,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.*;
 
-@Slf4j
+@Slf4j(topic = "hoj")
 @Component
 public class JudgeStrategy {
 

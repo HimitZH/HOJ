@@ -13,7 +13,7 @@ import top.hcode.hoj.utils.RedisUtils;
 
 
 @Component
-@Slf4j
+@Slf4j(topic = "hoj")
 public class RemoteJudgeDispatcher {
 
     @Autowired

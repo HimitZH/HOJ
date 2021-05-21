@@ -67,6 +67,8 @@ public class NacosConfig {
             nacosDiscoveryProperties.setIp(ip);
         }
         nacosDiscoveryProperties.setPort(port);
+
+        nacosDiscoveryProperties.setService("hoj-judge-server");
         return nacosDiscoveryProperties;
     }
 

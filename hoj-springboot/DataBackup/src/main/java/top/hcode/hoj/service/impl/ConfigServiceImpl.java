@@ -1,19 +1,17 @@
 package top.hcode.hoj.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.nacos.client.utils.JSONUtils;
+
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.nacos.api.NacosFactory;
+import com.alibaba.nacos.api.exception.NacosException;
 import com.sun.management.OperatingSystemMXBean;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import top.hcode.hoj.pojo.vo.ConfigVo;
@@ -24,6 +22,7 @@ import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @Author: Himit_ZH
@@ -31,6 +30,7 @@ import java.util.List;
  * @Description: 动态修改网站配置，获取后台服务状态及判题服务器的状态
  */
 @Service
+@Slf4j(topic = "hoj")
 public class ConfigServiceImpl implements ConfigService {
 
     @Autowired
@@ -54,14 +54,26 @@ public class ConfigServiceImpl implements ConfigService {
     @Value("${spring.cloud.nacos.url}")
     private String NACOS_URL;
 
-    @Value("${spring.cloud.nacos.config.data-id}")
-    private String DATA_ID;
+    @Value("${spring.cloud.nacos.config.prefix}")
+    private String prefix;
+
+    @Value("${spring.profiles.active}")
+    private String active;
+
+    @Value("${spring.cloud.nacos.config.file-extension}")
+    private String fileExtension;
 
     @Value("${spring.cloud.nacos.config.group}")
     private String GROUP;
 
     @Value("${spring.cloud.nacos.config.type}")
     private String TYPE;
+
+    @Value("${spring.cloud.nacos.config.username}")
+    private String nacosUsername;
+
+    @Value("${spring.cloud.nacos.config.password}")
+    private String nacosPassword;
 
     private OperatingSystemMXBean osmxb = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
@@ -75,7 +87,7 @@ public class ConfigServiceImpl implements ConfigService {
         // 获取nacos中心配置所在的机器环境
         String response = restTemplate.getForObject(NACOS_URL + "/nacos/v1/ns/operator/metrics", String.class);
 
-        JSONObject jsonObject = JSONObject.parseObject(response);
+        JSONObject jsonObject = JSONUtil.parseObj(response);
         // 获取当前数据后台所在机器环境
         int cores = Runtime.getRuntime().availableProcessors(); // 当前机器的cpu核数
         double cpuLoad = osmxb.getSystemCpuLoad();
@@ -100,7 +112,7 @@ public class ConfigServiceImpl implements ConfigService {
         List<ServiceInstance> serviceInstances = discoveryClient.getInstances(judgeServiceName);
         for (ServiceInstance serviceInstance : serviceInstances) {
             String result = restTemplate.getForObject(serviceInstance.getUri() + "/get-sys-config", String.class);
-            JSONObject jsonObject = JSONObject.parseObject(result);
+            JSONObject jsonObject = JSONUtil.parseObj(result);
             jsonObject.put("service", serviceInstance);
             serviceInfoList.add(jsonObject);
         }
@@ -193,20 +205,22 @@ public class ConfigServiceImpl implements ConfigService {
 
 
     public boolean sendNewConfigToNacos() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-        map.add("dataId", DATA_ID);
-        map.add("content", configUtils.getConfigContent());
-        map.add("group", GROUP);
-        map.add("type", TYPE);
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
-        String result = restTemplate.postForObject(NACOS_URL + "/nacos/v1/cs/configs", request, String.class);
 
-        if (result != null && result.equals("true")) {
-            return true;
-        } else {
-            return false;
+        Properties properties = new Properties();
+        properties.put("serverAddr", NACOS_URL);
+
+        // if need username and password to login
+        properties.put("username", nacosUsername);
+        properties.put("password", nacosPassword);
+
+        com.alibaba.nacos.api.config.ConfigService configService = null;
+        boolean isOK = false;
+        try {
+            configService = NacosFactory.createConfigService(properties);
+            isOK = configService.publishConfig(prefix + "-" + active + "." + fileExtension, GROUP, configUtils.getConfigContent(), TYPE);
+        } catch (NacosException e) {
+            log.error("通过nacos修改网站配置异常--------------->{}", e.getMessage());
         }
+        return isOK;
     }
 }

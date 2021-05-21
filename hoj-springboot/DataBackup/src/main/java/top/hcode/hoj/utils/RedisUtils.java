@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  */
 
 @Component
-@Slf4j
+@Slf4j(topic = "hoj")
 public final class RedisUtils {
 
     @Autowired

@@ -21,7 +21,7 @@ import top.hcode.hoj.utils.RedisUtils;
  * 3. 再次接受到信息，再次查询是否有空闲判题服务器，若有则进行判题，否则回到2
  */
 @Component
-@Slf4j
+@Slf4j(topic = "hoj")
 public class JudgeReceiver {
 
     @Autowired

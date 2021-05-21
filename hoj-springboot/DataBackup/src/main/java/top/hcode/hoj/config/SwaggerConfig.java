@@ -18,8 +18,8 @@ import java.util.ArrayList;
  * @Date: 2020/5/29 22:28
  * @Description:
  */
-@Configuration
-@EnableSwagger2 //开启swagger2
+//@Configuration
+//@EnableSwagger2 //开启swagger2
 public class SwaggerConfig {
     @Bean //配置swagger的docket的bean势力
     public Docket docket(Environment environment){

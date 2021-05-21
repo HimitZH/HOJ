@@ -28,16 +28,16 @@ hoj:
     port: 6371
     password: your_redis_password
   web-config:
-    base-url: http://localhost:9010                 # 后端服务地址
-    name: zsc-acm-hoj                               # 后端服务地址
+    base-url: https://gitee.com/himitzh0730/hoj     # 后端服务地址
+    name: Hcode Online Judge                        #  oj全称
     short-name: hoj                                 # oj简写
     register: true
     footer:  # 网站页面底部footer配置
-      record:                                      
-        name: 浙ICP备20009096号-1                   # 网站备案
-        url: http://oj.hcode.top                    # 网站域名
-      project: # 项目                               
-        name: HOJ                                   # 项目名字
+      record:
+        name: 2020-2021                             # 网站备案
+        url: http://localhost:80                    # 网站域名
+      project: # 项目
+        name: HOJ-20210515017e97a                   # 项目名字
         url: https://gitee.com/himitzh0730/hoj      # 项目地址
   hdu:
     account:

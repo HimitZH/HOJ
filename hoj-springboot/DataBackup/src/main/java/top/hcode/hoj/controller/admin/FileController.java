@@ -6,8 +6,9 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ZipUtil;
 import cn.hutool.core.io.file.FileWriter;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,7 @@ import java.util.stream.Collectors;
  */
 @Controller
 @RequestMapping("/api/file")
-@Slf4j
+@Slf4j(topic = "hoj")
 public class FileController {
 
     @Autowired
@@ -295,7 +296,7 @@ public class FileController {
             map.put("msg", "下载文件失败，请重新尝试！");
             map.put("data", null);
             try {
-                response.getWriter().println(JSON.toJSONString(map));
+                response.getWriter().println(JSONUtil.toJsonStr(map));
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }
@@ -486,7 +487,7 @@ public class FileController {
             map.put("msg", "下载文件失败，请重新尝试！");
             map.put("data", null);
             try {
-                response.getWriter().println(JSON.toJSONString(map));
+                response.getWriter().println(JSONUtil.toJsonStr(map));
             } catch (IOException ioException) {
                 ioException.printStackTrace();
             }

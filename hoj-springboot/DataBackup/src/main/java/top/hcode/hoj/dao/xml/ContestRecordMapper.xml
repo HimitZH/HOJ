@@ -3,21 +3,28 @@
 <mapper namespace="top.hcode.hoj.dao.ContestRecordMapper">
 
     <select id="getACInfo" resultType="top.hcode.hoj.pojo.entity.ContestRecord">
-        SELECT id,uid,username,display_id,cid,realname,pid,time,status,checked,
-        MIN(submit_id) AS submit_id,
-        MIN(submit_time) AS submit_time,
-        MAX(first_blood) AS first_blood
-        FROM contest_record
+        SELECT c.id,c.uid,c.username,c.display_id,c.cid,c.realname,c.pid,c.time,c.status,c.checked,c.submit_id,
+        c.submit_time,c.first_blood FROM contest_record c,
+        (SELECT status,uid,pid,cpid,
+        MIN(submit_id) AS min_submit_id,
+        MIN(submit_time) AS min_submit_time,
+        MAX(first_blood) AS max_first_blood
+        FROM contest_record GROUP BY status,uid,pid,cpid
+        ) AS t
         <where>
+            t.status = c.status AND t.uid=c.uid AND t.pid=c.pid
+            AND t.cpid=c.cpid
+            AND t.min_submit_id=c.submit_id
+            AND t.min_submit_time=c.submit_time
+            AND t.max_first_blood=c.first_blood
             <if test="status!=null">
-                status=#{status}
+                AND c.status=#{status}
             </if>
             <if test="cid!=null">
-                and cid = #{cid}
+                AND c.cid = #{cid}
             </if>
         </where>
-        GROUP BY status,uid,pid,cpid
-        ORDER BY checked ASC,submit_time DESC
+        ORDER BY c.checked ASC,c.submit_time DESC
     </select>
 
     <select id="getOIContestRecord" resultType="top.hcode.hoj.pojo.entity.ContestRecord">

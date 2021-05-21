@@ -22,21 +22,6 @@ public class SystemConfigServiceImpl implements SystemConfigService {
 
     private static final int cpuNum = Runtime.getRuntime().availableProcessors();
 
-    @Value("${hoj-judge-server.ip}")
-    private String ip;
-
-    @Value("${hoj-judge-server.port}")
-    private Integer port;
-
-    @Value("${hoj-judge-server.name}")
-    private String name;
-
-    @Value("${spring.application.name}")
-    private String judgeServiceName;
-
-    @Autowired
-    private JudgeServerServiceImpl judgeServerService;
-
     private static OperatingSystemMXBean osmxb = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 
     public HashMap<String, Object> getSystemConfig() {

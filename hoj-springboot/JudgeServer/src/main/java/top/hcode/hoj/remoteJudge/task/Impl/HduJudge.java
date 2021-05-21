@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Slf4j
+@Slf4j(topic = "hoj")
 public class HduJudge implements RemoteJudgeStrategy {
     public static final String HOST = "http://acm.hdu.edu.cn";
     public static final String LOGIN_URL = "/userloginex.php?action=login";
@@ -24,7 +24,12 @@ public class HduJudge implements RemoteJudgeStrategy {
     public static final String STATUS_URL = "/status.php?user=%s&pid=%s";
     public static final String QUERY_URL = "/status.php?first=%d";
     public static final String ERROR_URL = "/viewerror.php?rid=%d";
-
+    public static Map<String, String> headers = MapUtil
+            .builder(new HashMap<String, String>())
+            .put("Host", "acm.hdu.edu.cn")
+            .put("origin","http://acm.hdu.edu.cn")
+            .put("referer","http://acm.hdu.edu.cn")
+            .map();
     /**
      * @param problemId 提交的题目id
      * @param language
@@ -38,7 +43,7 @@ public class HduJudge implements RemoteJudgeStrategy {
         }
         Map<String, Object> loginUtils = getLoginUtils(username, password);
         Map<String, String> loginCookie = (Map<String, String>) loginUtils.get("cookie");
-        Connection connection = JsoupUtils.getConnectionFromUrl(HOST + SUBMIT_URL, null, loginCookie);
+        Connection connection = JsoupUtils.getConnectionFromUrl(HOST + SUBMIT_URL, headers, loginCookie);
         Connection.Response response = JsoupUtils.postResponse(connection, MapUtil
                 .builder(new HashMap<String, String>())
                 .put("check", "0")
@@ -46,11 +51,11 @@ public class HduJudge implements RemoteJudgeStrategy {
                 .put("problemid", problemId)
                 .put("usercode", userCode)
                 .map());
-
         if (response.statusCode() != 200) {
             log.error("进行题目提交时发生错误：提交题目失败，" + HduJudge.class.getName() + "，题号:" + problemId);
             return null;
         }
+
         // 获取提交的题目id
         Long maxRunId = getMaxRunId(connection, username, problemId);
         return MapUtil.builder(new HashMap<String, Object>())
@@ -63,7 +68,7 @@ public class HduJudge implements RemoteJudgeStrategy {
     @Override
     public Map<String, Object> result(Long submitId, String username, String token, HashMap<String, String> cookies) throws Exception {
         String url = HOST + String.format(QUERY_URL, submitId);
-        Connection connection = JsoupUtils.getConnectionFromUrl(url, null, null);
+        Connection connection = JsoupUtils.getConnectionFromUrl(url, headers, null);
         Connection.Response response = JsoupUtils.getResponse(connection, null);
         // 1提交时间 2结果 3执行时间 4执行空间 5代码长度
         // 一般情况下 代码长度和提交时间不需要，想要也行，自行添加
@@ -98,10 +103,11 @@ public class HduJudge implements RemoteJudgeStrategy {
 
     @Override
     public Map<String, Object> getLoginUtils(String username, String password) throws Exception {
-        Connection connection = JsoupUtils.getConnectionFromUrl(HOST + LOGIN_URL, null, null);
+        Connection connection = JsoupUtils.getConnectionFromUrl(HOST + LOGIN_URL, headers, null);
         Connection.Response response = JsoupUtils.postResponse(connection, MapUtil
                 .builder(new HashMap<String, String>())
                 .put("username", username)
+                .put("login", "Sign In")
                 .put("userpass", password).map());
         return MapUtil.builder(new HashMap<String, Object>()).put("cookie", response.cookies()).map();
     }

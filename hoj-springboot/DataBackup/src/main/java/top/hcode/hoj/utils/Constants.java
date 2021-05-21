@@ -1,9 +1,5 @@
 package top.hcode.hoj.utils;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.stereotype.Component;
-
 /**
  * @Author: Himit_ZH
  * @Date: 2021/1/1 13:00
@@ -34,8 +30,6 @@ public class Constants {
         STATUS_NULL(15, "No Status", null),
         STATUS_JUDGE_WAITING(-100, "Waiting Queue", null),
         STATUS_REMOTE_JUDGE_WAITING_HANDLE(-200, "Remote Waiting Handle Queue", null),
-        STATUS_HDU_REMOTE_JUDGE_ACCOUNT(-1000, "Hdu Remote Judge Account", null),
-        STATUS_CF_REMOTE_JUDGE_ACCOUNT(-1001, "Codeforces Remote Judge Account", null),
         JUDGE_SERVER_SUBMIT_PREFIX(-1002, "Judge SubmitId-ServerId:", null);
 
         private Judge(Integer status, String name, String columnName) {
@@ -65,17 +59,6 @@ public class Constants {
                 if (judge.getStatus() == status) {
                     return judge.getColumnName();
                 }
-            }
-            return null;
-        }
-
-        public static String getListNameByOJName(String judgeName) {
-            if (judgeName == null) return null;
-            switch (judgeName) {
-                case "HDU":
-                    return Judge.STATUS_HDU_REMOTE_JUDGE_ACCOUNT.getName();
-                case "CF":
-                    return Judge.STATUS_CF_REMOTE_JUDGE_ACCOUNT.getName();
             }
             return null;
         }

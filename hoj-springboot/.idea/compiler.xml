@@ -7,9 +7,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="api" />
         <module name="DataBackup" />
         <module name="JudgeServer" />
-        <module name="api" />
       </profile>
     </annotationProcessing>
   </component>

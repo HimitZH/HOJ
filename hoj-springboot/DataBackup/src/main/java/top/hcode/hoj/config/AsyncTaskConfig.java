@@ -19,7 +19,7 @@ public class AsyncTaskConfig implements AsyncConfigurer {
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         // 线程池维护线程的最少数量
-        taskExecutor.setCorePoolSize(50);
+        taskExecutor.setCorePoolSize(20);
         // 线程池维护线程的最大数量
         taskExecutor.setMaxPoolSize(100);
         // 缓存队列

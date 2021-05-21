@@ -22,7 +22,7 @@ import java.util.concurrent.*;
  * @Date: 2021/4/16 12:15
  * @Description: 判题流程解耦重构2.0，该类负责输入数据进入程序进行测评
  */
-@Slf4j
+@Slf4j(topic = "hoj")
 public class JudgeRun {
 
     private static final int cpuNum = Runtime.getRuntime().availableProcessors();

@@ -6,6 +6,8 @@
 
 在线文档：[https://www.hcode.top/docs](https://www.hcode.top/docs/)
 
+快速部署：[基于docker-compose部署](https://gitee.com/himitzh0730/hoj-deploy/tree/master)
+
 > 上线日记
 
 | 时间       | 内容                                               | 更新者   |

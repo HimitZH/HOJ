@@ -2,17 +2,24 @@ package top.hcode.hoj.judge.remote;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.judge.JudgeServerUtils;
 import top.hcode.hoj.pojo.entity.Judge;
+import top.hcode.hoj.pojo.entity.JudgeServer;
+import top.hcode.hoj.pojo.entity.RemoteJudgeAccount;
 import top.hcode.hoj.pojo.entity.ToJudge;
 import top.hcode.hoj.service.impl.JudgeServiceImpl;
+import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -32,7 +39,10 @@ public class RemoteJudgeReceiver {
     @Autowired
     private RedisUtils redisUtils;
 
+    @Autowired
+    private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void processWaitingTask() {
         // 如果队列中还有任务，则继续处理
         if (redisUtils.lGetListSize(Constants.Judge.STATUS_REMOTE_JUDGE_WAITING_HANDLE.getName()) > 0) {
@@ -44,8 +54,8 @@ public class RemoteJudgeReceiver {
         }
     }
 
-
-    private void handleJudgeMsg(String taskJsonStr) {
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void handleJudgeMsg(String taskJsonStr) {
 
         JSONObject task = JSONUtil.parseObj(taskJsonStr);
 
@@ -55,37 +65,49 @@ public class RemoteJudgeReceiver {
         String remoteJudge = task.getStr("remoteJudge");
         Boolean isContest = task.getBool("isContest");
         Integer tryAgainNum = task.getInt("tryAgainNum");
-        // 如果对应远程判题oj的账号列表还有账号
-        String remoteJudgeAccountListName = Constants.Judge.getListNameByOJName(remoteJudge.split("-")[0]);
 
-        String account, username, password;
-        if (redisUtils.lGetListSize(remoteJudgeAccountListName) > 0) {
-            account = (String) redisUtils.lrPop(remoteJudgeAccountListName);
-            if (StringUtils.isEmpty(account)) {
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+        String remoteOJName = remoteJudge.split("-")[0].toUpperCase();
+
+        // 过滤出当前远程oj可用的账号列表
+        QueryWrapper<RemoteJudgeAccount> remoteJudgeAccountQueryWrapper = new QueryWrapper<>();
+        remoteJudgeAccountQueryWrapper
+                .eq("status", true)
+                .eq("oj", remoteOJName);
+
+        List<RemoteJudgeAccount> remoteJudgeAccountList = remoteJudgeAccountService.list(remoteJudgeAccountQueryWrapper);
+
+        if (remoteJudgeAccountList.size() > 0) {
+            RemoteJudgeAccount account = null;
+            for (RemoteJudgeAccount remoteJudgeAccount : remoteJudgeAccountList) {
+                remoteJudgeAccount.setStatus(false);
+                boolean isOk = remoteJudgeAccountService.updateById(remoteJudgeAccount);
+                if (isOk) {
+                    account = remoteJudgeAccount;
+                    break;
                 }
-                remoteJudgeDispatcher.sendTask(submitId, pid, token, remoteJudge, isContest, tryAgainNum + 1);
+            }
 
-            } else {
-                JSONObject accountJson = JSONUtil.parseObj(account);
-                username = accountJson.getStr("username");
-                password = accountJson.getStr("password");
+            if (account != null) { // 如果获取到账号
+
                 Judge judge = judgeService.getById(submitId);
                 // 调用判题服务
                 judgeServerUtils.dispatcher("judge", "/remote-judge", new ToJudge()
                         .setJudge(judge)
                         .setToken(token)
                         .setRemoteJudge(remoteJudge)
-                        .setUsername(username)
-                        .setPassword(password)
+                        .setUsername(account.getUsername())
+                        .setPassword(account.getPassword())
                         .setTryAgainNum(tryAgainNum));
-
                 // 如果队列中还有任务，则继续处理
                 processWaitingTask();
 
+            } else {
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                remoteJudgeDispatcher.sendTask(submitId, pid, token, remoteJudge, isContest, tryAgainNum + 1);
             }
         } else {
             if (tryAgainNum >= 30) {
