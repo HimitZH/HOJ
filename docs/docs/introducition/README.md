@@ -4,6 +4,14 @@
 
 HOJ，全称 Hcode Online Judge，是基于前后端分离，分布式架构的在线测评系统。
 
+[![Java](https://img.shields.io/badge/Java-1.8-informational)](http://openjdk.java.net/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.2.6.RELEASE-success)](https://spring.io/projects/spring-boot)
+[![SpringCloud Alibaba](https://img.shields.io/badge/Spring%20Cloud%20Alibaba-2.2.1.RELEASE-success)](https://spring.io/projects/spring-cloud-alibaba)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0.19-blue)](https://www.mysql.com/)
+[![Redis](https://img.shields.io/badge/Redis-5.0.9-red)](https://redis.io/)
+[![Nacos](https://img.shields.io/badge/Nacos-1.4.1-%23267DF7)](https://github.com/alibaba/nacos)
+[![Vue](https://img.shields.io/badge/Vue-2.6.11-success)](https://cn.vuejs.org/)
+
 ## 为什么要开发HOJ？
 
 因为这是Himit_ZH的毕业设计。

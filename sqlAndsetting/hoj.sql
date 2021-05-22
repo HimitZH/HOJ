@@ -32,7 +32,7 @@ CREATE TABLE `announcement` (
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`),
   CONSTRAINT `announcement_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `auth` */
 
@@ -46,7 +46,7 @@ CREATE TABLE `auth` (
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `category` */
 
@@ -58,7 +58,7 @@ CREATE TABLE `category` (
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `code_template` */
 
@@ -77,7 +77,7 @@ CREATE TABLE `code_template` (
   KEY `lid` (`lid`),
   CONSTRAINT `code_template_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `code_template_ibfk_2` FOREIGN KEY (`lid`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `comment` */
 
@@ -104,7 +104,7 @@ CREATE TABLE `comment` (
   CONSTRAINT `comment_ibfk_6` FOREIGN KEY (`from_avatar`) REFERENCES `user_info` (`avatar`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `comment_ibfk_7` FOREIGN KEY (`did`) REFERENCES `discussion` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `comment_ibfk_8` FOREIGN KEY (`cid`) REFERENCES `contest` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `comment_like` */
 
@@ -121,7 +121,7 @@ CREATE TABLE `comment_like` (
   KEY `cid` (`cid`),
   CONSTRAINT `comment_like_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `comment_like_ibfk_2` FOREIGN KEY (`cid`) REFERENCES `comment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `contest` */
 
@@ -148,7 +148,7 @@ CREATE TABLE `contest` (
   PRIMARY KEY (`id`,`uid`),
   KEY `uid` (`uid`),
   CONSTRAINT `contest_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1002 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `contest_announcement` */
 
@@ -203,7 +203,7 @@ CREATE TABLE `contest_problem` (
   KEY `contest_problem_ibfk_2` (`pid`),
   CONSTRAINT `contest_problem_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `contest` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `contest_problem_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `contest_record` */
 
@@ -239,7 +239,7 @@ CREATE TABLE `contest_record` (
   CONSTRAINT `contest_record_ibfk_3` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `contest_record_ibfk_4` FOREIGN KEY (`cpid`) REFERENCES `contest_problem` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `contest_record_ibfk_5` FOREIGN KEY (`submit_id`) REFERENCES `judge` (`submit_id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `contest_register` */
 
@@ -306,7 +306,7 @@ CREATE TABLE `discussion` (
   CONSTRAINT `discussion_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `discussion_ibfk_4` FOREIGN KEY (`avatar`) REFERENCES `user_info` (`avatar`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `discussion_ibfk_6` FOREIGN KEY (`pid`) REFERENCES `problem` (`problem_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `discussion_like` */
 
@@ -323,7 +323,7 @@ CREATE TABLE `discussion_like` (
   KEY `uid` (`uid`),
   CONSTRAINT `discussion_like_ibfk_1` FOREIGN KEY (`did`) REFERENCES `discussion` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `discussion_like_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `discussion_report` */
 
@@ -342,7 +342,7 @@ CREATE TABLE `discussion_report` (
   KEY `reporter` (`reporter`),
   CONSTRAINT `discussion_report_ibfk_1` FOREIGN KEY (`did`) REFERENCES `discussion` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `discussion_report_ibfk_2` FOREIGN KEY (`reporter`) REFERENCES `user_info` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `file` */
 
@@ -362,7 +362,7 @@ CREATE TABLE `file` (
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`),
   CONSTRAINT `file_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `judge` */
 
@@ -398,7 +398,7 @@ CREATE TABLE `judge` (
   CONSTRAINT `judge_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `judge_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `judge_ibfk_3` FOREIGN KEY (`username`) REFERENCES `user_info` (`username`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=147 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `judge_case` */
 
@@ -427,7 +427,7 @@ CREATE TABLE `judge_case` (
   CONSTRAINT `judge_case_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `judge_case_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `judge_case_ibfk_3` FOREIGN KEY (`submit_id`) REFERENCES `judge` (`submit_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1778 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `judge_server` */
 
@@ -448,7 +448,7 @@ CREATE TABLE `judge_server` (
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=154 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `language` */
 
@@ -467,7 +467,7 @@ CREATE TABLE `language` (
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `problem` */
 
@@ -503,7 +503,7 @@ CREATE TABLE `problem` (
   KEY `author` (`author`),
   KEY `problem_id` (`problem_id`),
   CONSTRAINT `problem_ibfk_1` FOREIGN KEY (`author`) REFERENCES `user_info` (`username`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1065 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `problem_case` */
 
@@ -521,7 +521,7 @@ CREATE TABLE `problem_case` (
   PRIMARY KEY (`id`),
   KEY `pid` (`pid`),
   CONSTRAINT `problem_case_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=102 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `problem_count` */
 
@@ -546,7 +546,7 @@ CREATE TABLE `problem_count` (
   PRIMARY KEY (`id`,`pid`),
   UNIQUE KEY `pid` (`pid`),
   CONSTRAINT `problem_count_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=54 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `problem_language` */
 
@@ -563,7 +563,7 @@ CREATE TABLE `problem_language` (
   KEY `lid` (`lid`),
   CONSTRAINT `problem_language_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `problem_language_ibfk_2` FOREIGN KEY (`lid`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=786 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `problem_tag` */
 
@@ -580,7 +580,7 @@ CREATE TABLE `problem_tag` (
   KEY `tid` (`tid`),
   CONSTRAINT `problem_tag_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `problem_tag_ibfk_2` FOREIGN KEY (`tid`) REFERENCES `tag` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `reply` */
 
@@ -607,7 +607,7 @@ CREATE TABLE `reply` (
   CONSTRAINT `reply_ibfk_1` FOREIGN KEY (`comment_id`) REFERENCES `comment` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `reply_ibfk_2` FOREIGN KEY (`from_avatar`) REFERENCES `user_info` (`avatar`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `reply_ibfk_3` FOREIGN KEY (`to_avatar`) REFERENCES `user_info` (`avatar`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `role` */
 
@@ -638,7 +638,7 @@ CREATE TABLE `role_auth` (
   KEY `role_id` (`role_id`) USING BTREE,
   CONSTRAINT `role_auth_ibfk_1` FOREIGN KEY (`auth_id`) REFERENCES `auth` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `role_auth_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `session` */
 
@@ -654,7 +654,7 @@ CREATE TABLE `session` (
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`),
   CONSTRAINT `session_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=134 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `tag` */
 
@@ -668,7 +668,7 @@ CREATE TABLE `tag` (
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`name`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `user_acproblem` */
 
@@ -688,7 +688,7 @@ CREATE TABLE `user_acproblem` (
   CONSTRAINT `user_acproblem_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_acproblem_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_acproblem_ibfk_3` FOREIGN KEY (`submit_id`) REFERENCES `judge` (`submit_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=311 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `user_info` */
 
@@ -734,7 +734,7 @@ CREATE TABLE `user_record` (
   PRIMARY KEY (`id`,`uid`),
   KEY `uid` (`uid`),
   CONSTRAINT `user_record_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=307 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `user_role` */
 
@@ -751,7 +751,25 @@ CREATE TABLE `user_role` (
   KEY `role_id` (`role_id`) USING BTREE,
   CONSTRAINT `user_role_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_role_ibfk_2` FOREIGN KEY (`role_id`) REFERENCES `role` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=309 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+/*Table structure for table `remote_judge_account` */
+
+DROP TABLE IF EXISTS `remote_judge_account`;
+
+CREATE TABLE `remote_judge_account` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `oj` varchar(50) NOT NULL COMMENT '远程oj名字',
+  `username` varchar(255) NOT NULL COMMENT '账号',
+  `password` varchar(255) NOT NULL COMMENT '密码',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否可用',
+  `version` bigint(20) DEFAULT '0' COMMENT '版本控制',
+  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 
 /* Trigger structure for table `contest` */
 
@@ -807,6 +825,17 @@ DELIMITER ;
 
 
 
+/*!40101 SET NAMES utf8 */;
+
+/*!40101 SET SQL_MODE=''*/;
+
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+USE `hoj`;
+
 /*Data for the table `auth` */
 
 insert  into `auth`(`id`,`name`,`permission`,`status`,`gmt_create`,`gmt_modified`) values (1,'problem','problem_admin',0,'2020-10-25 00:17:17','2021-05-15 06:51:23'),(2,'submit','submit',0,'2020-10-25 00:17:22','2021-05-15 06:41:59'),(3,'contest','contest_admin',0,'2020-10-25 00:17:33','2021-05-15 06:51:28'),(4,'rejudge','rejudge',0,'2020-10-25 00:17:49','2021-05-15 06:50:55'),(5,'announcement','announcement_admin',0,'2021-05-15 06:54:28','2021-05-15 06:54:31'),(6,'user','user_admin',0,'2021-05-15 06:54:30','2021-05-15 06:55:04'),(7,'system_info','system_info_admin',0,'2021-05-15 06:57:34','2021-05-15 06:57:41'),(8,'dicussion','discussion_add',0,'2021-05-15 06:57:36','2021-05-15 07:50:45'),(9,'dicussion','discussion_del',0,'2021-05-15 07:01:02','2021-05-15 07:51:31'),(10,'dicussion','discussion_edit',0,'2021-05-15 07:02:15','2021-05-15 07:51:34'),(11,'comment','comment_add',0,'2021-05-15 07:03:48','2021-05-15 07:03:48'),(12,'reply','reply_add',0,'2021-05-15 07:04:55','2021-05-15 07:04:55');
@@ -826,3 +855,9 @@ insert  into `role`(`id`,`role`,`description`,`status`,`gmt_create`,`gmt_modifie
 /*Data for the table `role_auth` */
 
 insert  into `role_auth`(`id`,`auth_id`,`role_id`,`gmt_create`,`gmt_modified`) values (1,1,1000,'2020-10-25 00:18:17','2020-10-25 00:18:17'),(2,2,1000,'2020-10-25 00:18:38','2021-05-15 07:17:35'),(3,3,1000,'2020-10-25 00:18:48','2021-05-15 07:17:44'),(4,4,1000,'2021-05-15 07:17:56','2021-05-15 07:17:56'),(5,5,1000,'2021-05-15 07:18:20','2021-05-15 07:18:20'),(6,6,1000,'2021-05-15 07:18:29','2021-05-15 07:18:29'),(7,7,1000,'2021-05-15 07:18:42','2021-05-15 07:18:42'),(8,8,1000,'2021-05-15 07:18:59','2021-05-15 07:18:59'),(9,9,1000,'2021-05-15 07:19:07','2021-05-15 07:19:07'),(10,10,1000,'2021-05-15 07:19:10','2021-05-15 07:19:10'),(11,11,1000,'2021-05-15 07:19:13','2021-05-15 07:19:13'),(12,12,1000,'2021-05-15 07:19:18','2021-05-15 07:19:30'),(13,1,1001,'2021-05-15 07:19:29','2021-05-15 07:20:02'),(14,2,1001,'2021-05-15 07:20:25','2021-05-15 07:20:25'),(15,3,1001,'2021-05-15 07:20:33','2021-05-15 07:20:33'),(16,8,1001,'2021-05-15 07:21:56','2021-05-15 07:21:56'),(17,9,1001,'2021-05-15 07:22:03','2021-05-15 07:22:03'),(18,10,1001,'2021-05-15 07:22:10','2021-05-15 07:22:10'),(19,11,1001,'2021-05-15 07:22:17','2021-05-15 07:22:17'),(20,12,1001,'2021-05-15 07:22:21','2021-05-15 07:22:21'),(21,2,1002,'2021-05-15 07:22:40','2021-05-15 07:22:40'),(22,8,1002,'2021-05-15 07:23:49','2021-05-15 07:23:49'),(23,9,1002,'2021-05-15 07:24:10','2021-05-15 07:24:10'),(24,10,1002,'2021-05-15 07:24:14','2021-05-15 07:24:14'),(25,11,1002,'2021-05-15 07:24:19','2021-05-15 07:24:19'),(26,12,1002,'2021-05-15 07:24:23','2021-05-15 07:24:23'),(27,8,1003,'2021-05-15 07:32:56','2021-05-15 07:32:56'),(28,9,1003,'2021-05-15 07:33:01','2021-05-15 07:33:01'),(29,10,1003,'2021-05-15 07:33:05','2021-05-15 07:33:05'),(30,11,1003,'2021-05-15 07:33:09','2021-05-15 07:33:09'),(31,12,1003,'2021-05-15 07:33:22','2021-05-15 07:33:22'),(32,2,1004,'2021-05-15 07:33:38','2021-05-15 07:33:38'),(33,9,1004,'2021-05-15 07:34:27','2021-05-15 07:34:27'),(34,10,1004,'2021-05-15 07:34:31','2021-05-15 07:34:31'),(35,11,1004,'2021-05-15 07:34:42','2021-05-15 07:34:42'),(36,12,1004,'2021-05-15 07:34:47','2021-05-15 07:34:47'),(37,2,1005,'2021-05-15 07:35:11','2021-05-15 07:35:11'),(38,9,1005,'2021-05-15 07:35:46','2021-05-15 07:35:46'),(39,10,1005,'2021-05-15 07:36:01','2021-05-15 07:36:01'),(40,9,1006,'2021-05-15 07:40:09','2021-05-15 07:40:09'),(41,10,1006,'2021-05-15 07:40:16','2021-05-15 07:40:16'),(42,11,1006,'2021-05-15 07:40:30','2021-05-15 07:40:30'),(43,12,1006,'2021-05-15 07:40:37','2021-05-15 07:40:37'),(44,9,1007,'2021-05-15 07:40:54','2021-05-15 07:40:54'),(45,10,1007,'2021-05-15 07:41:04','2021-05-15 07:41:04');
+
+insert  into `user_info`(`uuid`,`username`,`password`,`gmt_create`,`gmt_modified`) values('1','root','9f09812f6e5165b85e258c48901d4d74',NOW(),NOW());
+
+insert  into `user_record`(`uid`,`gmt_create`,`gmt_modified`) values('1',NOW(),NOW());
+
+insert  into `user_role`(`uid`,`role_id`,`gmt_create`,`gmt_modified`) values('1',00000000000000001000,NOW(),NOW());
