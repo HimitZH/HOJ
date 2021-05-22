@@ -1,3 +1,12 @@
+# Hcode Online Judge（HOJ）
+[![Java](https://img.shields.io/badge/Java-1.8-informational)](http://openjdk.java.net/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.2.6.RELEASE-success)](https://spring.io/projects/spring-boot)
+[![SpringCloud Alibaba](https://img.shields.io/badge/Spring%20Cloud%20Alibaba-2.2.1.RELEASE-success)](https://spring.io/projects/spring-cloud-alibaba)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0.19-blue)](https://www.mysql.com/)
+[![Redis](https://img.shields.io/badge/Redis-5.0.9-red)](https://redis.io/)
+[![Nacos](https://img.shields.io/badge/Nacos-1.4.1-%23267DF7)](https://github.com/alibaba/nacos)
+[![Vue](https://img.shields.io/badge/Vue-2.6.11-success)](https://cn.vuejs.org/)
+
 > 前言
 
 基于前后端分离，分布式架构的在线测评平台（hoj），前端使用vue，后端主要使用springboot，redis，mysql，nacos等技术。
@@ -6,7 +15,25 @@
 
 在线文档：[https://www.hcode.top/docs](https://www.hcode.top/docs/)
 
-快速部署：[基于docker-compose部署](https://gitee.com/himitzh0730/hoj-deploy/tree/master)
+> 部署
+
+部署文档：[基于docker-compose部署](https://gitee.com/himitzh0730/hoj-deploy/tree/master)
+
+具体请看部署文档，已安装docker和docker-compose的可以执行以下命令快速部署
+
+```shell
+git clone https://gitee.com/himitzh0730/hoj-deploy.git && cd hoj-deploy
+
+cd standAlone && docker-compose up -d
+```
+
+根据网速情况，大约十到二十分钟即可安装完毕，全程无需人工干预。
+
+当看到所有的容器的状态status都为`UP`就代表 OJ 已经启动成功。
+
+默认超级管理员账号与密码：**root / hoj123456**
+
+其它设置与参数说明请看[基于docker-compose部署](https://gitee.com/himitzh0730/hoj-deploy/tree/master)
 
 > 上线日记
 

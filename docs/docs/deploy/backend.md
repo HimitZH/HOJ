@@ -1,282 +1,194 @@
 # 后端部署
 
-首先 先下载[hoj-deploy](https://gitee.com/himitzh0730/hoj-deploy/tree/master)
+## 前言
+
+下载本项目，进入到当前文件夹执行打包命令
 
 ```shell
-git clone git@gitee.com:himitzh0730/hoj-deploy.git
+git clone https://gitee.com/himitzh0730/hoj-deploy.git && cd hoj-deploy/src/backend
 ```
 
-###  一、MySQL部署
+当前文件夹为打包`hoj-backend`镜像的相关文件，将这些文件复制到同一个文件夹内，**然后打包[DataBackup](https://gitee.com/himitzh0730/hoj/tree/master/hoj-springboot/DataBackup)（SpringBoot项目）成jar包也放到当前文件夹**，之后执行以下命令进行打包成镜像
 
- 
+```shell
+docker build -t hoj-backend .
+```
 
-1. 进入到文件
+**项目依赖于hoj-redis，hoj-nacos，hoj-mysql等镜像成功启动，以及根据前面三个镜像的配置修改环境参数才可正常启动**
 
-### 安装Nacos
+docker-compose 启动
 
-> nacos在HOJ中的作用是注册中心与配置中心，不可缺少
+```yaml
+version: "3"
+services:
+  hoj-backend:
+#    image: registry.cn-shenzhen.aliyuncs.com/hcode/hoj_backend
+	image: hoj-backend
+    container_name: hoj-backend
+    restart: always
+    depends_on:
+      - hoj-redis
+      - hoj-mysql
+      - hoj-nacos
+    volumes:
+      - ./hoj/file:/hoj/file
+      - ./hoj/testcase:/hoj/testcase
+      - ./hoj/log/backend:/hoj/log/backend
+    environment:
+      - TZ=Asia/Shanghai
+      - BACKEND_SERVER_PORT=6688 # backend服务端口号
+      - NACOS_URL=172.20.0.4:8848 # hoj-nacos的url
+      - NACOS_USERNAME=root # nacos的管理员账号
+      - NACOS_PASSWORD=hoj123456 # nacos的管理员密码
+      - JWT_TOKEN_SECRET=default # 加密秘钥 默认则生成32位随机密钥
+      - JWT_TOKEN_EXPIRE=86400 # token过期时间默认为24小时 86400s
+      - JWT_TOKEN_FRESH_EXPIRE=43200 # token默认12小时可自动刷新
+      - JUDGE_TOKEN=default # 调用判题服务器的token 默认则生成32位随机密钥
+      - MYSQL_HOST=172.20.0.3 # hoj-mysql的host
+      - MYSQL_PUBLIC_HOST=172.20.0.3 # 如果判题服务是分布式，请提供当前mysql所在服务器的公网ip
+      - MYSQL_PORT=3306 # hoj-mysql端口号
+      - MYSQL_DATABASE_NAME=hoj # 改动需要修改hoj-mysql镜像,默认为hoj
+      - MYSQL_USERNAME=root 
+      - MYSQL_ROOT_PASSWORD=hoj123456 # hoj-mysql的root账号密码
+      - EMAIL_SERVER_HOST=smtp.qq.com # 请使用邮件服务的域名或ip
+      - EMAIL_SERVER_PORT=465 # 请使用邮件服务的端口号
+      - EMAIL_USERNMAE=-your_email_username # 请使用对应邮箱账号
+      - EMAIL_PASSWORD=-your_email_password # 请使用对应邮箱密码
+      - REDIS_HOST=172.20.0.2 # hoj-redis的host
+      - REDIS_PORT=6379 # hoj-redis的port
+      - REDIS_PASSWORD=hoj123456 #hoj-redis的密码
+      - OPEN_REMOTE_JUDGE=true # 是否开启对hdu和codeforces的虚拟判题
+      # 开启虚拟判题请提供对应oj的账号密码 格式为 
+      # username1,username2,...
+      # password1,password2,...
+      - HDU_ACCOUNT_USERNAME_LIST=
+      - HDU_ACCOUNT_PASSWORD_LIST=
+      - CF_ACCOUNT_USERNAME_LIST=
+      - CF_ACCOUNT_USERNAME_LIST=
+    ports:
+      - "6688:6688"
+    networks:
+      hoj-network:
+        ipv4_address: 172.20.0.5
+        
+  hoj-redis:
+    image: redis:5.0.9-alpine
+    container_name: hoj-redis
+    restart: always
+    volumes:
+      - ./hoj/data/redis/data:/data
+    networks:
+      hoj-network:
+        ipv4_address: 172.20.0.2
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass "hoj123456" --appendonly yes
+        
+  hoj-mysql:
+    image: registry.cn-shenzhen.aliyuncs.com/hcode/hoj_database
+    container_name: hoj-mysql
+    restart: always
+    volumes:
+      - ./hoj/data/mysql/data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=hoj123456
+      - TZ=Asia/Shanghai
+      - NACOS_USERNAME=root
+      - NACOS_PASSWORD=hoj123456
+    ports:
+      - "3306:3306"
+    networks:
+      hoj-network:
+        ipv4_address: 172.20.0.3
+      
+  hoj-nacos:
+    image: nacos/nacos-server:1.4.2
+    container_name: hoj-nacos
+    restart: always
+    depends_on: 
+      - hoj-mysql
+    environment:
+      - JVM_XMX=384m
+      - JVM_XMS=384m
+      - JVM_XMN=192m
+      - MODE=standalone
+      - SPRING_DATASOURCE_PLATFORM=mysql
+      - MYSQL_SERVICE_HOST=172.20.0.3
+      - MYSQL_SERVICE_PORT=3306
+      - MYSQL_SERVICE_USER=root
+      - MYSQL_SERVICE_PASSWORD=Hzh&hy2020
+      - MYSQL_SERVICE_DB_NAME=nacos
+      - NACOS_AUTH_ENABLE=true # 开启鉴权
 
-1. 执行docker命令，拉取nacos镜像。
+networks:
+   hoj-network:
+     driver: bridge
+     ipam:
+       config:
+         - subnet: 172.20.0.0/16
+```
 
-   ```shell
-   //查询nacos镜像
-   docker search nacos
-   //拉取镜像
-   docker pull nacos/nacos-server
-   //查看镜像
-   docker images
-   ```
 
-2. 启动nacos
 
-   注意：`MYSQL_SERVICE_PASSWORD`为数据库密码，如果第一步部署MySQL有自定义密码，请修改与之对应。
+## 文件介绍
 
-   ```shell
-   docker run -d \
-   -e JVM_XMS=384m \
-   -e JVM_XMX=384m \
-   -e JVM_XMN=192m \
-   -e MODE=standalone \
-   -e SPRING_DATASOURCE_PLATFORM=mysql \
-   -e MYSQL_SERVICE_HOST="172.18.0.2" \
-   -e MYSQL_SERVICE_PORT=3306 \
-   -e MYSQL_SERVICE_USER=root \
-   -e MYSQL_SERVICE_PASSWORD="123456" \
-   -e MYSQL_SERVICE_DB_NAME=nacos \
-   -p 8848:8848 \
-   --network hoj-network \
-   --ip 172.18.0.3 \
-   --name nacos \
-   --restart=always \
-   nacos/nacos-server
-   ```
+### 1. check_nacos.sh
 
-3. 查看是否启动成功
+用于检测nacos是否启动完成，然后再执行启动backend
 
-   ```shell
-   # 查看当前docker运行的容器
-   docker ps
-   # 查看日志
-   docker logs nacos
-   ```
+```shell
+#!/bin/bash
 
-4. 连上nacos，将后端服务需要的配置添加进去
+while :
+    do
+        # 访问nacos注册中心，获取http状态码
+        CODE=`curl -I -m 10 -o /dev/null -s -w %{http_code}  http://$NACOS_URL/nacos/index.html`
+        # 判断状态码为200
+        if [[ $CODE -eq 200 ]]; then
+            # 输出绿色文字，并跳出循环
+            echo -e "\033[42;34m nacos is ok \033[0m"
+            break
+        else
+            # 暂停1秒
+            sleep 1
+        fi
+    done
 
-   `ip`为服务器ip，请自行修改，登录账号密码初始都为 nacos
+# while结束时，执行容器中的run.sh。
+bash /run.sh
+```
 
-   ```she
-   访问 http://ip:8848/nacos/index.html
-   nacos/nacos(用户名和密码)
-   ```
+### 2. run.sh
 
-   **登陆后，点击添加**
+启动backend的springboot jar包
 
-   ![nacos2]( https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/nacos2.jpg)
+```shell
+#!/bin/sh
 
-   **依次添加后台服务的配置文件和判题服务的配置文件**
+java -Djava.security.egd=file:/dev/./urandom -jar  /app.jar
+```
 
-   ![nacos1]( https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/nacos1.jpg)
+### 3. Dockerfile
 
-5. hoj-data-backup-prod.yml的配置如下，请自行修改
+```dockerfile
+FROM java:8
 
-   ```yaml
-   hoj:
-     jwt:
-       # 加密秘钥
-       secret: zsc-acm-hoj
-       # token有效时长，3*3600*24，单位秒
-       expire: 259200
-       # 2*3600*24s内还有请求，可进行刷新
-       checkRefreshExpire: 172800
-       header: token
-     judge:
-       # 调用判题服务器的token
-       token: zsc-acm-hoj-judge-server
-     db: # mysql数据库服务配置
-       host: 172.18.0.4  #如果是公用容器网络 请使用网络ip 例如1.1的172.18.0.4
-       port: 3306
-       name: hoj # 默认hoj
-       username: root 
-       password: 123456 # your_mysql_password
-     mail: # 邮箱服务配置
-       ssl: true
-       username: your_email_username
-       password: your_email_password
-       host: your_email_host
-       port: your_email_port
-       background-img: https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/HCODE.png # 邮箱系统发送邮件模板的背景图片地址
-     redis: # redis服务配置
-       host: 172.18.0.3 # your_redis_host 如果是公用容器网络 请使用网络ip
-       port: 6371
-       password: your_redis_password
-     web-config:
-       base-url: http://www.hcode.top                  # 后端服务地址
-       name: zsc-acm-hoj                               # 后端服务地址
-       short-name: hoj                                 # oj简写
-       register: true
-       footer:  # 网站页面底部footer配置
-         record:                                      
-           name: 浙ICP备20009096号-1                   # 网站备案
-           url: http://www.hcode.top                    # 网站域名
-         project: # 项目                               
-           name: HOJ                                   # 项目名字
-           url: https://gitee.com/himitzh0730/hoj      # 项目地址
-     hdu:
-       account:
-         username: hdu账号1用户名,hdu账号2用户名,...
-         password: hdu账号1密码,hdu账号2密码,...
-     cf:
-       account:
-         username: cf账号1用户名,cf账号2用户名,...
-         password: cf账号1密码,cf账号2密码,...
-   ```
+COPY *.jar /app.jar
 
-6. 添加好后点击发布，然后再次添加hoj-judge-server-prod.yml，流程一样
+COPY check_nacos.sh /check_nacos.sh
 
-   **注意：判题服务默认不是跟后端服务部署在同一云服务器的，所以以下配置，请使用mysql和redis的公网IP。**
+COPY run.sh /run.sh
 
-   ```yaml
-   hoj:
-     judge:
-       db:
-         username: your_mysql_username
-         password: your_mysql_password
-         host: your_mysql_host
-         port: your_mysql_port
-         name: your_mysql_database_name # 数据库名字默认hoj
-       # 调用判题服务器的token，与数据服务后台必须一致！
-       token: zsc-acm-hoj-judge-server
-     redis:
-       host: your_redis_host
-       port: your_redis_port
-       password: your_redis_password
-   ```
+ENV TZ=Asia/Shanghai
 
-### 安装Redis
+ENV BACKEND_SERVER_PORT=6688
 
-1. 依旧使用docker部署 ,**mypassword是redis的密码，请使用上面配置文件中redis的password，必须一致！**
+VOLUME ["/hoj/file","/hoj/testcase"]
 
-2. 查询可用redis镜像
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-   ```shell
-   docker search redis、
-   ```
+CMD ["bash","/check_nacos.sh"]
 
-3. 选择拉取官网的镜像
+EXPOSE $BACKEND_SERVER_PORT
 
-   ```shell
-   docker pull redis
-   ```
-
-4. 创建本地目录来挂载redis的数据
-
-   ```shell
-   mkdir -p /hoj/data/redis/data
-   ```
-
-5. 启动Redis，`mypassword`请与上面nacos导入的配置文件的redis密码一致
-
-   ```shell
-   docker run -d --name redis -p 6379:6379 
-   -v /hoj/data/redis/data:/data \
-   --restart="always" \
-   --network hoj-network \
-   --ip 172.18.0.3 \
-   redis \
-   --requirepass "mypassword" 
-   ```
-
-6. 查看是否启动成功
-
-   ```shell
-   docker ps
-   ```
-
-### 部署后台服务
-
-> 注意：如果想把nacos与该后台服务分别部署不同服务器，就可以修改本HOJ项目路径`/hoj-springboot/DataBackup/src/main/resources/bootstrap.yml`的相关配置
->
-> ```yaml
-> hoj-backstage:
->   port: 6688
->   nacos-url: 172.18.0.3:8848  # nacos地址,如果使用了docker network 可用使用network的ip 否则请使用服务器ip
-> ```
-
-1. 依旧是需要下载本HOJ项目的hoj-springboot文件夹，然后进入该文件夹。
-
-2. 使用cmd打开当前JudgeServer文件夹路径，然后使用mvn命令进行打包成jar包，也可以用IDEA自带的辅助工具一键package
-
-   ```powershell
-   mvn clean package -Dmaven.test.skip=true
-   ```
-
-3. 在云服务器上创建对应的文件夹进行存储，同时创建数据挂载目录
-
-   - 该目录存放源代码打包的jar包与Dockfile文件
-
-     ```shell
-     mkdir -p /hoj/server
-     ```
-
-   - 该目录存放网站上传的文件，例如头像文件，一些zip压缩包等
-
-     ```shell
-     mkdir -p /hoj/file
-     ```
-
-   - 该目录存放题目的评测数据
-
-     ```shell
-     mkdir -p /hoj/testcase
-     ```
-
-4. 然后将第2步打包的jar包上传到该目录下(/hoj/server)，然后在当前路径(/hoj/server)同时创建名叫`Dockerfile`的文件，
-
-   ```shell
-   sudo vi Dockerfile
-   ```
-
-5. 将下面内容复制进去
-
-   ```dockerfile
-   FROM java:8
-     
-   COPY *.jar /app.jar
-   
-   CMD ["--server.port=6688"]
-   
-   EXPOSE 6688
-   
-   ENV TZ=Asia/Shanghai
-   
-   RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-   
-   ENTRYPOINT ["java","-Xmx512m","-Xms512m","-Xmn256m","-Djava.security.egd=file:/dev/./urandom","-jar", "/app.jar"]
-   ```
-
-6. 保存退出后，使用命令打包成docker镜像
-
-   ```shell
-   // 使用dockerfile打包成镜像
-   docker build -t hoj .
-   // 查看hoj镜像是否存在
-   docker images
-   ```
-
-7. 启动容器
-
-   ```shell
-   docker run -d -p 6688:6688 \
-   -v /hoj/file:/hoj/file \
-   -v /hoj/testcase:/hoj/testcase \
-   --name hoj \
-   --network hoj-network \
-   --restart=always \
-   hoj
-   ```
-
-8. 查看是否成功
-
-   ```shell
-   docker ps
-   ```
+```

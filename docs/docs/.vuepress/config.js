@@ -31,6 +31,9 @@ module.exports = {
                 children: [
                     'deploy/',
                     'deploy/frontend',
+					'deploy/mysql',
+					'deploy/redis',
+					'deploy/nacos',
                     'deploy/backend',
                     'deploy/judgeserver',
                     'deploy/rsync'
