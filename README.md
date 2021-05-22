@@ -29,9 +29,22 @@ cd standAlone && docker-compose up -d
 
 根据网速情况，大约十到二十分钟即可安装完毕，全程无需人工干预。
 
-当看到所有的容器的状态status都为`UP`就代表 OJ 已经启动成功。
+```shell
+docker ps # 查看当前运行的容器状态
+```
+
+大概初始化启动需要一至两分钟，当看到所有的容器的状态status都为`UP`和`healthy`就代表 OJ 已经启动成功。
 
 默认超级管理员账号与密码：**root / hoj123456**
+
+**部署成功后，登录root账号进入后台（http://ip/admin/conf）修改邮箱配置，新用户才可以正常注册（因为账号注册与密码等修改操作需要通过邮件发送验证码）邮箱配置可以自行百度，开启使用例如QQ邮箱提供的POP3/SMTP服务：**
+
+```json
+Host: smtp.qq.com
+Port: 465
+Username: qq邮箱账号
+Password: 开启SMTP服务后生成的随机授权码
+```
 
 其它设置与参数说明请看[基于docker-compose部署](https://gitee.com/himitzh0730/hoj-deploy/tree/master)
 
