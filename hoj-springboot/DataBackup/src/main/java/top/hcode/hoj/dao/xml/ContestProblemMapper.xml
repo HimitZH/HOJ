@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.dao.ContestProblemMapper">
+    <select id="getContestProblemList" resultType="top.hcode.hoj.pojo.vo.ContestProblemVo">
+        select cp.id,cp.display_id,cp.cid,cp.pid,cp.display_title,
+        (select count(*) from judge where cpid=cp.id and cid=cp.cid and pid =cp.pid and
+        submit_time >= #{startTime}) as total,
+        (select count(*) from judge where cpid=cp.id and cid=cp.cid and pid =cp.pid and
+        status=0 and submit_time >= #{startTime}) as ac
+        from contest_problem cp
+        where cp.cid = #{cid} order by cp.display_id asc
+    </select>
+</mapper>

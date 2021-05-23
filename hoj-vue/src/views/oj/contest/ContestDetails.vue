@@ -1,0 +1,425 @@
+<template>
+  <div class="contest-body">
+    <el-row>
+      <el-col :xs="24" :md="24" :lg="24">
+        <el-card shadow>
+          <div class="contest-title">
+            <div slot="header">
+              <span class="panel-title">{{ contest.title }}</span>
+            </div>
+          </div>
+          <el-row>
+            <el-col :span="12" class="text-align:left">
+              <el-tooltip
+                v-if="contest.auth != null && contest.auth != undefined"
+                :content.sync="CONTEST_TYPE_REVERSE[contest.auth]['tips']"
+                placement="top"
+              >
+                <el-tag
+                  :type.sync="CONTEST_TYPE_REVERSE[contest.auth]['color']"
+                  effect="plain"
+                >
+                  {{ CONTEST_TYPE_REVERSE[contest.auth]['name'] }}
+                </el-tag>
+              </el-tooltip>
+            </el-col>
+            <el-col :span="12" style="text-align:right">
+              <el-button size="small" plain v-if="contest != null">
+                {{ contest.type | parseContestType }}
+              </el-button>
+            </el-col>
+          </el-row>
+          <div class="contest-time">
+            <el-row>
+              <el-col :xs="24" :md="12" class="left">
+                <p>
+                  <i class="fa fa-hourglass-start" aria-hidden="true"></i>
+                  StartAt：{{ contest.startTime | localtime }}
+                </p>
+              </el-col>
+              <el-col :xs="24" :md="12" class="right">
+                <p>
+                  <i class="fa fa-hourglass-end" aria-hidden="true"></i>
+                  EndAt：{{ contest.endTime | localtime }}
+                </p>
+              </el-col>
+            </el-row>
+          </div>
+          <div class="slider">
+            <el-slider
+              v-model="progressValue"
+              :format-tooltip="formatTooltip"
+              :step="timeStep"
+            ></el-slider>
+          </div>
+          <el-row>
+            <el-col :span="24" style="text-align:center">
+              <el-tag effect="dark" size="medium" :style="countdownColor">
+                <i class="fa fa-circle" aria-hidden="true"></i>
+                {{ countdown }}
+              </el-tag>
+            </el-col>
+          </el-row>
+        </el-card>
+      </el-col>
+    </el-row>
+    <div class="sub-menu">
+      <!-- 判断是否需要密码验证 -->
+      <el-card
+        v-if="passwordFormVisible"
+        class="password-form-card"
+        style="text-align:center"
+      >
+        <div slot="header">
+          <span class="panel-title">Password required</span>
+        </div>
+        <p class="password-form-tips">
+          To enter the Private contest,please input the password!
+        </p>
+        <el-form>
+          <el-input
+            v-model="contestPassword"
+            type="password"
+            placeholder="Enter the contest password"
+            @keydown.enter.native="checkPassword"
+          />
+          <el-button
+            type="primary"
+            @click="checkPassword"
+            style="float:right;margin:5px"
+            >Enter</el-button
+          >
+        </el-form>
+      </el-card>
+
+      <el-tabs v-else @tab-click="tabClick" v-model="route_name">
+        <el-tab-pane name="ContestDetails" lazy>
+          <span slot="label"><i class="el-icon-s-home"></i>&nbsp;Overview</span>
+          <el-card class="box-card">
+            <div
+              v-html="descriptionHtml"
+              v-katex
+              v-highlight
+              class="markdown-body"
+            ></div>
+          </el-card>
+        </el-tab-pane>
+
+        <el-tab-pane
+          name="ContestProblemList"
+          lazy
+          :disabled="contestMenuDisabled"
+        >
+          <span slot="label"
+            ><i class="fa fa-list" aria-hidden="true"></i>&nbsp;Problem</span
+          >
+          <transition name="el-zoom-in-bottom">
+            <router-view
+              v-if="route_name === 'ContestProblemList'"
+            ></router-view>
+          </transition>
+        </el-tab-pane>
+
+        <el-tab-pane
+          name="ContestSubmissionList"
+          lazy
+          :disabled="contestMenuDisabled"
+        >
+          <span slot="label"><i class="el-icon-menu"></i>&nbsp;Status</span>
+          <transition name="el-zoom-in-bottom">
+            <router-view
+              v-if="route_name === 'ContestSubmissionList'"
+            ></router-view>
+          </transition>
+        </el-tab-pane>
+
+        <el-tab-pane name="ContestRank" lazy :disabled="contestMenuDisabled">
+          <span slot="label"
+            ><i class="fa fa-bar-chart" aria-hidden="true"></i>&nbsp;Rank</span
+          >
+          <transition name="el-zoom-in-bottom">
+            <router-view v-if="route_name === 'ContestRank'"></router-view>
+          </transition>
+        </el-tab-pane>
+
+        <el-tab-pane
+          name="ContestAnnouncementList"
+          lazy
+          :disabled="contestMenuDisabled"
+        >
+          <span slot="label"
+            ><i class="fa fa-bullhorn" aria-hidden="true"></i
+            >&nbsp;Announcement</span
+          >
+          <transition name="el-zoom-in-bottom">
+            <router-view
+              v-if="route_name === 'ContestAnnouncementList'"
+            ></router-view>
+          </transition>
+        </el-tab-pane>
+
+        <el-tab-pane name="ContestComment" lazy :disabled="contestMenuDisabled">
+          <span slot="label"
+            ><i class="fa fa-commenting" aria-hidden="true"></i
+            >&nbsp;Comment</span
+          >
+          <transition name="el-zoom-in-bottom">
+            <router-view v-if="route_name === 'ContestComment'"></router-view>
+          </transition>
+        </el-tab-pane>
+
+        <el-tab-pane
+          name="ContestACInfo"
+          lazy
+          :disabled="contestMenuDisabled"
+          v-if="showAdminHelper"
+        >
+          <span slot="label"
+            ><i class="el-icon-s-help" aria-hidden="true"></i>&nbsp;AC
+            Info</span
+          >
+          <transition name="el-zoom-in-bottom">
+            <router-view v-if="route_name === 'ContestACInfo'"></router-view>
+          </transition>
+        </el-tab-pane>
+
+        <el-tab-pane
+          name="ContestRejudgeAdmin"
+          lazy
+          :disabled="contestMenuDisabled"
+          v-if="isSuperAdmin"
+        >
+          <span slot="label"
+            ><i class="el-icon-refresh" aria-hidden="true"></i
+            >&nbsp;Rejudge</span
+          >
+          <transition name="el-zoom-in-bottom">
+            <router-view
+              v-if="route_name === 'ContestRejudgeAdmin'"
+            ></router-view>
+          </transition>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+  </div>
+</template>
+<script>
+import time from '@/common/time';
+import moment from 'moment';
+import api from '@/common/api';
+import { mapState, mapGetters, mapActions } from 'vuex';
+import { addCodeBtn } from '@/common/codeblock';
+import {
+  CONTEST_STATUS_REVERSE,
+  CONTEST_STATUS,
+  CONTEST_TYPE_REVERSE,
+  RULE_TYPE,
+} from '@/common/constants';
+import myMessage from '@/common/message';
+export default {
+  name: '',
+  data() {
+    return {
+      route_name: 'contestDetails',
+      timer: null,
+      CONTEST_STATUS: {},
+      CONTEST_STATUS_REVERSE: {},
+      CONTEST_TYPE_REVERSE: {},
+      RULE_TYPE: {},
+      btnLoading: false,
+      contestPassword: '',
+    };
+  },
+  created() {
+    this.contestID = this.$route.params.contestID;
+    this.route_name = this.$route.name;
+    if (this.route_name == 'ContestProblemDetails') {
+      this.route_name = 'ContestProblemList';
+    }
+    if (this.route_name == 'ContestSubmissionDeatil') {
+      this.route_name = 'ContestSubmissionList';
+    }
+    this.CONTEST_TYPE_REVERSE = Object.assign({}, CONTEST_TYPE_REVERSE);
+    this.CONTEST_STATUS = Object.assign({}, CONTEST_STATUS);
+    this.CONTEST_STATUS_REVERSE = Object.assign({}, CONTEST_STATUS_REVERSE);
+    this.RULE_TYPE = Object.assign({}, RULE_TYPE);
+    this.$store.dispatch('getContest').then((res) => {
+      this.changeDomTitle({ title: res.data.data.title });
+      let data = res.data.data;
+      let endTime = moment(data.endTime);
+      // 如果当前时间还是在比赛结束前的时间，需要计算倒计时
+      if (endTime.isAfter(moment(data.now))) {
+        // 实时更新时间
+        this.timer = setInterval(() => {
+          this.$store.commit('nowAdd1s');
+        }, 1000);
+      }
+      this.$nextTick((_) => {
+        addCodeBtn();
+      });
+    });
+  },
+  methods: {
+    ...mapActions(['changeDomTitle']),
+    formatTooltip(val) {
+      if (this.contest.status == -1) {
+        // 还未开始
+        return '00:00:00';
+      } else if (this.contest.status == 0) {
+        return time.secondFormat(this.BeginToNowDuration); // 格式化时间
+      } else {
+        return time.secondFormat(this.contest.duration);
+      }
+    },
+    checkPassword() {
+      if (this.contestPassword === '') {
+        myMessage.warning('请输入该比赛的密码！');
+        return;
+      }
+      this.btnLoading = true;
+      api.registerContest(this.contestID + '', this.contestPassword).then(
+        (res) => {
+          myMessage.success(res.data.msg);
+          this.$store.commit('contestIntoAccess', { intoAccess: true });
+          this.btnLoading = false;
+        },
+        (res) => {
+          this.btnLoading = false;
+        }
+      );
+    },
+    tabClick(tab) {
+      let name = tab.name;
+      if (name !== this.$route.name) {
+        this.$router.push({ name: name });
+      }
+    },
+  },
+  computed: {
+    ...mapState({
+      contest: (state) => state.contest.contest,
+      now: (state) => state.contest.now,
+    }),
+    ...mapGetters([
+      'contestMenuDisabled',
+      'contestRuleType',
+      'contestStatus',
+      'countdown',
+      'BeginToNowDuration',
+      'isContestAdmin',
+      'isSuperAdmin',
+      'ContestRealTimePermission',
+      'passwordFormVisible',
+    ]),
+    progressValue: {
+      get: function() {
+        return this.$store.getters.progressValue;
+      },
+      set: function() {},
+    },
+    timeStep() {
+      // 时间段平分滑条长度
+      return 100 / this.contest.duration;
+    },
+    countdownColor() {
+      if (this.contestStatus) {
+        return 'color:' + CONTEST_STATUS_REVERSE[this.contestStatus].color;
+      }
+    },
+    showAdminHelper() {
+      return this.isContestAdmin && this.contestRuleType === RULE_TYPE.ACM;
+    },
+    descriptionHtml() {
+      if (this.contest.description) {
+        return this.$markDown.render(this.contest.description);
+      }
+    },
+  },
+  watch: {
+    $route(newVal) {
+      this.route_name = newVal.name;
+      if (newVal.name == 'ContestProblemDetails') {
+        this.route_name = 'ContestProblemList';
+      }
+      if (this.route_name == 'ContestSubmissionDeatil') {
+        this.route_name = 'ContestSubmissionList';
+      }
+      this.contestID = newVal.params.contestID;
+      this.changeDomTitle({ title: this.contest.title });
+    },
+  },
+  beforeDestroy() {
+    clearInterval(this.timer);
+    this.$store.commit('clearContest');
+  },
+};
+</script>
+<style scoped>
+@media screen and (min-width: 768px) {
+  .contest-body {
+    padding: 0 3%;
+  }
+  .contest-time .left {
+    text-align: left;
+  }
+  .contest-time .right {
+    text-align: right;
+  }
+  .password-form-card {
+    width: 400px;
+    margin: 0 auto;
+  }
+}
+@media screen and (max-width: 768px) {
+  .contest-time .left,
+  .contest-time .right {
+    text-align: center;
+  }
+}
+/deep/.el-slider__button {
+  width: 20px !important;
+  height: 20px !important;
+  background-color: #409eff !important;
+}
+/deep/.el-slider__button-wrapper {
+  z-index: 500;
+}
+/deep/.el-slider__bar {
+  height: 10px !important;
+  background-color: #09be24 !important;
+}
+/deep/ .el-card__header {
+  border-bottom: 0px;
+  padding-bottom: 0px;
+}
+/deep/.el-tabs__nav-wrap {
+  background: #fff;
+  border-radius: 3px;
+}
+/deep/.el-tabs--top .el-tabs__item.is-top:nth-child(2) {
+  padding-left: 20px;
+}
+.contest-title {
+  text-align: center;
+}
+.contest-time {
+  width: 100%;
+  font-size: 16px;
+}
+.el-tag--dark {
+  border-color: #fff;
+}
+.el-tag {
+  color: rgb(25, 190, 107);
+  background: #fff;
+  border: 1px solid #e9eaec;
+  font-size: 18px;
+}
+.sub-menu {
+  margin-top: 15px;
+}
+.password-form-tips {
+  text-align: center;
+  font-size: 14px;
+}
+</style>
