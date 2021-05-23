@@ -184,7 +184,7 @@ hoj-frontend:
     container_name: hoj-frontend
     restart: always
     # 开启https，请提供证书
-    #volumes:
+    volumes:
       - ./server.crt:/etc/nginx/etc/crt/server.crt
       - ./server.key:/etc/nginx/etc/crt/server.key
     environment:
