@@ -30,6 +30,7 @@ module.exports = {
                 collapsable: true,
                 children: [
                     'deploy/',
+					'deploy/docker',
                     'deploy/frontend',
 					'deploy/mysql',
 					'deploy/redis',
@@ -44,7 +45,8 @@ module.exports = {
                 collapsable: true,
                 children: [
                     'develop/',
-                    'develop/db'
+                    'develop/db',
+					'develop/sandbox'
                 ]
             },
 			{
@@ -52,7 +54,11 @@ module.exports = {
                 collapsable: true,
                 children: [
                     'use/',
-                    'use/sandbox',
+					'use/testcase',
+					'use/contest',
+					'use/import-problem',
+					'use/import-user',
+					'use/discussion-admin',
                     'use/spj'
                 ]
             },
