@@ -1,4 +1,4 @@
-# redis部署
+# Redis部署
 
 ## docker部署
 
