@@ -1,6 +1,6 @@
 hoj-backstage:
   port: ${BACKEND_SERVER_PORT:6688} # 本服务器启动的端口号
-  nacos-url: ${NACOS_URL:172.20.0.4:8848} # nacos的地址
+  nacos-url: ${NACOS_URL:129.204.177.72:8848} # nacos的地址
 server:
   port: ${hoj-backstage.port}
 spring:
