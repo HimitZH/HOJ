@@ -48,10 +48,6 @@ public class JudgeServer {
     @ApiModelProperty(value = "0可用，1不可用")
     private Integer status;
 
-    @Version
-    @TableField(fill = FieldFill.INSERT)
-    private Long version;
-
     @ApiModelProperty(value = "是否为远程判题vj")
     private Boolean isRemote;
 

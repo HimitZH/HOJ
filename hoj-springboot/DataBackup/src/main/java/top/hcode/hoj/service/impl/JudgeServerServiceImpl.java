@@ -8,6 +8,8 @@ import top.hcode.hoj.dao.JudgeServerMapper;
 import top.hcode.hoj.pojo.entity.JudgeServer;
 import top.hcode.hoj.service.JudgeServerService;
 
+import java.util.List;
+
 /**
  * @Author: Himit_ZH
  * @Date: 2021/4/15 11:27
@@ -15,6 +17,5 @@ import top.hcode.hoj.service.JudgeServerService;
  */
 @Service
 public class JudgeServerServiceImpl extends ServiceImpl<JudgeServerMapper, JudgeServer> implements JudgeServerService {
-
 
 }
