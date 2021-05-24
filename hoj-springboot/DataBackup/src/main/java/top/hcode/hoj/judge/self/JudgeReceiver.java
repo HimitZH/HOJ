@@ -6,10 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import top.hcode.hoj.judge.JudgeServerUtils;
+import top.hcode.hoj.judge.Dispatcher;
 import top.hcode.hoj.pojo.entity.Judge;
 import top.hcode.hoj.pojo.entity.ToJudge;
-import top.hcode.hoj.service.impl.JudgeServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
@@ -25,12 +24,12 @@ import top.hcode.hoj.utils.RedisUtils;
 public class JudgeReceiver {
 
     @Autowired
-    private JudgeServerUtils judgeServerUtils;
+    private Dispatcher dispatcher;
 
     @Autowired
     private RedisUtils redisUtils;
 
-    @Async
+    @Async("judgeTaskAsyncPool")
     public void processWaitingTask() {
         // 如果队列中还有任务，则继续处理
         if (redisUtils.lGetListSize(Constants.Judge.STATUS_JUDGE_WAITING.getName()) > 0) {
@@ -48,9 +47,8 @@ public class JudgeReceiver {
         Judge judge = task.get("judge", Judge.class);
         String token = task.getStr("token");
         Integer tryAgainNum = task.getInt("tryAgainNum");
-
         // 调用判题服务
-        judgeServerUtils.dispatcher("judge", "/judge", new ToJudge()
+        dispatcher.dispatcher("judge", "/judge", new ToJudge()
                 .setJudge(judge)
                 .setToken(token)
                 .setRemoteJudge(null)

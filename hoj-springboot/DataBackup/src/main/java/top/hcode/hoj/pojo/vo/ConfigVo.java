@@ -21,7 +21,7 @@ public class ConfigVo {
     @Value("${hoj.db.username}")
     private String mysqlUsername;
 
-    @Value("${hoj.db.password:hoj123456}")
+    @Value("${hoj.db.password}")
     private String mysqlPassword;
 
     @Value("${hoj.db.name}")

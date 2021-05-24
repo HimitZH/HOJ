@@ -24,6 +24,8 @@ public class AsyncTaskConfig implements AsyncConfigurer {
         taskExecutor.setMaxPoolSize(50);
         // 缓存队列
         taskExecutor.setQueueCapacity(200);
+        //活跃时间
+        taskExecutor.setKeepAliveSeconds(10);
         // 对拒绝task的处理策略
         //(1) 默认的ThreadPoolExecutor.AbortPolicy   处理程序遭到拒绝将抛出运行时RejectedExecutionException;
         //(2) ThreadPoolExecutor.CallerRunsPolicy 线程调用运行该任务的 execute 本身。此策略提供简单的反馈控制机制，能够减缓新任务的提交速度

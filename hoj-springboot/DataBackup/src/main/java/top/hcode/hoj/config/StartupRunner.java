@@ -107,9 +107,6 @@ public class StartupRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (openRemoteJudge.equals("true")) {
-            addRemoteJudgeAccountToRedis();
-        }
         // 动态修改nacos上的配置文件
         if (judgeToken.equals("default")) {
             configVo.setJudgeToken(IdUtil.fastSimpleUUID());
@@ -147,6 +144,10 @@ public class StartupRunner implements CommandLineRunner {
         configVo.setCfUsernameList(cfUsernameList);
         configVo.setCfPasswordList(cfPasswordList);
         configService.sendNewConfigToNacos();
+
+        if (openRemoteJudge.equals("true")) {
+            addRemoteJudgeAccountToRedis();
+        }
     }
 
     /**

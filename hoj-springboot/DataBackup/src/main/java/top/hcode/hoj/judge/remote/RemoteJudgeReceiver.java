@@ -6,12 +6,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import top.hcode.hoj.judge.JudgeServerUtils;
+import top.hcode.hoj.judge.Dispatcher;
 import top.hcode.hoj.pojo.entity.Judge;
-import top.hcode.hoj.pojo.entity.JudgeServer;
 import top.hcode.hoj.pojo.entity.RemoteJudgeAccount;
 import top.hcode.hoj.pojo.entity.ToJudge;
 import top.hcode.hoj.service.impl.JudgeServiceImpl;
@@ -23,7 +19,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
-@Async
 public class RemoteJudgeReceiver {
 
 
@@ -34,7 +29,7 @@ public class RemoteJudgeReceiver {
     private JudgeServiceImpl judgeService;
 
     @Autowired
-    private JudgeServerUtils judgeServerUtils;
+    private Dispatcher dispatcher;
 
     @Autowired
     private RedisUtils redisUtils;
@@ -42,7 +37,7 @@ public class RemoteJudgeReceiver {
     @Autowired
     private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @Async("judgeTaskAsyncPool")
     public void processWaitingTask() {
         // 如果队列中还有任务，则继续处理
         if (redisUtils.lGetListSize(Constants.Judge.STATUS_REMOTE_JUDGE_WAITING_HANDLE.getName()) > 0) {
@@ -54,7 +49,6 @@ public class RemoteJudgeReceiver {
         }
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void handleJudgeMsg(String taskJsonStr) {
 
         JSONObject task = JSONUtil.parseObj(taskJsonStr);
@@ -88,7 +82,7 @@ public class RemoteJudgeReceiver {
 
             if (account != null) { // 如果获取到账号
                 // 调用判题服务
-                judgeServerUtils.dispatcher("judge", "/remote-judge", new ToJudge()
+                dispatcher.dispatcher("judge", "/remote-judge", new ToJudge()
                         .setJudge(judge)
                         .setToken(token)
                         .setRemoteJudge(remoteJudge)

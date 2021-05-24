@@ -153,7 +153,7 @@ public class Constants {
 
         PYTHON2("Python2", "main.py", "main.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python -m py_compile ./{1}", defaultEnv),
 
-        PYTHON3("Python3", "main.py", "__pycache__/main.cpython-37.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python3 -m py_compile ./{1}", defaultEnv),
+        PYTHON3("Python3", "main.py", "__pycache__/main.cpython-36.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python3 -m py_compile ./{1}", defaultEnv),
 
         GOLANG("Golang", "main.go", "main", 3000L, 5000L, 512 * 1024 * 1024L, "/usr/bin/go build -o {2} {1}", defaultEnv),
 
