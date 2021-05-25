@@ -23,7 +23,7 @@ class HduJudgeTest {
     @Test
     void getLoginCookie() throws Exception {
 
-        Map<String, Object> loginUtils = getLoginUtils("Himit_ZH", "hoj123456");
+        Map<String, Object> loginUtils = getLoginUtils("username", "password");
         CodeForcesJudge.CodeForcesToken token = (CodeForcesJudge.CodeForcesToken) loginUtils.get("token");
         Connection CEInfoConnection = JsoupUtils.getConnectionFromUrl("https://codeforces.com/data/judgeProtocol", headers, token.cookies);
         CEInfoConnection.ignoreContentType(true);
