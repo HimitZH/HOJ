@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.dao.JudgeMapper">
+    <select id="getCommonJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="false">
+        select j.uid,j.submit_id,j.submit_time,j.uid,j.username,j.uid,j.pid,j.display_pid,j.status,j.share,
+        j.time,j.memory,j.length,j.language,j.cid,j.cpid,j.judger
+        from judge j
+        <where>
+            j.cid = 0 AND j.cpid = 0
+            <if test="searchPid!=null">
+                AND j.display_pid like concat('%',#{searchPid},'%')
+            </if>
+            <if test="username!='' and username!=null">
+                AND j.username like concat('%',#{username},'%')
+            </if>
+            <if test="status!=null">
+                AND (j.status = #{status}
+                    <if test="status==1">
+                    OR j.status = 2
+                    </if>
+                )
+            </if>
+            <if test="uid!=null and uid!=''">
+                AND j.uid = #{uid}
+            </if>
+        </where>
+        order by j.submit_time DESC,j.submit_id DESC
+    </select>
+
+
+    <select id="getContestJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="false">
+        select j.uid,j.submit_id,j.submit_time,j.uid,j.username,j.uid,cp.display_id,
+        j.status,j.share,j.time,j.memory,j.length,j.language,j.cid,j.cpid,j.judger
+        from judge j,contest_problem cp
+        <where>
+            j.pid=cp.pid AND j.cid = cp.cid
+            <if test="cid!=null">
+               AND j.cid = #{cid}
+            </if>
+            <if test="displayId!=null and displayId!=''">
+                AND cp.display_id like concat('%',#{displayId},'%')
+            </if>
+            <if test="username!='' and username!=null">
+                AND j.username like concat('%',#{username},'%')
+            </if>
+            <if test="status!=null">
+                AND j.status = #{status}
+            </if>
+            <if test="uid!=null and uid!=''">
+                AND j.uid = #{uid}
+            </if>
+            <if test="beforeContestSubmit!=null and beforeContestSubmit==true">
+                AND (select start_time from contest where id = #{cid}) > j.submit_time
+            </if>
+            <if test="beforeContestSubmit!=null and beforeContestSubmit==false">
+                AND j.submit_time >= (select start_time from contest where id = #{cid})
+            </if>
+        </where>
+        order by j.submit_time DESC,j.submit_id DESC
+    </select>
+
+    <select id="getTodayJudgeNum" resultType="int">
+        SELECT count(*) FROM judge WHERE DATE(gmt_create) = CURDATE();
+    </select>
+</mapper>

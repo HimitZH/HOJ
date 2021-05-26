@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.dao.UserRoleMapper">
+    <resultMap id="map_UserRoles" type="top.hcode.hoj.pojo.vo.UserRolesVo">
+        <id column="uuid" property="uid"></id>
+        <result column="username" property="username"></result>
+        <result column="password" property="password"></result>
+        <result column="nickname" property="nickname"></result>
+        <result column="school" property="school"></result>
+        <result column="course" property="course"></result>
+        <result column="number" property="number"></result>
+        <result column="realname" property="realname"></result>
+        <result column="cf_username" property="cfUsername"></result>
+        <result column="github" property="github"></result>
+        <result column="blog" property="blog"></result>
+        <result column="email" property="email"></result>
+        <result column="signature" property="signature"></result>
+        <result column="status" property="status"></result>
+        <result column="avatar" property="avatar"></result>
+        <result column="gmt_create" property="gmtCreate"></result>
+        <result column="gmt_modified" property="gmtModified"></result>
+        <collection property="roles" ofType="top.hcode.hoj.pojo.entity.Role">
+            <id column="role_id" property="id"></id>
+            <result column="role" property="role"></result>
+            <result column="description" property="description"></result>
+            <result column="role_status" property="status"></result>
+            <result column="role_gmt_create" property="gmtCreate"></result>
+            <result column="role_gmt_modified" property="gmtModified"></result>
+        </collection>
+    </resultMap>
+
+    <select id="getUserRoles" resultMap="map_UserRoles">
+        SELECT r.id as role_id,r.role as role,r.description as description,r.status as role_status, r.gmt_create as
+        role_gmt_create,
+        r.gmt_modified as role_gmt_modified,
+        u.* FROM user_info u
+        LEFT OUTER JOIN user_role ur ON u.uuid=ur.uid LEFT JOIN role r ON ur.role_id = r.id
+        <where>
+            <if test="uid != null and uid != ''">
+                u.uuid = #{uid}
+            </if>
+            <if test="username != null and username != ''">
+                and u.username = #{username}
+            </if>
+        </where>
+
+    </select>
+
+
+    <resultMap id="map_UserRolesList" type="top.hcode.hoj.pojo.vo.UserRolesVo">
+        <id column="uuid" property="uid"></id>
+        <result column="username" property="username"></result>
+        <result column="password" property="password"></result>
+        <result column="nickname" property="nickname"></result>
+        <result column="school" property="school"></result>
+        <result column="course" property="course"></result>
+        <result column="number" property="number"></result>
+        <result column="realname" property="realname"></result>
+        <result column="cf_username" property="cfUsername"></result>
+        <result column="github" property="github"></result>
+        <result column="blog" property="blog"></result>
+        <result column="email" property="email"></result>
+        <result column="signature" property="signature"></result>
+        <result column="status" property="status"></result>
+        <result column="avatar" property="avatar"></result>
+        <result column="gmt_create" property="gmtCreate"></result>
+        <result column="gmt_modified" property="gmtModified"></result>
+        <collection property="roles" ofType="top.hcode.hoj.pojo.entity.Role" select="getUserListRoles" column="uuid">
+        </collection>
+    </resultMap>
+
+
+    <!-- 主查询  -->
+    <select id="getUserList" resultMap="map_UserRolesList" resultType="list">
+        SELECT u.* FROM user_info u
+        <where>
+            <if test="keyword!=null and keyword!=''">
+                u.username like CONCAT("%",#{keyword},"%")
+                or u.email like CONCAT("%",#{keyword},"%")
+                or u.realname like CONCAT("%",#{keyword},"%")
+            </if>
+        </where>
+        order by u.gmt_create desc
+    </select>
+
+    <!-- 子查询 -->
+    <select id="getUserListRoles" resultType="top.hcode.hoj.pojo.entity.Role">
+        select  r.* from role r,user_role ur where ur.uid=#{uuid} and ur.role_id = r.id
+    </select>
+
+</mapper>
