@@ -447,13 +447,14 @@ export default {
         this.$store.dispatch('changeModalStatus', { visible: true });
       } else {
         this.discussionDialogTitle = 'Create Discussion';
-        this.showEditDiscussionDialog = true;
         if (this.backupDiscussion) {
           this.discussion = this.backupDiscussion;
+          // 避免监听覆盖
+          this.discussion.pid = this.query.pid || null;
         } else {
           this.discussion = {
             id: null,
-            pid: null,
+            pid: this.query.pid || null,
             title: '',
             content: '',
             description: '',
@@ -464,6 +465,7 @@ export default {
             avatar: '',
           };
         }
+        this.showEditDiscussionDialog = true;
       }
     },
 
