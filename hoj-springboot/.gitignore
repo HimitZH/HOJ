@@ -1,7 +1,14 @@
+*.classpath
+
+# Package Files 
+*.jar
+*.war
+*.ear
+
 .DS_Store
 node_modules
-/dist
-/target/
+dist/
+target/
 .classpath
 .project
 
