@@ -1,12 +1,16 @@
 package top.hcode.hoj.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.yaml.snakeyaml.Yaml;
 import top.hcode.hoj.crawler.problem.ProblemStrategy;
 import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.entity.ProblemCase;
+import top.hcode.hoj.pojo.vo.ImportProblemVo;
 import top.hcode.hoj.pojo.vo.ProblemVo;
 import top.hcode.hoj.pojo.entity.Problem;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -30,4 +34,6 @@ public interface ProblemService extends IService<Problem> {
     ProblemStrategy.RemoteProblemInfo getOtherOJProblemInfo(String OJName, String problemId, String author) throws Exception;
 
     boolean adminAddOtherOJProblem(ProblemStrategy.RemoteProblemInfo remoteProblemInfo, String OJName);
+
+    ImportProblemVo buildExportProblem(Long pid, List<HashMap<String, Object>> problemCaseList, HashMap<Long, String> languageMap, HashMap<Long, String> tagMap);
 }

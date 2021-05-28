@@ -1,12 +1,14 @@
 package top.hcode.hoj.controller.admin;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ZipUtil;
 import cn.hutool.core.io.file.FileWriter;
-import cn.hutool.json.JSON;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -22,12 +24,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.error.YAMLException;
 import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.*;
-import top.hcode.hoj.pojo.vo.ACMContestRankVo;
-import top.hcode.hoj.pojo.vo.ExcelUserVo;
-import top.hcode.hoj.pojo.vo.OIContestRankVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.*;
 import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
@@ -39,10 +43,8 @@ import java.io.*;
 import java.io.File;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -80,6 +82,16 @@ public class FileController {
 
     @Autowired
     private JudgeServiceImpl judgeService;
+
+    @Autowired
+    private LanguageServiceImpl languageService;
+
+    @Autowired
+    private ProblemServiceImpl problemService;
+
+    @Autowired
+    private TagServiceImpl tagService;
+
 
     @RequestMapping("/generate-user-excel")
     @RequiresAuthentication
@@ -245,14 +257,14 @@ public class FileController {
     @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
     public void downloadTestcase(@RequestParam("pid") Long pid, HttpServletResponse response) {
 
-        String workDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + "problem_" + pid;
+        String workDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid;
         File file = new File(workDir);
         if (!file.exists()) { // 本地为空 尝试去数据库查找
             QueryWrapper<ProblemCase> problemCaseQueryWrapper = new QueryWrapper<>();
             problemCaseQueryWrapper.eq("pid", pid);
             List<ProblemCase> problemCaseList = problemCaseService.list(problemCaseQueryWrapper);
             Assert.notEmpty(problemCaseList, "对不起，该题目的评测数据为空！");
-            workDir = Constants.File.TESTCASE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + IdUtil.simpleUUID();
+            workDir = Constants.File.FILE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + IdUtil.simpleUUID();
             FileUtil.mkdir(workDir);
             // 写入本地
             for (int i = 0; i < problemCaseList.size(); i++) {
@@ -268,9 +280,9 @@ public class FileController {
 
         String fileName = "problem_" + pid + "_testcase_" + System.currentTimeMillis() + ".zip";
         // 将对应文件夹的文件压缩成zip
-        ZipUtil.zip(workDir, Constants.File.TESTCASE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
+        ZipUtil.zip(workDir, Constants.File.FILE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
         // 将zip变成io流返回给前端
-        FileReader fileReader = new FileReader(Constants.File.TESTCASE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
+        FileReader fileReader = new FileReader(Constants.File.FILE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
         BufferedInputStream bins = new BufferedInputStream(fileReader.getInputStream());//放到缓冲流里面
         OutputStream outs = null;//获取文件输出IO流
         BufferedOutputStream bouts = null;
@@ -314,7 +326,7 @@ public class FileController {
             }
             // 清空临时文件
             FileUtil.del(workDir);
-            FileUtil.del(Constants.File.TESTCASE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
+            FileUtil.del(Constants.File.FILE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
         }
     }
 
@@ -373,7 +385,7 @@ public class FileController {
                     .sheet("rank")
                     .doWrite(fileService.changeACMContestRankToExcelRowList(acmContestRankVoList, contestProblemDisplayIDList));
         } else {
-            List<ContestRecord> oiContestRecord = contestRecordService.getOIContestRecord(cid, isOpenSealRank, contest.getSealRankTime(),contest.getStartTime(), contest.getEndTime());
+            List<ContestRecord> oiContestRecord = contestRecordService.getOIContestRecord(cid, isOpenSealRank, contest.getSealRankTime(), contest.getStartTime(), contest.getEndTime());
             Assert.notEmpty(oiContestRecord, "比赛暂无排行榜记录！");
             List<OIContestRankVo> oiContestRankVoList = contestRecordService.calcOIRank(oiContestRecord);
             EasyExcel.write(response.getOutputStream())
@@ -612,5 +624,340 @@ public class FileController {
         }
 
     }
+
+    /**
+     * @param file
+     * @MethodName importProblem
+     * @Description zip文件导入题目
+     * @Return
+     * @Since 2021/5/27
+     */
+    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresAuthentication
+    @ResponseBody
+    @Transactional
+    @PostMapping("/import-problem")
+    public CommonResult importProblem(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+
+        String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
+        if (!"zip".toUpperCase().contains(suffix.toUpperCase())) {
+            return CommonResult.errorResponse("请上传zip格式的题目文件压缩包！");
+        }
+
+        String fileDirId = IdUtil.simpleUUID();
+        String fileDir = Constants.File.TESTCASE_TMP_FOLDER.getPath() + File.separator + fileDirId;
+        String filePath = fileDir + File.separator + file.getOriginalFilename();
+        // 文件夹不存在就新建
+        FileUtil.mkdir(fileDir);
+        try {
+            file.transferTo(new File(filePath));
+        } catch (IOException e) {
+            FileUtil.del(fileDir);
+            return CommonResult.errorResponse("服务器异常：评测数据上传失败！");
+        }
+
+        // 将压缩包压缩到指定文件夹
+        ZipUtil.unzip(filePath, fileDir);
+
+        // 删除zip文件
+        FileUtil.del(filePath);
+
+
+        // 检查文件是否存在
+        File testCaseFileList = new File(fileDir);
+        File[] files = testCaseFileList.listFiles();
+        if (files == null || files.length == 0) {
+            FileUtil.del(fileDir);
+            return CommonResult.errorResponse("评测数据压缩包里文件不能为空！");
+        }
+
+
+        HashMap<String, File> problemInfo = new HashMap<>();
+        HashMap<String, File> testcaseInfo = new HashMap<>();
+
+        // 遍历读取与检查是否in和out文件一一对应，否则报错
+        for (File tmp : files) {
+            if (tmp.isFile()) {
+                // 检查文件是否时json文件
+                if (!tmp.getName().endsWith("json")) {
+                    FileUtil.del(fileDir);
+                    return CommonResult.errorResponse("编号为：" + tmp.getName() + "的文件格式错误，请使用json文件！");
+                }
+                String tmpPreName = tmp.getName().substring(0, tmp.getName().lastIndexOf("."));
+                problemInfo.put(tmpPreName, tmp);
+            }
+            if (tmp.isDirectory()) {
+                testcaseInfo.put(tmp.getName(), tmp);
+            }
+        }
+
+        // 读取json文件生成对象
+        HashMap<String, ImportProblemVo> problemVoMap = new HashMap<>();
+        for (String key : problemInfo.keySet()) {
+            // 若有名字不对应，直接返回失败
+            if (testcaseInfo.getOrDefault(key, null) == null) {
+                FileUtil.del(fileDir);
+                return CommonResult.errorResponse("请检查编号为：" + key + "的题目数据文件与测试数据文件夹是否一一对应！");
+            }
+            try {
+                FileReader fileReader = new FileReader(problemInfo.get(key));
+                ImportProblemVo importProblemVo = JSONUtil.toBean(fileReader.readString(), ImportProblemVo.class);
+                problemVoMap.put(key, importProblemVo);
+            } catch (Exception e) {
+                FileUtil.del(fileDir);
+                return CommonResult.errorResponse("请检查编号为：" + key + "的题目json文件的格式：" + e.getLocalizedMessage());
+            }
+        }
+
+        QueryWrapper<Language> languageQueryWrapper = new QueryWrapper<>();
+        languageQueryWrapper.eq("oj", "ME");
+        List<Language> languageList = languageService.list(languageQueryWrapper);
+
+        HashMap<String, Long> languageMap = new HashMap<>();
+        for (Language language : languageList) {
+            languageMap.put(language.getName(), language.getId());
+        }
+
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        List<ProblemDto> problemDtos = new LinkedList<>();
+        for (String key : problemInfo.keySet()) {
+            ImportProblemVo importProblemVo = problemVoMap.get(key);
+            // 格式化题目语言
+            List<Language> languages = new LinkedList<>();
+            for (String lang : importProblemVo.getLanguages()) {
+                Long lid = languageMap.getOrDefault(lang, null);
+
+                if (lid == null) {
+                    return CommonResult.errorResponse("请检查编号为：" + key + "的题目的代码语言是否有错，不要添加不支持的语言！");
+                }
+                languages.add(new Language().setId(lid).setName(lang));
+            }
+
+            // 格式化题目代码模板
+            List<CodeTemplate> codeTemplates = new LinkedList<>();
+            for (Map<String, String> tmp : importProblemVo.getCodeTemplates()) {
+                String language = tmp.getOrDefault("language", null);
+                String code = tmp.getOrDefault("code", null);
+                Long lid = languageMap.getOrDefault(language, null);
+                if (language == null || code == null || lid == null) {
+                    FileUtil.del(fileDir);
+                    return CommonResult.errorResponse("请检查编号为：" + key + "的题目的代码模板列表是否有错，不要添加不支持的语言！");
+                }
+                codeTemplates.add(new CodeTemplate().setCode(code).setStatus(true).setLid(lid));
+            }
+            Problem problem = BeanUtil.mapToBean(importProblemVo.getProblem(), Problem.class, true);
+            if (problem.getAuthor() == null) {
+                problem.setAuthor(userRolesVo.getUsername());
+            }
+            List<ProblemCase> problemCaseList = new LinkedList<>();
+            for (Map<String, Object> tmp : importProblemVo.getSamples()) {
+                problemCaseList.add(BeanUtil.mapToBean(tmp, ProblemCase.class, true));
+            }
+
+            List<Tag> tagList = tagService.list();
+            HashMap<String, Long> tagMap = new HashMap<>();
+            for (Tag tag : tagList) {
+                tagMap.put(tag.getName(), tag.getId());
+            }
+
+            ProblemDto problemDto = new ProblemDto();
+            problemDto.setIsSpj(importProblemVo.getIsSpj())
+                    .setProblem(problem)
+                    .setCodeTemplates(codeTemplates)
+                    .setTags(importProblemVo.getTags().stream().map(tag -> new Tag().setName(tag).setId(tagMap.getOrDefault(tag, null))).collect(Collectors.toList()))
+                    .setLanguages(languages)
+                    .setUploadTestcaseDir(fileDir + File.separator + key)
+                    .setIsUploadTestCase(true)
+                    .setSamples(problemCaseList);
+
+            problemDtos.add(problemDto);
+        }
+        for (ProblemDto problemDto : problemDtos) {
+            problemService.adminAddProblem(problemDto);
+        }
+        FileUtil.del(fileDir);
+        return CommonResult.successResponse(null, "导入题目成功");
+    }
+
+
+    /**
+     * @param pidList
+     * @param response
+     * @MethodName exportProblem
+     * @Description 导出指定的题目包括测试数据生成zip
+     * @Return
+     * @Since 2021/5/28
+     */
+    @GetMapping("/export-problem")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    public void exportProblem(@RequestParam("pid") List<Long> pidList, HttpServletResponse response) {
+
+        QueryWrapper<Language> languageQueryWrapper = new QueryWrapper<>();
+        languageQueryWrapper.eq("oj", "ME");
+        List<Language> languageList = languageService.list(languageQueryWrapper);
+
+        HashMap<Long, String> languageMap = new HashMap<>();
+        for (Language language : languageList) {
+            languageMap.put(language.getId(), language.getName());
+        }
+
+        List<Tag> tagList = tagService.list();
+
+        HashMap<Long, String> tagMap = new HashMap<>();
+        for (Tag tag : tagList) {
+            tagMap.put(tag.getId(), tag.getName());
+        }
+
+        String workDir = Constants.File.FILE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + IdUtil.simpleUUID();
+
+        // 使用线程池
+        ExecutorService threadPool = new ThreadPoolExecutor(
+                2, // 核心线程数
+                4, // 最大线程数。最多几个线程并发。
+                3,//当非核心线程无任务时，几秒后结束该线程
+                TimeUnit.SECONDS,// 结束线程时间单位
+                new LinkedBlockingDeque<>(200), //阻塞队列，限制等候线程数
+                Executors.defaultThreadFactory(),
+                new ThreadPoolExecutor.DiscardOldestPolicy());//队列满了，尝试去和最早的竞争，也不会抛出异常！
+
+        List<FutureTask<Void>> futureTasks = new ArrayList<>();
+
+        for (Long pid : pidList) {
+
+            futureTasks.add(new FutureTask<>(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    String testcaseWorkDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid;
+                    File file = new File(testcaseWorkDir);
+
+                    List<HashMap<String, Object>> problemCases = new LinkedList<>();
+                    if (!file.exists() || file.listFiles() == null) { // 本地为空 尝试去数据库查找
+                        QueryWrapper<ProblemCase> problemCaseQueryWrapper = new QueryWrapper<>();
+                        problemCaseQueryWrapper.eq("pid", pid);
+                        List<ProblemCase> problemCaseList = problemCaseService.list(problemCaseQueryWrapper);
+                        FileUtil.mkdir(testcaseWorkDir);
+                        // 写入本地
+                        for (int i = 0; i < problemCaseList.size(); i++) {
+                            String filePreName = testcaseWorkDir + File.separator + (i + 1);
+                            String inputName = filePreName + ".in";
+                            String outputName = filePreName + ".out";
+                            FileWriter infileWriter = new FileWriter(inputName);
+                            infileWriter.write(problemCaseList.get(i).getInput());
+                            FileWriter outfileWriter = new FileWriter(outputName);
+                            outfileWriter.write(problemCaseList.get(i).getOutput());
+
+                            ProblemCase problemCase = problemCaseList.get(i).setPid(null)
+                                    .setInput(inputName)
+                                    .setOutput(outputName)
+                                    .setGmtCreate(null)
+                                    .setStatus(null)
+                                    .setId(null)
+                                    .setGmtModified(null);
+                            HashMap<String, Object> problemCaseMap = new HashMap<>();
+                            BeanUtil.beanToMap(problemCase, problemCaseMap, false, true);
+                            problemCases.add(problemCaseMap);
+                        }
+                        FileUtil.copy(testcaseWorkDir, workDir, true);
+
+                    } else {
+                        String infoPath = testcaseWorkDir + File.separator + "info";
+                        if (FileUtil.exist(infoPath)) {
+                            FileReader reader = new FileReader(infoPath);
+                            JSONObject jsonObject = JSONUtil.parseObj(reader.readString());
+                            JSONArray testCases = jsonObject.getJSONArray("testCases");
+                            for (int i = 0; i < testCases.size(); i++) {
+                                JSONObject jsonObject1 = testCases.get(i, JSONObject.class);
+                                HashMap<String, Object> problemCaseMap = new HashMap<>();
+                                problemCaseMap.put("input", jsonObject1.getStr("inputName"));
+                                problemCaseMap.put("output", jsonObject1.getStr("outputName"));
+                                Integer score = jsonObject1.getInt("score");
+                                if (score != null && score > 0) {
+                                    problemCaseMap.put("score", score);
+                                }
+                                problemCases.add(problemCaseMap);
+                            }
+                        }
+                        FileUtil.copy(testcaseWorkDir, workDir, true);
+                    }
+                    ImportProblemVo importProblemVo = problemService.buildExportProblem(pid, problemCases, languageMap, tagMap);
+                    String content = JSONUtil.toJsonStr(importProblemVo);
+                    FileWriter fileWriter = new FileWriter(workDir + File.separator + "problem_" + pid + ".json");
+                    fileWriter.write(content);
+                    return null;
+                }
+            }));
+
+        }
+        // 提交到线程池进行执行
+        for (FutureTask<Void> futureTask : futureTasks) {
+            threadPool.submit(futureTask);
+        }
+        // 所有任务执行完成且等待队列中也无任务关闭线程池
+        if (!threadPool.isShutdown()) {
+            threadPool.shutdown();
+        }
+        // 阻塞主线程, 直至线程池关闭
+        try {
+            threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            log.error("线程池异常--------------->{}", e.getMessage());
+        }
+
+        String fileName = "problem_export_" + System.currentTimeMillis() + ".zip";
+        // 将对应文件夹的文件压缩成zip
+        ZipUtil.zip(workDir, Constants.File.FILE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
+        // 将zip变成io流返回给前端
+        FileReader fileReader = new FileReader(Constants.File.FILE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
+        BufferedInputStream bins = new BufferedInputStream(fileReader.getInputStream());//放到缓冲流里面
+        OutputStream outs = null;//获取文件输出IO流
+        BufferedOutputStream bouts = null;
+        try {
+            outs = response.getOutputStream();
+            bouts = new BufferedOutputStream(outs);
+            response.setContentType("application/x-download");
+            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(fileName, "UTF-8"));
+            int bytesRead = 0;
+            byte[] buffer = new byte[1024 * 10];
+            //开始向网络传输文件流
+            while ((bytesRead = bins.read(buffer, 0, 1024 * 10)) != -1) {
+                bouts.write(buffer, 0, bytesRead);
+            }
+            bouts.flush();
+        } catch (IOException e) {
+            log.error("导出题目数据的压缩文件异常------------>{}", e.getMessage());
+            response.reset();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            Map<String, Object> map = new HashMap<>();
+            map.put("status", CommonResult.STATUS_ERROR);
+            map.put("msg", "导出题目数据失败，请重新尝试！");
+            map.put("data", null);
+            try {
+                response.getWriter().println(JSONUtil.toJsonStr(map));
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        } finally {
+            try {
+                bins.close();
+                if (outs != null) {
+                    outs.close();
+                }
+                if (bouts != null) {
+                    bouts.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // 清空临时文件
+            FileUtil.del(workDir);
+            FileUtil.del(Constants.File.FILE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
+        }
+    }
+
 
 }

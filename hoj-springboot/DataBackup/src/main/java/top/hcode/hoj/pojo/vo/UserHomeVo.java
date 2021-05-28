@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -44,5 +45,8 @@ public class UserHomeVo {
 
     @ApiModelProperty(value = "已解决题目列表")
     private List<String> solvedList;
+
+    @ApiModelProperty(value = "最近上线时间")
+    private Date recentLoginTime;
 
 }

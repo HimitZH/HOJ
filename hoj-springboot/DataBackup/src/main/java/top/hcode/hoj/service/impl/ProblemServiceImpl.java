@@ -1,5 +1,6 @@
 package top.hcode.hoj.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.io.file.FileWriter;
@@ -11,16 +12,19 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.YamlJsonParser;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
+import org.yaml.snakeyaml.Yaml;
 import top.hcode.hoj.crawler.problem.CFProblemStrategy;
 import top.hcode.hoj.crawler.problem.HDUProblemStrategy;
 import top.hcode.hoj.crawler.problem.ProblemContext;
 import top.hcode.hoj.crawler.problem.ProblemStrategy;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.pojo.vo.ImportProblemVo;
 import top.hcode.hoj.pojo.vo.ProblemVo;
 import top.hcode.hoj.dao.ProblemMapper;
 import top.hcode.hoj.service.ProblemService;
@@ -34,6 +38,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -185,7 +190,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         if (needDeleteCTs.size() > 0) {
             deleteTemplate = codeTemplateService.removeByIds(needDeleteCTs);
         }
-        if (problemDto.getCodeTemplates().size()>0) {
+        if (problemDto.getCodeTemplates().size() > 0) {
             saveOrUpdateCodeTemplate = codeTemplateService.saveOrUpdateBatch(problemDto.getCodeTemplates());
         }
 
@@ -434,7 +439,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         result.set("testCasesSize", problemCaseList.size());
         result.set("testCases", new JSONArray());
 
-        String testCasesDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + "problem_" + problemId;
+        String testCasesDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() +File.separator+ "problem_" + problemId;
 
 
         for (ProblemCase problemCase : problemCaseList) {
@@ -480,7 +485,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         result.set("testCasesSize", problemCaseList.size());
         result.set("testCases", new JSONArray());
 
-        String testCasesDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + "problem_" + problemId;
+        String testCasesDir = Constants.File.TESTCASE_BASE_FOLDER.getPath()+File.separator + "problem_" + problemId;
         FileUtil.del(testCasesDir);
         for (int index = 0; index < problemCaseList.size(); index++) {
             JSONObject jsonObject = new JSONObject();
@@ -605,6 +610,48 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         }
 
         return addProblemResult && addProblemTagResult && addProblemLanguageResult && initProblemCountResult;
+    }
+
+    @Override
+    public ImportProblemVo buildExportProblem(Long pid, List<HashMap<String, Object>> problemCaseList,
+                                              HashMap<Long, String> languageMap, HashMap<Long, String> tagMap) {
+        // 导出相当于导入
+        ImportProblemVo importProblemVo = new ImportProblemVo();
+        Problem problem = problemMapper.selectById(pid);
+        problem.setCaseVersion(null)
+                .setGmtCreate(null)
+                .setId(null)
+                .setGmtModified(null);
+        HashMap<String,Object> problemMap = new HashMap<>();
+        BeanUtil.beanToMap(problem,problemMap,false,true);
+        importProblemVo.setProblem(problemMap);
+        QueryWrapper<CodeTemplate> codeTemplateQueryWrapper = new QueryWrapper<>();
+        codeTemplateQueryWrapper.eq("pid", pid).eq("status", true);
+        List<CodeTemplate> codeTemplates = codeTemplateService.list(codeTemplateQueryWrapper);
+        List<HashMap<String, String>> codeTemplateList = new LinkedList<>();
+        for (CodeTemplate codeTemplate : codeTemplates) {
+            HashMap<String, String> tmp = new HashMap<>();
+            tmp.put("language", languageMap.get(codeTemplate.getLid()));
+            tmp.put("code", codeTemplate.getCode());
+            codeTemplateList.add(tmp);
+        }
+        importProblemVo.setCodeTemplates(codeTemplateList);
+        importProblemVo.setIsSpj(problem.getSpjCode() != null);
+
+        importProblemVo.setSamples(problemCaseList);
+
+        QueryWrapper<ProblemTag> problemTagQueryWrapper = new QueryWrapper<>();
+        problemTagQueryWrapper.eq("pid", pid);
+        List<ProblemTag> problemTags = problemTagService.list(problemTagQueryWrapper);
+        importProblemVo.setTags(problemTags.stream().map(problemTag -> tagMap.get(problemTag.getTid())).collect(Collectors.toList()));
+
+        QueryWrapper<ProblemLanguage> problemLanguageQueryWrapper = new QueryWrapper<>();
+        problemLanguageQueryWrapper.eq("pid", pid);
+        List<ProblemLanguage> problemLanguages = problemLanguageService.list(problemLanguageQueryWrapper);
+        importProblemVo.setLanguages(problemLanguages.stream().map(problemLanguage -> languageMap.get(problemLanguage.getLid())).collect(Collectors.toList()));
+
+
+        return importProblemVo;
     }
 
     // 去除所有的空格换行等空白符

@@ -135,15 +135,15 @@ public class Constants {
 
         USER_AVATAR_FOLDER("/hoj/file/avatar"),
 
-        MARKDOWN_IMG_FOLDER("/hoj/md"),
+        MARKDOWN_IMG_FOLDER("/hoj/file/md"),
 
         IMG_API("/api/public/img/"),
 
         TESTCASE_TMP_FOLDER("/hoj/file/zip"),
 
-        TESTCASE_BASE_FOLDER("/hoj/testcase/"),
+        TESTCASE_BASE_FOLDER("/hoj/testcase"),
 
-        TESTCASE_DOWNLOAD_TMP_FOLDER("/hoj/file/zip/download"),
+        FILE_DOWNLOAD_TMP_FOLDER("/hoj/file/zip/download"),
 
         CONTEST_AC_SUBMISSION_TMP_FOLDER("/hoj/file/zip/contest_ac");
 
