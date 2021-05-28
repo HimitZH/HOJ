@@ -358,7 +358,7 @@ public class AccountController {
 
         userHomeInfo.setSolvedList(disPlayIdList);
         QueryWrapper<Session> sessionQueryWrapper = new QueryWrapper<>();
-        sessionQueryWrapper.eq("uid", userRolesVo.getUid()).orderByDesc("gmt_create").last("limit 1");
+        sessionQueryWrapper.eq("uid", uid).orderByDesc("gmt_create").last("limit 1");
 
         Session recentSession = sessionDao.selectOne(sessionQueryWrapper);
         if (recentSession != null) {
