@@ -40,7 +40,7 @@ public class ProblemCase {
     private Integer score;
 
     @ApiModelProperty(value = "0可用，1不可用")
-    private int status;
+    private Integer status;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;

@@ -347,7 +347,7 @@ public class AccountController {
 
         List<String> disPlayIdList = new LinkedList<>();
 
-        if (pidList.size()>0) {
+        if (pidList.size() > 0) {
             QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
             problemQueryWrapper.in("id", pidList);
             List<Problem> problems = problemService.list(problemQueryWrapper);
@@ -357,6 +357,13 @@ public class AccountController {
         }
 
         userHomeInfo.setSolvedList(disPlayIdList);
+        QueryWrapper<Session> sessionQueryWrapper = new QueryWrapper<>();
+        sessionQueryWrapper.eq("uid", userRolesVo.getUid()).orderByDesc("gmt_create").last("limit 1");
+
+        Session recentSession = sessionDao.selectOne(sessionQueryWrapper);
+        if (recentSession != null) {
+            userHomeInfo.setRecentLoginTime(recentSession.getGmtCreate());
+        }
         return CommonResult.successResponse(userHomeInfo, "查询成功！");
     }
 

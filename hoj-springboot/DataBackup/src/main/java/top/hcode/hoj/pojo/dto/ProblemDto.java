@@ -1,6 +1,7 @@
 package top.hcode.hoj.pojo.dto;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 import top.hcode.hoj.pojo.entity.*;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  * @Description:
  */
 @Data
+@Accessors(chain = true)
 public class ProblemDto {
 
     private Problem problem;
