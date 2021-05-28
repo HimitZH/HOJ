@@ -2,9 +2,7 @@
   <div>
     <el-card>
       <div slot="header">
-        <span class="panel-title home-title"
-          >Export Problems(暂不支持使用！)</span
-        >
+        <span class="panel-title home-title">Export Problems</span>
         <div class="filter-row">
           <span>
             <el-button
@@ -21,6 +19,7 @@
               placeholder="Enter keyword"
               type="search"
               size="medium"
+              @keyup.enter.native="filterByKeyword"
               @search-click="filterByKeyword"
             ></vxe-input>
           </span>
@@ -65,11 +64,11 @@
 
     <el-card style="margin-top:15px">
       <div slot="header">
-        <span class="panel-title home-title">Import QDUOJ Problems</span>
+        <span class="panel-title home-title">Import Problems</span>
       </div>
       <el-upload
-        ref="QDU"
-        action="/api/admin/import_problem"
+        ref="HOJ"
+        action="/api/file/import-problem"
         name="file"
         :file-list="fileList1"
         :show-file-list="true"
@@ -91,7 +90,7 @@
           style="margin-left: 10px;"
           size="small"
           type="success"
-          @click="submitUpload('QDU')"
+          @click="submitUpload('HOJ')"
           icon="el-icon-upload"
           >Upload</el-button
         >
@@ -102,7 +101,7 @@
 <script>
 import api from '@/common/api';
 import utils from '@/common/utils';
-
+import myMessage from '@/common/message';
 export default {
   name: 'import_and_export',
   data() {
@@ -126,7 +125,7 @@ export default {
     };
   },
   mounted() {
-    // this.getProblems()
+    this.getProblems();
   },
   methods: {
     // 题目表部分勾选 改变选中的内容
@@ -142,12 +141,13 @@ export default {
     getProblems(page = 1) {
       let params = {
         keyword: this.keyword,
-        offset: (page - 1) * this.limit,
+        currentPage: page,
         limit: this.limit,
+        oj: 'HOJ',
       };
       this.loadingProblems = true;
-      api.getProblemList(params).then((res) => {
-        this.problems = res.data.data.results;
+      api.admin_getProblemList(params).then((res) => {
+        this.problems = res.data.data.records;
         this.total = res.data.data.total;
         this.loadingProblems = false;
       });
@@ -155,9 +155,9 @@ export default {
     exportProblems() {
       let params = [];
       for (let p of this.selected_problems) {
-        params.push('problem_id=' + p.id);
+        params.push('pid=' + p.id);
       }
-      let url = '/admin/export_problem?' + params.join('&');
+      let url = '/api/file/export-problem?' + params.join('&');
       utils.downloadFile(url);
     },
     submitUpload(ref) {
@@ -170,17 +170,16 @@ export default {
       this.fileList2 = fileList.slice(-1);
     },
     uploadSucceeded(response) {
-      if (response.error) {
-        this.$error(response.data);
+      console.log(response);
+      if (response.status != 200) {
+        myMessage.error(response.msg);
       } else {
-        this.$success(
-          'Successfully imported ' + response.data.import_count + ' problems'
-        );
+        myMessage.success(response.msg);
         this.getProblems();
       }
     },
     uploadFailed() {
-      this.$error('Upload failed');
+      myMessage.error('Upload failed');
     },
     filterByKeyword() {
       this.getProblems();

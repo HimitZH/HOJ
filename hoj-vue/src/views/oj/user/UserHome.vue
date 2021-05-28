@@ -10,8 +10,20 @@
       ></avatar>
     </div>
     <el-card class="box-card">
-      <div>
-        <p style="margin-top: 50px">
+      <div class="recent-login">
+        <el-tooltip
+          :content="profile.recentLoginTime | localtime"
+          placement="top"
+        >
+          <el-tag type="success" effect="plain" size="medium">
+            <i class="fa fa-circle">
+              最近上线：{{ profile.recentLoginTime | fromNow }}</i
+            >
+          </el-tag>
+        </el-tooltip>
+      </div>
+      <div class="user-info">
+        <p>
           <span class="emphasis"
             ><i class="fa fa-user-circle-o" aria-hidden="true"></i>
             {{ profile.username }}</span
@@ -212,6 +224,10 @@ export default {
     z-index: 1;
     margin-top: -90px;
   }
+  .container .recent-login {
+    text-align: center;
+    margin-top: 30px;
+  }
 }
 
 @media screen and (min-width: 1080px) {
@@ -227,6 +243,14 @@ export default {
     transform: translate(-50%);
     z-index: 1;
     margin-top: -8%;
+  }
+  .container .recent-login {
+    position: absolute;
+    right: 1%;
+    top: 1%;
+  }
+  .container .user-info {
+    margin-top: 50px;
   }
 }
 .container .avatar {

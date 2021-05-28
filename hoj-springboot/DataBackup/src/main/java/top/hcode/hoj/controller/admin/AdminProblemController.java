@@ -54,7 +54,8 @@ public class AdminProblemController {
     @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
     public CommonResult getProblemList(@RequestParam(value = "limit", required = false) Integer limit,
                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
-                                       @RequestParam(value = "keyword", required = false) String keyword) {
+                                       @RequestParam(value = "keyword", required = false) String keyword,
+                                       @RequestParam(value = "oj", required = false) String oj) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;
         IPage<Problem> iPage = new Page<>(currentPage, limit);
@@ -62,13 +63,14 @@ public class AdminProblemController {
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc("gmt_create");
+        if (!StringUtils.isEmpty(oj)) {
+            queryWrapper.like("problem_id", oj.toUpperCase());
+        }
         if (!StringUtils.isEmpty(keyword)) {
-            keyword = keyword.trim();
-            queryWrapper
-                    .like("title", keyword).or()
-                    .like("author", keyword).or()
-                    .like("problem_id", keyword)
-                    .orderByAsc("gmt_create");
+            final String key = keyword.trim();
+            queryWrapper.and(wrapper -> wrapper.like("title", key).or()
+                    .like("author", key).or()
+                    .like("problem_id", key));
             problemList = problemService.page(iPage, queryWrapper);
         } else {
             problemList = problemService.page(iPage, queryWrapper);
@@ -161,7 +163,7 @@ public class AdminProblemController {
         map.put("pid", pid);
         map.put("status", 0);
         List<ProblemCase> problemCases = (List<ProblemCase>) problemCaseService.listByMap(map);
-        if (problemCases != null&&problemCases.size()>0) {
+        if (problemCases != null && problemCases.size() > 0) {
             return CommonResult.successResponse(problemCases, "获取该题目的评测样例列表成功！");
         } else {
             return CommonResult.errorResponse("获取该题目的评测样例列表失败！可能该题目测试数据是zip上传的！");
