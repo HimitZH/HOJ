@@ -51,5 +51,5 @@ export default {
   fromNow: fromNow,
   parseContestType:parseContestType,
   parseRole:parseRole,
-  parseProblemLevel:parseProblemLevel
+  parseProblemLevel:parseProblemLevel,
 }

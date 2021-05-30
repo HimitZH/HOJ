@@ -55,6 +55,7 @@ public class ConfigUtils {
                 "    base-url: " + configVo.getBaseUrl() + "\n" +
                 "    name: " + configVo.getName() + "\n" +
                 "    short-name: " + configVo.getShortName() + "\n" +
+                "    description: " + configVo.getDescription() + "\n" +
                 "    register: " + configVo.getRegister() + "\n" +
                 "    footer:\n" +
                 "      record:\n" +

@@ -45,7 +45,7 @@ public class JudgeServerApplicationTests {
     @Test
     public void test2() throws Exception {
         CodeForcesJudge codeForcesJudge = new CodeForcesJudge();
-        Map<String, Object> result = codeForcesJudge.submit("Himit_ZH", "hoj123456", "750A", "GNU G++11 5.1.0", "#include <bits/stdc++.h>\n" +
+        Map<String, Object> result = codeForcesJudge.submit("账号", "密码", "750A", "GNU G++11 5.1.0", "#include <bits/stdc++.h>\n" +
                 "using namespace std;\n" +
                 "const int maxn = 105;\n" +
                 "struct node\n" +

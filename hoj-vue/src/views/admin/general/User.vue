@@ -23,6 +23,16 @@
               @keyup.enter.native="filterByKeyword"
             ></vxe-input>
           </span>
+          <span>
+            <el-switch
+              v-model="onlyAdmin"
+              active-text="OnlyAdmin"
+              :width="40"
+              @change="filterByAdmin"
+              inactive-text="All"
+            >
+            </el-switch>
+          </span>
         </div>
       </div>
       <vxe-table
@@ -448,6 +458,7 @@ export default {
       keyword: '',
       // 是否显示用户对话框
       showUserDialog: false,
+      onlyAdmin: false,
 
       // 当前用户model
       selectUser: {
@@ -555,7 +566,9 @@ export default {
     },
     filterByKeyword() {
       this.currentChange(1);
-      this.keyword = '';
+    },
+    filterByAdmin() {
+      this.currentChange(1);
     },
     getRole(roles) {
       return roles[0]['id'];
@@ -575,16 +588,18 @@ export default {
     // 获取用户列表
     getUserList(page) {
       this.loadingTable = true;
-      api.admin_getUserList(page, this.pageSize, this.keyword).then(
-        (res) => {
-          this.loadingTable = false;
-          this.total = res.data.data.total;
-          this.userList = res.data.data.records;
-        },
-        (res) => {
-          this.loadingTable = false;
-        }
-      );
+      api
+        .admin_getUserList(page, this.pageSize, this.keyword, this.onlyAdmin)
+        .then(
+          (res) => {
+            this.loadingTable = false;
+            this.total = res.data.data.total;
+            this.userList = res.data.data.records;
+          },
+          (res) => {
+            this.loadingTable = false;
+          }
+        );
     },
     deleteUsers(ids) {
       if (!ids) {

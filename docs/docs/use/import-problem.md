@@ -2,7 +2,7 @@
 
 ## 一、HOJ题目
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210528205738445.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210530214011773.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 #### 1. 导出题目
 
@@ -60,7 +60,7 @@
     ], 
     "tags": ["测试题","测试"], // 题目标签，一般不超过三个 
     "problem": {
-        "auth": 1, 
+        "auth": 1, // 1 公开赛
         "author": "admin", // 题目上传的作者，请使用用户名
         "isRemote": false, // 均为非VJ题目，不用修改
         "problemId": "HOJ-1010", // 题目的展示id
@@ -96,13 +96,15 @@
 }
 ```
 
+## 二、导入qdoj的题目
 
+请严格按照青岛oj的后台导出的压缩文件来上传。
 
-## 二、导入其它OJ题目
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210530212411781.png)
+
+## 三、导入其它OJ题目
 
 导入HDU、Codeforces题目，只需提供该题目的题号便可一键导入
-
-
 
 **管理员进入后台，点击题目列表**
 

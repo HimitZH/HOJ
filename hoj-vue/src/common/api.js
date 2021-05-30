@@ -575,11 +575,12 @@ const adminApi = {
   },
 
   // 获取用户列表
-  admin_getUserList (currentPage, limit, keyword) {
+  admin_getUserList (currentPage, limit, keyword,onlyAdmin) {
     let params = {currentPage, limit}
     if (keyword) {
       params.keyword = keyword
     }
+    params.onlyAdmin = onlyAdmin
     return ajax('/api/admin/user/get-user-list', 'get', {
       params: params
     })

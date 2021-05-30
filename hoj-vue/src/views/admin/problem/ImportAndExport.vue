@@ -96,6 +96,41 @@
         >
       </el-upload>
     </el-card>
+
+    <el-card style="margin-top:15px">
+      <div slot="header">
+        <span class="panel-title home-title">Import QDOJ Problems</span>
+      </div>
+      <el-upload
+        ref="QDOJ"
+        action="/api/file/import-qdoj-problem"
+        name="file"
+        :file-list="fileList2"
+        :show-file-list="true"
+        :with-credentials="true"
+        :limit="3"
+        :on-change="onFile2Change"
+        :auto-upload="false"
+        :on-success="uploadSucceeded"
+        :on-error="uploadFailed"
+      >
+        <el-button
+          size="small"
+          type="primary"
+          slot="trigger"
+          icon="el-icon-folder-opened"
+          >Choose File</el-button
+        >
+        <el-button
+          style="margin-left: 10px;"
+          size="small"
+          type="success"
+          @click="submitUpload('QDOJ')"
+          icon="el-icon-upload"
+          >Upload</el-button
+        >
+      </el-upload>
+    </el-card>
   </div>
 </template>
 <script>
@@ -107,20 +142,14 @@ export default {
   data() {
     return {
       fileList1: [],
+      fileList2: [],
       page: 1,
       limit: 10,
       total: 0,
       loadingProblems: false,
       loadingImporting: false,
       keyword: '',
-      problems: [
-        {
-          id: 1001,
-          author: 'Himit_ZH',
-          title: '测试题目',
-          gmtCreate: '2020-11-11 11:11:11',
-        },
-      ],
+      problems: [],
       selected_problems: [],
     };
   },
@@ -143,7 +172,7 @@ export default {
         keyword: this.keyword,
         currentPage: page,
         limit: this.limit,
-        oj: 'HOJ',
+        oj: 'Mine',
       };
       this.loadingProblems = true;
       api.admin_getProblemList(params).then((res) => {

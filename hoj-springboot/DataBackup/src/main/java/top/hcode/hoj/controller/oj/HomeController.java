@@ -137,6 +137,8 @@ public class HomeController {
                         .put("register", configVo.getRegister())
                         .put("recordName", configVo.getRecordName())
                         .put("recordUrl", configVo.getRecordUrl())
+                        .put("description", configVo.getDescription())
+                        .put("email", configVo.getEmailUsername())
                         .put("projectName", configVo.getProjectName())
                         .put("projectUrl", configVo.getProjectUrl()).map()
         );

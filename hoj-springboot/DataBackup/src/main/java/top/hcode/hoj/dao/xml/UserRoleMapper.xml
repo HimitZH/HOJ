@@ -65,7 +65,8 @@
         <result column="avatar" property="avatar"></result>
         <result column="gmt_create" property="gmtCreate"></result>
         <result column="gmt_modified" property="gmtModified"></result>
-        <collection property="roles" ofType="top.hcode.hoj.pojo.entity.Role" select="getUserListRoles" column="uuid">
+        <collection property="roles" ofType="top.hcode.hoj.pojo.entity.Role" select="getUserListRoles"
+                    column="uuid=uuid">
         </collection>
     </resultMap>
 
@@ -86,6 +87,20 @@
     <!-- 子查询 -->
     <select id="getUserListRoles" resultType="top.hcode.hoj.pojo.entity.Role">
         select  r.* from role r,user_role ur where ur.uid=#{uuid} and ur.role_id = r.id
+    </select>
+
+    <!-- 主查询 -->
+    <select id="getAdminUserList" resultMap="map_UserRolesList" resultType="list">
+        SELECT u.* FROM user_info u, (SELECT DISTINCT ur.uid AS uid FROM user_role ur WHERE ur.role_id=1000 OR ur.role_id=1001) t
+        <where>
+         t.uid = u.uuid
+            <if test="keyword!=null and keyword!=''">
+                and (u.username like CONCAT("%",#{keyword},"%")
+                or u.email like CONCAT("%",#{keyword},"%")
+                or u.realname like CONCAT("%",#{keyword},"%"))
+            </if>
+        </where>
+        order by u.gmt_create desc
     </select>
 
 </mapper>

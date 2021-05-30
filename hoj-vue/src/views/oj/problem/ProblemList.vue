@@ -15,14 +15,14 @@
                 trigger="hover"
               >
                 <span class="el-dropdown-link">
-                  {{ query.oj === 'HOJ' || query.oj === '' ? 'HOJ' : query.oj }}
+                  {{
+                    query.oj === 'Mine' || query.oj === '' ? 'Mine' : query.oj
+                  }}
                   <i class="el-icon-caret-bottom"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item command="All">All</el-dropdown-item>
-                  <el-dropdown-item :command="OJ_NAME">{{
-                    OJ_NAME
-                  }}</el-dropdown-item>
+                  <el-dropdown-item command="Mine">Mine</el-dropdown-item>
                   <el-dropdown-item
                     :command="remoteOj.key"
                     v-for="(remoteOj, index) in REMOTE_OJ"
@@ -217,14 +217,12 @@
 <script>
 import { mapGetters } from 'vuex';
 import api from '@/common/api';
-import utils from '@/common/utils';
 import {
   PROBLEM_LEVEL,
   PROBLEM_LEVEL_RESERVE,
   JUDGE_STATUS,
   JUDGE_STATUS_RESERVE,
   REMOTE_OJ,
-  OJ_NAME,
 } from '@/common/constants';
 import Pagination from '@/components/oj/common/Pagination';
 import myMessage from '@/common/message';
@@ -241,7 +239,6 @@ export default {
       JUDGE_STATUS: {},
       JUDGE_STATUS_RESERVE: {},
       REMOTE_OJ: {},
-      OJ_NAME: '',
       tagList: [],
       currentProblemTitle: '请触碰或鼠标悬浮到指定题目行即可查看提交情况',
       problemRecord: [],
@@ -275,7 +272,6 @@ export default {
     this.JUDGE_STATUS_RESERVE = Object.assign({}, JUDGE_STATUS_RESERVE);
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
     this.REMOTE_OJ = Object.assign({}, REMOTE_OJ);
-    this.OJ_NAME = OJ_NAME;
     // 初始化
     this.problemRecord = [
       { status: 0, count: 100 },
@@ -364,7 +360,7 @@ export default {
       if (queryParams.oj == 'All') {
         queryParams.oj = '';
       } else if (!queryParams.oj) {
-        queryParams.oj = OJ_NAME;
+        queryParams.oj = 'Mine';
       }
       api.getProblemList(this.limit, queryParams).then(
         (res) => {

@@ -18,9 +18,6 @@
                 placeholder="Enter the display id of problem"
                 v-model="problem.problemId"
               >
-                <template slot="prepend" v-if="mode == 'add'">{{
-                  problemIdPrex
-                }}</template>
               </el-input>
             </el-form-item>
           </el-col>
@@ -531,7 +528,6 @@ import utils from '@/common/utils';
 import { mapGetters } from 'vuex';
 import api from '@/common/api';
 import myMessage from '@/common/message';
-import { OJ_NAME } from '@/common/constants';
 export default {
   name: 'Problem',
   components: {
@@ -562,7 +558,6 @@ export default {
       mode: '', // 该题目是编辑或者创建
       contest: {},
       codeTemplate: {},
-      problemIdPrex: 'HOJ-',
       pid: null, // 题目id，如果为创建模式则为null
       contestID: null, // 比赛id
       contestProblem: {
@@ -625,11 +620,6 @@ export default {
   mounted() {
     this.routeName = this.$route.name;
     let contestID = this.$route.params.contestId;
-    this.problemIdPrex = OJ_NAME + '-';
-    // 比赛题目HOJ-C1000
-    if (contestID) {
-      this.problemIdPrex += 'C';
-    }
     this.uploadFileUrl = '/api/file/upload-testcase-zip';
     if (
       this.routeName === 'admin-edit-problem' ||
@@ -1140,10 +1130,6 @@ export default {
 
       let problemDto = {}; // 上传给后台的数据
       problemDto['problem'] = Object.assign({}, this.problem); // 深克隆
-      if (this.mode == 'add') {
-        problemDto.problem.problemId =
-          this.problemIdPrex + this.problem.problemId;
-      }
       problemDto.problem.examples = utils.examplesToString(
         this.problem.examples
       ); // 需要转换格式

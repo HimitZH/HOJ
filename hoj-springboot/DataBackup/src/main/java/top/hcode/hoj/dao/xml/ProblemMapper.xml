@@ -44,8 +44,11 @@
             <if test="tid != null">
                 and pt.tid = #{tid}
             </if>
-            <if test="oj != null">
-                and p.problem_id like concat(#{oj},'%')
+            <if test="oj != null and oj !='Mine'">
+                and p.problem_id like concat(#{oj},'%') and p.is_remote=true
+            </if>
+            <if test="oj != null and oj =='Mine'">
+                and p.is_remote=false
             </if>
         </where>
         order by length(p.problem_id) asc,p.problem_id asc
