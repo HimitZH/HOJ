@@ -160,7 +160,8 @@ docker-compose 启动
 version: "3"
 services:
   hoj-frontend:
-    image: registry.cn-shenzhen.aliyuncs.com/hcode/hoj_frontend
+    # image: registry.cn-shenzhen.aliyuncs.com/hcode/hoj_frontend
+    image: hoj-frontend
     container_name: hoj-frontend
     restart: always
     # 开启https，请提供证书
