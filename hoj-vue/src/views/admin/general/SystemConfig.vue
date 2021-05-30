@@ -12,10 +12,10 @@
       >
         <el-row :gutter="20">
           <el-col :md="8" :xs="24">
-            <el-form-item label="Base Url" required>
+            <el-form-item label="Base URL" required>
               <el-input
                 v-model="websiteConfig.baseUrl"
-                placeholder="Website Base Url"
+                placeholder="Website Base URL"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -45,10 +45,10 @@
             </el-form-item>
           </el-col>
           <el-col :md="12" :xs="24">
-            <el-form-item label="Record Url" required>
+            <el-form-item label="Record URL" required>
               <el-input
                 v-model="websiteConfig.recordUrl"
-                placeholder="Website Record Url"
+                placeholder="Website Record URL"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -61,11 +61,23 @@
             </el-form-item>
           </el-col>
           <el-col :md="12" :xs="24">
-            <el-form-item label="Project Url" required>
+            <el-form-item label="Project URL" required>
               <el-input
                 v-model="websiteConfig.projectUrl"
-                placeholder="Website Project Url"
+                placeholder="Website Project URL"
               ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :md="24" :xs="24">
+            <el-form-item label="Website Desc" required>
+              <el-input
+                type="textarea"
+                placeholder="Website Description"
+                v-model="websiteConfig.description"
+                maxlength="150"
+                show-word-limit
+              >
+              </el-input>
             </el-form-item>
           </el-col>
           <el-col :md="24" :xs="24">

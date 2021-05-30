@@ -50,13 +50,14 @@ public class AdminUserController {
     @RequiresPermissions("announcement_admin")
     public CommonResult getUserList(@RequestParam(value = "limit", required = false) Integer limit,
                                     @RequestParam(value = "currentPage", required = false) Integer currentPage,
+                                    @RequestParam(value = "onlyAdmin", defaultValue = "false") Boolean onlyAdmin,
                                     @RequestParam(value = "keyword", required = false) String keyword) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;
         if (keyword != null) {
             keyword = keyword.trim();
         }
-        IPage<UserRolesVo> userList = userRoleService.getUserList(limit, currentPage, keyword);
+        IPage<UserRolesVo> userList = userRoleService.getUserList(limit, currentPage, keyword, onlyAdmin);
         if (userList.getTotal() == 0) { // 未查询到一条数据
             return CommonResult.successResponse(userList, "暂无数据");
         } else {

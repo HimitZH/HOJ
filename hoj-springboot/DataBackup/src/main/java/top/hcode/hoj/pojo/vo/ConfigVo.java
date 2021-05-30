@@ -89,6 +89,9 @@ public class ConfigVo {
     @Value("${hoj.web-config.short-name}")
     private String shortName;
 
+    @Value("${hoj.web-config.description}")
+    private String description;
+
     @Value("${hoj.web-config.register}")
     private Boolean register;
 

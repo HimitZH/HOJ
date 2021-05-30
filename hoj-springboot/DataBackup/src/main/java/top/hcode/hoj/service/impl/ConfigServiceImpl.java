@@ -156,6 +156,9 @@ public class ConfigServiceImpl implements ConfigService {
         if (!StringUtils.isEmpty(params.get("shortName"))) {
             configVo.setShortName((String) params.get("shortName"));
         }
+        if (!StringUtils.isEmpty(params.get("description"))) {
+            configVo.setDescription((String) params.get("description"));
+        }
         if (params.get("register") != null) {
             configVo.setRegister((Boolean) params.get("register"));
         }

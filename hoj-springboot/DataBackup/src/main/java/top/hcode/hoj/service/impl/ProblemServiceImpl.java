@@ -404,7 +404,11 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         List<ProblemTag> problemTagList = new LinkedList<>();
         for (Tag tag : problemDto.getTags()) {
             if (tag.getId() == null) { //id为空 表示为原tag表中不存在的 插入后可以获取到对应的tagId
-                tagService.save(tag);
+                try {
+                    tagService.save(tag);
+                } catch (Exception ignored) {
+                    tag = tagService.getOne(new QueryWrapper<Tag>().eq("name", tag.getName()));
+                }
             }
             problemTagList.add(new ProblemTag().setTid(tag.getId()).setPid(pid));
         }
@@ -439,7 +443,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         result.set("testCasesSize", problemCaseList.size());
         result.set("testCases", new JSONArray());
 
-        String testCasesDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() +File.separator+ "problem_" + problemId;
+        String testCasesDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + problemId;
 
 
         for (ProblemCase problemCase : problemCaseList) {
@@ -485,7 +489,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         result.set("testCasesSize", problemCaseList.size());
         result.set("testCases", new JSONArray());
 
-        String testCasesDir = Constants.File.TESTCASE_BASE_FOLDER.getPath()+File.separator + "problem_" + problemId;
+        String testCasesDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + problemId;
         FileUtil.del(testCasesDir);
         for (int index = 0; index < problemCaseList.size(); index++) {
             JSONObject jsonObject = new JSONObject();
@@ -622,8 +626,8 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                 .setGmtCreate(null)
                 .setId(null)
                 .setGmtModified(null);
-        HashMap<String,Object> problemMap = new HashMap<>();
-        BeanUtil.beanToMap(problem,problemMap,false,true);
+        HashMap<String, Object> problemMap = new HashMap<>();
+        BeanUtil.beanToMap(problem, problemMap, false, true);
         importProblemVo.setProblem(problemMap);
         QueryWrapper<CodeTemplate> codeTemplateQueryWrapper = new QueryWrapper<>();
         codeTemplateQueryWrapper.eq("pid", pid).eq("status", true);

@@ -6,7 +6,7 @@
     (SELECT COUNT( DISTINCT pid ) FROM user_acproblem WHERE uid =u.uuid) AS solved,
     (SELECT COUNT(pid) FROM user_acproblem WHERE uid =u.uuid) AS ac
     FROM user_info u,user_record ur WHERE u.uuid = ur.uid AND u.status = 0
-    ORDER BY ac DESC,solved DESC
+    ORDER BY solved DESC,ac DESC
     </select>
 
     <select id="getRecent7ACRank" resultType="top.hcode.hoj.pojo.vo.ACMRankVo">
@@ -19,7 +19,7 @@
     and DATE(gmt_create) >= DATE_SUB(CURDATE(),INTERVAL 7 DAY)) AS ac
 
     FROM user_info u,user_record ur WHERE u.uuid = ur.uid AND u.status = 0
-    ORDER BY ac DESC,solved DESC LIMIT 10
+    ORDER BY solved DESC,ac DESC LIMIT 10
     </select>
 
     <select id="getOIRankList" resultType="top.hcode.hoj.pojo.vo.OIRankVo" useCache="true">

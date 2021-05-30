@@ -25,9 +25,13 @@ public class UserRoleServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> i
     private UserRoleMapper userRoleMapper;
 
     @Override
-    public IPage<UserRolesVo> getUserList(int limit, int currentPage, String keyword) {
+    public IPage<UserRolesVo> getUserList(int limit, int currentPage, String keyword,Boolean onlyAdmin) {
         //新建分页
         Page<UserRolesVo> page = new Page<>(currentPage, limit);
-        return userRoleMapper.getUserList(page,limit, currentPage,keyword);
+        if (onlyAdmin){
+            return userRoleMapper.getAdminUserList(page,limit, currentPage,keyword);
+        }else {
+            return userRoleMapper.getUserList(page, limit, currentPage, keyword);
+        }
     }
 }
