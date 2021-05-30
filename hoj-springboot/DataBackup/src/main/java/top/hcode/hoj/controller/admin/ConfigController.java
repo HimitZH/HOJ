@@ -58,7 +58,7 @@ public class ConfigController {
         return CommonResult.successResponse(configService.getJudgeServiceInfo());
     }
 
-    @RequiresPermissions("announcement_admin")
+    @RequiresPermissions("system_info_admin")
     @RequestMapping("/get-web-config")
     public CommonResult getWebConfig() {
 
@@ -66,6 +66,7 @@ public class ConfigController {
                 MapUtil.builder().put("baseUrl", configVo.getBaseUrl())
                         .put("name", configVo.getName())
                         .put("shortName", configVo.getShortName())
+                        .put("description", configVo.getDescription())
                         .put("register", configVo.getRegister())
                         .put("recordName", configVo.getRecordName())
                         .put("recordUrl", configVo.getRecordUrl())
@@ -74,7 +75,7 @@ public class ConfigController {
         );
     }
 
-    @RequiresPermissions("announcement_admin")
+    @RequiresPermissions("system_info_admin")
     @RequestMapping(value = "/set-web-config",method = RequestMethod.PUT)
     public CommonResult setWebConfig(@RequestBody HashMap<String,Object> params){
 
@@ -86,7 +87,7 @@ public class ConfigController {
         }
     }
 
-    @RequiresPermissions("announcement_admin")
+    @RequiresPermissions("system_info_admin")
     @RequestMapping("/get-email-config")
     public CommonResult getEmailConfig() {
         return CommonResult.successResponse(
@@ -99,7 +100,7 @@ public class ConfigController {
         );
     }
 
-    @RequiresPermissions("announcement_admin")
+    @RequiresPermissions("system_info_admin")
     @PutMapping("/set-email-config")
     public CommonResult setEmailConfig(@RequestBody HashMap<String,Object> params) {
 
@@ -111,7 +112,7 @@ public class ConfigController {
         }
     }
 
-    @RequiresPermissions("announcement_admin")
+    @RequiresPermissions("system_info_admin")
     @PostMapping("/test-email")
     public CommonResult testEmail(@RequestBody HashMap<String,Object> params) throws MessagingException {
         String email = (String) params.get("email");
@@ -124,7 +125,7 @@ public class ConfigController {
         }
     }
 
-    @RequiresPermissions("announcement_admin")
+    @RequiresPermissions("system_info_admin")
     @RequestMapping("/get-db-and-redis-config")
     public CommonResult getDBAndRedisConfig(){
 
@@ -141,7 +142,7 @@ public class ConfigController {
         );
     }
 
-    @RequiresPermissions("announcement_admin")
+    @RequiresPermissions("system_info_admin")
     @PutMapping("/set-db-and-redis-config")
     public CommonResult setDBAndRedisConfig(@RequestBody HashMap<String,Object> params){
         boolean result = configService.setDBAndRedisConfig(params);

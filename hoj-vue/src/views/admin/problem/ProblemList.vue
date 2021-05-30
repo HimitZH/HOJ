@@ -325,7 +325,6 @@ export default {
     },
     filterByKeyword() {
       this.currentChange(1);
-      this.keyword = '';
     },
     addRemoteOJProblem() {
       this.addRemoteOJproblemLoading = true;

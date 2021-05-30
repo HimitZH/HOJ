@@ -14,5 +14,5 @@ import top.hcode.hoj.pojo.vo.UserRolesVo;
  * @since 2020-10-23
  */
 public interface UserRoleService extends IService<UserRole> {
-    IPage<UserRolesVo> getUserList(int limit, int currentPage, String keyword);
+    IPage<UserRolesVo> getUserList(int limit, int currentPage, String keyword,Boolean onlyAdmin);
 }

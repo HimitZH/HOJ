@@ -5,6 +5,7 @@
       @imgAdd="$imgAdd"
       @imgDel="$imgDel"
       :ishljs="true"
+      :autofocus="false"
       v-model="currentValue"
       codeStyle="arduino-light"
     ></mavon-editor>

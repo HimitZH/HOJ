@@ -12,9 +12,9 @@
         <div class="mundb-footer">
           <el-row>
             <el-col :md="6" :xs="24">
-              <h1>HOJ</h1>
-              <p>
-                Hcode Online Judge
+              <h1>{{ toUpper(websiteConfig.shortName) }}</h1>
+              <p style="line-height:25px">
+                {{ websiteConfig.description }}
               </p>
             </el-col>
             <el-col class="hr-none">
@@ -48,7 +48,7 @@
               </p>
               <p>
                 <i class="fa fa-envelope" aria-hidden="true"></i>
-                oj.hcode@qq.com
+                {{ websiteConfig.email }}
               </p>
             </el-col>
           </el-row>
@@ -96,6 +96,11 @@ export default {
       this.$router.push({
         path: path,
       });
+    },
+    toUpper(str) {
+      if (str) {
+        return str.toUpperCase();
+      }
     },
   },
   watch: {

@@ -19,6 +19,7 @@ import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.impl.*;
+import top.hcode.hoj.utils.Constants;
 
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,9 +64,11 @@ public class AdminProblemController {
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc("gmt_create");
-        if (!StringUtils.isEmpty(oj)) {
-            queryWrapper.like("problem_id", oj.toUpperCase());
+
+        if (oj != null && oj.equals("Mine")) {
+            queryWrapper.eq("is_remote", false);
         }
+
         if (!StringUtils.isEmpty(keyword)) {
             final String key = keyword.trim();
             queryWrapper.and(wrapper -> wrapper.like("title", key).or()

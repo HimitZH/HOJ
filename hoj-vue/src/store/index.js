@@ -12,6 +12,7 @@ const rootState = {
   websiteConfig:{
     recordName:'粤ICP备×××××××号-1',
     projectName:'HOJ',
+    shortName:'HOJ',
     recordUrl:'#',
     projectUrl:'#'
   },

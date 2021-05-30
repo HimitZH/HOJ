@@ -88,7 +88,9 @@ public class ProblemController {
                 pid = Long.valueOf(keyword);
             }
         }
-
+        if (oj!=null && !Constants.RemoteOJ.isRemoteOJ(oj)) {
+            oj = "Mine";
+        }
         Page<ProblemVo> problemList = problemService.getProblemList(limit, currentPage, pid, keyword,
                 difficulty, tagId, oj);
         if (problemList.getTotal() == 0) { // 未查询到一条数据

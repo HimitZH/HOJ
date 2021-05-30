@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author Himit_ZH
@@ -22,8 +22,13 @@ import java.util.List;
 @Mapper
 @Repository
 public interface UserRoleMapper extends BaseMapper<UserRole> {
-    UserRolesVo getUserRoles(@Param("uid")String uid,@Param("username")String username);
-    IPage<UserRolesVo> getUserList(Page<UserRolesVo> page, @Param("limit")int limit,
-                                   @Param("currentPage")int currentPage,
-                                   @Param("keyword")String keyword);
+    UserRolesVo getUserRoles(@Param("uid") String uid, @Param("username") String username);
+
+    IPage<UserRolesVo> getUserList(Page<UserRolesVo> page, @Param("limit") int limit,
+                                   @Param("currentPage") int currentPage,
+                                   @Param("keyword") String keyword);
+
+    IPage<UserRolesVo> getAdminUserList(Page<UserRolesVo> page, @Param("limit") int limit,
+                                        @Param("currentPage") int currentPage,
+                                        @Param("keyword") String keyword);
 }

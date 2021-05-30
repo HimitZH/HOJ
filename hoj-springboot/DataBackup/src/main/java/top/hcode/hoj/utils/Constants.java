@@ -64,6 +64,31 @@ public class Constants {
         }
     }
 
+    public enum RemoteOJ {
+        HDU("HDU"),
+        CODEFORCES("CF");
+
+        private final String name;
+
+        private RemoteOJ(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public static Boolean isRemoteOJ(String name) {
+            for (RemoteOJ remoteOJ : RemoteOJ.values()) {
+                if (remoteOJ.getName().equals(name)) {
+                    return true;
+                }
+            }
+            return false;
+
+        }
+    }
+
 
     /**
      * @Description 比赛相关的常量

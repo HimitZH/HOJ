@@ -67,7 +67,7 @@
         <el-card v-else>
           <div slot="header" class="content-center">
             <span class="panel-title home-title welcome-title"
-              >Welcome to HOJ</span
+              >Welcome to {{ toUpper(websiteConfig.shortName) }}</span
             >
           </div>
           <el-carousel
@@ -298,6 +298,11 @@ export default {
     },
     getRankTagClass(rowIndex) {
       return 'rank-tag no' + (rowIndex + 1);
+    },
+    toUpper(str) {
+      if (str) {
+        return str.toUpperCase();
+      }
     },
   },
   computed: {

@@ -276,6 +276,9 @@ hoj-frontend:
     volumes:
       - ./server.crt:/etc/nginx/etc/crt/server.crt
       - ./server.key:/etc/nginx/etc/crt/server.key
+    # 修改前端logo
+    # - ./logo.a0924d7d.png:/usr/share/nginx/html/assets/img/logo.a0924d7d.png
+    # - ./backstage.8bce8c6e.png:/usr/share/nginx/html/assets/img/backstage.8bce8c6e.png
     environment:
       - SERVER_NAME=localhost  # 提供你的域名！！！！
       - BACKEND_SERVER_HOST=${BACKEND_HOST:-172.20.0.5} # backend后端服务地址
