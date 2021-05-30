@@ -66,7 +66,7 @@
                 ><br />
                 <span
                   >Level：{{
-                    problemData.problem.difficulty | parseProblemLevel
+                    PROBLEM_LEVEL[problemData.problem.difficulty]['name']
                   }}</span
                 ><span
                   v-if="problemData.problem.type == 1"
@@ -350,6 +350,7 @@ import {
   JUDGE_STATUS_RESERVE,
   buildProblemCodeKey,
   RULE_TYPE,
+  PROBLEM_LEVEL,
 } from '@/common/constants';
 import { pie, largePie } from './chartData';
 import api from '@/common/api';
@@ -387,7 +388,9 @@ export default {
         status: 9,
       },
       problemData: {
-        problem: {},
+        problem: {
+          difficulty: 0,
+        },
         problemCount: {},
         tags: [],
         languages: [],
@@ -401,6 +404,7 @@ export default {
         height: '380',
       },
       JUDGE_STATUS_RESERVE: {},
+      PROBLEM_LEVEL: {},
       RULE_TYPE: {},
     };
   },
@@ -419,10 +423,13 @@ export default {
       next();
     }
   },
+  created() {
+    this.JUDGE_STATUS_RESERVE = Object.assign({}, JUDGE_STATUS_RESERVE);
+    this.PROBLEM_LEVEL = Object.assign({}, PROBLEM_LEVEL);
+    this.RULE_TYPE = Object.assign({}, RULE_TYPE);
+  },
   mounted() {
     this.init();
-    this.JUDGE_STATUS_RESERVE = Object.assign({}, JUDGE_STATUS_RESERVE);
-    this.RULE_TYPE = Object.assign({}, RULE_TYPE);
   },
   methods: {
     ...mapActions(['changeDomTitle']),

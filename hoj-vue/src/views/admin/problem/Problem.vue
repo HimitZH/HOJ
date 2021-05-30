@@ -89,9 +89,12 @@
                 placeholder="Enter the level of problem"
                 v-model="problem.difficulty"
               >
-                <el-option label="Easy" :value="0"></el-option>
-                <el-option label="Mid" :value="1"></el-option>
-                <el-option label="Hard" :value="2"></el-option>
+                <el-option
+                  :label="key"
+                  :value="value"
+                  v-for="(value, key, index) in PROBLEM_LEVEL_RESERVE"
+                  :key="index"
+                ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -528,6 +531,7 @@ import utils from '@/common/utils';
 import { mapGetters } from 'vuex';
 import api from '@/common/api';
 import myMessage from '@/common/message';
+import { PROBLEM_LEVEL_RESERVE } from '@/common/constants';
 export default {
   name: 'Problem',
   components: {
@@ -615,9 +619,11 @@ export default {
         languages: '',
         testCase: '',
       },
+      PROBLEM_LEVEL_RESERVE: {},
     };
   },
   mounted() {
+    this.PROBLEM_LEVEL_RESERVE = Object.assign({}, PROBLEM_LEVEL_RESERVE);
     this.routeName = this.$route.name;
     let contestID = this.$route.params.contestId;
     this.uploadFileUrl = '/api/file/upload-testcase-zip';
