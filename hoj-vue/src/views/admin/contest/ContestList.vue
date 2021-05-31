@@ -22,17 +22,17 @@
         :data="contestList"
         auto-resize
         stripe
+        align="center"
       >
-        <vxe-table-column field="id" min-width="80" title="ID">
-        </vxe-table-column>
+        <vxe-table-column field="id" width="80" title="ID"> </vxe-table-column>
         <vxe-table-column field="title" min-width="150" title="Title">
         </vxe-table-column>
-        <vxe-table-column title="Type" min-width="130">
+        <vxe-table-column title="Type" width="100">
           <template v-slot="{ row }">
             <el-tag type="gray">{{ row.type | parseContestType }}</el-tag>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="Auth" min-width="150">
+        <vxe-table-column title="Auth" width="100">
           <template v-slot="{ row }">
             <el-tooltip
               :content="CONTEST_TYPE_REVERSE[row.auth].tips"
@@ -48,7 +48,7 @@
             </el-tooltip>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="Status" min-width="130">
+        <vxe-table-column title="Status" width="100">
           <template v-slot="{ row }">
             <el-tag
               effect="dark"
@@ -76,56 +76,61 @@
             <p>Creator: {{ row.author }}</p>
           </template>
         </vxe-table-column>
-        <vxe-table-column min-width="280" title="Option">
+        <vxe-table-column min-width="150" title="Option">
           <template v-slot="{ row }">
-            <el-tooltip effect="dark" content="编辑比赛" placement="top">
-              <el-button
-                icon="el-icon-edit"
-                size="mini"
-                @click.native="goEdit(row.id)"
-                type="primary"
+            <div style="margin-bottom:10px">
+              <el-tooltip effect="dark" content="编辑比赛" placement="top">
+                <el-button
+                  icon="el-icon-edit"
+                  size="mini"
+                  @click.native="goEdit(row.id)"
+                  type="primary"
+                >
+                </el-button>
+              </el-tooltip>
+              <el-tooltip
+                effect="dark"
+                content="查看比赛题目列表"
+                placement="top"
               >
-              </el-button>
-            </el-tooltip>
-            <el-tooltip
-              effect="dark"
-              content="查看比赛题目列表"
-              placement="top"
-            >
-              <el-button
-                icon="el-icon-tickets"
-                size="mini"
-                @click.native="goContestProblemList(row.id)"
-                type="success"
+                <el-button
+                  icon="el-icon-tickets"
+                  size="mini"
+                  @click.native="goContestProblemList(row.id)"
+                  type="success"
+                >
+                </el-button>
+              </el-tooltip>
+            </div>
+            <div style="margin-bottom:10px">
+              <el-tooltip
+                effect="dark"
+                content="查看比赛公告列表"
+                placement="top"
               >
-              </el-button>
-            </el-tooltip>
-            <el-tooltip
-              effect="dark"
-              content="查看比赛公告列表"
-              placement="top"
-            >
-              <el-button
-                icon="el-icon-info"
-                size="mini"
-                @click.native="goContestAnnouncement(row.id)"
-                type="info"
+                <el-button
+                  icon="el-icon-info"
+                  size="mini"
+                  @click.native="goContestAnnouncement(row.id)"
+                  type="info"
+                >
+                </el-button>
+              </el-tooltip>
+
+              <el-tooltip
+                effect="dark"
+                content="下载通过的提交代码"
+                placement="top"
               >
-              </el-button>
-            </el-tooltip>
-            <el-tooltip
-              effect="dark"
-              content="下载通过的提交代码"
-              placement="top"
-            >
-              <el-button
-                icon="el-icon-download"
-                size="mini"
-                @click.native="openDownloadOptions(row.id)"
-                type="warning"
-              >
-              </el-button>
-            </el-tooltip>
+                <el-button
+                  icon="el-icon-download"
+                  size="mini"
+                  @click.native="openDownloadOptions(row.id)"
+                  type="warning"
+                >
+                </el-button>
+              </el-tooltip>
+            </div>
             <el-tooltip
               effect="dark"
               content="删除比赛"
