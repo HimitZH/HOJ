@@ -59,6 +59,15 @@
             </el-tag>
           </template>
         </vxe-table-column>
+        <vxe-table-column title="Status" min-width="80">
+          <template v-slot="{ row }">
+            <el-switch
+              v-model="row.visible"
+              @change="changeContestVisible(row.id, row.visible)"
+            >
+            </el-switch>
+          </template>
+        </vxe-table-column>
         <vxe-table-column min-width="210" title="More">
           <template v-slot="{ row }">
             <p>Start Time: {{ row.startTime | localtime }}</p>
@@ -67,7 +76,7 @@
             <p>Creator: {{ row.author }}</p>
           </template>
         </vxe-table-column>
-        <vxe-table-column min-width="250" title="Option">
+        <vxe-table-column min-width="280" title="Option">
           <template v-slot="{ row }">
             <el-tooltip effect="dark" content="编辑比赛" placement="top">
               <el-button
@@ -113,6 +122,20 @@
                 icon="el-icon-download"
                 size="mini"
                 @click.native="openDownloadOptions(row.id)"
+                type="warning"
+              >
+              </el-button>
+            </el-tooltip>
+            <el-tooltip
+              effect="dark"
+              content="删除比赛"
+              placement="top"
+              v-if="isSuperAdmin"
+            >
+              <el-button
+                icon="el-icon-delete"
+                size="mini"
+                @click.native="deleteContest(row.id)"
                 type="danger"
               >
               </el-button>
@@ -154,7 +177,8 @@ import {
   CONTEST_STATUS_REVERSE,
   CONTEST_TYPE_REVERSE,
 } from '@/common/constants';
-
+import { mapGetters } from 'vuex';
+import myMessage from '@/common/message';
 export default {
   name: 'ContestList',
   data() {
@@ -183,6 +207,9 @@ export default {
         this.getContestList(1);
       }
     },
+  },
+  computed: {
+    ...mapGetters(['isSuperAdmin']),
   },
   methods: {
     // 切换页码回调
@@ -225,6 +252,27 @@ export default {
       this.$router.push({
         name: 'admin-contest-problem-list',
         params: { contestId },
+      });
+    },
+    deleteContest(contestId) {
+      this.$confirm(
+        '此操作将删除该比赛以及比赛的提交、讨论、公告、记录等数据, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      ).then(() => {
+        api.admin_deleteContest(contestId).then((res) => {
+          myMessage.success(res.data.msg);
+          this.currentChange(1);
+        });
+      });
+    },
+    changeContestVisible(contestId, visible) {
+      api.admin_changeContestVisible(contestId, visible).then((res) => {
+        myMessage.success(res.data.msg);
       });
     },
     filterByKeyword() {

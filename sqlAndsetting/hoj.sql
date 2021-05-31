@@ -143,6 +143,7 @@ CREATE TABLE `contest` (
   `seal_rank` tinyint(1) DEFAULT '0' COMMENT '是否开启封榜',
   `seal_rank_time` datetime DEFAULT NULL COMMENT '封榜起始时间，一直到比赛结束，不刷新榜单',
   `status` int(11) DEFAULT NULL COMMENT '-1为未开始，0为进行中，1为已结束',
+  `visible` tinyint(1) DEFAULT '1' COMMENT '是否可见',
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`uid`),

@@ -47,7 +47,7 @@ public class AdminUserController {
 
     @GetMapping("/get-user-list")
     @RequiresAuthentication
-    @RequiresPermissions("announcement_admin")
+    @RequiresPermissions("user_admin")
     public CommonResult getUserList(@RequestParam(value = "limit", required = false) Integer limit,
                                     @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                     @RequestParam(value = "onlyAdmin", defaultValue = "false") Boolean onlyAdmin,
@@ -67,7 +67,7 @@ public class AdminUserController {
     }
 
     @PutMapping("/edit-user")
-    @RequiresPermissions("announcement_admin")
+    @RequiresPermissions("user_admin")
     @RequiresAuthentication
     @Transactional
     public CommonResult editUser(@RequestBody Map<String, Object> params) {
@@ -100,7 +100,7 @@ public class AdminUserController {
     }
 
     @DeleteMapping("/delete-user")
-    @RequiresPermissions("announcement_admin")
+    @RequiresPermissions("user_admin")
     @RequiresAuthentication
     public CommonResult deleteUser(@RequestBody Map<String, Object> params) {
         List<String> deleteUserIds = (List<String>) params.get("ids");
@@ -113,7 +113,7 @@ public class AdminUserController {
     }
 
     @PostMapping("/insert-batch-user")
-    @RequiresPermissions("announcement_admin")
+    @RequiresPermissions("user_admin")
     @RequiresAuthentication
     @Transactional
     public CommonResult insertBatchUser(@RequestBody Map<String, Object> params) {
@@ -148,7 +148,7 @@ public class AdminUserController {
     }
 
     @PostMapping("/generate-user")
-    @RequiresPermissions("announcement_admin")
+    @RequiresPermissions("user_admin")
     @RequiresAuthentication
     @Transactional
     public CommonResult generateUser(@RequestBody Map<String, Object> params) {

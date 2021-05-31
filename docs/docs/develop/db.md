@@ -403,6 +403,7 @@ contest表
 | seal_rank      | boolean      |      | 是否开启封榜                                          |
 | seal_rank_time | datetime     |      | 封榜起始时间，一直到比赛结束，不刷新榜单。            |
 | status         | int          |      | -1为未开始，0为进行中，1为已结束                      |
+| visible        | boolean      |      | 是否可见                                              |
 | gmt_create     | datetime     |      | 创建时间                                              |
 | gmt_modified   | datetime     |      | 修改时间                                              |
 

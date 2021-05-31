@@ -4,10 +4,10 @@
       <el-card shadow>
         <div slot="header">
           <el-row :gutter="18">
-            <el-col :sm="5" :md="7" :lg="10">
+            <el-col :sm="5" :md="5" :lg="7">
               <span class="panel-title hidden-xs-only">Problem List</span>
             </el-col>
-            <el-col :xs="24" :sm="4" :md="3" :lg="3" style="padding-top: 6px;">
+            <el-col :xs="8" :sm="3" :md="3" :lg="3" style="padding-top: 6px;">
               <el-dropdown
                 class="drop-menu"
                 @command="filterByOJ"
@@ -32,7 +32,7 @@
                 </el-dropdown-menu>
               </el-dropdown>
             </el-col>
-            <el-col :xs="6" :sm="4" :md="3" :lg="3" style="padding-top: 6px;">
+            <el-col :xs="8" :sm="3" :md="3" :lg="3" style="padding-top: 6px;">
               <el-dropdown
                 class="drop-menu"
                 @command="filterByDifficulty"
@@ -49,13 +49,23 @@
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item command="All">All</el-dropdown-item>
-                  <el-dropdown-item command="Easy">Easy</el-dropdown-item>
-                  <el-dropdown-item command="Mid">Mid</el-dropdown-item>
-                  <el-dropdown-item command="Hard">Hard</el-dropdown-item>
+                  <el-dropdown-item
+                    :command="value"
+                    v-for="(value, key, index) in PROBLEM_LEVEL_RESERVE"
+                    :key="index"
+                    >{{ key }}</el-dropdown-item
+                  >
                 </el-dropdown-menu>
               </el-dropdown>
             </el-col>
-            <el-col :xs="15" :sm="7" :md="7" :lg="5">
+            <el-col :xs="8" :sm="3" :md="2" :lg="3" style="padding-top: 6px;">
+              <vxe-checkbox
+                v-model="tagVisible"
+                @change="changeTagVisible(tagVisible)"
+                >Tag</vxe-checkbox
+              >
+            </el-col>
+            <el-col :xs="18" :sm="7" :md="7" :lg="5" class="top-pt">
               <vxe-input
                 v-model="query.keyword"
                 placeholder="Enter keyword"
@@ -65,7 +75,7 @@
                 @keyup.enter.native="filterByKeyword"
               ></vxe-input>
             </el-col>
-            <el-col :sm="4" :md="4" :lg="3" class="hidden-xs-only">
+            <el-col :sm="3" :md="3" :lg="3" class="hidden-xs-only">
               <el-button
                 type="primary"
                 size="small"
@@ -75,7 +85,7 @@
                 >Reset</el-button
               >
             </el-col>
-            <el-col :xs="3" class="hidden-sm-and-up">
+            <el-col :xs="6" class="hidden-sm-and-up top-pt">
               <el-button
                 type="primary"
                 size="small"
@@ -89,6 +99,7 @@
         <vxe-table
           border="inner"
           stripe
+          ref="problemList"
           auto-resize
           :loading="loadings.table"
           @cell-mouseenter="cellHover"
@@ -139,7 +150,12 @@
             </template>
           </vxe-table-column>
 
-          <vxe-table-column field="tag" title="Tag" min-width="250">
+          <vxe-table-column
+            field="tag"
+            title="Tag"
+            min-width="250"
+            visible="false"
+          >
             <template v-slot="{ row }">
               <span
                 class="el-tag el-tag--medium el-tag--light is-hit"
@@ -240,6 +256,7 @@ export default {
       JUDGE_STATUS_RESERVE: {},
       REMOTE_OJ: {},
       tagList: [],
+      tagVisible: false,
       currentProblemTitle: '请触碰或鼠标悬浮到指定题目行即可查看提交情况',
       problemRecord: [],
       problemList: [],
@@ -266,6 +283,7 @@ export default {
       },
     };
   },
+
   mounted() {
     this.PROBLEM_LEVEL = Object.assign({}, PROBLEM_LEVEL);
     this.PROBLEM_LEVEL_RESERVE = Object.assign({}, PROBLEM_LEVEL_RESERVE);
@@ -283,6 +301,13 @@ export default {
       { status: -2, count: 100 },
       { status: 4, count: 100 },
     ];
+    this.loadings.table = true;
+    setTimeout(() => {
+      // 将指定列设置为隐藏状态
+      this.$refs.problemList.getColumnByField('tag').visible = false;
+      this.$refs.problemList.refreshColumn();
+      this.loadings.table = false;
+    }, 300);
     this.init();
   },
   methods: {
@@ -297,7 +322,6 @@ export default {
       if (this.query.currentPage < 1) {
         this.query.currentPage = 1;
       }
-
       this.getTagList();
 
       this.getProblemList();
@@ -410,6 +434,10 @@ export default {
         }
       );
     },
+    changeTagVisible(visible) {
+      this.$refs.problemList.getColumnByField('tag').visible = visible;
+      this.$refs.problemList.refreshColumn();
+    },
     onReset() {
       if (JSON.stringify(this.$route.query) != '{}') {
         this.$router.push({ name: 'ProblemList' });
@@ -491,6 +519,9 @@ export default {
   margin-left: 4px !important;
   margin-top: 4px;
 }
+/deep/.vxe-checkbox .vxe-checkbox--label {
+  overflow: unset !important;
+}
 
 #pick-one {
   margin-top: 10px;
@@ -499,13 +530,15 @@ export default {
   border-bottom: 0px;
   padding-bottom: 0px;
 }
-/deep/ .el-card__body {
-  margin-top: 20px;
-}
 @media screen and (min-width: 1200px) {
   /deep/ .el-card__body {
     padding-top: 0px;
     margin-top: 5px;
+  }
+}
+@media only screen and (max-width: 767px) {
+  .top-pt {
+    padding-top: 10px;
   }
 }
 ul {
