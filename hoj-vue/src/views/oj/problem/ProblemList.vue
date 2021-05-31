@@ -50,7 +50,7 @@
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item command="All">All</el-dropdown-item>
                   <el-dropdown-item
-                    :command="value"
+                    :command="key"
                     v-for="(value, key, index) in PROBLEM_LEVEL_RESERVE"
                     :key="index"
                     >{{ key }}</el-dropdown-item
