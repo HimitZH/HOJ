@@ -12,14 +12,24 @@
                 ><el-tag effect="plain" size="small">比赛题目</el-tag></span
               >
               <div v-else-if="problemData.tags.length > 0" class="problem-tag">
-                <el-tag
-                  v-for="tag in problemData.tags"
-                  :key="tag"
-                  effect="plain"
-                  size="small"
-                  style="margin-right:10px;"
-                  >{{ tag }}</el-tag
-                >
+                <el-popover placement="right-start" width="60" trigger="hover">
+                  <el-tag
+                    slot="reference"
+                    size="small"
+                    type="primary"
+                    style="cursor: pointer;"
+                    effect="plain"
+                    >Show Tags</el-tag
+                  >
+                  <el-tag
+                    v-for="tag in problemData.tags"
+                    :key="tag"
+                    effect="plain"
+                    size="small"
+                    style="margin-right:5px;margin-top:2px"
+                    >{{ tag }}</el-tag
+                  >
+                </el-popover>
               </div>
               <div v-else-if="problemData.tags.length == 0" class="problem-tag">
                 <el-tag effect="plain" size="small">暂无标签</el-tag>

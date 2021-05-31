@@ -108,8 +108,12 @@ public class ContestController {
     public CommonResult getContestInfo(@RequestParam(value = "cid", required = true) Long cid) {
 
         ContestVo contestInfo = contestService.getContestInfoById(cid);
+        if (contestInfo == null) {
+            return CommonResult.errorResponse("对不起，该比赛不存在!");
+        }
         // 设置当前服务器系统时间
         contestInfo.setNow(new Date());
+
 
         return CommonResult.successResponse(contestInfo, "获取成功");
     }
@@ -136,6 +140,10 @@ public class ContestController {
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
         Contest contest = contestService.getById(Long.valueOf(cidStr));
+
+        if (contest == null || !contest.getVisible()) {
+            return CommonResult.errorResponse("对不起，该比赛不存在!");
+        }
 
         if (!contest.getPwd().equals(password)) { // 密码不对
             return CommonResult.errorResponse("比赛密码错误！");
@@ -414,7 +422,7 @@ public class ContestController {
 
         } else { //OI比赛：以最后一次提交得分作为该题得分
 
-            resultList = contestRecordService.getContestOIRank(cid, isOpenSealRank, contest.getSealRankTime(),contest.getStartTime(),
+            resultList = contestRecordService.getContestOIRank(cid, isOpenSealRank, contest.getSealRankTime(), contest.getStartTime(),
                     contest.getEndTime(), currentPage, limit);
         }
 
