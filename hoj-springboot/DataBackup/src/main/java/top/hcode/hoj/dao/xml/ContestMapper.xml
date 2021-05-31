@@ -5,8 +5,9 @@
         select c.id,c.author,c.title,c.description,c.type,c.status,c.source,c.auth,c.start_time,c.end_time,c.duration
         from contest c
         <where>
+            c.visible=true
             <if test="keyword!=null and keyword!=''">
-                c.title like concat('%',#{keyword},'%')
+                and c.title like concat('%',#{keyword},'%')
             </if>
             <if test="status!=null">
                 and c.status = #{status}
@@ -19,11 +20,11 @@
     </select>
     <select id="getContestInfoById" resultType="top.hcode.hoj.pojo.vo.ContestVo" useCache="true">
         select c.id,c.author,c.title,c.type,c.status,c.description,c.seal_rank,c.seal_rank_time,c.source,c.auth,c.start_time,c.end_time,c.duration
-        from contest c where c.id = #{cid}
+        from contest c where c.id = #{cid} and c.visible=true
     </select>
     <select id="getWithinNext14DaysContests" resultType="top.hcode.hoj.pojo.vo.ContestVo">
         SELECT c.id,c.author,c.title,c.type,c.source,c.auth,c.status,c.description,c.start_time,c.end_time,c.duration
-        FROM contest c WHERE DATE_ADD(CURDATE(), INTERVAL 14 DAY) >= DATE(start_time) AND c.status != 1
+        FROM contest c WHERE DATE_ADD(CURDATE(), INTERVAL 14 DAY) >= DATE(start_time) AND c.status != 1 AND c.visible=true
         order by c.start_time ASC
     </select>
 </mapper>

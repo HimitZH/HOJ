@@ -19,7 +19,7 @@
               trigger="click"
               v-model="facelistVisiable"
             >
-              <div class="emotionList">
+              <div class="emotionList face-box">
                 <a
                   href="javascript:void(0);"
                   @click="getEmo(index, true)"
@@ -867,12 +867,6 @@ export default {
 };
 </script>
 <style>
-.el-popover {
-  height: 200px !important;
-  width: 300px !important;
-  overflow: scroll !important;
-  overflow-x: hidden !important;
-}
 .comment .markdown-content p {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
@@ -880,6 +874,12 @@ export default {
 </style>
 
 <style scoped>
+.face-box {
+  height: 200px !important;
+  width: 300px !important;
+  overflow: scroll !important;
+  overflow-x: hidden !important;
+}
 .container {
   padding: 10px 20px;
   box-sizing: border-box;
@@ -903,7 +903,6 @@ export default {
 .container .own-input .own-btn-comment {
   float: right;
 }
-
 .container .emotionSelect {
   font-size: 25px;
   cursor: pointer;

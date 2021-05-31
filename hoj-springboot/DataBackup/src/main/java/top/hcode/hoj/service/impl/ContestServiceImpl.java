@@ -61,7 +61,7 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
     @Override
     public CommonResult checkContestAuth(Contest contest, UserRolesVo userRolesVo, Boolean isRoot) {
 
-        if (contest == null) {
+        if (contest == null || !contest.getVisible()) {
             return CommonResult.errorResponse("对不起，该比赛不存在！");
         }
 

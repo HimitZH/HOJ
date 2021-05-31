@@ -72,6 +72,9 @@ export default {
 };
 </script>
 <style>
+.auto-textarea-wrapper .auto-textarea-input {
+  height: 450px !important;
+}
 .markdown-body pre {
   display: block;
   border-radius: 3px !important;

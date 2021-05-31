@@ -15,7 +15,7 @@ import java.util.Date;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author Himit_ZH
@@ -24,7 +24,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="Contest对象", description="")
+@ApiModel(value = "Contest对象", description = "")
 public class Contest implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -74,6 +74,9 @@ public class Contest implements Serializable {
 
     @ApiModelProperty(value = "-1为未开始，0为进行中，1为已结束")
     private Integer status;
+
+    @ApiModelProperty(value = "是否可见")
+    private Boolean visible;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;

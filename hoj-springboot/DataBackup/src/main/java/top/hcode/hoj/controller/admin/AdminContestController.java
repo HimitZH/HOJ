@@ -91,7 +91,7 @@ public class AdminContestController {
 
     @DeleteMapping("")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = "root")
     public CommonResult deleteContest(@Valid @RequestParam("cid") Long cid) {
         boolean result = contestService.removeById(cid);
         /*
@@ -121,6 +121,20 @@ public class AdminContestController {
     @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
     public CommonResult updateContest(@RequestBody Contest contest) {
         boolean result = contestService.saveOrUpdate(contest);
+        if (result) { // 添加成功
+            return CommonResult.successResponse(null, "修改成功！");
+        } else {
+            return CommonResult.errorResponse("修改失败", CommonResult.STATUS_FAIL);
+        }
+    }
+
+    @PutMapping("/change-contest-visible")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    public CommonResult changeContestVisible(@RequestParam(value = "cid", required = true) Long cid,
+                                             @RequestParam(value = "visible", required = true) Boolean visible) {
+
+        boolean result = contestService.saveOrUpdate(new Contest().setId(cid).setVisible(visible));
         if (result) { // 添加成功
             return CommonResult.successResponse(null, "修改成功！");
         } else {
