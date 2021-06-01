@@ -104,19 +104,19 @@
             title="Run ID"
             min-width="100"
           ></vxe-table-column>
-          <vxe-table-column field="pid" title="Problem ID" min-width="100">
+          <vxe-table-column field="pid" title="Problem" min-width="150">
             <template v-slot="{ row }">
               <span
                 v-if="contestID"
                 @click="getProblemUri(row.displayId, true)"
                 style="color: rgb(87, 163, 243)"
-                >{{ row.displayId }}
+                >{{ row.displayId + ' ' + row.title }}
               </span>
               <span
                 v-else
                 @click="getProblemUri(row.displayPid, false)"
                 style="color: rgb(87, 163, 243)"
-                >{{ row.displayPid }}
+                >{{ row.displayPid + ' ' + row.title }}
               </span>
             </template>
           </vxe-table-column>
@@ -448,10 +448,10 @@ export default {
                 delete this.needCheckSubmitIds[key];
               }
             }
-            // 当前提交列表的提交都判题结束或者检查结果60s（2s*30）还没判题结束，为了避免无用请求加重服务器负担，直接停止检查的请求。
+            // 当前提交列表的提交都判题结束或者检查结果180s（2s*90）还没判题结束，为了避免无用请求加重服务器负担，直接停止检查的请求。
             if (
               Object.keys(this.needCheckSubmitIds).length == 0 ||
-              this.checkStatusNum == 30
+              this.checkStatusNum == 90
             ) {
               clearTimeout(this.refreshStatus);
               this.autoCheckOpen = false;

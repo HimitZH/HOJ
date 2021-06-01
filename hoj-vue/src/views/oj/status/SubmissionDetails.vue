@@ -88,7 +88,63 @@
         </vxe-table-column>
       </vxe-table>
     </el-col>
+    <el-col :span="24" v-if="testCaseResult">
+      <el-card style="margin-top: 13px;" shadow="hover">
+        <div slot="header">
+          <span class="panel-title home-title">测试点详情</span>
+        </div>
+        <el-row :gutter="10">
+          <el-col
+            :xs="24"
+            :sm="8"
+            :md="6"
+            :lg="3"
+            v-for="(item, index) in testCaseResult"
+            :key="index"
+          >
+            <div
+              class="test-detail-item"
+              :style="getTestCaseResultColor(item.status)"
+              v-if="item.status == JUDGE_STATUS_RESERVE.ac"
+            >
+              <span>Test #{{ index + 1 }}:</span>
+              <h2>{{ JUDGE_STATUS[item.status]['short'] }}</h2>
+              <div style="text-align:center;">
+                {{ item.time }}ms/{{ item.memory }}KB
+              </div>
+              <div class="test-run-static">
+                <span v-if="item.score != null">
+                  {{ item.score }}分 <i class="el-icon-success"></i>
+                </span>
+                <span v-else>
+                  <i class="el-icon-success"></i>
+                </span>
+              </div>
+            </div>
 
+            <div
+              class="test-detail-item"
+              :style="getTestCaseResultColor(item.status)"
+              v-else
+            >
+              <span>Test #{{ index + 1 }}: </span>
+              <h2>{{ JUDGE_STATUS[item.status]['short'] }}</h2>
+              <div style="text-align:center;">
+                {{ item.time }}ms/{{ item.memory }}KB
+              </div>
+              <div class="test-run-static">
+                <span v-if="item.score != null">
+                  {{ item.score }}分 <i class="el-icon-error"></i>
+                </span>
+                <span v-else>
+                  <i class="el-icon-error"></i>
+                </span>
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+      </el-card>
+    </el-col>
     <el-col :span="24" style="margin-top: 13px;">
       <Highlight
         :code="submission.code"
@@ -127,53 +183,6 @@
           </el-button>
         </template>
       </div>
-    </el-col>
-
-    <el-col :span="24" v-if="testCaseResult">
-      <el-card style="margin-top: 20px;">
-        <div slot="header">
-          <span class="panel-title home-title">测试点详情</span>
-        </div>
-        <el-row :gutter="10">
-          <el-col
-            :xs="24"
-            :md="12"
-            :lg="6"
-            v-for="(item, index) in testCaseResult"
-            :key="index"
-          >
-            <div
-              class="test-detail-item"
-              :style="getTestCaseResultColor(item.status)"
-              v-if="item.status == JUDGE_STATUS_RESERVE.ac"
-            >
-              <span>Test #{{ index + 1 }}:</span
-              ><span>{{ item.time }}ms/{{ item.memory }}KB</span>
-              <span class="test-run-static" v-if="item.score != null">
-                {{ item.score }}分 <i class="el-icon-success"></i>
-              </span>
-              <span class="test-run-static" v-else>
-                <i class="el-icon-success"></i>
-              </span>
-            </div>
-
-            <div
-              class="test-detail-item"
-              :style="getTestCaseResultColor(item.status)"
-              v-else
-            >
-              <span>Test #{{ index + 1 }}:</span
-              ><span>{{ item.time }}ms/{{ item.memory }}KB</span>
-              <span class="test-run-static" v-if="item.score != null">
-                {{ item.score }}分 <i class="el-icon-error"></i>
-              </span>
-              <span class="test-run-static" v-else>
-                <i class="el-icon-error"></i>
-              </span>
-            </div>
-          </el-col>
-        </el-row>
-      </el-card>
     </el-col>
   </el-row>
 </template>
@@ -404,10 +413,14 @@ export default {
 .el-row--flex {
   flex-wrap: wrap;
 }
+.el-col {
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+}
 
 .test-detail-item {
   width: 100%;
-  padding: 15px;
+  padding: 5px;
   font-size: 14px;
   display: inline-block;
   vertical-align: top;
@@ -417,11 +430,17 @@ export default {
   color: #ff431e;
   margin: 0 0 10px 0;
 }
+.test-detail-item h2 {
+  font-weight: bolder;
+  text-align: center;
+  margin: 2px;
+  padding: 0;
+}
 .test-detail-item > span {
   margin-right: 10px;
 }
 .test-run-static {
-  float: right;
+  text-align: center;
 }
 .test-detail-item.done {
   border-color: #25bb9b;

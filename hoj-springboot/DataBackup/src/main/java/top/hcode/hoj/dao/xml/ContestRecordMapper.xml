@@ -31,7 +31,10 @@
         SELECT cr.* FROM
         (SELECT uid,pid,cpid,MAX(time) AS time FROM contest_record
         <where>
-            cid=#{cid} AND status IS NOT NULL
+            cid=#{cid} AND status IS NOT NULL AND uid!='1'
+            <if test="contestAuthor!=null">
+                AND username!=#{contestAuthor}
+            </if>
             <choose>
                 <when test="isOpenSealRank">
                     AND submit_time BETWEEN #{startTime} AND #{sealTime}

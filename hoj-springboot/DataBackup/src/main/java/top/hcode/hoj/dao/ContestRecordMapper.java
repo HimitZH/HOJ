@@ -23,7 +23,8 @@ import java.util.List;
 public interface ContestRecordMapper extends BaseMapper<ContestRecord> {
     List<ContestRecord> getACInfo(IPage iPage, @Param("status") Integer status, @Param("cid") Long cid);
 
-    List<ContestRecord> getOIContestRecord(@Param("cid") Long cid, @Param("isOpenSealRank") Boolean isOpenSealRank,
+    List<ContestRecord> getOIContestRecord(@Param("cid") Long cid, @Param("contestAuthor") String contestAuthor,
+                                           @Param("isOpenSealRank") Boolean isOpenSealRank,
                                            @Param("sealTime") Date sealTime, @Param("startTime") Date startTime,
                                            @Param("endTime") Date endTime);
 }

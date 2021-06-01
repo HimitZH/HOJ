@@ -35,7 +35,7 @@
 
         <el-row :gutter="20" v-if="contestID">
           <el-col :md="12" :xs="24">
-            <el-form-item label="Display Title">
+            <el-form-item label="Display Title" required>
               <el-input
                 placeholder="Enter the display title of problem in contest"
                 v-model="contestProblem.displayTitle"
@@ -44,7 +44,7 @@
           </el-col>
 
           <el-col :md="12" :xs="24">
-            <el-form-item label="Display ID">
+            <el-form-item label="Display ID" required>
               <el-input
                 placeholder="Enter the display ID of problem in contest"
                 v-model="contestProblem.displayId"
@@ -996,6 +996,22 @@ export default {
     },
 
     submit() {
+      if (!this.problem.problemId) {
+        myMessage.error('题目的展示ID不能为空！');
+        return;
+      }
+
+      if (this.contestID) {
+        if (!this.contestProblem.displayId) {
+          myMessage.error('比赛题目的展示ID不能为空！');
+          return;
+        }
+        if (!this.contestProblem.displayTitle) {
+          myMessage.error('比赛题目的展示标题不能为空！');
+          return;
+        }
+      }
+
       if (!this.problem.examples.length) {
         myMessage.error('题面测试数据是不能为空！至少输入一项！');
         return;

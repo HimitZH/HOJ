@@ -129,7 +129,7 @@ public class ProblemTestCaseUtils {
         }
     }
 
-    // 去除所有的空格换行等空白符
+    // 去除末尾的空白符
     public static String rtrim(String value) {
         if (value == null) return null;
         return value.replaceAll("\\s+$", "");
