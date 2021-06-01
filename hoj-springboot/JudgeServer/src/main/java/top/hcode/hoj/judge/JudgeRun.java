@@ -80,8 +80,8 @@ public class JudgeRun {
         List<FutureTask<JSONObject>> futureTasks = new ArrayList<>();
         JSONArray testcaseList = (JSONArray) testCasesInfo.get("testCases");
         Boolean isSpj = testCasesInfo.getBool("isSpj");
-        // 默认给1.5倍题目限制时间用来测评
-        Double time = maxTime * 1.5;
+        // 默认给1.1倍题目限制时间用来测评
+        Double time = maxTime * 1.1;
         final Long testTime = time.longValue();
 
         // 用户输出的文件夹
@@ -105,7 +105,7 @@ public class JudgeRun {
                                 testCaseId,
                                 runDir,
                                 testCaseInputPath,
-                                testTime,// 默认给1.5倍题目限制时间用来测评
+                                testTime,// 默认给1.1倍题目限制时间用来测评
                                 maxMemory,
                                 maxOutputSize,
                                 getUserOutput,
@@ -125,7 +125,7 @@ public class JudgeRun {
                                 runDir,
                                 testCaseInputPath,
                                 testCaseOutputPath,
-                                testTime,// 默认给1.5倍题目限制时间用来测评
+                                testTime,// 默认给1.1倍题目限制时间用来测评
                                 maxMemory,
                                 maxOutputSize,
                                 runConfig.getExeName(),
@@ -390,7 +390,7 @@ public class JudgeRun {
         }
     }
 
-    // 去除所有的空格换行等空白符
+    // 去除末尾空白符
     public static String rtrim(String value) {
         if (value == null) return null;
         return value.replaceAll("\\s+$", "");

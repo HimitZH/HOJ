@@ -79,19 +79,19 @@ public class ProblemController {
         if (limit == null || limit < 1) limit = 10;
 
         // 关键词查询不为空
-        Long pid = null;
+//        Long pid = null;
         if (!StringUtils.isEmpty(keyword)) {
             keyword = keyword.trim();
             Pattern pattern = Pattern.compile("[0-9]*");
             Matcher isNum = pattern.matcher(keyword);
-            if (isNum.matches()) { // 利用正则表达式判断keyword是否为纯数字
-                pid = Long.valueOf(keyword);
-            }
+//            if (isNum.matches()) { // 利用正则表达式判断keyword是否为纯数字
+//                pid = Long.valueOf(keyword);
+//            }
         }
         if (oj!=null && !Constants.RemoteOJ.isRemoteOJ(oj)) {
             oj = "Mine";
         }
-        Page<ProblemVo> problemList = problemService.getProblemList(limit, currentPage, pid, keyword,
+        Page<ProblemVo> problemList = problemService.getProblemList(limit, currentPage, null, keyword,
                 difficulty, tagId, oj);
         if (problemList.getTotal() == 0) { // 未查询到一条数据
             return CommonResult.successResponse(problemList, "暂无数据");

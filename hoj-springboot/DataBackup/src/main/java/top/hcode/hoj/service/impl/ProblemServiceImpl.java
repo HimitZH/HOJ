@@ -454,7 +454,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             jsonObject.set("outputName", problemCase.getOutput());
             // 读取输出文件
             FileReader readFile = new FileReader(testCasesDir + "/" + problemCase.getOutput(), CharsetUtil.UTF_8);
-            String output = readFile.readString();
+            String output = readFile.readString().replaceAll("\r\n","\n");
 
             // spj是根据特判程序输出判断结果，所以无需初始化测试数据
             if (!isSpj) {
@@ -505,7 +505,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             String outputName = (index + 1) + ".out";
             jsonObject.set("outputName", outputName);
             // 生成对应文件
-            String outputData = problemCaseList.get(index).getOutput();
+            String outputData = problemCaseList.get(index).getOutput().replaceAll("\r\n","\n");
             FileWriter outFile = new FileWriter(testCasesDir + "/" + outputName, CharsetUtil.UTF_8);
             outFile.write(outputData);
 
@@ -625,6 +625,8 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         problem.setCaseVersion(null)
                 .setGmtCreate(null)
                 .setId(null)
+                .setAuth(1)
+                .setAuthor(null)
                 .setGmtModified(null);
         HashMap<String, Object> problemMap = new HashMap<>();
         BeanUtil.beanToMap(problem, problemMap, false, true);
@@ -658,7 +660,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         return importProblemVo;
     }
 
-    // 去除所有的空格换行等空白符
+    // 去除末尾的空白符
     public static String rtrim(String value) {
         if (value == null) return null;
         return value.replaceAll("\\s+$", "");

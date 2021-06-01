@@ -16,6 +16,7 @@ import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 
+import java.net.SocketTimeoutException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -84,7 +85,7 @@ public class Dispatcher {
                     }
                 }
 
-                if (count.get() == 30) { // 30次失败则判为提交失败
+                if (count.get() == 90) { // 90次失败则判为提交失败
                     if (isRemote) { // 远程判题需要将账号归为可用
                         UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
                         remoteJudgeAccountUpdateWrapper
@@ -98,7 +99,7 @@ public class Dispatcher {
                 }
             }
         };
-        scheduler.scheduleAtFixedRate(getResultTask, 0, 1, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(getResultTask, 0, 2, TimeUnit.SECONDS);
     }
 
 
@@ -130,7 +131,6 @@ public class Dispatcher {
         } else {
             if (result.getStatus().intValue() != CommonResult.STATUS_SUCCESS) { // 如果是结果码不是200 说明调用有错误
                 // 判为系统错误
-                System.out.println("进来了");
                 judge.setStatus(Constants.Judge.STATUS_SYSTEM_ERROR.getStatus())
                         .setErrorMessage(result.getMsg());
                 judgeService.updateById(judge);
