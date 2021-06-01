@@ -23,8 +23,8 @@ public interface ContestRecordService extends IService<ContestRecord> {
 
     IPage<ACMContestRankVo> getContestACMRank(List<ContestRecord> contestRecordList, int currentPage, int limit);
 
-    IPage<OIContestRankVo> getContestOIRank(Long cid, Boolean isOpenSealRank, Date sealTime, Date startTime, Date endTime, int currentPage, int limit);
+    IPage<OIContestRankVo> getContestOIRank(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime, Date startTime, Date endTime, int currentPage, int limit);
 
-    List<ContestRecord> getOIContestRecord(Long cid, Boolean isOpenSealRank, Date sealTime, Date startTime, Date endTime);
+    List<ContestRecord> getOIContestRecord(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime, Date startTime, Date endTime);
 
 }

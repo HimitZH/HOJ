@@ -180,7 +180,7 @@ export default {
         endTime: '',
         duration: 0,
         type: 0,
-        password: '',
+        pwd: '',
         sealRank: true,
         sealRankTime: '', //封榜时间
         auth: 0,
@@ -254,6 +254,31 @@ export default {
     },
 
     saveContest() {
+      if (!this.contest.title) {
+        myMessage.error('比赛的标题不能为空！');
+        return;
+      }
+      if (!this.contest.description) {
+        myMessage.error('比赛的描述不能为空！');
+        return;
+      }
+      if (!this.contest.startTime) {
+        myMessage.error('比赛的开始时间不能为空！');
+        return;
+      }
+      if (!this.contest.endTime) {
+        myMessage.error('比赛的结束时间不能为空！');
+        return;
+      }
+      if (!this.contest.duration || this.contest.duration <= 0) {
+        myMessage.error('比赛的时长不能小于或等于0！');
+        return;
+      }
+      if (this.contest.auth != 0 && !this.contest.pwd) {
+        myMessage.error('当前的比赛模式密码不能为空！');
+        return;
+      }
+
       let funcName =
         this.$route.name === 'admin-edit-contest'
           ? 'admin_editContest'

@@ -33,6 +33,9 @@ public class JudgeVo {
     @ApiModelProperty(value = "题目展示id")
     private String displayPid;
 
+    @ApiModelProperty(value = "题目标题")
+    private String title;
+
     @ApiModelProperty(value = "比赛display_id")
     private String displayId;
 

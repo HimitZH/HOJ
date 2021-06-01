@@ -23,6 +23,7 @@
             height="460px"
             :interval="interval"
             v-model="index"
+            @change="changeContest"
           >
             <el-carousel-item v-for="(contest, index) in contests" :key="index">
               <div class="contest-info">
@@ -277,6 +278,9 @@ export default {
           this.loading.recent7ACRankLoading = false;
         }
       );
+    },
+    changeContest(newIndex) {
+      this.index = newIndex;
     },
     goContest() {
       this.$router.push({

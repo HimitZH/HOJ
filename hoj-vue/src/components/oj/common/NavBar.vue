@@ -369,15 +369,19 @@ export default {
     },
     handleRoute(route) {
       //电脑端导航栏路由跳转事件
-      if (route) {
+      if (route && route.split('/')[1] != 'admin') {
         this.$router.push(route);
+      } else {
+        window.open('/admin/');
       }
     },
     handleCommand(route) {
       // 移动端导航栏路由跳转事件
       this.openusermenu = false;
-      if (route) {
+      if (route && route.split('/')[1] != 'admin') {
         this.$router.push(route);
+      } else {
+        window.open('/admin/');
       }
     },
   },
