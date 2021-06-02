@@ -95,6 +95,9 @@ public class Problem implements Serializable {
     @ApiModelProperty(value = "是否默认开启该题目的测试样例结果查看")
     private Boolean openCaseResult;
 
+    @ApiModelProperty(value = "题目测试数据是否是上传的")
+    private Boolean isUploadCase;
+
     @ApiModelProperty(value = "题目测试数据的版本号")
     private String caseVersion;
 

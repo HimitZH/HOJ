@@ -2,16 +2,11 @@ package top.hcode.hoj.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import top.hcode.hoj.pojo.entity.Judge;
 import com.baomidou.mybatisplus.extension.service.IService;
-import top.hcode.hoj.pojo.entity.ToJudge;
 import top.hcode.hoj.pojo.vo.JudgeVo;
+import top.hcode.hoj.pojo.vo.ProblemCountVo;
 
-import java.util.List;
 
 
 /**
@@ -33,4 +28,7 @@ public interface JudgeService extends IService<Judge> {
 
     void failToUseRedisPublishJudge(Long submitId, Long pid, Boolean isContest);
 
+    ProblemCountVo getContestProblemCount(Long pid, Long cpid, Long cid);
+
+    ProblemCountVo getProblemCount(Long pid);
 }

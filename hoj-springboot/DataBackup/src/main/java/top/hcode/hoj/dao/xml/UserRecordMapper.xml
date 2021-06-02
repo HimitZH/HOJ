@@ -2,37 +2,39 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.dao.UserRecordMapper">
     <select id="getACMRankList" resultType="top.hcode.hoj.pojo.vo.ACMRankVo" useCache="true">
-        SELECT u.uuid as uid,u.nickname,u.username,u.signature,u.avatar,ur.submissions as total,ur.rating,
+        SELECT u.uuid as uid,u.nickname,u.username,u.signature,u.avatar,
     (SELECT COUNT( DISTINCT pid ) FROM user_acproblem WHERE uid =u.uuid) AS solved,
-    (SELECT COUNT(pid) FROM user_acproblem WHERE uid =u.uuid) AS ac
-    FROM user_info u,user_record ur WHERE u.uuid = ur.uid AND u.status = 0
+    (SELECT COUNT(pid) FROM user_acproblem WHERE uid =u.uuid) AS ac,
+    (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid) AS total
+    FROM user_info u  WHERE u.status = 0
     ORDER BY solved DESC,ac DESC
     </select>
 
     <select id="getRecent7ACRank" resultType="top.hcode.hoj.pojo.vo.ACMRankVo">
-        SELECT u.uuid as uid,u.nickname,u.username,u.signature,u.avatar,ur.submissions as total,ur.rating,
+        SELECT u.uuid as uid,u.nickname,u.username,u.signature,u.avatar,
 
-    (SELECT COUNT( DISTINCT pid ) FROM user_acproblem WHERE uid =u.uuid
-    and DATE(gmt_create) >= DATE_SUB(CURDATE(),INTERVAL 7 DAY) ) AS solved,
-
-    (SELECT COUNT(pid) FROM user_acproblem WHERE uid =u.uuid
-    and DATE(gmt_create) >= DATE_SUB(CURDATE(),INTERVAL 7 DAY)) AS ac
-
-    FROM user_info u,user_record ur WHERE u.uuid = ur.uid AND u.status = 0
-    ORDER BY solved DESC,ac DESC LIMIT 10
+        (SELECT COUNT( DISTINCT pid ) FROM user_acproblem WHERE uid =u.uuid
+        and DATE(gmt_create) >= DATE_SUB(CURDATE(),INTERVAL 7 DAY) ) AS solved,
+        (SELECT COUNT(pid) FROM user_acproblem WHERE uid =u.uuid
+        and DATE(gmt_create) >= DATE_SUB(CURDATE(),INTERVAL 7 DAY)) AS ac,
+        (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid) AS total
+        FROM user_info u WHERE u.status = 0
+        ORDER BY solved DESC,ac DESC LIMIT 10
     </select>
 
     <select id="getOIRankList" resultType="top.hcode.hoj.pojo.vo.OIRankVo" useCache="true">
-        SELECT u.uuid as uid,u.nickname,u.username,u.signature,u.avatar,ur.submissions as total,ur.rating,
-        ur.total_score as score,
-    (SELECT COUNT(pid) FROM user_acproblem WHERE uid =u.uuid) AS ac
-    FROM user_info u,user_record ur WHERE u.uuid = ur.uid AND u.status = 0
-    ORDER BY score DESC,ac DESC
+        SELECT u.uuid as uid,u.nickname,u.username,u.signature,u.avatar,
+        (SELECT IFNULL(SUM(score),0) FROM judge WHERE uid=u.uuid) AS score,
+        (SELECT COUNT(pid) FROM user_acproblem WHERE uid =u.uuid) AS ac,
+        (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid) AS total
+        FROM user_info u WHERE u.status = 0
+        ORDER BY score DESC,ac DESC
     </select>
 
     <select id="getUserHomeInfo" resultType="top.hcode.hoj.pojo.vo.UserHomeVo">
-        SELECT u.username,u.signature,u.school,u.github,u.blog,u.avatar,ur.submissions as total,ur.rating,
-        ur.total_score as score
+        SELECT u.username,u.signature,u.school,u.github,u.blog,u.avatar,ur.rating,
+        (SELECT IFNULL(SUM(score),0) FROM judge WHERE uid=u.uuid) AS score,
+        (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid) AS total
         FROM user_info u,user_record ur WHERE u.uuid = ur.uid AND u.status = 0 AND u.uuid = #{uid}
     </select>
 

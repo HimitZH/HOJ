@@ -153,7 +153,7 @@
                 <p class="title">Hint</p>
                 <el-card dis-hover>
                   <div
-                    class="content"
+                    class="hint-content"
                     v-html="problemData.problem.hint"
                     v-katex
                     v-highlight
@@ -928,6 +928,10 @@ a {
   padding-left: 8px;
 }
 
+.hint-content {
+  font-size: 15px !important;
+}
+
 p.content {
   margin-left: 25px;
   margin-right: 20px;
@@ -941,6 +945,7 @@ p.content {
   align-items: flex-start;
   flex-flow: row nowrap;
 }
+
 .example {
   align-items: stretch;
 }

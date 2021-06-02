@@ -31,10 +31,17 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
     @Autowired
     private JudgeServiceImpl judgeService;
 
-    // 默认的事务隔离等级可重复读会产生幻读，读不到新的version数据，所以需要更换等级为读已提交
+    /**
+     * @MethodNameupdateRecord
+     * @Params  * @param null
+     * @Description 本方法启用，不适合数据一致性
+     * @Return
+     * @Since 2021/6/2
+     */
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
     @Async
     @Override
+    @Deprecated
     public void updateRecord(String uid, Long submitId, Long pid, Integer score) {
         QueryWrapper<Judge> judgeQueryWrapper = new QueryWrapper<>();
         judgeQueryWrapper.isNotNull("score")

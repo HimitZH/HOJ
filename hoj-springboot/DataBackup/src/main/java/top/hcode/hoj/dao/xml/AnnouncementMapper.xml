@@ -2,8 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.dao.AnnouncementMapper">
 
-    <select id="getAnnouncementList" resultMap="map_AnnouncementVo">
+    <select id="getAnnouncementList" resultMap="map_AnnouncementVo" useCache="true">
         SELECT a.*,u.username FROM user_info u,announcement a  where a.uid = u.uuid
+        and (SELECT COUNT(*) FROM contest_announcement ca WHERE ca.aid=a.id) = 0
         <if test="notAdmin">
             and a.status = 0
         </if>

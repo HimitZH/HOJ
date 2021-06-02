@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.PidListDto;
 import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.pojo.vo.ProblemCountVo;
 import top.hcode.hoj.pojo.vo.ProblemInfoVo;
 import top.hcode.hoj.pojo.vo.ProblemVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
@@ -54,8 +55,6 @@ public class ProblemController {
     @Autowired
     private ProblemLanguageServiceImpl problemLanguageService;
 
-    @Autowired
-    private ProblemCountServiceImpl problemCountService;
 
     @Autowired
     private CodeTemplateServiceImpl codeTemplateService;
@@ -255,9 +254,7 @@ public class ProblemController {
         });
 
         // 获取题目的提交记录
-        QueryWrapper<ProblemCount> problemCountQueryWrapper = new QueryWrapper<>();
-        problemCountQueryWrapper.eq("pid", problem.getId());
-        ProblemCount problemCount = problemCountService.getOne(problemCountQueryWrapper);
+        ProblemCountVo problemCount = judgeService.getProblemCount(problem.getId());
 
         // 获取题目的代码模板
         QueryWrapper<CodeTemplate> codeTemplateQueryWrapper = new QueryWrapper<>();

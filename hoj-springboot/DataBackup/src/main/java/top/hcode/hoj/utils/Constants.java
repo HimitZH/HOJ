@@ -53,15 +53,6 @@ public class Constants {
         public String getColumnName() {
             return columnName;
         }
-
-        public static String getTableColumnNameByStatus(int status) {
-            for (Judge judge : Judge.values()) {
-                if (judge.getStatus() == status) {
-                    return judge.getColumnName();
-                }
-            }
-            return null;
-        }
     }
 
     public enum RemoteOJ {
@@ -160,9 +151,11 @@ public class Constants {
 
         USER_AVATAR_FOLDER("/hoj/file/avatar"),
 
-        MARKDOWN_IMG_FOLDER("/hoj/file/md"),
+        MARKDOWN_FILE_FOLDER("/hoj/file/md"),
 
         IMG_API("/api/public/img/"),
+
+        FILE_API("/api/public/file/"),
 
         TESTCASE_TMP_FOLDER("/hoj/file/zip"),
 

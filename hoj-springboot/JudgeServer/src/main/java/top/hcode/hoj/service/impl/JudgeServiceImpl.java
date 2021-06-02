@@ -37,13 +37,8 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     private JudgeStrategy judgeStrategy;
 
     @Autowired
-    private ProblemCountServiceImpl problemCountService;
-
-    @Autowired
     private UserAcproblemServiceImpl userAcproblemService;
 
-    @Autowired
-    private UserRecordServiceImpl userRecordService;
 
     @Autowired
     private ContestRecordServiceImpl contestRecordService;
@@ -98,14 +93,6 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
                         .setUid(uid)
                         .setSubmitId(submitId)
                 );
-            }
-            // 比赛的提交不纳入，更新该提交对应题目的数据
-            problemCountService.updateCount(status, pid);
-
-
-            // 如果是非比赛提交，且为OI题目的提交，需要判断是否更新用户得分
-            if (score != null) {
-                userRecordService.updateRecord(uid, submitId, pid, score);
             }
 
         } else { //如果是比赛提交
