@@ -27,8 +27,9 @@ public class CorsConfig implements WebMvcConfigurer {
     // 前端直接通过/public/img/图片名称即可拿到
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler(Constants.File.IMG_API.getPath() + "**") // /api/public/img/**
+        // /api/public/img/** /api/public/file/**
+        registry.addResourceHandler(Constants.File.IMG_API.getPath() + "**",Constants.File.FILE_API.getPath() + "**")
                 .addResourceLocations("file:" + Constants.File.USER_AVATAR_FOLDER.getPath() + File.separator,
-                        "file:" + Constants.File.MARKDOWN_IMG_FOLDER.getPath() + File.separator);
+                        "file:" + Constants.File.MARKDOWN_FILE_FOLDER.getPath() + File.separator);
     }
 }

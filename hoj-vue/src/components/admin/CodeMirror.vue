@@ -42,7 +42,7 @@ export default {
         gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
         indentUnit: 4, //一个块（编辑语言中的含义）应缩进多少个空格
         styleActiveLine: true,
-        autofocus: true,
+        autofocus: false,
         matchBrackets: true, //括号匹配
         styleActiveLine: true,
         autoCloseBrackets: true,

@@ -1,5 +1,6 @@
 package top.hcode.hoj.controller.admin;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -17,8 +18,10 @@ import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.pojo.vo.AnnouncementVo;
 import top.hcode.hoj.service.impl.*;
+import top.hcode.hoj.utils.Constants;
 
 import javax.validation.Valid;
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -226,6 +229,7 @@ public class AdminContestController {
         problem的id为其他表的外键的表中的对应数据都会被一起删除！
          */
         if (result) { // 删除成功
+            FileUtil.del(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid);
             return CommonResult.successResponse(null, "删除成功！");
         } else {
             return CommonResult.errorResponse("删除失败！", CommonResult.STATUS_FAIL);

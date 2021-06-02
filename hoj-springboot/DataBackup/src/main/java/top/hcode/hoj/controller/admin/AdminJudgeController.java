@@ -39,9 +39,6 @@ public class AdminJudgeController {
     private JudgeServiceImpl judgeService;
 
     @Autowired
-    private ProblemCountServiceImpl problemCountService;
-
-    @Autowired
     private UserAcproblemServiceImpl userAcproblemService;
 
     @Autowired
@@ -73,15 +70,6 @@ public class AdminJudgeController {
         // 如果是非比赛题目
         if (judge.getCid() == 0 && judge.getCpid() == 0) {
             // 重判前，需要将该题目对应记录表一并更新
-            // 更新该题目的提交统计表problem_count
-            String columnName = Constants.Judge.getTableColumnNameByStatus(judge.getStatus()); // 获取要修改的字段名
-            if (columnName != null) {
-                UpdateWrapper<ProblemCount> problemCountUpdateWrapper = new UpdateWrapper<>();
-                // 重判需要减掉之前的判题结果
-                problemCountUpdateWrapper.setSql(columnName + "=" + columnName + "-1,total=total-1")
-                        .eq("pid", judge.getPid());
-                problemCountService.update(problemCountUpdateWrapper);
-            }
             // 如果该题已经是AC通过状态，更新该题目的用户ac做题表 user_acproblem
             if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus().intValue()) {
                 QueryWrapper<UserAcproblem> userAcproblemQueryWrapper = new QueryWrapper<>();

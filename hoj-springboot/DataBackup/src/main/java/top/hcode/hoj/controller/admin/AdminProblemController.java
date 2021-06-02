@@ -172,7 +172,7 @@ public class AdminProblemController {
         if (problemCases != null && problemCases.size() > 0) {
             return CommonResult.successResponse(problemCases, "获取该题目的评测样例列表成功！");
         } else {
-            return CommonResult.errorResponse("获取该题目的评测样例列表失败！可能该题目测试数据是zip上传的！");
+            return CommonResult.successResponse(null,"获取该题目的评测样例列表为空！");
         }
     }
 

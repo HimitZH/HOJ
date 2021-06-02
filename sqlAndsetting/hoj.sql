@@ -101,7 +101,7 @@ CREATE TABLE `comment` (
   KEY `from_avatar` (`from_avatar`),
   KEY `comment_ibfk_7` (`did`),
   KEY `cid` (`cid`),
-  CONSTRAINT `comment_ibfk_6` FOREIGN KEY (`from_avatar`) REFERENCES `user_info` (`avatar`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  CONSTRAINT `comment_ibfk_6` FOREIGN KEY (`from_avatar`) REFERENCES `user_info` (`avatar`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `comment_ibfk_7` FOREIGN KEY (`did`) REFERENCES `discussion` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `comment_ibfk_8` FOREIGN KEY (`cid`) REFERENCES `contest` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -148,7 +148,7 @@ CREATE TABLE `contest` (
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`uid`),
   KEY `uid` (`uid`),
-  CONSTRAINT `contest_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE NO ACTION ON UPDATE CASCADE
+  CONSTRAINT `contest_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `contest_announcement` */
@@ -183,7 +183,7 @@ CREATE TABLE `contest_explanation` (
   KEY `uid` (`uid`),
   KEY `contest_explanation_ibfk_1` (`cid`),
   CONSTRAINT `contest_explanation_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `contest` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `contest_explanation_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE NO ACTION ON UPDATE CASCADE
+  CONSTRAINT `contest_explanation_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Table structure for table `contest_problem` */
@@ -497,13 +497,13 @@ CREATE TABLE `problem` (
   `spj_language` varchar(255) DEFAULT NULL COMMENT '特判程序的语言',
   `is_remove_end_blank` tinyint(1) DEFAULT '1' COMMENT '是否默认去除用户代码的文末空格',
   `open_case_result` tinyint(1) DEFAULT '1' COMMENT '是否默认开启该题目的测试样例结果查看',
+  `is_upload_case` tinyint(1) DEFAULT '1' COMMENT '题目测试数据是否是上传文件的',
   `case_version` varchar(40) DEFAULT '0' COMMENT '题目测试数据的版本号',
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `author` (`author`),
   KEY `problem_id` (`problem_id`),
-  CONSTRAINT `problem_ibfk_1` FOREIGN KEY (`author`) REFERENCES `user_info` (`username`) ON DELETE NO ACTION ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `problem_case` */
@@ -524,30 +524,6 @@ CREATE TABLE `problem_case` (
   CONSTRAINT `problem_case_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-/*Table structure for table `problem_count` */
-
-DROP TABLE IF EXISTS `problem_count`;
-
-CREATE TABLE `problem_count` (
-  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `pid` bigint(20) unsigned NOT NULL,
-  `total` int(10) unsigned DEFAULT '0',
-  `ac` int(10) unsigned DEFAULT '0',
-  `mle` int(10) unsigned DEFAULT '0' COMMENT '空间超限',
-  `tle` int(10) unsigned DEFAULT '0' COMMENT '时间超限',
-  `re` int(10) unsigned DEFAULT '0' COMMENT '运行错误',
-  `pe` int(10) unsigned DEFAULT '0' COMMENT '格式错误',
-  `ce` int(10) unsigned DEFAULT '0' COMMENT '编译错误',
-  `wa` int(10) unsigned DEFAULT '0' COMMENT '答案错误',
-  `se` int(10) unsigned DEFAULT '0' COMMENT '系统错误',
-  `pa` int(11) DEFAULT '0' COMMENT '部分通过，OI题目',
-  `version` bigint(20) NOT NULL DEFAULT '0' COMMENT '乐观锁',
-  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
-  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`,`pid`),
-  UNIQUE KEY `pid` (`pid`),
-  CONSTRAINT `problem_count_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `problem_language` */
 
