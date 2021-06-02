@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.Judge;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import top.hcode.hoj.pojo.vo.JudgeVo;
+import top.hcode.hoj.pojo.vo.ProblemCountVo;
 
-import java.util.List;
 
 /**
  * <p>
@@ -29,4 +29,8 @@ public interface JudgeMapper extends BaseMapper<Judge> {
                                        @Param("username") String username, @Param("uid") String uid, @Param("beforeContestSubmit") Boolean beforeContestSubmit);
 
     int getTodayJudgeNum();
+
+    ProblemCountVo getContestProblemCount(@Param("pid") Long pid, @Param("cpid") Long cpid, @Param("cid") Long cid);
+
+    ProblemCountVo getProblemCount(@Param("pid") Long pid);
 }

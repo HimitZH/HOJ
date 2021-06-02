@@ -17,6 +17,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
+import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 import top.hcode.hoj.crawler.problem.CFProblemStrategy;
 import top.hcode.hoj.crawler.problem.HDUProblemStrategy;
@@ -69,9 +70,6 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
     @Autowired
     private ProblemTagServiceImpl problemTagService;
-
-    @Autowired
-    private ProblemCountServiceImpl problemCountService;
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -236,87 +234,68 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
         boolean checkProblemCase = true;
 
-        if (!problem.getIsRemote()) { // 如果是自家的题目才有测试数据
-            // 如果是选择上传测试文件的，则需要遍历对应文件夹，读取数据，写入数据库,先前的题目数据一并清空。
-            if (problemDto.getIsUploadTestCase()) {
-                // 如果是选择了上传测试文件的模式，但是数据为空，那就是修改题目，但是没修改测试数据，需要判断
-                if (problemDto.getSamples().size() > 0) {
-                    int sumScore = 0;
-                    String testcaseDir = problemDto.getUploadTestcaseDir();
+        if (!problem.getIsRemote() && problemDto.getSamples().size() > 0) { // 如果是自家的题目才有测试数据
+            int sumScore = 0;
+            // 新增加的case列表
+            List<ProblemCase> newProblemCaseList = new LinkedList<>();
+            // 需要修改的case列表
+            List<ProblemCase> needUpdateProblemCaseList = new LinkedList<>();
+            // 遍历上传的case列表，如果还存在，则从需要删除的测试样例列表移除该id
+            for (ProblemCase problemCase : problemDto.getSamples()) {
+                if (problemCase.getId() != null) { // 已存在的case
+                    needDeleteProblemCases.remove(problemCase.getId());
+                    // 跟原先的数据做对比，如果变动 则加入需要修改的case列表
+                    ProblemCase oldProblemCase = oldProblemMap.get(problemCase.getId());
+                    if (!oldProblemCase.getInput().equals(problemCase.getInput()) ||
+                            !oldProblemCase.getOutput().equals(problemCase.getOutput())) {
+                        needUpdateProblemCaseList.add(problemCase);
+                    } else if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
+                        if (oldProblemCase.getScore().intValue() != problemCase.getScore()) {
+                            needUpdateProblemCaseList.add(problemCase);
+                        }
+                    }
+                } else {
+                    newProblemCaseList.add(problemCase);
+                }
+                if (problemCase.getScore() != null) {
+                    sumScore += problemCase.getScore();
+                }
+            }
+            // 设置oi总分数，根据每个测试点的加和
+            if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
+                problem.setIoScore(sumScore);
+            }
+            // 执行批量删除操作
+            boolean deleteCasesFromProblemResult = true;
+            if (needDeleteProblemCases.size() > 0) {
+                deleteCasesFromProblemResult = problemCaseService.removeByIds(needDeleteProblemCases);
+            }
+            // 执行批量添加操作
+            boolean addCasesToProblemResult = true;
+            if (newProblemCaseList.size() > 0) {
+                addCasesToProblemResult = problemCaseService.saveBatch(newProblemCaseList);
+            }
+            // 执行批量修改操作
+            boolean updateCasesToProblemResult = true;
+            if (needUpdateProblemCaseList.size() > 0) {
+                updateCasesToProblemResult = problemCaseService.saveOrUpdateBatch(needUpdateProblemCaseList);
+            }
+            checkProblemCase = addCasesToProblemResult && deleteCasesFromProblemResult && updateCasesToProblemResult;
+
+            // 只要有新添加，修改，删除都需要更新版本号 同时更新测试数据
+            String caseVersion = String.valueOf(System.currentTimeMillis());
+            if (needDeleteProblemCases.size() > 0 || newProblemCaseList.size() > 0 || needUpdateProblemCaseList.size() > 0) {
+                problem.setCaseVersion(caseVersion);
+                // 如果是选择上传测试文件的，临时文件路径不为空，则需要遍历对应文件夹，读取数据，写入数据库,先前的题目数据一并清空。
+                String testcaseDir = problemDto.getUploadTestcaseDir();
+                if (problemDto.getIsUploadTestCase() && !StringUtils.isEmpty(testcaseDir)) {
                     // 将之前的临时文件夹里面的评测文件全部复制到指定文件夹(覆盖)
                     FileUtil.copyFilesFromDir(new File(testcaseDir), new File(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid), true);
-                    // 如果是io题目统计总分
-                    for (ProblemCase problemCase : problemDto.getSamples()) {
-                        if (problemCase.getScore() != null) {
-                            sumScore += problemCase.getScore();
-                        }
-                    }
-                    // 设置oi总分数，根据每个测试点的加和
-                    if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
-                        problem.setIoScore(sumScore);
-                    }
-
-                    // 设置新的测试样例版本号
-                    String caseVersion = String.valueOf(System.currentTimeMillis());
-                    problem.setCaseVersion(caseVersion);
                     // 获取代理bean对象执行异步方法===》根据测试文件初始info
                     applicationContext.getBean(ProblemServiceImpl.class).initUploadTestCase(problem.getSpjLanguage() != null, caseVersion, pid, problemDto.getSamples());
+                }else{
+                    applicationContext.getBean(ProblemServiceImpl.class).initHandTestCase(problem.getSpjLanguage() != null, problem.getCaseVersion(), pid, problemDto.getSamples());
                 }
-
-            } else if (problemDto.getSamples().size() > 0) {
-                int sumScore = 0;
-                // 新增加的case列表
-                List<ProblemCase> newProblemCaseList = new LinkedList<>();
-                // 需要修改的case列表
-                List<ProblemCase> needUpdateProblemCaseList = new LinkedList<>();
-                // 遍历上传的case列表，如果还存在，则从需要删除的测试样例列表移除该id
-                for (ProblemCase problemCase : problemDto.getSamples()) {
-                    if (problemCase.getId() != null) { // 已存在的case
-                        needDeleteProblemCases.remove(problemCase.getId());
-                        // 跟原先的数据做对比，如果变动 则加入需要修改的case列表
-                        ProblemCase oldProblemCase = oldProblemMap.get(problemCase.getId());
-                        if (!oldProblemCase.getInput().equals(problemCase.getInput()) ||
-                                !oldProblemCase.getOutput().equals(problemCase.getOutput())) {
-                            needUpdateProblemCaseList.add(problemCase);
-                        } else if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
-                            if (oldProblemCase.getScore().intValue() != problemCase.getScore()) {
-                                needUpdateProblemCaseList.add(problemCase);
-                            }
-                        }
-                    } else {
-                        newProblemCaseList.add(problemCase);
-                    }
-                    if (problemCase.getScore() != null) {
-                        sumScore += problemCase.getScore();
-                    }
-                }
-                // 设置oi总分数，根据每个测试点的加和
-                if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
-                    problem.setIoScore(sumScore);
-                }
-                // 执行批量删除操作
-                boolean deleteCasesFromProblemResult = true;
-                if (needDeleteProblemCases.size() > 0) {
-                    deleteCasesFromProblemResult = problemCaseService.removeByIds(needDeleteProblemCases);
-                }
-                // 执行批量添加操作
-                boolean addCasesToProblemResult = true;
-                if (newProblemCaseList.size() > 0) {
-                    addCasesToProblemResult = problemCaseService.saveBatch(newProblemCaseList);
-                }
-                // 执行批量修改操作
-                boolean updateCasesToProblemResult = true;
-                if (needUpdateProblemCaseList.size() > 0) {
-                    updateCasesToProblemResult = problemCaseService.saveOrUpdateBatch(needUpdateProblemCaseList);
-                }
-                checkProblemCase = addCasesToProblemResult && deleteCasesFromProblemResult && updateCasesToProblemResult;
-
-                // 只要有新添加，修改，删除都需要更新版本号 同时更新测试数据
-                if (needDeleteProblemCases.size() > 0 || newProblemCaseList.size() > 0 || needUpdateProblemCaseList.size() > 0) {
-                    problem.setCaseVersion(String.valueOf(System.currentTimeMillis()));
-                    initHandTestCase(problem.getSpjLanguage() != null, problem.getCaseVersion(), pid, problemDto.getSamples());
-                }
-
             }
         }
 
@@ -333,6 +312,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         } else {
             return false;
         }
+
     }
 
     @Override
@@ -375,15 +355,18 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             // 将之前的临时文件夹里面的评测文件全部复制到指定文件夹(覆盖)
             FileUtil.copyFilesFromDir(new File(testcaseDir), new File(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid), true);
             // 如果是io题目统计总分
-            for (ProblemCase problemCase : problemDto.getSamples()) {
+            List<ProblemCase> problemCases = problemDto.getSamples();
+            for (ProblemCase problemCase : problemCases) {
                 if (problemCase.getScore() != null) {
                     sumScore += problemCase.getScore();
                 }
+                problemCase.setPid(pid);
             }
             // 设置oi总分数，根据每个测试点的加和
             if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
                 problem.setIoScore(sumScore);
             }
+            addCasesToProblemResult = problemCaseService.saveOrUpdateBatch(problemCases);
             // 获取代理bean对象执行异步方法===》根据测试文件初始info
             applicationContext.getBean(ProblemServiceImpl.class).initUploadTestCase(problem.getSpjLanguage() != null, problem.getCaseVersion(), pid, problemDto.getSamples());
         } else {
@@ -414,12 +397,9 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         }
         boolean addTagsToProblemResult = problemTagService.saveOrUpdateBatch(problemTagList);
 
-        // 为新的题目初始化problem_count表
-        boolean initProblemCountResult = problemCountService.save(new ProblemCount().setPid(pid));
-
 
         if (addProblemResult && addCasesToProblemResult && addLangToProblemResult
-                && addTagsToProblemResult && initProblemCountResult && addProblemCodeTemplate) {
+                && addTagsToProblemResult && addProblemCodeTemplate) {
             // 修改数据库成功后，如果有进行文件上传操作，则进行删除
             if (problemDto.getIsUploadTestCase()) {
                 FileUtil.del(problemDto.getUploadTestcaseDir());
@@ -454,7 +434,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             jsonObject.set("outputName", problemCase.getOutput());
             // 读取输出文件
             FileReader readFile = new FileReader(testCasesDir + "/" + problemCase.getOutput(), CharsetUtil.UTF_8);
-            String output = readFile.readString().replaceAll("\r\n","\n");
+            String output = readFile.readString().replaceAll("\r\n", "\n");
 
             // spj是根据特判程序输出判断结果，所以无需初始化测试数据
             if (!isSpj) {
@@ -478,6 +458,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
 
     // 初始化手动输入上传的测试数据，写成json文件
+    @Async
     public void initHandTestCase(Boolean isSpj,
                                  String version,
                                  Long problemId,
@@ -505,7 +486,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             String outputName = (index + 1) + ".out";
             jsonObject.set("outputName", outputName);
             // 生成对应文件
-            String outputData = problemCaseList.get(index).getOutput().replaceAll("\r\n","\n");
+            String outputData = problemCaseList.get(index).getOutput().replaceAll("\r\n", "\n");
             FileWriter outFile = new FileWriter(testCasesDir + "/" + outputName, CharsetUtil.UTF_8);
             outFile.write(outputData);
 
@@ -571,9 +552,6 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         boolean addProblemLanguageResult = problemLanguageService.saveOrUpdateBatch(problemLanguageList);
 
 
-        // 为新的题目初始化problem_count表
-        boolean initProblemCountResult = problemCountService.save(new ProblemCount().setPid(problem.getId()));
-
         boolean addProblemTagResult = true;
         List<Tag> addTagList = remoteProblemInfo.getTagList();
 
@@ -613,7 +591,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                     .setPid(problem.getId()));
         }
 
-        return addProblemResult && addProblemTagResult && addProblemLanguageResult && initProblemCountResult;
+        return addProblemResult && addProblemTagResult && addProblemLanguageResult;
     }
 
     @Override
@@ -626,6 +604,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                 .setGmtCreate(null)
                 .setId(null)
                 .setAuth(1)
+                .setIsUploadCase(true)
                 .setAuthor(null)
                 .setGmtModified(null);
         HashMap<String, Object> problemMap = new HashMap<>();

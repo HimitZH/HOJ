@@ -60,9 +60,6 @@ public class JudgeController {
     private ProblemService problemService;
 
     @Autowired
-    private UserRecordServiceImpl userRecordService;
-
-    @Autowired
     private ContestProblemServiceImpl contestProblemService;
 
     @Autowired
@@ -70,9 +67,6 @@ public class JudgeController {
 
     @Autowired
     private ContestRecordServiceImpl contestRecordService;
-
-    @Autowired
-    private ProblemCountServiceImpl problemCountService;
 
     @Autowired
     private UserAcproblemServiceImpl userAcproblemService;
@@ -116,8 +110,6 @@ public class JudgeController {
                 .setSubmitTime(new Date())
                 .setVersion(0)
                 .setIp(IpUtils.getUserIpAddr(request));
-
-        boolean updateUserRecord = true;
         boolean updateContestRecord = true;
         int result = 0;
         // 如果比赛id不等于0，则说明为比赛提交，需要查询对应的contest_problem的主键
@@ -197,15 +189,11 @@ public class JudgeController {
             Problem problem = problemService.getOne(problemQueryWrapper);
             judge.setCpid(0L).setPid(problem.getId()).setDisplayPid(problem.getProblemId());
 
-            // 更新一下user_record表
-            UpdateWrapper<UserRecord> userRecordUpdateWrapper = new UpdateWrapper<>();
-            userRecordUpdateWrapper.setSql("submissions=submissions+1").eq("uid", judge.getUid());
-            updateUserRecord = userRecordService.update(userRecordUpdateWrapper);
             // 将新提交数据插入数据库
             result = judgeMapper.insert(judge);
         }
 
-        if (result != 1 || !updateContestRecord || !updateUserRecord) {
+        if (result != 1 || !updateContestRecord) {
             return CommonResult.errorResponse("代码提交失败！", CommonResult.STATUS_ERROR);
         }
 
@@ -248,15 +236,6 @@ public class JudgeController {
         // 如果是非比赛题目
         if (judge.getCid() == 0) {
             // 重判前，需要将该题目对应记录表一并更新
-            // 更新该题目的提交统计表problem_count
-            String columnName = Constants.Judge.getTableColumnNameByStatus(judge.getStatus()); // 获取要修改的字段名
-            if (columnName != null) {
-                UpdateWrapper<ProblemCount> problemCountUpdateWrapper = new UpdateWrapper<>();
-                // 重判需要减掉之前的判题结果
-                problemCountUpdateWrapper.setSql(columnName + "=" + columnName + "-1,total=total-1")
-                        .eq("pid", judge.getPid());
-                problemCountService.update(problemCountUpdateWrapper);
-            }
             // 如果该题已经是AC通过状态，更新该题目的用户ac做题表 user_acproblem
             if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus().intValue()) {
                 QueryWrapper<UserAcproblem> userAcproblemQueryWrapper = new QueryWrapper<>();

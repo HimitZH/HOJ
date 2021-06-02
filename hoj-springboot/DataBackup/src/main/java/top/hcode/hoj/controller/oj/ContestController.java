@@ -60,8 +60,6 @@ public class ContestController {
     @Autowired
     private ProblemLanguageServiceImpl problemLanguageService;
 
-    @Autowired
-    private ProblemCountServiceImpl problemCountService;
 
     @Autowired
     private JudgeServiceImpl judgeService;
@@ -298,7 +296,7 @@ public class ContestController {
         });
 
         // 获取题目的提交记录
-        ProblemCount problemCount = problemCountService.getContestProblemCount(contestProblem.getPid(), contestProblem.getId(), contestProblem.getCid());
+        ProblemCountVo problemCount = judgeService.getContestProblemCount(contestProblem.getPid(), contestProblem.getId(), contestProblem.getCid());
 
         // 获取题目的代码模板
         QueryWrapper<CodeTemplate> codeTemplateQueryWrapper = new QueryWrapper<>();

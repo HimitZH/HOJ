@@ -6,6 +6,7 @@
       type="search"
       size="medium"
       @search-click="filterByKeyword"
+      @keyup.enter.native="filterByKeyword"
       style="margin-bottom:10px"
     ></vxe-input>
     <vxe-table

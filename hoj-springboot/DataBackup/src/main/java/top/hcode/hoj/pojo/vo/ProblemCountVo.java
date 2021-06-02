@@ -1,4 +1,4 @@
-package top.hcode.hoj.pojo.entity;
+package top.hcode.hoj.pojo.vo;
 
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
@@ -19,15 +19,10 @@ import java.util.Date;
  * @since 2020-10-23
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="ProblemCount对象", description="")
-public class ProblemCount implements Serializable {
+public class ProblemCountVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    @TableId(value = "pid", type = IdType.ID_WORKER)
-    private Long pid;
 
     private Integer total;
 
@@ -56,15 +51,5 @@ public class ProblemCount implements Serializable {
 
     @ApiModelProperty(value = "部分通过，OI题目")
     private Integer pa;
-
-    @Version
-    private Long version;
-
-    @TableField(fill = FieldFill.INSERT)
-    private Date gmtCreate;
-
-    @TableField(fill = FieldFill.INSERT_UPDATE)
-    private Date gmtModified;
-
 
 }

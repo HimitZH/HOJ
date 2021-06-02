@@ -3,6 +3,9 @@ hoj-backstage:
   nacos-url: ${NACOS_URL:172.20.0.4:8848} # nacos的地址
 server:
   port: ${hoj-backstage.port}
+  servlet:
+    encoding:
+      force: true
 spring:
   profiles:
     active: prod

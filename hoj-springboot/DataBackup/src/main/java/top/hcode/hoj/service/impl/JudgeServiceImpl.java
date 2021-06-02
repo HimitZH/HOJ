@@ -1,6 +1,5 @@
 package top.hcode.hoj.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import top.hcode.hoj.pojo.entity.ContestRecord;
 import top.hcode.hoj.pojo.entity.Judge;
 import top.hcode.hoj.dao.JudgeMapper;
-import top.hcode.hoj.pojo.entity.ProblemCount;
 import top.hcode.hoj.pojo.vo.JudgeVo;
+import top.hcode.hoj.pojo.vo.ProblemCountVo;
 import top.hcode.hoj.service.JudgeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -29,9 +28,6 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
 
     @Autowired
     private JudgeMapper judgeMapper;
-
-    @Autowired
-    private ProblemCountServiceImpl problemCountService;
 
     @Autowired
     private ContestRecordServiceImpl contestRecordService;
@@ -61,21 +57,24 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
                 .set("error_message", "The something has gone wrong with the data Backup server. Please report this to administrator.")
                 .set("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
         judgeMapper.update(null, judgeUpdateWrapper);
-        // 更新problem_count 表
-        if (!isContest) {
-            QueryWrapper<ProblemCount> problemCountQueryWrapper = new QueryWrapper<ProblemCount>();
-            problemCountQueryWrapper.eq("pid", pid);
-            ProblemCount problemCount = problemCountService.getOne(problemCountQueryWrapper);
-            problemCount.setSe(problemCount.getSe() + 1);
-            problemCountService.saveOrUpdate(problemCount);
-        } else {
-            // 更新contest_record表
+        // 更新contest_record表
+        if (isContest) {
             UpdateWrapper<ContestRecord> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq("submit_id", submitId) // submit_id一定只有一个
                     .set("first_blood", false)
                     .set("status", Constants.Contest.RECORD_NOT_AC_NOT_PENALTY.getCode());
             contestRecordService.update(updateWrapper);
         }
+    }
+
+    @Override
+    public ProblemCountVo getContestProblemCount(Long pid, Long cpid, Long cid) {
+        return judgeMapper.getContestProblemCount(pid, cpid, cid);
+    }
+
+    @Override
+    public ProblemCountVo getProblemCount(Long pid) {
+        return judgeMapper.getProblemCount(pid);
     }
 
 }

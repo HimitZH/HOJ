@@ -15,6 +15,7 @@ spring:
     multipart:
       max-file-size: 128MB
       max-request-size: 128MB
+
   redis:
     host: ${hoj.redis.host:${REDIS_HOST:172.20.0.2}}
     port: ${hoj.redis.port:${REDIS_PORT:6379}}

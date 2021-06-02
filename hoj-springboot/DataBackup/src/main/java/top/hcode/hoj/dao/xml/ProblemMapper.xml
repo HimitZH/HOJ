@@ -24,9 +24,35 @@
 
     <!-- 主查询 -->
     <select id="getProblemList" resultMap="map_ProblemList">
-        SELECT distinct p.id as pid,p.problem_id,p.title,p.difficulty,p.type,pc.total,pc.ac,pc.mle,pc.tle,pc.re,
-        pc.pe,pc.ce,pc.wa,pc.se,pc.pa FROM problem p
-        LEFT JOIN problem_count pc ON p.id = pc.pid
+        SELECT DISTINCT p.id AS pid, p.problem_id, p.title, p.difficulty, p.type
+        , COALESCE(j.pe, 0) AS pe
+        , COALESCE(j.ce, 0) AS ce
+        , COALESCE(j.wa, 0) AS wa
+        , COALESCE(j.ac, 0) AS ac
+        , COALESCE(j.tle, 0) AS tle
+        , COALESCE(j.mle, 0) AS mle
+        , COALESCE(j.re, 0) AS re
+        , COALESCE(j.se, 0) AS se
+        , COALESCE(j.pa, 0) AS pa
+        , COALESCE(j.total, 0) AS total
+        FROM problem p
+        LEFT JOIN (
+        SELECT j.pid AS pid
+        , COUNT(IF(j.status = -3, STATUS, NULL)) AS pe
+        , COUNT(IF(j.status = -2, STATUS, NULL)) AS ce
+        , COUNT(IF(j.status = -1, STATUS, NULL)) AS wa
+        , COUNT(IF(j.status = 0, STATUS, NULL)) AS ac
+        , COUNT(IF(j.status = 1, STATUS, NULL)) AS tle
+        , COUNT(IF(j.status = 2, STATUS, NULL)) AS mle
+        , COUNT(IF(j.status = 3, STATUS, NULL)) AS re
+        , COUNT(IF(j.status = 4, STATUS, NULL)) AS se
+        , COUNT(IF(j.status = 8, STATUS, NULL)) AS pa
+        , COUNT(*) AS total
+        FROM judge j
+        WHERE j.pid
+        GROUP BY j.pid
+        ) j
+        ON j.pid = p.id
         LEFT JOIN problem_tag pt ON p.id = pt.pid
         <where>
             p.auth = 1

@@ -83,7 +83,7 @@ public class SandboxRun {
     static {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(20000);
-        requestFactory.setReadTimeout(20000);
+        requestFactory.setReadTimeout(180000);
         restTemplate = new RestTemplate(requestFactory);
     }
 

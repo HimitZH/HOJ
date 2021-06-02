@@ -32,19 +32,9 @@ public class UserRecord implements Serializable {
     @ApiModelProperty(value = "用户id")
     private String uid;
 
-    @ApiModelProperty(value = "总提交数")
-    private Integer submissions;
-
     @ApiModelProperty(value = "cf得分")
     @TableField("rating")
     private Integer rating;
-
-    @ApiModelProperty(value = "IO题目总得分")
-    private Integer totalScore;
-
-    @ApiModelProperty(value = "乐观锁")
-    @Version
-    private Integer version;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;

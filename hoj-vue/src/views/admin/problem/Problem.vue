@@ -366,15 +366,14 @@
           </div>
 
           <el-switch
-            v-model="isUploadTestCase"
-            @change="changeSampleUploadMethod"
+            v-model="problem.isUploadCase"
             active-text="Use Upload File"
             inactive-text="Use Manual Input"
             style="margin: 10px 0"
           >
           </el-switch>
 
-          <div v-show="isUploadTestCase">
+          <div v-show="problem.isUploadCase">
             <el-col :span="24">
               <el-form-item :error="error.testcase">
                 <el-upload
@@ -416,7 +415,7 @@
             </el-col>
           </div>
 
-          <div v-show="!isUploadTestCase">
+          <div v-show="!problem.isUploadCase">
             <el-form-item
               v-for="(sample, index) in problemSamples"
               :key="'sample' + index"
@@ -590,6 +589,7 @@ export default {
         uploadTestcaseDir: '',
         testCaseScore: [],
         isRemote: false,
+        isUploadCase: true,
         type: 0,
         hint: '',
         source: '',
@@ -610,7 +610,6 @@ export default {
       spjMode: '',
       disableRuleType: false,
       routeName: '',
-      isUploadTestCase: true,
       uploadTestcaseDir: '',
       uploadFileUrl: '',
       error: {
@@ -660,6 +659,7 @@ export default {
         spjLanguage: '',
         spjCode: '',
         spjCompileOk: false,
+        isUploadCase: true,
         uploadTestcaseDir: '',
         testCaseScore: [],
         contestProblem: {},
@@ -699,6 +699,8 @@ export default {
       this.problemTags = []; //指定问题的标签列表
       this.problemLanguages = []; //指定问题的编程语言列表
       this.problemSamples = [];
+      this.problemCodeTemplate = [];
+      this.codeTemplate = [];
       this.init();
     },
 
@@ -771,6 +773,14 @@ export default {
           this.problem = data;
           this.problem['examples'] = utils.stringToExamples(data.examples);
           this.testCaseUploaded = true;
+
+          api.admin_getProblemCases(this.pid).then((res) => {
+            if (this.problem.isUploadCase) {
+              this.problem.testCaseScore = res.data.data;
+            } else {
+              this.problemSamples = res.data.data;
+            }
+          });
         });
         if (funcName === 'admin_getContestProblem') {
           api
@@ -781,11 +791,6 @@ export default {
         }
         this.getProblemCodeTemplateAndLanguage();
 
-        if (!this.isUploadTestCase) {
-          api.admin_getProblemCases(this.pid).then((res) => {
-            this.problemSamples = res.data.data;
-          });
-        }
         api.admin_getProblemTags(this.pid).then((res) => {
           this.problemTags = res.data.data;
         });
@@ -810,30 +815,6 @@ export default {
       });
     },
 
-    changeSampleUploadMethod() {
-      if (
-        !this.isUploadTestCase &&
-        this.problemSamples.length == 0 &&
-        this.mode == 'edit'
-      ) {
-        this.$confirm(
-          '你确定要获取显示该题目的评测数据？可能该题目是使用zip上传，那么数据库默认无该测试数据！',
-          '注意',
-          {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning',
-          }
-        )
-          .then(() => {
-            api.admin_getProblemCases(this.pid).then((res) => {
-              this.problemSamples = res.data.data;
-              myMessage.success(res.data.msg);
-            });
-          })
-          .catch(() => {});
-      }
-    },
     switchSpj() {
       if (this.testCaseUploaded) {
         this.$confirm(
@@ -1024,7 +1005,7 @@ export default {
       }
       if (!this.problem.isRemote) {
         // 选择手动输入
-        if (!this.isUploadTestCase) {
+        if (!this.problem.isUploadCase) {
           if (!this.problemSamples.length) {
             myMessage.error('评测数据不能为空！请手动输入评测数据！');
             return;
@@ -1159,11 +1140,11 @@ export default {
       problemDto['codeTemplates'] = this.problemCodeTemplate;
       problemDto['tags'] = problemTagList;
       problemDto['languages'] = problemLanguageList;
-      problemDto['isUploadTestCase'] = this.isUploadTestCase;
+      problemDto['isUploadTestCase'] = this.problem.isUploadCase;
       problemDto['uploadTestcaseDir'] = this.problem.uploadTestcaseDir;
       problemDto['isSpj'] = this.problem.spj;
       // 如果选择上传文件，则使用上传后的结果
-      if (this.isUploadTestCase) {
+      if (this.problem.isUploadCase) {
         problemDto['samples'] = this.problem.testCaseScore;
       } else {
         problemDto['samples'] = this.problemSamples;
