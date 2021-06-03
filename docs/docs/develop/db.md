@@ -91,8 +91,6 @@ role_auth表
 | ------------ | ------------ | ----------- | -------------------------- |
 | id           | long         | primary key | auto_increment             |
 | uid          | String       | 外键        | 用户id                     |
-| submissions  | int          |             | 总提交数                   |
-| total_score  | int          |             | 总OI题目得分               |
 | rating       | int          |             | Cf得分，未参加过默认为1500 |
 | gmt_create   | datetime     |             | 创建时间                   |
 | gmt_modified | datetime     |             | 修改时间                   |
@@ -118,32 +116,33 @@ user_acproblem表
 
 problem表
 
-| 列名             | 实体属性类型 | 键          | 备注                                        |
-| ---------------- | ------------ | ----------- | ------------------------------------------- |
-| id               | long         | primary key | auto_increment 1000开始                     |
-| problem_id       | String       |             | 题目展示id                                  |
-| title            | String       |             | 题目标题                                    |
-| author           | String       |             | 默认可为无                                  |
-| type             | int          |             | 题目类型 0为ACM,1为OI                       |
-| time_limit       | int          |             | 时间限制(ms)，默认为c/c++限制,其它语言为2倍 |
-| memory_limit     | int          |             | 空间限制(mb)，默认为c/c++限制,其它语言为2倍 |
-| description      | String       |             | 内容描述                                    |
-| input            | String       |             | 输入描述                                    |
-| output           | String       |             | 输出描述                                    |
-| examples         | Srting       |             | 题面输入输出样例，不纳入评测数据            |
-| source           | int          |             | 题目来源（比赛id），默认为hoj,可能为爬虫vj  |
-| difficulty       | int          |             | 题目难度，0简单，1中等，2困难               |
-| hint             | String       |             | 备注 提醒                                   |
-| auth             | int          |             | 默认为1公开，2为私有，3为比赛中。           |
-| io_score         | int          |             | 当该题目为io题目时的分数 默认为100          |
-| code_share       | boolean      |             | 该题目对应的相关提交代码，用户是否可用分享  |
-| spj_code         | String       |             | 特判程序代码 空代表非特判                   |
-| spj_language     | String       |             | 特判程序的语言                              |
-| isRemoveEndBlank | boolean      |             | 是否默认去除用户代码的文末空格              |
-| openCaseResult   | boolean      |             | 是否默认开启该题目的测试样例结果查看        |
-| caseVersion      | String       |             | 题目测试数据的版本号                        |
-| gmt_create       | datetime     |             | 创建时间                                    |
-| gmt_modified     | datetime     |             | 修改时间                                    |
+| 列名                | 实体属性类型 | 键          | 备注                                        |
+| ------------------- | ------------ | ----------- | ------------------------------------------- |
+| id                  | long         | primary key | auto_increment 1000开始                     |
+| problem_id          | String       |             | 题目展示id                                  |
+| title               | String       |             | 题目标题                                    |
+| author              | String       |             | 默认可为无                                  |
+| type                | int          |             | 题目类型 0为ACM,1为OI                       |
+| time_limit          | int          |             | 时间限制(ms)，默认为c/c++限制,其它语言为2倍 |
+| memory_limit        | int          |             | 空间限制(mb)，默认为c/c++限制,其它语言为2倍 |
+| description         | String       |             | 内容描述                                    |
+| input               | String       |             | 输入描述                                    |
+| output              | String       |             | 输出描述                                    |
+| examples            | Srting       |             | 题面输入输出样例，不纳入评测数据            |
+| source              | int          |             | 题目来源（比赛id），默认为hoj,可能为爬虫vj  |
+| difficulty          | int          |             | 题目难度，0简单，1中等，2困难               |
+| hint                | String       |             | 备注 提醒                                   |
+| auth                | int          |             | 默认为1公开，2为私有，3为比赛中。           |
+| io_score            | int          |             | 当该题目为io题目时的分数 默认为100          |
+| code_share          | boolean      |             | 该题目对应的相关提交代码，用户是否可用分享  |
+| spj_code            | String       |             | 特判程序代码 空代表非特判                   |
+| spj_language        | String       |             | 特判程序的语言                              |
+| is_remove_end_blank | boolean      |             | 是否默认去除用户代码的文末空格              |
+| open_case_result    | boolean      |             | 是否默认开启该题目的测试样例结果查看        |
+| caseVersion         | String       |             | 题目测试数据的版本号                        |
+| is_upload_case      | boolean      |             | 是否是上传zip评测数据的                     |
+| gmt_create          | datetime     |             | 创建时间                                    |
+| gmt_modified        | datetime     |             | 修改时间                                    |
 
  
 
@@ -160,26 +159,6 @@ problem_case表
 | gmt_modified | datetime     |             | 修改时间           |
 
 
-
-problem_count表
-
-| 列名         | 实体属性类型 | 键   | 备注             |
-| ------------ | ------------ | ---- | ---------------- |
-| pid          | int          |      | 题目id           |
-| total        | int          |      | 总提交数         |
-| ac           | int          |      | 通过数           |
-| mle          | int          |      | 空间超限         |
-| tle          | int          |      | 时间超限         |
-| re           | int          |      | 运行错误         |
-| pe           | int          |      | 格式错误         |
-| ce           | int          |      | 编译错误         |
-| wa           | int          |      | 答案错误         |
-| se           | int          |      | 系统错误         |
-| pa           | int          |      | 该IO题目分数总和 |
-| gmt_create   | datetime     |      | 创建时间         |
-| gmt_modified | datetime     |      | 修改时间         |
-
- 
 
 tag表  题目表的标签
 
