@@ -397,6 +397,7 @@ CREATE TABLE `judge` (
   KEY `uid` (`uid`),
   KEY `username` (`username`),
   CONSTRAINT `judge_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `judge_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `judge_ibfk_3` FOREIGN KEY (`username`) REFERENCES `user_info` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -504,6 +505,7 @@ CREATE TABLE `problem` (
   PRIMARY KEY (`id`),
   KEY `author` (`author`),
   KEY `problem_id` (`problem_id`),
+  CONSTRAINT `problem_ibfk_1` FOREIGN KEY (`author`) REFERENCES `user_info` (`username`) ON DELETE NO ACTION ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `problem_case` */
@@ -662,7 +664,6 @@ CREATE TABLE `user_acproblem` (
   KEY `submit_id` (`submit_id`),
   KEY `uid` (`uid`),
   KEY `pid` (`pid`),
-  CONSTRAINT `user_acproblem_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_acproblem_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `user_acproblem_ibfk_3` FOREIGN KEY (`submit_id`) REFERENCES `judge` (`submit_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -702,10 +703,7 @@ DROP TABLE IF EXISTS `user_record`;
 CREATE TABLE `user_record` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `uid` varchar(32) NOT NULL COMMENT '用户id',
-  `submissions` int(11) DEFAULT '0' COMMENT '总提交数',
-  `total_score` int(11) DEFAULT '0' COMMENT 'IO题目总得分',
   `rating` int(11) DEFAULT NULL COMMENT 'cf得分',
-  `version` int(11) DEFAULT '0' COMMENT '乐观锁',
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`uid`),
