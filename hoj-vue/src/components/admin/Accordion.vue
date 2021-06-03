@@ -27,11 +27,11 @@ export default {
       type: String,
       required: true,
     },
-  },
-  data() {
-    return {
-      isOpen: false,
-    };
+    isOpen: {
+      type: Boolean,
+      required: true,
+      default: true,
+    },
   },
 };
 </script>
@@ -73,7 +73,7 @@ footer {
   transition: 0.2s;
 }
 footer:hover {
-  background-color: #f9fafc;
+  background-color: #ebeef5;
 }
 .rotate {
   transform: rotate(180deg);

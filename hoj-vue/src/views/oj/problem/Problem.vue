@@ -1,5 +1,5 @@
 <template>
-  <div class="flex-container">
+  <div>
     <div id="problem-main">
       <!--problem main-->
       <el-row>
@@ -153,7 +153,7 @@
                 <p class="title">Hint</p>
                 <el-card dis-hover>
                   <div
-                    class="hint-content"
+                    class="hint-content markdown-body"
                     v-html="problemData.problem.hint"
                     v-katex
                     v-highlight
@@ -365,7 +365,7 @@ import {
 import { pie, largePie } from './chartData';
 import api from '@/common/api';
 import myMessage from '@/common/message';
-
+import { addCodeBtn } from '@/common/codeblock';
 // 只显示这些状态的图形占用
 const filtedStatus = ['wa', 'ce', 'ac', 'tle', 'mle', 're', 'pe'];
 
@@ -509,6 +509,9 @@ export default {
           if (codeTemplate && codeTemplate[this.language]) {
             this.code = codeTemplate[this.language];
           }
+          this.$nextTick((_) => {
+            addCodeBtn();
+          });
         },
         () => {}
       );

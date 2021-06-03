@@ -255,7 +255,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                         }
                     }
                 } else {
-                    newProblemCaseList.add(problemCase);
+                    newProblemCaseList.add(problemCase.setPid(pid));
                 }
                 if (problemCase.getScore() != null) {
                     sumScore += problemCase.getScore();
