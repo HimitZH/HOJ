@@ -124,9 +124,6 @@ export default {
 };
 </script>
 <style>
-.auto-textarea-wrapper .auto-textarea-input {
-  height: 450px !important;
-}
 .markdown-body pre {
   display: block;
   border-radius: 3px !important;
@@ -137,6 +134,9 @@ export default {
   font-size: 1rem !important;
   background: #f8f8f9 !important;
   white-space: pre !important;
+}
+.auto-textarea-wrapper .auto-textarea-block {
+  white-space: pre-wrap !important;
 }
 .markdown-body pre code {
   line-height: 26px !important;

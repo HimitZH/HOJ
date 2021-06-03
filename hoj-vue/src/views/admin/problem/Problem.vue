@@ -216,7 +216,7 @@
             v-for="(example, index) in problem.examples"
             :key="'example' + index"
           >
-            <Accordion :title="'Example' + (index + 1)">
+            <Accordion :title="'Example' + (index + 1)" :isOpen="index == 0">
               <el-button
                 type="danger"
                 size="small"
@@ -420,7 +420,7 @@
               v-for="(sample, index) in problemSamples"
               :key="'sample' + index"
             >
-              <Accordion :title="'Sample' + (index + 1)">
+              <Accordion :title="'Sample' + (index + 1)" :isOpen="index == 0">
                 <el-button
                   type="danger"
                   size="small"
@@ -795,6 +795,7 @@ export default {
           this.problemTags = res.data.data;
         });
       } else {
+        this.addExample();
         this.title = 'Create Problem';
         for (let item of this.allLanguage) {
           this.problemLanguages.push(item.name);
@@ -926,10 +927,8 @@ export default {
       }
       myMessage.success('上传测试数据包成功');
       let fileList = response.data.fileList;
-      let averSorce = null;
-      if (this.problem.ioScore) {
-        averSorce = (this.problem.ioScore / fileList.length).toFixed(0);
-      }
+      let averSorce = (100 / fileList.length).toFixed(0);
+
       for (let file of fileList) {
         if (averSorce) {
           file.score = averSorce;
@@ -937,6 +936,7 @@ export default {
         if (!file.output && this.problem.spj) {
           file.output = '-';
         }
+        file.pid = this.problem.id;
       }
       this.problem.testCaseScore = fileList;
       this.testCaseUploaded = true;
