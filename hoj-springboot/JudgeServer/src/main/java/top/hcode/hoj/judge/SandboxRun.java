@@ -140,6 +140,7 @@ public class SandboxRun {
             "Power failure", // 30
             "Bad system call" // 31
     );
+
     public JSONArray run(String uri, JSONObject param) throws SystemError {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -152,7 +153,7 @@ public class SandboxRun {
             if (ex.getRawStatusCode() != 200) {
                 throw new SystemError("Cannot connect to sandbox service.", null, ex.getResponseBodyAsString());
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new SystemError("Call SandBox Error.", null, e.getMessage());
         }
         return null;
@@ -234,14 +235,14 @@ public class SandboxRun {
         param.set("cmd", new JSONArray().put(cmd));
 
         JSONArray result = instance.run("/run", param);
-        JSONObject tmp = (JSONObject)result.get(0);
-        ((JSONObject)result.get(0)).set("status",RESULT_MAP_STATUS.get(tmp.getStr("status")));
+        JSONObject tmp = (JSONObject) result.get(0);
+        ((JSONObject) result.get(0)).set("status", RESULT_MAP_STATUS.get(tmp.getStr("status")));
         return result;
     }
 
 
     public static JSONArray testCase(List<String> args, List<String> envs, String testCasePath, Long maxTime, Long maxOutputSize,
-                                     String exeName, String fileId) throws SystemError {
+                                     Integer maxStack, String exeName, String fileId) throws SystemError {
         JSONObject cmd = new JSONObject();
         cmd.set("args", args);
         cmd.set("env", envs);
@@ -269,7 +270,7 @@ public class SandboxRun {
         // byte
         cmd.set("memoryLimit", MEMORY_LIMIT_MB * 1024 * 1024L);
         cmd.set("procLimit", maxProcessNumber);
-        cmd.set("stackLimit", STACK_LIMIT_MB * 1024 * 1024L);
+        cmd.set("stackLimit", maxStack * 1024 * 1024L);
 
         JSONObject exeFile = new JSONObject();
         exeFile.set("fileId", fileId);
@@ -285,15 +286,16 @@ public class SandboxRun {
         // 调用判题安全沙箱
         JSONArray result = instance.run("/run", param);
 
-        JSONObject tmp = (JSONObject)result.get(0);
-        ((JSONObject)result.get(0)).set("status",RESULT_MAP_STATUS.get(tmp.getStr("status")));
+        JSONObject tmp = (JSONObject) result.get(0);
+        ((JSONObject) result.get(0)).set("status", RESULT_MAP_STATUS.get(tmp.getStr("status")));
         return result;
     }
 
 
     public static JSONArray spjTestCase(List<String> args, List<String> envs, String userExeName, String userFileId,
-                                        String testCaseInputPath, Long maxTime, Long maxOutputSize,List<String> spjArgs,
-                                        List<String> spjEnvs, String spjExeSrc, String testCaseOutputFilePath,String spjExeName) throws SystemError {
+                                        String testCaseInputPath, String testCaseInputFileName, Long maxTime, Long maxOutputSize,
+                                        Integer maxStack, List<String> spjArgs, List<String> spjEnvs, String spjExeSrc,
+                                        String testCaseOutputFilePath, String testCaseOutputFileName, String spjExeName) throws SystemError {
 
         /**
          *  注意：用户源代码需要先编译，若是通过编译需要先将文件存入内存，再利用管道判题，同时特殊判题程序必须已编译且存在（否则判题失败，系统错误）！
@@ -315,7 +317,7 @@ public class SandboxRun {
         files.put(new JSONObject());
         files.put(stderr);
         String inTmp = files.toString().replace("{}", "null");
-        pipeInputCmd.set("files", JSONUtil.parseArray(inTmp,false));
+        pipeInputCmd.set("files", JSONUtil.parseArray(inTmp, false));
 
         // ms-->ns
         pipeInputCmd.set("cpuLimit", maxTime * 1000 * 1000L);
@@ -323,7 +325,7 @@ public class SandboxRun {
         // byte
         pipeInputCmd.set("memoryLimit", MEMORY_LIMIT_MB * 1024 * 1024L);
         pipeInputCmd.set("clockLimit", maxProcessNumber);
-        pipeInputCmd.set("stackLimit", STACK_LIMIT_MB * 1024 * 1024L);
+        pipeInputCmd.set("stackLimit", maxStack * 1024 * 1024L);
 
         JSONObject exeFile = new JSONObject();
         exeFile.set("fileId", userFileId);
@@ -352,7 +354,7 @@ public class SandboxRun {
         outFiles.put(outStdout);
         outFiles.put(outStderr);
         String outTmp = outFiles.toString().replace("{}", "null");
-        pipeOutputCmd.set("files", JSONUtil.parseArray(outTmp,false));
+        pipeOutputCmd.set("files", JSONUtil.parseArray(outTmp, false));
 
         // ms-->ns
         pipeOutputCmd.set("cpuLimit", TIME_LIMIT_MS * 1000 * 1000L);
@@ -365,12 +367,16 @@ public class SandboxRun {
         JSONObject spjExeFile = new JSONObject();
         spjExeFile.set("src", spjExeSrc);
 
+        JSONObject stdInputFileSrc = new JSONObject();
+        stdInputFileSrc.set("src", testCaseInputPath);
+
         JSONObject stdOutFileSrc = new JSONObject();
         stdOutFileSrc.set("src", testCaseOutputFilePath);
 
         JSONObject spjCopyIn = new JSONObject();
         spjCopyIn.set(spjExeName, spjExeFile);
-        spjCopyIn.set("tmp", stdOutFileSrc);
+        spjCopyIn.set(testCaseInputFileName, stdInputFileSrc);
+        spjCopyIn.set(testCaseOutputFileName, stdOutFileSrc);
 
 
         pipeOutputCmd.set("copyIn", spjCopyIn);
@@ -384,7 +390,7 @@ public class SandboxRun {
         // 添加cmd指令
         param.set("cmd", cmdList);
 
-        // 添加管道隐射管道映射
+        // 添加管道映射
         JSONArray pipeMapping = new JSONArray();
 
         JSONObject in = new JSONObject();
@@ -405,8 +411,8 @@ public class SandboxRun {
 
         // 调用判题安全沙箱
         JSONArray result = instance.run("/run", param);
-        JSONObject tmp = (JSONObject)result.get(0);
-        ((JSONObject)result.get(0)).set("status",RESULT_MAP_STATUS.get(tmp.getStr("status")));
+        JSONObject tmp = (JSONObject) result.get(0);
+        ((JSONObject) result.get(0)).set("status", RESULT_MAP_STATUS.get(tmp.getStr("status")));
         return result;
     }
 

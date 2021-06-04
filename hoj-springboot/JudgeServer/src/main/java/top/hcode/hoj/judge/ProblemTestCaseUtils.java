@@ -113,6 +113,16 @@ public class ProblemTestCaseUtils {
         QueryWrapper<ProblemCase> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("pid", problemId);
         List<ProblemCase> problemCases = problemCaseService.list(queryWrapper);
+
+        if (problemCases.size() == 0) { // 数据库也为空的话
+            throw new SystemError("problemID:[" + problemId + "] test case has not found.", null, null);
+        }
+        // 可能zip上传记录的是文件名，这是也是说明文件丢失了
+        if (problemCases.get(0).getInput().endsWith(".in") && (problemCases.get(0).getInput().endsWith(".out") ||
+                problemCases.get(0).getInput().endsWith(".ans"))) {
+            throw new SystemError("problemID:[" + problemId + "] test case has not found.", null, null);
+        }
+
         List<HashMap<String, Object>> testCases = new LinkedList<>();
         for (ProblemCase problemCase : problemCases) {
             HashMap<String, Object> tmp = new HashMap<>();
@@ -122,11 +132,8 @@ public class ProblemTestCaseUtils {
             tmp.put("score", problemCase.getScore());
             testCases.add(tmp);
         }
-        if (testCases.size() == 0) { // 数据库也为空的话
-            throw new SystemError("problemID:[" + problemId + "] test case has not found.", null, null);
-        } else {
-            return initTestCase(testCases, problemId, version, isSpj);
-        }
+
+        return initTestCase(testCases, problemId, version, isSpj);
     }
 
     // 去除末尾的空白符

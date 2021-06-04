@@ -26,6 +26,8 @@ public class ProblemDto {
 
     private Boolean isSpj;
 
+    private Boolean changeSpj;
+
     private List<Language> languages;
 
     private List<Tag> tags;

@@ -34,7 +34,7 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
     /**
      * @MethodNameupdateRecord
      * @Params  * @param null
-     * @Description 本方法启用，不适合数据一致性
+     * @Description 本方法不启用，不适合数据一致性
      * @Return
      * @Since 2021/6/2
      */

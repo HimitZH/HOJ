@@ -16,6 +16,9 @@ import java.util.List;
 @Data
 public class UserHomeVo {
 
+    @ApiModelProperty(value = "用户id")
+    private String uid;
+
     @ApiModelProperty(value = "用户名")
     private String username;
 
@@ -40,8 +43,8 @@ public class UserHomeVo {
     @ApiModelProperty(value = "cf得分")
     private Integer rating;
 
-    @ApiModelProperty(value = "OI得分")
-    private Integer score;
+    @ApiModelProperty(value = "OI得分列表")
+    private List<Integer> scoreList;
 
     @ApiModelProperty(value = "已解决题目列表")
     private List<String> solvedList;

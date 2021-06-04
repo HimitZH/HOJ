@@ -29,7 +29,7 @@ public class OIRankVo {
     @ApiModelProperty(value = "头像地址")
     private String avatar;
 
-    @ApiModelProperty(value = "OI得分")
+    @ApiModelProperty(value = "OI得分列表")
     private Integer score;
 
     @ApiModelProperty(value = "总提交数")
@@ -38,6 +38,4 @@ public class OIRankVo {
     @ApiModelProperty(value = "总通过数")
     private Integer ac;
 
-    @ApiModelProperty(value = "cf得分")
-    private Integer rating;
 }

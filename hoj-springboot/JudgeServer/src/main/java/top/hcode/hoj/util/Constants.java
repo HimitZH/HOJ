@@ -230,7 +230,8 @@ public class Constants {
     /*
         {0} --> tmpfs_dir
         {1} --> exeName
-        {2} --> The test case standard output file name of question
+        {2} --> The test case standard input file name of question
+        {3} --> The test case standard output file name of question
  */
     public enum RunConfig {
         C("C", "{0}/{1}", "main", defaultEnv),
@@ -247,9 +248,9 @@ public class Constants {
 
         CS("C#", "/usr/bin/mono {0}/{1}", "main", defaultEnv),
 
-        SPJ_C("SPJ-C", "{0}/{1} {2}", "spj", defaultEnv),
+        SPJ_C("SPJ-C", "{0}/{1} {2} {3}", "spj", defaultEnv),
 
-        SPJ_CPP("SPJ-C++", "{0}/{1} {2}", "spj", defaultEnv);
+        SPJ_CPP("SPJ-C++", "{0}/{1} {2} {3}", "spj", defaultEnv);
 
         private String language;
         private String command;
