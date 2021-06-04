@@ -62,7 +62,7 @@
         </el-row>
 
         <el-row :gutter="20">
-          <el-col :md="8" :xs="24">
+          <el-col :md="6" :xs="24">
             <el-form-item label="Time Limit(ms)" required>
               <el-input
                 type="Number"
@@ -72,7 +72,7 @@
               ></el-input>
             </el-form-item>
           </el-col>
-          <el-col :md="8" :xs="24">
+          <el-col :md="6" :xs="24">
             <el-form-item label="Memory Limit(mb)" required>
               <el-input
                 type="Number"
@@ -82,7 +82,17 @@
               ></el-input>
             </el-form-item>
           </el-col>
-          <el-col :md="8" :xs="24">
+          <el-col :md="6" :xs="24">
+            <el-form-item label="Stack Limit(mb)" required>
+              <el-input
+                type="Number"
+                placeholder="Enter the stack limit of problem"
+                v-model="problem.stackLimit"
+                :disabled="problem.isRemote"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :md="6" :xs="24">
             <el-form-item label="Level" required>
               <el-select
                 class="difficulty-select"
@@ -216,7 +226,12 @@
             v-for="(example, index) in problem.examples"
             :key="'example' + index"
           >
-            <Accordion :title="'Example' + (index + 1)" :isOpen="index == 0">
+            <Accordion
+              :title="'Example' + (index + 1)"
+              :isOpen="example.isOpen ? true : false"
+              :index="index"
+              @changeVisible="changeExampleVisible"
+            >
               <el-button
                 type="danger"
                 size="small"
@@ -420,7 +435,12 @@
               v-for="(sample, index) in problemSamples"
               :key="'sample' + index"
             >
-              <Accordion :title="'Sample' + (index + 1)" :isOpen="index == 0">
+              <Accordion
+                :title="'Sample' + (index + 1)"
+                :isOpen="sample.isOpen ? true : false"
+                :index="index"
+                @changeVisible="changeSampleVisible"
+              >
                 <el-button
                   type="danger"
                   size="small"
@@ -578,6 +598,7 @@ export default {
         output: '',
         timeLimit: 1000,
         memoryLimit: 256,
+        stackLimit: 128,
         difficulty: 0,
         auth: 1,
         codeShare: true,
@@ -619,6 +640,10 @@ export default {
         testCase: '',
       },
       PROBLEM_LEVEL_RESERVE: {},
+      spjRecord: {
+        spjCode: '',
+        spjLanguage: '',
+      },
     };
   },
   mounted() {
@@ -651,6 +676,7 @@ export default {
         output: '',
         timeLimit: 1000,
         memoryLimit: 256,
+        stackLimit: 128,
         difficulty: 0,
         auth: 1,
         codeShare: true,
@@ -769,9 +795,12 @@ export default {
             data.spjCode = '';
             data.spj = false;
           }
+          this.spjRecord.spjLanguage = data.spjLanguage;
+          this.spjRecord.spjCode = data.spjCode;
           data.spjLanguage = data.spjLanguage || 'C';
           this.problem = data;
           this.problem['examples'] = utils.stringToExamples(data.examples);
+          this.problem['examples'][0]['isOpen'] = true;
           this.testCaseUploaded = true;
 
           api.admin_getProblemCases(this.pid).then((res) => {
@@ -779,6 +808,7 @@ export default {
               this.problem.testCaseScore = res.data.data;
             } else {
               this.problemSamples = res.data.data;
+              this.problemSamples[0]['isOpen'] = true;
             }
           });
         });
@@ -891,7 +921,10 @@ export default {
     },
     // 添加题目样例
     addExample() {
-      this.problem.examples.push({ input: '', output: '' });
+      this.problem.examples.push({ input: '', output: '', isOpen: true });
+    },
+    changeExampleVisible(index, isOpen) {
+      this.problem.examples[index]['isOpen'] = isOpen;
     },
     // 添加判题机的测试样例
     addSample() {
@@ -901,6 +934,7 @@ export default {
           output: '',
           score: 0,
           pid: this.pid,
+          isOpen: true,
         });
       } else {
         this.problemSamples.push({
@@ -908,6 +942,7 @@ export default {
           output: '',
           score: null,
           pid: this.pid,
+          isOpen: true,
         });
       }
     },
@@ -918,6 +953,9 @@ export default {
     //根据下标删除特定的判题机测试样例
     deleteSample(index) {
       this.problemSamples.splice(index, 1);
+    },
+    changeSampleVisible(index, isOpen) {
+      this.problemSamples[index]['isOpen'] = isOpen;
     },
     uploadSucceeded(response) {
       if (response.status != 200) {
@@ -1132,6 +1170,16 @@ export default {
       }
 
       let problemDto = {}; // 上传给后台的数据
+      if (!this.problem.spj) {
+        this.problem.spjCode = '';
+        this.problem.spjLanguage = '';
+      }
+      if (
+        this.spjRecord.spjLanguage != this.problem.spjLanguage ||
+        this.spjRecord.spjCode != this.problem.spjCode
+      ) {
+        problemDto['changeSpj'] = true;
+      }
       problemDto['problem'] = Object.assign({}, this.problem); // 深克隆
       problemDto.problem.examples = utils.examplesToString(
         this.problem.examples
@@ -1143,6 +1191,7 @@ export default {
       problemDto['isUploadTestCase'] = this.problem.isUploadCase;
       problemDto['uploadTestcaseDir'] = this.problem.uploadTestcaseDir;
       problemDto['isSpj'] = this.problem.spj;
+
       // 如果选择上传文件，则使用上传后的结果
       if (this.problem.isUploadCase) {
         problemDto['samples'] = this.problem.testCaseScore;

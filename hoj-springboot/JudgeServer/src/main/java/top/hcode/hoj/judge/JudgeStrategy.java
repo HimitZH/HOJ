@@ -58,8 +58,10 @@ public class JudgeStrategy {
             String testCasesDir = Constants.JudgeDir.TEST_CASE_DIR.getContent() + "/problem_" + problem.getId();
             // 从文件中加载测试数据json
             JSONObject testCasesInfo = problemTestCaseUtils.loadTestCaseInfo(problem.getId(), testCasesDir, problem.getCaseVersion(), !StringUtils.isEmpty(problem.getSpjCode()));
-            // 检查是否为spj，同时是否有spj编译完成的文件，若不存在，就先编译生成该spj文件。
-            Boolean hasSpjOrNotSpj = checkOrCompileSpj(problem);
+            JSONArray testcaseList = (JSONArray) testCasesInfo.get("testCases");
+            String version = testCasesInfo.getStr("version");
+            // 检查是否为spj，同时是否有spj编译完成的文件，若不存在，就先编译生成该spj文件，同时也要检查版本
+            Boolean hasSpjOrNotSpj = checkOrCompileSpj(problem,version);
             // 如果该题为spj，但是没有spj程序
             if (!hasSpjOrNotSpj) {
                 result.put("code", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
@@ -90,6 +92,7 @@ public class JudgeStrategy {
                     userFileId,
                     problem.getTimeLimit() * 1L,
                     problem.getMemoryLimit() * 1024L,
+                    problem.getStackLimit(),
                     false,
                     problem.getIsRemoveEndBlank(),
                     spjExeName);
@@ -130,9 +133,9 @@ public class JudgeStrategy {
     }
 
 
-    public Boolean checkOrCompileSpj(Problem problem) throws CompileError, SystemError {
+    public Boolean checkOrCompileSpj(Problem problem,String version) throws CompileError, SystemError {
         // 如果是需要特判的题目，则需要检测特批程序是否已经编译，否则进行编译
-        if (!StringUtils.isEmpty(problem.getSpjCode())) {
+        if (!StringUtils.isEmpty(problem.getSpjCode()) || !problem.getCaseVersion().equals(version)) {
             Constants.CompileConfig spjCompiler = Constants.CompileConfig.getCompilerByLanguage(problem.getSpjLanguage());
             // 如果不存在该已经编译好的特批程序，则需要再次进行编译
             if (!FileUtil.exist(Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + "/" + problem.getId() + "/" + spjCompiler.getExeName())) {

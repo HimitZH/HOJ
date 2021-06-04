@@ -60,7 +60,7 @@
           <el-col :md="6" :sm="24">
             <el-card shadow="always" class="score">
               <p><i class="fa fa-star" aria-hidden="true"></i> Score</p>
-              <p class="data-number">{{ profile.score }}</p>
+              <p class="data-number">{{ getSumScore(profile.scoreList) }}</p>
             </el-card>
           </el-col>
           <el-col :md="6" :sm="24">
@@ -163,6 +163,13 @@ export default {
     freshProblemDisplayID() {
       this.init();
       myMessage.success('更新成功！');
+    },
+    getSumScore(scoreList) {
+      var sum = 0;
+      for (let i = 0; i < scoreList.length; i++) {
+        sum += scoreList[i];
+      }
+      return sum;
     },
   },
   watch: {

@@ -58,6 +58,7 @@ public class JudgeRun {
     public List<JSONObject> judgeAllCase(String userFileId,
                                          Long maxTime,
                                          Long maxMemory,
+                                         Integer maxStack,
                                          Boolean getUserOutput,
                                          Boolean isRemoveEOFBlank,
                                          String spjExeName)
@@ -107,6 +108,7 @@ public class JudgeRun {
                                 testCaseInputPath,
                                 testTime,// 默认给1.1倍题目限制时间用来测评
                                 maxMemory,
+                                maxStack,
                                 maxOutputSize,
                                 getUserOutput,
                                 isRemoveEOFBlank);
@@ -128,6 +130,7 @@ public class JudgeRun {
                                 testTime,// 默认给1.1倍题目限制时间用来测评
                                 maxMemory,
                                 maxOutputSize,
+                                maxStack,
                                 runConfig.getExeName(),
                                 spjExeName,
                                 getUserOutput);
@@ -172,6 +175,7 @@ public class JudgeRun {
                                        Long maxTime,
                                        Long maxMemory,
                                        Long maxOutputSize,
+                                       Integer maxStack,
                                        String userExeName,
                                        String spjExeName,
                                        Boolean getUserOutput) throws SystemError {
@@ -181,19 +185,24 @@ public class JudgeRun {
 
         // 特判程序的路径
         String spjExeSrc = Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + "/" + problemId + "/" + spjExeName;
+        String testCaseInputFileName = problemId + "_input";
+        String testCaseOutputFileName = problemId + "_output";
 
         JSONArray judgeResultList = SandboxRun.spjTestCase(
-                parseRunCommand(runConfig.getCommand(), runConfig, null),
+                parseRunCommand(runConfig.getCommand(), runConfig, null, null),
                 runConfig.getEnvs(),
                 userExeName,
                 userFileId,
                 testCaseInputFilePath,
+                testCaseInputFileName,
                 maxTime,
                 maxOutputSize,
-                parseRunCommand(spjRunConfig.getCommand(), spjRunConfig, "tmp"),
+                maxStack,
+                parseRunCommand(spjRunConfig.getCommand(), spjRunConfig, testCaseInputFileName, testCaseOutputFileName),
                 spjRunConfig.getEnvs(),
                 spjExeSrc,
                 testCaseOutputFilePath,
+                testCaseOutputFileName,
                 spjExeName);
 
         JSONObject result = new JSONObject();
@@ -267,16 +276,18 @@ public class JudgeRun {
                                     String testCasePath,
                                     Long maxTime,
                                     Long maxMemory,
+                                    Integer maxStack,
                                     Long maxOutputSize,
                                     Boolean getUserOutput,
                                     Boolean isRemoveEOFBlank) throws SystemError {
 
         // 调用安全沙箱使用测试点对程序进行测试
-        JSONArray judgeResultList = SandboxRun.testCase(parseRunCommand(runConfig.getCommand(), runConfig, null),
+        JSONArray judgeResultList = SandboxRun.testCase(parseRunCommand(runConfig.getCommand(), runConfig, null, null),
                 runConfig.getEnvs(),
                 testCasePath,
                 maxTime,
                 maxOutputSize,
+                maxStack,
                 runConfig.getExeName(),
                 userFileId);
 
@@ -354,10 +365,12 @@ public class JudgeRun {
     }
 
 
-    private static List<String> parseRunCommand(String command, Constants.RunConfig runConfig, String testCaseTmpName) {
+    private static List<String> parseRunCommand(String command, Constants.RunConfig runConfig, String testCaseInputName,
+                                                String testCaseOutputName) {
 
         command = MessageFormat.format(command, Constants.JudgeDir.TMPFS_DIR.getContent(),
-                runConfig.getExeName(), Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + testCaseTmpName);
+                runConfig.getExeName(), Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + testCaseInputName,
+                Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + testCaseOutputName);
 
         return Arrays.asList(command.split(" "));
     }

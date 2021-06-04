@@ -35,6 +35,7 @@ void close_file(FILE *f){
 }
 
 int main(int argc, char *args[]){
+    FILE *input;
     FILE *output;
     int result;
     if(argc != 2){
@@ -42,12 +43,18 @@ int main(int argc, char *args[]){
     }
     int user_output;
     cin>>user_output;
+    /**
+    input:输入
+    output:样例的输出
+    user_output:用户的输出
+    **/
     cout<<user_output<<endl;
-    output = fopen(args[1], "r");
+    input = fopen(args[1], "r")
+    output = fopen(args[2], "r");
 	
     result = spj(user_output, output);
     printf("result: %d\n", result);
-    
+    close_file(input);
     close_file(output);
     return result;
 }
