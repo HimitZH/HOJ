@@ -182,7 +182,6 @@ public class AdminProblemController {
     public CommonResult compileSpj(@RequestBody CompileSpj compileSpj) {
 
         if (StringUtils.isEmpty(compileSpj.getSpjSrc()) ||
-                compileSpj.getPid() == null ||
                 StringUtils.isEmpty(compileSpj.getSpjLanguage())) {
             return CommonResult.errorResponse("参数不能为空！");
         }

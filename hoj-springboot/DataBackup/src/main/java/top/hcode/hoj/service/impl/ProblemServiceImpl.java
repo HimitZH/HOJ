@@ -284,17 +284,26 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
             // 只要有新添加，修改，删除都需要更新版本号 同时更新测试数据
             String caseVersion = String.valueOf(System.currentTimeMillis());
-            if (needDeleteProblemCases.size() > 0 || newProblemCaseList.size() > 0 || needUpdateProblemCaseList.size() > 0) {
+            String testcaseDir = problemDto.getUploadTestcaseDir();
+            if (needDeleteProblemCases.size() > 0 || newProblemCaseList.size() > 0
+                    || needUpdateProblemCaseList.size() > 0 || !StringUtils.isEmpty(testcaseDir)) {
                 problem.setCaseVersion(caseVersion);
                 // 如果是选择上传测试文件的，临时文件路径不为空，则需要遍历对应文件夹，读取数据，写入数据库,先前的题目数据一并清空。
-                String testcaseDir = problemDto.getUploadTestcaseDir();
                 if (problemDto.getIsUploadTestCase() && !StringUtils.isEmpty(testcaseDir)) {
-                    // 将之前的临时文件夹里面的评测文件全部复制到指定文件夹(覆盖)
-                    FileUtil.copyFilesFromDir(new File(testcaseDir), new File(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid), true);
                     // 获取代理bean对象执行异步方法===》根据测试文件初始info
-                    applicationContext.getBean(ProblemServiceImpl.class).initUploadTestCase(problem.getSpjLanguage() != null, caseVersion, pid, problemDto.getSamples());
-                }else{
-                    applicationContext.getBean(ProblemServiceImpl.class).initHandTestCase(problem.getSpjLanguage() != null, problem.getCaseVersion(), pid, problemDto.getSamples());
+                    applicationContext.getBean(ProblemServiceImpl.class).initUploadTestCase(problemDto.getIsSpj(), caseVersion, pid, testcaseDir, problemDto.getSamples());
+                } else {
+                    applicationContext.getBean(ProblemServiceImpl.class).initHandTestCase(problemDto.getIsSpj(), problem.getCaseVersion(), pid, problemDto.getSamples());
+                }
+            }
+            // 变化成spj或者取消 同时更新测试数据
+            else if (problemDto.getChangeSpj() != null && problemDto.getChangeSpj()) {
+                problem.setCaseVersion(caseVersion);
+                if (problemDto.getIsUploadTestCase()) {
+                    // 获取代理bean对象执行异步方法===》根据测试文件初始info
+                    applicationContext.getBean(ProblemServiceImpl.class).initUploadTestCase(problemDto.getIsSpj(), caseVersion, pid, null, problemDto.getSamples());
+                } else {
+                    applicationContext.getBean(ProblemServiceImpl.class).initHandTestCase(problemDto.getIsSpj(), problem.getCaseVersion(), pid, problemDto.getSamples());
                 }
             }
         }
@@ -304,10 +313,6 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
         if (problemUpdateResult && checkProblemCase && deleteLanguagesFromProblemResult && deleteTagsFromProblemResult
                 && addLanguagesToProblemResult && addTagsToProblemResult && deleteTemplate && saveOrUpdateCodeTemplate) {
-            // 修改数据库成功后，如果有进行文件上传操作，则进行删除
-            if (problemDto.getIsUploadTestCase() && problemDto.getSamples().size() > 0) {
-                FileUtil.del(problemDto.getUploadTestcaseDir());
-            }
             return true;
         } else {
             return false;
@@ -349,11 +354,9 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
         boolean addCasesToProblemResult = true;
         // 为新的题目添加对应的case
-        if (problemDto.getIsUploadTestCase()) { // 如果是选择上传测试文件的，则需要遍历对应文件夹，读取数据，写入数据库。
+        if (problemDto.getIsUploadTestCase()) { // 如果是选择上传测试文件的，则需要遍历对应文件夹，读取数据。。
             int sumScore = 0;
             String testcaseDir = problemDto.getUploadTestcaseDir();
-            // 将之前的临时文件夹里面的评测文件全部复制到指定文件夹(覆盖)
-            FileUtil.copyFilesFromDir(new File(testcaseDir), new File(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid), true);
             // 如果是io题目统计总分
             List<ProblemCase> problemCases = problemDto.getSamples();
             for (ProblemCase problemCase : problemCases) {
@@ -368,7 +371,8 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             }
             addCasesToProblemResult = problemCaseService.saveOrUpdateBatch(problemCases);
             // 获取代理bean对象执行异步方法===》根据测试文件初始info
-            applicationContext.getBean(ProblemServiceImpl.class).initUploadTestCase(problem.getSpjLanguage() != null, problem.getCaseVersion(), pid, problemDto.getSamples());
+            applicationContext.getBean(ProblemServiceImpl.class).initUploadTestCase(problemDto.getIsSpj(),
+                    problem.getCaseVersion(), pid, testcaseDir, problemDto.getSamples());
         } else {
             // oi题目需要求取平均值，给每个测试点初始oi的score值，默认总分100分
             if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
@@ -380,7 +384,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                 problemDto.getSamples().forEach(problemCase -> problemCase.setPid(pid)); // 设置好新题目的pid
                 addCasesToProblemResult = problemCaseService.saveOrUpdateBatch(problemDto.getSamples());
             }
-            initHandTestCase(problem.getSpjLanguage() != null, problem.getCaseVersion(), pid, problemDto.getSamples());
+            initHandTestCase(problemDto.getIsSpj(), problem.getCaseVersion(), pid, problemDto.getSamples());
         }
 
         // 为新的题目添加对应的tag，可能tag是原表已有，也可能是新的，所以需要判断。
@@ -400,10 +404,6 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
         if (addProblemResult && addCasesToProblemResult && addLangToProblemResult
                 && addTagsToProblemResult && addProblemCodeTemplate) {
-            // 修改数据库成功后，如果有进行文件上传操作，则进行删除
-            if (problemDto.getIsUploadTestCase()) {
-                FileUtil.del(problemDto.getUploadTestcaseDir());
-            }
             return true;
         } else {
             return false;
@@ -415,15 +415,21 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     public void initUploadTestCase(Boolean isSpj,
                                    String version,
                                    Long problemId,
+                                   String tmpTestcaseDir,
                                    List<ProblemCase> problemCaseList) {
+
+        String testCasesDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + problemId;
+
+        // 将之前的临时文件夹里面的评测文件全部复制到指定文件夹(覆盖)
+        if (tmpTestcaseDir != null) {
+            FileUtil.copyFilesFromDir(new File(tmpTestcaseDir), new File(testCasesDir), true);
+        }
 
         JSONObject result = new JSONObject();
         result.set("isSpj", isSpj);
         result.set("version", version);
         result.set("testCasesSize", problemCaseList.size());
         result.set("testCases", new JSONArray());
-
-        String testCasesDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + problemId;
 
 
         for (ProblemCase problemCase : problemCaseList) {
@@ -454,6 +460,8 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         FileWriter infoFile = new FileWriter(testCasesDir + "/info", CharsetUtil.UTF_8);
         // 写入记录文件
         infoFile.write(JSONUtil.toJsonStr(result));
+        // 删除临时上传文件夹
+        FileUtil.del(tmpTestcaseDir);
     }
 
 

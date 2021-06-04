@@ -22,20 +22,62 @@
         ORDER BY solved DESC,ac DESC LIMIT 10
     </select>
 
+
+
+
+
     <select id="getOIRankList" resultType="top.hcode.hoj.pojo.vo.OIRankVo" useCache="true">
-        SELECT u.uuid as uid,u.nickname,u.username,u.signature,u.avatar,
-        (SELECT IFNULL(SUM(score),0) FROM judge WHERE uid=u.uuid) AS score,
-        (SELECT COUNT(pid) FROM user_acproblem WHERE uid =u.uuid) AS ac,
-        (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid) AS total
-        FROM user_info u WHERE u.status = 0
-        ORDER BY score DESC,ac DESC
+        SELECT ui.uuid AS uid, ui.nickname, ui.username, ui.signature, ui.avatar
+            , (
+                SELECT COUNT(DISTINCT pid)
+                FROM user_acproblem
+                WHERE uid = ui.uuid
+            ) AS ac
+            , (
+                SELECT COUNT(uid)
+                FROM judge
+                WHERE uid = ui.uuid
+            ) AS total, ss.score AS score
+        FROM user_info ui, (
+                SELECT u.uuid AS uid, SUM(s.score) AS score
+                FROM user_info u, (
+                        SELECT MAX(score) AS score, uid, pid
+                        FROM judge
+                        WHERE score IS NOT NULL
+                        GROUP BY pid, uid
+                    ) s
+                WHERE u.status = 0
+                    AND s.uid = u.uuid
+                GROUP BY u.uuid
+            ) ss
+        WHERE ss.uid = ui.uuid
+        ORDER BY score DESC, ac DESC
     </select>
 
-    <select id="getUserHomeInfo" resultType="top.hcode.hoj.pojo.vo.UserHomeVo">
-        SELECT u.username,u.signature,u.school,u.github,u.blog,u.avatar,ur.rating,
-        (SELECT IFNULL(SUM(score),0) FROM judge WHERE uid=u.uuid) AS score,
+    <resultMap id="map_UserHomeVo" type="top.hcode.hoj.pojo.vo.UserHomeVo">
+        <id column="uid" property="uid"></id>
+        <result column="username" property="username"></result>
+        <result column="school" property="school"></result>
+        <result column="signature" property="signature"></result>
+        <result column="github" property="github"></result>
+        <result column="blog" property="blog"></result>
+        <result column="avatar" property="avatar"></result>
+        <result column="rating" property="rating"></result>
+        <result column="total" property="total"></result>
+        <collection property="scoreList" ofType="java.lang.Integer" select="getProblemScore" column="uid">
+        </collection>
+    </resultMap>
+
+    <select id="getUserHomeInfo" resultMap="map_UserHomeVo">
+        SELECT u.uuid as uid,u.username,u.signature,u.school,u.github,u.blog,u.avatar,ur.rating,
         (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid) AS total
         FROM user_info u,user_record ur WHERE u.uuid = ur.uid AND u.status = 0 AND u.uuid = #{uid}
+    </select>
+
+    <!-- 子查询-->
+    <select id="getProblemScore" resultType="java.lang.Integer">
+        SELECT MAX(score) AS sum_score FROM judge
+        WHERE uid=#{uid} AND score IS NOT NULL GROUP BY pid
     </select>
 
 </mapper>

@@ -9,7 +9,7 @@
     <div class="body" v-show="isOpen">
       <slot></slot>
     </div>
-    <footer @click="isOpen = !isOpen">
+    <footer @click="changeVisible">
       <i
         :class="{ rotate: !isOpen }"
         class="el-icon-caret-top"
@@ -29,8 +29,18 @@ export default {
     },
     isOpen: {
       type: Boolean,
-      required: true,
+      required: false,
       default: true,
+    },
+    index: {
+      type: Number,
+      required: false,
+    },
+  },
+  methods: {
+    changeVisible() {
+      this.isOpen = !this.isOpen;
+      this.$emit('changeVisible', this.index, this.isOpen);
     },
   },
 };

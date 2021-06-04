@@ -35,11 +35,11 @@
           title="Mood"
           min-width="180"
         ></vxe-table-column>
-        <vxe-table-column
-          field="score"
-          title="Score"
-          min-width="80"
-        ></vxe-table-column>
+        <vxe-table-column title="Score" min-width="80">
+          <template v-slot="{ row }">
+            <span>{{ row.score }}</span>
+          </template>
+        </vxe-table-column>
         <vxe-table-column title="AC" min-width="80">
           <template v-slot="{ row }">
             <a

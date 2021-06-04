@@ -125,6 +125,7 @@ problem表
 | type                | int          |             | 题目类型 0为ACM,1为OI                       |
 | time_limit          | int          |             | 时间限制(ms)，默认为c/c++限制,其它语言为2倍 |
 | memory_limit        | int          |             | 空间限制(mb)，默认为c/c++限制,其它语言为2倍 |
+| stack_limit         | int          |             | 栈限制(mb)，默认为128                       |
 | description         | String       |             | 内容描述                                    |
 | input               | String       |             | 输入描述                                    |
 | output              | String       |             | 输出描述                                    |
