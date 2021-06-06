@@ -17,7 +17,8 @@
         >
           <el-tag type="success" effect="plain" size="medium">
             <i class="fa fa-circle">
-              最近上线：{{ profile.recentLoginTime | fromNow }}</i
+              {{ $t('m.Recent_login_time')
+              }}{{ profile.recentLoginTime | fromNow }}</i
             >
           </el-tag>
         </el-tooltip>
@@ -32,12 +33,12 @@
         <p>
           <span
             ><i class="fa fa-graduation-cap" aria-hidden="true"></i>
-            {{ profile.school ? profile.school : '暂未设置' }}</span
+            {{ profile.school ? profile.school : $t('m.Not_set_yet') }}</span
           >
         </p>
         <p class="mood">
           <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-          {{ profile.signature ? profile.signature : '暂无个性签名' }}
+          {{ profile.signature ? profile.signature : $t('m.Not_set_yet') }}
         </p>
 
         <hr id="split" />
@@ -45,27 +46,37 @@
         <el-row :gutter="12">
           <el-col :md="6" :sm="24">
             <el-card shadow="always" class="submission">
-              <p><i class="fa fa-th" aria-hidden="true"></i> Submissions</p>
+              <p>
+                <i class="fa fa-th" aria-hidden="true"></i>
+                {{ $t('m.UserHome_Submissions') }}
+              </p>
               <p class="data-number">{{ profile.total }}</p>
             </el-card>
           </el-col>
           <el-col :md="6" :sm="24">
             <el-card shadow="always" class="solved">
               <p>
-                <i class="fa fa-check-circle" aria-hidden="true"></i> Solved
+                <i class="fa fa-check-circle" aria-hidden="true"></i>
+                {{ $t('m.UserHome_Solved') }}
               </p>
               <p class="data-number">{{ profile.solvedList.length }}</p>
             </el-card>
           </el-col>
           <el-col :md="6" :sm="24">
             <el-card shadow="always" class="score">
-              <p><i class="fa fa-star" aria-hidden="true"></i> Score</p>
+              <p>
+                <i class="fa fa-star" aria-hidden="true"></i>
+                {{ $t('m.UserHome_Score') }}
+              </p>
               <p class="data-number">{{ getSumScore(profile.scoreList) }}</p>
             </el-card>
           </el-col>
           <el-col :md="6" :sm="24">
             <el-card shadow="always" class="rating">
-              <p><i class="fa fa-user-secret" aria-hidden="true"></i> Rating</p>
+              <p>
+                <i class="fa fa-user-secret" aria-hidden="true"></i>
+                {{ $t('m.UserHome_Rating') }}
+              </p>
               <p class="data-number">
                 {{ profile.rating ? profile.rating : '--' }}
               </p>
@@ -75,7 +86,7 @@
 
         <div id="problems">
           <div v-if="profile.solvedList.length">
-            List of AC problems
+            {{ $t('m.List_Solved_Problems') }}
             <el-button
               type="primary"
               icon="el-icon-refresh"
@@ -84,7 +95,7 @@
               @click="freshProblemDisplayID"
             ></el-button>
           </div>
-          <p v-else>暂无数据</p>
+          <p v-else>{{ $t('m.UserHome_Not_Data') }}</p>
           <div class="btns">
             <div
               class="problem-btn"
@@ -131,10 +142,10 @@ export default {
   data() {
     return {
       profile: {
-        username: '暂无数据',
+        username: '',
         avatar: '',
-        school: '暂无数据',
-        signature: '暂无数据',
+        school: '',
+        signature: '',
         total: 0,
         rating: 0,
         score: 0,
@@ -162,14 +173,16 @@ export default {
     },
     freshProblemDisplayID() {
       this.init();
-      myMessage.success('更新成功！');
+      myMessage.success(this.$i18n.t('m.Update_Successfully'));
     },
     getSumScore(scoreList) {
-      var sum = 0;
-      for (let i = 0; i < scoreList.length; i++) {
-        sum += scoreList[i];
+      if (scoreList) {
+        var sum = 0;
+        for (let i = 0; i < scoreList.length; i++) {
+          sum += scoreList[i];
+        }
+        return sum;
       }
-      return sum;
     },
   },
   watch: {

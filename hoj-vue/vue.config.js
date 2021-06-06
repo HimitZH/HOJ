@@ -17,7 +17,6 @@ const cdn = {
     vuex:'Vuex',
     'element-ui':'ELEMENT',
     'highlight.js': 'hljs',
-    'katex':'katex',
     'vxe-table':'VXETable',
     "moment": "moment",
     'vue-echarts': 'VueECharts',
@@ -27,7 +26,6 @@ const cdn = {
   // cdn的css链接
   css: [
       'https://cdn.bootcdn.net/ajax/libs/element-ui/2.14.0/theme-chalk/index.min.css',
-      "https://cdn.bootcdn.net/ajax/libs/KaTeX/0.12.0/katex.min.css",
       "https://cdn.bootcdn.net/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css",
       "https://cdn.jsdelivr.net/npm/vxe-table@2.9.26/lib/style.css"
   ],
@@ -39,11 +37,11 @@ const cdn = {
     "https://cdn.bootcdn.net/ajax/libs/vuex/3.5.1/vuex.min.js",
     "https://cdn.bootcdn.net/ajax/libs/element-ui/2.14.0/index.min.js",
     "https://cdn.bootcdn.net/ajax/libs/highlight.js/10.3.2/highlight.min.js",
-    "https://cdn.bootcdn.net/ajax/libs/KaTeX/0.12.0/katex.min.js",
     "https://cdn.jsdelivr.net/npm/xe-utils",
     "https://cdn.jsdelivr.net/npm/vxe-table@2.9.26",
     "https://cdn.bootcss.com/moment.js/2.29.1/moment.min.js",
-    "https://cdn.bootcss.com/moment.js/2.29.1/locale/zh-cn.js",
+    "https://cdn.bootcss.com/moment.js/2.29.1/locale/zh-cn.min.js",
+    "https://cdn.bootcdn.net/ajax/libs/moment.js/2.29.1/locale/es-us.min.js",
     "https://cdn.bootcdn.net/ajax/libs/echarts/4.9.0-rc.1/echarts.min.js",
     "https://cdn.bootcdn.net/ajax/libs/vue-echarts/5.0.0-beta.0/vue-echarts.min.js"
     // "https://unpkg.com/mavon-editor@2.9.1/dist/mavon-editor.js"

@@ -5,7 +5,7 @@
         <el-input
           v-model="registerForm.username"
           prefix-icon="el-icon-user-solid"
-          placeholder="Please Enter Username"
+          :placeholder="$t('m.Register_Username')"
           @keyup.enter.native="handleRegister"
           width="100%"
         ></el-input>
@@ -15,7 +15,7 @@
         <el-input
           v-model="registerForm.password"
           prefix-icon="el-icon-lock"
-          placeholder="Please Enter Password"
+          :placeholder="$t('m.Register_Password')"
           @keyup.enter.native="handleRegister"
           type="password"
         ></el-input>
@@ -24,7 +24,7 @@
         <el-input
           v-model="registerForm.passwordAgain"
           prefix-icon="el-icon-lock"
-          placeholder="Please Enter Password Again"
+          :placeholder="$t('m.Register_Password_Again')"
           @keyup.enter.native="handleRegister"
           type="password"
         ></el-input>
@@ -33,7 +33,7 @@
         <el-input
           v-model="registerForm.email"
           prefix-icon="el-icon-message"
-          placeholder="Please Enter Email"
+          :placeholder="$t('m.Register_Email')"
           @keyup.enter.native="handleRegister"
         >
           <el-button
@@ -51,7 +51,7 @@
         <el-input
           v-model="registerForm.code"
           prefix-icon="el-icon-s-check"
-          placeholder="Please enter the captcha from the email"
+          :placeholder="$t('m.Register_Email_Captcha')"
           @keyup.enter.native="handleRegister"
         ></el-input>
       </el-form-item>
@@ -62,11 +62,11 @@
         @click="handleRegister()"
         :loading="btnRegisterLoading"
       >
-        注册
+        {{ $t('m.Register_Btn') }}
       </el-button>
-      <el-link type="primary" @click="switchMode('Login')"
-        >已有账户? 返回登录!</el-link
-      >
+      <el-link type="primary" @click="switchMode('Login')">{{
+        $t('m.Register_Already_Registed')
+      }}</el-link>
     </div>
   </div>
 </template>
@@ -80,7 +80,7 @@ export default {
       api.checkUsernameOrEmail(value, undefined).then(
         (res) => {
           if (res.data.data.username === true) {
-            callback(new Error('The username already exists'));
+            callback(new Error(this.$i18n.t('m.The_username_already_exists')));
           } else {
             callback();
           }
@@ -92,7 +92,7 @@ export default {
       api.checkUsernameOrEmail(undefined, value).then(
         (res) => {
           if (res.data.data.email === true) {
-            callback(new Error('The email already exists'));
+            callback(new Error(this.$i18n.t('m.The_email_already_exists')));
           } else {
             callback();
           }
@@ -110,7 +110,7 @@ export default {
 
     const CheckAgainPassword = (rule, value, callback) => {
       if (value !== this.registerForm.password) {
-        callback(new Error('Password does not match'));
+        callback(new Error(this.$i18n.t('m.Password_does_not_match')));
       }
       callback();
     };
@@ -128,15 +128,19 @@ export default {
       sendEmailError: false,
       rules: {
         username: [
-          { required: true, message: 'Username is required', trigger: 'blur' },
+          {
+            required: true,
+            message: this.$i18n.t('m.Username_Check_Required'),
+            trigger: 'blur',
+          },
           {
             validator: CheckUsernameNotExist,
             trigger: 'blur',
-            message: 'The username already exists',
+            message: this.$i18n.t('m.The_username_already_exists'),
           },
           {
             max: 255,
-            message: 'The longest length of a username is 255',
+            message: this.$i18n.t('m.Username_Check_Max'),
             trigger: 'blur',
           },
         ],
@@ -144,30 +148,30 @@ export default {
         email: [
           {
             required: true,
-            message: 'The email is required',
+            message: this.$i18n.t('m.Email_Check_Required'),
             trigger: 'blur',
           },
           {
             type: 'email',
-            message: 'The email format is incorrect',
+            message: this.$i18n.t('m.Email_Check_Format'),
             trigger: 'blur',
           },
           {
             validator: CheckEmailNotExist,
-            message: 'The email already exists',
+            message: this.$i18n.t('m.The_email_already_exists'),
             trigger: 'blur',
           },
         ],
         password: [
           {
             required: true,
-            message: 'The password is required',
+            message: this.$i18n.t('m.Password_Check_Required'),
             trigger: 'blur',
           },
           {
             min: 6,
             max: 20,
-            message: 'The length of the password is between 6 and 20',
+            message: this.$i18n.t('m.Password_Check_Between'),
             trigger: 'blur',
           },
           { validator: CheckPassword, trigger: 'blur' },
@@ -175,7 +179,7 @@ export default {
         passwordAgain: [
           {
             required: true,
-            message: 'The password again is required',
+            message: this.$i18n.t('m.Password_Again_Check_Required'),
             trigger: 'blur',
           },
           { validator: CheckAgainPassword, trigger: 'change' },
@@ -183,13 +187,13 @@ export default {
         code: [
           {
             required: true,
-            message: 'The captcha must be six digits',
+            message: this.$i18n.t('m.Code_Check_Required'),
             trigger: 'blur',
           },
           {
             min: 6,
             max: 6,
-            message: 'The captcha must be six digits',
+            message: this.$i18n.t('m.Code_Check_Length'),
             trigger: 'blur',
           },
         ],
@@ -222,13 +226,13 @@ export default {
     sendRegisterEmail() {
       var emailReg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
       if (!emailReg.test(this.registerForm.email)) {
-        mMessage.error('请检查邮箱格式！');
+        mMessage.error(this.$i18n.t('m.Email_Check_Format'));
         return;
       }
       this.btnEmailLoading = true;
-      this.countdownNum = '正在处理...';
+      this.countdownNum = 'Waiting...';
       if (this.registerForm.email) {
-        mMessage.info('请稍后...系统正在处理中...');
+        mMessage.info(this.$i18n.t('m.The_system_is_processing'));
         api.getRegisterEmail(this.registerForm.email).then(
           (res) => {
             if (res.data.msg != null) {
@@ -253,7 +257,7 @@ export default {
           this.btnRegisterLoading = true;
           api.register(formData).then(
             (res) => {
-              mMessage.success(res.data.msg);
+              mMessage.success(this.$i18n.t('m.Thanks_for_registering'));
               this.switchMode('Login');
               this.btnRegisterLoading = false;
             },

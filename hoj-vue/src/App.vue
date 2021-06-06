@@ -21,19 +21,23 @@
               <el-divider></el-divider>
             </el-col>
             <el-col :md="6" :xs="24">
-              <h1>Service</h1>
-              <p><a @click="goRoute('/status')">Judging Queue</a></p>
-              <p><a @click="goRoute('/developer')">System Info</a></p>
+              <h1>{{ $t('m.Service') }}</h1>
+              <p>
+                <a @click="goRoute('/status')">{{ $t('m.Judging_Queue') }}</a>
+              </p>
+              <p>
+                <a @click="goRoute('/developer')">{{ $t('m.System_Info') }}</a>
+              </p>
             </el-col>
             <el-col class="hr-none">
               <el-divider></el-divider>
             </el-col>
             <el-col :md="6" :xs="24">
-              <h1>Development</h1>
+              <h1>{{ $t('m.Development') }}</h1>
               <p class="mb-1">
-                <a :href="websiteConfig.projectUrl" target="_blank"
-                  >Open Source</a
-                >
+                <a :href="websiteConfig.projectUrl" target="_blank">{{
+                  $t('m.Open_Source')
+                }}</a>
               </p>
               <p class="mb-1"><a @click="goRoute('/#')">API</a></p>
             </el-col>
@@ -41,10 +45,10 @@
               <el-divider></el-divider>
             </el-col>
             <el-col :md="6" :xs="24">
-              <h1>Support</h1>
+              <h1>{{ $t('m.Support') }}</h1>
               <p>
                 <i class="fa fa-info-circle" aria-hidden="true"></i
-                ><a @click="goRoute('/introduction')"> Help</a>
+                ><a @click="goRoute('/introduction')"> {{ $t('m.Help') }}</a>
               </p>
               <p>
                 <i class="fa fa-envelope" aria-hidden="true"></i>
@@ -64,6 +68,19 @@
             target="_blank"
             >{{ websiteConfig.projectName }}</a
           >
+          <span style="margin-left:10px">
+            <el-dropdown @command="changeLanguage" placement="top">
+              <span class="el-dropdown-link">
+                <i class="fa fa-globe" aria-hidden="true">
+                  {{ this.webLanguage == 'zh-CN' ? '简体中文' : 'English' }}</i
+                ><i class="el-icon-arrow-up el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="zh-CN">简体中文</el-dropdown-item>
+                <el-dropdown-item command="en-US">English</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </span>
         </div>
       </footer>
     </div>
@@ -79,7 +96,7 @@
 
 <script>
 import NavBar from '@/components/oj/common/NavBar';
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapGetters } from 'vuex';
 export default {
   name: 'app-content',
   components: {
@@ -102,6 +119,9 @@ export default {
         return str.toUpperCase();
       }
     },
+    changeLanguage(language) {
+      this.$store.commit('changeWebLanguage', { language: language });
+    },
   },
   watch: {
     $route(newVal, oldVal) {
@@ -118,6 +138,7 @@ export default {
   },
   computed: {
     ...mapState(['websiteConfig']),
+    ...mapGetters(['webLanguage']),
   },
   created: function() {
     this.$nextTick(function() {

@@ -54,6 +54,9 @@ public class JudgeVo {
     @ApiModelProperty(value = "运行内存（b）")
     private Integer memory;
 
+    @ApiModelProperty(value = "题目得分，ACM题目默认为null")
+    private Integer score;
+
     @ApiModelProperty(value = "代码长度")
     private Integer length;
 

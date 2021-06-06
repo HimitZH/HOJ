@@ -5,7 +5,7 @@
         <el-input
           v-model="formResetPassword.email"
           prefix-icon="el-icon-message"
-          placeholder="Please Enter Your Email"
+          :placeholder="$t('m.Reset_Password_Email')"
         >
         </el-input>
       </el-form-item>
@@ -15,7 +15,7 @@
             <el-input
               v-model="formResetPassword.captcha"
               prefix-icon="el-icon-s-check"
-              placeholder="Please Enter the captcha"
+              :placeholder="$t('m.Reset_Password_Captcha')"
             ></el-input>
           </div>
           <div id="captchaImg">
@@ -35,9 +35,9 @@
       >
         {{ resetText }}
       </el-button>
-      <el-link type="primary" @click="switchMode('Login')"
-        >想起密码? 返回登录!</el-link
-      >
+      <el-link type="primary" @click="switchMode('Login')">{{
+        $t('m.Remember_Passowrd_To_Login')
+      }}</el-link>
     </div>
   </div>
 </template>
@@ -60,7 +60,7 @@ export default {
       );
     };
     return {
-      resetText: '发送重置密码的邮件',
+      resetText: 'Send Password Reset Email',
       btnResetPwdLoading: false,
       btnResetPwdDisabled: false,
       captchaSrc: '',
@@ -92,6 +92,7 @@ export default {
     };
   },
   mounted() {
+    this.resetText = this.$i18n.t('m.Send_Password_Reset_Email');
     this.getCaptcha();
   },
   methods: {
@@ -110,10 +111,10 @@ export default {
     },
     countDown() {
       let i = this.time;
-      this.resetText = i + '秒后，可重新发送重置密码的邮件...';
+      this.resetText = i + 's, ' + this.$i18n.t('m.Watting_Can_Resend_Email');
       if (i == 0) {
         this.btnResetPwdDisabled = false;
-        this.resetText = '发送重置密码的邮件';
+        this.resetText = this.$i18n.t('m.Send_Password_Reset_Email');
         return;
       }
       setTimeout(() => {
@@ -123,8 +124,8 @@ export default {
     handleResetPwd() {
       this.$refs['formResetPassword'].validate((valid) => {
         if (valid) {
-          this.resetText = '正在处理...';
-          mMessage.info('请稍后...系统正在处理中...');
+          this.resetText = 'Waiting...';
+          mMessage.info(this.$i18n.t('m.The_system_is_processing'));
           this.btnResetPwdLoading = true;
           this.btnResetPwdDisabled = true;
           api.applyResetPassword(this.formResetPassword).then(
@@ -142,7 +143,7 @@ export default {
               this.formResetPassword.captchaKey = '';
               this.btnResetPwdLoading = false;
               this.btnResetPwdDisabled = false;
-              this.resetText = '重新发送';
+              this.resetText = this.$i18n.t('m.Send_Password_Reset_Email');
               this.getCaptcha();
             }
           );

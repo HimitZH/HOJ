@@ -68,7 +68,8 @@
         <el-card v-else>
           <div slot="header" class="content-center">
             <span class="panel-title home-title welcome-title"
-              >Welcome to {{ toUpper(websiteConfig.shortName) }}</span
+              >{{ $t('m.Welcome_to')
+              }}{{ toUpper(websiteConfig.shortName) }}</span
             >
           </div>
           <el-carousel
@@ -87,9 +88,9 @@
       <el-col :md="10" :sm="24" class="phone-margin">
         <el-card>
           <div slot="header" class="clearfix">
-            <span class="panel-title home-title"
-              >Recent 7 Days AC Top 10 Rank</span
-            >
+            <span class="panel-title home-title">{{
+              $t('m.Recent_7_Days_AC_Rank')
+            }}</span>
           </div>
           <vxe-table
             border="inner"
@@ -110,7 +111,7 @@
             </vxe-table-column>
             <vxe-table-column
               field="username"
-              title="Username"
+              :title="$t('m.Username')"
               min-width="130"
               align="left"
             >
@@ -130,11 +131,16 @@
                 >
               </template>
             </vxe-table-column>
-            <vxe-table-column field="ac" title="AC" min-width="30" align="left">
+            <vxe-table-column
+              field="ac"
+              :title="$t('m.AC')"
+              min-width="30"
+              align="left"
+            >
             </vxe-table-column>
             <vxe-table-column
               field="solved"
-              title="Solved"
+              :title="$t('m.Solved')"
               min-width="50"
               align="left"
             >
@@ -147,9 +153,9 @@
       <el-col :md="14" :sm="24" style="margin-top: 20px;">
         <el-card>
           <div slot="header" class="clearfix">
-            <span class="panel-title home-title"
-              >Other Online Judge Contest</span
-            >
+            <span class="panel-title home-title">{{
+              $t('m.Other_OJ_Contest')
+            }}</span>
           </div>
           <vxe-table
             border="inner"
@@ -162,24 +168,28 @@
           >
             <vxe-table-column
               field="oj"
-              title="OJ"
+              :title="$t('m.OJ')"
               min-width="100"
             ></vxe-table-column>
             <vxe-table-column
               field="title"
-              title="Title"
+              :title="$t('m.Title')"
               min-width="200"
             ></vxe-table-column>
             <vxe-table-column
               field="beginTime"
-              title="Begin Time"
+              :title="$t('m.Begin_Time')"
               min-width="150"
             >
               <template v-slot="{ row }">
                 <span>{{ row.beginTime | localtime }}</span>
               </template>
             </vxe-table-column>
-            <vxe-table-column field="endTime" title="End Time" min-width="150">
+            <vxe-table-column
+              field="endTime"
+              :title="$t('m.End_Time')"
+              min-width="150"
+            >
               <template v-slot="{ row }">
                 <span>{{ row.endTime | localtime }}</span>
               </template>

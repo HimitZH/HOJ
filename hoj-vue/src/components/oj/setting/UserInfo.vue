@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="section-title">Avatar Setting</div>
+    <div class="section-title">{{ $t('m.Avatar_Setting') }}</div>
     <div class="section-main">
       <avatar
         :username="formProfile.username"
@@ -19,7 +19,7 @@
         >
           <div style="padding: 20px 0">
             <i class="el-icon-upload" style="color: #3399ff;font-size:52px"></i>
-            <p>将头像图片拖放到此处，或者单击手动选择。</p>
+            <p>{{ $t('m.Upload_avatar_hint') }}</p>
           </div>
         </el-upload>
       </template>
@@ -108,11 +108,11 @@
       </template>
       <el-dialog
         :visible.sync="uploadModalVisible"
-        title="上传头像"
+        :title="$t('m.Upload')"
         width="350px"
       >
         <div class="upload-modal">
-          <p class="notice">你的头像将被设置为如下:</p>
+          <p class="notice">{{ $t('m.Your_new_avatar') + ':' }}</p>
           <img :src="uploadImgSrc" />
         </div>
         <div slot="footer">
@@ -120,13 +120,13 @@
             @click="uploadAvatar"
             :loading="loadingUploadBtn"
             type="primary"
-            >Upload</el-button
+            >{{ $t('m.Upload') }}</el-button
           >
         </div>
       </el-dialog>
     </div>
 
-    <div class="section-title">UserInfo Setting</div>
+    <div class="section-title">{{ $t('m.UserInfo_Setting') }}</div>
     <el-form ref="formProfile" :model="formProfile">
       <el-row :gutter="30" justify="space-around">
         <el-col :md="10" :xs="24">
@@ -168,7 +168,7 @@
         type="primary"
         @click="updateUserInfo"
         :loading="loadingSaveBtn"
-        >Save All</el-button
+        >{{ $t('m.Save') }}</el-button
       >
     </div>
   </div>

@@ -73,7 +73,7 @@ public class AdminJudgeController {
             // 如果该题已经是AC通过状态，更新该题目的用户ac做题表 user_acproblem
             if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus().intValue()) {
                 QueryWrapper<UserAcproblem> userAcproblemQueryWrapper = new QueryWrapper<>();
-                userAcproblemQueryWrapper.eq("pid", judge.getPid()).eq("uid", judge.getUid());
+                userAcproblemQueryWrapper.eq("submit_id", judge.getSubmitId());
                 userAcproblemService.remove(userAcproblemQueryWrapper);
             }
         }

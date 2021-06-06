@@ -5,9 +5,9 @@
         <div slot="header">
           <span class="panel-title"
             >{{
-              query.type === '' ? 'All' : parseContestType(query.type)
+              query.type === '' ? $t('m.All') : parseContestType(query.type)
             }}
-            Contests</span
+            {{ $t('m.Contests') }}</span
           >
           <div class="filter-row">
             <span>
@@ -18,11 +18,17 @@
                 class="drop-menu"
               >
                 <span class="el-dropdown-link">
-                  {{ query.type == '' ? 'Rule' : parseContestType(query.type) }}
+                  {{
+                    query.type == ''
+                      ? $t('m.Rule')
+                      : parseContestType(query.type)
+                  }}
                   <i class="el-icon-caret-bottom"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="">All</el-dropdown-item>
+                  <el-dropdown-item command="">{{
+                    $t('m.All')
+                  }}</el-dropdown-item>
                   <el-dropdown-item command="0">ACM</el-dropdown-item>
                   <el-dropdown-item command="1">OI</el-dropdown-item>
                 </el-dropdown-menu>
@@ -39,16 +45,24 @@
                 <span class="el-dropdown-link">
                   {{
                     query.status === ''
-                      ? 'Status'
+                      ? $t('m.Status')
                       : CONTEST_STATUS_REVERSE[query.status]['name']
                   }}
                   <i class="el-icon-caret-bottom"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="">All</el-dropdown-item>
-                  <el-dropdown-item command="-1">Scheduled</el-dropdown-item>
-                  <el-dropdown-item command="0">Running</el-dropdown-item>
-                  <el-dropdown-item command="1">Ended</el-dropdown-item>
+                  <el-dropdown-item command="">{{
+                    $t('m.All')
+                  }}</el-dropdown-item>
+                  <el-dropdown-item command="-1">{{
+                    $t('m.Scheduled')
+                  }}</el-dropdown-item>
+                  <el-dropdown-item command="0">{{
+                    $t('m.Running')
+                  }}</el-dropdown-item>
+                  <el-dropdown-item command="1">{{
+                    $t('m.Ended')
+                  }}</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </span>
@@ -56,7 +70,7 @@
             <span>
               <vxe-input
                 v-model="query.keyword"
-                placeholder="Enter keyword"
+                :placeholder="$t('m.Enter_keyword')"
                 type="search"
                 size="medium"
                 @keyup.enter.native="filterByChange"
@@ -65,7 +79,9 @@
             </span>
           </div>
         </div>
-        <p id="no-contest" v-show="contests.length == 0">暂无比赛</p>
+        <p id="no-contest" v-show="contests.length == 0">
+          {{ $t('m.No_contest') }}
+        </p>
         <ol id="contest-list">
           <li
             v-for="contest in contests"
@@ -127,7 +143,9 @@
                   </li>
                   <li>
                     <el-tooltip
-                      :content="CONTEST_TYPE_REVERSE[contest.auth].tips"
+                      :content="
+                        $t('m.' + CONTEST_TYPE_REVERSE[contest.auth].tips)
+                      "
                       placement="top"
                       effect="light"
                     >
@@ -135,7 +153,9 @@
                         :type="CONTEST_TYPE_REVERSE[contest.auth]['color']"
                         effect="plain"
                       >
-                        {{ CONTEST_TYPE_REVERSE[contest.auth]['name'] }}
+                        {{
+                          $t('m.' + CONTEST_TYPE_REVERSE[contest.auth]['name'])
+                        }}
                       </el-tag>
                     </el-tooltip>
                   </li>
@@ -154,7 +174,9 @@
                   size="medium"
                 >
                   <i class="fa fa-circle" aria-hidden="true"></i>
-                  {{ CONTEST_STATUS_REVERSE[contest.status]['name'] }}
+                  {{
+                    $t('m.' + CONTEST_STATUS_REVERSE[contest.status]['name'])
+                  }}
                 </el-tag>
               </el-col>
             </el-row>
@@ -257,7 +279,7 @@ export default {
     },
     toContest(contest) {
       if (contest.type !== CONTEST_TYPE.PUBLIC && !this.isAuthenticated) {
-        myMessage.warning('请先登录');
+        myMessage.warning(this.$i18n.t('m.Please_login_first'));
         this.$store.dispatch('changeModalStatus', { visible: true });
       } else {
         this.$router.push({
