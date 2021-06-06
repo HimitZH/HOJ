@@ -1,10 +1,10 @@
 <template>
   <el-card shadow="always">
     <div slot="header">
-      <span class="panel-title">AC Info</span>
+      <span class="panel-title">{{ $t('m.Admin_Helper') }}</span>
       <div class="filter-row">
         <span>
-          Auto Refresh(10s)
+          {{ $t('m.Auto_Refresh') }}(10s)
           <el-switch
             @change="handleAutoRefresh"
             v-model="autoRefresh"
@@ -17,7 +17,7 @@
             size="small"
             icon="el-icon-refresh"
             :loading="btnLoading"
-            >Refresh</el-button
+            >{{ $t('m.Refresh') }}</el-button
           >
         </span>
       </div>
@@ -29,25 +29,35 @@
       align="center"
       :data="acInfoList"
     >
-      <vxe-table-column field="submitTime" min-width="150" title="AC Time">
+      <vxe-table-column
+        field="submitTime"
+        min-width="150"
+        :title="$t('m.AC_Time')"
+      >
         <template v-slot="{ row }">
           <span>{{ row.submitTime | localtime }}</span>
         </template>
       </vxe-table-column>
       <vxe-table-column
         field="displayId"
-        title="Problem ID"
+        :title="$t('m.Problem_ID')"
         min-width="100"
       ></vxe-table-column>
       <vxe-table-column field="first_blood" title="AC Status" min-width="80">
         <template v-slot="{ row }">
-          <el-tag effect="dark" color="#ed3f14" v-if="row.firstBlood"
-            >First Blood</el-tag
-          >
-          <el-tag effect="dark" color="#19be6b" v-else>Accepet</el-tag>
+          <el-tag effect="dark" color="#ed3f14" v-if="row.firstBlood">{{
+            $t('m.First_Blood')
+          }}</el-tag>
+          <el-tag effect="dark" color="#19be6b" v-else>{{
+            $t('m.Accepted')
+          }}</el-tag>
         </template>
       </vxe-table-column>
-      <vxe-table-column field="username" title="Username" min-width="150">
+      <vxe-table-column
+        field="username"
+        :title="$t('m.Username')"
+        min-width="150"
+      >
         <template v-slot="{ row }">
           <span
             ><a
@@ -60,15 +70,17 @@
       </vxe-table-column>
       <vxe-table-column
         field="realname"
-        title="RealName"
+        :title="$t('m.RealName')"
         min-width="150"
       ></vxe-table-column>
-      <vxe-table-column field="checked" title="Status" min-width="150">
+      <vxe-table-column field="checked" :title="$t('m.Status')" min-width="150">
         <template v-slot="{ row }">
-          <el-tag effect="dark" color="#19be6b" v-if="row.checked"
-            >Checked</el-tag
-          >
-          <el-tag effect="dark" color="#f90" v-else>Not Checked</el-tag>
+          <el-tag effect="dark" color="#19be6b" v-if="row.checked">{{
+            $t('m.Checked')
+          }}</el-tag>
+          <el-tag effect="dark" color="#f90" v-else>{{
+            $t('m.Not_Checked')
+          }}</el-tag>
         </template>
       </vxe-table-column>
       <vxe-table-column field="option" title="Option" min-width="150">
@@ -79,7 +91,7 @@
             icon="el-icon-circle-check"
             @click="updateCheckedStatus(row)"
             round
-            >Check It</el-button
+            >{{ $t('m.Check_It') }}</el-button
           >
         </template>
       </vxe-table-column>
@@ -93,8 +105,7 @@
   </el-card>
 </template>
 <script>
-import { mapState, mapActions } from 'vuex';
-import moment from 'moment';
+import { mapState } from 'vuex';
 import Pagination from '@/components/oj/common/Pagination.vue';
 import api from '@/common/api';
 import myMessage from '@/common/message';
@@ -152,7 +163,7 @@ export default {
       api
         .updateACInfoCheckedStatus(data)
         .then((res) => {
-          myMessage.success(res.data.msg);
+          myMessage.success(this.$i18n.t('m.Update_Successfully'));
           this.getACInfo();
         })
         .catch(() => {});

@@ -10,7 +10,7 @@
         <el-input
           v-model="formLogin.username"
           prefix-icon="el-icon-user-solid"
-          placeholder="Username"
+          :placeholder="$t('m.Login_Username')"
           width="100%"
           @keyup.enter.native="enterHandleLogin"
         ></el-input>
@@ -19,7 +19,7 @@
         <el-input
           v-model="formLogin.password"
           prefix-icon="el-icon-lock"
-          placeholder="Password"
+          :placeholder="$t('m.Login_Password')"
           type="password"
           @keyup.enter.native="enterHandleLogin"
         ></el-input>
@@ -31,7 +31,7 @@
         v-if="!needVerify"
         @click="handleLogin"
         :loading="btnLoginLoading"
-        >登录</el-button
+        >{{ $t('m.Login_Btn') }}</el-button
       >
       <el-popover
         placement="bottom"
@@ -40,9 +40,9 @@
         trigger="click"
         v-else
       >
-        <el-button type="primary" :loading="btnLoginLoading" slot="reference"
-          >登录</el-button
-        >
+        <el-button type="primary" :loading="btnLoginLoading" slot="reference">{{
+          $t('m.Login_Btn')
+        }}</el-button>
         <slide-verify
           :l="42"
           :r="10"
@@ -50,13 +50,13 @@
           :h="100"
           :accuracy="3"
           @success="handleLogin"
-          slider-text="请向右滑动验证"
+          :slider-text="$t('m.Login_Verify')"
           ref="slideBlock"
           v-if="!verify.loginSuccess"
         >
         </slide-verify>
         <el-alert
-          title="验证成功"
+          :title="$t('m.Login_Verify_Success')"
           type="success"
           :description="verify.loginMsg"
           v-show="verify.loginSuccess"
@@ -70,13 +70,13 @@
         v-if="allow_register"
         type="primary"
         @click="switchMode('Register')"
-        >没有账户? 现在注册!</el-link
+        >{{ $t('m.Login_No_Account') }}</el-link
       >
       <el-link
         type="primary"
         @click="switchMode('ResetPwd')"
         style="float: right"
-        >忘记密码</el-link
+        >{{ $t('m.Login_Forget_Password') }}</el-link
       >
     </div>
   </div>
@@ -104,25 +104,25 @@ export default {
         username: [
           {
             required: true,
-            message: 'The username is required',
+            message: this.$i18n.t('m.Username_Check'),
             trigger: 'blur',
           },
           {
             max: 255,
-            message: 'The longest length of a username is 255',
+            message: this.$i18n.t('m.Username_Check_Max'),
             trigger: 'blur',
           },
         ],
         password: [
           {
             required: true,
-            message: 'The password is required',
+            message: this.$i18n.t('m.Password_Check_Required'),
             trigger: 'blur',
           },
           {
             min: 6,
             max: 20,
-            message: 'The length of the password is between 6 and 20',
+            message: this.$i18n.t('m.Password_Check_Between'),
             trigger: 'blur',
           },
         ],
@@ -148,7 +148,7 @@ export default {
       if (this.needVerify) {
         this.verify.loginSuccess = true;
         let time = (times / 1000).toFixed(1);
-        this.verify.loginMsg = '本次耗时' + time + 's';
+        this.verify.loginMsg = 'Total time ' + time + 's';
         setTimeout(() => {
           this.loginSlideBlockVisible = false;
           this.verify.loginSuccess = false;
@@ -167,7 +167,7 @@ export default {
               this.$store.commit('changeUserToken', jwt);
               this.$store.dispatch('setUserInfo', res.data.data);
               this.$store.dispatch('incrLoginFailNum', true);
-              mMessage.success('欢迎回来~');
+              mMessage.success(this.$i18n.t('m.Welcome_Back'));
             },
             (_) => {
               this.$store.dispatch('incrLoginFailNum', false);

@@ -8,11 +8,11 @@
           type="textarea"
           :rows="8"
           id="own-textarea"
-          placeholder="快来写下你的评论吧~😘"
+          :placeholder="$t('m.Come_and_write_down_your_comments') + '~😘'"
         >
         </el-input>
         <div class="input-bottom">
-          <span title="emoji表情">
+          <span title="emoji">
             <el-popover
               placement="top-start"
               width="300"
@@ -34,7 +34,7 @@
           </span>
           <span
             class="markdown-key"
-            title="行内代码"
+            :title="$t('m.Inline_Code')"
             @click="addContentTips(0, false)"
             ><svg
               xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +53,7 @@
           </span>
           <span
             class="markdown-key"
-            title="代码块"
+            :title="$t('m.Code_Block')"
             @click="addContentTips(1, false)"
           >
             <svg
@@ -73,7 +73,7 @@
           </span>
           <span
             class="markdown-key"
-            title="链接"
+            :title="$t('m.Link')"
             @click="addContentTips(2, false)"
             ><svg
               xmlns="http://www.w3.org/2000/svg"
@@ -91,7 +91,7 @@
           ></span>
           <span
             class="markdown-key"
-            title="无序列表"
+            :title="$t('m.Unordered_list')"
             @click="addContentTips(3, false)"
             ><svg
               xmlns="http://www.w3.org/2000/svg"
@@ -109,7 +109,7 @@
           ></span>
           <span
             class="markdown-key"
-            title="有序列表"
+            :title="$t('m.Ordered_List')"
             @click="addContentTips(4, false)"
             ><svg
               xmlns="http://www.w3.org/2000/svg"
@@ -127,14 +127,17 @@
           ></span>
           <span class="own-btn-comment">
             <el-button class="btn" type="primary" round @click="commitComment"
-              ><i class="el-icon-edit"> 提交评论</i></el-button
+              ><i class="el-icon-edit">
+                {{ $t('m.Submit_Comment') }}</i
+              ></el-button
             >
           </span>
         </div>
       </div>
       <h3 class="comment-total">
         <div class="text">
-          <span>全部评论</span><span class="number">{{ totalComment }}</span>
+          <span>{{ $t('m.All_Comment') }}</span
+          ><span class="number">{{ totalComment }}</span>
         </div>
       </h3>
       <div
@@ -201,7 +204,7 @@
             >
               <i class="iconfont fa fa-thumbs-o-up"></i>
               <span class="like-num">{{
-                item.likeNum > 0 ? item.likeNum + '人赞' : '赞'
+                item.likeNum > 0 ? item.likeNum + $t('m.Like') : $t('m.Like')
               }}</span>
             </span>
             <span
@@ -209,7 +212,7 @@
               @click="showCommentInput(item)"
             >
               <i class="iconfont el-icon-chat-square"></i>
-              <span>回复</span>
+              <span>{{ $t('m.Reply') }}</span>
             </span>
             <span
               v-if="item.fromUid == userInfo.uid || isAdminRole"
@@ -217,7 +220,7 @@
               @click="deleteComment(item, commentIndex)"
             >
               <i class="iconfont el-icon-delete"></i>
-              <span>删除</span>
+              <span>{{ $t('m.Delete') }}</span>
             </span>
           </div>
           <div class="reply">
@@ -254,7 +257,7 @@
                   v-if="reply.fromRole == 'admin'"
                   >ADM</span
                 >
-                <span class="reply-text">回复</span>
+                <span class="reply-text">{{ $t('m.Reply') }}</span>
                 <span
                   class="to-name"
                   :title="reply.toName"
@@ -283,7 +286,7 @@
                   @click="showCommentInput(item, reply)"
                 >
                   <i class="iconfont el-icon-chat-square"></i>
-                  <span>回复</span>
+                  <span>{{ $t('m.Reply') }}</span>
                 </span>
                 <span
                   class="reply-opt reply-delete"
@@ -291,20 +294,22 @@
                   @click="deleteReply(reply, commentIndex, replyIndex)"
                 >
                   <i class="iconfont el-icon-delete"></i>
-                  <span>删除</span>
+                  <span>{{ $t('m.Delete') }}</span>
                 </span>
               </div>
             </div>
             <div class="view-more item" v-if="item.totalReplyNum > 3">
-              共<b>{{ item.totalReplyNum }}</b
-              >条回复,
+              {{ $t('m.Reply_Total') }}<b>{{ item.totalReplyNum }}</b
+              >{{ $t('m.Replies') }},
               <a
                 class="btn-more"
                 @click="showAllReply(item)"
                 v-if="!item.hadOpen"
-                >点击查看全部</a
+                >{{ $t('m.Click_Show_All') }}</a
               >
-              <a class="btn-more" @click="pickWayReply(item)" v-else>收起</a>
+              <a class="btn-more" @click="pickWayReply(item)" v-else>{{
+                $t('m.Pick_up')
+              }}</a>
             </div>
             <transition name="fade">
               <div class="input-wrapper" v-if="showItemId === item.id">
@@ -318,7 +323,7 @@
                 >
                 </el-input>
                 <div class="input-bottom">
-                  <span title="emoji表情">
+                  <span title="emoji">
                     <el-popover
                       placement="top-start"
                       width="300"
@@ -343,7 +348,7 @@
                   </span>
                   <span
                     class="markdown-key"
-                    title="行内代码"
+                    :title="$t('m.Inline_Code')"
                     @click="addContentTips(0, true)"
                     ><svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -362,7 +367,7 @@
                   </span>
                   <span
                     class="markdown-key"
-                    title="代码块"
+                    :title="$t('m.Code_Block')"
                     @click="addContentTips(1, true)"
                   >
                     <svg
@@ -382,7 +387,7 @@
                   </span>
                   <span
                     class="markdown-key"
-                    title="链接"
+                    :title="$t('m.Link')"
                     @click="addContentTips(2, true)"
                     ><svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -400,7 +405,7 @@
                   ></span>
                   <span
                     class="markdown-key"
-                    title="无序列表"
+                    :title="$t('m.Unordered_list')"
                     @click="addContentTips(3, true)"
                     ><svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -418,7 +423,7 @@
                   ></span>
                   <span
                     class="markdown-key"
-                    title="有序列表"
+                    :title="$t('m.Ordered_List')"
                     @click="addContentTips(4, true)"
                     ><svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -441,7 +446,7 @@
                       round
                       @click="cancel"
                       size="small"
-                      >取消</el-button
+                      >{{ $t('m.Cancel') }}</el-button
                     >
                     <el-button
                       class="btn"
@@ -449,7 +454,7 @@
                       round
                       @click="commitReply(item.id)"
                       size="small"
-                      >发送</el-button
+                      >{{ $t('m.OK') }}</el-button
                     >
                   </span>
                 </div>
@@ -461,7 +466,7 @@
     </div>
     <div class="container loading-text" v-if="showloading">
       <a style="background: #fff;padding:10px;" @click="loadMoreComment"
-        ><span>加载更多...</span></a
+        ><span>{{ $t('m.Load_More') }}...</span></a
       >
     </div>
   </div>
@@ -497,7 +502,7 @@ export default {
       commentLikeMap: {},
       facelistVisiable: false,
       replyFacelistVisiable: false,
-      replyPlaceholder: '写下你的评论吧~',
+      replyPlaceholder: '',
       query: {
         limit: 10,
         currentPage: 1,
@@ -537,6 +542,9 @@ export default {
   methods: {
     init() {
       let queryParams = Object.assign({}, this.query);
+      this.replyPlaceholder = this.$i18n.t(
+        'm.Come_and_write_down_your_comments'
+      );
       api.getCommentList(queryParams).then((res) => {
         let moreCommentList = res.data.data.commentList.records;
         for (let i = 0; i < moreCommentList.length; i++) {
@@ -582,7 +590,7 @@ export default {
      */
     commitComment() {
       if (!this.isAuthenticated) {
-        myMessage.warning('请先登录');
+        myMessage.warning(this.$i18n.t('m.Please_login_first'));
         this.$store.dispatch('changeModalStatus', { visible: true });
         return;
       }
@@ -609,7 +617,7 @@ export default {
 
     commitReply() {
       if (!this.isAuthenticated) {
-        myMessage.warning('请先登录');
+        myMessage.warning(this.$i18n.t('m.Please_login_first'));
         this.$store.dispatch('changeModalStatus', { visible: true });
         return;
       }
@@ -657,7 +665,9 @@ export default {
         this.replyObj.toName = reply.fromName;
         this.replyObj.toAvatar = reply.fromAvatar;
       } else {
-        this.replyPlaceholder = '快来写下你的评论吧~';
+        this.replyPlaceholder = this.$i18n.t(
+          'm.Come_and_write_down_your_comments'
+        );
         this.replyObj.commentId = item.id;
         this.replyObj.toUid = item.fromUid;
         this.replyObj.toName = item.fromName;
@@ -671,9 +681,9 @@ export default {
      */
 
     deleteComment(comment, commentIndex) {
-      this.$confirm('此操作将删除该评论及其所有回复, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$i18n.t('m.Delete_Comment_Tips'), 'Tips', {
+        confirmButtonText: this.$i18n.t('m.OK'),
+        cancelButtonText: this.$i18n.t('m.Cancel'),
         type: 'warning',
       })
         .then(() => {
@@ -697,9 +707,9 @@ export default {
      */
 
     deleteReply(reply, commentIndex, replyIndex) {
-      this.$confirm('此操作将删除该回复, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$i18n.t('m.Delete_Reply_Tips'), 'Tips', {
+        confirmButtonText: this.$i18n.t('m.OK'),
+        cancelButtonText: this.$i18n.t('m.Cancel'),
         type: 'warning',
       })
         .then(() => {
@@ -794,10 +804,10 @@ export default {
           tips = '[HOJ](https://hcode.top)';
           break;
         case 3:
-          tips = '\n- 无序列表';
+          tips = '\n- ...';
           break;
         case 4:
-          tips = '\n1. 有序列表';
+          tips = '\n1. ...';
           break;
       }
       if (isReply) {

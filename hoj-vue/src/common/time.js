@@ -1,4 +1,8 @@
 import moment from 'moment'
+import i18n from '@/i18n'
+// 全局设定语言
+moment.locale(i18n.locale);
+
 
 // convert utc time to localtime
 function utcToLocal (utcDt, format = 'YYYY-MM-DD  HH:mm:ss') {

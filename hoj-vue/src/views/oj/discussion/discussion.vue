@@ -36,7 +36,7 @@
             >ADM</span
           >
           <span class="c999" style="padding:0 6px;"
-            ><i class="el-icon-folder-opened"> 分类：</i
+            ><i class="el-icon-folder-opened"> {{ $t('m.Category') }}：</i
             ><a
               class="c999"
               @click="toAllDiscussionByCid(discussion.categoryId)"
@@ -45,35 +45,39 @@
           >
           <span class="c999"
             ><i class="fa fa-thumbs-o-up"></i
-            ><span> 点赞：{{ discussion.likeNum }}</span></span
+            ><span> {{ $t('m.Likes') }}：{{ discussion.likeNum }}</span></span
           >
           <span class="c999"
             ><i class="fa fa-eye"></i
-            ><span> 浏览：{{ discussion.viewNum }}</span></span
+            ><span> {{ $t('m.Views') }}：{{ discussion.viewNum }}</span></span
           >
 
-          <a @click="showReportDialog = true" class="report" title="举报"
-            ><i class="fa fa-envira"></i><span>举报</span></a
+          <a
+            @click="showReportDialog = true"
+            class="report"
+            :title="$t('m.Report')"
+            ><i class="fa fa-envira"></i><span>{{ $t('m.Report') }}</span></a
           >
           <a
             @click="toLikeDiscussion(discussion.id, true)"
             class="like"
-            title="点赞"
+            :title="$t('m.Like')"
             v-if="!discussion.hasLike"
           >
-            <i class="fa fa-thumbs-o-up"></i> <span>点赞</span></a
+            <i class="fa fa-thumbs-o-up"></i>
+            <span>{{ $t('m.Like') }}</span></a
           >
           <a
             @click="toLikeDiscussion(discussion.id, false)"
             class="like"
-            title="已点赞"
+            :title="$t('m.Liked')"
             v-else
           >
-            <i class="fa fa-thumbs-up"></i> <span>已点赞</span></a
+            <i class="fa fa-thumbs-up"></i> <span>{{ $t('m.Liked') }}</span></a
           >
 
           <span>
-            <i class="fa fa-clock-o"> 创建时间：</i>
+            <i class="fa fa-clock-o"> {{ $t('m.Created_Time') }}：</i>
             <span>
               <el-tooltip
                 :content="discussion.gmtCreate | localtime"
@@ -86,7 +90,7 @@
 
           <span style="padding:0 6px;" v-show="userInfo.uid == discussion.uid"
             ><a style="color:#8fb0c9" @click="showEditDiscussionDialog = true"
-              ><i class="el-icon-edit-outline"> 编辑</i></a
+              ><i class="el-icon-edit-outline"> {{ $t('m.Edit') }}</i></a
             ></span
           >
         </div>
@@ -100,9 +104,13 @@
         ></div>
       </div>
     </div>
-    <el-dialog title="举报" :visible.sync="showReportDialog" width="350px">
+    <el-dialog
+      :title="$t('m.Report')"
+      :visible.sync="showReportDialog"
+      width="350px"
+    >
       <el-form label-position="top" :model="report">
-        <el-form-item label="标签" required>
+        <el-form-item :label="$t('m.Tags')" required>
           <el-checkbox-group v-model="report.tagList">
             <el-checkbox label="垃圾广告"></el-checkbox>
             <el-checkbox label="违法违规"></el-checkbox>
@@ -112,11 +120,11 @@
             <el-checkbox label="恶意抄袭"></el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-        <el-form-item label="理由" required>
+        <el-form-item :label="$t('m.Report_Reason')" required>
           <el-input
             type="textarea"
             v-model="report.content"
-            placeholder="请写下举报的理由"
+            :placeholder="$t('m.Report_Reason')"
             maxlength="200"
             show-word-limit
             :rows="4"
@@ -125,10 +133,12 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button type="danger" @click.native="showReportDialog = false"
-          >取消</el-button
-        >
-        <el-button type="primary" @click.native="submitReport">提交</el-button>
+        <el-button type="danger" @click.native="showReportDialog = false">{{
+          $t('m.Cancel')
+        }}</el-button>
+        <el-button type="primary" @click.native="submitReport">{{
+          $t('m.OK')
+        }}</el-button>
       </span>
     </el-dialog>
 
@@ -140,28 +150,24 @@
       @open="onOpenEditDialog"
     >
       <el-form label-position="top" :model="discussion">
-        <el-form-item label="讨论标题" required>
+        <el-form-item :label="$t('m.Discussion_title')" required>
           <el-input
             v-model="discussion.title"
-            placeholder="请输入讨论标题"
+            :placeholder="$t('m.Discussion_title')"
             class="title-input"
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="讨论简介" required>
+        <el-form-item :label="$t('m.Discussion_Desc')" required>
           <el-input
             v-model="discussion.description"
-            placeholder="请输入讨论简介"
+            :placeholder="$t('m.Discussion_Desc')"
             class="title-input"
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="讨论分类" required>
-          <el-select
-            v-model="discussion.categoryId"
-            placeholder="请选择"
-            disabled
-          >
+        <el-form-item :label="$t('m.Discussion_Category')" required>
+          <el-select v-model="discussion.categoryId" placeholder="---" disabled>
             <el-option
               :label="discussion.categoryName"
               :value="discussion.categoryId"
@@ -169,10 +175,14 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="是否置顶" required v-if="isAdminRole">
+        <el-form-item
+          :label="$t('m.Discussion_top')"
+          required
+          v-if="isAdminRole"
+        >
           <el-switch v-model="discussion.topPriority"> </el-switch>
         </el-form-item>
-        <el-form-item label="讨论内容" required>
+        <el-form-item :label="$t('m.Discussion_content')" required>
           <Editor :value.sync="discussion.content"></Editor>
         </el-form-item>
       </el-form>
@@ -180,11 +190,11 @@
         <el-button
           type="danger"
           @click.native="showEditDiscussionDialog = false"
-          >取消</el-button
+          >{{ $t('m.Cancel') }}</el-button
         >
-        <el-button type="primary" @click.native="submitDiscussion"
-          >发布</el-button
-        >
+        <el-button type="primary" @click.native="submitDiscussion">{{
+          $t('m.OK')
+        }}</el-button>
       </span>
     </el-dialog>
     <comment :did="$route.params.discussionID"></comment>
@@ -260,7 +270,7 @@ export default {
 
     toLikeDiscussion(did, toLike) {
       if (!this.isAuthenticated) {
-        myMessage.warning('请先登录');
+        myMessage.warning(this.$i18n.t('m.Please_login_first'));
         return;
       }
       api.toLikeDiscussion(did, toLike).then((res) => {
@@ -281,14 +291,14 @@ export default {
       delete discussion.viewNum;
       delete discussion.likeNum;
       api.updateDiscussion(discussion).then((res) => {
-        myMessage.success(res.data.msg);
+        myMessage.success(this.$i18n.t('m.Update_Successfully'));
         this.showEditDiscussionDialog = false;
         this.init();
       });
     },
     submitReport() {
       if (!this.isAuthenticated) {
-        myMessage.warning('请先登录');
+        myMessage.warning(this.$i18n.t('m.Please_login_first'));
         return;
       }
       if (this.report.tagList.length == 0 && !this.report.content) {
@@ -306,7 +316,7 @@ export default {
         did: this.discussionID,
       };
       api.toReportDiscussion(discussionReport).then((res) => {
-        myMessage.success(res.data.msg);
+        myMessage.success(this.$i18n.t('m.Post_successfully'));
         this.showReportDialog = false;
       });
     },
@@ -388,7 +398,7 @@ export default {
 .title-article .title-msg a.like {
   position: absolute;
   top: 30px;
-  right: 60px;
+  right: 68px;
   color: #ff6700 !important;
   font-weight: bold;
   font-size: 14px;

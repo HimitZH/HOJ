@@ -169,7 +169,10 @@ public class AccountController {
         }
         QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
         userInfoQueryWrapper.eq("email", email.trim());
-        UserInfo userInfo = userInfoDao.getOne(userInfoQueryWrapper);
+        UserInfo userInfo = userInfoDao.getOne(userInfoQueryWrapper, false);
+        if (userInfo == null) {
+            return CommonResult.errorResponse("对不起，该邮箱无注册用户，请重新检查！");
+        }
         String code = IdUtil.simpleUUID().substring(0, 21); // 随机生成20位数字与字母的组合
         redisUtils.set(Constants.Email.RESET_PASSWORD_KEY_PREFIX.getValue() + userInfo.getUsername(), code, 10 * 60);//默认链接有效10分钟
         // 发送邮件
@@ -454,11 +457,10 @@ public class AccountController {
     public CommonResult changeEmail(@RequestBody Map params, HttpServletRequest request) {
 
         String password = (String) params.get("password");
-        String oldEmail = (String) params.get("oldEmail");
         String newEmail = (String) params.get("newEmail");
         // 数据可用性判断
-        if (StringUtils.isEmpty(password) || StringUtils.isEmpty(newEmail) || StringUtils.isEmpty(oldEmail)) {
-            return CommonResult.errorResponse("请求参数不能为空！");
+        if (StringUtils.isEmpty(password) || StringUtils.isEmpty(newEmail)) {
+            return CommonResult.errorResponse("密码或新邮箱不能为空！");
         }
         if (!Validator.isEmail(newEmail)) {
             return CommonResult.errorResponse("邮箱格式错误！");

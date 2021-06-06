@@ -118,8 +118,8 @@ public class ProblemTestCaseUtils {
             throw new SystemError("problemID:[" + problemId + "] test case has not found.", null, null);
         }
         // 可能zip上传记录的是文件名，这是也是说明文件丢失了
-        if (problemCases.get(0).getInput().endsWith(".in") && (problemCases.get(0).getInput().endsWith(".out") ||
-                problemCases.get(0).getInput().endsWith(".ans"))) {
+        if (problemCases.get(0).getInput().endsWith(".in") && (problemCases.get(0).getOutput().endsWith(".out") ||
+                problemCases.get(0).getOutput().endsWith(".ans"))) {
             throw new SystemError("problemID:[" + problemId + "] test case has not found.", null, null);
         }
 

@@ -9,7 +9,9 @@
               <span>{{ problemData.problem.title }}</span
               ><br />
               <span v-if="contestID && !contestEnded"
-                ><el-tag effect="plain" size="small">比赛题目</el-tag></span
+                ><el-tag effect="plain" size="small">{{
+                  $t('m.Contest_Problem')
+                }}</el-tag></span
               >
               <div v-else-if="problemData.tags.length > 0" class="problem-tag">
                 <el-popover placement="right-start" width="60" trigger="hover">
@@ -19,7 +21,7 @@
                     type="primary"
                     style="cursor: pointer;"
                     effect="plain"
-                    >Show Tags</el-tag
+                    >{{ $t('m.Show_Tags') }}</el-tag
                   >
                   <el-tag
                     v-for="tag in problemData.tags"
@@ -32,7 +34,9 @@
                 </el-popover>
               </div>
               <div v-else-if="problemData.tags.length == 0" class="problem-tag">
-                <el-tag effect="plain" size="small">暂无标签</el-tag>
+                <el-tag effect="plain" size="small">{{
+                  $t('m.No_tag')
+                }}</el-tag>
               </div>
               <div class="problem-menu">
                 <span v-if="!contestID">
@@ -41,7 +45,7 @@
                     :underline="false"
                     @click="goProblemDiscussion"
                     ><i class="fa fa-comments" aria-hidden="true"></i>
-                    Discussion</el-link
+                    {{ $t('m.NavBar_Discussion') }}</el-link
                   ></span
                 >
                 <span>
@@ -50,7 +54,7 @@
                     :underline="false"
                     @click="graphVisible = !graphVisible"
                     ><i class="fa fa-pie-chart" aria-hidden="true"></i>
-                    Statistic</el-link
+                    {{ $t('m.Statistic') }}</el-link
                   ></span
                 >
                 <span>
@@ -59,45 +63,45 @@
                     :underline="false"
                     @click="goProblemSubmission"
                     ><i class="fa fa-bars" aria-hidden="true"></i>
-                    Solution</el-link
+                    {{ $t('m.Solution') }}</el-link
                   ></span
                 >
               </div>
               <div class="question-intr">
                 <span
-                  >Time Limit：C/C++
-                  {{ problemData.problem.timeLimit }}MS，Other
+                  >{{ $t('m.Time_Limit') }}：C/C++
+                  {{ problemData.problem.timeLimit }}MS，{{ $t('m.Other') }}
                   {{ problemData.problem.timeLimit * 2 }}MS</span
                 ><br />
                 <span
-                  >Memory Limit：C/C++
-                  {{ problemData.problem.memoryLimit }}MB，Other
+                  >{{ $t('m.Memory_Limit') }}：C/C++
+                  {{ problemData.problem.memoryLimit }}MB，{{ $t('m.Other') }}
                   {{ problemData.problem.memoryLimit * 2 }}MB</span
                 ><br />
                 <span
-                  >Level：{{
+                  >{{ $t('m.Level') }}：{{
                     PROBLEM_LEVEL[problemData.problem.difficulty]['name']
                   }}</span
                 ><span
                   v-if="problemData.problem.type == 1"
                   style="margin-left: 10px;"
-                  >Score：{{ problemData.problem.ioScore }}</span
+                  >{{ $t('m.Score') }}：{{ problemData.problem.ioScore }}</span
                 ><br />
                 <span v-show="problemData.problem.author"
-                  >Create By：{{ problemData.problem.author }}</span
+                  >{{ $t('m.Created') }}：{{ problemData.problem.author }}</span
                 ><br />
               </div>
             </div>
 
             <div id="problem-content">
-              <p class="title">Description</p>
+              <p class="title">{{ $t('m.Description') }}</p>
               <p
                 class="content markdown-body"
                 v-html="problemData.problem.description"
                 v-katex
                 v-highlight
               ></p>
-              <p class="title">Input</p>
+              <p class="title">{{ $t('m.Input') }}</p>
               <p
                 class="content markdown-body"
                 v-html="problemData.problem.input"
@@ -105,7 +109,7 @@
                 v-highlight
               ></p>
 
-              <p class="title">Output</p>
+              <p class="title">{{ $t('m.Output') }}</p>
               <p
                 class="content markdown-body"
                 v-html="problemData.problem.output"
@@ -120,7 +124,7 @@
                 <div class="flex-container example">
                   <div class="example-input">
                     <p class="title">
-                      Sample Input {{ index + 1 }}
+                      {{ $t('m.Sample_Input') }} {{ index + 1 }}
                       <a
                         class="copy"
                         v-clipboard:copy="example.input"
@@ -134,7 +138,7 @@
                   </div>
                   <div class="example-output">
                     <p class="title">
-                      Sample Output {{ index + 1 }}
+                      {{ $t('m.Sample_Output') }} {{ index + 1 }}
                       <a
                         class="copy"
                         v-clipboard:copy="example.output"
@@ -149,22 +153,22 @@
                 </div>
               </div>
 
-              <div v-if="problemData.problem.hint">
-                <p class="title">Hint</p>
+              <template v-if="problemData.problem.hint">
+                <p class="title">{{ $t('m.Hint') }}</p>
                 <el-card dis-hover>
-                  <div
+                  <p
                     class="hint-content markdown-body"
                     v-html="problemData.problem.hint"
                     v-katex
                     v-highlight
-                  ></div>
+                  ></p>
                 </el-card>
-              </div>
+              </template>
 
-              <div v-if="problemData.problem.source && !contestID">
-                <p class="title">Source</p>
+              <template v-if="problemData.problem.source && !contestID">
+                <p class="title">{{ $t('m.Source') }}</p>
                 <p class="content" v-html="problemData.problem.source"></p>
-              </div>
+              </template>
             </div>
           </el-card>
         </el-col>
@@ -192,12 +196,12 @@
                     show-icon
                     effect="dark"
                     :closable="false"
-                    >Please login first</el-alert
+                    >{{ $t('m.Please_login_first') }}</el-alert
                   >
                 </div>
                 <div class="status" v-if="statusVisible">
                   <template v-if="result.status == JUDGE_STATUS_RESERVE['sf']">
-                    <span>Status:</span>
+                    <span>{{ $t('m.Status') }}:</span>
                     <el-tag
                       effect="dark"
                       :color="submissionStatus.color"
@@ -217,7 +221,7 @@
                           this.contestRuleType == RULE_TYPE.ACM)
                     "
                   >
-                    <span>Status:</span>
+                    <span>{{ $t('m.Status') }}:</span>
                     <el-tag
                       effect="dark"
                       :color="submissionStatus.color"
@@ -239,7 +243,7 @@
                       show-icon
                       effect="dark"
                       :closable="false"
-                      >Submitted successfully</el-alert
+                      >{{ $t('m.Submitted_successfully') }}</el-alert
                     >
                   </template>
                 </div>
@@ -254,7 +258,7 @@
                     show-icon
                     effect="dark"
                     :closable="false"
-                    >You have solved the problem</el-alert
+                    >{{ $t('m.You_have_solved_the_problem') }}</el-alert
                   >
                 </div>
                 <div
@@ -270,7 +274,7 @@
                     show-icon
                     effect="dark"
                     :closable="false"
-                    >You have submitted a solution</el-alert
+                    >{{ $t('m.You_have_submitted_a_solution') }}</el-alert
                   >
                 </div>
                 <div v-if="contestEnded">
@@ -279,7 +283,7 @@
                     show-icon
                     effect="dark"
                     :closable="false"
-                    >Contest has ended</el-alert
+                    >{{ $t('m.Contest_has_ended') }}</el-alert
                   >
                 </div>
               </el-col>
@@ -306,8 +310,8 @@
                   :disabled="problemSubmitDisabled || submitted"
                   class="fl-right"
                 >
-                  <span v-if="submitting">Submitting</span>
-                  <span v-else>Submit</span>
+                  <span v-if="submitting">{{ $t('m.Submitting') }}</span>
+                  <span v-else>{{ $t('m.Submit') }}</span>
                 </el-button>
               </el-col>
             </el-row>
@@ -321,9 +325,9 @@
         <ECharts :options="largePie" :initOptions="largePieInitOpts"></ECharts>
       </div>
       <div slot="footer">
-        <el-button type="ghost" @click="graphVisible = false" size="small"
-          >Close</el-button
-        >
+        <el-button type="ghost" @click="graphVisible = false" size="small">{{
+          $t('m.Close')
+        }}</el-button>
       </div>
     </el-dialog>
 
@@ -342,7 +346,7 @@
           style="margin-left:130px"
           @click="submitCode"
         >
-          OK
+          {{ $t('m.Submit') }}
         </el-button>
       </el-form>
     </el-dialog>
@@ -367,7 +371,7 @@ import api from '@/common/api';
 import myMessage from '@/common/message';
 import { addCodeBtn } from '@/common/codeblock';
 // 只显示这些状态的图形占用
-const filtedStatus = ['wa', 'ce', 'ac', 'tle', 'mle', 're', 'pe'];
+const filtedStatus = ['wa', 'ce', 'ac', 'pa', 'tle', 'mle', 're', 'pe'];
 
 export default {
   name: 'ProblemDetails',
@@ -601,11 +605,15 @@ export default {
       this.theme = newTheme;
     },
     onResetToTemplate() {
-      this.$confirm('是否确定要重置代码模板？', '提示', {
-        cancelButtonText: '取消',
-        confirmButtonText: '确定',
-        type: 'warning',
-      })
+      this.$confirm(
+        this.$i18n.t('m.Are_you_sure_you_want_to_reset_your_code'),
+        'Tips',
+        {
+          cancelButtonText: this.$i18n.t('m.Cancel'),
+          confirmButtonText: this.$i18n.t('m.OK'),
+          type: 'warning',
+        }
+      )
         .then(() => {
           let codeTemplate = this.problemData.codeTemplate;
           if (codeTemplate && codeTemplate[this.language]) {
@@ -659,7 +667,7 @@ export default {
     },
     submitCode() {
       if (this.code.trim() === '') {
-        myMessage.error('提交的代码不能为空！');
+        myMessage.error(this.$i18n.t('m.Code_can_not_be_empty'));
         return;
       }
 
@@ -699,7 +707,7 @@ export default {
             if (!detailsVisible) {
               this.$Modal.success({
                 title: 'Success',
-                content: '代码提交成功！',
+                content: this.$i18n.t('m.Submit_code_successfully'),
               });
               return;
             } else {
@@ -729,11 +737,13 @@ export default {
       ) {
         if (this.submissionExists) {
           this.$confirm(
-            '你已经有该题目的提交了，确定要再一次提交覆盖之前的提交记录？',
-            '警告',
+            this.$i18n.t(
+              'm.You_have_submission_in_this_problem_sure_to_cover_it'
+            ),
+            'Warning',
             {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
+              confirmButtonText: this.$i18n.t('m.OK'),
+              cancelButtonText: this.$i18n.t('m.Cancel'),
               type: 'warning',
             }
           )
@@ -771,10 +781,10 @@ export default {
     },
 
     onCopy(event) {
-      myMessage.success('Sample copied successfully');
+      myMessage.success(this.$i18n.t('m.Copied_successfully'));
     },
     onCopyError(e) {
-      myMessage.success('Sample copy failed');
+      myMessage.success(this.$i18n.t('m.Copied_failed'));
     },
   },
   computed: {
@@ -845,6 +855,11 @@ export default {
   },
 };
 </script>
+<style>
+.katex .katex-mathml {
+  display: none;
+}
+</style>
 
 <style scoped>
 #problem-main {

@@ -7,7 +7,8 @@
             <el-breadcrumb separator-class="el-icon-arrow-right">
               <template v-if="currentCategory">
                 <el-breadcrumb-item :to="{ name: routeName, query: null }">
-                  {{ query.onlyMine ? '我的' : '' }}全部</el-breadcrumb-item
+                  {{ query.onlyMine ? $t('m.Mine') : ''
+                  }}{{ $t('m.All') }}</el-breadcrumb-item
                 >
                 <el-breadcrumb-item
                   >{{ currentCategory }} ( {{ total }} )</el-breadcrumb-item
@@ -15,7 +16,7 @@
               </template>
               <template v-else>
                 <el-breadcrumb-item :to="{ name: routeName }"
-                  >{{ query.onlyMine ? '我的' : '' }}全部 (
+                  >{{ query.onlyMine ? $t('m.Mine') : '' }}{{ $t('m.All') }} (
                   {{ total }} )</el-breadcrumb-item
                 >
               </template>
@@ -24,7 +25,7 @@
           <span class="search"
             ><vxe-input
               v-model="query.keyword"
-              placeholder="Enter the keyword"
+              :placeholder="$t('m.Enter_keyword')"
               type="search"
               @keyup.enter.native="handleQueryChange"
               @search-click="handleQueryChange"
@@ -103,7 +104,7 @@
               <span class="pr pl hidden-xs-only"
                 ><label class="fw"><i class="fa fa-clock-o"></i></label
                 ><span>
-                  创建时间：<el-tooltip
+                  {{ $t('m.Created_Time') }}：<el-tooltip
                     :content="discussion.gmtCreate | localtime"
                     placement="top"
                   >
@@ -113,11 +114,15 @@
               >
               <span class="pr"
                 ><label class="fw"><i class="fa fa-thumbs-o-up"></i></label
-                ><span> 点赞：{{ discussion.likeNum }}</span></span
+                ><span>
+                  {{ $t('m.Likes') }}：{{ discussion.likeNum }}</span
+                ></span
               >
               <span class="pr"
                 ><label class="fw"><i class="fa fa-eye"></i></label
-                ><span> 浏览：{{ discussion.viewNum }}</span></span
+                ><span>
+                  {{ $t('m.Views') }}：{{ discussion.viewNum }}</span
+                ></span
               >
               <span
                 ><label class="fw"><i class="el-icon-folder-opened"></i></label>
@@ -148,13 +153,13 @@
                     icon="el-icon-edit-outline"
                     :command="'edit:' + index"
                     v-show="discussion.uid === userInfo.uid"
-                    >编辑</el-dropdown-item
+                    >{{ $t('m.Edit') }}</el-dropdown-item
                   >
                   <el-dropdown-item
                     icon="el-icon-delete"
                     :command="'delete:' + index"
                     v-show="discussion.uid === userInfo.uid || isAdminRole"
-                    >删除</el-dropdown-item
+                    >{{ $t('m.Delete') }}</el-dropdown-item
                   >
                 </el-dropdown-menu>
               </el-dropdown>
@@ -173,13 +178,13 @@
                       icon="el-icon-edit-outline"
                       :command="'edit:' + index"
                       v-show="discussion.uid === userInfo.uid"
-                      >编辑</el-dropdown-item
+                      >{{ $t('m.Edit') }}</el-dropdown-item
                     >
                     <el-dropdown-item
                       icon="el-icon-delete"
                       :command="'delete:' + index"
                       v-show="discussion.uid === userInfo.uid || isAdminRole"
-                      >删除</el-dropdown-item
+                      >{{ $t('m.Delete') }}</el-dropdown-item
                     >
                   </el-dropdown-menu>
                 </el-dropdown>
@@ -206,7 +211,11 @@
           @click="toEditDiscussion"
           style="width: 100%;"
           ><i class="el-icon-edit">
-            {{ this.query.pid == '' ? '发布讨论' : '发布题目讨论' }}</i
+            {{
+              this.query.pid == ''
+                ? $t('m.Post_discussion')
+                : $t('m.Post_problem_discussion')
+            }}</i
           >
         </el-button>
         <el-button
@@ -216,7 +225,7 @@
           @click="toOnlyMyDiscussion(!query.onlyMine)"
           style="width: 100%;margin-left:0;margin-top:10px"
           ><i class="el-icon-search">
-            {{ query.onlyMine ? '查看所有讨论' : '只看自己' }}</i
+            {{ query.onlyMine ? $t('m.All') : $t('m.Mine') }}</i
           >
         </el-button>
         <template v-if="this.query.pid">
@@ -225,7 +234,7 @@
             type="success"
             @click="toAllDiscussion"
             style="width: 100%;margin-left:0;margin-top:10px"
-            ><i class="el-icon-s-home"> 综合讨论区</i>
+            ><i class="el-icon-s-home"> {{ $t('m.General_discussion') }}</i>
           </el-button>
 
           <el-button
@@ -239,7 +248,7 @@
               )
             "
             style="width: 100%;margin-left:0;margin-top:10px"
-            ><i class="el-icon-back"> 返回 ({{ query.pid }}) 题目</i>
+            ><i class="el-icon-back"> {{ $t('m.Return') }} ({{ query.pid }})</i>
           </el-button>
         </template>
         <div class="category-body">
@@ -252,7 +261,7 @@
                   routeName
                 )
               "
-              ><i class="el-icon-folder-opened"></i> 讨论分类</a
+              ><i class="el-icon-folder-opened"></i> {{ $t('m.Category') }}</a
             >
           </h3>
           <el-row>
@@ -292,24 +301,24 @@
       @open="onOpenEditDialog"
     >
       <el-form label-position="top" :model="discussion">
-        <el-form-item label="讨论标题" required>
+        <el-form-item :label="$t('m.Discussion_title')" required>
           <el-input
             v-model="discussion.title"
-            placeholder="请输入讨论标题"
+            :placeholder="$t('m.Discussion_title')"
             class="title-input"
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="讨论简介" required>
+        <el-form-item :label="$t('m.Discussion_Desc')" required>
           <el-input
             v-model="discussion.description"
-            placeholder="请输入讨论简介"
+            :placeholder="$t('m.Discussion_Desc')"
             class="title-input"
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="讨论分类" required>
-          <el-select v-model="discussion.categoryId" placeholder="请选择">
+        <el-form-item :label="$t('m.Discussion_Category')" required>
+          <el-select v-model="discussion.categoryId" placeholder="---">
             <el-option
               v-for="category in categoryList"
               :key="category.id"
@@ -319,10 +328,14 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="是否置顶" required v-if="isAdminRole">
+        <el-form-item
+          :label="$t('m.Discussion_top')"
+          required
+          v-if="isAdminRole"
+        >
           <el-switch v-model="discussion.topPriority"> </el-switch>
         </el-form-item>
-        <el-form-item label="讨论内容" required>
+        <el-form-item :label="$t('m.Discussion_content')" required>
           <Editor :value.sync="discussion.content"></Editor>
         </el-form-item>
       </el-form>
@@ -330,11 +343,11 @@
         <el-button
           type="danger"
           @click.native="showEditDiscussionDialog = false"
-          >取消</el-button
+          >{{ $t('m.Cancel') }}</el-button
         >
-        <el-button type="primary" @click.native="submitDiscussion"
-          >发布</el-button
-        >
+        <el-button type="primary" @click.native="submitDiscussion">{{
+          $t('m.OK')
+        }}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -372,7 +385,7 @@ export default {
       },
       backupDiscussion: {}, // 临时记录
       // 对话框标题
-      discussionDialogTitle: 'Edit Discussion',
+      discussionDialogTitle: '',
       discussionList: [],
       categoryList: [],
       cidMapName: {},
@@ -389,6 +402,7 @@ export default {
     };
   },
   mounted() {
+    this.discussionDialogTitle = this.$i18n.t('m.Edit_Discussion');
     api.getCategoryList().then((res) => {
       this.categoryList = res.data.data;
       for (let i = 0; i < this.categoryList.length; i++) {
@@ -443,10 +457,10 @@ export default {
 
     toEditDiscussion() {
       if (!this.isAuthenticated) {
-        myMessage.warning('请先登录');
+        myMessage.warning(this.$i18n.t('m.Please_login_first'));
         this.$store.dispatch('changeModalStatus', { visible: true });
       } else {
-        this.discussionDialogTitle = 'Create Discussion';
+        this.discussionDialogTitle = this.$i18n.t('m.Create_Discussion');
         if (this.backupDiscussion) {
           this.discussion = this.backupDiscussion;
           // 避免监听覆盖
@@ -524,18 +538,18 @@ export default {
     submitDiscussion() {
       // 默认为题目的讨论添加题号格式
       let discussion = Object.assign({}, this.discussion);
-      if (this.discussionDialogTitle == 'Create Discussion') {
+      if (this.discussionDialogTitle == this.$i18n.t('m.Create_Discussion')) {
         if (discussion.pid) {
           discussion.title = '[' + discussion.pid + '] ' + discussion.title;
         }
         api.addDiscussion(discussion).then((res) => {
-          myMessage.success(res.data.msg);
+          myMessage.success(this.$i18n.t('m.Post_successfully'));
           this.showEditDiscussionDialog = false;
           this.init();
         });
       } else {
         api.updateDiscussion(discussion).then((res) => {
-          myMessage.success(res.data.msg);
+          myMessage.success(this.$i18n.t('m.Update_Successfully'));
           this.showEditDiscussionDialog = false;
           this.init();
         });
@@ -545,7 +559,7 @@ export default {
       let tmpArr = command.split(':');
       switch (tmpArr[0]) {
         case 'edit':
-          this.discussionDialogTitle = 'Edit Discussion';
+          this.discussionDialogTitle = this.$i18n.t('m.Edit_Discussion');
           this.discussion = Object.assign(
             {},
             this.discussionList[parseInt(tmpArr[1])]
@@ -553,19 +567,15 @@ export default {
           this.showEditDiscussionDialog = true;
           break;
         case 'delete':
-          this.$confirm(
-            '此操作将删除该讨论包括关联的评论与回复, 是否继续?',
-            '提示',
-            {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning',
-            }
-          ).then(() => {
+          this.$confirm(this.$i18n.t('m.Delete_Discussion_Tips'), 'Tips', {
+            confirmButtonText: this.$i18n.t('m.OK'),
+            cancelButtonText: this.$i18n.t('m.Cancel'),
+            type: 'warning',
+          }).then(() => {
             api
               .deleteDiscussion(this.discussionList[parseInt(tmpArr[1])].id)
               .then((res) => {
-                myMessage.success(res.data.msg);
+                myMessage.success(this.$i18n.t('m.Delete_successfully'));
                 this.init();
               });
           });
@@ -582,7 +592,7 @@ export default {
     },
     discussion(newVal, oldVal) {
       if (
-        this.discussionDialogTitle == 'Create Discussion' &&
+        this.discussionDialogTitle == this.$i18n.t('m.Create_Discussion') &&
         newVal != oldVal
       ) {
         this.backupDiscussion = this.discussion;

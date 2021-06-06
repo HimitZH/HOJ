@@ -5,16 +5,18 @@
         <div slot="header">
           <el-row :gutter="18">
             <el-col :md="4" :lg="2">
-              <span class="panel-title hidden-md-and-down">Status</span>
+              <span class="panel-title hidden-md-and-down">{{
+                $t('m.Status')
+              }}</span>
             </el-col>
             <el-col :xs="10" :sm="8" :md="4" :lg="4">
               <el-switch
                 style="display: block"
                 v-model="formFilter.onlyMine"
-                active-text="Mine"
+                :active-text="$t('m.Mine')"
                 :width="40"
                 @change="handleOnlyMine"
-                inactive-text="All"
+                :inactive-text="$t('m.All')"
               >
               </el-switch>
             </el-col>
@@ -31,7 +33,9 @@
                   <i class="el-icon-caret-bottom"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="All">All</el-dropdown-item>
+                  <el-dropdown-item command="All">{{
+                    $t('m.All')
+                  }}</el-dropdown-item>
                   <el-dropdown-item
                     v-for="result in Object.keys(JUDGE_STATUS_LIST)"
                     :key="result"
@@ -50,7 +54,7 @@
                 icon="el-icon-refresh"
                 round
                 @click="getSubmissions"
-                >Refresh</el-button
+                >{{ $t('m.Refresh') }}</el-button
               >
             </el-col>
             <el-col :xs="4" class="hidden-sm-and-up">
@@ -66,7 +70,7 @@
             <el-col :xs="24" :sm="12" :md="5" :lg="5" class="search">
               <vxe-input
                 v-model="formFilter.problemID"
-                placeholder="Enter Problem ID"
+                :placeholder="$t('m.Enter_Problem_ID')"
                 type="search"
                 size="medium"
                 @keyup.enter.native="handleQueryChange"
@@ -77,7 +81,7 @@
               <vxe-input
                 v-model="formFilter.username"
                 :disabled="formFilter.onlyMine"
-                placeholder="Enter Author"
+                :placeholder="$t('m.Enter_Author')"
                 type="search"
                 size="medium"
                 @keyup.enter.native="handleQueryChange"
@@ -101,10 +105,14 @@
         >
           <vxe-table-column
             field="submitId"
-            title="Run ID"
-            min-width="100"
+            :title="$t('m.Run_ID')"
+            width="100"
           ></vxe-table-column>
-          <vxe-table-column field="pid" title="Problem" min-width="150">
+          <vxe-table-column
+            field="pid"
+            :title="$t('m.Problem')"
+            min-width="150"
+          >
             <template v-slot="{ row }">
               <span
                 v-if="contestID"
@@ -120,7 +128,11 @@
               </span>
             </template>
           </vxe-table-column>
-          <vxe-table-column field="status" title="Status" min-width="170">
+          <vxe-table-column
+            field="status"
+            :title="$t('m.Status')"
+            min-width="180"
+          >
             <template v-slot="{ row }">
               <span :class="getStatusColor(row.status)">
                 <i
@@ -139,28 +151,43 @@
                   "
                   @click="reSubmit(row)"
                 ></i>
-                {{ JUDGE_STATUS[row.status].name }}
+                {{
+                  (row.score != null ? row.score + ' ' : '') +
+                    JUDGE_STATUS[row.status].name
+                }}
               </span>
             </template>
           </vxe-table-column>
-          <vxe-table-column field="time" title="Time" min-width="96">
+          <vxe-table-column field="time" :title="$t('m.Time')" min-width="96">
             <template v-slot="{ row }">
               <span>{{ submissionTimeFormat(row.time) }}</span>
             </template>
           </vxe-table-column>
-          <vxe-table-column field="memory" title="Memory" min-width="96">
+          <vxe-table-column
+            field="memory"
+            :title="$t('m.Memory')"
+            min-width="96"
+          >
             <template v-slot="{ row }">
               <span>{{ submissionMemoryFormat(row.memory) }}</span>
             </template>
           </vxe-table-column>
 
-          <vxe-table-column field="length" title="Length" min-width="80">
+          <vxe-table-column
+            field="length"
+            :title="$t('m.Length')"
+            min-width="80"
+          >
             <template v-slot="{ row }">
               <span>{{ submissionLengthFormat(row.length) }}</span>
             </template>
           </vxe-table-column>
 
-          <vxe-table-column field="language" title="Language" min-width="130">
+          <vxe-table-column
+            field="language"
+            :title="$t('m.Language')"
+            min-width="130"
+          >
             <template v-slot="{ row }">
               <span
                 v-if="!row.share && row.uid != userInfo.uid && !isAdminRole"
@@ -169,7 +196,7 @@
               <el-tooltip
                 class="item"
                 effect="dark"
-                content="查看提交详情"
+                :content="$t('m.View_submission_details')"
                 placement="top"
                 v-else
               >
@@ -179,13 +206,21 @@
               </el-tooltip>
             </template>
           </vxe-table-column>
-          <vxe-table-column field="judger" title="Judger" min-width="100">
+          <vxe-table-column
+            field="judger"
+            :title="$t('m.Judger')"
+            min-width="100"
+          >
             <template v-slot="{ row }">
               <span v-if="row.judger">{{ row.judger }}</span>
               <span v-else>--</span>
             </template>
           </vxe-table-column>
-          <vxe-table-column field="username" title="Author" min-width="100">
+          <vxe-table-column
+            field="username"
+            :title="$t('m.Author')"
+            min-width="100"
+          >
             <template v-slot="{ row }">
               <a
                 @click="goUserHome(row.username, row.uid)"
@@ -196,7 +231,7 @@
           </vxe-table-column>
           <vxe-table-column
             field="submitTime"
-            title="Submit Time"
+            :title="$t('m.Submit_Time')"
             min-width="96"
           >
             <template v-slot="{ row }">
@@ -213,7 +248,7 @@
           <!-- 非比赛提交记录，超级管理员可以对提交进行重判 -->
           <vxe-table-column
             v-if="rejudgeColumnVisible"
-            title="Option"
+            :title="$t('m.Option')"
             min-width="90"
           >
             <template v-slot="{ row }">
@@ -222,7 +257,7 @@
                 @click="handleRejudge(row)"
                 size="mini"
                 :loading="row.loading"
-                >Rejudge</vxe-button
+                >{{ $t('m.Rejudge') }}</vxe-button
               >
             </template>
           </vxe-table-column>
@@ -372,7 +407,7 @@ export default {
           this.formFilter.username = '';
         } else {
           this.formFilter.onlyMine = false;
-          myMessage.error('请您先登陆！');
+          myMessage.error(this.$i18n.t('m.Please_login_first'));
           return;
         }
       }
@@ -545,7 +580,7 @@ export default {
 
           this.submissions[row.index] = res.data.data;
           this.submissions[row.index].loading = false;
-          myMessage.success(res.data.msg);
+          myMessage.success(this.$i18n.t('m.Rejudge_successfully'));
 
           // 加入待重判列表
           this.needCheckSubmitIds[row.submitId] = row.index;
@@ -567,7 +602,7 @@ export default {
           this.formFilter.username = '';
         } else {
           this.formFilter.onlyMine = false;
-          myMessage.error('请您先登陆！');
+          myMessage.error(this.$i18n.t('m.Please_login_first'));
           return;
         }
       }
@@ -579,7 +614,7 @@ export default {
     showSubmitDetail(row) {
       if (!this.isAuthenticated) {
         this.changeModalStatus({ mode: 'Login', visible: true });
-        myMessage.warning('请先登录后再查看代码！');
+        myMessage.warning(this.$i18n.t('m.Please_login_first'));
         return;
       }
       if (row.cid != 0) {

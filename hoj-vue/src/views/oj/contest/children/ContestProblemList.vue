@@ -69,26 +69,26 @@
       ></vxe-table-column>
       <vxe-table-column
         field="displayTitle"
-        title="Title"
+        :title="$t('m.Title')"
         min-width="200"
       ></vxe-table-column>
 
       <!-- 以下列只有在实时刷新榜单的情况下才显示 -->
       <vxe-table-column
         field="ac"
-        title="AC"
+        :title="$t('m.AC')"
         min-width="80"
         v-if="ContestRealTimePermission"
       ></vxe-table-column>
       <vxe-table-column
         field="total"
-        title="Total"
+        :title="$t('m.Total')"
         min-width="80"
         v-if="ContestRealTimePermission"
       ></vxe-table-column>
       <vxe-table-column
         field="ACRating"
-        title="AC Rate"
+        :title="$t('m.AC_Rate')"
         min-width="80"
         v-if="ContestRealTimePermission"
       >

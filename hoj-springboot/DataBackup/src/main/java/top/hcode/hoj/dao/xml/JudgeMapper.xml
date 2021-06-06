@@ -3,7 +3,7 @@
 <mapper namespace="top.hcode.hoj.dao.JudgeMapper">
     <select id="getCommonJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="false">
         select j.uid,j.submit_id,j.submit_time,j.uid,j.username,j.uid,j.pid,j.status,j.share,
-        j.time,j.memory,j.length,j.language,j.cid,j.cpid,j.judger,p.problem_id as display_pid,p.title
+        j.time,j.memory,j.score,j.length,j.language,j.cid,j.cpid,j.judger,p.problem_id as display_pid,p.title
         from judge j,problem p
         <where>
             p.id = j.pid AND j.cid = 0 AND j.cpid = 0
@@ -30,7 +30,7 @@
 
     <select id="getContestJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="false">
         select j.uid,j.submit_id,j.submit_time,j.uid,j.username,j.uid,cp.display_id,cp.display_title as title,
-        j.status,j.share,j.time,j.memory,j.length,j.language,j.cid,j.cpid,j.judger
+        j.status,j.share,j.time,j.memory,j.score,j.length,j.language,j.cid,j.cpid,j.judger
         from judge j,contest_problem cp
         <where>
             j.pid=cp.pid AND j.cid = cp.cid
@@ -88,6 +88,6 @@
                COUNT(IF(status=4,status,NULL)) AS se,
                COUNT(IF(status=8,status,NULL)) AS pa,
                COUNT(*) AS total
-        FROM judge where pid=#{pid}
+        FROM judge where pid=#{pid} AND cid=0
     </select>
 </mapper>

@@ -4,8 +4,8 @@ const pieColorMap = {
   'TLE': {color: '#ff9300'},
   'MLE': {color: '#f7de00'},
   'RE': {color: '#ff6104'},
-  'CE': {color: '#80848f'},
-  'PAC': {color: '#2d8cf0'},
+  'CE': {color: '#f90'},
+  'PA': {color: '#2d8cf0'},
   'PE':{color:'#f90'}
 }
 
@@ -64,7 +64,7 @@ const largePie = {
     itemGap:
       10,
     data:
-      ['AC', 'RE', 'WA', 'TLE', 'PAC', 'MLE','PE']
+      ['AC','PA','PE','CE','RE', 'WA', 'TLE', 'MLE']
   },
   series: [
     {
@@ -80,9 +80,10 @@ const largePie = {
         {value: 0, name: 'WA'},
         {value: 0, name: 'TLE'},
         {value: 0, name: 'AC'},
+        {value: 0, name: 'PA'},
         {value: 0, name: 'MLE'},
-        {value: 0, name: 'PAC'},
-        {value: 0, name: 'PE'}
+        {value: 0, name: 'PE'},
+        {value: 0, name: 'CE'}
       ],
       label: {
         normal: {

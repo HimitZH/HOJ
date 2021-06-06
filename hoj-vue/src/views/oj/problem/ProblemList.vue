@@ -5,7 +5,9 @@
         <div slot="header">
           <el-row :gutter="18">
             <el-col :sm="5" :md="5" :lg="7">
-              <span class="panel-title hidden-xs-only">Problem List</span>
+              <span class="panel-title hidden-xs-only">{{
+                $t('m.Problem_List')
+              }}</span>
             </el-col>
             <el-col :xs="8" :sm="3" :md="3" :lg="3" style="padding-top: 6px;">
               <el-dropdown
@@ -16,7 +18,9 @@
               >
                 <span class="el-dropdown-link">
                   {{
-                    query.oj === 'Mine' || query.oj === '' ? 'Mine' : query.oj
+                    query.oj === 'Mine' || query.oj === ''
+                      ? $t('m.Mine')
+                      : query.oj
                   }}
                   <i class="el-icon-caret-bottom"></i>
                 </span>
@@ -42,13 +46,15 @@
                 <span class="el-dropdown-link">
                   {{
                     query.difficulty === 'All' || query.difficulty === ''
-                      ? 'Level'
+                      ? $t('m.Level')
                       : query.difficulty
                   }}
                   <i class="el-icon-caret-bottom"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="All">All</el-dropdown-item>
+                  <el-dropdown-item command="All">{{
+                    $t('m.All')
+                  }}</el-dropdown-item>
                   <el-dropdown-item
                     :command="key"
                     v-for="(value, key, index) in PROBLEM_LEVEL_RESERVE"
@@ -62,13 +68,13 @@
               <vxe-checkbox
                 v-model="tagVisible"
                 @change="changeTagVisible(tagVisible)"
-                >Tag</vxe-checkbox
+                >{{ $t('m.Tags') }}</vxe-checkbox
               >
             </el-col>
             <el-col :xs="18" :sm="7" :md="7" :lg="5" class="top-pt">
               <vxe-input
                 v-model="query.keyword"
-                placeholder="Enter keyword"
+                :placeholder="$t('m.Enter_keyword')"
                 type="search"
                 size="medium"
                 @search-click="filterByKeyword"
@@ -82,7 +88,7 @@
                 icon="el-icon-refresh"
                 round
                 @click="onReset"
-                >Reset</el-button
+                >{{ $t('m.Reset') }}</el-button
               >
             </el-col>
             <el-col :xs="6" class="hidden-sm-and-up top-pt">
@@ -130,11 +136,15 @@
           </vxe-table-column>
           <vxe-table-column
             field="problemId"
-            title="Problem ID"
+            :title="$t('m.Problem_ID')"
             min-width="100"
           ></vxe-table-column>
 
-          <vxe-table-column field="title" title="Title" min-width="180">
+          <vxe-table-column
+            field="title"
+            :title="$t('m.Title')"
+            min-width="180"
+          >
             <template v-slot="{ row }">
               <a @click="getProblemUri(row.problemId)" class="title-a">{{
                 row.title
@@ -142,7 +152,11 @@
             </template>
           </vxe-table-column>
 
-          <vxe-table-column field="difficulty" title="Level" min-width="100">
+          <vxe-table-column
+            field="difficulty"
+            :title="$t('m.Level')"
+            min-width="100"
+          >
             <template v-slot="{ row }">
               <span :class="getLevelColor(row.difficulty)">{{
                 PROBLEM_LEVEL[row.difficulty].name
@@ -152,7 +166,7 @@
 
           <vxe-table-column
             field="tag"
-            title="Tag"
+            :title="$t('m.Tags')"
             min-width="250"
             visible="false"
           >
@@ -168,10 +182,10 @@
           </vxe-table-column>
           <vxe-table-column
             field="total"
-            title="Total"
+            :title="$t('m.Total')"
             min-width="80"
           ></vxe-table-column>
-          <vxe-table-column title="AC Rate" min-width="80">
+          <vxe-table-column :title="$t('m.AC_Rate')" min-width="80">
             <template v-slot="{ row }">
               <span>{{ getPercentage(row.ac, row.total) }}%</span>
             </template>
@@ -209,7 +223,9 @@
         </el-row>
       </el-card>
       <el-card :padding="10" style="margin-top:20px">
-        <div slot="header"><span class="taglist-title">Tags</span></div>
+        <div slot="header">
+          <span class="taglist-title">{{ $t('m.Tags') }}</span>
+        </div>
         <el-button
           v-for="tag in tagList"
           :key="tag.id"
@@ -223,7 +239,7 @@
 
         <el-button long id="pick-one" @click="pickone">
           <i class="fa fa-random"></i>
-          Pick a random question
+          {{ $t('m.Pick_a_random_question') }}
         </el-button>
       </el-card>
     </el-col>
@@ -257,7 +273,7 @@ export default {
       REMOTE_OJ: {},
       tagList: [],
       tagVisible: false,
-      currentProblemTitle: '请触碰或鼠标悬浮到指定题目行即可查看提交情况',
+      currentProblemTitle: '',
       problemRecord: [],
       problemList: [],
       limit: 20,
@@ -290,6 +306,7 @@ export default {
     this.JUDGE_STATUS_RESERVE = Object.assign({}, JUDGE_STATUS_RESERVE);
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
     this.REMOTE_OJ = Object.assign({}, REMOTE_OJ);
+    this.currentProblemTitle = this.$i18n.t('m.Touch_Get_Status');
     // 初始化
     this.problemRecord = [
       { status: 0, count: 100 },
@@ -464,7 +481,7 @@ export default {
     },
     pickone() {
       api.pickone().then((res) => {
-        myMessage.success('随机题目获取成功，祝你好运');
+        myMessage.success(this.$i18n.t('m.Good_luck_to_you'));
         this.$router.push({
           name: 'ProblemDetails',
           params: { problemID: res.data.data.problemId },

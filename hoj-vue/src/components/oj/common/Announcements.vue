@@ -11,7 +11,7 @@
           size="small"
           icon="el-icon-refresh"
           :loading="btnLoading"
-          >Refresh</el-button
+          >{{ $t('m.Refresh') }}</el-button
         >
         <el-button
           v-else
@@ -19,7 +19,7 @@
           icon="el-icon-back"
           @click="goBack"
           size="small"
-          >Back</el-button
+          >{{ $t('m.Back') }}</el-button
         >
       </span>
     </div>
@@ -29,7 +29,7 @@
         v-if="!announcements.length"
         key="no-announcement"
       >
-        <p>暂无公告</p>
+        <p>{{ $t('m.No_Announcements') }}</p>
       </div>
       <template v-if="listVisible">
         <ul class="announcements-container" key="list">
@@ -155,7 +155,9 @@ export default {
   computed: {
     title() {
       if (this.listVisible) {
-        return this.isContest ? 'Contest Announcements' : 'Announcements';
+        return this.isContest
+          ? this.$i18n.t('m.Contest_Announcement')
+          : this.$i18n.t('m.Announcement');
       } else {
         return this.announcement.title;
       }

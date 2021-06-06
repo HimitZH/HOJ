@@ -1,53 +1,58 @@
 <template>
-<el-card shadow>
-  <div class="error">
-    <div class="container-floud">
-      <div style="text-align: center">
-        <div class="container-error-404">
-          <div class="clip">
-            <div class="shadow">
-              <span class="digit thirdDigit">{{thirdDigit}}</span>
+  <el-card shadow>
+    <div class="error">
+      <div class="container-floud">
+        <div style="text-align: center">
+          <div class="container-error-404">
+            <div class="clip">
+              <div class="shadow">
+                <span class="digit thirdDigit">{{ thirdDigit }}</span>
+              </div>
+            </div>
+            <div class="clip">
+              <div class="shadow">
+                <span class="digit secondDigit">{{ secondDigit }}</span>
+              </div>
+            </div>
+            <div class="clip">
+              <div class="shadow">
+                <span class="digit firstDigit">{{ firstDigit }}</span>
+              </div>
+            </div>
+            <div class="msg">
+              OH!
+              <span class="triangle"></span>
             </div>
           </div>
-          <div class="clip">
-            <div class="shadow">
-              <span class="digit secondDigit">{{secondDigit}}</span>
-            </div>
-          </div>
-          <div class="clip">
-            <div class="shadow">
-              <span class="digit firstDigit">{{firstDigit}}</span>
-            </div>
-          </div>
-          <div class="msg">
-            OH!
-            <span class="triangle"></span>
-          </div>
+          <h2 class="h1">{{ $t('m.Page_Not_Found') }}</h2>
+          <el-button @click="goHome" size="large" style="width: 150px;">
+            <i class="el-icon-s-home"></i> {{ $t('m.Go_Home') }}
+          </el-button>
+          <el-button
+            @click="backPage"
+            size="large"
+            style="width: 150px;margin-left: 40px;"
+            type="primary"
+          >
+            <i class="el-icon-back"></i> {{ $t('m.Back') }}
+          </el-button>
         </div>
-        <h2 class="h1">很抱歉，你访问的页面找不到了</h2>
-        <el-button @click="goHome" size="large" style="width: 150px;">
-            <i class="el-icon-s-home"></i> Go Home
-        </el-button>
-        <el-button @click="backPage" size="large" style="width: 150px;margin-left: 40px;" type="primary">
-            <i class="el-icon-back"></i> Back
-        </el-button>
       </div>
     </div>
-  </div>
-</el-card>
+  </el-card>
 </template>
 <script>
 export default {
-  name: "NotFound404",
-  data(){
-      return{
-          firstDigit:null,
-          secondDigit:null,
-          thirdDigit:null
-      }
+  name: 'NotFound404',
+  data() {
+    return {
+      firstDigit: null,
+      secondDigit: null,
+      thirdDigit: null,
+    };
   },
-  mounted(){
-      this.init()
+  mounted() {
+    this.init();
   },
   methods: {
     backPage() {
@@ -55,9 +60,8 @@ export default {
     },
     goHome() {
       this.$router.push({
-        name: "Home",
+        name: 'Home',
       });
-      
     },
     init() {
       var loop1,
@@ -66,7 +70,7 @@ export default {
         time = 30,
         i = 0,
         number;
-      loop3 = setInterval(()=> {
+      loop3 = setInterval(() => {
         if (i > 40) {
           clearInterval(loop3);
           this.thirdDigit = 4;
@@ -75,16 +79,16 @@ export default {
           i++;
         }
       }, time);
-      loop2 = setInterval(()=> {
+      loop2 = setInterval(() => {
         if (i > 80) {
           clearInterval(loop2);
           this.secondDigit = 0;
         } else {
-          this.secondDigit= Math.floor(Math.random() * 9) + 1;
+          this.secondDigit = Math.floor(Math.random() * 9) + 1;
           i++;
         }
       }, time);
-      loop1 = setInterval(()=> {
+      loop1 = setInterval(() => {
         if (i > 100) {
           clearInterval(loop1);
           this.firstDigit = 4;
@@ -98,7 +102,6 @@ export default {
 };
 </script>
 <style scoped>
-
 .error .clip .shadow {
   height: 180px;
 }
@@ -135,7 +138,7 @@ export default {
   border-bottom: 15px solid transparent;
 }
 .error .container-error-404 {
-  margin:0 auto;
+  margin: 0 auto;
   position: relative;
   height: 250px;
   padding-top: 40px;
@@ -155,7 +158,7 @@ export default {
 }
 .error .clip:nth-of-type(3) .shadow:after,
 .error .clip:nth-of-type(1) .shadow:after {
-  content: "";
+  content: '';
   position: absolute;
   right: -8px;
   bottom: 0px;
@@ -214,7 +217,7 @@ export default {
   position: absolute;
   z-index: 999;
   transform: rotate(45deg);
-  content: "";
+  content: '';
   width: 0;
   height: 0;
 }

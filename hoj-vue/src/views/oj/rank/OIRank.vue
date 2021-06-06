@@ -2,7 +2,9 @@
   <el-row type="flex" justify="space-around">
     <el-col :span="24">
       <el-card :padding="10">
-        <div slot="header"><span class="panel-title">OI Ranklist</span></div>
+        <div slot="header">
+          <span class="panel-title">{{ $t('m.OI_Ranklist') }}</span>
+        </div>
         <div class="echarts">
           <ECharts :options="options" ref="chart" auto-resize></ECharts>
         </div>
@@ -16,7 +18,11 @@
         style="font-weight: 500;"
       >
         <vxe-table-column type="seq" min-width="50"></vxe-table-column>
-        <vxe-table-column field="username" title="User" min-width="150">
+        <vxe-table-column
+          field="username"
+          :title="$t('m.User')"
+          min-width="150"
+        >
           <template v-slot="{ row }">
             <a
               @click="getInfoByUsername(row.uid, row.username)"
@@ -27,20 +33,20 @@
         </vxe-table-column>
         <vxe-table-column
           field="nickname"
-          title="Nickname"
+          :title="$t('m.Nickname')"
           min-width="180"
         ></vxe-table-column>
         <vxe-table-column
           field="signature"
-          title="Mood"
+          :title="$t('m.Mood')"
           min-width="180"
         ></vxe-table-column>
-        <vxe-table-column title="Score" min-width="80">
+        <vxe-table-column :title="$t('m.Score')" min-width="80">
           <template v-slot="{ row }">
             <span>{{ row.score }}</span>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="AC" min-width="80">
+        <vxe-table-column :title="$t('m.AC')" min-width="80">
           <template v-slot="{ row }">
             <a
               @click="goUserACStatus(row.username)"
@@ -51,10 +57,10 @@
         </vxe-table-column>
         <vxe-table-column
           field="total"
-          title="Total"
+          :title="$t('m.Total')"
           min-width="80"
         ></vxe-table-column>
-        <vxe-table-column title="Rating" min-width="80">
+        <vxe-table-column :title="$t('m.Rating')" min-width="80">
           <template v-slot="{ row }">
             <span>{{ getACRate(row.ac, row.total) }}</span>
           </template>
@@ -156,7 +162,7 @@ export default {
         ],
         series: [
           {
-            name: 'Score',
+            name: this.$i18n.t('m.Score'),
             type: 'bar',
             data: [0],
             barMaxWidth: '80',

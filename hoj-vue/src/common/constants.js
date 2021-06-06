@@ -175,21 +175,21 @@ export const CONTEST_TYPE_REVERSE = {
   '0': {
     name:'Public',
     color:'success',
-    tips:'公开赛，每个用户都可查看与提交',
+    tips:'Public_Tips',
     submit:true,              // 公开赛可看可提交
     look:true,
   },
   '1':{
     name:'Private',
     color:'danger',
-    tips:'私有赛，需要密码才可查看与提交',
+    tips:'Private_Tips',
     submit:false,         // 私有赛 必须要密码才能看和提交
     look:false,
   },
   '2':{
-    name:'Protect',
+    name:'Protected',
     color:'warning',
-    tips:'保护赛，每个用户都可查看，提交需要密码',
+    tips:'Protected_Tips',
     submit:false,       //保护赛，可以看但是不能提交，提交需要附带比赛密码
     look:true,
   }
@@ -198,7 +198,7 @@ export const CONTEST_TYPE_REVERSE = {
 export const CONTEST_TYPE = {
   PUBLIC: 0,
   PRIVATE: 1,
-  PROTECT: 2
+  PROTECTED: 2
 }
 
 export const USER_TYPE = {
