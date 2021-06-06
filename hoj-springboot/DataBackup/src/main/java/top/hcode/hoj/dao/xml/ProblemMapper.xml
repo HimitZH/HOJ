@@ -49,7 +49,7 @@
         , COUNT(IF(j.status = 8, STATUS, NULL)) AS pa
         , COUNT(*) AS total
         FROM judge j
-        WHERE j.pid
+        WHERE j.cid=0
         GROUP BY j.pid
         ) j
         ON j.pid = p.id

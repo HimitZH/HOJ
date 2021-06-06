@@ -18,16 +18,23 @@
           </div>
           <div v-else class="content">
             <span class="span-row"
-              >Time: {{ submissionTimeFormat(submission.time) }}</span
+              >{{ $t('m.Time') }}:
+              {{ submissionTimeFormat(submission.time) }}</span
             >
             <span class="span-row"
-              >Memory: {{ submissionMemoryFormat(submission.memory) }}</span
+              >{{ $t('m.Memory') }}:
+              {{ submissionMemoryFormat(submission.memory) }}</span
             >
             <span class="span-row"
-              >Length: {{ submissionLengthFormat(submission.length) }}</span
+              >{{ $t('m.Length') }}:
+              {{ submissionLengthFormat(submission.length) }}</span
             >
-            <span class="span-row">Language: {{ submission.language }}</span>
-            <span class="span-row">Author: {{ submission.username }}</span>
+            <span class="span-row"
+              >{{ $t('m.Language') }}: {{ submission.language }}</span
+            >
+            <span class="span-row"
+              >{{ $t('m.Author') }}: {{ submission.username }}</span
+            >
           </div>
         </template>
       </el-alert>
@@ -44,44 +51,52 @@
       >
         <vxe-table-column
           field="submitId"
-          title="ID"
+          :title="$t('m.Run_ID')"
           min-width="100"
         ></vxe-table-column>
-        <vxe-table-column title="Submit time" min-width="150">
+        <vxe-table-column :title="$t('m.Submit_Time')" min-width="150">
           <template v-slot="{ row }">
             <span>{{ row.submitTime | localtime }}</span>
           </template>
         </vxe-table-column>
-        <vxe-table-column field="pid" title="Problem ID" min-width="100">
+        <vxe-table-column
+          field="pid"
+          :title="$t('m.Problem_ID')"
+          min-width="100"
+        >
           <template v-slot="{ row }">
             <a @click="getProblemUri(row)" style="color: rgb(87, 163, 243)">{{
               row.displayPid
             }}</a>
           </template>
         </vxe-table-column>
-        <vxe-table-column field="status" title="Status" min-width="170">
+        <vxe-table-column field="status" :title="$t('m.Staus')" min-width="170">
           <template v-slot="{ row }">
             <span :class="getStatusColor(row.status)">{{
               JUDGE_STATUS[row.status].name
             }}</span>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="Time" min-width="96">
+        <vxe-table-column :title="$t('m.Time')" min-width="96">
           <template v-slot="{ row }">
             <span>{{ submissionTimeFormat(row.time) }}</span>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="Memory" min-width="96">
+        <vxe-table-column :title="$t('m.Memory')" min-width="96">
           <template v-slot="{ row }">
             <span>{{ submissionMemoryFormat(row.memory) }}</span>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="Score" min-width="64" v-if="isIOProblem">
+        <vxe-table-column
+          :title="$t('m.Score')"
+          min-width="64"
+          v-if="isIOProblem"
+        >
           <template v-slot="{ row }">
             <span>{{ row.score }}</span>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="Length" min-width="80">
+        <vxe-table-column :title="$t('m.Length')" min-width="80">
           <template v-slot="{ row }">
             <span>{{ submissionLengthFormat(row.length) }}</span>
           </template>
@@ -91,7 +106,9 @@
     <el-col :span="24" v-if="testCaseResult">
       <el-card style="margin-top: 13px;" shadow="hover">
         <div slot="header">
-          <span class="panel-title home-title">测试点详情</span>
+          <span class="panel-title home-title">{{
+            $t('m.Test_point_details')
+          }}</span>
         </div>
         <el-row :gutter="10">
           <el-col
@@ -114,7 +131,7 @@
               </div>
               <div class="test-run-static">
                 <span v-if="item.score != null">
-                  {{ item.score }}分 <i class="el-icon-success"></i>
+                  {{ item.score }} <i class="el-icon-success"></i>
                 </span>
                 <span v-else>
                   <i class="el-icon-success"></i>
@@ -134,7 +151,7 @@
               </div>
               <div class="test-run-static">
                 <span v-if="item.score != null">
-                  {{ item.score }}分 <i class="el-icon-error"></i>
+                  {{ item.score }} <i class="el-icon-error"></i>
                 </span>
                 <span v-else>
                   <i class="el-icon-error"></i>
@@ -160,7 +177,7 @@
           size="large"
           @click="doCopy"
           v-if="submission.code"
-          >Copy</el-button
+          >{{ $t('m.Copy') }}</el-button
         >
         <template v-if="codeShare">
           <el-button
@@ -170,7 +187,7 @@
             icon="el-icon-circle-close"
             @click="shareSubmission(false)"
           >
-            Unshared
+            {{ $t('m.Unshared') }}
           </el-button>
           <el-button
             v-else-if="isAuthenticated && !submission.share && isMeSubmisson"
@@ -179,7 +196,7 @@
             icon="el-icon-share"
             @click="shareSubmission(true)"
           >
-            Shared
+            {{ $t('m.Shared') }}
           </el-button>
         </template>
       </div>
@@ -306,7 +323,6 @@ export default {
             }
           }
           // 如果是比赛 需要显示的是比赛题号
-          console.log(this.$route.params.problemID);
           if (this.$route.params.problemID && data.submission.cid != 0) {
             data.submission.displayPid = this.$route.params.problemID;
           }
@@ -345,7 +361,7 @@ export default {
       api.updateSubmission(data).then(
         (res) => {
           this.getSubmission();
-          myMessage.success(res.data.msg);
+          myMessage.success(this.$i18n.t('m.Shared_successfully'));
         },
         () => {}
       );

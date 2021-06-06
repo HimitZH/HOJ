@@ -16,37 +16,53 @@
           ></el-image>
         </div>
         <el-menu-item index="/home"
-          ><i class="el-icon-s-home"></i>Home</el-menu-item
+          ><i class="el-icon-s-home"></i>{{ $t('m.NavBar_Home') }}</el-menu-item
         >
         <el-menu-item index="/problem"
-          ><i class="el-icon-s-grid"></i>Problem</el-menu-item
+          ><i class="el-icon-s-grid"></i
+          >{{ $t('m.NavBar_Problem') }}</el-menu-item
         >
         <el-menu-item index="/contest"
-          ><i class="el-icon-trophy"></i>Contest</el-menu-item
+          ><i class="el-icon-trophy"></i
+          >{{ $t('m.NavBar_Contest') }}</el-menu-item
         >
         <el-menu-item index="/status"
-          ><i class="el-icon-s-marketing"></i>Status</el-menu-item
+          ><i class="el-icon-s-marketing"></i
+          >{{ $t('m.NavBar_Status') }}</el-menu-item
         >
         <el-submenu index="rank">
-          <template slot="title"><i class="el-icon-s-data"></i>Rank</template>
-          <el-menu-item index="/acm-rank">ACM Rank</el-menu-item>
-          <el-menu-item index="/oi-rank">OI Rank</el-menu-item>
+          <template slot="title"
+            ><i class="el-icon-s-data"></i>{{ $t('m.NavBar_Rank') }}</template
+          >
+          <el-menu-item index="/acm-rank">{{
+            $t('m.NavBar_ACM_Rank')
+          }}</el-menu-item>
+          <el-menu-item index="/oi-rank">{{
+            $t('m.NavBar_OI_Rank')
+          }}</el-menu-item>
         </el-submenu>
 
         <el-menu-item index="/discussion"
-          ><i class="el-icon-s-comment"></i>Discussion</el-menu-item
+          ><i class="el-icon-s-comment"></i
+          >{{ $t('m.NavBar_Discussion') }}</el-menu-item
         >
 
         <el-submenu index="about">
-          <template slot="title"><i class="el-icon-info"></i>About</template>
-          <el-menu-item index="/introduction">Introduction</el-menu-item>
-          <el-menu-item index="/developer">Developer</el-menu-item>
+          <template slot="title"
+            ><i class="el-icon-info"></i>{{ $t('m.NavBar_About') }}</template
+          >
+          <el-menu-item index="/introduction">{{
+            $t('m.NavBar_Introduction')
+          }}</el-menu-item>
+          <el-menu-item index="/developer">{{
+            $t('m.NavBar_Developer')
+          }}</el-menu-item>
         </el-submenu>
 
         <template v-if="!isAuthenticated">
           <div class="btn-menu">
             <el-button type="primary" round @click="handleBtnClick('Login')"
-              >Login
+              >{{ $t('m.NavBar_Login') }}
             </el-button>
             <el-button
               v-if="websiteConfig.register"
@@ -54,7 +70,7 @@
               type="danger"
               @click="handleBtnClick('Register')"
               style="margin-left: 5px"
-              >Register
+              >{{ $t('m.NavBar_Register') }}
             </el-button>
           </div>
         </template>
@@ -70,17 +86,21 @@
             </span>
 
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="/user-home">Home</el-dropdown-item>
-              <el-dropdown-item command="/status?onlyMine=true"
-                >Submissions</el-dropdown-item
-              >
-              <el-dropdown-item command="/setting">Setting</el-dropdown-item>
-              <el-dropdown-item v-if="isAdminRole" command="/admin"
-                >Management</el-dropdown-item
-              >
-              <el-dropdown-item divided command="/logout"
-                >Logout</el-dropdown-item
-              >
+              <el-dropdown-item command="/user-home">{{
+                $t('m.NavBar_UserHome')
+              }}</el-dropdown-item>
+              <el-dropdown-item command="/status?onlyMine=true">{{
+                $t('m.NavBar_Submissions')
+              }}</el-dropdown-item>
+              <el-dropdown-item command="/setting">{{
+                $t('m.NavBar_Setting')
+              }}</el-dropdown-item>
+              <el-dropdown-item v-if="isAdminRole" command="/admin">{{
+                $t('m.NavBar_Management')
+              }}</el-dropdown-item>
+              <el-dropdown-item divided command="/logout">{{
+                $t('m.NavBar_Logout')
+              }}</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
           <avatar
@@ -108,14 +128,14 @@
           slot="right"
           @click="handleBtnClick('Login')"
           v-show="!isAuthenticated"
-          >Login</mu-button
+          >{{ $t('m.NavBar_Login') }}</mu-button
         >
         <mu-button
           flat
           slot="right"
           @click="handleBtnClick('Register')"
           v-show="!isAuthenticated && websiteConfig.register"
-          >Register</mu-button
+          >{{ $t('m.NavBar_Register') }}</mu-button
         >
 
         <mu-menu
@@ -129,31 +149,41 @@
           <mu-list slot="content" @change="handleCommand">
             <mu-list-item button value="/user-home">
               <mu-list-item-content>
-                <mu-list-item-title>Home</mu-list-item-title>
+                <mu-list-item-title>{{
+                  $t('m.NavBar_UserHome')
+                }}</mu-list-item-title>
               </mu-list-item-content>
             </mu-list-item>
 
             <mu-list-item button value="/status?onlyMine=true">
               <mu-list-item-content>
-                <mu-list-item-title>Submissions</mu-list-item-title>
+                <mu-list-item-title>{{
+                  $t('m.NavBar_Submissions')
+                }}</mu-list-item-title>
               </mu-list-item-content>
             </mu-list-item>
             <mu-list-item button value="/setting">
               <mu-list-item-content>
-                <mu-list-item-title>Setting</mu-list-item-title>
+                <mu-list-item-title>{{
+                  $t('m.NavBar_Setting')
+                }}</mu-list-item-title>
               </mu-list-item-content>
             </mu-list-item>
 
             <mu-list-item button value="/admin" v-show="isAdminRole">
               <mu-list-item-content>
-                <mu-list-item-title>Management</mu-list-item-title>
+                <mu-list-item-title>{{
+                  $t('m.NavBar_Management')
+                }}</mu-list-item-title>
               </mu-list-item-content>
             </mu-list-item>
             <mu-divider></mu-divider>
 
             <mu-list-item button value="/logout">
               <mu-list-item-content>
-                <mu-list-item-title>Logout</mu-list-item-title>
+                <mu-list-item-title>{{
+                  $t('m.NavBar_Logout')
+                }}</mu-list-item-title>
               </mu-list-item-content>
             </mu-list-item>
           </mu-list>
@@ -175,7 +205,7 @@
             <mu-list-item-action>
               <mu-icon value="home" size="24"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>Home</mu-list-item-title>
+            <mu-list-item-title>{{ $t('m.NavBar_Home') }}</mu-list-item-title>
           </mu-list-item>
 
           <mu-list-item
@@ -187,7 +217,9 @@
             <mu-list-item-action>
               <mu-icon value=":el-icon-s-grid" size="24"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>Problem</mu-list-item-title>
+            <mu-list-item-title>{{
+              $t('m.NavBar_Problem')
+            }}</mu-list-item-title>
           </mu-list-item>
 
           <mu-list-item
@@ -199,7 +231,9 @@
             <mu-list-item-action>
               <mu-icon value=":el-icon-trophy" size="24"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>Contest</mu-list-item-title>
+            <mu-list-item-title>{{
+              $t('m.NavBar_Contest')
+            }}</mu-list-item-title>
           </mu-list-item>
 
           <mu-list-item
@@ -211,7 +245,7 @@
             <mu-list-item-action>
               <mu-icon value=":el-icon-s-marketing" size="24"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>Status</mu-list-item-title>
+            <mu-list-item-title>{{ $t('m.NavBar_Status') }}</mu-list-item-title>
           </mu-list-item>
 
           <mu-list-item
@@ -224,7 +258,7 @@
             <mu-list-item-action>
               <mu-icon value=":el-icon-s-data" size="24"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>Rank</mu-list-item-title>
+            <mu-list-item-title>{{ $t('m.NavBar_Rank') }}</mu-list-item-title>
             <mu-list-item-action>
               <mu-icon
                 class="toggle-icon"
@@ -240,7 +274,7 @@
               @click="opendrawer = !opendrawer"
               active-class="mobile-menu-active"
             >
-              <mu-list-item-title>ACM Rank</mu-list-item-title>
+              <mu-list-item-title>{{ $t('m.NavBar_Rank') }}</mu-list-item-title>
             </mu-list-item>
             <mu-list-item
               button
@@ -250,7 +284,9 @@
               @click="opendrawer = !opendrawer"
               active-class="mobile-menu-active"
             >
-              <mu-list-item-title>OI Rank</mu-list-item-title>
+              <mu-list-item-title>{{
+                $t('m.NavBar_OI_Rank')
+              }}</mu-list-item-title>
             </mu-list-item>
           </mu-list-item>
 
@@ -263,7 +299,9 @@
             <mu-list-item-action>
               <mu-icon value=":fa fa-comments" size="24"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>Discussion</mu-list-item-title>
+            <mu-list-item-title>{{
+              $t('m.NavBar_Discussion')
+            }}</mu-list-item-title>
           </mu-list-item>
 
           <mu-list-item
@@ -276,7 +314,7 @@
             <mu-list-item-action>
               <mu-icon value=":el-icon-info" size="24"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>About</mu-list-item-title>
+            <mu-list-item-title>{{ $t('m.NavBar_About') }}</mu-list-item-title>
             <mu-list-item-action>
               <mu-icon
                 class="toggle-icon"
@@ -292,7 +330,9 @@
               @click="opendrawer = !opendrawer"
               active-class="mobile-menu-active"
             >
-              <mu-list-item-title>Introduction</mu-list-item-title>
+              <mu-list-item-title>{{
+                $t('m.NavBar_Introduction')
+              }}</mu-list-item-title>
             </mu-list-item>
             <mu-list-item
               button
@@ -302,7 +342,9 @@
               @click="opendrawer = !opendrawer"
               active-class="mobile-menu-active"
             >
-              <mu-list-item-title>Developer</mu-list-item-title>
+              <mu-list-item-title>{{
+                $t('m.NavBar_Developer')
+              }}</mu-list-item-title>
             </mu-list-item>
           </mu-list-item>
         </mu-list>
@@ -415,10 +457,15 @@ export default {
     },
     title: {
       get() {
+        let ojName = this.websiteConfig.shortName
+          ? this.websiteConfig.shortName.toUpperCase()
+          : 'OJ';
         if (this.modalStatus.mode == 'ResetPwd') {
-          return 'Reset Password - HOJ';
+          return this.$i18n.t('m.Dialog_Reset_Password') + ' - ' + ojName;
         } else {
-          return this.modalStatus.mode + ' - HOJ';
+          return (
+            this.$i18n.t('m.Dialog_' + this.modalStatus.mode) + ' - ' + ojName
+          );
         }
       },
     },

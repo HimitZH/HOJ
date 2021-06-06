@@ -15,7 +15,6 @@ import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -26,10 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.error.YAMLException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.dto.QDOJProblemDto;
@@ -271,6 +266,13 @@ public class FileController {
             problemCaseQueryWrapper.eq("pid", pid);
             List<ProblemCase> problemCaseList = problemCaseService.list(problemCaseQueryWrapper);
             Assert.notEmpty(problemCaseList, "对不起，该题目的评测数据为空！");
+            boolean hasTestCase = true;
+            if (problemCaseList.get(0).getInput().endsWith(".in") && (problemCaseList.get(0).getOutput().endsWith(".out") ||
+                    problemCaseList.get(0).getOutput().endsWith(".ans"))) {
+                hasTestCase = false;
+            }
+            Assert.isTrue(hasTestCase, "对不起，该题目的评测数据为空！");
+
             workDir = Constants.File.FILE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + IdUtil.simpleUUID();
             FileUtil.mkdir(workDir);
             // 写入本地

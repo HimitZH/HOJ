@@ -9,60 +9,58 @@
           >
         </h1>
         <p>
-          Leader & BackEnd | FrontEnd Engineer / Himit_ZH
+          {{ $t('m.Leader_BackEnd_FrontEnd_Engineer') }} / Himit_ZH
           <a href="https://github.com/HimitZH" class="icon" target="_blank"
             ><i class="fa fa-github"></i>
           </a>
         </p>
-        <p>
-          BackEnd Engineer / Howie
-          <a href="https://github.com/Huangyan0804" class="icon" target="_blank"
-            ><i class="fa fa-github"></i>
-          </a>
-        </p>
-        <p>
-          Maintainer Engineer / Alteria
-          <a href="https://github.com/HackerMac" class="icon" target="_blank"
-            ><i class="fa fa-github"></i>
-          </a>
-        </p>
         <p class="teal-text">
-          <i class="el-icon-circle-check"></i> Open Source
+          <i class="el-icon-circle-check"></i> {{ $t('m.Open_Source') }}
         </p>
       </paper-card>
     </div>
     <el-row :gutter="20">
       <el-col :xs="24" :md="12">
         <paper-card type="server">
-          <h1>分布式</h1>
-          <p><small>前后端分离，支持判题微服务集群</small></p>
+          <h1>{{ $t('m.Distributed') }}</h1>
+          <p>
+            <small>{{ $t('m.Distributed_Desc') }}</small>
+          </p>
           <p class="teal-text">
-            <i class="el-icon-circle-check"></i> Distributed
+            <i class="el-icon-circle-check"></i> {{ $t('m.Available') }}
           </p>
         </paper-card>
       </el-col>
       <el-col :xs="24" :md="12">
         <paper-card type="server">
-          <h1>定制化</h1>
-          <p><small>网站配置高度集成，支持定制化修改</small></p>
+          <h1>{{ $t('m.Customization') }}</h1>
+          <p>
+            <small>{{ $t('m.Customization_Desc') }}</small>
+          </p>
           <p class="teal-text">
-            <i class="el-icon-circle-check"></i> Customization
+            <i class="el-icon-circle-check"></i> {{ $t('m.Available') }}
           </p>
         </paper-card>
       </el-col>
       <el-col :xs="24" :md="12">
         <paper-card type="server">
-          <h1>安全性</h1>
-          <p><small>判题沙盒使用cgroup隔离，网站权限控制完善</small></p>
-          <p class="teal-text"><i class="el-icon-circle-check"></i> Security</p>
+          <h1>{{ $t('m.Security') }}</h1>
+          <p>
+            <small>{{ $t('m.Security_Desc') }}</small>
+          </p>
+          <p class="teal-text">
+            <i class="el-icon-circle-check"></i> {{ $t('m.Available') }}
+          </p>
         </paper-card>
       </el-col>
       <el-col :xs="24" :md="12">
         <paper-card type="server">
-          <h1>多样性</h1>
-          <p><small>支持Codefoces，HDU的远程判题</small></p>
+          <h1>{{ $t('m.Diversity') }}</h1>
+          <p>
+            <small>{{ $t('m.Diversity_Desc') }}</small>
+          </p>
           <p class="teal-text">
-            <i class="el-icon-circle-check"></i> Diversity
+            <i class="el-icon-circle-check"></i> {{ $t('m.Faulty') }}
           </p>
         </paper-card>
       </el-col>

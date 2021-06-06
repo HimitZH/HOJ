@@ -3,7 +3,7 @@
     <el-row class="header">
       <el-col :xs="24" :sm="14" :md="14" :lg="14">
         <div class="select-row">
-          <span>Lang:</span>
+          <span>{{ $t('m.Lang') }}:</span>
           <span>
             <el-select
               :value="this.language"
@@ -17,7 +17,7 @@
             </el-select>
           </span>
           <span>
-            <el-tooltip content="重置代码" placement="top" style="">
+            <el-tooltip :content="$t('m.Reset_Code')" placement="top">
               <el-button
                 icon="el-icon-refresh"
                 @click="onResetClick"
@@ -26,7 +26,7 @@
             </el-tooltip>
           </span>
           <span>
-            <el-tooltip content="上传文件" placement="top" style="">
+            <el-tooltip :content="$t('m.Upload_file')" placement="top">
               <el-button
                 icon="el-icon-upload"
                 @click="onUploadFile"
@@ -46,7 +46,7 @@
       </el-col>
       <el-col :xs="24" :sm="10" :md="10" :lg="10">
         <div class="select-row fl-right">
-          <span>Theme:</span>
+          <span>{{ $t('m.Theme') }}:</span>
           <el-select
             :value="this.theme"
             @change="onThemeChange"
@@ -56,8 +56,9 @@
             <el-option
               v-for="item in themes"
               :key="item.label"
+              :label="$t('m.' + item.label)"
               :value="item.value"
-              >{{ item.label }}
+              >{{ $t('m.' + item.label) }}
             </el-option>
           </el-select>
         </div>

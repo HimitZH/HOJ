@@ -3,7 +3,7 @@
     <el-row :gutter="20">
       <el-col :sm="24" :md="10" :lg="10">
         <div class="left">
-          <p class="section-title">Change Password</p>
+          <p class="section-title">{{ $t('m.Change_Password') }}</p>
           <el-form
             class="setting-content"
             ref="formPassword"
@@ -31,7 +31,7 @@
               slot="reference"
               :loading="loading.btnPassword"
               :disabled="disabled.btnPassword"
-              >Update Password</el-button
+              >{{ $t('m.Update_Password') }}</el-button
             >
             <slide-verify
               :l="42"
@@ -41,13 +41,13 @@
               :accuracy="3"
               @success="changePassword"
               @again="onAgain('password')"
-              slider-text="请向右滑动验证"
+              :slider-text="$t('m.Slide_Verify')"
               ref="passwordSlideBlock"
               v-show="!verify.passwordSuccess"
             >
             </slide-verify>
             <el-alert
-              title="验证成功"
+              :title="$t('m.Slide_Verify_Success')"
               type="success"
               :description="verify.passwordMsg"
               v-show="verify.passwordSuccess"
@@ -76,7 +76,7 @@
       </el-col>
       <el-col :sm="24" :md="10" :lg="10">
         <div class="right">
-          <p class="section-title">Change Email</p>
+          <p class="section-title">{{ $t('m.Change_Email') }}</p>
           <el-form
             class="setting-content"
             ref="formEmail"
@@ -104,7 +104,7 @@
               slot="reference"
               :loading="loading.btnEmailLoading"
               :disabled="disabled.btnEmail"
-              >Update Email</el-button
+              >{{ $t('m.Update_Email') }}</el-button
             >
             <slide-verify
               :l="42"
@@ -114,13 +114,13 @@
               :accuracy="3"
               @success="changeEmail"
               @again="onAgain('email')"
-              slider-text="请向右滑动验证"
+              :slider-text="$t('m.Slide_Verify')"
               ref="emailSlideBlock"
               v-show="!verify.emailSuccess"
             >
             </slide-verify>
             <el-alert
-              title="验证成功"
+              :title="$t('m.Slide_Verify_Success')"
               type="success"
               :description="verify.emailMsg"
               v-show="verify.emailSuccess"
@@ -157,25 +157,26 @@ export default {
       {
         required: true,
         trigger: 'blur',
-        message: 'The old password is required',
       },
       {
         trigger: 'blur',
         min: 6,
         max: 20,
-        message: 'The length of the password is between 6 and 20',
+        message: this.$i18n.t('m.Password_Check_Between'),
       },
     ];
     const CheckAgainPassword = (rule, value, callback) => {
       if (value !== this.formPassword.newPassword) {
-        callback(new Error('Password does not match'));
+        callback(new Error(this.$i18n.t('m.Password_does_not_match')));
       }
       callback();
     };
     const CheckNewPassword = (rule, value, callback) => {
       if (this.formPassword.oldPassword !== '') {
         if (this.formPassword.oldPassword === this.formPassword.newPassword) {
-          callback(new Error("The new password doesn't change"));
+          callback(
+            new Error(this.$i18n.t('m.The_new_password_does_not_change'))
+          );
         } else {
           // 对第二个密码框再次验证
           this.$refs.formPassword.validateField('again_password');
@@ -186,7 +187,7 @@ export default {
     const CheckEmail = (rule, value, callback) => {
       if (this.formEmail.oldEmail !== '') {
         if (this.formEmail.oldEmail === this.formEmail.newEmail) {
-          callback(new Error("The new email doesn't change"));
+          callback(new Error(this.$i18n.t('m.The_new_email_does_not_change')));
         }
       }
       callback();
@@ -238,13 +239,12 @@ export default {
           {
             required: true,
             trigger: 'blur',
-            message: 'The new password is required',
           },
           {
             trigger: 'blur',
             min: 6,
             max: 20,
-            message: 'The length of the password is between 6 and 20',
+            message: this.$i18n.t('m.Password_Check_Between'),
           },
           { validator: CheckNewPassword, trigger: 'blur' },
         ],
@@ -252,7 +252,7 @@ export default {
           {
             required: true,
             trigger: 'blur',
-            message: 'The again password is required',
+            message: this.$i18n.t('m.Password_Again_Check_Required'),
           },
           { validator: CheckAgainPassword, trigger: 'blur' },
         ],
@@ -262,13 +262,13 @@ export default {
         newEmail: [
           {
             required: true,
-            message: 'The new email is required',
+            message: this.$i18n.t('m.Email_Check_Required'),
             trigger: 'blur',
           },
           {
             type: 'email',
             trigger: 'change',
-            message: 'The email format is incorrect',
+            message: this.$i18n.t('m.Email_Check_Format'),
           },
           { validator: CheckEmail, trigger: 'blur' },
         ],
@@ -282,7 +282,7 @@ export default {
     changePassword(times) {
       this.verify.passwordSuccess = true;
       let time = (times / 1000).toFixed(1);
-      this.verify.passwordMsg = '本次耗时' + time + 's';
+      this.verify.passwordMsg = 'Total time ' + time + 's';
       setTimeout(() => {
         this.visible.passwordSlideBlock = false;
         this.verify.passwordSuccess = false;
@@ -299,10 +299,10 @@ export default {
             (res) => {
               this.loading.btnPassword = false;
               if (res.data.data.code == 200) {
-                myMessage.success(res.data.msg);
+                myMessage.success(this.$i18n.t('m.Update_Successfully'));
                 this.visible.passwordAlert = {
                   show: true,
-                  title: '修改成功',
+                  title: this.$i18n.t('m.Update_Successfully'),
                   type: 'success',
                   description: res.data.data.msg,
                 };
@@ -314,7 +314,7 @@ export default {
                 myMessage.error(res.data.msg);
                 this.visible.passwordAlert = {
                   show: true,
-                  title: '修改失败',
+                  title: this.$i18n.t('m.Update_Failed'),
                   type: 'warning',
                   description: res.data.data.msg,
                 };
@@ -334,7 +334,7 @@ export default {
     changeEmail(times) {
       this.verify.emailSuccess = true;
       let time = (times / 1000).toFixed(1);
-      this.verify.emailMsg = '本次耗时' + time + 's';
+      this.verify.emailMsg = 'Total time ' + time + 's';
       setTimeout(() => {
         this.visible.emailSlideBlock = false;
         this.verify.emailSuccess = false;
@@ -349,10 +349,10 @@ export default {
             (res) => {
               this.loading.btnEmail = false;
               if (res.data.data.code == 200) {
-                myMessage.success(res.data.msg);
+                myMessage.success(this.$i18n.t('m.Update_Successfully'));
                 this.visible.emailAlert = {
                   show: true,
-                  title: '修改成功',
+                  title: this.$i18n.t('m.Update_Successfully'),
                   type: 'success',
                   description: res.data.data.msg,
                 };
@@ -364,7 +364,7 @@ export default {
                 myMessage.error(res.data.msg);
                 this.visible.emailAlert = {
                   show: true,
-                  title: '修改失败',
+                  title: this.$i18n.t('m.Update_Failed'),
                   type: 'warning',
                   description: res.data.data.msg,
                 };
@@ -387,7 +387,7 @@ export default {
       } else {
         this.$refs.emailSlideBlock.reset();
       }
-      myMessage.warning('速度过快，可能为机器操作！请重新验证！');
+      myMessage.warning(this.$i18n.t('m.Guess_robot'));
     },
   },
 };

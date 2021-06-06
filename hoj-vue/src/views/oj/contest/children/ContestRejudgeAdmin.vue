@@ -1,7 +1,7 @@
 <template>
   <el-card shadow="always">
     <div slot="header">
-      <span class="panel-title">Admin Contest Rejudge</span>
+      <span class="panel-title">{{ $t('m.Contest_Rejudge') }}</span>
     </div>
     <vxe-table
       border="inner"
@@ -10,23 +10,27 @@
       align="center"
       :data="contestProblems"
     >
-      <vxe-table-column field="pid" min-width="50" title="Problem ID">
+      <vxe-table-column field="pid" min-width="50" :title="$t('m.ID')">
       </vxe-table-column>
       <vxe-table-column
         field="displayId"
-        title="Display ID"
+        :title="$t('m.Problem_ID')"
         min-width="100"
       ></vxe-table-column>
-      <vxe-table-column field="displayTitle" title="Title" min-width="200">
+      <vxe-table-column
+        field="displayTitle"
+        :title="$t('m.Title')"
+        min-width="200"
+      >
       </vxe-table-column>
-      <vxe-table-column field="ac" title="AC" min-width="80">
+      <vxe-table-column field="ac" :title="$t('m.AC')" min-width="80">
       </vxe-table-column>
       <vxe-table-column
         field="total"
-        title="Total"
+        :title="$t('m.Total')"
         min-width="80"
       ></vxe-table-column>
-      <vxe-table-column field="option" title="Option" min-width="150">
+      <vxe-table-column field="option" :title="$t('m.Option')" min-width="150">
         <template v-slot="{ row }">
           <el-button
             type="primary"
@@ -35,7 +39,7 @@
             icon="el-icon-refresh-right"
             @click="rejudgeProblem(row)"
             round
-            >Rejudge All</el-button
+            >{{ $t('m.Rejudge_All') }}</el-button
           >
         </template>
       </vxe-table-column>
@@ -63,26 +67,29 @@ export default {
   methods: {
     ...mapActions(['getContestProblems']),
     rejudgeProblem(row) {
-      this.$confirm('你是否确定将该题的所有提交全部重判？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$i18n.t('m.Contest_Rejudge_Tips'), 'Tips', {
+        confirmButtonText: this.$i18n.t('m.OK'),
+        cancelButtonText: this.$i18n.t('m.Cancel'),
         type: 'warning',
-      }).then(() => {
-        let params = {
-          pid: row.pid,
-          cid: row.cid,
-        };
-        this.btnLoading = true;
-        api
-          .ContestRejudgeProblem(params)
-          .then((res) => {
-            myMessage.success(res.data.msg);
-            this.btnLoading = false;
-          })
-          .catch(() => {
-            this.btnLoading = false;
-          });
-      });
+      }).then(
+        () => {
+          let params = {
+            pid: row.pid,
+            cid: row.cid,
+          };
+          this.btnLoading = true;
+          api
+            .ContestRejudgeProblem(params)
+            .then((res) => {
+              myMessage.success(this.$i18n.t('m.Rejudge_successfully'));
+              this.btnLoading = false;
+            })
+            .catch(() => {
+              this.btnLoading = false;
+            });
+        },
+        () => {}
+      );
     },
   },
   computed: {

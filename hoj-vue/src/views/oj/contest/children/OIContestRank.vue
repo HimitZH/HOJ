@@ -1,21 +1,21 @@
 <template>
   <el-card shadow>
     <div slot="header">
-      <span class="panel-title">Contest Rank</span>
+      <span class="panel-title">{{ $t('m.Contest_Rank') }}</span>
       <span style="float:right;font-size: 20px;">
         <el-popover trigger="hover" placement="left-start">
           <i class="el-icon-s-tools" slot="reference"></i>
           <div id="switches">
             <p>
-              <span>Chart</span>
+              <span>{{ $t('m.Chart') }}</span>
               <el-switch v-model="showChart"></el-switch>
             </p>
             <p>
-              <span>Table</span>
+              <span>{{ $t('m.Table') }}</span>
               <el-switch v-model="showTable"></el-switch>
             </p>
             <p>
-              <span>Auto Refresh(10s)</span>
+              <span>{{ $t('m.Auto_Refresh') }}(10s)</span>
               <el-switch
                 :disabled="refreshDisabled"
                 @change="handleAutoRefresh"
@@ -24,7 +24,7 @@
             </p>
             <template v-if="isContestAdmin">
               <p>
-                <span>Force Update</span>
+                <span>{{ $t('m.Force_Update') }}</span>
                 <el-switch
                   :disabled="refreshDisabled"
                   v-model="forceUpdate"
@@ -32,9 +32,9 @@
               </p>
             </template>
             <template>
-              <el-button type="primary" size="small" @click="downloadRankCSV"
-                >Download as CSV</el-button
-              >
+              <el-button type="primary" size="small" @click="downloadRankCSV">{{
+                $t('m.Download_as_CSV')
+              }}</el-button>
             </template>
           </div>
         </el-popover>
@@ -60,7 +60,11 @@
           min-width="50"
           fixed="left"
         ></vxe-table-column>
-        <vxe-table-column field="username" min-width="150" title="User">
+        <vxe-table-column
+          field="username"
+          min-width="150"
+          :title="$t('m.User')"
+        >
           <template v-slot="{ row }">
             <span
               ><a
@@ -74,11 +78,15 @@
         <vxe-table-column
           field="realname"
           min-width="100"
-          title="RealName"
+          :title="$t('m.RealName')"
           v-if="isContestAdmin"
         >
         </vxe-table-column>
-        <vxe-table-column field="totalScore" title="TotalScore" min-width="80">
+        <vxe-table-column
+          field="totalScore"
+          :title="$t('m.Total_Score')"
+          min-width="80"
+        >
           <template v-slot="{ row }">
             <span
               ><a
@@ -141,7 +149,7 @@ export default {
       autoRefresh: false,
       options: {
         title: {
-          text: 'Top 10 Teams',
+          text: this.$i18n.t('m.Top_10_Teams'),
           left: 'center',
         },
         tooltip: {
@@ -152,7 +160,7 @@ export default {
           feature: {
             dataView: { show: true, readOnly: true },
             magicType: { show: true, type: ['line', 'bar'] },
-            saveAsImage: { show: true },
+            saveAsImage: { show: true, title: this.$i18n.t('m.save_as_image') },
           },
           right: '10%',
           top: '5%',
@@ -187,7 +195,7 @@ export default {
         },
         series: [
           {
-            name: 'Score',
+            name: this.$i18n.t('m.Score'),
             type: 'bar',
             barMaxWidth: '80',
             data: [0],

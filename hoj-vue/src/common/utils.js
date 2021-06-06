@@ -4,11 +4,17 @@ import { STORAGE_KEY } from '@/common/constants'
 import myMessage from '@/common/message'
 import api from "@/common/api";
 
-function submissionMemoryFormat (memory) {
-  if (memory === undefined || memory ===null || memory === '') return '--'
-  // 1048576 = 1024 * 1024
-  let t = parseInt(memory)
-  return String(t.toFixed(0)) + 'KB'
+// function submissionMemoryFormat (memory) {
+//   if (memory === undefined || memory ===null || memory === '') return '--'
+//   // 1048576 = 1024 * 1024
+//   let t = parseInt(memory)
+//   return String(t.toFixed(0)) + 'KB'
+// }
+function submissionMemoryFormat(a,b){
+  if(0===a || a ===null || a === ''||a=== undefined)return"--";
+  var c=1024,d=b||1,e=["KB","MB","GB","TB","PB","EB","ZB","YB"],
+  f=Math.floor(Math.log(a)/Math.log(c));
+  return parseFloat((a/Math.pow(c,f)).toFixed(d))+" "+e[f]
 }
 
 function submissionTimeFormat (time) {
