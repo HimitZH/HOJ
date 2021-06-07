@@ -6,6 +6,7 @@
 [![Redis](https://img.shields.io/badge/Redis-5.0.9-red)](https://redis.io/)
 [![Nacos](https://img.shields.io/badge/Nacos-1.4.1-%23267DF7)](https://github.com/alibaba/nacos)
 [![Vue](https://img.shields.io/badge/Vue-2.6.11-success)](https://cn.vuejs.org/)
+[![QQ Group 598587305](https://img.shields.io/badge/QQ%20Group-598587305-blue)](https://qm.qq.com/cgi-bin/qm/qr?k=WWGBZ5gfDiBZOcpNvM8xnZTfUq7BT4Rs&jump_from=webapi)
 
 > 前言
 
@@ -65,8 +66,8 @@ Password: 开启SMTP服务后生成的随机授权码
 | 2021-05-22 | 更新docker-compose一键部署，修正部分bug                      | Himit_ZH |
 | 2021-05-24 | 判题调度乐观锁改为悲观锁                                     | Himit_ZH |
 | 2021-05-28 | 增加导入导出题目，增加用户页面的最近登录，开发正式结束，进入维护摸鱼 | Himit_ZH |
-| 2021-06-04 | 修正特殊判题，增加对testlib的支持                            | Himit_ZH |
-| 2021-06-07 | 增加前台i18n                                                 | Himit_ZH |
+| 2021-06-02 | 大更新，完善补充前端页面，修正判题等待超时时间，修补一系列bug | Himit_ZH |
+| 2021-06-07 | 修正特殊判题，增加前台i18n                                   | Himit_ZH |
 
 
 

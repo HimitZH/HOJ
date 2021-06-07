@@ -51,8 +51,8 @@
                 ><a @click="goRoute('/introduction')"> {{ $t('m.Help') }}</a>
               </p>
               <p>
-                <i class="fa fa-envelope" aria-hidden="true"></i>
-                {{ websiteConfig.email }}
+                <i class="fa fa-qq" aria-hidden="true"></i>
+                {{ $t('m.Group') }} 598587305
               </p>
             </el-col>
           </el-row>

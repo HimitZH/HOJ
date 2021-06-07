@@ -15,7 +15,9 @@
 
 在创建题目的适合，选择开启特殊判题，编写特殊判题程序，然后编译通过便可。
 
-> 后台对题目使用特殊判题时，请参考以下程序例子
+**注意：用户的输出数据以stdin流输入道spj程序里面，也就是可以直接用scanf或cin等获取用户的输出数据，具体形式跟用户程序的输入数据获取一样。**
+
+> 后台对题目使用特殊判题时，请参考以下程序例子 判断精度
 
 ```cpp
 #include<iostream>
@@ -35,48 +37,28 @@ void close_file(FILE *f){
 }
 
 int main(int argc, char *args[]){
-    FILE *input;
-    FILE *output;
-    int result;
-    if(argc != 2){
+    if(argc != 3){
         return ERROR;
     }
-    int user_output;
-    cin>>user_output;
     /**
     input:输入
     output:样例的输出
     user_output:用户的输出
     **/
-    cout<<user_output<<endl;
-    input = fopen(args[1], "r")
-    output = fopen(args[2], "r");
-	
-    result = spj(user_output, output);
-    printf("result: %d\n", result);
+    FILE *input = fopen(args[1], "r")
+    FILE *output = fopen(args[2], "r");
+    
+    double std_out;
+	fscanf(output, "%lf", &std_out);
+	close_file(output);
     close_file(input);
-    close_file(output);
-    return result;
-}
-
-int spj(int user_output, FILE *output){
-    /*
-      parameter: 
-        - output，标程输出文件的指针
-        - user_output，用户输出数据
-      return: 
-        - 如果用户答案正确，返回AC
-        - 如果用户答案错误返回WA
-        - 如果主动捕获到自己的错误，如内存分配失败，返回ERROR
-      */
-      int std_out;
-      while(fscanf(output, "%d", &std_out) != EOF){
-          if(user_output+1 != std_out){
-             cout<<user_output<<endl<<std_out;
-              return WA;
-          }
-      }
-      return AC;
+    
+    double user_output;//读入用户输出 
+    cin>>user_output;
+	if (fabs(user_output - std_out)<=1e-6)
+		return AC;
+	else 
+		return WA;
 }
 ```
 

@@ -10,13 +10,16 @@
             :model="formPassword"
             :rules="rulePassword"
           >
-            <el-form-item label="Old Password" prop="oldPassword">
+            <el-form-item :label="$t('m.Old_Password')" prop="oldPassword">
               <el-input v-model="formPassword.oldPassword" type="password" />
             </el-form-item>
-            <el-form-item label="New Password" prop="newPassword">
+            <el-form-item :label="$t('m.New_Password')" prop="newPassword">
               <el-input v-model="formPassword.newPassword" type="password" />
             </el-form-item>
-            <el-form-item label="Confirm New Password" prop="againPassword">
+            <el-form-item
+              :label="$t('m.Confirm_New_Password')"
+              prop="againPassword"
+            >
               <el-input v-model="formPassword.againPassword" type="password" />
             </el-form-item>
           </el-form>
@@ -83,13 +86,13 @@
             :model="formEmail"
             :rules="ruleEmail"
           >
-            <el-form-item label="Current Password" prop="password">
+            <el-form-item :label="$t('m.Current_Password')" prop="password">
               <el-input v-model="formEmail.password" type="password" />
             </el-form-item>
-            <el-form-item label="Old Email">
+            <el-form-item :label="$t('m.Old_Email')">
               <el-input v-model="formEmail.oldEmail" disabled />
             </el-form-item>
-            <el-form-item label="New Email" prop="newEmail">
+            <el-form-item :label="$t('m.New_Email')" prop="newEmail">
               <el-input v-model="formEmail.newEmail" />
             </el-form-item>
           </el-form>

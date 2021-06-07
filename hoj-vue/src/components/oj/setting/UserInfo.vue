@@ -130,16 +130,16 @@
     <el-form ref="formProfile" :model="formProfile">
       <el-row :gutter="30" justify="space-around">
         <el-col :md="10" :xs="24">
-          <el-form-item label="Real Name">
+          <el-form-item :label="$t('m.RealName')">
             <el-input v-model="formProfile.realname" :maxlength="50" />
           </el-form-item>
-          <el-form-item label="Nickname">
+          <el-form-item :label="$t('m.Nickname')">
             <el-input v-model="formProfile.nickname" :maxlength="50" />
           </el-form-item>
-          <el-form-item label="School">
+          <el-form-item :label="$t('m.School')">
             <el-input v-model="formProfile.school" :maxlength="50" />
           </el-form-item>
-          <el-form-item label="Student Number">
+          <el-form-item :label="$t('m.Student_Number')">
             <el-input v-model="formProfile.number" :maxlength="25" />
           </el-form-item>
         </el-col>
@@ -148,16 +148,16 @@
           <p></p>
         </el-col>
         <el-col :md="10" :xs="24">
-          <el-form-item label="Signature">
+          <el-form-item :label="$t('m.Mood')">
             <el-input v-model="formProfile.signature" :maxlength="50" />
           </el-form-item>
-          <el-form-item label="Codeforces Username">
+          <el-form-item :label="$t('m.CF_Username')">
             <el-input v-model="formProfile.cfUsername" :maxlength="50" />
           </el-form-item>
-          <el-form-item label="Blog">
+          <el-form-item :label="$t('m.Blog')">
             <el-input v-model="formProfile.blog" />
           </el-form-item>
-          <el-form-item label="Github">
+          <el-form-item :label="$t('m.Github')">
             <el-input v-model="formProfile.github" />
           </el-form-item>
         </el-col>
