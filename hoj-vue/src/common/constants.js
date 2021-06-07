@@ -24,7 +24,7 @@ export const JUDGE_STATUS = {
     name: 'Wrong Answer',
     short: 'WA',
     color: 'red',
-    type: 'error',
+    type: 'danger',
     rgb:'#ed3f14'
   },
   '0': {
@@ -38,21 +38,21 @@ export const JUDGE_STATUS = {
     name: 'Time Limit Exceeded',
     short: 'TLE',
     color: 'red',
-    type: 'error',
+    type: 'danger',
     rgb:'#ed3f14'
   },
   '2': {
     name: 'Memory Limit Exceeded',
     short: 'MLE',
     color: 'red',
-    type: 'error',
+    type: 'danger',
     rgb:'#ed3f14'
   },
   '3': {
     name: 'Runtime Error',
     short: 'RE',
     color: 'red',
-    type: 'error',
+    type: 'danger',
     rgb:'#ed3f14'
   },
   '4': {

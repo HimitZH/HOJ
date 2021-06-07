@@ -131,7 +131,7 @@
           <vxe-table-column
             field="status"
             :title="$t('m.Status')"
-            min-width="180"
+            min-width="160"
           >
             <template v-slot="{ row }">
               <span :class="getStatusColor(row.status)">
@@ -151,11 +151,35 @@
                   "
                   @click="reSubmit(row)"
                 ></i>
-                {{
-                  (row.score != null ? row.score + ' ' : '') +
-                    JUDGE_STATUS[row.status].name
-                }}
+                {{ JUDGE_STATUS[row.status].name }}
               </span>
+            </template>
+          </vxe-table-column>
+          <vxe-table-column field="score" :title="$t('m.Score')" width="64">
+            <template v-slot="{ row }">
+              <el-tag
+                effect="plain"
+                size="medium"
+                v-if="row.score != null"
+                :type="JUDGE_STATUS[row.status]['type']"
+                >{{ row.score }}</el-tag
+              >
+              <el-tag
+                v-else
+                effect="plain"
+                size="medium"
+                :type="JUDGE_STATUS[row.status]['type']"
+              >
+                <i
+                  class="el-icon-loading"
+                  v-if="
+                    row.status == JUDGE_STATUS_RESERVE['Pending'] ||
+                      row.status == JUDGE_STATUS_RESERVE['Compiling'] ||
+                      row.status == JUDGE_STATUS_RESERVE['Judging']
+                  "
+                ></i>
+                <span v-else>--</span>
+              </el-tag>
             </template>
           </vxe-table-column>
           <vxe-table-column field="time" :title="$t('m.Time')" min-width="96">
@@ -219,7 +243,7 @@
           <vxe-table-column
             field="username"
             :title="$t('m.Author')"
-            min-width="100"
+            min-width="96"
           >
             <template v-slot="{ row }">
               <a
@@ -467,8 +491,9 @@ export default {
               let submitId = parseInt(key);
               // 更新数据列表
               this.submissions[submitIds[key]] = result[submitId];
-              // 更新view中的结果，耗时，空间消耗，判题机ip
+              // 更新view中的结果，f分数，耗时，空间消耗，判题机ip
               viewData[submitIds[key]].status = result[submitId].status;
+              viewData[submitIds[key]].score = result[submitId].score;
               viewData[submitIds[key]].time = result[submitId].time;
               viewData[submitIds[key]].memory = result[submitId].memory;
               viewData[submitIds[key]].judger = result[submitId].judger;
@@ -570,6 +595,7 @@ export default {
           let xTable = this.$refs.xTable;
           // 重判开始，需要将该提交的部分参数初始化
           row.status = res.data.data.status;
+          row.score = null;
           row.time = res.data.data.time;
           row.memory = res.data.data.memory;
           row.errorMessage = res.data.data.errorMessage;
@@ -680,10 +706,10 @@ export default {
     },
     status() {
       return this.formFilter.status === ''
-        ? 'Status'
+        ? this.$i18n.t('m.Status')
         : JUDGE_STATUS[this.formFilter.status]
         ? JUDGE_STATUS[this.formFilter.status].name
-        : 'Status';
+        : this.$i18n.t('m.Status');
     },
     rejudgeColumnVisible() {
       return this.isSuperAdmin && !this.contestID;

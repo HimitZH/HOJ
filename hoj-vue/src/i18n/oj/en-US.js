@@ -69,6 +69,12 @@ export const m = {
   Your_password_has_been_reset: 'Your password has been reset.',
 
   // /components/oj/setting/Account.vue 账号信息管理页面
+  Old_Password:'Old Password',
+  New_Password:'new Password',
+  Confirm_New_Password:'Confirm New Password',
+  Current_Password:'Current Password',
+  Old_Email:'Old Email',
+  New_Email:'New Email',
   Change_Password: 'Change Password',
   Change_Email: 'Change Email',
   Update_Password: 'Update Password',
@@ -84,6 +90,11 @@ export const m = {
   Avatar_Setting: 'Avatar Setting',
   UserInfo_Setting: 'UserInfo Setting',
   Upload_avatar_hint:'Drag and drop the avatar here, or click here.',
+  CF_Username:'Codeforces Username',
+  School:'School',
+  Student_Number:'Student Number',
+  Blog:'Blog',
+  Github:'Github',
   Save:'Save',
   Upload:'Upload',
   Your_new_avatar:'Your new avatar',
@@ -100,7 +111,6 @@ export const m = {
 
   // /views/oj/user/Setting.vue
   Account_Setting:'Account Setting',
-  UserInfo_Setting:'UserInfo Setting',
 
   // App.vue 底部文案
   Service:'Service',
@@ -110,6 +120,7 @@ export const m = {
   Open_Source:'Open Source',
   Support:'Support',
   Help:'Help',
+  Group:'Group',
 
   // /views/oj/Home.vue
   Welcome_to:'Welcome to ',
@@ -135,7 +146,7 @@ export const m = {
   // /views/oj/problem/problemList.vue
   Problem_List:'Problem List',
   All:'All',
-  Mine:'Mine',
+  My_OJ:'Mime',
   Level:'Level',
   Tags:'Tags',
   Pick_a_random_question:'Pick a random question',
@@ -195,7 +206,7 @@ export const m = {
 
 
   // /views/oj/status/SubmissionList.vue
-  When: 'When',
+  Mine:'Mine',
   Time: 'Time',
   Memory: 'Memory',
   Length:'Length',
