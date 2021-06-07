@@ -19,14 +19,20 @@
                 <span class="el-dropdown-link">
                   {{
                     query.oj === 'Mine' || query.oj === ''
-                      ? $t('m.Mine')
+                      ? $t('m.My_OJ')
+                      : query.oj === 'All'
+                      ? $t('m.All')
                       : query.oj
                   }}
                   <i class="el-icon-caret-bottom"></i>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="All">All</el-dropdown-item>
-                  <el-dropdown-item command="Mine">Mine</el-dropdown-item>
+                  <el-dropdown-item command="All">{{
+                    $t('m.All')
+                  }}</el-dropdown-item>
+                  <el-dropdown-item command="Mine">{{
+                    $t('m.My_OJ')
+                  }}</el-dropdown-item>
                   <el-dropdown-item
                     :command="remoteOj.key"
                     v-for="(remoteOj, index) in REMOTE_OJ"
@@ -223,7 +229,7 @@
         </el-row>
       </el-card>
       <el-card :padding="10" style="margin-top:20px">
-        <div slot="header">
+        <div slot="header" style="text-align: center;">
           <span class="taglist-title">{{ $t('m.Tags') }}</span>
         </div>
         <el-button
@@ -525,7 +531,6 @@ export default {
 
 <style scoped>
 .taglist-title {
-  margin: 0 43%;
   font-size: 21px;
   font-weight: 500;
 }

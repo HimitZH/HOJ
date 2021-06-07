@@ -3,7 +3,7 @@ export const m = {
   NavBar_Home: '首页',
   NavBar_Problem: '题目',
   NavBar_Contest: '比赛',
-  NavBar_Status: '状态',
+  NavBar_Status: '评测',
   NavBar_Rank: '排名',
   NavBar_ACM_Rank: 'ACM 排名',
   NavBar_OI_Rank: 'OI 排名',
@@ -69,38 +69,49 @@ export const m = {
   Your_password_has_been_reset: '您的密码已重置',
 
   // /components/oj/setting/Account.vue 账号信息管理页面
+  Old_Password:'当前密码',
+  New_Password:'新密码',
+  Confirm_New_Password:'确认新密码',
+  Current_Password:'当前密码',
+  Old_Email:'当前邮箱',
+  New_Email:'新邮箱',
   Change_Password: '更改密码',
   Change_Email: '更改邮箱',
   Update_Password: '更新密码',
   Update_Email: '更新邮箱',
-  The_new_password_does_not_change:"新密码未更改",
-  The_new_email_does_not_change:"新邮箱未更改",
+  The_new_password_does_not_change:"新密码未变动",
+  The_new_email_does_not_change:"新邮箱未变动",
   Update_Successfully:'更新成功',
   Update_Failed:'更新失败',
-  Guess_robot:'您的操作太快啦，可能是系统走神了！请再次验证！',
+  Guess_robot:'您的操作太快啦，可能是机器操作！请再次验证！',
 
 
   // /components/oj/setting/UserInfo.vue
-  Avatar_Setting: '头像设置',
-  UserInfo_Setting: '用户资料设置',
+  Avatar_Setting:'头像设置',
   Upload_avatar_hint:'将头像拖放到此处，或单击此处',
+  CF_Username:'Codeforces 用户名',
+  School:'学校',
+  Student_Number:'学号',
+  Blog:'博客',
+  Github:'Github',
   Save:'保存',
   Upload:'上传',
   Your_new_avatar:'您的新头像',
+  
 
   // /views/oj/user/UserHome.vue
   Recent_login_time:'最近上线时间：',
   Not_set_yet:'未设置',
   UserHome_Solved: '已解决',
-  UserHome_Submissions: '提交记录',
-  UserHome_Score: '分数',
+  UserHome_Submissions: '总交题数',
+  UserHome_Score: 'OI分数',
   UserHome_Rating:'CF分数',
   List_Solved_Problems: '已解决问题列表',
   UserHome_Not_Data: '这家伙太懒了，还没有做过题...',
 
   // /views/oj/user/Setting.vue
   Account_Setting:'账户设置',
-  UserInfo_Setting:'用户资料设置',
+  UserInfo_Setting:'资料设置',
 
   // App.vue 底部文案
   Service:'服务',
@@ -110,6 +121,7 @@ export const m = {
   Open_Source:'开源',
   Support:'支持',
   Help:'帮助',
+  Group:'Q群',
 
   // /views/oj/Home.vue
   Welcome_to:'欢迎使用 ',
@@ -135,7 +147,7 @@ export const m = {
   // /views/oj/problem/problemList.vue
   Problem_List:'问题列表',
   All:'全部',
-  Mine:'我的',
+  My_OJ:'本OJ',
   Level:'难度',
   Tags:'标签',
   Pick_a_random_question:'随机选一题',
@@ -183,7 +195,7 @@ export const m = {
 
 
   // /views/oj/status/SubmissionList.vue
-  When: '提交时间',
+  Mine:'我的',
   ID: 'ID',
   Time: '运行时间',
   Memory: '内存',
@@ -198,8 +210,8 @@ export const m = {
   Refresh:'刷新',
   Enter_Problem_ID:'请输入题目ID',
   Enter_Author:'请输入作者',
-  Run_ID:'run ID',
-  Problem:'问题',
+  Run_ID:'Run ID',
+  Problem:'题目',
 
   // /views/oj/status/SubmissionDetails.vue
   Test_point_details:'测试点详情',
@@ -211,7 +223,7 @@ export const m = {
   // /views/oj/rank/ACMRank.vue
   ACM_Ranklist: 'ACM 排行榜',
   User:'用户名',
-  Nickname:'真实姓名',
+  Nickname:'昵称',
   Mood: '格言',
   Rating: '通过率',
 
