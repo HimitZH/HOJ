@@ -70,7 +70,11 @@
             }}</a>
           </template>
         </vxe-table-column>
-        <vxe-table-column field="status" :title="$t('m.Staus')" min-width="170">
+        <vxe-table-column
+          field="status"
+          :title="$t('m.Status')"
+          min-width="170"
+        >
           <template v-slot="{ row }">
             <span :class="getStatusColor(row.status)">{{
               JUDGE_STATUS[row.status].name
@@ -162,45 +166,53 @@
         </el-row>
       </el-card>
     </el-col>
-    <el-col :span="24" style="margin-top: 13px;">
-      <Highlight
-        :code="submission.code"
-        :language="submission.language"
-        :border-color.sync="status.color"
-      ></Highlight>
-    </el-col>
-    <el-col :span="24">
-      <div id="share-btn">
-        <el-button
-          type="primary"
-          icon="el-icon-document-copy"
-          size="large"
-          @click="doCopy"
-          v-if="submission.code"
-          >{{ $t('m.Copy') }}</el-button
-        >
-        <template v-if="codeShare">
+    <template
+      v-if="
+        (submission.code && submission.share && codeShare) ||
+          isMeSubmisson ||
+          isAdminRole
+      "
+    >
+      <el-col :span="24" style="margin-top: 13px;">
+        <Highlight
+          :code="submission.code"
+          :language="submission.language"
+          :border-color.sync="status.color"
+        ></Highlight>
+      </el-col>
+      <el-col :span="24">
+        <div id="share-btn">
           <el-button
-            v-if="submission.share && isAuthenticated && isMeSubmisson"
-            type="warning"
-            size="large"
-            icon="el-icon-circle-close"
-            @click="shareSubmission(false)"
-          >
-            {{ $t('m.Unshared') }}
-          </el-button>
-          <el-button
-            v-else-if="isAuthenticated && !submission.share && isMeSubmisson"
             type="primary"
+            icon="el-icon-document-copy"
             size="large"
-            icon="el-icon-share"
-            @click="shareSubmission(true)"
+            @click="doCopy"
+            v-if="submission.code"
+            >{{ $t('m.Copy') }}</el-button
           >
-            {{ $t('m.Shared') }}
-          </el-button>
-        </template>
-      </div>
-    </el-col>
+          <template v-if="codeShare && isMeSubmisson">
+            <el-button
+              v-if="submission.share"
+              type="warning"
+              size="large"
+              icon="el-icon-circle-close"
+              @click="shareSubmission(false)"
+            >
+              {{ $t('m.Unshared') }}
+            </el-button>
+            <el-button
+              v-else-if="!submission.share"
+              type="primary"
+              size="large"
+              icon="el-icon-share"
+              @click="shareSubmission(true)"
+            >
+              {{ $t('m.Shared') }}
+            </el-button>
+          </template>
+        </div>
+      </el-col>
+    </template>
   </el-row>
 </template>
 
@@ -210,8 +222,7 @@ import { JUDGE_STATUS, JUDGE_STATUS_RESERVE } from '@/common/constants';
 import utils from '@/common/utils';
 import myMessage from '@/common/message';
 import { addCodeBtn } from '@/common/codeblock';
-
-const Highlight = () => import('@/components/oj/common/Highlight');
+import Highlight from '@/components/oj/common/Highlight';
 
 export default {
   name: 'submissionDetails',
@@ -254,10 +265,10 @@ export default {
     doCopy() {
       this.$copyText(this.submission.code).then(
         function(e) {
-          myMessage.success('Code copied successfully');
+          myMessage.success(this.$i18n.t('m.Copied_successfully'));
         },
         function(e) {
-          myMessage.success('Code copy failed');
+          myMessage.success(this.$i18n.t('m.复制失败'));
         }
       );
     },
@@ -367,6 +378,15 @@ export default {
         },
         () => {}
       );
+    },
+  },
+  watch: {
+    submission(newVal, oldVal) {
+      if (newVal.code) {
+        this.$nextTick((_) => {
+          addCodeBtn();
+        });
+      }
     },
   },
   computed: {
