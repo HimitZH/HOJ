@@ -207,11 +207,11 @@
 <script>
 import time from '@/common/time';
 import api from '@/common/api';
-import Announcements from '@/components/oj/common/Announcements.vue';
 import { CONTEST_STATUS_REVERSE } from '@/common/constants';
 import { mapState } from 'vuex';
 import { addCodeBtn } from '@/common/codeblock';
 import Avatar from 'vue-avatar';
+const Announcements = () => import('@/components/oj/common/Announcements.vue');
 export default {
   name: 'home',
   components: {

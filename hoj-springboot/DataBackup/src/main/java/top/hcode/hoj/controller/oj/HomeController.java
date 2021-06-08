@@ -1,6 +1,7 @@
 package top.hcode.hoj.controller.oj;
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.text.UnicodeUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -131,16 +132,16 @@ public class HomeController {
     public CommonResult getWebConfig() {
 
         return CommonResult.successResponse(
-                MapUtil.builder().put("baseUrl", configVo.getBaseUrl())
-                        .put("name", configVo.getName())
-                        .put("shortName", configVo.getShortName())
+                MapUtil.builder().put("baseUrl", UnicodeUtil.toString(configVo.getBaseUrl()))
+                        .put("name", UnicodeUtil.toString(configVo.getName()))
+                        .put("shortName", UnicodeUtil.toString(configVo.getShortName()))
                         .put("register", configVo.getRegister())
-                        .put("recordName", configVo.getRecordName())
-                        .put("recordUrl", configVo.getRecordUrl())
-                        .put("description", configVo.getDescription())
-                        .put("email", configVo.getEmailUsername())
-                        .put("projectName", configVo.getProjectName())
-                        .put("projectUrl", configVo.getProjectUrl()).map()
+                        .put("recordName", UnicodeUtil.toString(configVo.getRecordName()))
+                        .put("recordUrl", UnicodeUtil.toString(configVo.getRecordUrl()))
+                        .put("description", UnicodeUtil.toString(configVo.getDescription()))
+                        .put("email", UnicodeUtil.toString(configVo.getEmailUsername()))
+                        .put("projectName", UnicodeUtil.toString(configVo.getProjectName()))
+                        .put("projectUrl", UnicodeUtil.toString(configVo.getProjectUrl())).map()
         );
     }
 

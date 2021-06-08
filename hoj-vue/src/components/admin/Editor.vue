@@ -12,7 +12,7 @@
       <template v-slot:left-toolbar-after v-if="isAdminRole">
         <button
           type="button"
-          title="文件上传"
+          :title="$t('m.Upload_file')"
           class="op-icon fa markdown-upload"
           aria-hidden="true"
           @click="uploadFile"

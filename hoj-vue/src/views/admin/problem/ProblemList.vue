@@ -3,7 +3,7 @@
     <el-card>
       <div slot="header">
         <span class="panel-title home-title">{{
-          contestId ? 'Contest Problem List' : 'Problem List'
+          contestId ? $t('m.Contest_Problem_List') : $t('m.Problem_List')
         }}</span>
         <div class="filter-row">
           <span>
@@ -12,7 +12,7 @@
               size="small"
               @click="goCreateProblem"
               icon="el-icon-plus"
-              >Create
+              >{{ $t('m.Create') }}
             </el-button>
             <el-button
               type="success"
@@ -20,7 +20,7 @@
               v-if="!contestId"
               @click="AddRemoteOJProblemDialogVisible = true"
               icon="el-icon-plus"
-              >Add Remote OJ Problem
+              >{{ $t('m.Add_Rmote_OJ_Problem') }}
             </el-button>
             <el-button
               v-if="contestId"
@@ -28,13 +28,13 @@
               size="small"
               icon="el-icon-plus"
               @click="addProblemDialogVisible = true"
-              >Add From Public Problem
+              >{{ $t('m.Add_From_Public_Problem') }}
             </el-button>
           </span>
           <span>
             <vxe-input
               v-model="keyword"
-              placeholder="Enter keyword"
+              :placeholder="$t('m.Enter_keyword')"
               type="search"
               size="medium"
               @search-click="filterByKeyword"
@@ -54,16 +54,24 @@
       >
         <vxe-table-column min-width="100" field="problemId" title="ID">
         </vxe-table-column>
-        <vxe-table-column field="title" min-width="150" title="Title">
+        <vxe-table-column field="title" min-width="150" :title="$t('m.Title')">
         </vxe-table-column>
-        <vxe-table-column field="author" min-width="150" title="Author">
+        <vxe-table-column
+          field="author"
+          min-width="150"
+          :title="$t('m.Author')"
+        >
         </vxe-table-column>
-        <vxe-table-column min-width="150" field="gmtCreate" title="Create Time">
+        <vxe-table-column
+          min-width="150"
+          field="gmtCreate"
+          :title="$t('m.Created_Time')"
+        >
           <template v-slot="{ row }">
             {{ row.gmtCreate | localtime }}
           </template>
         </vxe-table-column>
-        <vxe-table-column min-width="130" field="auth" title="Auth">
+        <vxe-table-column min-width="130" field="auth" :title="$t('m.Auth')">
           <template v-slot="{ row }">
             <el-select
               v-model="row.auth"
@@ -71,10 +79,13 @@
               size="small"
               :disabled="row.auth == 3 && !contestId"
             >
-              <el-option label="公开" :value="1"></el-option>
-              <el-option label="私有" :value="2"></el-option>
+              <el-option :label="$t('m.Public_Problem')" :value="1"></el-option>
               <el-option
-                label="比赛题目"
+                :label="$t('m.Private_Problem')"
+                :value="2"
+              ></el-option>
+              <el-option
+                :label="$t('m.Contest_Problem')"
                 :value="3"
                 :disabled="!contestId"
               ></el-option>
@@ -83,7 +94,7 @@
         </vxe-table-column>
         <vxe-table-column title="Option" min-width="200">
           <template v-slot="{ row }">
-            <el-tooltip effect="dark" content="编辑题目" placement="top">
+            <el-tooltip effect="dark" :content="$t('m.Edit')" placement="top">
               <el-button
                 icon="el-icon-edit-outline"
                 size="mini"
@@ -93,7 +104,11 @@
               </el-button>
             </el-tooltip>
 
-            <el-tooltip effect="dark" content="下载测试样例" placement="top">
+            <el-tooltip
+              effect="dark"
+              :content="$t('m.Download_Testcase')"
+              placement="top"
+            >
               <el-button
                 icon="el-icon-download"
                 size="mini"
@@ -103,7 +118,7 @@
               </el-button>
             </el-tooltip>
 
-            <el-tooltip effect="dark" content="删除题目" placement="top">
+            <el-tooltip effect="dark" :content="$t('m.Delete')" placement="top">
               <el-button
                 icon="el-icon-delete-solid"
                 size="mini"
@@ -129,7 +144,7 @@
     </el-card>
 
     <el-dialog
-      title="Add Contest Problem"
+      :title="$t('m.Add_Contest_Problem')"
       v-if="contestId"
       width="90%"
       :visible.sync="addProblemDialogVisible"
@@ -142,13 +157,13 @@
     </el-dialog>
 
     <el-dialog
-      title="Add Remote OJ Problem"
+      :title="$t('m.Add_Rmote_OJ_Problem')"
       width="350px"
       :visible.sync="AddRemoteOJProblemDialogVisible"
       @close-on-click-modal="false"
     >
       <el-form>
-        <el-form-item label="Remote OJ">
+        <el-form-item :label="$t('m.Remote_OJ')">
           <el-select v-model="otherOJName" size="small">
             <el-option
               :label="remoteOj.name"
@@ -158,7 +173,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="Problem ID">
+        <el-form-item :label="$t('m.Problem_ID')">
           <el-input v-model="otherOJProblemId" size="small"></el-input>
         </el-form-item>
         <el-form-item style="text-align:center">
@@ -167,7 +182,7 @@
             icon="el-icon-plus"
             @click="addRemoteOJProblem"
             :loading="addRemoteOJproblemLoading"
-            >Add
+            >{{ $t('m.Add') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -274,18 +289,14 @@ export default {
 
     changeProblemAuth(row) {
       api.admin_changeProblemPublic(row).then((res) => {
-        myMessage.success(res.data.msg);
+        myMessage.success(this.$i18n.t('m.Update_Successfully'));
       });
     },
 
     deleteProblem(id) {
-      this.$confirm(
-        '确定要删除此问题吗？注意：该问题的相关提交数据也将被删除。',
-        '删除题目',
-        {
-          type: 'warning',
-        }
-      ).then(
+      this.$confirm(this.$i18n.t('m.Delete_Problem_Tips'), 'Tips', {
+        type: 'warning',
+      }).then(
         () => {
           let funcName =
             this.routeName === 'admin-problem-list'
@@ -293,7 +304,7 @@ export default {
               : 'admin_deleteContestProblem';
           api[funcName](id)
             .then((res) => {
-              myMessage.success(res.data.msg);
+              myMessage.success(this.$i18n.t('m.Delete_Successfully'));
               this.getProblemList(this.currentPage);
             })
             .catch(() => {});
@@ -312,7 +323,7 @@ export default {
       }
       api[funcName](data)
         .then((res) => {
-          myMessage.success(res.data.msg);
+          myMessage.success(this.$i18n.t('m.Update_Successfully'));
           this.getProblemList(this.currentPage);
         })
         .catch(() => {});
@@ -320,7 +331,7 @@ export default {
     downloadTestCase(problemID) {
       let url = '/api/file/download-testcase?pid=' + problemID;
       utils.downloadFile(url).then(() => {
-        this.$alert('该题目的测试样例已成功下载！', '提醒');
+        this.$alert(this.$i18n.t('m.Download_Testcase_Success'), 'Tips');
       });
     },
     filterByKeyword() {
@@ -334,7 +345,7 @@ export default {
           (res) => {
             this.addRemoteOJproblemLoading = false;
             this.AddRemoteOJProblemDialogVisible = false;
-            myMessage.success(res.data.msg);
+            myMessage.success(this.$i18n.t('m.Add_Successfully'));
             this.currentChange(1);
           },
           (err) => {

@@ -355,7 +355,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import CodeMirror from '@/components/oj/common/CodeMirror.vue';
 import storage from '@/common/storage';
 import utils from '@/common/utils';
 import {
@@ -370,6 +369,7 @@ import { pie, largePie } from './chartData';
 import api from '@/common/api';
 import myMessage from '@/common/message';
 import { addCodeBtn } from '@/common/codeblock';
+const CodeMirror = () => import('@/components/oj/common/CodeMirror.vue');
 // 只显示这些状态的图形占用
 const filtedStatus = ['wa', 'ce', 'ac', 'pa', 'tle', 'mle', 're', 'pe'];
 

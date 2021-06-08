@@ -202,14 +202,13 @@
 </template>
 
 <script>
-import comment from '@/components/oj/comment/comment';
 import api from '@/common/api';
 import myMessage from '@/common/message';
 import { addCodeBtn } from '@/common/codeblock';
 import Avatar from 'vue-avatar';
 import { mapGetters, mapActions } from 'vuex';
-import Editor from '@/components/admin/Editor.vue';
-
+const Editor = () => import('@/components/admin/Editor.vue');
+const comment = () => import('@/components/oj/comment/comment');
 export default {
   components: {
     comment,

@@ -2,6 +2,7 @@ package top.hcode.hoj.controller.admin;
 
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.text.UnicodeUtil;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -63,15 +64,15 @@ public class ConfigController {
     public CommonResult getWebConfig() {
 
         return CommonResult.successResponse(
-                MapUtil.builder().put("baseUrl", configVo.getBaseUrl())
-                        .put("name", configVo.getName())
-                        .put("shortName", configVo.getShortName())
-                        .put("description", configVo.getDescription())
+                MapUtil.builder().put("baseUrl", UnicodeUtil.toString(configVo.getBaseUrl()))
+                        .put("name", UnicodeUtil.toString(configVo.getName()))
+                        .put("shortName", UnicodeUtil.toString(configVo.getShortName()))
+                        .put("description", UnicodeUtil.toString(configVo.getDescription()))
                         .put("register", configVo.getRegister())
-                        .put("recordName", configVo.getRecordName())
-                        .put("recordUrl", configVo.getRecordUrl())
-                        .put("projectName", configVo.getProjectName())
-                        .put("projectUrl", configVo.getProjectUrl()).map()
+                        .put("recordName", UnicodeUtil.toString(configVo.getRecordName()))
+                        .put("recordUrl", UnicodeUtil.toString(configVo.getRecordUrl()))
+                        .put("projectName", UnicodeUtil.toString(configVo.getProjectName()))
+                        .put("projectUrl", UnicodeUtil.toString(configVo.getProjectUrl())).map()
         );
     }
 

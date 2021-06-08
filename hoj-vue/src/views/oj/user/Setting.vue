@@ -17,8 +17,8 @@
   </el-card>
 </template>
 <script>
-import Account from '@/components/oj/setting/Account';
-import UserInfo from '@/components/oj/setting/UserInfo';
+const Account = () => import('@/components/oj/setting/Account');
+const UserInfo = () => import('@/components/oj/setting/UserInfo');
 export default {
   components: {
     Account,

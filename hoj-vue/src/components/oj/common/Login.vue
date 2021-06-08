@@ -104,7 +104,7 @@ export default {
         username: [
           {
             required: true,
-            message: this.$i18n.t('m.Username_Check'),
+            message: this.$i18n.t('m.Username_Check_Required'),
             trigger: 'blur',
           },
           {

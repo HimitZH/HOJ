@@ -262,9 +262,9 @@ import {
   JUDGE_STATUS_RESERVE,
   REMOTE_OJ,
 } from '@/common/constants';
-import Pagination from '@/components/oj/common/Pagination';
 import myMessage from '@/common/message';
-
+import 'element-ui/lib/theme-chalk/display.css';
+import Pagination from '@/components/oj/common/Pagination';
 export default {
   name: 'ProblemList',
   components: {

@@ -308,6 +308,7 @@ import {
 import utils from '@/common/utils';
 import Pagination from '@/components/oj/common/Pagination';
 import myMessage from '@/common/message';
+import 'element-ui/lib/theme-chalk/display.css';
 export default {
   name: 'submissionList',
   components: {
