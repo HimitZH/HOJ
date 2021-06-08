@@ -148,7 +148,7 @@
 
           <vxe-table-column
             field="title"
-            :title="$t('m.Title')"
+            :title="$t('m.Problem')"
             min-width="180"
           >
             <template v-slot="{ row }">
