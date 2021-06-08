@@ -22,7 +22,7 @@
             $t('m.User_Admin')
           }}</el-menu-item>
           <el-menu-item index="/admin/announcement">{{
-            $t('m.Announcement')
+            $t('m.Announcement_Admin')
           }}</el-menu-item>
           <el-menu-item index="/admin/conf">{{
             $t('m.System_Config')
@@ -32,7 +32,7 @@
         <el-submenu index="problem">
           <template slot="title"
             ><i class="fa fa-bars fa-size" aria-hidden="true"></i
-            >{{ $t('m.Problem') }}</template
+            >{{ $t('m.Problem_Admin') }}</template
           >
           <el-menu-item index="/admin/problems">{{
             $t('m.Problem_List')
@@ -47,7 +47,7 @@
         <el-submenu index="contest">
           <template slot="title"
             ><i class="fa fa-trophy fa-size" aria-hidden="true"></i
-            >{{ $t('m.Contest') }}</template
+            >{{ $t('m.Contest_Admin') }}</template
           >
           <el-menu-item index="/admin/contest">{{
             $t('m.Contest_List')
