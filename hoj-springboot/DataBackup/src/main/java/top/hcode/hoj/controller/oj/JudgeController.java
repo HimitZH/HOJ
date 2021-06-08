@@ -269,7 +269,6 @@ public class JudgeController {
      * @Since 2021/1/2
      */
     @GetMapping("/submission")
-    @RequiresAuthentication
     public CommonResult getSubmission(@RequestParam(value = "submitId", required = true) Long submitId, HttpServletRequest request) {
         Judge judge = judgeService.getById(submitId);
         if (judge == null) {
@@ -289,10 +288,10 @@ public class JudgeController {
             if (userRolesVo != null) { // 当前是登陆状态
                 // 需要判断是否为当前登陆用户自己的提交代码
                 if (!judge.getUid().equals(userRolesVo.getUid())) {
-                    return CommonResult.errorResponse("对不起！该提交并未分享，您无权查看！");
+                    judge.setCode(null);
                 }
-            } else { // 不是登陆状态，就直接无权限
-                return CommonResult.errorResponse("对不起！该提交并未分享，您无权查看！");
+            } else { // 不是登陆状态，就直接无权限查看代码
+                judge.setCode(null);
             }
         }
 
@@ -423,7 +422,6 @@ public class JudgeController {
      * @Since 2020/10/29
      */
     @GetMapping("/get-all-case-result")
-    @RequiresAuthentication
     public CommonResult getALLCaseResult(@RequestParam(value = "submitId", required = true) Long submitId) {
 
         Judge judge = judgeService.getById(submitId);

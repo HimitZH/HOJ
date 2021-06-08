@@ -213,16 +213,11 @@
             min-width="130"
           >
             <template v-slot="{ row }">
-              <span
-                v-if="!row.share && row.uid != userInfo.uid && !isAdminRole"
-                >{{ row.language }}</span
-              >
               <el-tooltip
                 class="item"
                 effect="dark"
                 :content="$t('m.View_submission_details')"
                 placement="top"
-                v-else
               >
                 <el-button type="text" @click="showSubmitDetail(row)">{{
                   row.language
@@ -639,11 +634,6 @@ export default {
     ...mapActions(['changeModalStatus']),
 
     showSubmitDetail(row) {
-      if (!this.isAuthenticated) {
-        this.changeModalStatus({ mode: 'Login', visible: true });
-        myMessage.warning(this.$i18n.t('m.Please_login_first'));
-        return;
-      }
       if (row.cid != 0) {
         // 比赛提交详情
         this.$router.push({
