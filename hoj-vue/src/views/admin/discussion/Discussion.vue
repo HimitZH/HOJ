@@ -2,7 +2,9 @@
   <div>
     <el-card>
       <div slot="header">
-        <span class="panel-title home-title">Discussion List</span>
+        <span class="panel-title home-title">{{
+          $t('m.Discussion_Admin')
+        }}</span>
         <div class="filter-row">
           <span>
             <el-button
@@ -10,13 +12,13 @@
               icon="el-icon-delete-solid"
               @click="deleteDiscussion(null)"
               size="small"
-              >Delete
+              >{{ $t('m.Delete') }}
             </el-button>
           </span>
           <span>
             <vxe-input
               v-model="keyword"
-              placeholder="Enter keyword"
+              :placeholder="$t('m.Enter_keyword')"
               type="search"
               size="medium"
               @search-click="filterByKeyword"
@@ -30,6 +32,7 @@
         auto-resize
         :data="discussionList"
         ref="xTable"
+        align="center"
         :loading="discussionLoadingTable"
         :checkbox-config="{ highlight: true, range: true }"
         @checkbox-change="handleSelectionChange"
@@ -39,42 +42,58 @@
         <vxe-table-column field="id" title="ID" width="60"></vxe-table-column>
         <vxe-table-column
           field="title"
-          title="Title"
+          :title="$t('m.Title')"
           min-width="150"
         ></vxe-table-column>
         <vxe-table-column
           field="author"
-          title="Author"
+          :title="$t('m.Author')"
           min-width="150"
         ></vxe-table-column>
         <vxe-table-column
           field="likeNum"
-          title="Like Num"
+          :title="$t('m.Likes')"
           min-width="96"
         ></vxe-table-column>
         <vxe-table-column
           field="viewNum"
-          title="View Num"
+          :title="$t('m.Views')"
           min-width="96"
         ></vxe-table-column>
-        <vxe-table-column field="gmtCreate" title="Create Time" min-width="150">
+        <vxe-table-column
+          field="gmtCreate"
+          :title="$t('m.Created_Time')"
+          min-width="150"
+        >
           <template v-slot="{ row }">
             {{ row.gmtCreate | localtime }}
           </template>
         </vxe-table-column>
-        <vxe-table-column field="status" title="Status" min-width="100">
+        <vxe-table-column
+          field="status"
+          :title="$t('m.Status')"
+          min-width="100"
+        >
           <template v-slot="{ row }">
             <el-select
               v-model="row.status"
               @change="changeDiscussionStatus(row)"
               size="small"
             >
-              <el-option label="正常" :value="0" :key="0"></el-option
-              ><el-option label="封禁" :value="1" :key="1"></el-option>
+              <el-option :label="$t('m.Normal')" :value="0" :key="0"></el-option
+              ><el-option
+                :label="$t('m.Disable')"
+                :value="1"
+                :key="1"
+              ></el-option>
             </el-select>
           </template>
         </vxe-table-column>
-        <vxe-table-column min-width="100" field="topPriority" title="Top">
+        <vxe-table-column
+          min-width="100"
+          field="topPriority"
+          :title="$t('m.Top')"
+        >
           <template v-slot="{ row }">
             <el-switch
               v-model="row.topPriority"
@@ -87,9 +106,9 @@
             </el-switch>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="Option" min-width="130">
+        <vxe-table-column :title="$t('m.Option')" min-width="130">
           <template v-slot="{ row }">
-            <el-tooltip effect="dark" content="删除讨论" placement="top">
+            <el-tooltip effect="dark" :content="$t('m.Delete')" placement="top">
               <el-button
                 icon="el-icon-delete-solid"
                 size="mini"
@@ -98,7 +117,11 @@
               >
               </el-button>
             </el-tooltip>
-            <el-tooltip effect="dark" content="查看讨论" placement="top">
+            <el-tooltip
+              effect="dark"
+              :content="$t('m.View_Discussion')"
+              placement="top"
+            >
               <el-button
                 icon="el-icon-search"
                 size="mini"
@@ -123,7 +146,9 @@
     </el-card>
     <el-card style="margin-top:20px">
       <div slot="header">
-        <span class="panel-title home-title">Discussion Report</span>
+        <span class="panel-title home-title">{{
+          $t('m.Discussion_Report')
+        }}</span>
       </div>
       <vxe-table
         :loading="discussionReportLoadingTable"
@@ -135,20 +160,32 @@
       >
         <vxe-table-column min-width="60" field="id" title="ID">
         </vxe-table-column>
-        <vxe-table-column min-width="150" field="did" title="Discussion ID">
+        <vxe-table-column
+          min-width="150"
+          field="did"
+          :title="$t('m.Discussion_ID')"
+        >
         </vxe-table-column>
         <vxe-table-column
           min-width="150"
           field="reporter"
-          title="Reporter Name"
+          :title="$t('m.Reporter')"
         >
         </vxe-table-column>
-        <vxe-table-column min-width="150" field="gmtCreate" title="Report Time">
+        <vxe-table-column
+          min-width="150"
+          field="gmtCreate"
+          :title="$t('m.Report_Time')"
+        >
           <template v-slot="{ row }">
             {{ row.gmtCreate | localtime }}
           </template>
         </vxe-table-column>
-        <vxe-table-column min-width="100" field="status" title="Checked">
+        <vxe-table-column
+          min-width="100"
+          field="status"
+          :title="$t('m.Checked')"
+        >
           <template v-slot="{ row }">
             <el-switch
               v-model="row.status"
@@ -161,12 +198,12 @@
             </el-switch>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="Content" min-width="150">
+        <vxe-table-column :title="$t('m.Option')" min-width="150">
           <template v-slot="{ row }">
             <el-tooltip
               class="item"
               effect="dark"
-              content="点击查看举报内容"
+              :content="$t('m.View_Report_content')"
               placement="top"
             >
               <el-button
@@ -176,7 +213,11 @@
                 type="success"
               ></el-button>
             </el-tooltip>
-            <el-tooltip effect="dark" content="查看讨论" placement="top">
+            <el-tooltip
+              effect="dark"
+              :content="$t('m.View_Discussion')"
+              placement="top"
+            >
               <el-button
                 icon="el-icon-search"
                 size="mini"
@@ -296,7 +337,7 @@ export default {
         status: row.status,
       };
       api.admin_updateDiscussion(discussion).then((res) => {
-        myMessage.success(res.data.msg);
+        myMessage.success(this.$i18n.t('m.Update_Successfully'));
       });
     },
     handleTopSwitch(row) {
@@ -305,7 +346,7 @@ export default {
         topPriority: row.topPriority,
       };
       api.admin_updateDiscussion(discussion).then((res) => {
-        myMessage.success(res.data.msg);
+        myMessage.success(this.$i18n.t('m.Update_Successfully'));
       });
     },
 
@@ -315,7 +356,7 @@ export default {
         status: row.status,
       };
       api.admin_updateDiscussionReport(discussionReport).then((res) => {
-        myMessage.success(res.data.msg);
+        myMessage.success(this.$i18n.t('m.Update_Successfully'));
       });
     },
 
@@ -328,13 +369,9 @@ export default {
         didList = this.selectedDiscussions;
       }
       if (didList.length > 0) {
-        this.$confirm(
-          '你确定要删除该讨论？这样会关联删除该讨论的评论及回复',
-          '确认',
-          {
-            type: 'warning',
-          }
-        ).then(
+        this.$confirm(this.$i18n.t('m.Delete_Discussion_Tips'), 'Tips', {
+          type: 'warning',
+        }).then(
           () => {
             api
               .admin_deleteDiscussion(didList)
@@ -351,21 +388,26 @@ export default {
           () => {}
         );
       } else {
-        myMessage.warning('勾选的讨论不能为空！');
+        myMessage.warning(
+          this.$i18n.t('m.The_number_of_discussions_selected_cannot_be_empty')
+        );
       }
     },
     openReportDialog(content) {
       let reg = '#(.*?)# ';
       let re = RegExp(reg, 'g');
       let tmp;
-      let showContent = '<strong>标签</strong>：';
+      let showContent = '<strong>' + this.$i18n.t('m.Tags') + '</strong>：';
       while ((tmp = re.exec(content))) {
         showContent += tmp[1] + ' ';
       }
       showContent +=
-        '<br><br><strong>内容</strong>：' + content.replace(/#(.*?)# /g, '');
-      this.$alert(showContent, '举报内容', {
-        confirmButtonText: '确定',
+        '<br><br><strong>' +
+        this.$i18n.t('m.Content') +
+        '</strong>：' +
+        content.replace(/#(.*?)# /g, '');
+      this.$alert(showContent, this.$i18n.t('m.Report_Content'), {
+        confirmButtonText: this.$i18n.t('m.OK'),
         dangerouslyUseHTMLString: true,
       });
     },

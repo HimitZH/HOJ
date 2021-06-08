@@ -10,46 +10,61 @@
           <img :src="imgUrl" alt="oj admin" />
         </div>
         <el-menu-item index="/admin/">
-          <i class="fa fa-tachometer" aria-hidden="true"></i>Dashboard
+          <i class="fa fa-tachometer fa-size" aria-hidden="true"></i
+          >{{ $t('m.Dashboard') }}
         </el-menu-item>
         <!-- <el-submenu v-if="isSuperAdmin" index="general"> -->
         <el-submenu index="general" v-if="isSuperAdmin">
-          <template slot="title"><i class="el-icon-menu"></i>General</template>
-          <el-menu-item index="/admin/user">User</el-menu-item>
-          <el-menu-item index="/admin/announcement">Announcement</el-menu-item>
-          <el-menu-item index="/admin/conf">System Config</el-menu-item>
+          <template slot="title"
+            ><i class="el-icon-menu"></i>{{ $t('m.General') }}</template
+          >
+          <el-menu-item index="/admin/user">{{
+            $t('m.User_Admin')
+          }}</el-menu-item>
+          <el-menu-item index="/admin/announcement">{{
+            $t('m.Announcement')
+          }}</el-menu-item>
+          <el-menu-item index="/admin/conf">{{
+            $t('m.System_Config')
+          }}</el-menu-item>
         </el-submenu>
         <!-- <el-submenu index="problem" v-if="hasProblemPermission"> -->
         <el-submenu index="problem">
           <template slot="title"
-            ><i class="fa fa-bars" aria-hidden="true"></i>Problem</template
+            ><i class="fa fa-bars fa-size" aria-hidden="true"></i
+            >{{ $t('m.Problem') }}</template
           >
-          <el-menu-item index="/admin/problems">Problem List</el-menu-item>
-          <el-menu-item index="/admin/problem/create"
-            >Create Problem</el-menu-item
-          >
-          <el-menu-item index="/admin/problem/batch-operation"
-            >Export&Import Problem</el-menu-item
-          >
+          <el-menu-item index="/admin/problems">{{
+            $t('m.Problem_List')
+          }}</el-menu-item>
+          <el-menu-item index="/admin/problem/create">{{
+            $t('m.Create_Problem')
+          }}</el-menu-item>
+          <el-menu-item index="/admin/problem/batch-operation">{{
+            $t('m.Export_Import_Problem')
+          }}</el-menu-item>
         </el-submenu>
         <el-submenu index="contest">
           <template slot="title"
-            ><i class="fa fa-trophy" aria-hidden="true"></i>Contest</template
+            ><i class="fa fa-trophy fa-size" aria-hidden="true"></i
+            >{{ $t('m.Contest') }}</template
           >
-          <el-menu-item index="/admin/contest">Contest List</el-menu-item>
-          <el-menu-item index="/admin/contest/create"
-            >Create Contest</el-menu-item
-          >
+          <el-menu-item index="/admin/contest">{{
+            $t('m.Contest_List')
+          }}</el-menu-item>
+          <el-menu-item index="/admin/contest/create">{{
+            $t('m.Create_Contest')
+          }}</el-menu-item>
         </el-submenu>
 
         <el-submenu index="discussion">
           <template slot="title"
-            ><i class="fa fa-comments" aria-hidden="true"></i
-            >Discussion</template
+            ><i class="fa fa-comments fa-size" aria-hidden="true"></i
+            >{{ $t('m.Discussion') }}</template
           >
-          <el-menu-item index="/admin/discussion"
-            >Discussion Admin</el-menu-item
-          >
+          <el-menu-item index="/admin/discussion">{{
+            $t('m.Discussion_Admin')
+          }}</el-menu-item>
         </el-submenu>
       </el-menu>
       <div id="header">
@@ -57,17 +72,20 @@
           <el-col :span="20">
             <div class="breadcrumb-container">
               <el-breadcrumb separator-class="el-icon-arrow-right">
-                <el-breadcrumb-item :to="{ path: '/admin/' }"
-                  >Home page</el-breadcrumb-item
-                >
+                <el-breadcrumb-item :to="{ path: '/admin/' }">{{
+                  $t('m.Home_Page')
+                }}</el-breadcrumb-item>
                 <el-breadcrumb-item v-for="item in routeList" :key="item.path">
-                  {{ item.meta.title }}
+                  {{ $t('m.' + item.meta.title.replace(' ', '_')) }}
                 </el-breadcrumb-item>
               </el-breadcrumb>
             </div>
           </el-col>
           <el-col :span="4" v-show="isAuthenticated">
-            <i class="fa fa-font katex-editor" @click="katexVisible = true"></i>
+            <i
+              class="fa fa-font katex-editor fa-size"
+              @click="katexVisible = true"
+            ></i>
             <avatar
               :username="userInfo.username"
               :inline="true"
@@ -85,7 +103,9 @@
                 }}<i class="el-icon-caret-bottom el-icon--right"></i
               ></span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="logout">Logout</el-dropdown-item>
+                <el-dropdown-item command="logout">{{
+                  $t('m.Logout')
+                }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-col>
@@ -101,7 +121,7 @@
         {{
           websiteConfig.shortName
             ? websiteConfig.shortName.toUpperCase() + ' ADMIN'
-            : 'OJ ADMIN'
+            : 'ADMIN'
         }}
         <mu-menu slot="right" v-show="isAuthenticated">
           <mu-button flat @click="katexVisible = true">
@@ -119,7 +139,7 @@
           <mu-list slot="content" @change="handleCommand">
             <mu-list-item button value="logout">
               <mu-list-item-content>
-                <mu-list-item-title>Logout</mu-list-item-title>
+                <mu-list-item-title>{{ $t('m.Logout') }}</mu-list-item-title>
               </mu-list-item-content>
             </mu-list-item>
           </mu-list>
@@ -139,7 +159,7 @@
             <mu-list-item-action>
               <mu-icon value="dashboard" size="24"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>Dashboard</mu-list-item-title>
+            <mu-list-item-title>{{ $t('m.Dashboard') }}</mu-list-item-title>
           </mu-list-item>
 
           <mu-list-item
@@ -153,7 +173,7 @@
             <mu-list-item-action>
               <mu-icon value="view_list"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>General</mu-list-item-title>
+            <mu-list-item-title>{{ $t('m.General') }}</mu-list-item-title>
             <mu-list-item-action>
               <mu-icon
                 class="toggle-icon"
@@ -169,7 +189,7 @@
               @click="opendrawer = !opendrawer"
               active-class="mobile-menu-active"
             >
-              <mu-list-item-title>User</mu-list-item-title>
+              <mu-list-item-title>{{ $t('m.User_Admin') }}</mu-list-item-title>
             </mu-list-item>
             <mu-list-item
               button
@@ -179,7 +199,9 @@
               @click="opendrawer = !opendrawer"
               active-class="mobile-menu-active"
             >
-              <mu-list-item-title>Announcement</mu-list-item-title>
+              <mu-list-item-title>{{
+                $t('m.Announcement')
+              }}</mu-list-item-title>
             </mu-list-item>
             <mu-list-item
               button
@@ -189,7 +211,9 @@
               @click="opendrawer = !opendrawer"
               active-class="mobile-menu-active"
             >
-              <mu-list-item-title>System Config</mu-list-item-title>
+              <mu-list-item-title>{{
+                $t('m.System_Config')
+              }}</mu-list-item-title>
             </mu-list-item>
           </mu-list-item>
 
@@ -203,7 +227,7 @@
             <mu-list-item-action>
               <mu-icon value="menu"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>Problem</mu-list-item-title>
+            <mu-list-item-title>{{ $t('m.Problem') }}</mu-list-item-title>
             <mu-list-item-action>
               <mu-icon
                 class="toggle-icon"
@@ -219,7 +243,9 @@
               @click="opendrawer = !opendrawer"
               active-class="mobile-menu-active"
             >
-              <mu-list-item-title>Problem List</mu-list-item-title>
+              <mu-list-item-title>{{
+                $t('m.Problem_List')
+              }}</mu-list-item-title>
             </mu-list-item>
             <mu-list-item
               button
@@ -229,7 +255,9 @@
               @click="opendrawer = !opendrawer"
               active-class="mobile-menu-active"
             >
-              <mu-list-item-title>Create Problem</mu-list-item-title>
+              <mu-list-item-title>{{
+                $t('m.Create_Problem')
+              }}</mu-list-item-title>
             </mu-list-item>
             <mu-list-item
               button
@@ -239,7 +267,9 @@
               @click="opendrawer = !opendrawer"
               active-class="mobile-menu-active"
             >
-              <mu-list-item-title>Export&Import Problem</mu-list-item-title>
+              <mu-list-item-title>{{
+                $t('m.Export_Import_Problem')
+              }}</mu-list-item-title>
             </mu-list-item>
           </mu-list-item>
 
@@ -251,9 +281,9 @@
             @toggle-nested="openSideMenu = arguments[0] ? 'contest' : ''"
           >
             <mu-list-item-action>
-              <mu-icon value=":fa fa-trophy"></mu-icon>
+              <mu-icon value=":fa fa-trophy fa-size"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>Contest</mu-list-item-title>
+            <mu-list-item-title>{{ $t('m.Contest') }}</mu-list-item-title>
             <mu-list-item-action>
               <mu-icon
                 class="toggle-icon"
@@ -269,7 +299,9 @@
               @click="opendrawer = !opendrawer"
               active-class="mobile-menu-active"
             >
-              <mu-list-item-title>Contest List</mu-list-item-title>
+              <mu-list-item-title>{{
+                $t('m.Contest_List')
+              }}</mu-list-item-title>
             </mu-list-item>
             <mu-list-item
               button
@@ -279,7 +311,9 @@
               @click="opendrawer = !opendrawer"
               active-class="mobile-menu-active"
             >
-              <mu-list-item-title>Create Contest</mu-list-item-title>
+              <mu-list-item-title>{{
+                $t('m.Create_Contest')
+              }}</mu-list-item-title>
             </mu-list-item>
           </mu-list-item>
 
@@ -291,9 +325,9 @@
             @toggle-nested="openSideMenu = arguments[0] ? 'discussion' : ''"
           >
             <mu-list-item-action>
-              <mu-icon value=":fa fa-comments"></mu-icon>
+              <mu-icon value=":fa fa-comments fa-size"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>Discussion</mu-list-item-title>
+            <mu-list-item-title>{{ $t('m.Discussion') }}</mu-list-item-title>
             <mu-list-item-action>
               <mu-icon
                 class="toggle-icon"
@@ -309,7 +343,9 @@
               @click="opendrawer = !opendrawer"
               active-class="mobile-menu-active"
             >
-              <mu-list-item-title>Discussion Admin</mu-list-item-title>
+              <mu-list-item-title>{{
+                $t('m.Discussion_Admin')
+              }}</mu-list-item-title>
             </mu-list-item>
           </mu-list-item>
         </mu-list>
@@ -319,6 +355,28 @@
       <transition name="fadeInUp" mode="out-in">
         <router-view></router-view>
       </transition>
+      <div class="footer">
+        Powered by
+        <a
+          :href="websiteConfig.projectUrl"
+          style="color:#1E9FFF"
+          target="_blank"
+          >{{ websiteConfig.projectName }}</a
+        >
+        <span style="margin-left:10px">
+          <el-dropdown @command="changeLanguage" placement="top">
+            <span class="el-dropdown-link" style="font-size:14px">
+              <i class="fa fa-globe" aria-hidden="true">
+                {{ this.webLanguage == 'zh-CN' ? '简体中文' : 'English' }}</i
+              ><i class="el-icon-arrow-up el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="zh-CN">简体中文</el-dropdown-item>
+              <el-dropdown-item command="en-US">English</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </span>
+      </div>
     </div>
 
     <el-dialog title="Latex Editor" :visible.sync="katexVisible" width="350px">
@@ -329,7 +387,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import KatexEditor from '@/components/admin/KatexEditor.vue';
+const KatexEditor = () => import('@/components/admin/KatexEditor.vue');
 import api from '@/common/api';
 import mMessage from '@/common/message';
 import Avatar from 'vue-avatar';
@@ -381,6 +439,9 @@ export default {
       let matched = this.$route.matched.filter((item) => item.meta.title); //获取路由信息，并过滤保留路由标题信息存入数组
       this.routeList = matched;
     },
+    changeLanguage(language) {
+      this.$store.commit('changeWebLanguage', { language: language });
+    },
   },
   computed: {
     ...mapGetters([
@@ -388,6 +449,7 @@ export default {
       'isSuperAdmin',
       'isAuthenticated',
       'websiteConfig',
+      'webLanguage',
     ]),
   },
   watch: {
@@ -419,11 +481,12 @@ export default {
   width: 110px;
   height: 110px;
 }
-.fa {
-  margin-right: 5px;
-  width: 24px;
+.fa-size {
   text-align: center;
   font-size: 18px;
+  vertical-align: middle;
+  margin-right: 5px;
+  width: 24px;
 }
 a {
   background-color: transparent;
@@ -461,6 +524,11 @@ img {
   line-height: 50px;
   height: 50px;
   background: #f9fafc;
+}
+.footer {
+  margin: 15px;
+  text-align: center;
+  font-size: small;
 }
 
 @media screen and (min-width: 1080px) {

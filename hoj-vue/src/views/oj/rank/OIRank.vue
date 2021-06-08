@@ -80,11 +80,10 @@
 
 <script>
 import api from '@/common/api';
-import Pagination from '@/components/oj/common/Pagination';
 import utils from '@/common/utils';
 import { RULE_TYPE } from '@/common/constants';
 import { mapGetters } from 'vuex';
-
+const Pagination = () => import('@/components/oj/common/Pagination');
 export default {
   name: 'acm-rank',
   components: {

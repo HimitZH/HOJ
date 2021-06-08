@@ -197,15 +197,13 @@
 import api from '@/common/api';
 import { mapGetters } from 'vuex';
 import utils from '@/common/utils';
-import Pagination from '@/components/oj/common/Pagination';
 import time from '@/common/time';
 import {
   CONTEST_STATUS_REVERSE,
-  CONTEST_TYPE,
   CONTEST_TYPE_REVERSE,
 } from '@/common/constants';
 import myMessage from '@/common/message';
-
+const Pagination = () => import('@/components/oj/common/Pagination');
 const limit = 10;
 
 export default {
@@ -278,7 +276,7 @@ export default {
       this.filterByChange();
     },
     toContest(contest) {
-      if (contest.type !== CONTEST_TYPE.PUBLIC && !this.isAuthenticated) {
+      if (!this.isAuthenticated) {
         myMessage.warning(this.$i18n.t('m.Please_login_first'));
         this.$store.dispatch('changeModalStatus', { visible: true });
       } else {

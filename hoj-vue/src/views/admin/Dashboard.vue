@@ -12,12 +12,16 @@
                 <span class="panel-title admin-info-name">{{
                   userInfo.username
                 }}</span>
-                <p>{{ isSuperAdmin == true ? '超级管理员' : '管理员' }}</p>
+                <p>
+                  {{
+                    isSuperAdmin == true ? $t('m.Super_Admin') : $t('m.Admin')
+                  }}
+                </p>
               </el-col>
             </el-row>
           </div>
           <div class="last-info">
-            <p class="last-info-title home-title">Last Login</p>
+            <p class="last-info-title home-title">{{ $t('m.Last_Login') }}</p>
             <el-form label-width="80px" class="last-info-body">
               <el-form-item label="Time:">
                 <span>{{ session.gmtCreate | localtime }}</span>
@@ -42,7 +46,7 @@
           <info-card
             color="#909399"
             icon="fa fa-users"
-            message="Total Users"
+            :message="$t('m.Total_Users')"
             iconSize="30px"
             class="info-item"
             :value="infoData.userNum"
@@ -50,14 +54,14 @@
           <info-card
             color="#67C23A"
             icon="fa fa-list"
-            message="Today Submissions"
+            :message="$t('m.Today_Submissions')"
             class="info-item"
             :value="infoData.todayJudgeNum"
           ></info-card>
           <info-card
             color="#409EFF"
             icon="fa fa-trophy"
-            message="Recent 14 Days Contests"
+            :message="$t('m.Recent_14_Days_Contests')"
             class="info-item"
             :value="infoData.recentContestNum"
           ></info-card>
@@ -65,12 +69,14 @@
         <!-- <el-card title="System_Overview" v-if="isSuperAdmin"> -->
         <el-card>
           <div slot="header">
-            <span class="panel-title home-title">General System</span>
+            <span class="panel-title home-title">{{
+              $t('m.Backend_System')
+            }}</span>
           </div>
           <el-row>
             <el-col :xs="24" :md="8">
               <span
-                >HOJ Server Num：
+                >{{ $t('m.Server_Number') }}：
                 <el-tag effect="dark" color="#2d8cf0" size="mini">{{
                   generalInfo.backupService.length
                 }}</el-tag>
@@ -78,7 +84,7 @@
             </el-col>
             <el-col :xs="24" :md="8">
               <span
-                >Nacos Status：
+                >{{ $t('m.Nacos_Status') }}：
                 <el-tag
                   effect="dark"
                   color="#19be6b"
@@ -93,7 +99,7 @@
             </el-col>
             <el-col :xs="24" :md="8">
               <span
-                >Https Status：
+                >{{ $t('m.HTTPS_Status') }}：
                 <el-tag
                   :type="https ? 'success' : 'danger'"
                   size="small"
@@ -104,49 +110,53 @@
               </span>
             </el-col>
           </el-row>
-          <h2 class="home-title">Backup Service</h2>
+          <h2 class="home-title">{{ $t('m.Backend_Service') }}</h2>
           <vxe-table
             stripe
             auto-resize
             :data="generalInfo.backupService"
             align="center"
           >
-            <vxe-table-column title="Name" min-width="130">
+            <vxe-table-column :title="$t('m.Name')" min-width="130">
               <template v-slot="{ row }">
                 <span>{{ row['serviceId'] }}</span>
               </template>
             </vxe-table-column>
             <vxe-table-column
               field="host"
-              title="Host"
+              :title="$t('m.Host')"
               min-width="110"
             ></vxe-table-column>
             <vxe-table-column
               field="port"
-              title="Port"
+              :title="$t('m.Port')"
               min-width="80"
             ></vxe-table-column>
             <vxe-table-column
               min-width="80"
               field="backupCores"
-              title="CPU Core"
+              :title="$t('m.CPU_Core')"
             >
             </vxe-table-column>
 
             <vxe-table-column
               min-width="100"
               field="backupPercentCpuLoad"
-              title="CPU Usage"
+              :title="$t('m.CPU_Usage')"
             >
             </vxe-table-column>
 
             <vxe-table-column
               min-width="100"
               field="backupPercentMemoryLoad"
-              title="Mem Usage"
+              :title="$t('m.Mem_Usage')"
             >
             </vxe-table-column>
-            <vxe-table-column field="secure" title="Secure" min-width="80">
+            <vxe-table-column
+              field="secure"
+              :title="$t('m.Secure')"
+              min-width="80"
+            >
               <template v-slot="{ row }">
                 <el-tooltip content="是否触发保护阈值" placement="top">
                   <el-tag effect="dark" color="#ed3f14" v-if="row.secure"
@@ -156,15 +166,17 @@
                 </el-tooltip>
               </template>
             </vxe-table-column>
-            <vxe-table-column title="Healthy" min-width="100">
+            <vxe-table-column :title="$t('m.Healthy_Status')" min-width="100">
               <template v-slot="{ row }">
                 <el-tag
                   effect="dark"
                   color="#19be6b"
                   v-if="row.metadata['nacos.healthy'] == 'true'"
-                  >Healthy</el-tag
+                  >{{ $t('m.Healthy') }}</el-tag
                 >
-                <el-tag effect="dark" color="#f90" v-else>Unhealthy</el-tag>
+                <el-tag effect="dark" color="#f90" v-else>{{
+                  $t('m.Unhealthy')
+                }}</el-tag>
               </template>
             </vxe-table-column>
           </vxe-table>
@@ -174,44 +186,48 @@
 
     <el-card style="margin-top:10px">
       <div slot="header">
-        <span class="panel-title home-title">Judger Service</span>
+        <span class="panel-title home-title">{{ $t('m.Judge_Server') }}</span>
       </div>
       <vxe-table stripe auto-resize :data="judgeInfo" align="center">
         <vxe-table-column type="seq" width="50"></vxe-table-column>
-        <vxe-table-column title="Name" min-width="150">
+        <vxe-table-column :title="$t('m.Name')" min-width="150">
           <template v-slot="{ row }">
             <span>{{ row.service['serviceId'] }}</span>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="Host" min-width="80">
+        <vxe-table-column :title="$t('m.Host')" min-width="80">
           <template v-slot="{ row }">
             <span>{{ row.service.host }}</span>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="Port" min-width="80">
+        <vxe-table-column :title="$t('m.Port')" min-width="80">
           <template v-slot="{ row }">
             <span>{{ row.service.port }}</span>
           </template>
         </vxe-table-column>
 
-        <vxe-table-column min-width="80" field="cpuCores" title="CPU Core">
+        <vxe-table-column
+          min-width="80"
+          field="cpuCores"
+          :title="$t('m.CPU_Core')"
+        >
         </vxe-table-column>
 
         <vxe-table-column
           min-width="100"
           field="percentCpuLoad"
-          title="CPU Usage"
+          :title="$t('m.CPU_Usage')"
         >
         </vxe-table-column>
 
         <vxe-table-column
           min-width="110"
           field="percentMemoryLoad"
-          title="Memory Usage"
+          :title="$t('m.Mem_Usage')"
         >
         </vxe-table-column>
 
-        <vxe-table-column title="Secure" min-width="80">
+        <vxe-table-column :title="$t('m.Secure')" min-width="80">
           <template v-slot="{ row }">
             <el-tooltip content="是否触发保护阈值" placement="top">
               <el-tag effect="dark" color="#ed3f14" v-if="row.service.secure"
@@ -221,15 +237,17 @@
             </el-tooltip>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="Healthy" min-width="100">
+        <vxe-table-column :title="$t('m.Healthy_Status')" min-width="100">
           <template v-slot="{ row }">
             <el-tag
               effect="dark"
               color="#19be6b"
               v-if="row.service.metadata['nacos.healthy'] == 'true'"
-              >Healthy</el-tag
+              >{{ $t('m.Healthy') }}</el-tag
             >
-            <el-tag effect="dark" color="#f90" v-else>Unhealthy</el-tag>
+            <el-tag effect="dark" color="#f90" v-else>{{
+              $t('m.Unhealthy')
+            }}</el-tag>
           </template>
         </vxe-table-column>
       </vxe-table>
@@ -240,7 +258,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import browserDetector from 'browser-detect';
-import InfoCard from '@/components/admin/infoCard.vue';
+const InfoCard = () => import('@/components/admin/infoCard.vue');
 import api from '@/common/api';
 
 export default {

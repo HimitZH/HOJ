@@ -354,11 +354,12 @@
 </template>
 <script>
 import Avatar from 'vue-avatar';
-import Pagination from '@/components/oj/common/Pagination';
-import Editor from '@/components/admin/Editor.vue';
 import api from '@/common/api';
 import myMessage from '@/common/message';
 import { mapGetters, mapActions } from 'vuex';
+import 'element-ui/lib/theme-chalk/display.css';
+import Pagination from '@/components/oj/common/Pagination';
+const Editor = () => import('@/components/admin/Editor.vue');
 export default {
   components: {
     Avatar,

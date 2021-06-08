@@ -61,7 +61,7 @@ router.beforeEach((to, from, next) => {
             })
             store.commit('changeModalStatus',{mode: 'Login', visible: true})
           }
-          mMessage.error('对不起！您并非超级管理员，您无权操作，请重新登陆！')
+          mMessage.error('Error！Please Login Again!')
           store.commit("clearUserInfoAndToken");
         }
       }else if(to.matched.some(record => record.meta.requireAdmin)){ //判断是否需要管理员权限
@@ -78,7 +78,7 @@ router.beforeEach((to, from, next) => {
             })
             store.commit('changeModalStatus',{mode: 'Login', visible: true})
           }  
-          mMessage.error('对不起！您并非管理员，您无权操作，请重新登录！')
+          mMessage.error('Error！Please Login Again!')
           store.commit("clearUserInfoAndToken");
         }
       }else{
@@ -98,7 +98,7 @@ router.beforeEach((to, from, next) => {
         store.commit('changeModalStatus',{mode: 'Login', visible: true})
       }
       store.commit("clearUserInfoAndToken");
-      mMessage.error('请您先登录！')
+      mMessage.error('Please Login First!')
     }
   } else { // 不需要认证的页面
     next()

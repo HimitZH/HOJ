@@ -13,9 +13,13 @@
       >
         <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item prop="problemId" label="Problem ID" required>
+            <el-form-item
+              prop="problemId"
+              :label="$t('m.Problem_Display_ID')"
+              required
+            >
               <el-input
-                placeholder="Enter the display id of problem"
+                :placeholder="$t('m.Problem_Display_ID')"
                 v-model="problem.problemId"
               >
               </el-input>
@@ -24,9 +28,9 @@
         </el-row>
         <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item prop="title" label="Title" required>
+            <el-form-item prop="title" :label="$t('m.Title')" required>
               <el-input
-                placeholder="Enter the title of problem"
+                :placeholder="$t('m.Title')"
                 v-model="problem.title"
               ></el-input>
             </el-form-item>
@@ -35,18 +39,18 @@
 
         <el-row :gutter="20" v-if="contestID">
           <el-col :md="12" :xs="24">
-            <el-form-item label="Display Title" required>
+            <el-form-item :label="$t('m.Contest_Display_Title')" required>
               <el-input
-                placeholder="Enter the display title of problem in contest"
+                :placeholder="$t('m.Contest_Display_Title')"
                 v-model="contestProblem.displayTitle"
               ></el-input>
             </el-form-item>
           </el-col>
 
           <el-col :md="12" :xs="24">
-            <el-form-item label="Display ID" required>
+            <el-form-item :label="$t('m.Contest_Display_ID')" required>
               <el-input
-                placeholder="Enter the display ID of problem in contest"
+                :placeholder="$t('m.Contest_Display_ID')"
                 v-model="contestProblem.displayId"
               ></el-input>
             </el-form-item>
@@ -55,7 +59,11 @@
 
         <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item prop="description" label="Description" required>
+            <el-form-item
+              prop="description"
+              :label="$t('m.Description')"
+              required
+            >
               <Editor :value.sync="problem.description"></Editor>
             </el-form-item>
           </el-col>
@@ -63,37 +71,37 @@
 
         <el-row :gutter="20">
           <el-col :md="6" :xs="24">
-            <el-form-item label="Time Limit(ms)" required>
+            <el-form-item :label="$t('m.Time_Limit') + '(ms)'" required>
               <el-input
                 type="Number"
-                placeholder="Enter the time limit of problem"
+                :placeholder="$t('m.Time_Limit')"
                 v-model="problem.timeLimit"
                 :disabled="problem.isRemote"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="6" :xs="24">
-            <el-form-item label="Memory Limit(mb)" required>
+            <el-form-item :label="$t('m.Memory_Limit') + '(mb)'" required>
               <el-input
                 type="Number"
-                placeholder="Enter the memory limit of problem"
+                :placeholder="$t('m.Memory_Limit')"
                 v-model="problem.memoryLimit"
                 :disabled="problem.isRemote"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="6" :xs="24">
-            <el-form-item label="Stack Limit(mb)" required>
+            <el-form-item :label="$t('m.Stack_Limit') + '(mb)'" required>
               <el-input
                 type="Number"
-                placeholder="Enter the stack limit of problem"
+                :placeholder="$t('m.Stack_Limit')"
                 v-model="problem.stackLimit"
                 :disabled="problem.isRemote"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="6" :xs="24">
-            <el-form-item label="Level" required>
+            <el-form-item :label="$t('m.Level')" required>
               <el-select
                 class="difficulty-select"
                 placeholder="Enter the level of problem"
@@ -114,7 +122,7 @@
           <el-col :span="24">
             <el-form-item
               prop="input_description"
-              label="Input Description"
+              :label="$t('m.Input')"
               required
             >
               <Editor :value.sync="problem.input"></Editor>
@@ -123,7 +131,7 @@
           <el-col :span="24">
             <el-form-item
               prop="output_description"
-              label="Output Description"
+              :label="$t('m.Output')"
               required
             >
               <Editor :value.sync="problem.output"></Editor>
@@ -133,16 +141,25 @@
 
         <el-row :gutter="20">
           <el-col :md="4" :xs="24">
-            <el-form-item label="Auth">
+            <el-form-item :label="$t('m.Auth')">
               <el-select v-model="problem.auth" size="small">
-                <el-option label="公开" :value="1"></el-option>
-                <el-option label="私有" :value="2"></el-option>
-                <el-option label="比赛题目" :value="3"></el-option>
+                <el-option
+                  :label="$t('m.Public_Problem')"
+                  :value="1"
+                ></el-option>
+                <el-option
+                  :label="$t('m.Private_Problem')"
+                  :value="2"
+                ></el-option>
+                <el-option
+                  :label="$t('m.Contest_Problem')"
+                  :value="3"
+                ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :md="4" :xs="24">
-            <el-form-item label="Code Shareable">
+            <el-form-item :label="$t('m.Code_Shareable')">
               <el-switch
                 v-model="problem.codeShare"
                 active-text=""
@@ -152,7 +169,7 @@
             </el-form-item>
           </el-col>
           <el-col :md="16" :xs="24">
-            <el-form-item label="Tags" required>
+            <el-form-item :label="$t('m.Tags')" required>
               <el-tag
                 v-for="tag in problemTags"
                 closable
@@ -179,7 +196,7 @@
               </el-autocomplete>
               <el-tooltip
                 effect="dark"
-                content="添加新标签"
+                :content="$t('m.Add')"
                 placement="top"
                 v-else
               >
@@ -195,7 +212,11 @@
         </el-row>
         <el-row>
           <el-col :md="24" :xs="24">
-            <el-form-item label="Language" :error="error.languages" required>
+            <el-form-item
+              :label="$t('m.Languages')"
+              :error="error.languages"
+              required
+            >
               <el-checkbox-group v-model="problemLanguages">
                 <el-tooltip
                   class="spj-radio"
@@ -214,10 +235,10 @@
 
         <div>
           <div class="panel-title home-title">
-            Problem Examples
+            {{ $t('m.Problem_Examples') }}
             <el-popover placement="right" trigger="hover">
               <p>
-                题目样例：请最好不要超过2个题目样例，题面样例不纳入评测数据。
+                {{ $t('m.Problem_Examples_Desc') }}
               </p>
               <i slot="reference" class="el-icon-question"></i>
             </el-popover>
@@ -227,7 +248,7 @@
             :key="'example' + index"
           >
             <Accordion
-              :title="'Example' + (index + 1)"
+              :title="$t('m.Problem_Example') + (index + 1)"
               :isOpen="example.isOpen ? true : false"
               :index="index"
               @changeVisible="changeExampleVisible"
@@ -239,15 +260,15 @@
                 slot="header"
                 @click="deleteExample(index)"
               >
-                Delete
+                {{ $t('m.Delete') }}
               </el-button>
               <el-row :gutter="20">
                 <el-col :xs="24" :md="12">
-                  <el-form-item label="Input Example" required>
+                  <el-form-item :label="$t('m.Example_Input')" required>
                     <el-input
                       :rows="5"
                       type="textarea"
-                      placeholder="Input Example"
+                      :placeholder="$t('m.Example_Input')"
                       v-model="example.input"
                       style="white-space: pre-line"
                     >
@@ -255,11 +276,11 @@
                   </el-form-item>
                 </el-col>
                 <el-col :xs="24" :md="12">
-                  <el-form-item label="Output Example" required>
+                  <el-form-item :label="$t('m.Example_Output')" required>
                     <el-input
                       :rows="5"
                       type="textarea"
-                      placeholder="Output Example"
+                      :placeholder="$t('m.Example_Output')"
                       v-model="example.output"
                     >
                     </el-input>
@@ -276,20 +297,16 @@
             @click="addExample()"
             icon="el-icon-plus"
             type="small"
-            >Add Example
+            >{{ $t('m.Add_Example') }}
           </el-button>
         </div>
         <template v-if="!problem.isRemote">
           <div class="panel-title home-title">
-            Special Judge
+            {{ $t('m.Special_Judge') }}
             <el-popover placement="right" trigger="hover">
-              <p>使用特殊判题的原因：</p>
-              <p>1. 题目要求的输出结果可能不唯一，允许不同结果存在。</p>
-              <p>
-                2.
-                题目最终要求输出一个浮点数，而且会告诉只要答案和标准答案相差不超过某个较小的数就可以。
-                例如题目要求保留几位小数，输出结果后几位小数不相同也是正确的。
-              </p>
+              <p>{{ $t('m.Special_Judge_Tips1') }}</p>
+              <p>1. {{ $t('m.Special_Judge_Tips2') }}</p>
+              <p>2. {{ $t('m.Special_Judge_Tips3') }}</p>
               <i slot="reference" class="el-icon-question"></i>
             </el-popover>
           </div>
@@ -298,14 +315,16 @@
               <el-checkbox
                 v-model="problem.spj"
                 @click.native.prevent="switchSpj()"
-                >Use Special Judge</el-checkbox
+                >{{ $t('m.Use_Special_Judge') }}</el-checkbox
               >
             </el-col>
           </el-form-item>
           <el-form-item v-if="problem.spj">
-            <Accordion title="Special Judge Code">
+            <Accordion :title="$t('m.Special_Judge_Code')">
               <template slot="header">
-                <span style="margin-right:5px;">SPJ language：</span>
+                <span style="margin-right:5px;"
+                  >{{ $t('m.SPJ_language') }}：</span
+                >
                 <el-radio-group v-model="problem.spjLanguage">
                   <el-tooltip
                     class="spj-radio"
@@ -325,7 +344,7 @@
                   @click="compileSPJ"
                   :loading="loadingCompile"
                   style="margin-left:10px"
-                  >Complie
+                  >{{ $t('m.Compile') }}
                 </el-button>
               </template>
               <code-mirror
@@ -336,11 +355,11 @@
           </el-form-item>
         </template>
 
-        <el-form-item style="margin-top: 20px" label="Hint">
+        <el-form-item style="margin-top: 20px" :label="$t('m.Hint')">
           <Editor :value.sync="problem.hint"></Editor>
         </el-form-item>
 
-        <el-form-item label="Code Template">
+        <el-form-item :label="$t('m.Code_Template')">
           <el-row>
             <el-col
               :span="24"
@@ -359,7 +378,7 @@
 
         <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item label="Type">
+            <el-form-item :label="$t('m.Type')">
               <el-radio-group
                 v-model="problem.type"
                 :disabled="disableRuleType || problem.isRemote"
@@ -373,17 +392,17 @@
 
         <el-row :gutter="20" v-if="!problem.isRemote">
           <div class="panel-title home-title">
-            Judge Samples
+            {{ $t('m.Judge_Samples') }}
             <el-popover placement="right" trigger="hover">
-              <p>评测数据：判题机对该题目的相关提交进行评测的数据来源。</p>
+              <p>{{ $t('m.Sample_Tips') }}</p>
               <i slot="reference" class="el-icon-question"></i>
             </el-popover>
           </div>
 
           <el-switch
             v-model="problem.isUploadCase"
-            active-text="Use Upload File"
-            inactive-text="Use Manual Input"
+            :active-text="$t('m.Use_Upload_File')"
+            :inactive-text="$t('m.Use_Manual_Input')"
             style="margin: 10px 0"
           >
           </el-switch>
@@ -398,8 +417,11 @@
                   :on-success="uploadSucceeded"
                   :on-error="uploadFailed"
                 >
-                  <el-button size="small" type="primary" icon="el-icon-upload"
-                    >Choose File</el-button
+                  <el-button
+                    size="small"
+                    type="primary"
+                    icon="el-icon-upload"
+                    >{{ $t('m.Choose_File') }}</el-button
                   >
                 </el-upload>
               </el-form-item>
@@ -411,15 +433,27 @@
                 :data="problem.testCaseScore"
                 align="center"
               >
-                <vxe-table-column field="input" title="Input" min-width="100">
+                <vxe-table-column
+                  field="input"
+                  :title="$t('m.Sample_Input_File')"
+                  min-width="100"
+                >
                 </vxe-table-column>
-                <vxe-table-column field="output" title="Output" min-width="100">
+                <vxe-table-column
+                  field="output"
+                  :title="$t('m.Sample_Output_File')"
+                  min-width="100"
+                >
                 </vxe-table-column>
-                <vxe-table-column field="score" title="Score" min-width="100">
+                <vxe-table-column
+                  field="score"
+                  :title="$t('m.Score')"
+                  min-width="100"
+                >
                   <template v-slot="{ row }">
                     <el-input
                       size="small"
-                      placeholder="Score"
+                      :placeholder="$t('m.Score')"
                       v-model="row.score"
                       :disabled="problem.type != 1"
                     >
@@ -436,7 +470,7 @@
               :key="'sample' + index"
             >
               <Accordion
-                :title="'Sample' + (index + 1)"
+                :title="$t('m.Problem_Sample') + (index + 1)"
                 :isOpen="sample.isOpen ? true : false"
                 :index="index"
                 @changeVisible="changeSampleVisible"
@@ -448,26 +482,26 @@
                   slot="header"
                   @click="deleteSample(index)"
                 >
-                  Delete
+                  {{ $t('m.Delete') }}
                 </el-button>
                 <el-row :gutter="20">
                   <el-col :xs="24" :md="12">
-                    <el-form-item label="Input Sample" required>
+                    <el-form-item :label="$t('m.Sample_Input')" required>
                       <el-input
                         :rows="5"
                         type="textarea"
-                        placeholder="Input Sample"
+                        :placeholder="$t('m.Sample_Input')"
                         v-model="sample.input"
                       >
                       </el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :xs="24" :md="12">
-                    <el-form-item label="Output Sample" required>
+                    <el-form-item :label="$t('m.Sample_Output')" required>
                       <el-input
                         :rows="5"
                         type="textarea"
-                        placeholder="Output Sample"
+                        :placeholder="$t('m.Sample_Output')"
                         v-model="sample.output"
                       >
                       </el-input>
@@ -477,11 +511,11 @@
                     :span="24"
                     v-show="problem.type == 1 && sample.score != null"
                   >
-                    <el-form-item label="IO Score">
+                    <el-form-item :label="$t('m.Score')">
                       <el-input
                         type="number"
                         size="small"
-                        placeholder="The score of the testcase"
+                        :placeholder="$t('m.Score')"
                         v-model="sample.score"
                       >
                       </el-input>
@@ -497,21 +531,21 @@
                 @click="addSample()"
                 icon="el-icon-plus"
                 type="small"
-                >Add Sample
+                >{{ $t('m.Add_Sample') }}
               </el-button>
             </div>
           </div>
         </el-row>
 
-        <el-form-item label="Source">
+        <el-form-item :label="$t('m.Source')">
           <el-input
-            placeholder="Enter the problem where from"
+            :placeholder="$t('m.Source')"
             v-model="problem.source"
           ></el-input>
         </el-form-item>
 
         <el-form-item
-          label="Auto Remove the Blank at the End of Code"
+          :label="$t('m.Auto_Remove_the_Blank_at_the_End_of_Code')"
           v-if="!problem.isRemote"
         >
           <el-switch
@@ -523,7 +557,7 @@
         </el-form-item>
 
         <el-form-item
-          label="Publish the Judging Result of Test Data"
+          :label="$t('m.Publish_the_Judging_Result_of_Test_Data')"
           v-if="!problem.isRemote"
         >
           <el-switch
@@ -534,23 +568,23 @@
           </el-switch>
         </el-form-item>
 
-        <el-button type="primary" @click.native="submit()" size="small"
-          >Save</el-button
-        >
+        <el-button type="primary" @click.native="submit()" size="small">{{
+          $t('m.Save')
+        }}</el-button>
       </el-form>
     </el-card>
   </div>
 </template>
 
 <script>
-import Editor from '@/components/admin/Editor';
-import Accordion from '@/components/admin/Accordion';
-import CodeMirror from '@/components/admin/CodeMirror';
 import utils from '@/common/utils';
 import { mapGetters } from 'vuex';
 import api from '@/common/api';
 import myMessage from '@/common/message';
 import { PROBLEM_LEVEL_RESERVE } from '@/common/constants';
+const Editor = () => import('@/components/admin/Editor.vue');
+const Accordion = () => import('@/components/admin/Accordion.vue');
+const CodeMirror = () => import('@/components/admin/CodeMirror.vue');
 export default {
   name: 'Problem',
   components: {
@@ -780,7 +814,7 @@ export default {
     init() {
       if (this.mode === 'edit') {
         this.pid = this.$route.params.problemId;
-        this.title = 'Edit Problem';
+        this.title = this.$i18n.t('m.Edit_Problem');
         let funcName = {
           'admin-edit-problem': 'admin_getProblem',
           'admin-edit-contest-problem': 'admin_getContestProblem',
@@ -826,7 +860,7 @@ export default {
         });
       } else {
         this.addExample();
-        this.title = 'Create Problem';
+        this.title = this.$i18n.t('m.Create_Problem');
         for (let item of this.allLanguage) {
           this.problemLanguages.push(item.name);
         }
@@ -848,15 +882,11 @@ export default {
 
     switchSpj() {
       if (this.testCaseUploaded) {
-        this.$confirm(
-          '如果你想改变该题目的判题方法，那么你需要重新上传测试数据。',
-          '注意',
-          {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning',
-          }
-        )
+        this.$confirm(this.$i18n.t('m.Change_Judge_Method'), 'Tips', {
+          confirmButtonText: this.$i18n.t('m.OK'),
+          cancelButtonText: this.$i18n.t('m.Cancel'),
+          type: 'warning',
+        })
           .then(() => {
             this.problem.spj = !this.problem.spj;
             this.resetTestCase();
@@ -890,7 +920,7 @@ export default {
     selectTag(item) {
       for (var i = 0; i < this.problemTags.length; i++) {
         if (this.problemTags[i].name == item.value) {
-          myMessage.warning('该标签已添加，请不要重复添加！');
+          myMessage.warning(this.$i18n.t('m.Add_Tag_Error'));
           this.tagInput = '';
           return;
         }
@@ -904,7 +934,7 @@ export default {
       if (this.tagInput) {
         for (var i = 0; i < this.problemTags.length; i++) {
           if (this.problemTags[i].name == this.tagInput) {
-            myMessage.warning('该标签已添加，请不要重复添加！');
+            myMessage.warning(this.$i18n.t('m.Add_Tag_Error'));
             this.tagInput = '';
             return;
           }
@@ -963,7 +993,7 @@ export default {
         this.testCaseUploaded = false;
         return;
       }
-      myMessage.success('上传测试数据包成功');
+      myMessage.success(this.$i18n.t('m.Upload_Testcase_Successfully'));
       let fileList = response.data.fileList;
       let averSorce = (100 / fileList.length).toFixed(0);
 
@@ -981,7 +1011,7 @@ export default {
       this.problem.uploadTestcaseDir = response.data.fileListDir;
     },
     uploadFailed() {
-      myMessage.error('上传测试数据包失败');
+      myMessage.error(this.$i18n.t('m.Upload_Testcase_Failed'));
     },
 
     compileSPJ() {
@@ -1016,42 +1046,62 @@ export default {
 
     submit() {
       if (!this.problem.problemId) {
-        myMessage.error('题目的展示ID不能为空！');
+        myMessage.error(
+          this.$i18n.t('m.Problem_Display_ID') +
+            ' ' +
+            this.$i18n.t('m.is_required')
+        );
         return;
       }
 
       if (this.contestID) {
         if (!this.contestProblem.displayId) {
-          myMessage.error('比赛题目的展示ID不能为空！');
+          myMessage.error(
+            this.$i18n.t('m.Contest_Display_ID') +
+              ' ' +
+              this.$i18n.t('m.is_required')
+          );
           return;
         }
         if (!this.contestProblem.displayTitle) {
-          myMessage.error('比赛题目的展示标题不能为空！');
+          myMessage.error(
+            this.$i18n.t('m.Contest_Display_Title') +
+              ' ' +
+              this.$i18n.t('m.is_required')
+          );
           return;
         }
       }
 
       if (!this.problem.examples.length) {
-        myMessage.error('题面测试数据是不能为空！至少输入一项！');
+        myMessage.error(
+          this.$i18n.t('m.Problem_Examples') +
+            ' ' +
+            this.$i18n.t('m.is_required')
+        );
         return;
-      }
-      for (let example of this.problem.examples) {
-        if (!example.input || !example.output) {
-          myMessage.error('每一项题面测试数据的输入输出都不能为空！');
-          return;
-        }
       }
       if (!this.problem.isRemote) {
         // 选择手动输入
         if (!this.problem.isUploadCase) {
           if (!this.problemSamples.length) {
-            myMessage.error('评测数据不能为空！请手动输入评测数据！');
+            myMessage.error(
+              this.$i18n.t('m.Judge_Samples') +
+                ' ' +
+                this.$i18n.t('m.is_required')
+            );
             return;
           }
 
           for (let sample of this.problemSamples) {
             if (!sample.input && !sample.output) {
-              myMessage.error('每一项评测数据的输入和输出都不能同时为空！');
+              myMessage.error(
+                this.$i18n.t('m.Sample_Input') +
+                  ' or ' +
+                  this.$i18n.t('m.Sample_Output') +
+                  ' ' +
+                  this.$i18n.t('m.is_required')
+              );
               return;
             }
           }
@@ -1061,11 +1111,13 @@ export default {
             for (let item of this.problemSamples) {
               try {
                 if (parseInt(item.score) < 0) {
-                  myMessage.error('测评得分小于0是无效的！');
+                  myMessage.error(
+                    this.$i18n.t('m.Score_must_be_greater_than_or_equal_to_0')
+                  );
                   return;
                 }
               } catch (e) {
-                myMessage.error('测评得分的结果必须是整数类型！');
+                myMessage.error(this.$i18n.t('m.Score_must_be_an_integer'));
                 return;
               }
             }
@@ -1075,7 +1127,10 @@ export default {
 
           // 两种情况：create模式是需要校验是否上传成功了，edit模式获取题目数据已经默认为true了，若是edit又重新上传数据，需要校验
           if (!this.testCaseUploaded) {
-            this.error.testCase = '评测数据不能为空！请先上传评测数据！';
+            this.error.testCase =
+              this.$i18n.t('m.Judge_Samples') +
+              ' ' +
+              this.$i18n.t('m.is_required');
             myMessage.error(this.error.testCase);
             return;
           }
@@ -1085,11 +1140,13 @@ export default {
             for (let item of this.problem.testCaseScore) {
               try {
                 if (parseInt(item.score) <= 0) {
-                  myMessage.error('测评得分小于0是无效的！');
+                  myMessage.error(
+                    this.$i18n.t('m.Score_must_be_greater_than_or_equal_to_0')
+                  );
                   return;
                 }
               } catch (e) {
-                myMessage.error('测评得分的结果必须是数字类型！');
+                myMessage.error(this.$i18n.t('m.Score_must_be_an_integer'));
                 return;
               }
             }
@@ -1097,17 +1154,19 @@ export default {
         }
       }
       if (!this.problemTags.length) {
-        this.error.tags = '请添加至少一个题目标签！';
+        this.error.tags =
+          this.$i18n.t('m.Tags') + ' ' + this.$i18n.t('m.is_required');
         myMessage.error(this.error.tags);
         return;
       }
 
       if (this.problem.spj) {
         if (!this.problem.spjCode) {
-          this.error.spj = '特殊判题的程序代码不能为空！';
+          this.error.spj =
+            this.$i18n.t('m.Spj_Code') + ' ' + this.$i18n.t('m.is_required');
           myMessage.error(this.error.spj);
         } else if (!this.problem.spjCompileOk) {
-          this.error.spj = '特殊判题的程序没有编译成功，请重新编译！';
+          this.error.spj = this.$i18n.t('m.Spj_Code_not_Compile_Success');
         }
         if (this.error.spj) {
           myMessage.error(this.error.spj);
@@ -1116,7 +1175,8 @@ export default {
       }
 
       if (!this.problemLanguages.length) {
-        this.error.languages = '请至少给题目选择一项编程语言！';
+        this.error.languages =
+          this.$i18n.t('m.Language') + ' ' + this.$i18n.t('m.is_required');
         myMessage.error(this.error.languages);
         return;
       }
@@ -1211,14 +1271,14 @@ export default {
               this.contestProblem['cid'] = this.$route.params.contestId;
             }
             api.admin_setContestProblemInfo(this.contestProblem).then((res) => {
-              myMessage.success(res.data.msg);
+              myMessage.success('success');
               this.$router.push({
                 name: 'admin-contest-problem-list',
                 params: { contestId: this.$route.params.contestId },
               });
             });
           } else {
-            myMessage.success(res.data.msg);
+            myMessage.success('success');
             this.$router.push({ name: 'admin-problem-list' });
           }
         })

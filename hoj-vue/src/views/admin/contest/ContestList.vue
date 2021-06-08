@@ -2,12 +2,12 @@
   <div>
     <el-card>
       <div slot="header">
-        <span class="panel-title home-title">Contest List</span>
+        <span class="panel-title home-title">{{ $t('m.Contest_List') }}</span>
         <div class="filter-row">
           <span>
             <vxe-input
               v-model="keyword"
-              placeholder="Enter keyword"
+              :placeholder="$t('m.Enter_keyword')"
               type="search"
               size="medium"
               @search-click="filterByKeyword"
@@ -25,17 +25,17 @@
         align="center"
       >
         <vxe-table-column field="id" width="80" title="ID"> </vxe-table-column>
-        <vxe-table-column field="title" min-width="150" title="Title">
+        <vxe-table-column field="title" min-width="150" :title="$t('m.Title')">
         </vxe-table-column>
-        <vxe-table-column title="Type" width="100">
+        <vxe-table-column :title="$t('m.Type')" width="100">
           <template v-slot="{ row }">
             <el-tag type="gray">{{ row.type | parseContestType }}</el-tag>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="Auth" width="100">
+        <vxe-table-column :title="$t('m.Auth')" width="100">
           <template v-slot="{ row }">
             <el-tooltip
-              :content="CONTEST_TYPE_REVERSE[row.auth].tips"
+              :content="$t('m.' + CONTEST_TYPE_REVERSE[row.auth].tips)"
               placement="top"
               effect="light"
             >
@@ -48,7 +48,7 @@
             </el-tooltip>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="Status" width="100">
+        <vxe-table-column :title="$t('m.Status')" width="100">
           <template v-slot="{ row }">
             <el-tag
               effect="dark"
@@ -59,7 +59,7 @@
             </el-tag>
           </template>
         </vxe-table-column>
-        <vxe-table-column title="Status" min-width="80">
+        <vxe-table-column :title="$t('m.Visible')" min-width="80">
           <template v-slot="{ row }">
             <el-switch
               v-model="row.visible"
@@ -68,7 +68,7 @@
             </el-switch>
           </template>
         </vxe-table-column>
-        <vxe-table-column min-width="210" title="More">
+        <vxe-table-column min-width="210" :title="$t('m.Info')">
           <template v-slot="{ row }">
             <p>Start Time: {{ row.startTime | localtime }}</p>
             <p>End Time: {{ row.endTime | localtime }}</p>
@@ -76,10 +76,10 @@
             <p>Creator: {{ row.author }}</p>
           </template>
         </vxe-table-column>
-        <vxe-table-column min-width="150" title="Option">
+        <vxe-table-column min-width="150" :title="$t('m.Option')">
           <template v-slot="{ row }">
             <div style="margin-bottom:10px">
-              <el-tooltip effect="dark" content="编辑比赛" placement="top">
+              <el-tooltip effect="dark" :content="$t('m.Edit')" placement="top">
                 <el-button
                   icon="el-icon-edit"
                   size="mini"
@@ -90,7 +90,7 @@
               </el-tooltip>
               <el-tooltip
                 effect="dark"
-                content="查看比赛题目列表"
+                :content="$t('m.View_Contest_Problem_List')"
                 placement="top"
               >
                 <el-button
@@ -105,7 +105,7 @@
             <div style="margin-bottom:10px">
               <el-tooltip
                 effect="dark"
-                content="查看比赛公告列表"
+                :content="$t('m.View_Contest_Announcement_List')"
                 placement="top"
               >
                 <el-button
@@ -119,7 +119,7 @@
 
               <el-tooltip
                 effect="dark"
-                content="下载通过的提交代码"
+                :content="$t('m.Download_Contest_AC_Submission')"
                 placement="top"
               >
                 <el-button
@@ -133,7 +133,7 @@
             </div>
             <el-tooltip
               effect="dark"
-              content="删除比赛"
+              :content="$t('m.Delete')"
               placement="top"
               v-if="isSuperAdmin"
             >
@@ -160,16 +160,18 @@
       </div>
     </el-card>
     <el-dialog
-      title="Download Contest Submissions"
+      :title="$t('m.Download_Contest_AC_Submission')"
       width="320px"
       :visible.sync="downloadDialogVisible"
     >
       <el-switch
         v-model="excludeAdmin"
-        active-text="Exclude admin submissions"
+        :active-text="$t('m.Exclude_admin_submissions')"
       ></el-switch>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="downloadSubmissions">确 定</el-button>
+        <el-button type="primary" @click="downloadSubmissions">{{
+          $t('m.OK')
+        }}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -260,24 +262,20 @@ export default {
       });
     },
     deleteContest(contestId) {
-      this.$confirm(
-        '此操作将删除该比赛以及比赛的提交、讨论、公告、记录等数据, 是否继续?',
-        '提示',
-        {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning',
-        }
-      ).then(() => {
+      this.$confirm(this.$i18n.t('m.Delete_Contest_Tips'), 'Tips', {
+        confirmButtonText: this.$i18n.t('m.OK'),
+        cancelButtonText: this.$i18n.t('m.Cancel'),
+        type: 'warning',
+      }).then(() => {
         api.admin_deleteContest(contestId).then((res) => {
-          myMessage.success(res.data.msg);
+          myMessage.success(this.$i18n.t('m.Delete_successfully'));
           this.currentChange(1);
         });
       });
     },
     changeContestVisible(contestId, visible) {
       api.admin_changeContestVisible(contestId, visible).then((res) => {
-        myMessage.success(res.data.msg);
+        myMessage.success(this.$i18n.t('m.Update_Successfully'));
       });
     },
     filterByKeyword() {

@@ -13,9 +13,8 @@
           <el-row>
             <el-col :md="6" :xs="24">
               <h1>{{ toUpper(websiteConfig.shortName) }}</h1>
-              <p style="line-height:25px">
-                {{ websiteConfig.description }}
-              </p>
+              <span style="line-height:25px" v-html="websiteConfig.description">
+              </span>
             </el-col>
             <el-col class="hr-none">
               <el-divider></el-divider>

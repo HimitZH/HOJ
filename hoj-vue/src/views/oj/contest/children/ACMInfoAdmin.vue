@@ -106,10 +106,9 @@
 </template>
 <script>
 import { mapState } from 'vuex';
-import Pagination from '@/components/oj/common/Pagination.vue';
 import api from '@/common/api';
 import myMessage from '@/common/message';
-
+const Pagination = () => import('@/components/oj/common/Pagination');
 export default {
   name: 'ACM-Info-Admin',
   components: {

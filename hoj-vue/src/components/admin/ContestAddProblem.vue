@@ -2,7 +2,7 @@
   <div style="text-align:center">
     <vxe-input
       v-model="keyword"
-      placeholder="Enter keyword"
+      :placeholder="$t('m.Enter_keyword')"
       type="search"
       size="medium"
       @search-click="filterByKeyword"
@@ -18,15 +18,11 @@
     >
       <vxe-table-column title="ID" min-width="100" field="problemId">
       </vxe-table-column>
-      <vxe-table-column min-width="150" title="Title" field="title">
+      <vxe-table-column min-width="150" :title="$t('m.Title')" field="title">
       </vxe-table-column>
-      <vxe-table-column title="option" align="center" min-width="100">
+      <vxe-table-column :title="$t('m.Option')" align="center" min-width="100">
         <template v-slot="{ row }">
-          <el-tooltip
-            effect="dark"
-            content="添加该题目到比赛中"
-            placement="top"
-          >
+          <el-tooltip effect="dark" :content="$t('m.Add')" placement="top">
             <el-button
               icon="el-icon-plus"
               size="mini"
@@ -97,7 +93,10 @@ export default {
         });
     },
     handleAddProblem(problemID) {
-      this.$prompt('请输入该题目在比赛中显示的序号ID', '确认').then(
+      this.$prompt(
+        this.$i18n.t('m.Enter_The_Problem_Display_ID_in_the_Contest'),
+        'Tips'
+      ).then(
         ({ value }) => {
           let data = {
             pid: problemID,
@@ -107,7 +106,7 @@ export default {
           api.admin_addProblemFromPublic(data).then(
             (res) => {
               this.$emit('on-change');
-              myMessage.success(res.data.msg);
+              myMessage.success(this.$i18n.t('m.Add_Successfully'));
               this.getPublicProblem(this.page);
             },
             () => {}

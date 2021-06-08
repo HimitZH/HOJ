@@ -65,7 +65,8 @@ export const m = {
   Set_New_Password:'Set New Password',
   Set_New_Password_Msg: 'Please Enter New Password',
   Set_New_Password_Again_Msg: 'Please Enter New Password Again',
-  The_username_does_not_exists:'The username does not exists.',
+  The_username_does_not_exists:'The username does not exist.',
+  The_email_does_not_exists:'The email does not exist.',
   Your_password_has_been_reset: 'Your password has been reset.',
 
   // /components/oj/setting/Account.vue 账号信息管理页面
@@ -191,18 +192,6 @@ export const m = {
   OK:'OK',
   Copied_successfully:'Copied successfully',
   Copied_failed:'Copied failed',
-
-
-  // 状态码表示的结果
-
-  Accepted: 'Accepted',
-  Time_Limit_Exceeded: 'Time Limit Exceeded',
-  Memory_Limit_Exceeded: 'Memory Limit Exceeded',
-  Runtime_Error: 'Runtime Error',
-  System_Error: 'System Error',
-  Pending: 'Pending',
-  Partial_Accepted: 'Partial Accepted',
-  Compile_Error: 'Compile Error',
 
 
   // /views/oj/status/SubmissionList.vue
@@ -398,5 +387,7 @@ export const m = {
   Load_More:'Load More',
   Delete_Comment_Tips:'This operation will delete the comment and all its replies. Do you want to continue?',
   Delete_Reply_Tips:'This operation will delete the reply. Do you want to continue?',
+
+
   
 }

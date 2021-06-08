@@ -129,10 +129,9 @@
 </template>
 <script>
 import { mapActions } from 'vuex';
-import Pagination from '@/components/oj/common/Pagination';
 import ContestRankMixin from './contestRankMixin';
 import utils from '@/common/utils';
-
+const Pagination = () => import('@/components/oj/common/Pagination');
 export default {
   name: 'OIContestRank',
   components: {

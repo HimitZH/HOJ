@@ -9,48 +9,48 @@
       <el-form label-position="top">
         <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item label="Contest Title" required>
+            <el-form-item :label="$t('m.Contest_Title')" required>
               <el-input
                 v-model="contest.title"
-                placeholder="Enter the Contest Title"
+                :placeholder="$t('m.Contest_Title')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="Contest Description" required>
+            <el-form-item :label="$t('m.Contest_Description')" required>
               <Editor :value.sync="contest.description"></Editor>
             </el-form-item>
           </el-col>
           <el-col :md="8" :xs="24">
-            <el-form-item label="Contest Start Time" required>
+            <el-form-item :label="$t('m.Contest_Start_Time')" required>
               <el-date-picker
                 v-model="contest.startTime"
                 @change="changeDuration"
                 type="datetime"
-                placeholder="Enter the Contest Start Time"
+                :placeholder="$t('m.Contest_Start_Time')"
               >
               </el-date-picker>
             </el-form-item>
           </el-col>
           <el-col :md="8" :xs="24">
-            <el-form-item label="Contest End Time" required>
+            <el-form-item :label="$t('m.Contest_End_Time')" required>
               <el-date-picker
                 v-model="contest.endTime"
                 @change="changeDuration"
                 type="datetime"
-                placeholder="Enter the Contest End Time"
+                :placeholder="$t('m.Contest_End_Time')"
               >
               </el-date-picker>
             </el-form-item>
           </el-col>
 
           <el-col :md="8" :xs="24">
-            <el-form-item label="Contest Duration" required>
+            <el-form-item :label="$t('m.Contest_Duration')" required>
               <el-input v-model="durationText" disabled> </el-input>
             </el-form-item>
           </el-col>
           <el-col :md="8" :xs="24">
-            <el-form-item label="Contest Type">
+            <el-form-item :label="$t('m.Contest_Rule_Type')">
               <el-radio
                 class="radio"
                 v-model="contest.type"
@@ -69,7 +69,7 @@
           </el-col>
 
           <el-col :md="8" :xs="24" v-if="contest.sealRank">
-            <el-form-item label="Seal Time Rank">
+            <el-form-item :label="$t('m.Seal_Time_Rank')">
               <el-switch
                 v-model="contest.sealRank"
                 active-color="#13ce66"
@@ -80,7 +80,7 @@
           </el-col>
 
           <el-col :md="16" :xs="24" v-else>
-            <el-form-item label="Real Time Rank">
+            <el-form-item :label="$t('m.Real_Time_Rank')">
               <el-switch
                 v-model="contest.sealRank"
                 active-color="#13ce66"
@@ -92,44 +92,47 @@
 
           <el-col :md="8" :xs="24">
             <el-form-item
-              label="Seal Rank Time"
+              :label="$t('m.Seal_Rank_Time')"
               :required="contest.sealRank"
               v-show="contest.sealRank"
             >
               <el-select v-model="seal_rank_time">
                 <el-option
-                  label="比赛结束前半小时"
+                  :label="$t('m.Contest_Seal_Half_Hour')"
                   :value="0"
                   :disabled="contest.duration < 1800"
                 ></el-option>
                 <el-option
-                  label="比赛结束前一小时"
+                  :label="$t('m.Contest_Seal_An_Hour')"
                   :value="1"
                   :disabled="contest.duration < 3600"
                 ></el-option>
-                <el-option label="比赛全程时间" :value="2"></el-option>
+                <el-option
+                  :label="$t('m.Contest_Seal_All_Hour')"
+                  :value="2"
+                ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
 
           <el-col :md="8" :xs="24">
-            <el-form-item label="Contest Auth" required>
+            <el-form-item :label="$t('m.Contest_Auth')" required>
               <el-select v-model="contest.auth">
-                <el-option label="公开赛" :value="0"></el-option>
-                <el-option label="私有赛" :value="1"></el-option>
-                <el-option label="保护赛" :value="2"></el-option>
+                <el-option :label="$t('m.Public')" :value="0"></el-option>
+                <el-option :label="$t('m.Private')" :value="1"></el-option>
+                <el-option :label="$t('m.Protected')" :value="2"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :md="8" :xs="24">
             <el-form-item
-              label="Contest Password"
+              :label="$t('m.Contest_Password')"
               v-show="contest.auth != 0"
               :required="contest.auth != 0"
             >
               <el-input
                 v-model="contest.pwd"
-                placeholder="Contest Password"
+                :placeholder="$t('m.Contest_Password')"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -150,18 +153,20 @@
           </el-col> -->
         </el-row>
       </el-form>
-      <el-button type="primary" @click.native="saveContest">Save</el-button>
+      <el-button type="primary" @click.native="saveContest">{{
+        $t('m.Save')
+      }}</el-button>
     </el-card>
   </div>
 </template>
 
 <script>
 import api from '@/common/api';
-import Editor from '@/components/admin/Editor.vue';
 import time from '@/common/time';
 import moment from 'moment';
 import { mapGetters } from 'vuex';
 import myMessage from '@/common/message';
+const Editor = () => import('@/components/admin/Editor.vue');
 export default {
   name: 'CreateContest',
   components: {
@@ -192,7 +197,7 @@ export default {
   },
   mounted() {
     if (this.$route.name === 'admin-edit-contest') {
-      this.title = 'Edit Contest';
+      this.title = this.$i18n.t('m.Edit_Contest');
       this.disableRuleType = true;
       this.getContestByCid();
     }
@@ -200,11 +205,11 @@ export default {
   watch: {
     $route() {
       if (this.$route.name === 'admin-edit-contest') {
-        this.title = 'Edit Contest';
+        this.title = this.$i18n.t('m.Edit_Contest');
         this.disableRuleType = true;
         this.getContestByCid();
       } else {
-        this.title = 'Create Contest';
+        this.title = this.$i18n.t('m.Create_Contest');
         this.disableRuleType = false;
         this.contest = [];
       }
@@ -255,27 +260,45 @@ export default {
 
     saveContest() {
       if (!this.contest.title) {
-        myMessage.error('比赛的标题不能为空！');
+        myMessage.error(
+          this.$i18n.t('m.Contest_Title') + ' ' + this.$i18n.t('m.is_required')
+        );
         return;
       }
       if (!this.contest.description) {
-        myMessage.error('比赛的描述不能为空！');
+        myMessage.error(
+          this.$i18n.t('m.Contest_Description') +
+            ' ' +
+            this.$i18n.t('m.is_required')
+        );
         return;
       }
       if (!this.contest.startTime) {
-        myMessage.error('比赛的开始时间不能为空！');
+        myMessage.error(
+          this.$i18n.t('m.Contest_Start_Time') +
+            ' ' +
+            this.$i18n.t('m.is_required')
+        );
         return;
       }
       if (!this.contest.endTime) {
-        myMessage.error('比赛的结束时间不能为空！');
+        myMessage.error(
+          this.$i18n.t('m.Contest_End_Time') +
+            ' ' +
+            this.$i18n.t('m.is_required')
+        );
         return;
       }
       if (!this.contest.duration || this.contest.duration <= 0) {
-        myMessage.error('比赛的时长不能小于或等于0！');
+        myMessage.error(this.$i18n.t('m.Contest_Duration_Check'));
         return;
       }
       if (this.contest.auth != 0 && !this.contest.pwd) {
-        myMessage.error('当前的比赛模式密码不能为空！');
+        myMessage.error(
+          this.$i18n.t('m.Contest_Password') +
+            ' ' +
+            this.$i18n.t('m.is_required')
+        );
         return;
       }
 
@@ -315,7 +338,7 @@ export default {
 
       api[funcName](data)
         .then((res) => {
-          myMessage.success(res.data.msg);
+          myMessage.success('success');
           this.$router.push({
             name: 'admin-contest-list',
             query: { refresh: 'true' },
@@ -328,7 +351,7 @@ export default {
       let end = this.contest.endTime;
       let durationMS = time.durationMs(start, end);
       if (durationMS < 0) {
-        this.durationText = '比赛起始时间不应该晚于结束时间！';
+        this.durationText = this.$i18n.t('m.Contets_Time_Check');
         this.contest.duration = 0;
         return;
       }
