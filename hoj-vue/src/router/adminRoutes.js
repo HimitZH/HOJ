@@ -46,7 +46,7 @@ const adminRoutes= [
           path: 'announcement',
           name: 'admin-announcement',
           component: Announcement,
-          meta: { requireSuperAdmin: true,title:'Announcement'},
+          meta: { requireSuperAdmin: true,title:'Announcement Admin'},
       },
         {
           path: 'conf',
@@ -100,25 +100,25 @@ const adminRoutes= [
           path: 'contest/:contestId/announcement',
           name: 'admin-contest-announcement',
           component: Announcement,
-          meta: { title:'Create Contest Announcement'}
+          meta: { title:'Contest Announcement'}
         },
         {
           path: 'contest/:contestId/problems',
           name: 'admin-contest-problem-list',
           component: ProblemList,
-          meta: { title:'Contest Problem List'}
+          meta: { title:'Contest Problem_List'}
         },
         {
           path: 'contest/:contestId/problem/create',
           name: 'admin-create-contest-problem',
           component: Problem,
-          meta: { title:'Create Contest Problem'}
+          meta: { title:'Create Problem'}
         },
         {
           path: 'contest/:contestId/problem/:problemId/edit',
           name: 'admin-edit-contest-problem',
           component: Problem,
-          meta: { title:'Edit Contest Problem'}
+          meta: { title:'Edit Problem'}
         },
         {
           path: 'discussion',
