@@ -6,10 +6,9 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import ACMContestRank from './ACMContestRank.vue';
-import OIContestRank from './OIContestRank.vue';
 import { RULE_TYPE } from '@/common/constants';
-
+const ACMContestRank = () => import('./ACMContestRank.vue');
+const OIContestRank = () => import('./OIContestRank.vue');
 const NullComponent = {
   name: 'null-component',
   template: '<div></div>',

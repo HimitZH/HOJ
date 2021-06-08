@@ -2,7 +2,7 @@
   <div>
     <el-card>
       <div slot="header">
-        <span class="panel-title home-title">Export Problems</span>
+        <span class="panel-title home-title">{{ $t('m.Export_Problem') }}</span>
         <div class="filter-row">
           <span>
             <el-button
@@ -10,13 +10,13 @@
               size="small"
               @click="exportProblems"
               icon="el-icon-arrow-down"
-              >Export
+              >{{ $t('m.Export') }}
             </el-button>
           </span>
           <span>
             <vxe-input
               v-model="keyword"
-              placeholder="Enter keyword"
+              :placeholder="$t('m.Enter_keyword')"
               type="search"
               size="medium"
               @keyup.enter.native="filterByKeyword"
@@ -38,12 +38,16 @@
         <vxe-table-column type="checkbox" width="60"> </vxe-table-column>
         <vxe-table-column title="ID" min-width="100" field="id">
         </vxe-table-column>
-        <vxe-table-column min-width="150" title="Title" field="title">
+        <vxe-table-column min-width="150" :title="$t('m.Title')" field="title">
         </vxe-table-column>
-        <vxe-table-column min-width="150" field="author" title="Author">
+        <vxe-table-column
+          min-width="150"
+          field="author"
+          :title="$t('m.Author')"
+        >
         </vxe-table-column>
 
-        <vxe-table-column field="gmtCreate" title="Create Time">
+        <vxe-table-column field="gmtCreate" :title="$t('m.Created_Time')">
           <template v-slot="{ row }">
             {{ row.create_time | localtime }}
           </template>
@@ -64,7 +68,7 @@
 
     <el-card style="margin-top:15px">
       <div slot="header">
-        <span class="panel-title home-title">Import Problems</span>
+        <span class="panel-title home-title">{{ $t('m.Import_Problem') }}</span>
       </div>
       <el-upload
         ref="HOJ"
@@ -84,7 +88,7 @@
           type="primary"
           slot="trigger"
           icon="el-icon-folder-opened"
-          >Choose File</el-button
+          >{{ $t('m.Choose_File') }}</el-button
         >
         <el-button
           style="margin-left: 10px;"
@@ -92,14 +96,16 @@
           type="success"
           @click="submitUpload('HOJ')"
           icon="el-icon-upload"
-          >Upload</el-button
+          >{{ $t('m.Upload') }}</el-button
         >
       </el-upload>
     </el-card>
 
     <el-card style="margin-top:15px">
       <div slot="header">
-        <span class="panel-title home-title">Import QDOJ Problems</span>
+        <span class="panel-title home-title">{{
+          $t('m.Import_QDOJ_Problem')
+        }}</span>
       </div>
       <el-upload
         ref="QDOJ"
@@ -119,7 +125,7 @@
           type="primary"
           slot="trigger"
           icon="el-icon-folder-opened"
-          >Choose File</el-button
+          >{{ $t('m.Choose_File') }}</el-button
         >
         <el-button
           style="margin-left: 10px;"
@@ -127,7 +133,7 @@
           type="success"
           @click="submitUpload('QDOJ')"
           icon="el-icon-upload"
-          >Upload</el-button
+          >{{ $t('m.Upload') }}</el-button
         >
       </el-upload>
     </el-card>
@@ -183,6 +189,10 @@ export default {
     },
     exportProblems() {
       let params = [];
+      if (this.selected_problems.length <= 0) {
+        myMessage.error(this.$i18n.t('m.Export_Problem_NULL_Tips'));
+        return;
+      }
       for (let p of this.selected_problems) {
         params.push('pid=' + p.id);
       }

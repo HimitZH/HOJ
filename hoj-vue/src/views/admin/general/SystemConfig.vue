@@ -2,7 +2,7 @@
   <div>
     <el-card>
       <div slot="header">
-        <span class="panel-title home-title">Website Config</span>
+        <span class="panel-title home-title">{{ $t('m.Website_Config') }}</span>
       </div>
       <el-form
         label-position="left"
@@ -12,67 +12,67 @@
       >
         <el-row :gutter="20">
           <el-col :md="8" :xs="24">
-            <el-form-item label="Base URL" required>
+            <el-form-item :label="$t('m.Base_Url')" required>
               <el-input
                 v-model="websiteConfig.baseUrl"
-                placeholder="Website Base URL"
+                :placeholder="$t('m.Base_Url')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="8" :xs="24">
-            <el-form-item label="Name" required>
+            <el-form-item :label="$t('m.Web_Name')" required>
               <el-input
                 v-model="websiteConfig.name"
-                placeholder="Website Name"
+                :placeholder="$t('m.Web_Name')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="8" :xs="24">
-            <el-form-item label="Short Name" required>
+            <el-form-item :label="$t('m.Short_Name')" required>
               <el-input
                 v-model="websiteConfig.shortName"
-                placeholder="Website Name Shortcut"
+                :placeholder="$t('m.Short_Name')"
               ></el-input>
             </el-form-item>
           </el-col>
 
           <el-col :md="12" :xs="24">
-            <el-form-item label="Record Name" required>
+            <el-form-item :label="$t('m.Record_Name')" required>
               <el-input
                 v-model="websiteConfig.recordName"
-                placeholder="Website Record Name"
+                :placeholder="$t('m.Record_Name')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="12" :xs="24">
-            <el-form-item label="Record URL" required>
+            <el-form-item :label="$t('m.Record_Url')" required>
               <el-input
                 v-model="websiteConfig.recordUrl"
-                placeholder="Website Record URL"
+                :placeholder="$t('m.Record_Url')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="12" :xs="24">
-            <el-form-item label="Project Name" required>
+            <el-form-item :label="$t('m.Project_Name')" required>
               <el-input
                 v-model="websiteConfig.projectName"
-                placeholder="Website Project Namet"
+                :placeholder="$t('m.Project_Name')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="12" :xs="24">
-            <el-form-item label="Project URL" required>
+            <el-form-item :label="$t('m.Project_Url')" required>
               <el-input
                 v-model="websiteConfig.projectUrl"
-                placeholder="Website Project URL"
+                :placeholder="$t('m.Project_Url')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="24" :xs="24">
-            <el-form-item label="Website Desc" required>
+            <el-form-item :label="$t('m.Web_Desc')" required>
               <el-input
                 type="textarea"
-                placeholder="Website Description"
+                :placeholder="$t('m.Web_Desc')"
                 v-model="websiteConfig.description"
                 maxlength="150"
                 show-word-limit
@@ -81,7 +81,7 @@
             </el-form-item>
           </el-col>
           <el-col :md="24" :xs="24">
-            <el-form-item label="Allow Register" label-width="120px">
+            <el-form-item :label="$t('m.Allow_Register')" label-width="120px">
               <el-switch
                 v-model="websiteConfig.register"
                 active-color="#13ce66"
@@ -92,55 +92,58 @@
           </el-col>
         </el-row>
       </el-form>
-      <el-button type="primary" @click.native="saveWebsiteConfig" size="small"
-        >Save</el-button
+      <el-button
+        type="primary"
+        @click.native="saveWebsiteConfig"
+        size="small"
+        >{{ $t('m.Save') }}</el-button
       >
     </el-card>
 
     <el-card style="margin-top:15px">
       <div slot="header">
-        <span class="panel-title home-title">SMTP Config</span>
+        <span class="panel-title home-title">{{ $t('m.SMTP_Config') }}</span>
       </div>
       <el-form label-position="left" label-width="80px" :model="smtp">
         <el-row :gutter="20">
           <el-col :md="24" :xs="24">
-            <el-form-item label="Host" required label-width="80px">
+            <el-form-item :label="$t('m.Host')" required label-width="80px">
               <el-input
                 v-model="smtp.emailHost"
-                placeholder="SMTP Host Address"
+                :placeholder="$t('m.Host')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="24" :xs="24">
-            <el-form-item label="Port" required label-width="80px">
+            <el-form-item :label="$t('m.Port')" required label-width="80px">
               <el-input
                 v-model="smtp.emailPort"
-                placeholder="SMTP Port"
+                :placeholder="$t('m.Port')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="12" :xs="24">
-            <el-form-item label="Username" required label-width="80px">
+            <el-form-item :label="$t('m.Email')" required label-width="80px">
               <el-input
                 v-model="smtp.emailUsername"
-                placeholder="Account Username"
+                :placeholder="$t('m.Email')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="12" :xs="24">
-            <el-form-item label="Password" label-width="80px" required>
+            <el-form-item :label="$t('m.Password')" label-width="80px" required>
               <el-input
                 v-model="smtp.emailPassword"
                 type="password"
-                placeholder="SMTP Server Password"
+                :placeholder="$t('m.Password')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="24" :xs="24">
-            <el-form-item label="BG IMG" label-width="80px" required>
+            <el-form-item :label="$t('m.Email_BG')" label-width="80px" required>
               <el-input
                 v-model="smtp.emailBGImg"
-                placeholder="SMTP Template Background IMG Address"
+                :placeholder="$t('m.Email_BG_Desc')"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -151,90 +154,123 @@
           </el-col>
         </el-row>
       </el-form>
-      <el-button type="primary" @click.native="saveSMTPConfig" size="small"
-        >Save</el-button
-      >
+      <el-button type="primary" @click.native="saveSMTPConfig" size="small">{{
+        $t('m.Save')
+      }}</el-button>
       <el-button
         type="warning"
         @click.native="testSMTPConfig"
         v-if="saved"
         :loading="loadingBtnTest"
         size="small"
-        >Send Test Email</el-button
+        >{{ $t('m.Send_Test_Email') }}</el-button
       >
     </el-card>
 
     <el-card style="margin-top:15px">
       <div slot="header">
-        <span class="panel-title home-title">DataBase Config</span>
+        <span class="panel-title home-title">{{
+          $t('m.DataSource_Config')
+        }}</span>
       </div>
       <el-form label-position="top" :model="databaseConfig">
         <el-row :gutter="20">
           <el-col :md="12" :xs="24">
-            <el-form-item label="MySQL Host" required label-width="80px">
+            <el-form-item
+              :label="'MySQL ' + $t('m.Host')"
+              required
+              label-width="80px"
+            >
               <el-input
                 v-model="databaseConfig.dbHost"
-                placeholder="MySQL Host Address"
+                :placeholder="'MySQL ' + $t('m.Host')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="12" :xs="24">
-            <el-form-item label="MySQL Port" required label-width="80px">
+            <el-form-item
+              :label="'MySQL ' + $t('m.Port')"
+              required
+              label-width="80px"
+            >
               <el-input
                 type="number"
                 v-model="databaseConfig.dbPost"
-                placeholder="MySQL Port"
+                :placeholder="'MySQL ' + $t('m.Port')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="12" :xs="24">
-            <el-form-item label="MySQL Username" required label-width="80px">
+            <el-form-item
+              :label="'MySQL ' + $t('m.Username')"
+              required
+              label-width="80px"
+            >
               <el-input
                 v-model="databaseConfig.dbUsername"
-                placeholder="MySQL Username"
+                :placeholder="'MySQL ' + $t('m.Username')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="12" :xs="24">
-            <el-form-item label="MySQL Password" label-width="80px" required>
+            <el-form-item
+              :label="'MySQL ' + $t('m.Password')"
+              label-width="80px"
+              required
+            >
               <el-input
                 v-model="databaseConfig.dbPassword"
                 type="password"
-                placeholder="MySQL Password"
+                :placeholder="'MySQL ' + $t('m.Password')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="8" :xs="24">
-            <el-form-item label="Redis Host" label-width="80px" required>
+            <el-form-item
+              :label="'Redis ' + $t('m.Host')"
+              label-width="80px"
+              required
+            >
               <el-input
                 v-model="databaseConfig.redisHost"
                 type="password"
-                placeholder="Redis Host Address"
+                :placeholder="'Redis ' + $t('m.Host')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="8" :xs="24">
-            <el-form-item label="Redis Port" label-width="80px" required>
+            <el-form-item
+              :label="'Redis ' + $t('m.Port')"
+              label-width="80px"
+              required
+            >
               <el-input
                 v-model="databaseConfig.redisPort"
                 type="password"
-                placeholder="Redis Port"
+                :placeholder="'Redis ' + $t('m.Port')"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :md="8" :xs="24">
-            <el-form-item label="Redis Password" label-width="80px" required>
+            <el-form-item
+              :label="'Redis ' + $t('m.Password')"
+              label-width="80px"
+              required
+            >
               <el-input
                 v-model="databaseConfig.redisPassword"
                 type="password"
-                placeholder="Redis Password"
+                :placeholder="'Redis ' + $t('m.Password')"
               ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
-      <el-button type="primary" @click.native="saveDataBaseConfig" size="small"
-        >Save</el-button
+      <el-button
+        type="primary"
+        @click.native="saveDataBaseConfig"
+        size="small"
+        >{{ $t('m.Save') }}</el-button
       >
     </el-card>
   </div>
@@ -268,7 +304,7 @@ export default {
         this.smtp = res.data.data;
       } else {
         this.init = true;
-        myMessage.warning('请先添加STMP的配置！');
+        myMessage.warning('No STMP Config');
       }
     });
     api
@@ -288,22 +324,22 @@ export default {
     saveSMTPConfig() {
       api.admin_editSMTPConfig(this.smtp).then(
         (res) => {
-          myMessage.success(res.data.msg);
+          myMessage.success(this.$i18n.t('m.Update_Successfully'));
           this.saved = true;
         },
         () => {}
       );
     },
     testSMTPConfig() {
-      this.$prompt('Please input your email', '', {
+      this.$prompt(this.$i18n.t('m.Please_input_your_email'), '', {
         inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
-        inputErrorMessage: 'Error email format',
+        inputErrorMessage: this.$i18n.t('m.Email_Check_Format'),
       })
         .then(({ value }) => {
           this.loadingBtnTest = true;
           api.admin_testSMTPConfig(value).then(
             (res) => {
-              myMessage.success(res.data.msg);
+              myMessage.success(this.$i18n.t('m.Post_Successfully'));
               this.loadingBtnTest = false;
             },
             () => {
@@ -314,10 +350,19 @@ export default {
         .catch(() => {});
     },
     saveWebsiteConfig() {
+      for (var key in this.websiteConfig) {
+        if (key == 'register') {
+          continue;
+        } else {
+          if (this.websiteConfig[key].replace(/(^\s*)|(\s*$)/g, '')) {
+            this.websiteConfig[key] = 'None';
+          }
+        }
+      }
       api
         .admin_editWebsiteConfig(this.websiteConfig)
         .then((res) => {
-          myMessage.success(res.data.msg);
+          myMessage.success(this.$i18n.t('m.Update_Successfully'));
         })
         .catch(() => {});
     },
@@ -325,7 +370,7 @@ export default {
       api
         .admin_editDataBaseConfig(this.databaseConfig)
         .then((res) => {
-          myMessage.success(res.data.msg);
+          myMessage.success(this.$i18n.t('m.Update_Successfully'));
         })
         .catch(() => {});
     },

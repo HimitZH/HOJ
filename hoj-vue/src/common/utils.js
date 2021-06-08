@@ -83,7 +83,7 @@ function downloadFile (url) {
       document.body.appendChild(link)
       link.click()
       link.remove()
-      myMessage.success("Request success, Downloading...")
+      myMessage.success("Downloading...")
       resolve()
     }).catch((error) => {
       reject(error)

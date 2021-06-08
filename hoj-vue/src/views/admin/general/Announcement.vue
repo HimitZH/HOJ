@@ -2,7 +2,9 @@
   <div>
     <el-card>
       <div slot="header">
-        <span class="panel-title home-title">Announcement</span>
+        <span class="panel-title home-title">{{
+          $t('m.General_Announcement')
+        }}</span>
       </div>
       <div class="create">
         <el-button
@@ -10,7 +12,7 @@
           size="small"
           @click="openAnnouncementDialog(null)"
           icon="el-icon-plus"
-          >Create</el-button
+          >{{ $t('m.Create') }}</el-button
         >
       </div>
       <div class="list">
@@ -23,12 +25,16 @@
         >
           <vxe-table-column min-width="50" field="id" title="ID">
           </vxe-table-column>
-          <vxe-table-column min-width="150" field="title" title="Title">
+          <vxe-table-column
+            min-width="150"
+            field="title"
+            :title="$t('m.Announcement_Title')"
+          >
           </vxe-table-column>
           <vxe-table-column
             min-width="150"
             field="gmtCreate"
-            title="Create Time"
+            :title="$t('m.Created_Time')"
           >
             <template v-slot="{ row }">
               {{ row.gmtCreate | localtime }}
@@ -37,15 +43,23 @@
           <vxe-table-column
             min-width="150"
             field="gmtModified"
-            title="Last Update Time"
+            :title="$t('m.Modified_Time')"
           >
             <template v-slot="{ row }">
               {{ row.gmtModified | localtime }}
             </template>
           </vxe-table-column>
-          <vxe-table-column min-width="150" field="username" title="Author">
+          <vxe-table-column
+            min-width="150"
+            field="username"
+            :title="$t('m.Author')"
+          >
           </vxe-table-column>
-          <vxe-table-column min-width="100" field="status" title="Visible">
+          <vxe-table-column
+            min-width="100"
+            field="status"
+            :title="$t('m.Announcement_visible')"
+          >
             <template v-slot="{ row }">
               <el-switch
                 v-model="row.status"
@@ -63,7 +77,7 @@
               <el-tooltip
                 class="item"
                 effect="dark"
-                content="编辑公告"
+                :content="$t('m.Edit_Announcement')"
                 placement="top"
               >
                 <el-button
@@ -76,7 +90,7 @@
               <el-tooltip
                 class="item"
                 effect="dark"
-                content="删除公告"
+                :content="$t('m.Delete_Announcement')"
                 placement="top"
               >
                 <el-button
@@ -112,19 +126,19 @@
       @open="onOpenEditDialog"
     >
       <el-form label-position="top" :model="announcement">
-        <el-form-item label="公告标题" required>
+        <el-form-item :label="$t('m.Announcement_Title')" required>
           <el-input
             v-model="announcement.title"
-            placeholder="请输入公告标题"
+            :placeholder="$t('m.Announcement_Title')"
             class="title-input"
           >
           </el-input>
         </el-form-item>
-        <el-form-item label="公告内容" required>
+        <el-form-item :label="$t('m.Announcement_Content')" required>
           <Editor :value.sync="announcement.content"></Editor>
         </el-form-item>
         <div class="visible-box">
-          <span>是否显示</span>
+          <span>{{ $t('m.Announcement_visible') }}</span>
           <el-switch
             v-model="announcement.status"
             :active-value="0"
@@ -139,21 +153,21 @@
         <el-button
           type="danger"
           @click.native="showEditAnnouncementDialog = false"
-          >Cancel</el-button
+          >{{ $t('m.Cancel') }}</el-button
         >
-        <el-button type="primary" @click.native="submitAnnouncement"
-          >Save</el-button
-        >
+        <el-button type="primary" @click.native="submitAnnouncement">{{
+          $t('m.OK')
+        }}</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import Editor from '@/components/admin/Editor.vue';
 import api from '@/common/api';
 import myMessage from '@/common/message';
 import { mapGetters } from 'vuex';
+const Editor = () => import('@/components/admin/Editor.vue');
 export default {
   name: 'announcement',
   components: {
@@ -278,7 +292,7 @@ export default {
       api[funcName](requestData)
         .then((res) => {
           this.showEditAnnouncementDialog = false;
-          myMessage.success(res.data.msg);
+          myMessage.success(this.$i18n.t('m.Post_successfully'));
           this.init();
         })
         .catch();
@@ -286,9 +300,9 @@ export default {
 
     // 删除公告
     deleteAnnouncement(announcementId) {
-      this.$confirm('你确定要删除该公告?', 'Warning', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$i18n.t('m.Delete_Announcement_Tips'), 'Warning', {
+        confirmButtonText: this.$i18n.t('m.OK'),
+        cancelButtonText: this.$i18n.t('m.Cancel'),
         type: 'warning',
       })
         .then(() => {
@@ -312,11 +326,11 @@ export default {
     openAnnouncementDialog(row) {
       this.showEditAnnouncementDialog = true;
       if (row !== null) {
-        this.announcementDialogTitle = 'Edit Announcement';
+        this.announcementDialogTitle = this.$i18n.t('m.Edit_Announcement');
         this.announcement = Object.assign({}, row);
         this.mode = 'edit';
       } else {
-        this.announcementDialogTitle = 'Create Announcement';
+        this.announcementDialogTitle = this.$i18n.t('m.Create_Announcement');
         this.announcement.title = '';
         this.announcement.status = 0;
         this.announcement.content = '';

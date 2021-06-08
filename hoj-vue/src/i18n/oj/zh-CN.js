@@ -31,7 +31,7 @@ export const m = {
   Login_No_Account: '没有账号？立即注册!',
   Login_Forget_Password: '忘记密码',
   Username_Check_Required:'用户名不能为空',
-  Username_Check_Max:'用户名长度超过255位',
+  Username_Check_Max:'用户名长度不能超过255位',
   Password_Check_Required:'密码不能为空',
   Password_Check_Between:'请输入长度为6~20位的密码',
   Welcome_Back: '欢迎回来~',
@@ -66,6 +66,7 @@ export const m = {
   Set_New_Password_Msg: '请输入新密码',
   Set_New_Password_Again_Msg: '请再次输入新密码',
   The_username_does_not_exists:'用户名不存在',
+  The_email_does_not_exists:'邮箱不存在',
   Your_password_has_been_reset: '您的密码已重置',
 
   // /components/oj/setting/Account.vue 账号信息管理页面
@@ -145,7 +146,7 @@ export const m = {
   Score: '分数',
 
   // /views/oj/problem/problemList.vue
-  Problem_List:'问题列表',
+  Problem_List:'题目列表',
   All:'全部',
   My_OJ:'本OJ',
   Level:'难度',
@@ -161,8 +162,8 @@ export const m = {
   Statistic: '统计',
   Solution:'提交记录',
   Description: '题目描述',
-  Input: '输入格式',
-  Output: '输出格式',
+  Input: '输入描述',
+  Output: '输出描述',
   Sample_Input: '样例输入',
   Sample_Output: '样例输出',
   Hint: '说明',
@@ -189,7 +190,7 @@ export const m = {
   You_have_submission_in_this_problem_sure_to_cover_it: '您已经提交过该问题的代码，确定重新提交？',
   Close:'关闭',
   Cancel:'取消',
-  OK:'OK',
+  OK:'确定',
   Copied_successfully:'复制成功',
   Copied_failed:'复制失败',
 
@@ -222,7 +223,7 @@ export const m = {
 
   // /views/oj/rank/ACMRank.vue
   ACM_Ranklist: 'ACM 排行榜',
-  User:'用户名',
+  User:'用户',
   Nickname:'昵称',
   Mood: '格言',
   Rating: '通过率',
@@ -388,6 +389,4 @@ export const m = {
   Load_More:'加载更多',
   Delete_Comment_Tips:'此操作将删除该评论及其所有回复, 是否继续?',
   Delete_Reply_Tips:'此操作将删除该回复, 是否继续?',
-
-
 }

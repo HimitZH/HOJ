@@ -1,9 +1,8 @@
 import Vue from 'vue'
-import store from "@/store"
 import VueI18n from 'vue-i18n'
 import elenUS from 'element-ui/lib/locale/lang/en'
 import elzhCN from 'element-ui/lib/locale/lang/zh-CN'
-
+import storage from '@/common/storage'
 Vue.use(VueI18n)
 
 const languages = [
@@ -16,14 +15,14 @@ const messages = {}
 for (let lang of languages) {
   let locale = lang.value
   let m = require(`./oj/${locale}`).m
-  // Object.assign(m, require(`./admin/${locale}`).m)
+  Object.assign(m, require(`./admin/${locale}`).m)
   messages[locale] = Object.assign({m: m}, lang.el);
 }
 
 
 // load language packages
 export default new VueI18n({
-  locale: store.getters.webLanguage,
+  locale: storage.get('Web_Language') || 'zh-CN',
   messages: messages
 })
 

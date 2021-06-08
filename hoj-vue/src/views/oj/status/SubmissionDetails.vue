@@ -208,9 +208,11 @@
 import api from '@/common/api';
 import { JUDGE_STATUS, JUDGE_STATUS_RESERVE } from '@/common/constants';
 import utils from '@/common/utils';
-import Highlight from '@/components/oj/common/Highlight';
 import myMessage from '@/common/message';
 import { addCodeBtn } from '@/common/codeblock';
+
+const Highlight = () => import('@/components/oj/common/Highlight');
+
 export default {
   name: 'submissionDetails',
   components: {

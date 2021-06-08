@@ -51,7 +51,7 @@ export default {
       api.checkUsernameOrEmail(undefined, value).then(
         (res) => {
           if (res.data.data.email === false) {
-            callback(new Error('The email does not exist'));
+            callback(new Error(this.$i18n.t('m.The_email_does_not_exists')));
           } else {
             callback();
           }
@@ -73,7 +73,7 @@ export default {
         captcha: [
           {
             required: true,
-            message: 'The captcha is required',
+            message: this.$i18n.t('m.Code_Check_Required'),
             trigger: 'blur',
             min: 1,
             max: 8,
@@ -82,7 +82,7 @@ export default {
         email: [
           {
             required: true,
-            message: 'The email is required',
+            message: this.$i18n.t('m.Email_Check_Required'),
             type: 'email',
             trigger: 'blur',
           },

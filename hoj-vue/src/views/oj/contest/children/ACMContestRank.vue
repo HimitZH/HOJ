@@ -145,8 +145,7 @@
 <script>
 import moment from 'moment';
 import { mapActions } from 'vuex';
-
-import Pagination from '@/components/oj/common/Pagination';
+const Pagination = () => import('@/components/oj/common/Pagination');
 import time from '@/common/time';
 import utils from '@/common/utils';
 import ContestRankMixin from './contestRankMixin';

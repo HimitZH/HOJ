@@ -106,9 +106,9 @@
 
 <script>
 import utils from '@/common/utils';
-import Highlight from '@/components/oj/common/Highlight';
 import { JUDGE_STATUS } from '@/common/constants';
 import { addCodeBtn } from '@/common/codeblock';
+const Highlight = () => import('@/components/oj/common/Highlight');
 export default {
   components: {
     Highlight,

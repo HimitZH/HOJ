@@ -1,17 +1,17 @@
 
 // 引入 view 组件
-import Login from '@/views/admin/Login'
-import Home from '@/views/admin/Home'
-import Dashboard from '@/views/admin/Dashboard'
-import User from '@/views/admin/general/User'
-import Announcement from '@/views/admin/general/Announcement'
-import SystemConfig from '@/views/admin/general/SystemConfig'
-import ProblemList from '@/views/admin/problem/ProblemList'
-import Problem from '@/views/admin/problem/Problem'
-import ProblemImportAndExport from '@/views/admin/problem/ImportAndExport'
-import Contest from '@/views/admin/contest/Contest'
-import ContestList from '@/views/admin/contest/ContestList'
-import DiscussionList from '@/views/admin/discussion/Discussion'
+const Login= ()=>import('@/views/admin/Login')
+const Home= ()=>import('@/views/admin/Home')
+const Dashboard= ()=>import('@/views/admin/Dashboard')
+const User= ()=>import('@/views/admin/general/User')
+const Announcement= ()=>import('@/views/admin/general/Announcement')
+const SystemConfig= ()=>import('@/views/admin/general/SystemConfig')
+const ProblemList= ()=>import('@/views/admin/problem/ProblemList')
+const Problem= ()=>import('@/views/admin/problem/Problem')
+const ProblemImportAndExport= ()=>import('@/views/admin/problem/ImportAndExport')
+const Contest= ()=>import('@/views/admin/contest/Contest')
+const ContestList= ()=>import('@/views/admin/contest/ContestList')
+const DiscussionList= ()=>import('@/views/admin/discussion/Discussion')
 const adminRoutes= [
     {
       path: '/admin/login',
@@ -40,7 +40,7 @@ const adminRoutes= [
           path: 'user',
           name: 'admin-user',
           component: User,
-          meta: { requireSuperAdmin: true,title:'User'},
+          meta: { requireSuperAdmin: true,title:'User Admin'},
       },
         {
           path: 'announcement',
@@ -76,7 +76,7 @@ const adminRoutes= [
           path: 'problem/batch-operation',
           name: 'admin-problem_batch_operation',
           component: ProblemImportAndExport,
-          meta: { title:'Problem Operation'},
+          meta: { title:'Export Import_Problem'},
         },
         {
           path: 'contest/create',
@@ -124,7 +124,7 @@ const adminRoutes= [
           path: 'discussion',
           name: 'admin-discussion-list',
           component: DiscussionList,
-          meta: { title:'Discussion List'}
+          meta: { title:'Discussion Admin'}
         },
       ]
     },
