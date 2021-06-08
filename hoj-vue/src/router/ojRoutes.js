@@ -1,28 +1,27 @@
-const Home= ()=>import('@/views/oj/Home.vue')
-const SetNewPassword= ()=>import("@/views/oj/user/SetNewPassword.vue")
-const UserHome= ()=>import("@/views/oj/user/UserHome.vue")
-const Setting= ()=>import("@/views/oj/user/Setting.vue")
-const ProblemLIst= ()=>import("@/views/oj/problem/ProblemList.vue")
-const Logout= ()=>import("@/views/oj/user/Logout.vue")
-const SubmissionList= ()=>import("@/views/oj/status/SubmissionList.vue")
-const SubmissionDetails= ()=>import("@/views/oj/status/SubmissionDetails.vue")
-const ContestList= ()=>import("@/views/oj/contest/ContestList.vue")
-const Problem= ()=>import("@/views/oj/problem/Problem.vue")
-const ACMRank= ()=>import("@/views/oj/rank/ACMRank.vue")
-const OIRank= ()=>import("@/views/oj/rank/OIRank.vue")
-const ContestDetails= ()=>import("@/views/oj/contest/ContestDetails.vue")
-const ContestProblemList= ()=>import("@/views/oj/contest/children/ContestProblemList.vue")
-const ContestRank= ()=>import("@/views/oj/contest/children/ContestRank.vue")
-const ACMInfoAdmin= ()=>import("@/views/oj/contest/children/ACMInfoAdmin.vue")
-const Announcements= ()=>import("@/components/oj/common/Announcements.vue")
-const ContestComment= ()=>import("@/views/oj/contest/children/ContestComment.vue")
-const ContestRejudgeAdmin= ()=>import("@/views/oj/contest/children/ContestRejudgeAdmin.vue")
-const DiscussionList= ()=>import("@/views/oj/discussion/discussionList.vue")
-const Discussion= ()=>import("@/views/oj/discussion/discussion.vue")
-const Introduction= ()=>import("@/views/oj/about/Introduction.vue")
-const Developer= ()=>import("@/views/oj/about/Developer.vue")
-const NotFound= ()=>import("@/views/404.vue")
-
+import Home from '@/views/oj/Home.vue'
+import SetNewPassword from "@/views/oj/user/SetNewPassword.vue"
+import UserHome from "@/views/oj/user/UserHome.vue"
+import Setting from "@/views/oj/user/Setting.vue"
+import ProblemLIst from "@/views/oj/problem/ProblemList.vue"
+import Logout from "@/views/oj/user/Logout.vue"
+import SubmissionList from "@/views/oj/status/SubmissionList.vue"
+import SubmissionDetails from "@/views/oj/status/SubmissionDetails.vue"
+import ContestList from "@/views/oj/contest/ContestList.vue"
+import Problem from "@/views/oj/problem/Problem.vue"
+import ACMRank from "@/views/oj/rank/ACMRank.vue"
+import OIRank from "@/views/oj/rank/OIRank.vue"
+import ContestDetails from "@/views/oj/contest/ContestDetails.vue"
+import ContestProblemList from "@/views/oj/contest/children/ContestProblemList.vue"
+import ContestRank from "@/views/oj/contest/children/ContestRank.vue"
+import ACMInfoAdmin from "@/views/oj/contest/children/ACMInfoAdmin.vue"
+import Announcements from "@/components/oj/common/Announcements.vue"
+import ContestComment from "@/views/oj/contest/children/ContestComment.vue"
+import ContestRejudgeAdmin from "@/views/oj/contest/children/ContestRejudgeAdmin.vue"
+import DiscussionList from "@/views/oj/discussion/discussionList.vue"
+import Discussion from "@/views/oj/discussion/discussion.vue"
+import Introduction from "@/views/oj/about/Introduction.vue"
+import Developer from "@/views/oj/about/Developer.vue"
+import NotFound from "@/views/404.vue"
 
 const ojRoutes = [
   {
