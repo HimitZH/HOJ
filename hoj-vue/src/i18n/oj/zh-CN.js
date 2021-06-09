@@ -31,7 +31,7 @@ export const m = {
   Login_No_Account: '没有账号？立即注册!',
   Login_Forget_Password: '忘记密码',
   Username_Check_Required:'用户名不能为空',
-  Username_Check_Max:'用户名长度不能超过255位',
+  Username_Check_Max:'用户名长度不能超过20位',
   Password_Check_Required:'密码不能为空',
   Password_Check_Between:'请输入长度为6~20位的密码',
   Welcome_Back: '欢迎回来~',
@@ -98,6 +98,11 @@ export const m = {
   Save:'保存',
   Upload:'上传',
   Your_new_avatar:'您的新头像',
+  File_type_not_support:'文件类型不支持',
+  is_incorrect_format_file:'的文件格式不正确，请选择.gif,.jpg,.jpeg,.png,.bmp,.webp的图片文件。',
+  Exceed_max_size_limit:'超过文件大小限制',
+  File_Exceed_Tips:'文件大小错误, 您只能上传不大于2MB的图片文件！',
+  Cancel_Avater_Tips:'您确定取消该图像的截取？',
   
 
   // /views/oj/user/UserHome.vue
@@ -109,6 +114,8 @@ export const m = {
   UserHome_Rating:'CF分数',
   List_Solved_Problems: '已解决问题列表',
   UserHome_Not_Data: '这家伙太懒了，还没有做过题...',
+  Personal_Profile:'个人简介',
+  UserHome_Solved_Problems:'做题情况',
 
   // /views/oj/user/Setting.vue
   Account_Setting:'账户设置',
@@ -225,7 +232,7 @@ export const m = {
   ACM_Ranklist: 'ACM 排行榜',
   User:'用户',
   Nickname:'昵称',
-  Mood: '格言',
+  Signature: '个性简介',
   Rating: '通过率',
 
   // /views/oj/rank/OIRank.vue

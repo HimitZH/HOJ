@@ -108,7 +108,7 @@ export default {
             trigger: 'blur',
           },
           {
-            max: 255,
+            max: 20,
             message: this.$i18n.t('m.Username_Check_Max'),
             trigger: 'blur',
           },

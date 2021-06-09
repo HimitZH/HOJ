@@ -17,11 +17,12 @@
         auto-resize
         style="font-weight: 500;"
       >
-        <vxe-table-column type="seq" min-width="50"></vxe-table-column>
+        <vxe-table-column type="seq" width="50"></vxe-table-column>
         <vxe-table-column
           field="username"
           :title="$t('m.User')"
           min-width="150"
+          show-overflow
         >
           <template v-slot="{ row }">
             <a
@@ -34,35 +35,57 @@
         <vxe-table-column
           field="nickname"
           :title="$t('m.Nickname')"
-          min-width="180"
-        ></vxe-table-column>
-        <vxe-table-column
-          field="signature"
-          :title="$t('m.Mood')"
-          min-width="180"
-        ></vxe-table-column>
+          width="160"
+        >
+          <template v-slot="{ row }">
+            <el-tag
+              effect="plain"
+              size="small"
+              v-if="row.nickname"
+              :type="nicknameColor(row.nickname)"
+            >
+              {{ row.nickname }}
+            </el-tag>
+          </template>
+        </vxe-table-column>
         <vxe-table-column
           field="solved"
           :title="$t('m.Solved')"
           min-width="80"
         ></vxe-table-column>
-        <vxe-table-column :title="$t('m.AC')" min-width="80">
+        <vxe-table-column
+          :title="$t('m.AC') + '/' + $t('m.Total')"
+          min-width="100"
+        >
           <template v-slot="{ row }">
-            <a
-              @click="goUserACStatus(row.username)"
-              style="color:rgb(87, 163, 243);"
-              >{{ row.ac }}</a
-            >
+            <span>
+              <a
+                @click="goUserACStatus(row.username)"
+                style="color:rgb(87, 163, 243);"
+                >{{ row.ac }}</a
+              >
+              <span>/{{ row.total }}</span>
+            </span>
           </template>
         </vxe-table-column>
-        <vxe-table-column
-          field="total"
-          :title="$t('m.Total')"
-          min-width="80"
-        ></vxe-table-column>
         <vxe-table-column :title="$t('m.Rating')" min-width="80">
           <template v-slot="{ row }">
             <span>{{ getACRate(row.ac, row.total) }}</span>
+          </template>
+        </vxe-table-column>
+        <vxe-table-column
+          field="signature"
+          :title="$t('m.Signature')"
+          min-width="300"
+          show-overflow="ellipsis"
+          align="left"
+        >
+          <template v-slot="{ row }">
+            <span
+              v-html="row.signature"
+              v-katex
+              class="rank-signature-body"
+            ></span>
           </template>
         </vxe-table-column>
       </vxe-table>
@@ -242,6 +265,11 @@ export default {
     getACRate(ac, total) {
       return utils.getACRate(ac, total);
     },
+    nicknameColor(nickname) {
+      let typeArr = ['', 'success', 'info', 'danger', 'warning'];
+      let index = nickname.length % 5;
+      return typeArr[index];
+    },
   },
   computed: {
     ...mapGetters(['isAuthenticated', 'userInfo']),
@@ -259,5 +287,15 @@ export default {
   /deep/.el-card__body {
     padding: 0 !important;
   }
+}
+</style>
+<style>
+.rank-signature-body img {
+  height: 50px !important;
+  width: 50px !important;
+}
+.rank-signature-body p {
+  margin: 0;
+  padding: 0;
 }
 </style>

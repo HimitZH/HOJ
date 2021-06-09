@@ -31,7 +31,7 @@ export const m = {
   Login_No_Account: 'No account? Register now!',
   Login_Forget_Password: 'Forget Password',
   Username_Check_Required:'The username is required.',
-  Username_Check_Max:'The longest length of a username is 255.',
+  Username_Check_Max:'The longest length of a username is 20.',
   Password_Check_Required:'The password is required.',
   Password_Check_Between:'The length of the password is between 6 and 20.',
   Welcome_Back: 'Welcome back~',
@@ -99,6 +99,11 @@ export const m = {
   Save:'Save',
   Upload:'Upload',
   Your_new_avatar:'Your new avatar',
+  File_type_not_support:'File type not support',
+  is_incorrect_format_file:' is an incorrect format file,please choose the file format of .GIF, .JPG, .JPEG, .PNG, .BMP, .Webp',
+  Exceed_max_size_limit:'Exceed max size limit',
+  File_Exceed_Tips:' file size is wrong, you can upload a image up to 2MB in size',
+  Cancel_Avater_Tips:'Are you sure you want to cancel the capture of this image?',
 
   // /views/oj/user/UserHome.vue
   Recent_login_time:'Recently launched：',
@@ -109,6 +114,8 @@ export const m = {
   UserHome_Rating:'Rating',
   List_Solved_Problems: 'List of solved problems',
   UserHome_Not_Data: 'The guy is so lazy that has not solved any problem yet.',
+  Personal_Profile:'Persion Profile',
+  UserHome_Solved_Problems:'Solved Problems',
 
   // /views/oj/user/Setting.vue
   Account_Setting:'Account Setting',
@@ -223,7 +230,7 @@ export const m = {
   ACM_Ranklist: 'ACM Ranklist',
   User:'User',
   Nickname:'Nickname',
-  Mood: 'Mood',
+  Signature: 'Signature',
   Rating: 'Rating',
 
   // /views/oj/rank/OIRank.vue

@@ -26,7 +26,7 @@ public class RankController {
 
     /**
      * @MethodName get-rank-list
-     * @Params  * @param null
+     * @Params * @param null
      * @Description 获取排行榜数据
      * @Return CommonResult
      * @Since 2020/10/27
@@ -40,18 +40,18 @@ public class RankController {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 30;
 
-        Page rankList=null;
+        Page rankList = null;
         // 根据type查询不同类型的排行榜
-        if (type.intValue()== Constants.Contest.TYPE_ACM.getCode()) {
+        if (type.intValue() == Constants.Contest.TYPE_ACM.getCode()) {
             rankList = userRecordService.getACMRankList(limit, currentPage);
-        }else if (type.intValue()== Constants.Contest.TYPE_OI.getCode()){
-            rankList = userRecordService.getOIRankList(limit,currentPage);
-        }else {
+        } else if (type.intValue() == Constants.Contest.TYPE_OI.getCode()) {
+            rankList = userRecordService.getOIRankList(limit, currentPage);
+        } else {
             return CommonResult.errorResponse("比赛类型代码不正确！");
         }
 
-        if (rankList!=null&&rankList.getTotal() == 0) {
-            return CommonResult.successResponse(rankList,"暂无数据");
+        if (rankList != null && rankList.getTotal() == 0) {
+            return CommonResult.successResponse(rankList, "暂无数据");
         } else {
             return CommonResult.successResponse(rankList, "获取成功");
         }
