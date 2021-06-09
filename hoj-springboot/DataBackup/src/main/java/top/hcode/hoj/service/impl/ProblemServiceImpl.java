@@ -144,6 +144,10 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                     problemTagList.add(new ProblemTag()
                             .setPid(pid).setTid(tag.getId()));
                 }
+                // 已存在tag 但是新添加的
+            } else if (mapOldPT.getOrDefault(tag.getId(), null) == null) {
+                problemTagList.add(new ProblemTag()
+                        .setPid(pid).setTid(tag.getId()));
             } else { // 已有主键的需要记录一下，若原先在problem_tag有的，现在不见了，表明需要删除
                 mapOldPT.put(tag.getId(), 1); // 更新记录，说明该tag未删除
             }
