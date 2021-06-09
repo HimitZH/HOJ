@@ -189,7 +189,6 @@
                 :trigger-on-focus="true"
                 @keyup.enter.native="addTag"
                 @click="selectTag"
-                @blur="addTag"
                 @select="addTag"
                 :fetch-suggestions="querySearch"
               >
@@ -659,6 +658,7 @@ export default {
       allLanguage: [], //所有编程语言
       allSpjLanguage: [], // 所有可以用特殊判题的语言
       allTags: [],
+      allTagsTmp: [],
       inputVisible: false,
       tagInput: '',
       title: '',
@@ -693,6 +693,15 @@ export default {
     } else {
       this.mode = 'add';
     }
+    api
+      .admin_getAllProblemTagList()
+      .then((res) => {
+        this.allTags = res.data.data;
+        for (let tag of res.data.data) {
+          this.allTagsTmp.push({ value: tag.name });
+        }
+      })
+      .catch(() => {});
     api.getLanguages(this.$route.params.problemId, false).then((res) => {
       let allLanguage = res.data.data;
       this.allLanguage = allLanguage;
@@ -897,17 +906,14 @@ export default {
       }
     },
     querySearch(queryString, cb) {
-      api
-        .admin_getAllProblemTagList()
-        .then((res) => {
-          let tagList = [];
-          this.allTags = res.data.data;
-          for (let tag of res.data.data) {
-            tagList.push({ value: tag.name });
-          }
-          cb(tagList);
-        })
-        .catch(() => {});
+      var restaurants = this.allTagsTmp;
+      var results = queryString
+        ? restaurants.filter(
+            (item) =>
+              item.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+          )
+        : restaurants;
+      cb(results);
     },
     changeContent(newVal) {
       this.announcement.content = newVal;
