@@ -16,6 +16,14 @@
 
 在线文档：[https://www.hcode.top/docs](https://www.hcode.top/docs/)
 
+Github仓库地址：[https://github.com/HimitZH/HOJ](https://github.com/HimitZH/HOJ)
+
+Gitee仓库地址：[https://gitee.com/himitzh0730/hoj](https://gitee.com/himitzh0730/hoj)
+
+**有任何部署问题或项目bug请发issue或者加QQ群：598587305进行咨询。**
+
+**如果要对本项目进行商业化，请在页面底部的Powered by指向HOJ本仓库地址，顺便点上star收藏本项目对开发者的支持，谢谢。**
+
 > 部署
 
 部署文档：[基于docker-compose部署](https://gitee.com/himitzh0730/hoj-deploy/tree/master)
@@ -34,20 +42,26 @@ cd standAlone && docker-compose up -d
 docker ps # 查看当前运行的容器状态
 ```
 
-大概初始化启动需要一至两分钟，当看到所有的容器的状态status都为`UP`和`healthy`就代表 OJ 已经启动成功。
+1. 大概初始化启动需要一至两分钟，当看到所有的容器的状态status都为`UP`和`healthy`就代表 OJ 已经启动成功。
 
-默认超级管理员账号与密码：**root / hoj123456**
+   **注意：可能初始化过程中访问网页会出现服务器异常，此为正常现象，因为容器还在初始化中，请耐心等待容器状态为up和healthy，大概需要1~2分钟**
 
-**部署成功后，登录root账号进入后台（`http://ip/admin/conf`）修改邮箱配置，新用户才可以正常注册（因为账号注册与密码等修改操作需要通过邮件发送验证码）邮箱配置可以自行百度，开启使用例如QQ邮箱提供的POP3/SMTP服务：**
+2. 默认超级管理员账号与密码：**root / hoj123456**
 
-```
-Host: smtp.qq.com
-Port: 465
-Username: qq邮箱账号
-Password: 开启SMTP服务后生成的随机授权码
-```
+   **部署成功后，登录root账号进入后台（`http://ip/admin/conf`）修改邮箱配置，新用户才可以正常注册（因为账号注册与密码等修改操作需要通过邮件发送验证码）邮箱配置可以自行百度，开启使用例如QQ邮箱提供的POP3/SMTP服务：**
+
+   ```
+   Host: smtp.qq.com
+   Port: 465
+   Username: qq邮箱账号
+   Password: 开启SMTP服务后生成的随机授权码
+   ```
 
 其它设置与参数说明请看[基于docker-compose部署](https://gitee.com/himitzh0730/hoj-deploy/tree/master)
+
+> 更新
+
+请在docker-compose.yml当前文件夹下执行`docker-compose pull`拉取最新镜像，然后重新`docker-compose up -d`即可。
 
 > 上线日记
 
@@ -68,39 +82,53 @@ Password: 开启SMTP服务后生成的随机授权码
 | 2021-05-28 | 增加导入导出题目，增加用户页面的最近登录，开发正式结束，进入维护摸鱼 | Himit_ZH |
 | 2021-06-02 | 大更新，完善补充前端页面，修正判题等待超时时间，修补一系列bug | Himit_ZH |
 | 2021-06-07 | 修正特殊判题，增加前台i18n                                   | Himit_ZH |
-| 2021-06-08 | 增加后台i18n,增加路由延迟加载                                | Himit_ZH |
+| 2021-06-08 | 添加后台i18n,路由懒加载                                      | Himit_ZH |
 
 
 
-> 首页页面
+**以下截图页面均支持中英文国际化，点击底部的转换即可全网站转换，包括后台管理，同时浏览器会记住本次选择的语言**
 
-![首页](https://img-blog.csdnimg.cn/20210509232352226.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+> 首页页面 
+
+![首页](https://img-blog.csdnimg.cn/20210609212151977.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+
+
+
+> 首页英文
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210609213403198.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 
 
 > 题目列表页
 
-![题目列表](https://img-blog.csdnimg.cn/20210509232501952.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![题目列表页](https://img-blog.csdnimg.cn/20210609212304243.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 
 
 > 题目详情页
 
-![题目详情页](https://img-blog.csdnimg.cn/20210509232609398.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![题目详情页](https://img-blog.csdnimg.cn/20210609212436191.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 > 比赛列表页
 
-![比赛列表](https://img-blog.csdnimg.cn/20210509232701288.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![比赛列表页](https://img-blog.csdnimg.cn/2021060921255349.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 
 
 > 比赛详情首页
 
-![比赛详情](https://img-blog.csdnimg.cn/20210509232843932.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70#pic_center)
+![比赛详情页](https://img-blog.csdnimg.cn/2021060921270679.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+
+> 比赛排行榜
+
+![比赛排行榜](https://img-blog.csdnimg.cn/20210609212919197.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+
+
 
 > 提交列表页
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210513134128914.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20210609213021223.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 > 排行榜
 
@@ -122,13 +150,13 @@ Password: 开启SMTP服务后生成的随机授权码
 
 > 个人信息页
 
-![个人信息](https://img-blog.csdnimg.cn/20210509233300701.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![个人信息](https://img-blog.csdnimg.cn/20210609213116562.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 
 
 > 个人设置页
 
-![个人设置](https://img-blog.csdnimg.cn/20210509233439791.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![个人设置页](https://img-blog.csdnimg.cn/202106092132206.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
 
 
