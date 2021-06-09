@@ -292,3 +292,7 @@ hoj-frontend:
         ipv4_address: 172.20.0.6
 ```
 
+## 四、更新最新版本
+
+请在对应的docker-compose.yml当前文件夹下执行`docker-compose pull`拉取最新镜像，然后重新`docker-compose up -d`即可。
+
