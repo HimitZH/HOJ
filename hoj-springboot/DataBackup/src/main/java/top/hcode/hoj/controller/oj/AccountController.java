@@ -197,6 +197,9 @@ public class AccountController {
         if (StringUtils.isEmpty(password) || StringUtils.isEmpty(username) || StringUtils.isEmpty(code)) {
             return CommonResult.errorResponse("用户名,新密码或验证码不能为空");
         }
+        if (password.length() < 6 || password.length() > 20) {
+            return CommonResult.errorResponse("新密码长度应该为6~20位！");
+        }
         String codeKey = Constants.Email.RESET_PASSWORD_KEY_PREFIX.getValue() + username;
 
         if (!redisUtils.hasKey(codeKey)) {
@@ -237,6 +240,12 @@ public class AccountController {
         if (!redisUtils.get(codeKey).equals(registerDto.getCode())) { //验证码判断
             return CommonResult.errorResponse("验证码不正确");
         }
+        if (registerDto.getPassword().length() < 6 || registerDto.getPassword().length() > 20) {
+            return CommonResult.errorResponse("密码长度应该为6~20位！");
+        }
+        if (registerDto.getUsername().length() > 20) {
+            return CommonResult.errorResponse("用户名长度不能超过20位!");
+        }
         String uuid = IdUtil.simpleUUID();
         //为新用户设置uuid
         registerDto.setUuid(uuid);
@@ -268,7 +277,12 @@ public class AccountController {
         // 去掉账号密码首尾的空格
         loginDto.setPassword(loginDto.getPassword().trim());
         loginDto.setUsername(loginDto.getUsername().trim());
-
+        if (loginDto.getPassword().length() < 6 || loginDto.getPassword().length() > 20) {
+            return CommonResult.errorResponse("密码长度应该为6~20位！");
+        }
+        if (loginDto.getUsername().length() > 20) {
+            return CommonResult.errorResponse("用户名长度不能超过20位!");
+        }
         UserRolesVo userRoles = userRoleDao.getUserRoles(null, loginDto.getUsername());
         Assert.notNull(userRoles, "用户名不存在，请注意大小写！");
         if (!userRoles.getPassword().equals(SecureUtil.md5(loginDto.getPassword()))) {
@@ -388,6 +402,9 @@ public class AccountController {
         // 数据可用性判断
         if (StringUtils.isEmpty(oldPassword) || StringUtils.isEmpty(newPassword)) {
             return CommonResult.errorResponse("请求参数不能为空！");
+        }
+        if (newPassword.length() < 6 || newPassword.length() > 20) {
+            return CommonResult.errorResponse("新密码长度应该为6~20位！");
         }
         // 获取当前登录的用户
         HttpSession session = request.getSession();
@@ -539,17 +556,25 @@ public class AccountController {
 
     @PostMapping("/change-userInfo")
     @RequiresAuthentication
-    public CommonResult changeEmail(@RequestBody HashMap<String, Object> params, HttpServletRequest request) {
+    public CommonResult changeUserInfo(@RequestBody HashMap<String, Object> params, HttpServletRequest request) {
 
         // 获取当前登录的用户
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
+        String realname = (String) params.get("realname");
+        String nickname = (String) params.get("nickname");
+        if (realname.length() > 20) {
+            return CommonResult.errorResponse("真实姓名不能超过20位");
+        }
+        if (nickname.length() > 20) {
+            return CommonResult.errorResponse("昵称不能超过20位");
+        }
         UserInfo userInfo = new UserInfo();
         userInfo.setUuid(userRolesVo.getUid())
                 .setCfUsername((String) params.get("cfUsername"))
-                .setRealname((String) params.get("realname"))
-                .setNickname((String) params.get("nickname"))
+                .setRealname(realname)
+                .setNickname(nickname)
                 .setSignature((String) params.get("signature"))
                 .setBlog((String) params.get("blog"))
                 .setGithub((String) params.get("github"))

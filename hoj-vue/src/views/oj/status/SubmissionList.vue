@@ -112,6 +112,7 @@
             field="pid"
             :title="$t('m.Problem')"
             min-width="150"
+            show-overflow
           >
             <template v-slot="{ row }">
               <span
@@ -229,6 +230,7 @@
             field="judger"
             :title="$t('m.Judger')"
             min-width="100"
+            show-overflow
           >
             <template v-slot="{ row }">
               <span v-if="row.judger">{{ row.judger }}</span>
@@ -239,6 +241,7 @@
             field="username"
             :title="$t('m.Author')"
             min-width="96"
+            show-overflow
           >
             <template v-slot="{ row }">
               <a

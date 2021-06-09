@@ -274,7 +274,9 @@
               @click="opendrawer = !opendrawer"
               active-class="mobile-menu-active"
             >
-              <mu-list-item-title>{{ $t('m.NavBar_Rank') }}</mu-list-item-title>
+              <mu-list-item-title>{{
+                $t('m.NavBar_ACM_Rank')
+              }}</mu-list-item-title>
             </mu-list-item>
             <mu-list-item
               button
@@ -480,7 +482,7 @@ export default {
   left: 0;
   height: auto;
   width: 100%;
-  z-index: 1000;
+  z-index: 2000;
   background-color: #fff;
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.1);
 }

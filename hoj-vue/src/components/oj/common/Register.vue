@@ -139,7 +139,7 @@ export default {
             message: this.$i18n.t('m.The_username_already_exists'),
           },
           {
-            max: 255,
+            max: 20,
             message: this.$i18n.t('m.Username_Check_Max'),
             trigger: 'blur',
           },

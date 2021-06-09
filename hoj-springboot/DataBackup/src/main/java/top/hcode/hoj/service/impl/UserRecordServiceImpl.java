@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author Himit_ZH
@@ -31,7 +31,7 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
     public Page<ACMRankVo> getACMRankList(int limit, int currentPage) {
 
         //新建分页
-        Page<ACMRankVo> page =new Page<>(currentPage,limit);
+        Page<ACMRankVo> page = new Page<>(currentPage, limit);
 
         return page.setRecords(userRecordMapper.getACMRankList(page));
     }
@@ -44,7 +44,7 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
     @Override
     public Page<OIRankVo> getOIRankList(int limit, int currentPage) {
         //新建分页
-        Page<OIRankVo> page =new Page<>(currentPage,limit);
+        Page<OIRankVo> page = new Page<>(currentPage, limit);
 
         return page.setRecords(userRecordMapper.getOIRankList(page));
     }
