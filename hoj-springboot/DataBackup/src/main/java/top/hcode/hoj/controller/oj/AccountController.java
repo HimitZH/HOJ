@@ -564,10 +564,10 @@ public class AccountController {
 
         String realname = (String) params.get("realname");
         String nickname = (String) params.get("nickname");
-        if (realname.length() > 20) {
+        if (!StringUtils.isEmpty(realname) && realname.length() > 20) {
             return CommonResult.errorResponse("真实姓名不能超过20位");
         }
-        if (nickname.length() > 20) {
+        if (!StringUtils.isEmpty(nickname) && nickname.length() > 20) {
             return CommonResult.errorResponse("昵称不能超过20位");
         }
         UserInfo userInfo = new UserInfo();
