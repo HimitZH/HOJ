@@ -31,18 +31,39 @@
           >
         </p>
         <p>
-          <span
-            ><i class="fa fa-graduation-cap" aria-hidden="true"></i>
-            {{ profile.school ? profile.school : $t('m.Not_set_yet') }}</span
+          <span v-if="profile.nickname">
+            <el-tag
+              effect="plain"
+              size="small"
+              :type="nicknameColor(profile.nickname)"
+            >
+              {{ profile.nickname }}
+            </el-tag>
+          </span>
+        </p>
+        <span class="default-info" v-if="profile.school"
+          ><i class="fa fa-graduation-cap" aria-hidden="true"></i>
+          {{ profile.school }}</span
+        >
+        <span id="icons">
+          <a
+            :href="profile.github"
+            v-if="profile.github"
+            class="icon"
+            target="_blank"
           >
-        </p>
-        <p class="mood">
-          <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-          {{ profile.signature ? profile.signature : $t('m.Not_set_yet') }}
-        </p>
-
+            <i class="fa fa-github"> {{ $t('m.Github') }}</i>
+          </a>
+          <a
+            :href="profile.blog"
+            v-if="profile.blog"
+            class="icon"
+            target="_blank"
+          >
+            <i class="fa fa-share-alt-square"> {{ $t('m.Blog') }}</i>
+          </a>
+        </span>
         <hr id="split" />
-
         <el-row :gutter="12">
           <el-col :md="6" :sm="24">
             <el-card shadow="always" class="submission">
@@ -83,49 +104,44 @@
             </el-card>
           </el-col>
         </el-row>
-
-        <div id="problems">
-          <div v-if="profile.solvedList.length">
-            {{ $t('m.List_Solved_Problems') }}
-            <el-button
-              type="primary"
-              icon="el-icon-refresh"
-              circle
-              size="mini"
-              @click="freshProblemDisplayID"
-            ></el-button>
-          </div>
-          <p v-else>{{ $t('m.UserHome_Not_Data') }}</p>
-          <div class="btns">
-            <div
-              class="problem-btn"
-              v-for="problemID of profile.solvedList"
-              :key="problemID"
-            >
-              <el-button type="success" @click="goProblem(problemID)">{{
-                problemID
-              }}</el-button>
+        <el-tabs type="card" style="margin-top:1rem;">
+          <el-tab-pane :label="$t('m.Personal_Profile')">
+            <div class="signature-body">
+              <div
+                class="markdown-body"
+                v-html="contentHtml"
+                v-katex
+                v-highlight
+              ></div>
             </div>
-          </div>
-        </div>
-        <div id="icons">
-          <a
-            :href="profile.github"
-            v-if="profile.github"
-            class="icon"
-            target="_blank"
+          </el-tab-pane>
+          <el-tab-pane :label="$t('m.UserHome_Solved_Problems')"
+            ><div id="problems">
+              <div v-if="profile.solvedList.length">
+                {{ $t('m.List_Solved_Problems') }}
+                <el-button
+                  type="primary"
+                  icon="el-icon-refresh"
+                  circle
+                  size="mini"
+                  @click="freshProblemDisplayID"
+                ></el-button>
+              </div>
+              <p v-else>{{ $t('m.UserHome_Not_Data') }}</p>
+              <div class="btns">
+                <div
+                  class="problem-btn"
+                  v-for="problemID of profile.solvedList"
+                  :key="problemID"
+                >
+                  <el-button type="success" @click="goProblem(problemID)">{{
+                    problemID
+                  }}</el-button>
+                </div>
+              </div>
+            </div></el-tab-pane
           >
-            <i class="fa fa-github"></i>
-          </a>
-          <a
-            :href="profile.blog"
-            v-if="profile.blog"
-            class="icon"
-            target="_blank"
-          >
-            <i class="fa fa-pencil"></i>
-          </a>
-        </div>
+        </el-tabs>
       </div>
     </el-card>
   </div>
@@ -134,6 +150,7 @@
 import { mapActions } from 'vuex';
 import api from '@/common/api';
 import myMessage from '@/common/message';
+import { addCodeBtn } from '@/common/codeblock';
 import Avatar from 'vue-avatar';
 export default {
   components: {
@@ -143,6 +160,7 @@ export default {
     return {
       profile: {
         username: '',
+        nickname: '',
         avatar: '',
         school: '',
         signature: '',
@@ -163,6 +181,9 @@ export default {
       api.getUserInfo(this.uid).then((res) => {
         this.changeDomTitle({ title: res.data.username });
         this.profile = res.data.data;
+        this.$nextTick((_) => {
+          addCodeBtn();
+        });
       });
     },
     goProblem(problemID) {
@@ -184,11 +205,25 @@ export default {
         return sum;
       }
     },
+    nicknameColor(nickname) {
+      let typeArr = ['', 'success', 'info', 'danger', 'warning'];
+      let index = nickname.length % 5;
+      return typeArr[index];
+    },
   },
   watch: {
     $route(newVal, oldVal) {
       if (newVal !== oldVal) {
         this.init();
+      }
+    },
+  },
+  computed: {
+    contentHtml() {
+      if (this.profile.signature) {
+        return this.$markDown.render(this.profile.signature);
+      } else {
+        return null;
       }
     },
   },
@@ -216,9 +251,9 @@ export default {
   color: #fff;
   font-size: 14px;
 }
-.mood {
-  font-style: italic;
-  font-size: 15px;
+.default-info {
+  font-size: 13px;
+  padding-right: 5px;
 }
 .data-number {
   font-size: 20px;
@@ -266,8 +301,8 @@ export default {
   }
   .container .recent-login {
     position: absolute;
-    right: 1%;
-    top: 1%;
+    right: 1rem;
+    top: 0.5rem;
   }
   .container .user-info {
     margin-top: 50px;
@@ -297,13 +332,19 @@ export default {
   display: inline-block;
   margin: 5px;
 }
-#icons {
-  margin-top: 50px;
-}
 
 #icons .icon {
-  font-size: 20px;
+  font-size: 13px !important;
   padding: 0 10px;
   color: #2196f3;
+}
+.signature-body {
+  background: #fff;
+  overflow: hidden;
+  width: 100%;
+  padding: 10px 10px;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.6;
 }
 </style>

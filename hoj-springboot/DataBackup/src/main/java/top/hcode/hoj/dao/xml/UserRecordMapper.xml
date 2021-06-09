@@ -39,11 +39,11 @@
                 WHERE uid = ui.uuid
             ) AS total, ss.score AS score
         FROM user_info ui, (
-                SELECT u.uuid AS uid, SUM(s.score) AS score
+                SELECT u.uuid AS uid, COALESCE(SUM(s.score),0) AS score
                 FROM user_info u, (
                         SELECT MAX(score) AS score, uid, pid
                         FROM judge
-                        WHERE cid=0 AND score IS NOT NULL
+                        WHERE cid=0
                         GROUP BY pid, uid
                     ) s
                 WHERE u.status = 0
@@ -59,6 +59,7 @@
         <result column="username" property="username"></result>
         <result column="school" property="school"></result>
         <result column="signature" property="signature"></result>
+        <result column="nickname" property="nickname"></result>
         <result column="github" property="github"></result>
         <result column="blog" property="blog"></result>
         <result column="avatar" property="avatar"></result>
@@ -69,7 +70,7 @@
     </resultMap>
 
     <select id="getUserHomeInfo" resultMap="map_UserHomeVo">
-        SELECT u.uuid as uid,u.username,u.signature,u.school,u.github,u.blog,u.avatar,ur.rating,
+        SELECT u.uuid as uid,u.username,u.nickname,u.signature,u.school,u.github,u.blog,u.avatar,ur.rating,
         (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid AND cid=0) AS total
         FROM user_info u,user_record ur WHERE u.uuid = ur.uid AND u.status = 0 AND u.uuid = #{uid}
     </select>

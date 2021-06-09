@@ -131,10 +131,10 @@
       <el-row :gutter="30" justify="space-around">
         <el-col :md="10" :xs="24">
           <el-form-item :label="$t('m.RealName')">
-            <el-input v-model="formProfile.realname" :maxlength="50" />
+            <el-input v-model="formProfile.realname" :maxlength="20" />
           </el-form-item>
           <el-form-item :label="$t('m.Nickname')">
-            <el-input v-model="formProfile.nickname" :maxlength="50" />
+            <el-input v-model="formProfile.nickname" :maxlength="20" />
           </el-form-item>
           <el-form-item :label="$t('m.School')">
             <el-input v-model="formProfile.school" :maxlength="50" />
@@ -148,18 +148,26 @@
           <p></p>
         </el-col>
         <el-col :md="10" :xs="24">
-          <el-form-item :label="$t('m.Mood')">
-            <el-input v-model="formProfile.signature" :maxlength="50" />
-          </el-form-item>
           <el-form-item :label="$t('m.CF_Username')">
             <el-input v-model="formProfile.cfUsername" :maxlength="50" />
           </el-form-item>
           <el-form-item :label="$t('m.Blog')">
-            <el-input v-model="formProfile.blog" />
+            <el-input v-model="formProfile.blog" :maxlength="255" />
           </el-form-item>
           <el-form-item :label="$t('m.Github')">
-            <el-input v-model="formProfile.github" />
+            <el-input v-model="formProfile.github" :maxlength="255" />
           </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="24">
+          <label class="el-form-item__label" style="float: none;">{{
+            $t('m.Signature')
+          }}</label>
+          <Editor
+            :value.sync="formProfile.signature"
+            style="padding: 5px;"
+          ></Editor>
         </el-col>
       </el-row>
     </el-form>
@@ -181,10 +189,12 @@ import myMessage from '@/common/message';
 import { VueCropper } from 'vue-cropper';
 import Avatar from 'vue-avatar';
 import 'element-ui/lib/theme-chalk/display.css';
+const Editor = () => import('@/components/admin/Editor.vue');
 export default {
   components: {
     Avatar,
     VueCropper,
+    Editor,
   },
   data() {
     return {
@@ -224,10 +234,8 @@ export default {
     checkFileType(file) {
       if (!/\.(gif|jpg|jpeg|png|bmp|webp|GIF|JPG|PNG|WEBP)$/.test(file.name)) {
         this.$notify.warning({
-          title: '文件类型不支持',
-          message:
-            file.name +
-            '的文件格式不正确，请选择.gif,.jpg,.jpeg,.png,.bmp,.webp的图片文件。',
+          title: this.$i18n.t('m.File_type_not_support'),
+          message: file.name + this.$i18n.t('m.is_incorrect_format_file'),
         });
         return false;
       }
@@ -237,9 +245,8 @@ export default {
       // max size is 2MB
       if (file.size > 2 * 1024 * 1024) {
         this.$notify.warning({
-          title: '超出最大文件大小限制',
-          message:
-            '文件[' + file.name + ']太大, 您只能上传不大于2MB的图片文件！',
+          title: this.$i18n.t('m.Exceed_max_size_limit'),
+          message: file.name + this.$i18n.t('m.File_Exceed_Tips'),
         });
         return false;
       }
@@ -268,9 +275,9 @@ export default {
       }
     },
     reselect() {
-      this.$confirm('您确定取消该图像的截取？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm(this.$i18n.t('m.Cancel_Avater_Tips'), 'Tips', {
+        confirmButtonText: this.$i18n.t('m.OK'),
+        cancelButtonText: this.$i18n.t('m.Cancel'),
         type: 'warning',
       }).then(() => {
         this.avatarOption.imgSrc = '';
@@ -317,7 +324,7 @@ export default {
       );
       api.changeUserInfo(updateData).then(
         (res) => {
-          myMessage.success(res.data.msg);
+          myMessage.success(this.$i18n.t('m.Update_Successfully'));
           this.$store.dispatch('setUserInfo', res.data.data);
           this.loadingSaveBtn = false;
         },
