@@ -15,6 +15,7 @@
         align="center"
         highlight-hover-row
         auto-resize
+        :seq-config="{ seqMethod }"
         style="font-weight: 500;"
       >
         <vxe-table-column type="seq" min-width="50"></vxe-table-column>
@@ -95,6 +96,7 @@
         @on-change="getRankData"
         show-sizer
         @on-page-size-change="getRankData(1)"
+        :layout="'prev, pager, next, sizes'"
       ></Pagination>
     </el-col>
   </el-row>
@@ -227,6 +229,9 @@ export default {
           bar.hideLoading();
         }
       );
+    },
+    seqMethod({ rowIndex }) {
+      return this.limit * (this.page - 1) + rowIndex + 1;
     },
     changeCharts(rankData) {
       let [usernames, scores] = [[], []];
