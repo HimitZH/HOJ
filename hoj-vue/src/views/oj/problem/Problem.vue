@@ -45,7 +45,7 @@
                     :underline="false"
                     @click="goProblemDiscussion"
                     ><i class="fa fa-comments" aria-hidden="true"></i>
-                    {{ $t('m.NavBar_Discussion') }}</el-link
+                    {{ $t('m.Problem_Discussion') }}</el-link
                   ></span
                 >
                 <span>

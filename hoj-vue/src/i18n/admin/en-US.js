@@ -75,7 +75,7 @@ export const m = {
   Password_Length:'Password Length',
   Generate_and_Export:'Generate & Export',
   The_usernames_will_be:'The usernames will be',
-  Set_New_PWD:'Set New PWD',
+  Set_New_PWD:'Set PWD',
   General_New_Password: 'New PWD',
   The_end_number_cannot_be_less_than_the_start_number:'The end number cannot be less than the start number',
   Please_select_6_to_25_characters_for_password_length:'Please select 6 ~ 25 characters for password length',

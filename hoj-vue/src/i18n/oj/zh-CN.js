@@ -107,7 +107,7 @@ export const m = {
 
   // /views/oj/user/UserHome.vue
   Recent_login_time:'最近上线时间：',
-  Not_set_yet:'未设置',
+  Not_set_yet:'这个家伙很懒，什么也没写…',
   UserHome_Solved: '已解决',
   UserHome_Submissions: '总交题数',
   UserHome_Score: 'OI分数',
@@ -166,8 +166,9 @@ export const m = {
   Contest_Problem:'比赛题目',
   Show_Tags:'显示标签',
   No_tag:'暂无标签',
-  Statistic: '统计',
+  Statistic: '题目统计',
   Solution:'提交记录',
+  Problem_Discussion:'题目讨论',
   Description: '题目描述',
   Input: '输入描述',
   Output: '输出描述',
@@ -210,7 +211,7 @@ export const m = {
   Length:'代码长度',
   Language:'语言',
   View_submission_details:'查看提交详情',
-  Judger:'Judger',
+  Judger:'判题机',
   Author: '作者',
   Submit_Time:'提交时间',
   Option: '操作',
@@ -297,7 +298,7 @@ export const m = {
    Submissions: '提交记录',
    Rankings: '排行榜',
    Comment:'评论',
-   Admin_Helper: 'AC Info',
+   Admin_Helper: 'AC助手',
    Register_contest_successfully:'比赛报名成功',
 
    // /views/oj/contest/children/ACMContestRank.vue
@@ -373,7 +374,7 @@ export const m = {
   // /components/oj/common/CodeMirror.vue
   Lang: '语言',
   Theme: '风格',
-  Reset_Code: '重置密码',
+  Reset_Code: '重置代码',
   Upload_file: '上传文件',
   monokai: 'Monokai',
   solarized: 'Molarized Light',

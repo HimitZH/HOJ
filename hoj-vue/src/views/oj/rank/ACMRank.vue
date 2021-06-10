@@ -14,6 +14,7 @@
         :loading="loadingTable"
         align="center"
         highlight-hover-row
+        :seq-config="{ seqMethod }"
         auto-resize
         style="font-weight: 500;"
       >
@@ -97,6 +98,7 @@
         @on-change="getRankData"
         show-sizer
         @on-page-size-change="getRankData(1)"
+        :layout="'prev, pager, next, sizes'"
       ></Pagination>
     </el-col>
   </el-row>
@@ -238,6 +240,9 @@ export default {
           this.loadingTable = false;
           bar.hideLoading();
         });
+    },
+    seqMethod({ rowIndex }) {
+      return this.limit * (this.page - 1) + rowIndex + 1;
     },
     changeCharts(rankData) {
       let [usernames, acData, totalData] = [[], [], []];

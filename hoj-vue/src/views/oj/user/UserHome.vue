@@ -112,7 +112,11 @@
                 v-html="contentHtml"
                 v-katex
                 v-highlight
+                v-if="contentHtml"
               ></div>
+              <div class="markdown-body" v-else>
+                <p>{{ $t('m.Not_set_yet') }}</p>
+              </div>
             </div>
           </el-tab-pane>
           <el-tab-pane :label="$t('m.UserHome_Solved_Problems')"

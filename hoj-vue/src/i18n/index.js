@@ -16,7 +16,8 @@ for (let lang of languages) {
   let locale = lang.value
   let m = require(`./oj/${locale}`).m
   Object.assign(m, require(`./admin/${locale}`).m)
-  messages[locale] = Object.assign({m: m}, lang.el);
+  let ui = Object.assign({}, lang.el)
+  messages[locale] = Object.assign({m: m}, ui);
 }
 
 

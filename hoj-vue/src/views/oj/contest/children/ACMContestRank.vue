@@ -139,6 +139,8 @@
       :page-size.sync="limit"
       :current.sync="page"
       @on-change="getContestRankData"
+      @on-page-size-change="getContestRankData(1)"
+      :layout="'prev, pager, next, sizes'"
     ></Pagination>
   </el-card>
 </template>

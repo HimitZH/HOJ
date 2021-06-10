@@ -134,10 +134,12 @@
       <div class="panel-options">
         <el-pagination
           class="page"
-          layout="prev, pager, next"
+          layout="prev, pager, next, sizes"
           @current-change="currentChange"
           :page-size="pageSize"
           :total="total"
+          @size-change="onPageSizeChange"
+          :page-sizes="[10, 30, 50, 100]"
         >
         </el-pagination>
       </div>
@@ -259,6 +261,10 @@ export default {
     currentChange(page) {
       this.currentPage = page;
       this.getProblemList(page);
+    },
+    onPageSizeChange(pageSize) {
+      this.pageSize = pageSize;
+      this.getProblemList(this.currentPage);
     },
     getProblemList(page = 1) {
       this.loading = true;

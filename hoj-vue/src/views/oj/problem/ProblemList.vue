@@ -203,6 +203,8 @@
         :page-size="limit"
         @on-change="pushRouter"
         :current.sync="query.currentPage"
+        @on-page-size-change="onPageSizeChange"
+        :layout="'prev, pager, next, sizes'"
       ></Pagination>
     </el-col>
 
@@ -282,7 +284,7 @@ export default {
       currentProblemTitle: '',
       problemRecord: [],
       problemList: [],
-      limit: 20,
+      limit: 15,
       total: 100,
       isGetStatusOk: false,
       loadings: {
@@ -291,7 +293,7 @@ export default {
       },
       page: {
         currentPage: 1,
-        pageSize: 10,
+        pageSize: 30,
         totalResult: 300,
       },
       filterConfig: { remote: true },
@@ -330,7 +332,7 @@ export default {
       this.$refs.problemList.getColumnByField('tag').visible = false;
       this.$refs.problemList.refreshColumn();
       this.loadings.table = false;
-    }, 300);
+    }, 200);
     this.init();
   },
   methods: {
@@ -354,6 +356,10 @@ export default {
         path: '/problem',
         query: this.query,
       });
+    },
+    onPageSizeChange(pageSize) {
+      this.limit = pageSize;
+      this.getProblemList();
     },
     getPercentage(partNumber, total) {
       return partNumber == 0
