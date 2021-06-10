@@ -158,29 +158,37 @@
           </vxe-table-column>
           <vxe-table-column field="score" :title="$t('m.Score')" width="64">
             <template v-slot="{ row }">
-              <el-tag
-                effect="plain"
-                size="medium"
-                v-if="row.score != null"
-                :type="JUDGE_STATUS[row.status]['type']"
-                >{{ row.score }}</el-tag
+              <template v-if="row.score != null">
+                <el-tag
+                  effect="plain"
+                  size="medium"
+                  :type="JUDGE_STATUS[row.status]['type']"
+                  >{{ row.score }}</el-tag
+                >
+              </template>
+              <template
+                v-else-if="
+                  row.status == JUDGE_STATUS_RESERVE['Pending'] ||
+                    row.status == JUDGE_STATUS_RESERVE['Compiling'] ||
+                    row.status == JUDGE_STATUS_RESERVE['Judging']
+                "
               >
-              <el-tag
-                v-else
-                effect="plain"
-                size="medium"
-                :type="JUDGE_STATUS[row.status]['type']"
-              >
-                <i
-                  class="el-icon-loading"
-                  v-if="
-                    row.status == JUDGE_STATUS_RESERVE['Pending'] ||
-                      row.status == JUDGE_STATUS_RESERVE['Compiling'] ||
-                      row.status == JUDGE_STATUS_RESERVE['Judging']
-                  "
-                ></i>
-                <span v-else>--</span>
-              </el-tag>
+                <el-tag
+                  effect="plain"
+                  size="medium"
+                  :type="JUDGE_STATUS[row.status]['type']"
+                >
+                  <i class="el-icon-loading"></i>
+                </el-tag>
+              </template>
+              <template v-else>
+                <el-tag
+                  effect="plain"
+                  size="medium"
+                  :type="JUDGE_STATUS[row.status]['type']"
+                  >--</el-tag
+                >
+              </template>
             </template>
           </vxe-table-column>
           <vxe-table-column field="time" :title="$t('m.Time')" min-width="96">
@@ -290,6 +298,8 @@
         :page-size="limit"
         @on-change="changeRoute"
         :current.sync="currentPage"
+        @on-page-size-change="onPageSizeChange"
+        :layout="'prev, pager, next, sizes'"
       ></Pagination>
     </div>
   </el-row>
@@ -302,6 +312,7 @@ import {
   JUDGE_STATUS,
   CONTEST_STATUS,
   JUDGE_STATUS_RESERVE,
+  RULE_TYPE,
 } from '@/common/constants';
 import utils from '@/common/utils';
 import Pagination from '@/components/oj/common/Pagination';
@@ -334,6 +345,7 @@ export default {
       autoCheckOpen: false,
       JUDGE_STATUS_RESERVE: {},
       CONTEST_STATUS: {},
+      RULE_TYPE: {},
     };
   },
   mounted() {
@@ -341,6 +353,7 @@ export default {
     this.JUDGE_STATUS_LIST = Object.assign({}, JUDGE_STATUS);
     this.JUDGE_STATUS_RESERVE = Object.assign({}, JUDGE_STATUS_RESERVE);
     this.CONTEST_STATUS = Object.assign({}, CONTEST_STATUS);
+    this.RULE_TYPE = Object.assign({}, RULE_TYPE);
     // 去除下拉框选择中的Compiling,Judging,Submitting,Not Submitted,四种状态（pending为了管理员易筛选用来重判失败提交重新进入判题队列）
     delete this.JUDGE_STATUS_LIST['5'];
     delete this.JUDGE_STATUS_LIST['6'];
@@ -364,7 +377,18 @@ export default {
       if (this.currentPage < 1) {
         this.currentPage = 1;
       }
+      this.limit = parseInt(query.limit) || 15;
       this.routeName = this.$route.name;
+      // ACM比赛没有必要显示分数列
+      if (this.contestID && this.contestRuleType == RULE_TYPE.ACM) {
+        this.loadingTable = true;
+        setTimeout(() => {
+          // 将指定列设置为隐藏状态
+          this.$refs.xTable.getColumnByField('score').visible = false;
+          this.$refs.xTable.refreshColumn();
+          this.loadingTable = false;
+        }, 200);
+      }
       this.getSubmissions();
     },
     buildQuery() {
@@ -374,6 +398,7 @@ export default {
         username: this.formFilter.username,
         problemID: this.formFilter.problemID,
         currentPage: this.currentPage,
+        limit: this.limit,
       };
     },
 
@@ -530,7 +555,10 @@ export default {
       this.refreshStatus = setTimeout(checkStatus, 2000);
       this.autoCheckOpen = true;
     },
-
+    onPageSizeChange(pageSize) {
+      this.limit = pageSize;
+      this.changeRoute();
+    },
     // 改变route， 通过监听route变化请求数据，这样可以产生route history， 用户返回时就会保存之前的状态
     changeRoute() {
       let query = this.buildQuery();
@@ -687,6 +715,7 @@ export default {
       'userInfo',
       'isSuperAdmin',
       'isAdminRole',
+      'contestRuleType',
       'contestStatus',
     ]),
     title() {

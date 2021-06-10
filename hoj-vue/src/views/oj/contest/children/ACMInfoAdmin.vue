@@ -43,7 +43,11 @@
         :title="$t('m.Problem_ID')"
         min-width="100"
       ></vxe-table-column>
-      <vxe-table-column field="first_blood" title="AC Status" min-width="80">
+      <vxe-table-column
+        field="first_blood"
+        :title="'AC' + $t('m.Status')"
+        min-width="80"
+      >
         <template v-slot="{ row }">
           <el-tag effect="dark" color="#ed3f14" v-if="row.firstBlood">{{
             $t('m.First_Blood')

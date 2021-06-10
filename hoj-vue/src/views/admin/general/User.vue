@@ -132,10 +132,12 @@
       <div class="panel-options">
         <el-pagination
           class="page"
-          layout="prev, pager, next"
+          layout="prev, pager, next, sizes"
           @current-change="currentChange"
           :page-size="pageSize"
           :total="total"
+          @size-change="onPageSizeChange"
+          :page-sizes="[10, 30, 50, 100]"
         >
         </el-pagination>
       </div>
@@ -612,6 +614,10 @@ export default {
     currentChange(page) {
       this.currentPage = page;
       this.getUserList(page);
+    },
+    onPageSizeChange(pageSize) {
+      this.pageSize = pageSize;
+      this.getUserList(this.currentPage);
     },
     // 提交修改用户的信息
     saveUser() {

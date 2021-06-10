@@ -119,6 +119,13 @@ export default {
       JUDGE_STATUS: JUDGE_STATUS,
     };
   },
+  mounted() {
+    setTimeout(() => {
+      this.$nextTick((_) => {
+        addCodeBtn();
+      });
+    }, 200);
+  },
   methods: {
     getStatusColor(status) {
       return 'el-tag el-tag--medium status-' + JUDGE_STATUS[status].color;

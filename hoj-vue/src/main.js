@@ -70,7 +70,9 @@ Vue.use(Katex)  // 数学公式渲染
 // Vue.use(VXETable) // 表格组件
 Vue.use(VueClipboard) // 剪贴板
 Vue.use(highlight) // 代码高亮
-Vue.use(Element)
+Vue.use(Element,{
+  i18n: (key, value) => i18n.t(key, value)
+})
 
 Vue.use(VueCropper) // 图像剪切
 Vue.use(Message, { name: 'msg' }) // `Vue.prototype.$msg` 全局消息提示

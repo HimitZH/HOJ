@@ -107,7 +107,7 @@ export const m = {
 
   // /views/oj/user/UserHome.vue
   Recent_login_time:'Recently launched：',
-  Not_set_yet:'Not set yet',
+  Not_set_yet:'This guy is lazy. He doesn\'t write anything.',
   UserHome_Solved: 'Solved',
   UserHome_Submissions: 'Submissions',
   UserHome_Score: 'Score',
@@ -154,7 +154,7 @@ export const m = {
   // /views/oj/problem/problemList.vue
   Problem_List:'Problem List',
   All:'All',
-  My_OJ:'Mime',
+  My_OJ:'Mine',
   Level:'Level',
   Tags:'Tags',
   Pick_a_random_question:'Pick a random question',
@@ -167,6 +167,7 @@ export const m = {
   No_tag:'No tag',
   Statistic: 'Statistic',
   Solution:'Solution',
+  Problem_Discussion:'Discussion',
   Description: 'Description',
   Input: 'Input',
   Output: 'Output',
