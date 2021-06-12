@@ -6,6 +6,13 @@ export const JUDGE_STATUS = {
     type: 'info',
     rgb:'#909399'
   },
+  '-5': {
+    name: 'Submitted Unknown Result',
+    short: 'SNR',
+    color: 'gray',
+    type: 'info',
+    rgb:'#909399'
+  },
   '-3': {
     name: 'Presentation Error',
     short: 'PE',
@@ -104,6 +111,7 @@ export const JUDGE_STATUS = {
 }
 
 export const JUDGE_STATUS_RESERVE={
+  'snr':-5,
   'pe':-3,
   'ce':-2,
   'wa':-1,
@@ -115,6 +123,7 @@ export const JUDGE_STATUS_RESERVE={
   'Compiling':5,
   'Pending':6,
   'Judging':7,
+  'pa':8,
   'sf':10,
 }
 

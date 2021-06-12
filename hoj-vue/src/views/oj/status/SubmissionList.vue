@@ -503,7 +503,10 @@ export default {
       }
       const checkStatus = () => {
         let submitIds = this.needCheckSubmitIds;
-        api.checkSubmissonsStatus(Object.keys(submitIds)).then(
+        let func = this.contestID
+          ? 'getContestSubmissionList'
+          : 'checkSubmissonsStatus';
+        api[func](Object.keys(submitIds), this.contestID).then(
           (res) => {
             let result = res.data.data;
             if (!this.$refs.xTable) {
@@ -717,6 +720,7 @@ export default {
       'isAdminRole',
       'contestRuleType',
       'contestStatus',
+      'ContestRealTimePermission',
     ]),
     title() {
       if (!this.contestID) {

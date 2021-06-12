@@ -57,14 +57,20 @@ public class AccountRealm extends AuthorizingRealm {
         //用户角色列表
         List<String> roleNameList = new LinkedList<>();
         //获取该用户角色所有的权限
-        for (Role role:user.getRoles()) {
+        List<Role> roles = userRoleDao.getRolesByUid(user.getUid());
+        // 角色变动，同时需要修改会话里面的数据
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVo userInfo = (UserRolesVo) session.getAttribute("userInfo");
+        userInfo.setRoles(roles);
+        session.setAttribute("userInfo",userInfo);
+        for (Role role:roles) {
             roleNameList.add(role.getRole());
             for (Auth auth : roleAuthDao.getRoleAuths(role.getId()).getAuths()) {
                 permissionsNameList.add(auth.getPermission());
             }
         }
         SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-        // 添加角色
+
         authorizationInfo.addRoles(roleNameList);
         //添加权限
         authorizationInfo.addStringPermissions(permissionsNameList);
