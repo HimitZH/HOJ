@@ -10,6 +10,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.ProblemCountVo;
 
+import java.util.Date;
+
 
 /**
  * <p>
@@ -26,11 +28,14 @@ public interface JudgeMapper extends BaseMapper<Judge> {
                                       @Param("username") String username, @Param("uid") String uid);
 
     IPage<JudgeVo> getContestJudgeList(Page<JudgeVo> page, @Param("displayId") String displayId, @Param("cid") Long cid, @Param("status") Integer status,
-                                       @Param("username") String username, @Param("uid") String uid, @Param("beforeContestSubmit") Boolean beforeContestSubmit);
+                                       @Param("username") String username, @Param("uid") String uid, @Param("beforeContestSubmit") Boolean beforeContestSubmit,
+                                       @Param("rule") String rule, @Param("startTime") Date startTime, @Param("sealRankTime") Date sealRankTime,
+                                       @Param("sealTimeUid") String sealTimeUid);
 
     int getTodayJudgeNum();
 
-    ProblemCountVo getContestProblemCount(@Param("pid") Long pid, @Param("cpid") Long cpid, @Param("cid") Long cid);
+    ProblemCountVo getContestProblemCount(@Param("pid") Long pid, @Param("cpid") Long cpid, @Param("cid") Long cid,
+                                          @Param("startTime") Date startTime, @Param("sealRankTime") Date sealRankTime);
 
     ProblemCountVo getProblemCount(@Param("pid") Long pid);
 }

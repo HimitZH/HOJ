@@ -130,7 +130,11 @@ export default {
           this.btnResetPwdDisabled = true;
           api.applyResetPassword(this.formResetPassword).then(
             (res) => {
-              mMessage.success(res.data.msg);
+              mMessage.message(
+                'success',
+                this.$i18n.t('m.ResetPwd_Send_Email_Msg'),
+                10000
+              );
               this.countDown();
               this.startTimeOut({ name: 'resetTimeOut' });
               this.btnResetPwdLoading = false;

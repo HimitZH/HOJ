@@ -24,6 +24,13 @@
           <el-tooltip
             :content="JUDGE_STATUS[row.myStatus]['name']"
             placement="top"
+            v-else-if="row.myStatus == -5"
+          >
+            <i class="fa fa-question" :style="getIconColor(row.myStatus)"></i>
+          </el-tooltip>
+          <el-tooltip
+            :content="JUDGE_STATUS[row.myStatus]['name']"
+            placement="top"
             v-else
           >
             <i
@@ -74,26 +81,45 @@
       ></vxe-table-column>
 
       <!-- 以下列只有在实时刷新榜单的情况下才显示 -->
-      <vxe-table-column
-        field="ac"
-        :title="$t('m.AC')"
-        min-width="80"
-        v-if="ContestRealTimePermission"
-      ></vxe-table-column>
-      <vxe-table-column
-        field="total"
-        :title="$t('m.Total')"
-        min-width="80"
-        v-if="ContestRealTimePermission"
-      ></vxe-table-column>
+      <vxe-table-column field="ac" :title="$t('m.AC')" min-width="80">
+        <template v-slot="{ row }">
+          <span v-if="!ContestRealTimePermission">
+            <i
+              class="fa fa-question"
+              style="font-weight: 600;font-size: 16px;color:#909399"
+            ></i>
+          </span>
+          <span v-else>
+            {{ row.ac }}
+          </span>
+        </template>
+      </vxe-table-column>
+      <vxe-table-column field="total" :title="$t('m.Total')" min-width="80">
+        <template v-slot="{ row }">
+          <span v-if="!ContestRealTimePermission">
+            <i
+              class="fa fa-question"
+              style="font-weight: 600;font-size: 16px;color:#909399"
+            ></i>
+          </span>
+          <span v-else>
+            {{ row.total }}
+          </span>
+        </template>
+      </vxe-table-column>
       <vxe-table-column
         field="ACRating"
         :title="$t('m.AC_Rate')"
         min-width="80"
-        v-if="ContestRealTimePermission"
       >
         <template v-slot="{ row }">
-          <span>{{ getACRate(row.ac, row.total) }}</span>
+          <span v-if="!ContestRealTimePermission">
+            <i
+              class="fa fa-question"
+              style="font-weight: 600;font-size: 16px;color:#909399"
+            ></i>
+          </span>
+          <span v-else>{{ getACRate(row.ac, row.total) }}</span>
         </template>
       </vxe-table-column>
     </vxe-table>
@@ -126,25 +152,27 @@ export default {
           let isContestProblemList = true;
           // 如果已登录，则需要查询对当前页面题目列表中各个题目的提交情况
           let pidList = [];
-          for (let index = 0; index < this.problems.length; index++) {
-            pidList.push(this.problems[index].pid);
+          if (this.problems && this.problems.length > 0) {
+            for (let index = 0; index < this.problems.length; index++) {
+              pidList.push(this.problems[index].pid);
+            }
+            api
+              .getUserProblemStatus(
+                pidList,
+                isContestProblemList,
+                this.$route.params.contestID
+              )
+              .then((res) => {
+                let result = res.data.data;
+                for (let index = 0; index < this.problems.length; index++) {
+                  this.problems[index]['myStatus'] =
+                    result[this.problems[index].pid]['status'];
+                  this.problems[index]['score'] =
+                    result[this.problems[index].pid]['score'];
+                }
+                this.isGetStatusOk = true;
+              });
           }
-          api
-            .getUserProblemStatus(
-              pidList,
-              isContestProblemList,
-              this.$route.params.contestID
-            )
-            .then((res) => {
-              let result = res.data.data;
-              for (let index = 0; index < this.problems.length; index++) {
-                this.problems[index]['myStatus'] =
-                  result[this.problems[index].pid]['status'];
-                this.problems[index]['score'] =
-                  result[this.problems[index].pid]['score'];
-              }
-              this.isGetStatusOk = true;
-            });
         }
       });
     },

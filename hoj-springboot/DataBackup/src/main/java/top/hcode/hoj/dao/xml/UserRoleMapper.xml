@@ -46,6 +46,10 @@
 
     </select>
 
+    <select id="getRolesByUid" resultType="top.hcode.hoj.pojo.entity.Role">
+        select r.* from role r,user_role ur where r.id=ur.role_id and ur.uid = #{uid}
+    </select>
+
 
     <resultMap id="map_UserRolesList" type="top.hcode.hoj.pojo.vo.UserRolesVo">
         <id column="uuid" property="uid"></id>

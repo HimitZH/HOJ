@@ -310,7 +310,7 @@ export default {
               : 'admin_deleteContestProblem';
           api[funcName](id)
             .then((res) => {
-              myMessage.success(this.$i18n.t('m.Delete_Successfully'));
+              myMessage.success(this.$i18n.t('m.Delete_successfully'));
               this.getProblemList(this.currentPage);
             })
             .catch(() => {});

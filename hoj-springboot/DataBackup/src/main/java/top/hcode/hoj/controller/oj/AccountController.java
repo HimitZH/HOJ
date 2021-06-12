@@ -89,6 +89,9 @@ public class AccountController {
         if (!configVo.getRegister()) { // 需要判断一下网站是否开启注册
             return CommonResult.errorResponse("对不起！本站暂未开启注册功能！", CommonResult.STATUS_ACCESS_DENIED);
         }
+        if (!emailService.isOk()){
+            return CommonResult.errorResponse("对不起！本站邮箱系统未配置，暂不支持注册！", CommonResult.STATUS_ACCESS_DENIED);
+        }
         QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("email", email);
         UserInfo userInfo = userInfoDao.getOne(queryWrapper);
@@ -160,6 +163,9 @@ public class AccountController {
         String email = (String) data.get("email");
         if (StringUtils.isEmpty(captcha) || StringUtils.isEmpty(email) || StringUtils.isEmpty(captchaKey)) {
             return CommonResult.errorResponse("邮箱或验证码不能为空");
+        }
+        if (!emailService.isOk()){
+            return CommonResult.errorResponse("对不起！本站邮箱系统未配置，暂不支持重置密码！", CommonResult.STATUS_ACCESS_DENIED);
         }
         // 获取redis中的验证码
         String redisCode = (String) redisUtils.get(captchaKey);

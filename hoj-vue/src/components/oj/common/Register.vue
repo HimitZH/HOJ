@@ -236,7 +236,11 @@ export default {
         api.getRegisterEmail(this.registerForm.email).then(
           (res) => {
             if (res.data.msg != null) {
-              mMessage.success(res.data.msg);
+              mMessage.message(
+                'success',
+                this.$i18n.t('m.Register_Send_Email_Msg'),
+                10000
+              );
               this.countDown();
               this.startTimeOut({ name: 'registerTimeOut' });
             }

@@ -14,6 +14,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.utils.Constants;
 
+import java.util.Date;
+
 
 /**
  * <p>
@@ -42,11 +44,12 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     }
 
     @Override
-    public IPage<JudgeVo> getContestJudgeList(Integer limit, Integer currentPage, String displayId, Long cid, Integer status, String username, String uid, Boolean beforeContestSubmit) {
+    public IPage<JudgeVo> getContestJudgeList(Integer limit, Integer currentPage, String displayId, Long cid, Integer status, String username,
+                                              String uid, Boolean beforeContestSubmit, String rule, Date startTime, Date sealRankTime, String sealTimeUid) {
         //新建分页
         Page<JudgeVo> page = new Page<>(currentPage, limit);
 
-        return judgeMapper.getContestJudgeList(page, displayId, cid, status, username, uid, beforeContestSubmit);
+        return judgeMapper.getContestJudgeList(page, displayId, cid, status, username, uid, beforeContestSubmit, rule, startTime, sealRankTime, sealTimeUid);
     }
 
 
@@ -68,8 +71,8 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     }
 
     @Override
-    public ProblemCountVo getContestProblemCount(Long pid, Long cpid, Long cid) {
-        return judgeMapper.getContestProblemCount(pid, cpid, cid);
+    public ProblemCountVo getContestProblemCount(Long pid, Long cpid, Long cid, Date startTime, Date sealRankTime) {
+        return judgeMapper.getContestProblemCount(pid, cpid, cid, startTime, sealRankTime);
     }
 
     @Override

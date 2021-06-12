@@ -53,6 +53,7 @@ export const m = {
   Code_Check_Required:'The captcha is required.',
   Code_Check_Length:'The captcha must be six digits.',
   The_system_is_processing:'Please Waiting... The system is processing...',
+  Register_Send_Email_Msg:'Verification code has been sent to the designated mailbox! If you haven\'t received the email for a long time, please check whether your email is accurate!',
   Thanks_for_registering: 'Thanks for your registering, you can login now.',
 
   // /components/oj/common/ResetPassword.vue 重置密码弹窗
@@ -61,6 +62,7 @@ export const m = {
   Reset_Password_Captcha: 'Please Enter the captcha',
   Send_Password_Reset_Email: 'Send Password Reset Email',
   Waiting_Can_Resend_Email:'resend the Reset Email...',
+  ResetPwd_Send_Email_Msg:'Reset password email has been sent to the designated mailbox! If you haven\'t received the email for a long time, please check whether your email is accurate!',
   Remember_Passowrd_To_Login:'Remember password? To login!',
   Set_New_Password:'Set New Password',
   Set_New_Password_Msg: 'Please Enter New Password',
@@ -192,6 +194,7 @@ export const m = {
   Submit_code_successfully: 'Submit code successfully',
   You_have_solved_the_problem: 'You have solved the problem',
   Submitted_successfully: 'Submitted successfully',
+  Submitted_Not_Result:'Submitted successfully, but the result is not known at present',
   You_have_submitted_a_solution: 'You have submitted a solution.',
   Contest_has_ended: 'Contest has ended',
   You_have_submission_in_this_problem_sure_to_cover_it: 'You have submission in this problem, sure to cover it?',
