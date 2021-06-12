@@ -5,11 +5,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+
 
 @Slf4j
 @Data
@@ -23,6 +25,7 @@ public class JwtUtils {
     private long checkRefreshExpire;
     private final static String TOKEN_KEY = "token-key:";
     private final static String TOKEN_REFRESH = "token-refresh:";
+
     @Autowired
     private RedisUtils redisUtils;
     /**

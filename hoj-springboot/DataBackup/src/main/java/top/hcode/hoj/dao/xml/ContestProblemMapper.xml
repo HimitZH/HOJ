@@ -3,10 +3,38 @@
 <mapper namespace="top.hcode.hoj.dao.ContestProblemMapper">
     <select id="getContestProblemList" resultType="top.hcode.hoj.pojo.vo.ContestProblemVo">
         select cp.id,cp.display_id,cp.cid,cp.pid,cp.display_title,
-        (select count(*) from judge where cpid=cp.id and cid=cp.cid and pid =cp.pid and
-        submit_time >= #{startTime}) as total,
-        (select count(*) from judge where cpid=cp.id and cid=cp.cid and pid =cp.pid and
-        status=0 and submit_time >= #{startTime}) as ac
+        (select count(*) from judge
+        <where>
+            cpid=cp.id and cid=cp.cid and pid=cp.pid
+            <choose>
+                <when test="isAdmin">
+                    AND submit_time >= #{startTime} AND #{endTime}>submit_time
+                </when>
+                <when test="sealTime!=null">
+                    AND submit_time >= #{startTime} AND #{sealTime}>submit_time
+                </when>
+                <otherwise>
+                    AND submit_time >= #{startTime} AND #{endTime}>submit_time
+                </otherwise>
+            </choose>
+        </where>
+        ) as total,
+        (select count(*) from judge
+        <where>
+             cpid=cp.id and cid=cp.cid and pid =cp.pid and status=0
+            <choose>
+                <when test="isAdmin">
+                    AND submit_time >= #{startTime} AND #{endTime}>=submit_time
+                </when>
+                <when test="sealTime!=null">
+                    AND submit_time >= #{startTime} AND #{sealTime}>=submit_time
+                </when>
+                <otherwise>
+                    AND submit_time >= #{startTime} AND #{endTime}>=submit_time
+                </otherwise>
+            </choose>
+        </where>
+        ) as ac
         from contest_problem cp
         where cp.cid = #{cid} order by cp.display_id asc
     </select>

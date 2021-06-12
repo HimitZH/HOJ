@@ -50,11 +50,19 @@
                 AND j.uid = #{uid}
             </if>
             <if test="beforeContestSubmit!=null and beforeContestSubmit==true">
-                AND (select start_time from contest where id = #{cid}) > j.submit_time
+                AND #{startTime} > j.submit_time
             </if>
             <if test="beforeContestSubmit!=null and beforeContestSubmit==false">
-                AND j.submit_time >= (select start_time from contest where id = #{cid})
+                AND j.submit_time >= #{startTime}
             </if>
+            <choose>
+                <when test="sealRankTime!=null and rule=='ACM'">
+                    AND (#{sealRankTime} > j.submit_time OR j.uid=#{sealTimeUid})
+                </when>
+                <when test="sealRankTime!=null and rule=='OI'">
+                    AND  #{sealRankTime} > j.submit_time
+                </when>
+            </choose>
         </where>
         order by j.submit_time DESC,j.submit_id DESC
     </select>
@@ -74,7 +82,16 @@
                COUNT(IF(status=4,status,NULL)) AS se,
                COUNT(IF(status=8,status,NULL)) AS pa,
                COUNT(*) AS total
-        FROM judge where pid=#{pid} and cpid = #{cpid} and cid = #{cid}
+        FROM judge
+        <where>
+         pid=#{pid} and cpid = #{cpid} and cid = #{cid}
+         <if test="startTime!=null">
+             and submit_time >= #{startTime}
+         </if>
+         <if test="sealRankTime!=null">
+             and #{sealRankTime} > submit_time
+         </if>
+        </where>
     </select>
 
     <select id="getProblemCount" resultType="top.hcode.hoj.pojo.vo.ProblemCountVo">

@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author Himit_ZH
@@ -21,5 +21,7 @@ import java.util.List;
 @Mapper
 @Repository
 public interface ContestProblemMapper extends BaseMapper<ContestProblem> {
-    List<ContestProblemVo> getContestProblemList(@Param("cid")Long cid, @Param("startTime")Date startTime);
+    List<ContestProblemVo> getContestProblemList(@Param("cid") Long cid, @Param("startTime") Date startTime,
+                                                 @Param("endTime") Date endTime, @Param("sealTime") Date sealTime,
+                                                 @Param("isAdmin") Boolean isAdmin);
 }

@@ -233,6 +233,8 @@ public class JudgeController {
             return CommonResult.errorResponse("对不起！您并非提交数据的本人，无法重新提交！");
         }
 
+        Problem problem = problemService.getById(judge.getPid());
+
         // 如果是非比赛题目
         if (judge.getCid() == 0) {
             // 重判前，需要将该题目对应记录表一并更新
@@ -242,9 +244,17 @@ public class JudgeController {
                 userAcproblemQueryWrapper.eq("submit_id", judge.getSubmitId());
                 userAcproblemService.remove(userAcproblemQueryWrapper);
             }
+        } else {
+            if (problem.getIsRemote()) {
+                // 将对应比赛记录设置成默认值
+                UpdateWrapper<ContestRecord> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("submit_id", submitId).setSql("status=null,score=null");
+                contestRecordService.update(updateWrapper);
+            } else {
+                return CommonResult.errorResponse("错误！非vJudge题目在比赛过程无权限重新提交");
+            }
         }
 
-        Problem problem = problemService.getById(judge.getPid());
         // 重新进入等待队列
         judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus());
         judge.setVersion(judge.getVersion() + 1);
@@ -278,12 +288,26 @@ public class JudgeController {
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
+
+        boolean root = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
+
+        HashMap<String, Object> result = new HashMap<>();
+        // 如果是比赛需要判断是否为封榜,比赛管理员和超级管理员可以有权限查看(ACM题目除外)
+        if (judge.getCid() != 0 && !root) {
+            Contest contest = contestService.getById(judge.getCid());
+            if (!userRolesVo.getUid().equals(contest.getUid()) && contest.getSealRank()
+                    && contest.getType().intValue() == Constants.Contest.TYPE_OI.getCode()
+                    && contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()
+                    && contest.getSealRankTime().before(new Date())) {
+                result.put("submission", new Judge().setStatus(Constants.Judge.STATUS_SUBMITTED_UNKNOWN_RESULT.getStatus()));
+                return CommonResult.successResponse(result, "获取提交数据成功！");
+            }
+        }
+
         // 超级管理员与管理员有权限查看代码
         // 如果不是本人或者并未分享代码，则不可查看
         // 当此次提交代码不共享
-        boolean root = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
         boolean admin = SecurityUtils.getSubject().hasRole("admin");// 是否为管理员
-
         if (!judge.getShare() && !root && !admin) {
             if (userRolesVo != null) { // 当前是登陆状态
                 // 需要判断是否为当前登陆用户自己的提交代码
@@ -296,7 +320,6 @@ public class JudgeController {
         }
 
         Problem problem = problemService.getById(judge.getPid());
-        HashMap<String, Object> result = new HashMap<>();
 
         // 只允许用户查看ce错误,sf错误，se错误信息提示
         if (judge.getStatus().intValue() != Constants.Judge.STATUS_COMPILE_ERROR.getStatus() &&
@@ -402,7 +425,7 @@ public class JudgeController {
      * @Since 2021/1/3
      */
     @RequestMapping(value = "/check-submissions-status", method = RequestMethod.POST)
-    public CommonResult checkJudgeResult(@RequestBody SubmitIdListDto submitIdListDto) {
+    public CommonResult checkCommonJudgeResult(@RequestBody SubmitIdListDto submitIdListDto) {
         QueryWrapper<Judge> queryWrapper = new QueryWrapper<>();
         // lambada表达式过滤掉code
         queryWrapper.select(Judge.class, info -> !info.getColumn().equals("code")).in("submit_id", submitIdListDto.getSubmitIds());
@@ -415,6 +438,49 @@ public class JudgeController {
     }
 
     /**
+     * @MethodName checkContestJudgeResult
+     * @Params * @param submitIdListDto
+     * @Description 需要检查是否为封榜，是否可以查询结果，避免有人恶意查询
+     * @Return
+     * @Since 2021/6/11
+     */
+    @RequestMapping(value = "/check-contest-submissions-status", method = RequestMethod.POST)
+    @RequiresAuthentication
+    public CommonResult checkContestJudgeResult(@RequestBody SubmitIdListDto submitIdListDto, HttpServletRequest request) {
+        if (submitIdListDto.getCid() == null) {
+            return CommonResult.errorResponse("查询比赛ID不能为空");
+        }
+
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        boolean root = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
+
+        Contest contest = contestService.getById(submitIdListDto.getCid());
+
+        boolean isSealRank = false;
+        // 如果是封榜时间且不是比赛管理员和超级管理员
+        if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode() &&
+                contest.getSealRank() && contest.getSealRankTime().before(new Date()) &&
+                !root && !userRolesVo.getUid().equals(contest.getUid())) {
+            isSealRank = true;
+        }
+
+        QueryWrapper<Judge> queryWrapper = new QueryWrapper<>();
+        // lambada表达式过滤掉code
+        queryWrapper.select(Judge.class, info -> !info.getColumn().equals("code"))
+                .in("submit_id", submitIdListDto.getSubmitIds())
+                .eq("cid", submitIdListDto.getCid())
+                .between(isSealRank, "submit_time", contest.getStartTime(), contest.getSealRankTime());
+        List<Judge> judgeList = judgeService.list(queryWrapper);
+        HashMap<Long, Object> result = new HashMap<>();
+        for (Judge judge : judgeList) {
+            result.put(judge.getSubmitId(), judge);
+        }
+        return CommonResult.successResponse(result, "获取最新判题数据成功！");
+    }
+
+
+    /**
      * @MethodName getJudgeCase
      * @Params * @param null
      * @Description 获得指定提交id的测试样例结果，暂不支持查看测试数据，只可看测试点结果，时间，空间，或者IO得分
@@ -422,7 +488,7 @@ public class JudgeController {
      * @Since 2020/10/29
      */
     @GetMapping("/get-all-case-result")
-    public CommonResult getALLCaseResult(@RequestParam(value = "submitId", required = true) Long submitId) {
+    public CommonResult getALLCaseResult(@RequestParam(value = "submitId", required = true) Long submitId, HttpServletRequest request) {
 
         Judge judge = judgeService.getById(submitId);
 
@@ -437,9 +503,25 @@ public class JudgeController {
             return CommonResult.successResponse(null, "对不起，该题测试样例详情不支持开放！");
         }
 
-        // 若是比赛题目，只支持IO查看测试点情况，ACM强制禁止查看
-        if (problem.getAuth() == 3 && problem.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) {
-            return CommonResult.successResponse(null, "对不起，该题测试样例详情不能查看！");
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        boolean root = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
+
+        if (judge.getCid() != 0 && userRolesVo != null && !root) {
+            Contest contest = contestService.getById(judge.getCid());
+            // 如果不是比赛管理员 比赛封榜不能看
+            if (!contest.getUid().equals(userRolesVo.getUid())) {
+                // 当前是比赛期间 同时处于封榜时间
+                if (contest.getSealRank() && contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()
+                        && contest.getSealRankTime().before(new Date())) {
+                    return CommonResult.successResponse(null, "对不起，该题测试样例详情不能查看！");
+                }
+
+                // 若是比赛题目，只支持OI查看测试点情况，ACM强制禁止查看,比赛管理员除外
+                if (problem.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) {
+                    return CommonResult.successResponse(null, "对不起，该题测试样例详情不能查看！");
+                }
+            }
         }
 
 

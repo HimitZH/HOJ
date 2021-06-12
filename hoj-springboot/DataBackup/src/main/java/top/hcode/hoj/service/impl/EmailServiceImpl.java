@@ -2,6 +2,7 @@ package top.hcode.hoj.service.impl;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.lang.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,7 +68,7 @@ public class EmailServiceImpl implements EmailService {
 
     /**
      * @MethodName getMailSender
-     * @Params  * @param
+     * @Params * @param
      * @Description 获取邮件系统配置
      * @Return
      * @Since 2021/5/21
@@ -87,6 +88,18 @@ public class EmailServiceImpl implements EmailService {
         p.setProperty("mail.smtp.starttls.enable", ojEmailSsl);
         sender.setJavaMailProperties(p);
         return sender;
+    }
+
+    /**
+     * @MethodName isOk
+     * @Params  * @param null
+     * @Description 验证当前邮箱系统是否已配置。
+     * @Return
+     * @Since 2021/6/12
+     */
+    public boolean isOk() {
+        return !ojEmailFrom.equals("your_email_username") && !ojEmailPassword.equals("your_email_password")
+                && Validator.isEmail(ojEmailFrom);
     }
 
     /**

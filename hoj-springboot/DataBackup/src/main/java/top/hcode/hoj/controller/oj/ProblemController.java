@@ -2,6 +2,7 @@ package top.hcode.hoj.controller.oj;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -87,7 +88,7 @@ public class ProblemController {
 //                pid = Long.valueOf(keyword);
 //            }
         }
-        if (oj!=null && !Constants.RemoteOJ.isRemoteOJ(oj)) {
+        if (oj != null && !Constants.RemoteOJ.isRemoteOJ(oj)) {
             oj = "Mine";
         }
         Page<ProblemVo> problemList = problemService.getProblemList(limit, currentPage, null, keyword,
@@ -146,24 +147,41 @@ public class ProblemController {
         List<Judge> judges = judgeService.list(queryWrapper);
 
         boolean isACMContest = true;
+        Contest contest = null;
         if (pidListDto.getIsContestProblemList()) {
-            Contest contest = contestService.getById(pidListDto.getCid());
+            contest = contestService.getById(pidListDto.getCid());
+            if (contest == null) {
+                return CommonResult.errorResponse("比赛参数错误！");
+            }
             isACMContest = contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode();
         }
 
         for (Judge judge : judges) {
 
             // 如果是比赛的题目列表状态
+            HashMap<String, Object> temp = new HashMap<>();
             if (pidListDto.getIsContestProblemList()) {
-                HashMap<String, Object> temp = new HashMap<>();
                 if (!isACMContest) {
+
                     if (!result.containsKey(judge.getPid())) { // IO比赛的，如果还未写入，则使用最新一次提交的结果
-                        temp.put("status", judge.getStatus());
-                        temp.put("score", judge.getScore());
+                        // 判断该提交是否为封榜之后的提交,OI赛制封榜后的提交看不到提交结果，
+                        // 只有比赛结束可以看到,比赛管理员与超级管理员的提交除外
+                        if (contest.getSealRank() &&
+                                !contest.getUid().equals(userRolesVo.getUid()) &&
+                                !SecurityUtils.getSubject().hasRole("root") &&
+                                contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode() &&
+                                judge.getSubmitTime().after(contest.getSealRankTime())) {
+                            temp.put("status", Constants.Judge.STATUS_SUBMITTED_UNKNOWN_RESULT.getStatus());
+                            temp.put("score", null);
+                        } else {
+                            temp.put("status", judge.getStatus());
+                            temp.put("score", judge.getScore());
+                        }
                         result.put(judge.getPid(), temp);
                     }
                 } else {
-                    if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) { // 如果该题目已通过，则强制写为通过（0）
+                    // 如果该题目已通过，且同时是为不封榜前提交的，则强制写为通过（0）
+                    if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
                         temp.put("status", Constants.Judge.STATUS_ACCEPTED.getStatus());
                         temp.put("score", null);
                         result.put(judge.getPid(), temp);
@@ -176,13 +194,14 @@ public class ProblemController {
 
             } else { // 不是比赛题目
                 if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) { // 如果该题目已通过，则强制写为通过（0）
-                    result.put(judge.getPid(), Constants.Judge.STATUS_ACCEPTED.getStatus());
+                    temp.put("status", Constants.Judge.STATUS_ACCEPTED.getStatus());
+                    result.put(judge.getPid(), temp);
                 } else if (!result.containsKey(judge.getPid())) { // 还未写入，则使用最新一次提交的结果
-                    result.put(judge.getPid(), judge.getStatus());
+                    temp.put("status", judge.getStatus());
+                    result.put(judge.getPid(), temp);
                 }
             }
         }
-
 
         // 再次检查，应该可能从未提交过该题，则状态写为-10
         for (Long pid : pidListDto.getPidList()) {
@@ -192,12 +211,14 @@ public class ProblemController {
                 if (!result.containsKey(pid)) {
                     HashMap<String, Object> temp = new HashMap<>();
                     temp.put("score", null);
-                    temp.put("status", -10);
+                    temp.put("status", Constants.Judge.STATUS_NOT_SUBMITTED.getStatus());
                     result.put(pid, temp);
                 }
             } else {
                 if (!result.containsKey(pid)) {
-                    result.put(pid, -10);
+                    HashMap<String, Object> temp = new HashMap<>();
+                    temp.put("status", Constants.Judge.STATUS_NOT_SUBMITTED.getStatus());
+                    result.put(pid, temp);
                 }
             }
         }

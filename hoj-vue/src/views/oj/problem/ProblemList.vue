@@ -440,7 +440,7 @@ export default {
                     index++
                   ) {
                     this.problemList[index]['myStatus'] =
-                      result[this.problemList[index].pid];
+                      result[this.problemList[index].pid].status;
                   }
                   this.isGetStatusOk = true;
                 });

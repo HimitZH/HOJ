@@ -212,6 +212,17 @@
                     </el-tag>
                   </template>
                   <template
+                    v-else-if="result.status == JUDGE_STATUS_RESERVE['snr']"
+                  >
+                    <el-alert
+                      type="warning"
+                      show-icon
+                      effect="dark"
+                      :closable="false"
+                      >{{ $t('m.Submitted_Not_Result') }}</el-alert
+                    >
+                  </template>
+                  <template
                     v-else-if="
                       !this.contestID ||
                         (this.contestID &&
@@ -249,7 +260,8 @@
                 </div>
                 <div
                   v-else-if="
-                    !this.contestID &&
+                    (!this.contestID ||
+                      this.contestRuleType == RULE_TYPE.ACM) &&
                       problemData.myStatus == JUDGE_STATUS_RESERVE.ac
                   "
                 >
@@ -461,21 +473,7 @@ export default {
           let result = res.data.data;
           this.changeDomTitle({ title: result.problem.title });
           result['myStatus'] = -10; // 设置默认值
-          if (this.isAuthenticated) {
-            let pidList = [result.problem.id];
-            let isContestProblemList = false;
-            api
-              .getUserProblemStatus(pidList, isContestProblemList)
-              .then((res) => {
-                let statusMap = res.data.data;
-                if (statusMap[result.problem.id] != -10) {
-                  this.submissionExists = true;
-                  result.myStatus = statusMap[result.problem.id];
-                } else {
-                  this.submissionExists = false;
-                }
-              });
-          }
+
           result.problem.examples = utils.stringToExamples(
             result.problem.examples
           );
@@ -500,6 +498,28 @@ export default {
             );
           }
           this.problemData = result;
+
+          if (this.isAuthenticated) {
+            let pidList = [result.problem.id];
+            let isContestProblemList = this.contestID ? true : false;
+            api
+              .getUserProblemStatus(
+                pidList,
+                isContestProblemList,
+                this.contestID
+              )
+              .then((res) => {
+                let statusMap = res.data.data;
+                if (statusMap[result.problem.id].status != -10) {
+                  this.submissionExists = true;
+                  this.problemData.myStatus =
+                    statusMap[result.problem.id].status;
+                } else {
+                  this.submissionExists = false;
+                }
+              });
+          }
+
           this.isRemote = result.problem.isRemote;
           this.changePie(result.problemCount);
 

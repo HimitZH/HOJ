@@ -26,7 +26,7 @@ public class ContestProblemServiceImpl extends ServiceImpl<ContestProblemMapper,
     private ContestProblemMapper contestProblemMapper;
 
     @Override
-    public List<ContestProblemVo> getContestProblemList(Long cid, Date startTime) {
-        return contestProblemMapper.getContestProblemList(cid, startTime);
+    public List<ContestProblemVo> getContestProblemList(Long cid, Date startTime, Date endTime, Date sealTime,Boolean isAdmin) {
+        return contestProblemMapper.getContestProblemList(cid, startTime,endTime,sealTime,isAdmin);
     }
 }

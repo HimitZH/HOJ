@@ -8,8 +8,9 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.crazycake.shiro.RedisSessionDAO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
@@ -21,6 +22,7 @@ import top.hcode.hoj.service.UserInfoService;
 import top.hcode.hoj.service.UserRecordService;
 import top.hcode.hoj.service.impl.UserRoleServiceImpl;
 import top.hcode.hoj.utils.RedisUtils;
+import top.hcode.hoj.utils.ShiroUtils;
 
 import java.util.*;
 
@@ -44,6 +46,7 @@ public class AdminUserController {
 
     @Autowired
     private RedisUtils redisUtils;
+
 
     @GetMapping("/get-user-list")
     @RequiresAuthentication
@@ -92,6 +95,13 @@ public class AdminUserController {
         UpdateWrapper<UserRole> updateWrapper2 = new UpdateWrapper<>();
         updateWrapper2.eq("uid", uid).set("role_id", type);
         boolean result2 = userRoleService.update(updateWrapper2);
+        if (result1) {
+            // 需要重新登录
+            userRoleService.deleteCache(uid, true);
+        } else if (result2) {
+            // 需要重新授权
+            userRoleService.deleteCache(uid, false);
+        }
 
         if (result1 && result2) {
             return CommonResult.successResponse(null, "修改成功！");

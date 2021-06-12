@@ -14,4 +14,6 @@ import java.util.List;
 public class SubmitIdListDto {
     @NotEmpty(message = "查询的提交id列表不能为空")
     private List<Long> submitIds;
+
+    private Long cid;
 }
