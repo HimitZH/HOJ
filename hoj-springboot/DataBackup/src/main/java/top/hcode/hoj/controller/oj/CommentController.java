@@ -105,7 +105,8 @@ public class CommentController {
 
         if (SecurityUtils.getSubject().hasRole("root")) {
             comment.setFromRole("root");
-        } else if (SecurityUtils.getSubject().hasRole("admin")) {
+        } else if (SecurityUtils.getSubject().hasRole("admin")
+                || SecurityUtils.getSubject().hasRole("problem_admin")) {
             comment.setFromRole("admin");
         } else {
             comment.setFromRole("user");
@@ -142,7 +143,7 @@ public class CommentController {
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
         // 如果不是评论本人 或者不是管理员 无权限删除该评论
         if (comment.getFromUid().equals(userRolesVo.getUid()) || SecurityUtils.getSubject().hasRole("root")
-                || SecurityUtils.getSubject().hasRole("admin")) {
+                || SecurityUtils.getSubject().hasRole("admin") || SecurityUtils.getSubject().hasRole("problem_admin")) {
 
             // 删除该数据
             boolean isDeleteComment = commentService.remove(new UpdateWrapper<Comment>().eq("id", comment.getId()));
@@ -233,7 +234,7 @@ public class CommentController {
 
         if (SecurityUtils.getSubject().hasRole("root")) {
             reply.setFromRole("root");
-        } else if (SecurityUtils.getSubject().hasRole("admin")) {
+        } else if (SecurityUtils.getSubject().hasRole("admin") || SecurityUtils.getSubject().hasRole("problem_admin")) {
             reply.setFromRole("admin");
         } else {
             reply.setFromRole("user");
@@ -259,7 +260,7 @@ public class CommentController {
 
         // 如果不是评论本人 或者不是管理员 无权限删除该评论
         if (reply.getFromUid().equals(userRolesVo.getUid()) || SecurityUtils.getSubject().hasRole("root")
-                || SecurityUtils.getSubject().hasRole("admin")) {
+                || SecurityUtils.getSubject().hasRole("admin") || SecurityUtils.getSubject().hasRole("problem_admin")) {
 
             // 删除该数据
             boolean isOk = replyService.removeById(reply.getId());

@@ -146,6 +146,9 @@ public class JudgeController {
                     .setPid(contestProblem.getPid());
 
             Problem problem = problemService.getById(contestProblem.getPid());
+            if (problem.getAuth() == 2) {
+                return CommonResult.errorResponse("错误！当前题目不可提交！", CommonResult.STATUS_FORBIDDEN);
+            }
             judge.setDisplayPid(problem.getProblemId());
 
             // 将新提交数据插入数据库
@@ -187,6 +190,11 @@ public class JudgeController {
             QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
             problemQueryWrapper.eq("problem_id", judgeDto.getPid());
             Problem problem = problemService.getOne(problemQueryWrapper);
+
+            if (problem.getAuth() == 2) {
+                return CommonResult.errorResponse("错误！当前题目不可提交！", CommonResult.STATUS_FORBIDDEN);
+            }
+
             judge.setCpid(0L).setPid(problem.getId()).setDisplayPid(problem.getProblemId());
 
             // 将新提交数据插入数据库
@@ -307,7 +315,8 @@ public class JudgeController {
         // 超级管理员与管理员有权限查看代码
         // 如果不是本人或者并未分享代码，则不可查看
         // 当此次提交代码不共享
-        boolean admin = SecurityUtils.getSubject().hasRole("admin");// 是否为管理员
+        boolean admin = SecurityUtils.getSubject().hasRole("admin")
+                || SecurityUtils.getSubject().hasRole("problem_admin");// 是否为管理员
         if (!judge.getShare() && !root && !admin) {
             if (userRolesVo != null) { // 当前是登陆状态
                 // 需要判断是否为当前登陆用户自己的提交代码

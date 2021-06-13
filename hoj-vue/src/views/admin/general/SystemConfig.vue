@@ -118,6 +118,7 @@
             <el-form-item :label="$t('m.Port')" required label-width="80px">
               <el-input
                 v-model="smtp.emailPort"
+                type="number"
                 :placeholder="$t('m.Port')"
               ></el-input>
             </el-form-item>
@@ -233,7 +234,6 @@
             >
               <el-input
                 v-model="databaseConfig.redisHost"
-                type="password"
                 :placeholder="'Redis ' + $t('m.Host')"
               ></el-input>
             </el-form-item>
@@ -246,7 +246,7 @@
             >
               <el-input
                 v-model="databaseConfig.redisPort"
-                type="password"
+                type="number"
                 :placeholder="'Redis ' + $t('m.Port')"
               ></el-input>
             </el-form-item>
@@ -327,7 +327,9 @@ export default {
           myMessage.success(this.$i18n.t('m.Update_Successfully'));
           this.saved = true;
         },
-        () => {}
+        () => {
+          this.saved = false;
+        }
       );
     },
     testSMTPConfig() {
@@ -339,7 +341,7 @@ export default {
           this.loadingBtnTest = true;
           api.admin_testSMTPConfig(value).then(
             (res) => {
-              myMessage.success(this.$i18n.t('m.Post_Successfully'));
+              myMessage.success(this.$i18n.t('m.Post_successfully'));
               this.loadingBtnTest = false;
             },
             () => {

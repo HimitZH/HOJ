@@ -63,7 +63,8 @@
           <template v-slot="{ row }">
             <el-switch
               v-model="row.visible"
-              @change="changeContestVisible(row.id, row.visible)"
+              :disabled="!isSuperAdmin && userInfo.uid != row.uid"
+              @change="changeContestVisible(row.id, row.visible, row.uid)"
             >
             </el-switch>
           </template>
@@ -78,59 +79,65 @@
         </vxe-table-column>
         <vxe-table-column min-width="150" :title="$t('m.Option')">
           <template v-slot="{ row }">
-            <div style="margin-bottom:10px">
-              <el-tooltip effect="dark" :content="$t('m.Edit')" placement="top">
-                <el-button
-                  icon="el-icon-edit"
-                  size="mini"
-                  @click.native="goEdit(row.id)"
-                  type="primary"
+            <template v-if="isSuperAdmin || userInfo.uid == row.uid">
+              <div style="margin-bottom:10px">
+                <el-tooltip
+                  effect="dark"
+                  :content="$t('m.Edit')"
+                  placement="top"
                 >
-                </el-button>
-              </el-tooltip>
-              <el-tooltip
-                effect="dark"
-                :content="$t('m.View_Contest_Problem_List')"
-                placement="top"
-              >
-                <el-button
-                  icon="el-icon-tickets"
-                  size="mini"
-                  @click.native="goContestProblemList(row.id)"
-                  type="success"
+                  <el-button
+                    icon="el-icon-edit"
+                    size="mini"
+                    @click.native="goEdit(row.id)"
+                    type="primary"
+                  >
+                  </el-button>
+                </el-tooltip>
+                <el-tooltip
+                  effect="dark"
+                  :content="$t('m.View_Contest_Problem_List')"
+                  placement="top"
                 >
-                </el-button>
-              </el-tooltip>
-            </div>
-            <div style="margin-bottom:10px">
-              <el-tooltip
-                effect="dark"
-                :content="$t('m.View_Contest_Announcement_List')"
-                placement="top"
-              >
-                <el-button
-                  icon="el-icon-info"
-                  size="mini"
-                  @click.native="goContestAnnouncement(row.id)"
-                  type="info"
+                  <el-button
+                    icon="el-icon-tickets"
+                    size="mini"
+                    @click.native="goContestProblemList(row.id)"
+                    type="success"
+                  >
+                  </el-button>
+                </el-tooltip>
+              </div>
+              <div style="margin-bottom:10px">
+                <el-tooltip
+                  effect="dark"
+                  :content="$t('m.View_Contest_Announcement_List')"
+                  placement="top"
                 >
-                </el-button>
-              </el-tooltip>
+                  <el-button
+                    icon="el-icon-info"
+                    size="mini"
+                    @click.native="goContestAnnouncement(row.id)"
+                    type="info"
+                  >
+                  </el-button>
+                </el-tooltip>
 
-              <el-tooltip
-                effect="dark"
-                :content="$t('m.Download_Contest_AC_Submission')"
-                placement="top"
-              >
-                <el-button
-                  icon="el-icon-download"
-                  size="mini"
-                  @click.native="openDownloadOptions(row.id)"
-                  type="warning"
+                <el-tooltip
+                  effect="dark"
+                  :content="$t('m.Download_Contest_AC_Submission')"
+                  placement="top"
                 >
-                </el-button>
-              </el-tooltip>
-            </div>
+                  <el-button
+                    icon="el-icon-download"
+                    size="mini"
+                    @click.native="openDownloadOptions(row.id)"
+                    type="warning"
+                  >
+                  </el-button>
+                </el-tooltip>
+              </div>
+            </template>
             <el-tooltip
               effect="dark"
               :content="$t('m.Delete')"
@@ -216,7 +223,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['isSuperAdmin']),
+    ...mapGetters(['isSuperAdmin', 'userInfo']),
   },
   methods: {
     // 切换页码回调
@@ -273,8 +280,8 @@ export default {
         });
       });
     },
-    changeContestVisible(contestId, visible) {
-      api.admin_changeContestVisible(contestId, visible).then((res) => {
+    changeContestVisible(contestId, visible, uid) {
+      api.admin_changeContestVisible(contestId, visible, uid).then((res) => {
         myMessage.success(this.$i18n.t('m.Update_Successfully'));
       });
     },

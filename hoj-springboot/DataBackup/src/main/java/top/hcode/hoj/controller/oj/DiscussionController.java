@@ -149,7 +149,7 @@ public class DiscussionController {
 
         if (SecurityUtils.getSubject().hasRole("root")) {
             discussion.setRole("root");
-        } else if (SecurityUtils.getSubject().hasRole("admin")) {
+        } else if (SecurityUtils.getSubject().hasRole("admin") || SecurityUtils.getSubject().hasRole("problem_admin")) {
             discussion.setRole("admin");
         } else {
             // 如果不是管理员角色，一律重置为不置顶
@@ -187,7 +187,8 @@ public class DiscussionController {
         UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<Discussion>().eq("id", did);
         // 如果不是是管理员,则需要附加当前用户的uid条件
         if (!SecurityUtils.getSubject().hasRole("root")
-                && !SecurityUtils.getSubject().hasRole("admin")) {
+                && !SecurityUtils.getSubject().hasRole("admin")
+                    &&!SecurityUtils.getSubject().hasRole("problem_admin")) {
             discussionUpdateWrapper.eq("uid", userRolesVo.getUid());
         }
         boolean isOk = discussionService.remove(discussionUpdateWrapper);

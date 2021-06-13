@@ -40,9 +40,11 @@
           <el-menu-item index="/admin/problem/create">{{
             $t('m.Create_Problem')
           }}</el-menu-item>
-          <el-menu-item index="/admin/problem/batch-operation">{{
-            $t('m.Export_Import_Problem')
-          }}</el-menu-item>
+          <el-menu-item
+            index="/admin/problem/batch-operation"
+            v-if="isSuperAdmin"
+            >{{ $t('m.Export_Import_Problem') }}</el-menu-item
+          >
         </el-submenu>
         <el-submenu index="contest">
           <template slot="title"
@@ -260,6 +262,7 @@
               }}</mu-list-item-title>
             </mu-list-item>
             <mu-list-item
+              v-if="isSuperAdmin"
               button
               :ripple="false"
               slot="nested"

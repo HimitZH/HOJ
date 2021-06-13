@@ -14,7 +14,11 @@
                 }}</span>
                 <p>
                   {{
-                    isSuperAdmin == true ? $t('m.Super_Admin') : $t('m.Admin')
+                    isSuperAdmin == true
+                      ? $t('m.Super_Admin')
+                      : isProblemAdmin == true
+                      ? $t('m.All_Problem_Admin')
+                      : $t('m.Admin')
                   }}
                 </p>
               </el-col>
@@ -338,7 +342,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['userInfo', 'isSuperAdmin']),
+    ...mapGetters(['userInfo', 'isSuperAdmin', 'isProblemAdmin']),
     https() {
       return document.URL.slice(0, 5) === 'https';
     },

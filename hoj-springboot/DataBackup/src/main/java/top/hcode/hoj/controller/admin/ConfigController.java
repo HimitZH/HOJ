@@ -46,14 +46,14 @@ public class ConfigController {
      * @Since 2020/12/3
      */
 
-    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
+    @RequiresRoles(value = {"root","admin","problem_admin"},logical = Logical.OR)
     @RequestMapping("/get-service-info")
     public CommonResult getServiceInfo(){
 
         return CommonResult.successResponse(configService.getServiceInfo());
     }
 
-    @RequiresRoles(value = {"root","admin"},logical = Logical.OR)
+    @RequiresRoles(value = {"root","admin","problem_admin"},logical = Logical.OR)
     @RequestMapping("/get-judge-service-info")
     public CommonResult getJudgeServiceInfo(){
         return CommonResult.successResponse(configService.getJudgeServiceInfo());

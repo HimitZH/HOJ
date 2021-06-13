@@ -2,6 +2,7 @@ package top.hcode.hoj.remoteJudge.task.Impl;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ReUtil;
+import cn.hutool.http.HtmlUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
 import org.jsoup.helper.Validate;
@@ -95,7 +96,7 @@ public class HduJudge implements RemoteJudgeStrategy {
             connection.url(HOST + String.format(ERROR_URL, submitId));
             response = JsoupUtils.getResponse(connection, null);
             String compilationErrorInfo = ReUtil.get("<pre>([\\s\\S]*?)</pre>", response.body(), 1);
-            result.put("CEInfo", compilationErrorInfo);
+            result.put("CEInfo", HtmlUtil.unescape(compilationErrorInfo));
         }
         return result;
     }
