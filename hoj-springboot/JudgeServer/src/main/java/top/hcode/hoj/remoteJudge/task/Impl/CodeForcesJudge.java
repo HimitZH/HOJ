@@ -1,40 +1,34 @@
 package top.hcode.hoj.remoteJudge.task.Impl;
 
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.text.UnicodeUtil;
 import cn.hutool.core.util.ReUtil;
+import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
+import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.*;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Connection;
-import org.springframework.http.HttpEntity;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.util.Constants;
-import top.hcode.hoj.util.JsoupUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 
 @Slf4j(topic = "hoj")
 public class CodeForcesJudge implements RemoteJudgeStrategy {
-    public static final String HOST = "https://codeforces.com";
-    public static final String LOGIN_URL = "/enter";
-    public static final String SUBMIT_URL = "/problemset/submit?csrf_token=%s";
-    public static final String SUBMISSION_RESULT_URL = "/api/user.status?handle=%s&from=1&count=20";
-    public static final String CE_INFO_URL = "/data/judgeProtocol";
-    public static Map<String, String> headers = MapUtil
-            .builder(new HashMap<String, String>())
-            .put("Host", "codeforces.com")
-            .put("origin","https://codeforces.com")
-            .put("referer","https://codeforces.com")
-            .map();
+    public static final String HOST = "https://codeforces.com/";
+    public static final String LOGIN_URL = "enter";
+    public static final String SUBMIT_URL = "problemset/submit";
+    public static final String SUBMISSION_RESULT_URL = "api/user.status?handle=%s&from=1&count=5";
+    public static final String CE_INFO_URL = "data/submitSource";
 
     private static final Map<String, Constants.Judge> statusMap = new HashMap<String, Constants.Judge>() {{
         put("FAILED", Constants.Judge.STATUS_SUBMITTED_FAILED);
@@ -62,47 +56,40 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         if (problemId == null || userCode == null) {
             return null;
         }
-        String contestNum = problemId.replaceAll("\\D.*", "");
-        String problemNum = problemId.replaceAll("^\\d*", "");
 
         Map<String, Object> loginUtils = getLoginUtils(username, password);
-        CodeForcesToken token = (CodeForcesToken) loginUtils.get("token");
-        Connection connection = JsoupUtils.getConnectionFromUrl(HOST + String.format(SUBMIT_URL,token.csrf_token), headers, token.cookies);
-        System.out.println(token.cookies);
-        Connection.Response response = JsoupUtils.postResponse(connection, MapUtil
-                .builder(new HashMap<String, String>())
-                .put("csrf_token", token.csrf_token)
-                .put("_tta", token._tta)
-                .put("action", "submitSolutionFormSubmitted")
-                .put("contestId", contestNum) // 比赛号
-                .put("submittedProblemIndex", problemNum) // 题号：1A
-                .put("programTypeId", getLanguage(language)) // 语言号
-                .put("source", userCode + getRandomBlankString())
-                .put("sourceFile", "")
-                .map());
-        if (response.statusCode() != 200) {
+
+        if (loginUtils == null) {
+            log.error("进行题目提交时发生错误：登录失败，可能原因账号或密码错误，登录失败！" + CodeForcesJudge.class.getName() + "，题号:" + problemId);
+            return null;
+        }
+
+        WebClient webClient = (WebClient) loginUtils.getOrDefault("webClient", null);
+
+        boolean isSubmitted = submitCode(webClient, problemId, getLanguage(language), userCode);
+
+        if (!isSubmitted) {
             log.error("进行题目提交时发生错误：提交题目失败，" + CodeForcesJudge.class.getName() + "，题号:" + problemId);
             return null;
         }
         // 获取提交的题目id
-        Long maxRunId = getMaxRunId(connection, username, problemId);
+        Long maxRunId = getMaxRunId(null, username, problemId);
         return MapUtil.builder(new HashMap<String, Object>())
-                .put("token", token.csrf_token)
-                .put("cookies", token.cookies)
                 .put("runId", maxRunId)
+                .put("token", "")
+                .put("cookies", new HashMap<String, String>())
                 .map();
     }
 
-    private Long getMaxRunId(Connection connection, String username, String problemId) throws IOException {
+    private Long getMaxRunId(Connection connection, String username, String problemId) {
+
         String url = String.format(SUBMISSION_RESULT_URL, username);
-        connection.url(HOST + url);
-        connection.ignoreContentType(true);
-        Connection.Response response = JsoupUtils.getResponse(connection, null);
+        String resJson = HttpUtil.createGet(HOST + url).timeout(30000).execute().body();
 
         String contestNum = problemId.replaceAll("\\D.*", "");
         String problemNum = problemId.replaceAll("^\\d*", "");
         try {
-            Map<String, Object> json = JSONUtil.parseObj(response.body());
+            Map<String, Object> json = JSONUtil.parseObj(resJson);
             List<Map<String, Object>> results = (List<Map<String, Object>>) json.get("result");
             for (Map<String, Object> result : results) {
                 Long runId = Long.valueOf(result.get("id").toString());
@@ -113,7 +100,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
                 }
             }
         } catch (Exception e) {
-            log.error("进行题目获取runID发生错误：提交题目失败，" + CodeForcesJudge.class.getName()
+            log.error("进行题目获取runID发生错误：获取提交ID失败，" + CodeForcesJudge.class.getName()
                     + "，题号:" + problemId + "，异常描述：" + e.getMessage());
             return -1L;
         }
@@ -122,12 +109,15 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
 
     @Override
     public Map<String, Object> result(Long submitId, String username, String token, HashMap<String, String> cookies) throws Exception {
-        String url = HOST + String.format(SUBMISSION_RESULT_URL, username);
-        Connection connection = JsoupUtils.getConnectionFromUrl(url, headers, cookies);
-        connection.ignoreContentType(true);
-        Connection.Response response = JsoupUtils.getResponse(connection, null);
 
-        JSONObject jsonObject = JSONUtil.parseObj(response.body());
+        String url = HOST + String.format(SUBMISSION_RESULT_URL, username);
+
+        String resJson = HttpUtil.createGet(url)
+                .timeout(30000)
+                .execute()
+                .body();
+
+        JSONObject jsonObject = JSONUtil.parseObj(resJson);
 
         Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("status", Constants.Judge.STATUS_JUDGING.getStatus());
@@ -149,17 +139,22 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
                 Constants.Judge resultStatus = statusMap.get(verdict);
                 if (resultStatus == Constants.Judge.STATUS_COMPILE_ERROR) {
 
-                    Connection CEInfoConnection = JsoupUtils.getConnectionFromUrl(HOST + CE_INFO_URL, headers, cookies);
-                    CEInfoConnection.ignoreContentType(true);
+                    String html = HttpUtil.createGet(HOST)
+                            .timeout(30000).execute().body();
+                    String csrfToken = ReUtil.get("data-csrf='(\\w+)'", html, 1);
 
-                    Connection.Response CEInfoResponse = JsoupUtils.postResponse(CEInfoConnection, MapUtil
-                            .builder(new HashMap<String, String>())
-                            .put("csrf_token", token)
-                            .put("submissionId", submitId.toString()).map());
+                    String ceJson = HttpUtil.createPost(HOST + CE_INFO_URL)
+                            .form(MapUtil
+                                    .builder(new HashMap<String, Object>())
+                                    .put("csrf_token", csrfToken)
+                                    .put("submissionId", "119327069").map())
+                            .timeout(30000)
+                            .execute()
+                            .body();
+                    JSONObject CEInfoJson = JSONUtil.parseObj(ceJson);
+                    String CEInfo = CEInfoJson.getStr("checkerStdoutAndStderr#1");
 
-
-                    resultMap.put("CEInfo", UnicodeUtil.toString(CEInfoResponse.body()).replaceAll("(\\\\r)?\\\\n", "\n")
-                            .replaceAll("\\\\\\\\", "\\\\"));
+                    resultMap.put("CEInfo", CEInfo);
                 }
                 resultMap.put("status", resultStatus.getStatus());
                 return resultMap;
@@ -170,21 +165,75 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
 
     @Override
     public Map<String, Object> getLoginUtils(String username, String password) throws Exception {
-        // 获取token
-        CodeForcesToken token = getTokens();
-        Connection connection = JsoupUtils.getConnectionFromUrl(HOST + LOGIN_URL, headers, token.cookies);
+        // 模拟一个浏览器
+        WebClient webClient = new WebClient(BrowserVersion.CHROME);
+        // 设置webClient的相关参数
+        webClient.setCssErrorHandler(new SilentCssErrorHandler());
+        //设置ajax
+        webClient.setAjaxController(new NicelyResynchronizingAjaxController());
+        //设置禁止js
+        webClient.getOptions().setJavaScriptEnabled(false);
+        //CSS渲染禁止
+        webClient.getOptions().setCssEnabled(false);
+        //超时时间
+        webClient.getOptions().setTimeout(40000);
 
-        Connection.Response response = JsoupUtils.postResponse(connection, MapUtil
-                .builder(new HashMap<String, String>())
-                .put("csrf_token", token.csrf_token)
-                .put("_tta", token._tta)
-                .put("action", "enter")
-                .put("remember", "on") // 是否记住登录
-                .put("handleOrEmail", username)
-                .put("password", password).map());
-        // 混合cookie才能确认身份
-        token.cookies.putAll(response.cookies());
-        return MapUtil.builder(new HashMap<String, Object>()).put("token", token).map();
+        //设置js抛出异常:false
+        webClient.getOptions().setThrowExceptionOnScriptError(false);
+        //允许重定向
+        webClient.getOptions().setRedirectEnabled(true);
+        //允许cookie
+        webClient.getCookieManager().setCookiesEnabled(true);
+
+        webClient.getOptions().setUseInsecureSSL(true);
+        // 模拟浏览器打开一个目标网址
+        HtmlPage page = webClient.getPage(HOST + LOGIN_URL);
+
+        HtmlForm form = (HtmlForm) page.getElementById("enterForm");
+        HtmlTextInput usernameInput = form.getInputByName("handleOrEmail");
+        HtmlPasswordInput passwordInput = form.getInputByName("password");
+        usernameInput.setValueAttribute(username);  //用户名
+        passwordInput.setValueAttribute(password);  //密码
+
+        HtmlSubmitInput button = (HtmlSubmitInput) page.getByXPath("//input[@class='submit']").get(0);
+
+        HtmlPage retPage = button.click();
+
+        if (retPage.getUrl().toString().equals(HOST)) {
+            return MapUtil.builder(new HashMap<String, Object>()).put("webClient", webClient).map();
+        } else {
+            webClient.close();
+            return null;
+        }
+    }
+
+    public boolean submitCode(WebClient webClient, String problemID, String languageID, String code) throws IOException {
+        // 模拟浏览器打开一个目标网址
+        HtmlPage page = webClient.getPage(HOST + SUBMIT_URL);
+
+        HtmlForm form = (HtmlForm) page.getByXPath("//form[@class='submit-form']").get(0);
+
+        // 题号
+        HtmlTextInput problemCode = form.getInputByName("submittedProblemCode");
+        problemCode.setValueAttribute(problemID);
+        // 编程语言
+        HtmlSelect programTypeId = form.getSelectByName("programTypeId");
+        HtmlOption optionByValue = programTypeId.getOptionByValue(languageID);
+        optionByValue.click();
+        // 代码
+        HtmlTextArea source = form.getTextAreaByName("source");
+        source.setText(code + getRandomBlankString());
+
+        HtmlSubmitInput button = (HtmlSubmitInput) page.getByXPath("//input[@class='submit']").get(0);
+        HtmlPage retPage = button.click();
+        if (retPage.getUrl().toString().equals("https://codeforces.com/problemset/status?my=on")) {
+            webClient.close();
+            return true;
+        } else {
+            webClient.close();
+            return false;
+        }
+
     }
 
     @Override
@@ -254,48 +303,6 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         }
     }
 
-
-    public static class CodeForcesToken {
-        public String _tta;
-        public String csrf_token;
-        public Map<String, String> cookies;
-
-        public CodeForcesToken(String _tta, String csrf_token, Map<String, String> cookies) {
-            this._tta = _tta;
-            this.csrf_token = csrf_token;
-            this.cookies = cookies;
-        }
-    }
-
-    public static CodeForcesToken getTokens() throws Exception {
-        Connection connection = JsoupUtils.getConnectionFromUrl(HOST, headers, null);
-        Connection.Response response = JsoupUtils.getResponse(connection, null);
-        String html = response.body();
-        String csrfToken = ReUtil.get("data-csrf='(\\w+)'", html, 1);
-        String _39ce7 = null;
-        Map<String, String> cookies = response.cookies();
-        if (cookies.containsKey("39ce7")) {
-            _39ce7 = cookies.get("39ce7");
-        } else {
-            throw new Exception("网络错误,无法找到cookies");
-        }
-        int _tta = 0;
-        for (int c = 0; c < _39ce7.length(); c++) {
-            _tta = (_tta + (c + 1) * (c + 2) * _39ce7.charAt(c)) % 1009;
-            if (c % 3 == 0)
-                _tta++;
-            if (c % 2 == 0)
-                _tta *= 2;
-            if (c > 0)
-                _tta -= (_39ce7.charAt(c / 2) / 2) * (_tta % 5);
-            while (_tta < 0)
-                _tta += 1009;
-            while (_tta >= 1009)
-                _tta -= 1009;
-        }
-        return new CodeForcesToken(Integer.toString(_tta), csrfToken, cookies);
-    }
-
     protected String getRandomBlankString() {
         StringBuilder string = new StringBuilder("\n");
         int random = new Random().nextInt(Integer.MAX_VALUE);
@@ -305,4 +312,5 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         }
         return string.toString();
     }
+
 }

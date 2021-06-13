@@ -4,6 +4,7 @@ import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -54,7 +55,7 @@ public class AdminProblemController {
 
     @GetMapping("/get-problem-list")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     public CommonResult getProblemList(@RequestParam(value = "limit", required = false) Integer limit,
                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                        @RequestParam(value = "keyword", required = false) String keyword,
@@ -90,10 +91,21 @@ public class AdminProblemController {
 
     @GetMapping("")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
-    public CommonResult getProblem(@Valid @RequestParam("pid") Long pid) {
+    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
+    public CommonResult getProblem(@Valid @RequestParam("pid") Long pid,HttpServletRequest request) {
 
         Problem problem = problemService.getById(pid);
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        // 是否为超级管理员
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean problem_admin = SecurityUtils.getSubject().hasRole("problem_admin");
+        // 只有超级管理员、题目管理员和题目拥有者才能操作
+        if (!isRoot && !problem_admin && !userRolesVo.getUsername().equals(problem.getAuthor())) {
+            return CommonResult.errorResponse("对不起，你无权限操作！", CommonResult.STATUS_FORBIDDEN);
+        }
+
         if (problem != null) { // 查询成功
             return CommonResult.successResponse(problem, "查询成功！");
         } else {
@@ -103,7 +115,7 @@ public class AdminProblemController {
 
     @DeleteMapping("")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root","problem_admin"}, logical = Logical.OR)
     public CommonResult deleteProblem(@Valid @RequestParam("pid") Long pid) {
         boolean result = problemService.removeById(pid);
         /*
@@ -119,7 +131,7 @@ public class AdminProblemController {
 
     @PostMapping("")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     public CommonResult addProblem(@RequestBody ProblemDto problemDto) {
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
@@ -140,9 +152,9 @@ public class AdminProblemController {
 
     @PutMapping("")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     @Transactional
-    public CommonResult updateProblem(@RequestBody ProblemDto problemDto) {
+    public CommonResult updateProblem(@RequestBody ProblemDto problemDto,HttpServletRequest request) {
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("problem_id", problemDto.getProblem().getProblemId().toUpperCase());
@@ -163,7 +175,7 @@ public class AdminProblemController {
 
     @GetMapping("/get-problem-cases")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     public CommonResult getProblemCases(@Valid @RequestParam("pid") Long pid) {
         Map<String, Object> map = new HashMap<>();
         map.put("pid", pid);
@@ -178,7 +190,7 @@ public class AdminProblemController {
 
     @PostMapping("/compile-spj")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     public CommonResult compileSpj(@RequestBody CompileSpj compileSpj) {
 
         if (StringUtils.isEmpty(compileSpj.getSpjSrc()) ||
@@ -192,7 +204,7 @@ public class AdminProblemController {
 
     @GetMapping("/import-remote-oj-problem")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     @Transactional
     public CommonResult importRemoteOJProblem(@RequestParam("name") String name,
                                               @RequestParam("problemId") String problemId,

@@ -1,4 +1,4 @@
-import { USER_TYPE, PROBLEM_PERMISSION } from '@/common/constants'
+import { USER_TYPE } from '@/common/constants'
 import storage from '@/common/storage'
 const state = {
   userInfo:  storage.get('userInfo'),
@@ -16,6 +16,7 @@ const getters = {
   isAdminRole: (state, getters) => {
     if(getters.userInfo.roleList){
       return getters.userInfo.roleList.indexOf(USER_TYPE.ADMIN)!=-1 ||
+        getters.userInfo.roleList.indexOf(USER_TYPE.PROBLEM_ADMIN)!=-1 ||
         getters.userInfo.roleList.indexOf(USER_TYPE.SUPER_ADMIN)!=-1
     }else{
       return false;
@@ -24,6 +25,13 @@ const getters = {
   isSuperAdmin: (state, getters) => {
     if(getters.userInfo.roleList){
       return getters.userInfo.roleList.indexOf(USER_TYPE.SUPER_ADMIN) !=-1
+    }else{
+      return false;
+    }
+  },
+  isProblemAdmin:(state, getters) => {
+    if(getters.userInfo.roleList){
+      return getters.userInfo.roleList.indexOf(USER_TYPE.PROBLEM_ADMIN) !=-1
     }else{
       return false;
     }

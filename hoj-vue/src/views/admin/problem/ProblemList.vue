@@ -77,9 +77,13 @@
               v-model="row.auth"
               @change="changeProblemAuth(row)"
               size="small"
-              :disabled="row.auth == 3 && !contestId"
+              :disabled="!isSuperAdmin && !isProblemAdmin && !contestId"
             >
-              <el-option :label="$t('m.Public_Problem')" :value="1"></el-option>
+              <el-option
+                :label="$t('m.Public_Problem')"
+                :value="1"
+                :disabled="!isSuperAdmin && !isProblemAdmin"
+              ></el-option>
               <el-option
                 :label="$t('m.Private_Problem')"
                 :value="2"
@@ -108,6 +112,7 @@
               effect="dark"
               :content="$t('m.Download_Testcase')"
               placement="top"
+              v-if="isSuperAdmin || isProblemAdmin"
             >
               <el-button
                 icon="el-icon-download"
@@ -118,7 +123,27 @@
               </el-button>
             </el-tooltip>
 
-            <el-tooltip effect="dark" :content="$t('m.Delete')" placement="top">
+            <el-tooltip
+              effect="dark"
+              :content="$t('m.Remove')"
+              placement="top"
+              v-if="contestId"
+            >
+              <el-button
+                icon="el-icon-close"
+                size="mini"
+                @click.native="removeProblem(row.id)"
+                type="warning"
+              >
+              </el-button>
+            </el-tooltip>
+
+            <el-tooltip
+              effect="dark"
+              :content="$t('m.Delete')"
+              placement="top"
+              v-if="isSuperAdmin || isProblemAdmin"
+            >
               <el-button
                 icon="el-icon-delete-solid"
                 size="mini"
@@ -198,6 +223,7 @@ import utils from '@/common/utils';
 import ContestAddProblem from '@/components/admin/ContestAddProblem.vue';
 import myMessage from '@/common/message';
 import { REMOTE_OJ } from '@/common/constants';
+import { mapGetters } from 'vuex';
 export default {
   name: 'ProblemList',
   components: {
@@ -229,6 +255,9 @@ export default {
     this.contestId = this.$route.params.contestId;
     this.getProblemList(this.currentPage);
     this.REMOTE_OJ = Object.assign({}, REMOTE_OJ);
+  },
+  computed: {
+    ...mapGetters(['userInfo', 'isSuperAdmin', 'isProblemAdmin']),
   },
   methods: {
     handleDblclick(row) {
@@ -308,9 +337,25 @@ export default {
             this.routeName === 'admin-problem-list'
               ? 'admin_deleteProblem'
               : 'admin_deleteContestProblem';
-          api[funcName](id)
+          api[funcName](id, null)
             .then((res) => {
               myMessage.success(this.$i18n.t('m.Delete_successfully'));
+              this.getProblemList(this.currentPage);
+            })
+            .catch(() => {});
+        },
+        () => {}
+      );
+    },
+    removeProblem(pid) {
+      this.$confirm(this.$i18n.t('m.Remove_Problem_Tips'), 'Tips', {
+        type: 'warning',
+      }).then(
+        () => {
+          api
+            .admin_deleteContestProblem(pid, this.contestId)
+            .then((res) => {
+              myMessage.success('success');
               this.getProblemList(this.currentPage);
             })
             .catch(() => {});

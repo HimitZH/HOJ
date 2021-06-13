@@ -794,10 +794,11 @@ const adminApi = {
       data
     })
   },
-  admin_deleteContestProblem (pid) {
+  admin_deleteContestProblem (pid,cid) {
     return ajax('/api/admin/contest/problem', 'delete', {
       params: {
-        id
+        pid,
+        cid
       }
     })
   },
@@ -842,11 +843,12 @@ const adminApi = {
       }
     })
   },
-  admin_changeContestVisible(cid,visible){
+  admin_changeContestVisible(cid,visible,uid){
     return ajax('/api/admin/contest/change-contest-visible', 'put', {
       params: {
         cid,
-        visible
+        visible,
+        uid
       }
     })
   },

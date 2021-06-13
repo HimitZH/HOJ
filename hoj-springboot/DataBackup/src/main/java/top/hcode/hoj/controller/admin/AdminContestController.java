@@ -5,6 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -17,9 +18,12 @@ import top.hcode.hoj.pojo.dto.AnnouncementDto;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.utils.Constants;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.File;
 import java.util.HashMap;
@@ -53,7 +57,7 @@ public class AdminContestController {
 
     @GetMapping("/get-contest-list")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult getContestList(@RequestParam(value = "limit", required = false) Integer limit,
                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                        @RequestParam(value = "keyword", required = false) String keyword) {
@@ -82,9 +86,22 @@ public class AdminContestController {
 
     @GetMapping("")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
-    public CommonResult getContest(@Valid @RequestParam("cid") Long cid) {
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
+    public CommonResult getContest(@Valid @RequestParam("cid") Long cid, HttpServletRequest request) {
+
+        // 获取本场比赛的状态
         Contest contest = contestService.getById(cid);
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        // 是否为超级管理员
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        // 只有超级管理员和比赛拥有者才能操作
+        if (!isRoot && !userRolesVo.getUid().equals(contest.getUid())) {
+            return CommonResult.errorResponse("对不起，你无权限操作！", CommonResult.STATUS_FORBIDDEN);
+        }
+
         if (contest != null) { // 查询成功
             return CommonResult.successResponse(contest, "查询成功！");
         } else {
@@ -94,7 +111,7 @@ public class AdminContestController {
 
     @DeleteMapping("")
     @RequiresAuthentication
-    @RequiresRoles(value = "root")
+    @RequiresRoles(value = "root") // 只有超级管理员能删除比赛
     public CommonResult deleteContest(@Valid @RequestParam("cid") Long cid) {
         boolean result = contestService.removeById(cid);
         /*
@@ -109,7 +126,7 @@ public class AdminContestController {
 
     @PostMapping("")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult addContest(@RequestBody Contest contest) {
         boolean result = contestService.save(contest);
         if (result) { // 添加成功
@@ -121,8 +138,19 @@ public class AdminContestController {
 
     @PutMapping("")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
-    public CommonResult updateContest(@RequestBody Contest contest) {
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
+    public CommonResult updateContest(@RequestBody Contest contest, HttpServletRequest request) {
+
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        // 是否为超级管理员
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        // 只有超级管理员和比赛拥有者才能操作
+        if (!isRoot && !userRolesVo.getUid().equals(contest.getUid())) {
+            return CommonResult.errorResponse("对不起，你无权限操作！", CommonResult.STATUS_FORBIDDEN);
+        }
+
         boolean result = contestService.saveOrUpdate(contest);
         if (result) { // 添加成功
             return CommonResult.successResponse(null, "修改成功！");
@@ -133,9 +161,21 @@ public class AdminContestController {
 
     @PutMapping("/change-contest-visible")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult changeContestVisible(@RequestParam(value = "cid", required = true) Long cid,
-                                             @RequestParam(value = "visible", required = true) Boolean visible) {
+                                             @RequestParam(value = "uid", required = true) String uid,
+                                             @RequestParam(value = "visible", required = true) Boolean visible,
+                                             HttpServletRequest request) {
+
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        // 是否为超级管理员
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        // 只有超级管理员和比赛拥有者才能操作
+        if (!isRoot && !userRolesVo.getUid().equals(uid)) {
+            return CommonResult.errorResponse("对不起，你无权限操作！", CommonResult.STATUS_FORBIDDEN);
+        }
 
         boolean result = contestService.saveOrUpdate(new Contest().setId(cid).setVisible(visible));
         if (result) { // 添加成功
@@ -151,7 +191,7 @@ public class AdminContestController {
 
     @GetMapping("/get-problem-list")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     @Transactional
     public CommonResult getProblemList(@RequestParam(value = "limit", required = false) Integer limit,
                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
@@ -210,7 +250,7 @@ public class AdminContestController {
 
     @GetMapping("/problem")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult getProblem(@Valid @RequestParam("pid") Long pid) {
         Problem problem = problemService.getById(pid);
         if (problem != null) { // 查询成功
@@ -222,12 +262,24 @@ public class AdminContestController {
 
     @DeleteMapping("/problem")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
-    public CommonResult deleteProblem(@Valid @RequestParam("pid") Long pid) {
-        boolean result = problemService.removeById(pid);
-        /*
-        problem的id为其他表的外键的表中的对应数据都会被一起删除！
-         */
+    @RequiresRoles(value = {"root", "problem_admin"}, logical = Logical.OR)
+    public CommonResult deleteProblem(@RequestParam("pid") Long pid,
+                                      @RequestParam(value = "cid", required = false) Long cid) {
+
+        boolean result = false;
+        //  比赛id不为null，表示就是从比赛列表移除而已
+        if (cid != null) {
+            QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
+            contestProblemQueryWrapper.eq("cid", cid).eq("pid", pid);
+            result = contestProblemService.remove(contestProblemQueryWrapper);
+        } else {
+             /*
+                problem的id为其他表的外键的表中的对应数据都会被一起删除！
+              */
+            result = problemService.removeById(pid);
+        }
+
+
         if (result) { // 删除成功
             FileUtil.del(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid);
             return CommonResult.successResponse(null, "删除成功！");
@@ -238,7 +290,7 @@ public class AdminContestController {
 
     @PostMapping("/problem")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     @Transactional
     public CommonResult addProblem(@RequestBody ProblemDto problemDto) {
 
@@ -248,7 +300,8 @@ public class AdminContestController {
         if (problem != null) {
             return CommonResult.errorResponse("该题目的Problem ID已存在，请更换！", CommonResult.STATUS_FAIL);
         }
-
+        // 设置为比赛题目
+        problemDto.getProblem().setAuth(3);
         boolean result = problemService.adminAddProblem(problemDto);
         if (result) { // 添加成功
             // 顺便返回新的题目id，好下一步添加外键操作
@@ -261,9 +314,9 @@ public class AdminContestController {
 
     @PutMapping("/problem")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     @Transactional
-    public CommonResult updateProblem(@RequestBody ProblemDto problemDto) {
+    public CommonResult updateProblem(@RequestBody ProblemDto problemDto, HttpServletRequest request) {
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("problem_id", problemDto.getProblem().getProblemId().toUpperCase());
@@ -284,7 +337,7 @@ public class AdminContestController {
 
     @GetMapping("/contest-problem")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult getContestProblem(@RequestParam(value = "cid", required = true) Long cid,
                                           @RequestParam(value = "pid", required = true) Long pid) {
         QueryWrapper<ContestProblem> queryWrapper = new QueryWrapper<>();
@@ -299,7 +352,7 @@ public class AdminContestController {
 
     @PutMapping("/contest-problem")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult setContestProblem(@RequestBody ContestProblem contestProblem) {
         boolean result = contestProblemService.saveOrUpdate(contestProblem);
         if (result) {
@@ -311,8 +364,18 @@ public class AdminContestController {
 
     @PutMapping("/change-problem-auth")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "problem_admin", "admin"}, logical = Logical.OR)
     public CommonResult changeProblemAuth(@RequestBody Problem problem) {
+
+        // 普通管理员只能将题目变成隐藏题目和比赛题目
+        boolean root = SecurityUtils.getSubject().hasRole("root");
+
+        boolean problemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
+
+        if (!problemAdmin && !root && problem.getAuth() == 1) {
+            return CommonResult.errorResponse("修改失败！你无权限公开题目！", CommonResult.STATUS_FORBIDDEN);
+        }
+
         boolean result = problemService.saveOrUpdate(problem);
         if (result) { // 更新成功
             return CommonResult.successResponse(null, "修改成功！");
@@ -323,7 +386,7 @@ public class AdminContestController {
 
     @PostMapping("/add-problem-from-public")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult addProblemFromPublic(@RequestBody HashMap<String, String> params) {
 
         String pidStr = params.get("pid");
@@ -344,11 +407,15 @@ public class AdminContestController {
         }
 
         // 比赛中题目显示默认为原标题
-        String displayName = problemService.getById(pid).getTitle();
+        Problem problem = problemService.getById(pid);
+        String displayName = problem.getTitle();
+
+        // 修改成比赛题目
+        boolean updateProblem = problemService.saveOrUpdate(problem.setAuth(3));
 
         boolean result = contestProblemService.saveOrUpdate(new ContestProblem()
                 .setCid(cid).setPid(pid).setDisplayTitle(displayName).setDisplayId(displayId));
-        if (result) { // 添加成功
+        if (result && updateProblem) { // 添加成功
             return CommonResult.successResponse(null, "添加成功！");
         } else {
             return CommonResult.errorResponse("添加失败", CommonResult.STATUS_FAIL);
@@ -362,7 +429,7 @@ public class AdminContestController {
 
     @GetMapping("/announcement")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult getAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
                                             @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                             @RequestParam(value = "cid", required = true) Long cid) {
@@ -379,7 +446,7 @@ public class AdminContestController {
 
     @DeleteMapping("/announcement")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult deleteAnnouncement(@Valid @RequestParam("aid") Long aid) {
         boolean result = announcementService.removeById(aid);
         if (result) { // 删除成功
@@ -391,7 +458,7 @@ public class AdminContestController {
 
     @PostMapping("/announcement")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     @Transactional
     public CommonResult addAnnouncement(@RequestBody AnnouncementDto announcementDto) {
         boolean result1 = announcementService.save(announcementDto.getAnnouncement());
@@ -406,7 +473,7 @@ public class AdminContestController {
 
     @PutMapping("/announcement")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult updateAnnouncement(@RequestBody AnnouncementDto announcementDto) {
         boolean result = announcementService.saveOrUpdate(announcementDto.getAnnouncement());
         if (result) { // 更新成功

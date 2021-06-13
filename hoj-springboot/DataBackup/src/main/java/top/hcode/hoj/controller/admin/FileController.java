@@ -186,6 +186,7 @@ public class FileController {
 
     @PostMapping("/upload-testcase-zip")
     @ResponseBody
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult uploadTestcaseZip(@RequestParam("file") MultipartFile file) {
         //获取文件后缀
         String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
@@ -256,7 +257,7 @@ public class FileController {
 
     @GetMapping("/download-testcase")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "problem_admin"}, logical = Logical.OR)
     public void downloadTestcase(@RequestParam("pid") Long pid, HttpServletResponse response) {
 
         String workDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid;
@@ -413,12 +414,35 @@ public class FileController {
 
     @GetMapping("/download-contest-ac-submission")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     public void downloadContestACSubmission(@RequestParam("cid") Long cid,
                                             @RequestParam(value = "excludeAdmin", defaultValue = "false") Boolean excludeAdmin,
+                                            HttpServletRequest request,
                                             HttpServletResponse response) {
 
         Contest contest = contestService.getById(cid);
+
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        // 除非是root 其它管理员只能下载自己的比赛ac记录
+        if (!userRolesVo.getUid().equals(contest.getUid())&&!isRoot){
+            response.reset();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            Map<String, Object> map = new HashMap<>();
+            map.put("status", CommonResult.STATUS_FORBIDDEN);
+            map.put("msg", "对不起，你无权限下载！");
+            map.put("data", null);
+            try {
+                response.getWriter().println(JSONUtil.toJsonStr(map));
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+            return;
+        }
+
         boolean isACM = contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode();
 
         // cpid-->displayId
@@ -435,7 +459,8 @@ public class FileController {
                 .eq(isACM, "status", Constants.Judge.STATUS_ACCEPTED.getStatus())
                 .isNotNull(!isACM, "score") // OI模式取得分不为null的
                 .between("submit_time", contest.getStartTime(), contest.getEndTime())
-                .ne(excludeAdmin, "uid", contest.getUid())
+                .ne(excludeAdmin, "uid", contest.getUid()) // 排除比赛创建者和root
+                .ne(excludeAdmin, "username","root")
                 .orderByDesc("submit_time");
 
         List<Judge> judgeList = judgeService.list(judgeQueryWrapper);
@@ -620,7 +645,7 @@ public class FileController {
     @RequestMapping(value = "/upload-md-file", method = RequestMethod.POST)
     @RequiresAuthentication
     @ResponseBody
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     public CommonResult uploadMd(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         if (file == null) {
             return CommonResult.errorResponse("上传的文件不能为空！");
@@ -671,11 +696,11 @@ public class FileController {
     /**
      * @param file
      * @MethodName importProblem
-     * @Description zip文件导入题目
+     * @Description zip文件导入题目 仅超级管理员可操作
      * @Return
      * @Since 2021/5/27
      */
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles("root")
     @RequiresAuthentication
     @ResponseBody
     @Transactional
@@ -827,11 +852,11 @@ public class FileController {
     /**
      * @param file
      * @MethodName importProblem
-     * @Description zip文件导入题目
+     * @Description zip文件导入题目 仅超级管理员可操作
      * @Return
      * @Since 2021/5/27
      */
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles("root")
     @RequiresAuthentication
     @ResponseBody
     @Transactional
@@ -1026,13 +1051,13 @@ public class FileController {
      * @param pidList
      * @param response
      * @MethodName exportProblem
-     * @Description 导出指定的题目包括测试数据生成zip
+     * @Description 导出指定的题目包括测试数据生成zip 仅超级管理员可操作
      * @Return
      * @Since 2021/5/28
      */
     @GetMapping("/export-problem")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles("root")
     public void exportProblem(@RequestParam("pid") List<Long> pidList, HttpServletResponse response) {
 
         QueryWrapper<Language> languageQueryWrapper = new QueryWrapper<>();
