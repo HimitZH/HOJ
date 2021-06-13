@@ -14,7 +14,12 @@
                 :color="CONTEST_STATUS_REVERSE[contests[index].status]['color']"
               >
                 <i class="fa fa-circle" aria-hidden="true"></i>
-                {{ CONTEST_STATUS_REVERSE[contests[index].status]['name'] }}
+                {{
+                  $t(
+                    'm.' +
+                      CONTEST_STATUS_REVERSE[contests[index].status]['name']
+                  )
+                }}
               </el-tag>
             </div>
           </div>

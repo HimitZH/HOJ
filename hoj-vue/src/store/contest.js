@@ -26,7 +26,7 @@ const getters = {
   },
   isContestAdmin: (state, getters, _, rootGetters) => {
     return rootGetters.isAuthenticated &&
-      (state.contest.author === rootGetters.userInfo.author || rootGetters.isSuperAdmin)
+      (state.contest.author === rootGetters.userInfo.username || rootGetters.isSuperAdmin)
   },
   canSubmit:(state, getters)=>{
      return state.intoAccess||state.submitAccess || state.contest.auth === CONTEST_TYPE.PUBLIC ||getters.isContestAdmin

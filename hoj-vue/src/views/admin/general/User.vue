@@ -384,7 +384,16 @@
                   :value="1000"
                   :key="1000"
                 ></el-option>
-                <el-option label="管理员" :value="1001" :key="1001"></el-option>
+                <el-option
+                  label="普通管理员"
+                  :value="1001"
+                  :key="1001"
+                ></el-option>
+                <el-option
+                  label="题目管理员"
+                  :value="1008"
+                  :key="1008"
+                ></el-option>
                 <el-option
                   label="用户(默认)"
                   :value="1002"
@@ -423,6 +432,8 @@
               <el-switch
                 :active-value="0"
                 :inactive-value="1"
+                :active-text="$t('m.Normal')"
+                :inactive-text="$t('m.Disable')"
                 v-model="selectUser.status"
               >
               </el-switch>
@@ -688,7 +699,7 @@ export default {
             api
               .admin_deleteUsers(ids)
               .then((res) => {
-                myMessage.success(res.data.msg);
+                myMessage.success(this.$i18n.$t('m.Delete_successfully'));
                 this.selectedUsers = [];
                 this.getUserList(this.currentPage);
               })

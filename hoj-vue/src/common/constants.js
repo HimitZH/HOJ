@@ -213,6 +213,7 @@ export const CONTEST_TYPE = {
 export const USER_TYPE = {
   REGULAR_USER: 'user',
   ADMIN: 'admin',
+  PROBLEM_ADMIN:'problem_admin',
   SUPER_ADMIN: 'root'
 }
 

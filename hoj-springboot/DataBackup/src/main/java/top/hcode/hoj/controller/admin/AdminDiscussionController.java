@@ -32,7 +32,7 @@ public class AdminDiscussionController {
     private DiscussionServiceImpl discussionService;
 
     @PutMapping("/discussion")
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     @RequiresAuthentication
     public CommonResult updateDiscussion(@RequestBody Discussion discussion) {
         boolean isOk = discussionService.updateById(discussion);
@@ -45,7 +45,7 @@ public class AdminDiscussionController {
 
 
     @DeleteMapping("/discussion")
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     @RequiresAuthentication
     public CommonResult removeDiscussion(@RequestBody List<Integer> didList) {
         boolean isOk = discussionService.removeByIds(didList);
@@ -57,7 +57,7 @@ public class AdminDiscussionController {
     }
 
     @GetMapping("/discussion-report")
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     @RequiresAuthentication
     public CommonResult getDiscussionReport(@RequestParam(value = "limit", defaultValue = "10") Integer limit,
                                             @RequestParam(value = "currentPage", defaultValue = "1") Integer currentPage) {
@@ -70,7 +70,7 @@ public class AdminDiscussionController {
     }
 
     @PutMapping("/discussion-report")
-    @RequiresRoles(value = {"root", "admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     @RequiresAuthentication
     public CommonResult updateDiscussionReport(@RequestBody DiscussionReport discussionReport) {
         boolean isOk = discussionReportService.updateById(discussionReport);

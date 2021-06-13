@@ -31,7 +31,6 @@ import java.util.Properties;
  */
 @Service
 @RefreshScope
-@Async
 @Slf4j(topic = "hoj")
 public class EmailServiceImpl implements EmailService {
 
@@ -92,7 +91,7 @@ public class EmailServiceImpl implements EmailService {
 
     /**
      * @MethodName isOk
-     * @Params  * @param null
+     * @Params * @param null
      * @Description 验证当前邮箱系统是否已配置。
      * @Return
      * @Since 2021/6/12
@@ -111,6 +110,7 @@ public class EmailServiceImpl implements EmailService {
      * @Since 2021/1/14
      */
     @Override
+    @Async
     public void sendCode(String email, String code) {
         DateTime expireTime = DateUtil.offsetMinute(new Date(), 10);
         JavaMailSenderImpl mailSender = getMailSender();
@@ -130,10 +130,8 @@ public class EmailServiceImpl implements EmailService {
             //利用模板引擎加载html文件进行渲染并生成对应的字符串
             String emailContent = templateEngine.process("emailTemplate_registerCode", context);
 
-            JavaMailSenderImpl sender = new JavaMailSenderImpl();
-
             // 设置邮件标题
-            mimeMessageHelper.setSubject("HOJ的注册邮件");
+            mimeMessageHelper.setSubject(ojShortName.toUpperCase() + "的注册邮件");
             mimeMessageHelper.setText(emailContent, true);
             // 收件人
             mimeMessageHelper.setTo(email);
@@ -157,6 +155,7 @@ public class EmailServiceImpl implements EmailService {
      * @Since 2021/1/14
      */
     @Override
+    @Async
     public void sendResetPassword(String username, String code, String email) {
         DateTime expireTime = DateUtil.offsetMinute(new Date(), 10);
         JavaMailSenderImpl mailSender = getMailSender();
@@ -177,7 +176,7 @@ public class EmailServiceImpl implements EmailService {
             //利用模板引擎加载html文件进行渲染并生成对应的字符串
             String emailContent = templateEngine.process("emailTemplate_resetPassword", context);
 
-            mimeMessageHelper.setSubject("HOJ的重置密码邮件");
+            mimeMessageHelper.setSubject(ojShortName.toUpperCase() + "的重置密码邮件");
 
             mimeMessageHelper.setText(emailContent, true);
             // 收件人
@@ -199,6 +198,7 @@ public class EmailServiceImpl implements EmailService {
      * @Since 2021/1/14
      */
     @Override
+    @Async
     public void testEmail(String email) {
         JavaMailSenderImpl mailSender = getMailSender();
         MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -214,7 +214,7 @@ public class EmailServiceImpl implements EmailService {
             //利用模板引擎加载html文件进行渲染并生成对应的字符串
             String emailContent = templateEngine.process("emailTemplate_testEmail", context);
 
-            mimeMessageHelper.setSubject("HOJ的测试邮件");
+            mimeMessageHelper.setSubject(ojShortName.toUpperCase() + "的测试邮件");
 
             mimeMessageHelper.setText(emailContent, true);
             // 收件人
