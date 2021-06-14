@@ -292,8 +292,8 @@ export const m = {
    // /views/oj/contest/ContestDetail.vue
    StartAt: '开始时间',
    EndAt: '结束时间',
-   Password_Required: '请输入密码',
-   To_Enter_Need_Password:'请输入密码',
+   Password_Required: '需要密码',
+   To_Enter_Need_Password:'请输入该比赛的密码，方可进入比赛',
    Enter_the_contest_password:'请输入比赛密码',
    Enter:'进入',
    Overview: '比赛简介',

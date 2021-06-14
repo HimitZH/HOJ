@@ -134,7 +134,7 @@ export const m = {
   Remote_OJ:'远程OJ',
   Add:'添加',
   Remove:'移除',
-  Delete_Problem_Tips:'确定要删除此问题吗？注意：该问题的相关提交数据也将被删除。',
+  Delete_Problem_Tips:'确定要删除此题目吗？注意：该问题的相关数据也将被彻底删除，包括题目详情、题目的提交记录等！',
   Remove_Problem_Tips:'你是否确定要将该题目移出比赛？',
   Add_Successfully:'添加成功',
   Download_Testcase_Success:'该题目的评测数据已经被成功下载！',
