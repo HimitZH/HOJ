@@ -48,7 +48,8 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     public Judge Judge(Problem problem, Judge judge) {
 
         // c和c++为一倍时间和空间，其它语言为2倍时间和空间
-        if (!judge.getLanguage().equals("C++") && !judge.getLanguage().equals("C")) {
+        if (!judge.getLanguage().equals("C++") && !judge.getLanguage().equals("C")&&
+                !judge.getLanguage().equals("C++ With O2") && !judge.getLanguage().equals("C With O2")) {
             problem.setTimeLimit(problem.getTimeLimit() * 2);
             problem.setMemoryLimit(problem.getMemoryLimit() * 2);
         }
