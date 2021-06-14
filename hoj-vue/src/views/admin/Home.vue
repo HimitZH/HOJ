@@ -229,7 +229,7 @@
             <mu-list-item-action>
               <mu-icon value="menu"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>{{ $t('m.Problem') }}</mu-list-item-title>
+            <mu-list-item-title>{{ $t('m.Problem_Admin') }}</mu-list-item-title>
             <mu-list-item-action>
               <mu-icon
                 class="toggle-icon"
@@ -286,7 +286,7 @@
             <mu-list-item-action>
               <mu-icon value=":fa fa-trophy fa-size"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>{{ $t('m.Contest') }}</mu-list-item-title>
+            <mu-list-item-title>{{ $t('m.Contest_Admin') }}</mu-list-item-title>
             <mu-list-item-action>
               <mu-icon
                 class="toggle-icon"

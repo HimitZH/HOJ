@@ -11,7 +11,8 @@ import api from "@/common/api";
 //   return String(t.toFixed(0)) + 'KB'
 // }
 function submissionMemoryFormat(a,b){
-  if(0===a || a ===null || a === ''||a=== undefined)return"--";
+  if(a ===null || a === ''||a=== undefined)return"--";
+  if(a===0) return"0 KB";
   var c=1024,d=b||1,e=["KB","MB","GB","TB","PB","EB","ZB","YB"],
   f=Math.floor(Math.log(a)/Math.log(c));
   return parseFloat((a/Math.pow(c,f)).toFixed(d))+" "+e[f]

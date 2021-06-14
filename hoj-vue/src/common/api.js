@@ -707,6 +707,17 @@ const adminApi = {
     })
   },
 
+  admin_addContestRemoteOJProblem(name,problemId,cid,displayId){
+    return ajax("/api/admin/contest/import-remote-oj-problem","get",{
+      params: {
+        name,
+        problemId,
+        cid,
+        displayId
+      }
+    })
+  },
+
   admin_createProblem (data) {
     return ajax('/api/admin/problem', 'post', {
       data

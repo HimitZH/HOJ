@@ -139,6 +139,8 @@ export const m = {
   Add_Successfully:'Add Successfully',
   Download_Testcase_Success:'The testcase of this problem has been downloaded successfully!',
   Enter_The_Problem_Display_ID_in_the_Contest:'Enter The Problem Display ID in the Contest',
+  Problem_ID_is_required:'Problem ID is required',
+  The_Problem_Display_ID_in_the_Contest_is_required:'The Problem Display ID in the Contest is required',
 
 
   // /views/admin/problem/Problem.vue

@@ -59,7 +59,10 @@ module.exports = {
 					'use/contest',
 					'use/import-problem',
 					'use/import-user',
+					'use/admin-user',
 					'use/discussion-admin',
+					'use/multi-judgeserver',
+					'use/update-fe',
                     'use/spj'
                 ]
             },

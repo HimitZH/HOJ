@@ -21,6 +21,7 @@
               <el-input
                 :placeholder="$t('m.Problem_Display_ID')"
                 v-model="problem.problemId"
+                :disabled="problem.isRemote"
               >
               </el-input>
             </el-form-item>

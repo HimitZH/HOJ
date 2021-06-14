@@ -549,7 +549,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
     @Override
     @Transactional
-    public boolean adminAddOtherOJProblem(ProblemStrategy.RemoteProblemInfo remoteProblemInfo, String OJName) {
+    public Problem adminAddOtherOJProblem(ProblemStrategy.RemoteProblemInfo remoteProblemInfo, String OJName) {
 
         Problem problem = remoteProblemInfo.getProblem();
         boolean addProblemResult = problemMapper.insert(problem) == 1;
@@ -603,7 +603,11 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                     .setPid(problem.getId()));
         }
 
-        return addProblemResult && addProblemTagResult && addProblemLanguageResult;
+        if (addProblemResult && addProblemTagResult && addProblemLanguageResult) {
+            return problem;
+        } else {
+            return null;
+        }
     }
 
     @Override
