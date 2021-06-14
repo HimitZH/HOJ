@@ -14,21 +14,23 @@
               icon="el-icon-plus"
               >{{ $t('m.Create') }}
             </el-button>
+          </span>
+          <span v-if="contestId">
             <el-button
-              type="success"
-              size="small"
-              v-if="!contestId"
-              @click="AddRemoteOJProblemDialogVisible = true"
-              icon="el-icon-plus"
-              >{{ $t('m.Add_Rmote_OJ_Problem') }}
-            </el-button>
-            <el-button
-              v-if="contestId"
               type="primary"
               size="small"
               icon="el-icon-plus"
               @click="addProblemDialogVisible = true"
               >{{ $t('m.Add_From_Public_Problem') }}
+            </el-button>
+          </span>
+          <span>
+            <el-button
+              type="success"
+              size="small"
+              @click="AddRemoteOJProblemDialogVisible = true"
+              icon="el-icon-plus"
+              >{{ $t('m.Add_Rmote_OJ_Problem') }}
             </el-button>
           </span>
           <span>
@@ -200,9 +202,18 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item :label="$t('m.Problem_ID')">
+        <el-form-item :label="$t('m.Problem_ID')" required>
           <el-input v-model="otherOJProblemId" size="small"></el-input>
         </el-form-item>
+
+        <el-form-item
+          v-if="contestId"
+          :label="$t('m.Enter_The_Problem_Display_ID_in_the_Contest')"
+          required
+        >
+          <el-input v-model="displayId" size="small"></el-input>
+        </el-form-item>
+
         <el-form-item style="text-align:center">
           <el-button
             type="primary"
@@ -248,6 +259,7 @@ export default {
       otherOJName: 'HDU',
       otherOJProblemId: '',
       REMOTE_OJ: {},
+      displayId: 'A',
     };
   },
   mounted() {
@@ -389,20 +401,41 @@ export default {
       this.currentChange(1);
     },
     addRemoteOJProblem() {
-      this.addRemoteOJproblemLoading = true;
-      api
-        .admin_addRemoteOJProblem(this.otherOJName, this.otherOJProblemId)
-        .then(
-          (res) => {
-            this.addRemoteOJproblemLoading = false;
-            this.AddRemoteOJProblemDialogVisible = false;
-            myMessage.success(this.$i18n.t('m.Add_Successfully'));
-            this.currentChange(1);
-          },
-          (err) => {
-            this.addRemoteOJproblemLoading = false;
-          }
+      if (!this.otherOJProblemId) {
+        myMessage.error(this.$i18n.t('m.Problem_ID_is_required'));
+        return;
+      }
+
+      if (!this.displayId && this.contestId) {
+        myMessage.error(
+          this.$i18n.t('m.The_Problem_Display_ID_in_the_Contest_is_required')
         );
+        return;
+      }
+
+      this.addRemoteOJproblemLoading = true;
+      let funcName = '';
+      if (this.contestId) {
+        funcName = 'admin_addContestRemoteOJProblem';
+      } else {
+        funcName = 'admin_addRemoteOJProblem';
+      }
+      api[funcName](
+        this.otherOJName,
+        this.otherOJProblemId,
+        this.contestId,
+        this.displayId
+      ).then(
+        (res) => {
+          this.addRemoteOJproblemLoading = false;
+          this.AddRemoteOJProblemDialogVisible = false;
+          myMessage.success(this.$i18n.t('m.Add_Successfully'));
+          this.currentChange(1);
+        },
+        (err) => {
+          this.addRemoteOJproblemLoading = false;
+        }
+      );
     },
   },
   watch: {
@@ -416,11 +449,12 @@ export default {
 </script>
 
 <style scoped>
-.filter-row {
-  margin-top: 10px;
-}
-.filter-row span {
+.filter-row span button {
+  margin-top: 5px;
   margin-bottom: 5px;
+}
+.filter-row span div {
+  margin-top: 5px;
 }
 @media screen and (max-width: 768px) {
   .filter-row span {

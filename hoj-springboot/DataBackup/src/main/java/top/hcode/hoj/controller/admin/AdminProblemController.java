@@ -55,7 +55,7 @@ public class AdminProblemController {
 
     @GetMapping("/get-problem-list")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult getProblemList(@RequestParam(value = "limit", required = false) Integer limit,
                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                        @RequestParam(value = "keyword", required = false) String keyword,
@@ -91,20 +91,10 @@ public class AdminProblemController {
 
     @GetMapping("")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
-    public CommonResult getProblem(@Valid @RequestParam("pid") Long pid,HttpServletRequest request) {
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
+    public CommonResult getProblem(@Valid @RequestParam("pid") Long pid) {
 
         Problem problem = problemService.getById(pid);
-        // 获取当前登录的用户
-        HttpSession session = request.getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-        // 是否为超级管理员
-        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-        boolean problem_admin = SecurityUtils.getSubject().hasRole("problem_admin");
-        // 只有超级管理员、题目管理员和题目拥有者才能操作
-        if (!isRoot && !problem_admin && !userRolesVo.getUsername().equals(problem.getAuthor())) {
-            return CommonResult.errorResponse("对不起，你无权限操作！", CommonResult.STATUS_FORBIDDEN);
-        }
 
         if (problem != null) { // 查询成功
             return CommonResult.successResponse(problem, "查询成功！");
@@ -115,7 +105,7 @@ public class AdminProblemController {
 
     @DeleteMapping("")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root","problem_admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "problem_admin"}, logical = Logical.OR)
     public CommonResult deleteProblem(@Valid @RequestParam("pid") Long pid) {
         boolean result = problemService.removeById(pid);
         /*
@@ -131,7 +121,7 @@ public class AdminProblemController {
 
     @PostMapping("")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult addProblem(@RequestBody ProblemDto problemDto) {
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
@@ -152,9 +142,9 @@ public class AdminProblemController {
 
     @PutMapping("")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     @Transactional
-    public CommonResult updateProblem(@RequestBody ProblemDto problemDto,HttpServletRequest request) {
+    public CommonResult updateProblem(@RequestBody ProblemDto problemDto) {
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("problem_id", problemDto.getProblem().getProblemId().toUpperCase());
@@ -175,7 +165,7 @@ public class AdminProblemController {
 
     @GetMapping("/get-problem-cases")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult getProblemCases(@Valid @RequestParam("pid") Long pid) {
         Map<String, Object> map = new HashMap<>();
         map.put("pid", pid);
@@ -184,13 +174,13 @@ public class AdminProblemController {
         if (problemCases != null && problemCases.size() > 0) {
             return CommonResult.successResponse(problemCases, "获取该题目的评测样例列表成功！");
         } else {
-            return CommonResult.successResponse(null,"获取该题目的评测样例列表为空！");
+            return CommonResult.successResponse(null, "获取该题目的评测样例列表为空！");
         }
     }
 
     @PostMapping("/compile-spj")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult compileSpj(@RequestBody CompileSpj compileSpj) {
 
         if (StringUtils.isEmpty(compileSpj.getSpjSrc()) ||
@@ -204,7 +194,7 @@ public class AdminProblemController {
 
     @GetMapping("/import-remote-oj-problem")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     @Transactional
     public CommonResult importRemoteOJProblem(@RequestParam("name") String name,
                                               @RequestParam("problemId") String problemId,
@@ -222,8 +212,8 @@ public class AdminProblemController {
         try {
             ProblemStrategy.RemoteProblemInfo otherOJProblemInfo = problemService.getOtherOJProblemInfo(name.toUpperCase(), problemId, userRolesVo.getUsername());
             if (otherOJProblemInfo != null) {
-                boolean result = problemService.adminAddOtherOJProblem(otherOJProblemInfo, name);
-                if (!result) {
+                Problem importProblem = problemService.adminAddOtherOJProblem(otherOJProblemInfo, name);
+                if (importProblem == null) {
                     return CommonResult.errorResponse("导入新题目失败！请重新尝试！");
                 }
             } else {
@@ -234,5 +224,6 @@ public class AdminProblemController {
         }
         return CommonResult.successResponse(null, "导入新题目成功！");
     }
+
 
 }

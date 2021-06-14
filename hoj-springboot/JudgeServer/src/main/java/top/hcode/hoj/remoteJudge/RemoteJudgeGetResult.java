@@ -51,8 +51,7 @@ public class RemoteJudgeGetResult {
                     Integer status = (Integer) result.getOrDefault("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
                     if (status.intValue() != Constants.Judge.STATUS_PENDING.getStatus() &&
                             status.intValue() != Constants.Judge.STATUS_JUDGING.getStatus()) {
-                        Judge judge = new Judge();
-                        judge.setSubmitId(submitId);
+                        Judge judge = judgeService.getById(submitId);
                         Integer time = (Integer) result.getOrDefault("time", null);
                         Integer memory = (Integer) result.getOrDefault("memory", null);
                         String CEInfo = (String) result.getOrDefault("CEInfo", null);
@@ -65,10 +64,28 @@ public class RemoteJudgeGetResult {
                         } else if (status.intValue() == Constants.Judge.STATUS_SYSTEM_ERROR.getStatus()) {
                             judge.setErrorMessage("There is something wrong with the " + remoteJudge + ", please try again later");
                         }
-                        // 写回数据库
-                        judgeService.updateById(judge);
-                        // 同步其它表
-                        judgeService.updateOtherTable(submitId, status, cid, uid, pid, null);
+
+                        // 如果是比赛题目，需要特别适配OI比赛的得分 除AC给100 其它结果给0分
+                        if (judge.getCid() != 0) {
+                            int score = 0;
+
+                            if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+                                score = 100;
+                            }
+
+                            judge.setScore(score);
+                            // 写回数据库
+                            judgeService.updateById(judge);
+                            // 同步其它表
+                            judgeService.updateOtherTable(submitId, status, cid, uid, pid, score);
+
+                        } else {
+
+                            judgeService.updateById(judge);
+                            // 同步其它表
+                            judgeService.updateOtherTable(submitId, status, cid, uid, pid, null);
+                        }
+
                         scheduler.shutdown();
                     }
 

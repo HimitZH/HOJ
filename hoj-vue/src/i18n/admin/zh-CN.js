@@ -135,11 +135,12 @@ export const m = {
   Add:'添加',
   Remove:'移除',
   Delete_Problem_Tips:'确定要删除此问题吗？注意：该问题的相关提交数据也将被删除。',
-  Remove_Problem_Tips:'你是否确定要将该题目移除比赛？',
+  Remove_Problem_Tips:'你是否确定要将该题目移出比赛？',
   Add_Successfully:'添加成功',
   Download_Testcase_Success:'该题目的评测数据已经被成功下载！',
   Enter_The_Problem_Display_ID_in_the_Contest:'请输入该题目在比赛中展示ID',
-
+  Problem_ID_is_required:'题目ID不能为空',
+  The_Problem_Display_ID_in_the_Contest_is_required:'题目在比赛中的展示ID不能为空',
 
   // /views/admin/problem/Problem.vue
   Problem_Display_ID: '题目展示ID',
