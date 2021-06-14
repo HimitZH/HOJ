@@ -145,9 +145,13 @@ public class Constants {
             {2} --> exeName
      */
     public enum CompileConfig {
-        C("C", "main.c", "main", 3000L, 10000L, 256 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {1} -lm -o {2}", defaultEnv),
+        C("C", "main.c", "main", 3000L, 10000L, 256 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -w -fmax-errors=3 -std=c11 {1} -lm -o {2}", defaultEnv),
 
-        CPP("C++", "main.cpp", "main", 10000L, 20000L, 512 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {1} -lm -o {2}", defaultEnv),
+        CWithO2("C With O2", "main.c", "main", 3000L, 10000L, 256 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {1} -lm -o {2}", defaultEnv),
+
+        CPP("C++", "main.cpp", "main", 10000L, 20000L, 512 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -w -fmax-errors=3 -std=c++14 {1} -lm -o {2}", defaultEnv),
+
+        CPPWithO2("C++ With O2", "main.cpp", "main", 10000L, 20000L, 512 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {1} -lm -o {2}", defaultEnv),
 
         JAVA("Java", "Main.java", "Main.class", 5000L, 10000L, 512 * 1024 * 1024L, "/usr/bin/javac -d {0} -encoding utf8 ./{1}", defaultEnv),
 
@@ -236,7 +240,11 @@ public class Constants {
     public enum RunConfig {
         C("C", "{0}/{1}", "main", defaultEnv),
 
+        CWithO2("C With O2", "{0}/{1}", "main", defaultEnv),
+
         CPP("C++", "{0}/{1}", "main", defaultEnv),
+
+        CPPWithO2("C++ With O2", "{0}/{1}", "main", defaultEnv),
 
         JAVA("Java", "/usr/bin/java Main", "Main.class", defaultEnv),
 
