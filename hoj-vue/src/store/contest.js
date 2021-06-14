@@ -77,7 +77,7 @@ const getters = {
   // 是否需要显示密码验证框
   passwordFormVisible: (state, getters) => {
     // 如果是公开赛，保护赛，或已注册过，管理员都不用再显示
-    return state.contest.auth !== CONTEST_TYPE.PUBLIC &&state.contest.auth !== CONTEST_TYPE.PROTECT &&!state.intoAccess && !getters.isContestAdmin 
+    return state.contest.auth !== CONTEST_TYPE.PUBLIC &&state.contest.auth !== CONTEST_TYPE.PROTECTED &&!state.intoAccess && !getters.isContestAdmin 
   },
   contestStartTime: (state) => {
     return moment(state.contest.startTime)
@@ -193,8 +193,8 @@ const actions = {
         commit('now', {now: moment(contest.now)})
         if (contest.auth == CONTEST_TYPE.PRIVATE) {
           dispatch('getContestAccess',{auth:CONTEST_TYPE.PRIVATE})
-        }else if(contest.auth == CONTEST_TYPE.PROTECT){
-          dispatch('getContestAccess',{auth:CONTEST_TYPE.PROTECT})
+        }else if(contest.auth == CONTEST_TYPE.PROTECTED){
+          dispatch('getContestAccess',{auth:CONTEST_TYPE.PROTECTED})
         }
       }, err => {
         reject(err)
