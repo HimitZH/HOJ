@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.crawler.problem.ProblemStrategy;
 import top.hcode.hoj.pojo.dto.AnnouncementDto;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.*;
@@ -219,14 +220,14 @@ public class AdminContestController {
 
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
 
-        if (problemType != null) { // 必备条件 私有的不可取来做比赛题目
+        if (problemType != null) { // 必备条件 隐藏的不可取来做比赛题目
             problemQueryWrapper.eq("type", problemType).ne("auth", 2);
         }
 
         // 逻辑判断，如果是查询已有的就应该是in，如果是查询不要重复的，使用not in
         if (pidList.size() > 0) {
             if (problemType != null) {
-                // 同时需要与比赛相同类型的题目，权限需要是公开的（私有，比赛中不可加入！）
+                // 同时需要与比赛相同类型的题目，权限需要是公开的（隐藏的，比赛中不可加入！）
                 problemQueryWrapper.notIn("id", pidList);
             } else {
                 problemQueryWrapper.in("id", pidList);
@@ -234,10 +235,9 @@ public class AdminContestController {
         }
 
         if (!StringUtils.isEmpty(keyword)) {
-            problemQueryWrapper
-                    .like("title", keyword).or()
+            problemQueryWrapper.and(wrapper -> wrapper.like("title", keyword).or()
                     .like("problem_id", keyword).or()
-                    .like("author", keyword);
+                    .like("author", keyword));
         }
 
         IPage<Problem> problemList = problemService.page(iPage, problemQueryWrapper);
@@ -422,6 +422,61 @@ public class AdminContestController {
         }
     }
 
+    @GetMapping("/import-remote-oj-problem")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
+    @Transactional
+    public CommonResult importContestRemoteOJProblem(@RequestParam("name") String name,
+                                              @RequestParam("problemId") String problemId,
+                                              @RequestParam("cid") Long cid,
+                                              @RequestParam("displayId") String displayId,
+                                              HttpServletRequest request) {
+
+        QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("problem_id", name.toUpperCase() + "-" + problemId);
+        Problem problem = problemService.getOne(queryWrapper,false);
+
+        // 如果该题目不存在，需要先导入
+        if (problem == null) {
+            HttpSession session = request.getSession();
+            UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+            try {
+                ProblemStrategy.RemoteProblemInfo otherOJProblemInfo = problemService.getOtherOJProblemInfo(name.toUpperCase(), problemId, userRolesVo.getUsername());
+                if (otherOJProblemInfo != null) {
+                    problem = problemService.adminAddOtherOJProblem(otherOJProblemInfo, name);
+                    if (problem == null) {
+                        return CommonResult.errorResponse("导入新题目失败！请重新尝试！");
+                    }
+                } else {
+                    return CommonResult.errorResponse("导入新题目失败！原因：可能是与该OJ链接超时或题号格式错误！");
+                }
+            } catch (Exception e) {
+                return CommonResult.errorResponse(e.getMessage());
+            }
+        }
+
+        QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
+        contestProblemQueryWrapper.eq("pid", problem.getId()).eq("cid", cid);
+        ContestProblem contestProblem = contestProblemService.getOne(contestProblemQueryWrapper, false);
+        if (contestProblem != null) {
+            return CommonResult.errorResponse("添加失败，该题目已经加入到此次比赛当中了，请勿重复操作！", CommonResult.STATUS_FAIL);
+        }
+
+        // 比赛中题目显示默认为原标题
+        String displayName = problem.getTitle();
+
+        // 修改成比赛题目
+        boolean updateProblem = problemService.saveOrUpdate(problem.setAuth(3));
+
+        boolean result = contestProblemService.saveOrUpdate(new ContestProblem()
+                .setCid(cid).setPid(problem.getId()).setDisplayTitle(displayName).setDisplayId(displayId));
+
+        if (result && updateProblem) { // 添加成功
+            return CommonResult.successResponse(null, "添加成功！");
+        } else {
+            return CommonResult.errorResponse("添加失败", CommonResult.STATUS_FAIL);
+        }
+    }
 
     /**
      * 以下处理比赛公告的操作请求

@@ -273,6 +273,10 @@ public class ContestController {
 
         Problem problem = problemService.getById(contestProblem.getPid());
 
+        if (problem.getAuth() == 2) {
+            return CommonResult.errorResponse("该比赛题目当前不可访问！", CommonResult.STATUS_FORBIDDEN);
+        }
+
         List<String> tagsStr = new LinkedList<>();
         // 比赛结束后才开放标签和source
         if (contest.getStatus().intValue() != Constants.Contest.STATUS_ENDED.getCode()) {
@@ -307,10 +311,10 @@ public class ContestController {
         Date sealRankTime = null;
         //封榜时间除超级管理员和比赛管理员外 其它人不可看到最新数据
         if (contest.getSealRank() &&
-                !isRoot&&
-                    !userRolesVo.getUid().equals(contest.getUid()) &&
-                        contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode() &&
-                            contest.getSealRankTime().before(new Date())) {
+                !isRoot &&
+                !userRolesVo.getUid().equals(contest.getUid()) &&
+                contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode() &&
+                contest.getSealRankTime().before(new Date())) {
             sealRankTime = contest.getSealRankTime();
         }
         // 获取题目的提交记录

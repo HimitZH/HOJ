@@ -60,7 +60,7 @@
             <small>{{ $t('m.Diversity_Desc') }}</small>
           </p>
           <p class="teal-text">
-            <i class="el-icon-circle-check"></i> {{ $t('m.Faulty') }}
+            <i class="el-icon-circle-check"></i> {{ $t('m.Available') }}
           </p>
         </paper-card>
       </el-col>
