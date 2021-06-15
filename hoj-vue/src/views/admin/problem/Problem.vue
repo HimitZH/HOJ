@@ -695,11 +695,11 @@ export default {
       this.mode = 'add';
     }
     api
-      .admin_getAllProblemTagList('ME')
+      .admin_getAllProblemTagList('ALL')
       .then((res) => {
         this.allTags = res.data.data;
         for (let tag of res.data.data) {
-          this.allTagsTmp.push({ value: tag.name });
+          this.allTagsTmp.push({ value: tag.name, oj: tag.oj });
         }
       })
       .catch(() => {});
@@ -907,7 +907,12 @@ export default {
       }
     },
     querySearch(queryString, cb) {
-      var restaurants = this.allTagsTmp;
+      var ojName = 'ME';
+      if (this.problem.isRemote) {
+        ojName = this.problem.problemId.split('-')[0];
+      }
+      var restaurants = this.allTagsTmp.filter((item) => item.oj == ojName);
+      console.log(ojName);
       var results = queryString
         ? restaurants.filter(
             (item) =>
@@ -1205,11 +1210,16 @@ export default {
         this.problem.author = this.userInfo.username;
       }
 
+      var ojName = 'ME';
+      if (this.problem.isRemote) {
+        ojName = this.problem.problemId.split('-')[0];
+      }
+
       let problemTagList = Object.assign([], this.problemTags);
       for (let i = 0; i < problemTagList.length; i++) {
         //避免后台插入违反唯一性
         for (let tag2 of this.allTags) {
-          if (problemTagList[i].name == tag2.name) {
+          if (problemTagList[i].name == tag2.name && tag2.oj == ojName) {
             problemTagList[i] = tag2;
             break;
           }
