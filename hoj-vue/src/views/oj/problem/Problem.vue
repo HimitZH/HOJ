@@ -345,9 +345,9 @@
 
     <el-dialog :visible.sync="submitPwdVisible" width="340px">
       <el-form>
-        <el-form-item label="Please Enter the Contest Protect Password">
+        <el-form-item :label="$t('m.Enter_the_contest_password')" required>
           <el-input
-            placeholder="Please Enter the Contest Protect Password"
+            :placeholder="$t('m.Enter_the_contest_password')"
             v-model="submitPwd"
             show-password
           ></el-input>
@@ -356,7 +356,7 @@
           type="primary"
           round
           style="margin-left:130px"
-          @click="submitCode"
+          @click="checkContestPassword"
         >
           {{ $t('m.Submit') }}
         </el-button>
@@ -685,6 +685,23 @@ export default {
       // 设置每2秒检查一下该题的提交结果
       this.refreshStatus = setTimeout(checkStatus, 2000);
     },
+
+    checkContestPassword() {
+      // 密码为空，需要重新输入
+      if (!this.submitPwd) {
+        myMessage.warning(this.$i18n.t('m.Enter_the_contest_password'));
+        return;
+      }
+      api.registerContest(this.contestID + '', this.submitPwd).then(
+        (res) => {
+          this.$store.commit('contestSubmitAccess', { submitAccess: true });
+          this.submitPwdVisible = false;
+          this.submitCode();
+        },
+        (res) => {}
+      );
+    },
+
     submitCode() {
       if (this.code.trim() === '') {
         myMessage.error(this.$i18n.t('m.Code_can_not_be_empty'));
@@ -693,13 +710,8 @@ export default {
 
       // 比赛题目需要检查是否有权限提交
       if (!this.canSubmit && this.$route.params.contestID) {
-        // 密码为空，需要重新输入
-        if (!this.submitPwd) {
-          this.submitPwdVisible = true;
-          return;
-        } else {
-          this.submitPwdVisible = false;
-        }
+        this.submitPwdVisible = true;
+        return;
       }
 
       this.submissionId = '';
@@ -710,7 +722,6 @@ export default {
         language: this.language,
         code: this.code,
         cid: this.contestID,
-        protectContestPwd: this.submitPwd,
         isRemote: this.isRemote,
       };
       if (this.captchaRequired) {
@@ -850,17 +861,11 @@ export default {
   beforeRouteLeave(to, from, next) {
     // 防止切换组件后仍然不断请求
     clearInterval(this.refreshStatus);
-    storage.set(
-      buildProblemCodeKey(
-        this.problemData.problem.problemId,
-        from.params.contestID
-      ),
-      {
-        code: this.code,
-        language: this.language,
-        theme: this.theme,
-      }
-    );
+    storage.set(buildProblemCodeKey(this.problemID, from.params.contestID), {
+      code: this.code,
+      language: this.language,
+      theme: this.theme,
+    });
     next();
   },
   watch: {

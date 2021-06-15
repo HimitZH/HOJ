@@ -102,10 +102,11 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         Map<String, Object> map = new HashMap<>();
         map.put("pid", pid);
         //查询出原来题目的关联表数据
-        List<ProblemTag> oldProblemTags = (List<ProblemTag>) problemTagService.listByMap(map);
         List<ProblemLanguage> oldProblemLanguages = (List<ProblemLanguage>) problemLanguageService.listByMap(map);
         List<ProblemCase> oldProblemCases = (List<ProblemCase>) problemCaseService.listByMap(map);
         List<CodeTemplate> oldProblemTemplate = (List<CodeTemplate>) codeTemplateService.listByMap(map);
+        map.put("oj", "ME");
+        List<ProblemTag> oldProblemTags = (List<ProblemTag>) problemTagService.listByMap(map);
 
         Map<Long, Integer> mapOldPT = new HashMap<>();
         Map<Long, Integer> mapOldPL = new HashMap<>();
@@ -139,6 +140,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         List<ProblemTag> problemTagList = new LinkedList<>(); // 存储新的problem_tag表数据
         for (Tag tag : problemDto.getTags()) {
             if (tag.getId() == null) { // 没有主键表示为新添加的标签
+                tag.setOj("ME");
                 boolean addTagResult = tagService.save(tag);
                 if (addTagResult) {
                     problemTagList.add(new ProblemTag()
@@ -395,10 +397,12 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         List<ProblemTag> problemTagList = new LinkedList<>();
         for (Tag tag : problemDto.getTags()) {
             if (tag.getId() == null) { //id为空 表示为原tag表中不存在的 插入后可以获取到对应的tagId
+                tag.setOj("ME");
                 try {
                     tagService.save(tag);
                 } catch (Exception ignored) {
-                    tag = tagService.getOne(new QueryWrapper<Tag>().eq("name", tag.getName()));
+                    tag = tagService.getOne(new QueryWrapper<Tag>().eq("name", tag.getName())
+                            .eq("oj", "ME"));
                 }
             }
             problemTagList.add(new ProblemTag().setTid(tag.getId()).setPid(pid));
@@ -563,7 +567,6 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         }
         boolean addProblemLanguageResult = problemLanguageService.saveOrUpdateBatch(problemLanguageList);
 
-
         boolean addProblemTagResult = true;
         List<Tag> addTagList = remoteProblemInfo.getTagList();
 
@@ -572,19 +575,24 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         HashMap<String, Tag> tagFlag = new HashMap<>();
 
         if (addTagList != null && addTagList.size() > 0) {
-            List<Tag> tagList = tagService.list();
+            QueryWrapper<Tag> tagQueryWrapper = new QueryWrapper<>();
+            tagQueryWrapper.eq("oj", OJName);
+            List<Tag> tagList = tagService.list(tagQueryWrapper);
             // 已存在的tag不进行添加
             for (Tag hasTag : tagList) {
-                tagFlag.put(hasTag.getName(), hasTag);
+                tagFlag.put(hasTag.getName().toUpperCase(), hasTag);
             }
             for (Tag tmp : addTagList) {
-                if (tagFlag.get(tmp.getName()) == null) {
+                Tag tag = tagFlag.get(tmp.getName().toUpperCase());
+                if (tag == null) {
+                    tmp.setOj(OJName);
                     needAddTagList.add(tmp);
                 } else {
-                    needAddTagList.add(tagFlag.get(tmp.getName()));
+                    needAddTagList.add(tag);
                 }
             }
             tagService.saveOrUpdateBatch(needAddTagList);
+
             List<ProblemTag> problemTagList = new LinkedList<>();
             for (Tag tmp : needAddTagList) {
                 problemTagList.add(new ProblemTag().setTid(tmp.getId()).setPid(problem.getId()));
@@ -596,6 +604,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             Tag OJNameTag = tagService.getOne(tagQueryWrapper, false);
             if (OJNameTag == null) {
                 OJNameTag = new Tag();
+                OJNameTag.setOj(OJName);
                 OJNameTag.setName(OJName);
                 tagService.saveOrUpdate(OJNameTag);
             }

@@ -67,10 +67,18 @@ public class CommonController {
 
 
     @GetMapping("/get-all-problem-tags")
-    public CommonResult getAllProblemTagsList() {
-        List<Tag> list = tagService.list();
-        if (list != null) {
-            return CommonResult.successResponse(list, "获取题目标签列表成功！");
+    public CommonResult getAllProblemTagsList(@RequestParam(value = "oj",defaultValue = "ME")String oj) {
+        List<Tag> tagList;
+        oj = oj.toUpperCase();
+        if (oj.equals("ALL")){
+            tagList = tagService.list();
+        }else {
+            QueryWrapper<Tag> tagQueryWrapper = new QueryWrapper<>();
+            tagQueryWrapper.eq( "oj", oj);
+            tagList = tagService.list(tagQueryWrapper);
+        }
+        if (tagList != null) {
+            return CommonResult.successResponse(tagList, "获取题目标签列表成功！");
         } else {
             return CommonResult.errorResponse("获取题目标签列表失败！");
         }

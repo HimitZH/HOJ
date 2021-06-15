@@ -644,6 +644,7 @@ CREATE TABLE `tag` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL COMMENT '标签名字',
   `color` varchar(10) DEFAULT NULL COMMENT '标签颜色',
+  `oj` varchar(255) DEFAULT 'ME' COMMENT '标签所属oj',
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`name`),

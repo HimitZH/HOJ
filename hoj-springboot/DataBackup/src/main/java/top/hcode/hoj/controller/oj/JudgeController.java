@@ -132,7 +132,7 @@ public class JudgeController {
                     return CommonResult.errorResponse("比赛未开始，不可提交！");
                 }
                 // 需要检查是否有权限在当前比赛进行提交
-                CommonResult checkResult = contestService.checkJudgeAuth(judgeDto.getProtectContestPwd(), contest, userRolesVo.getUid());
+                CommonResult checkResult = contestService.checkJudgeAuth(contest, userRolesVo.getUid());
                 if (checkResult != null) {
                     return checkResult;
                 }

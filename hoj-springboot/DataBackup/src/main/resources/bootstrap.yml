@@ -32,3 +32,8 @@ spring:
 # ${spring.application.name}-${spring.profile.active}.${spring.cloud.naces.config.file-extension}
 # ${spring.cloud.nacos.config.prefix}-${spring.profile.active}.${spring.cloud.naces.config.file-extension}
 # hoj-prod.yml
+
+# 消费者将要去访问的微服务名称（注册成功进入nacos的微服务提供者）
+service-url:
+  hoj-judge-server: http://hoj-judgeserver # 服务访问base_url
+  name: hoj-judgeserver # 服务名
