@@ -1,14 +1,4 @@
 spring:
-  profiles:
-    active: prod
-
----
-# 消费者将要去访问的微服务名称（注册成功进入nacos的微服务提供者）
-service-url:
-  hoj-judge-server: http://hoj-judgeserver # 服务访问base_url
-  name: hoj-judgeserver # 服务名
-
-spring:
   profiles: prod
   # 配置文件上传限制
   servlet:
@@ -84,4 +74,3 @@ logging:
     root: error
   config: classpath:logback-spring.xml
   path: /hoj/log/backend/hoj_backend.log
-

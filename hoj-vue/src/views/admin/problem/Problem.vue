@@ -695,7 +695,7 @@ export default {
       this.mode = 'add';
     }
     api
-      .admin_getAllProblemTagList()
+      .admin_getAllProblemTagList('ME')
       .then((res) => {
         this.allTags = res.data.data;
         for (let tag of res.data.data) {

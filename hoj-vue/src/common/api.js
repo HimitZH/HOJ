@@ -189,8 +189,12 @@ const ojApi = {
     })
   },
   // Problem List页的相关请求
-  getProblemTagList () {
-    return ajax('/api/get-all-problem-tags', 'get')
+  getProblemTagList (oj) {
+    return ajax('/api/get-all-problem-tags', 'get',{
+      params:{
+        oj
+      }
+    })
   },
   getProblemList (limit, searchParams) {
     let params = {
@@ -743,8 +747,12 @@ const adminApi = {
       }
     })
   },
-  admin_getAllProblemTagList () {
-    return ajax('/api/get-all-problem-tags', 'get')
+  admin_getAllProblemTagList (oj) {
+    return ajax('/api/get-all-problem-tags', 'get',{
+      params: {
+        oj
+      }
+    })
   },
 
   admin_getProblemTags(pid){

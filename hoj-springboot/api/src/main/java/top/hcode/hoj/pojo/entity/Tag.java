@@ -38,6 +38,9 @@ public class Tag implements Serializable {
     @ApiModelProperty(value = "标签颜色")
     private String color;
 
+    @ApiModelProperty(value = "标签所属oj")
+    private String oj;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 
