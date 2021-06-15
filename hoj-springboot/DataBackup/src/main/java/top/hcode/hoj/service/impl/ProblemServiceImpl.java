@@ -451,7 +451,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             jsonObject.set("inputName", problemCase.getInput());
             jsonObject.set("outputName", problemCase.getOutput());
             // 读取输出文件
-            FileReader readFile = new FileReader(testCasesDir + "/" + problemCase.getOutput(), CharsetUtil.UTF_8);
+            FileReader readFile = new FileReader(testCasesDir + File.separator  + problemCase.getOutput(), CharsetUtil.UTF_8);
             String output = readFile.readString().replaceAll("\r\n", "\n");
 
             // spj是根据特判程序输出判断结果，所以无需初始化测试数据
@@ -485,6 +485,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                                  List<ProblemCase> problemCaseList) {
 
         JSONObject result = new JSONObject();
+        System.out.println(isSpj);
         result.set("isSpj", isSpj);
         result.set("version", version);
         result.set("testCasesSize", problemCaseList.size());
