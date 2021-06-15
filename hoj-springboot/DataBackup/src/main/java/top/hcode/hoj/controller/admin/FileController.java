@@ -414,7 +414,7 @@ public class FileController {
 
     @GetMapping("/download-contest-ac-submission")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public void downloadContestACSubmission(@RequestParam("cid") Long cid,
                                             @RequestParam(value = "excludeAdmin", defaultValue = "false") Boolean excludeAdmin,
                                             HttpServletRequest request,
@@ -427,7 +427,7 @@ public class FileController {
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         // 除非是root 其它管理员只能下载自己的比赛ac记录
-        if (!userRolesVo.getUid().equals(contest.getUid())&&!isRoot){
+        if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot) {
             response.reset();
             response.setContentType("application/json");
             response.setCharacterEncoding("utf-8");
@@ -460,7 +460,7 @@ public class FileController {
                 .isNotNull(!isACM, "score") // OI模式取得分不为null的
                 .between("submit_time", contest.getStartTime(), contest.getEndTime())
                 .ne(excludeAdmin, "uid", contest.getUid()) // 排除比赛创建者和root
-                .ne(excludeAdmin, "username","root")
+                .ne(excludeAdmin, "username", "root")
                 .orderByDesc("submit_time");
 
         List<Judge> judgeList = judgeService.list(judgeQueryWrapper);
@@ -645,7 +645,7 @@ public class FileController {
     @RequestMapping(value = "/upload-md-file", method = RequestMethod.POST)
     @RequiresAuthentication
     @ResponseBody
-    @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult uploadMd(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         if (file == null) {
             return CommonResult.errorResponse("上传的文件不能为空！");
@@ -844,7 +844,6 @@ public class FileController {
         for (ProblemDto problemDto : problemDtos) {
             problemService.adminAddProblem(problemDto);
         }
-        FileUtil.del(fileDir);
         return CommonResult.successResponse(null, "导入题目成功");
     }
 
@@ -979,7 +978,6 @@ public class FileController {
         for (ProblemDto problemDto : problemDtos) {
             problemService.adminAddProblem(problemDto);
         }
-        FileUtil.del(fileDir);
         return CommonResult.successResponse(null, "导入题目成功");
     }
 
@@ -988,10 +986,17 @@ public class FileController {
         QDOJProblemDto qdojProblemDto = new QDOJProblemDto();
         List<String> tags = (List<String>) problemJson.get("tags");
         qdojProblemDto.setTags(tags.stream().map(UnicodeUtil::toString).collect(Collectors.toList()));
-        qdojProblemDto.setLanguages(Arrays.asList("C", "C++", "Java", "Python3", "Python2", "Golang", "C#"));
-        JSONObject spj = problemJson.getJSONObject("spj");
-        qdojProblemDto.setIsSpj(spj != null);
+        qdojProblemDto.setLanguages(Arrays.asList("C", "C With O2", "C++", "C++ With O2", "Java", "Python3", "Python2", "Golang", "C#"));
+        Object spj = problemJson.getObj("spj");
+        boolean isSpj = !JSONUtil.isNull(spj);
+        qdojProblemDto.setIsSpj(isSpj);
+
         Problem problem = new Problem();
+        if (isSpj) {
+            JSONObject spjJson = JSONUtil.parseObj(spj);
+            problem.setSpjCode(spjJson.getStr("code"))
+                    .setSpjLanguage(spjJson.getStr("language"));
+        }
         problem.setAuth(1)
                 .setIsUploadCase(true)
                 .setSource(problemJson.getStr("source", null))
@@ -1008,11 +1013,6 @@ public class FileController {
                 .setHint(UnicodeUtil.toString(problemJson.getJSONObject("hint").getStr("value")))
                 .setTimeLimit(problemJson.getInt("time_limit"))
                 .setMemoryLimit(problemJson.getInt("memory_limit"));
-
-        if (qdojProblemDto.getIsSpj() && spj != null) {
-            problem.setSpjCode(spj.getStr("code"))
-                    .setSpjLanguage(spj.getStr("language"));
-        }
 
         JSONArray samples = problemJson.getJSONArray("samples");
         StringBuilder sb = new StringBuilder();
