@@ -3,9 +3,7 @@ package top.hcode.hoj.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.ToJudgeDto;
 import top.hcode.hoj.pojo.entity.ContestRegister;
 import top.hcode.hoj.pojo.vo.ContestVo;
 import top.hcode.hoj.pojo.entity.Contest;
@@ -101,7 +99,7 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
     }
 
     @Override
-    public CommonResult checkJudgeAuth(String protectContestPwd, Contest contest, String uid) {
+    public CommonResult checkJudgeAuth(Contest contest, String uid) {
 
         if (contest.getAuth().intValue() == Constants.Contest.AUTH_PRIVATE.getCode() ||
                 contest.getAuth().intValue() == Constants.Contest.AUTH_PROTECT.getCode()) {
@@ -110,15 +108,7 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
             ContestRegister register = contestRegisterService.getOne(queryWrapper, false);
             // 如果还没注册
             if (register == null) {
-                // 如果提交附带密码不为空，且跟当前比赛的密码相等，则进行注册，并且此次提交可以提交,同时注册到数据库
-                if (!StringUtils.isEmpty(protectContestPwd)) {
-                    return CommonResult.errorResponse("对不起，提交失败！请您先成功注册该比赛！", CommonResult.STATUS_ACCESS_DENIED);
-                } else if (contest.getPwd().equals(protectContestPwd)) {
-                    contestRegisterService.saveOrUpdate(new ContestRegister().setUid(uid).setCid(contest.getId()));
-                    return null;
-                } else {
-                    return CommonResult.errorResponse("对不起，比赛密码错误，提交代码失败！", CommonResult.STATUS_FAIL);
-                }
+                return CommonResult.errorResponse("对不起，请你先注册该比赛，提交代码失败！", CommonResult.STATUS_FAIL);
             }
         }
         return null;

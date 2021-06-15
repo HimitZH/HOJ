@@ -105,8 +105,16 @@ public class StartupRunner implements CommandLineRunner {
     @Value("${CF_ACCOUNT_PASSWORD_LIST:}")
     private List<String> cfPasswordList;
 
+    @Value("${spring.profiles.active}")
+    private String profile;
+
     @Override
     public void run(String... args) throws Exception {
+
+        if (profile.equals("dev")){
+            return;
+        }
+
         // 动态修改nacos上的配置文件
         if (judgeToken.equals("default")) {
             configVo.setJudgeToken(IdUtil.fastSimpleUUID());

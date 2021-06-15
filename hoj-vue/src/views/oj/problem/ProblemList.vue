@@ -232,7 +232,7 @@
       </el-card>
       <el-card :padding="10" style="margin-top:20px">
         <div slot="header" style="text-align: center;">
-          <span class="taglist-title">{{ $t('m.Tags') }}</span>
+          <span class="taglist-title">{{ OJName + ' ' + $t('m.Tags') }}</span>
         </div>
         <el-button
           v-for="tag in tagList"
@@ -284,7 +284,7 @@ export default {
       currentProblemTitle: '',
       problemRecord: [],
       problemList: [],
-      limit: 15,
+      limit: 30,
       total: 100,
       isGetStatusOk: false,
       loadings: {
@@ -340,14 +340,14 @@ export default {
       this.routeName = this.$route.name;
       let query = this.$route.query;
       this.query.difficulty = query.difficulty || '';
-      this.query.oj = query.oj || '';
+      this.query.oj = query.oj || 'Mine';
       this.query.keyword = query.keyword || '';
       this.query.tagId = query.tagId || '';
       this.query.currentPage = parseInt(query.currentPage) || 1;
       if (this.query.currentPage < 1) {
         this.query.currentPage = 1;
       }
-      this.getTagList();
+      this.getTagList(this.query.oj);
 
       this.getProblemList();
     },
@@ -452,8 +452,11 @@ export default {
         }
       );
     },
-    getTagList() {
-      api.getProblemTagList().then(
+    getTagList(oj) {
+      if (oj == 'Mine') {
+        oj = 'ME';
+      }
+      api.getProblemTagList(oj).then(
         (res) => {
           this.tagList = res.data.data;
           this.loadings.tag = false;
@@ -484,6 +487,9 @@ export default {
     },
     filterByOJ(oj) {
       this.query.oj = oj;
+      if (oj != 'All') {
+        this.query.tagId = '';
+      }
       this.query.currentPage = 1;
       this.pushRouter();
     },
@@ -519,6 +525,15 @@ export default {
   },
   computed: {
     ...mapGetters(['isAuthenticated']),
+    OJName() {
+      if (this.query.oj == 'Mine' || !this.$route.query.oj) {
+        return this.$i18n.t('m.My_OJ');
+      } else if (this.query.oj == 'All') {
+        return this.$i18n.t('m.All');
+      } else {
+        return this.query.oj;
+      }
+    },
   },
   watch: {
     $route(newVal, oldVal) {

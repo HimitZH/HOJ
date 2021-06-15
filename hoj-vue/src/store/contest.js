@@ -4,7 +4,7 @@ import { CONTEST_STATUS, USER_TYPE, CONTEST_TYPE } from '@/common/constants'
 import time from '@/common/time'
 const state = {
   now: moment(),
-  intoAccess: true, // 比赛进入权限
+  intoAccess: false, // 比赛进入权限
   submitAccess:false, // 保护比赛的提交权限
   forceUpdate: false,
   contest: {
