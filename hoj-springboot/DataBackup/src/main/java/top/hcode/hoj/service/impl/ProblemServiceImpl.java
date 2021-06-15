@@ -92,10 +92,15 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     public boolean adminUpdateProblem(ProblemDto problemDto) {
 
         Problem problem = problemDto.getProblem();
-
         if (!problemDto.getIsSpj()) {
             problem.setSpjLanguage(null).setSpjCode(null);
         }
+        String ojName = "ME";
+        if (problem.getIsRemote()) {
+            String problemId = problem.getProblemId();
+            ojName = problemId.split("-")[0];
+        }
+
         problem.setProblemId(problem.getProblemId().toUpperCase());
         // 后面许多表的更新或删除需要用到题目id
         long pid = problemDto.getProblem().getId();
@@ -105,7 +110,6 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         List<ProblemLanguage> oldProblemLanguages = (List<ProblemLanguage>) problemLanguageService.listByMap(map);
         List<ProblemCase> oldProblemCases = (List<ProblemCase>) problemCaseService.listByMap(map);
         List<CodeTemplate> oldProblemTemplate = (List<CodeTemplate>) codeTemplateService.listByMap(map);
-        map.put("oj", "ME");
         List<ProblemTag> oldProblemTags = (List<ProblemTag>) problemTagService.listByMap(map);
 
         Map<Long, Integer> mapOldPT = new HashMap<>();
@@ -140,7 +144,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         List<ProblemTag> problemTagList = new LinkedList<>(); // 存储新的problem_tag表数据
         for (Tag tag : problemDto.getTags()) {
             if (tag.getId() == null) { // 没有主键表示为新添加的标签
-                tag.setOj("ME");
+                tag.setOj(ojName);
                 boolean addTagResult = tagService.save(tag);
                 if (addTagResult) {
                     problemTagList.add(new ProblemTag()
