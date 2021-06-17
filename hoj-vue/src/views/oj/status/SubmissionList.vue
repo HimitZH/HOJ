@@ -504,7 +504,7 @@ export default {
       const checkStatus = () => {
         let submitIds = this.needCheckSubmitIds;
         let func = this.contestID
-          ? 'getContestSubmissionList'
+          ? 'checkContestSubmissonsStatus'
           : 'checkSubmissonsStatus';
         api[func](Object.keys(submitIds), this.contestID).then(
           (res) => {
@@ -538,7 +538,7 @@ export default {
             // 当前提交列表的提交都判题结束或者检查结果180s（2s*90）还没判题结束，为了避免无用请求加重服务器负担，直接停止检查的请求。
             if (
               Object.keys(this.needCheckSubmitIds).length == 0 ||
-              this.checkStatusNum == 90
+              this.checkStatusNum == 300
             ) {
               clearTimeout(this.refreshStatus);
               this.autoCheckOpen = false;

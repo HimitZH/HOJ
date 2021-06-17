@@ -131,7 +131,7 @@
                 ></avatar>
                 <a
                   @click="goUserHome(row.username, row.uid)"
-                  style="color: rgb(87, 163, 243)"
+                  style="color:#2d8cf0;"
                   >{{ row.username }}</a
                 >
               </template>

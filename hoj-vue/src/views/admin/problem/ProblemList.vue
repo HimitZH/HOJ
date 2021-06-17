@@ -259,7 +259,7 @@ export default {
       otherOJName: 'HDU',
       otherOJProblemId: '',
       REMOTE_OJ: {},
-      displayId: 'A',
+      displayId: '',
     };
   },
   mounted() {

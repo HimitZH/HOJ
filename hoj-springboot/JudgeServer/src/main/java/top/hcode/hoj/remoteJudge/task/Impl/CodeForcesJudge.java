@@ -2,6 +2,8 @@ package top.hcode.hoj.remoteJudge.task.Impl;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ReUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -21,13 +23,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j(topic = "hoj")
 public class CodeForcesJudge implements RemoteJudgeStrategy {
     public static final String HOST = "https://codeforces.com/";
     public static final String LOGIN_URL = "enter";
     public static final String SUBMIT_URL = "problemset/submit";
-    public static final String SUBMISSION_RESULT_URL = "api/user.status?handle=%s&from=1&count=5";
+    public static final String SUBMISSION_RESULT_URL = "api/user.status?handle=%s&from=1&count=30";
     public static final String CE_INFO_URL = "data/submitSource";
 
     private static final Map<String, Constants.Judge> statusMap = new HashMap<String, Constants.Judge>() {{
@@ -64,16 +67,14 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
             return null;
         }
 
-        WebClient webClient = (WebClient) loginUtils.getOrDefault("webClient", null);
-
-        boolean isSubmitted = submitCode(webClient, problemId, getLanguage(language), userCode);
-
-        if (!isSubmitted) {
-            log.error("进行题目提交时发生错误：提交题目失败，" + CodeForcesJudge.class.getName() + "，题号:" + problemId);
-            return null;
+        try (WebClient webClient = (WebClient) loginUtils.getOrDefault("webClient", null)) {
+            submitCode(webClient, problemId, getLanguage(language), userCode);
         }
+
         // 获取提交的题目id
+
         Long maxRunId = getMaxRunId(null, username, problemId);
+
         return MapUtil.builder(new HashMap<String, Object>())
                 .put("runId", maxRunId)
                 .put("token", "")
@@ -81,15 +82,24 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
                 .map();
     }
 
-    private Long getMaxRunId(Connection connection, String username, String problemId) {
-
+    private Long getMaxRunId(Connection connection, String username, String problemId) throws InterruptedException {
+        int retryNum = 0;
         String url = String.format(SUBMISSION_RESULT_URL, username);
-        String resJson = HttpUtil.createGet(HOST + url).timeout(30000).execute().body();
+        HttpRequest httpRequest = HttpUtil.createGet(HOST + url);
+        httpRequest.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36 Edg/91.0.864.48");
+        httpRequest.disableCache();
+        HttpResponse httpResponse = httpRequest.execute();
+        // 防止cf的nginx限制访问频率，重试10次
+        while (httpResponse.getStatus() != 200 && retryNum != 10) {
+            TimeUnit.SECONDS.sleep(3);
+            httpResponse = httpRequest.execute();
+            retryNum++;
+        }
 
         String contestNum = problemId.replaceAll("\\D.*", "");
         String problemNum = problemId.replaceAll("^\\d*", "");
         try {
-            Map<String, Object> json = JSONUtil.parseObj(resJson);
+            Map<String, Object> json = JSONUtil.parseObj(httpResponse.body());
             List<Map<String, Object>> results = (List<Map<String, Object>>) json.get("result");
             for (Map<String, Object> result : results) {
                 Long runId = Long.valueOf(result.get("id").toString());
@@ -147,7 +157,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
                             .form(MapUtil
                                     .builder(new HashMap<String, Object>())
                                     .put("csrf_token", csrfToken)
-                                    .put("submissionId", "119327069").map())
+                                    .put("submissionId", submitId.toString()).map())
                             .timeout(30000)
                             .execute()
                             .body();
@@ -207,7 +217,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         }
     }
 
-    public boolean submitCode(WebClient webClient, String problemID, String languageID, String code) throws IOException {
+    public void submitCode(WebClient webClient, String problemID, String languageID, String code) throws IOException {
         // 模拟浏览器打开一个目标网址
         HtmlPage page = webClient.getPage(HOST + SUBMIT_URL);
 
@@ -225,15 +235,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         source.setText(code + getRandomBlankString());
 
         HtmlSubmitInput button = (HtmlSubmitInput) page.getByXPath("//input[@class='submit']").get(0);
-        HtmlPage retPage = button.click();
-        if (retPage.getUrl().toString().equals("https://codeforces.com/problemset/status?my=on")) {
-            webClient.close();
-            return true;
-        } else {
-            webClient.close();
-            return false;
-        }
-
+        button.click();
     }
 
     @Override

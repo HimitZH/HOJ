@@ -14,6 +14,7 @@ import top.hcode.hoj.util.JsoupUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,9 +29,10 @@ public class HduJudge implements RemoteJudgeStrategy {
     public static Map<String, String> headers = MapUtil
             .builder(new HashMap<String, String>())
             .put("Host", "acm.hdu.edu.cn")
-            .put("origin","http://acm.hdu.edu.cn")
-            .put("referer","http://acm.hdu.edu.cn")
+            .put("origin", "http://acm.hdu.edu.cn")
+            .put("referer", "http://acm.hdu.edu.cn")
             .map();
+
     /**
      * @param problemId 提交的题目id
      * @param language
@@ -59,6 +61,11 @@ public class HduJudge implements RemoteJudgeStrategy {
 
         // 获取提交的题目id
         Long maxRunId = getMaxRunId(connection, username, problemId);
+
+        if (maxRunId == -1L) { // 等待2s再次查询，如果还是失败，则表明提交失败了
+            TimeUnit.SECONDS.sleep(2);
+            maxRunId = getMaxRunId(connection, username, problemId);
+        }
         return MapUtil.builder(new HashMap<String, Object>())
                 .put("token", null)
                 .put("cookies", loginCookie)

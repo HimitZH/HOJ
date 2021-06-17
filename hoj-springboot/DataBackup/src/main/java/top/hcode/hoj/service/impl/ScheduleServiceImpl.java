@@ -24,6 +24,7 @@ import top.hcode.hoj.utils.JsoupUtils;
 import top.hcode.hoj.utils.RedisUtils;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -196,6 +197,12 @@ public class ScheduleServiceImpl implements ScheduleService {
             // 格式化api
             String ratingAPI = String.format(codeforcesUserInfoAPI, cfUsername);
             try {
+                // 防止cf的频率限制
+                try {
+                    TimeUnit.SECONDS.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 // 连接api，获取json格式对象
                 JSONObject resultObject = JsoupUtils.getJsonFromConnection(JsoupUtils.getConnectionFromUrl(ratingAPI, null, null));
                 // 获取状态码
