@@ -400,10 +400,13 @@ public class AdminContestController {
         Long cid = Long.valueOf(cidStr);
 
         QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
-        contestProblemQueryWrapper.eq("pid", pid).eq("cid", cid);
+        contestProblemQueryWrapper.eq("cid", cid)
+                .and(QueryWrapper -> QueryWrapper.eq("pid", pid)
+                        .or()
+                        .eq("display_id",displayId));
         ContestProblem contestProblem = contestProblemService.getOne(contestProblemQueryWrapper, false);
         if (contestProblem != null) {
-            return CommonResult.errorResponse("添加失败，该题目已经加入到此次比赛当中了，请勿重复操作！", CommonResult.STATUS_FAIL);
+            return CommonResult.errorResponse("添加失败，该题目已添加或者题目的比赛展示ID已存在！", CommonResult.STATUS_FAIL);
         }
 
         // 比赛中题目显示默认为原标题
@@ -456,11 +459,16 @@ public class AdminContestController {
         }
 
         QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
-        contestProblemQueryWrapper.eq("pid", problem.getId()).eq("cid", cid);
+        Problem finalProblem = problem;
+        contestProblemQueryWrapper.eq("cid", cid)
+                .and(QueryWrapper -> queryWrapper.eq("pid", finalProblem.getId())
+                        .or()
+                        .eq("display_id",displayId));
         ContestProblem contestProblem = contestProblemService.getOne(contestProblemQueryWrapper, false);
         if (contestProblem != null) {
-            return CommonResult.errorResponse("添加失败，该题目已经加入到此次比赛当中了，请勿重复操作！", CommonResult.STATUS_FAIL);
+            return CommonResult.errorResponse("添加失败，该题目已添加或者题目的比赛展示ID已存在！", CommonResult.STATUS_FAIL);
         }
+
 
         // 比赛中题目显示默认为原标题
         String displayName = problem.getTitle();

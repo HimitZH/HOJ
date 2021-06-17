@@ -300,7 +300,6 @@ public class JudgeController {
         boolean root = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
 
         HashMap<String, Object> result = new HashMap<>();
-        // 如果是比赛需要判断是否为封榜,比赛管理员和超级管理员可以有权限查看(ACM题目除外)
         if (judge.getCid() != 0 && !root) {
             Contest contest = contestService.getById(judge.getCid());
             if (!userRolesVo.getUid().equals(contest.getUid()) && contest.getSealRank()
@@ -315,16 +314,33 @@ public class JudgeController {
         // 超级管理员与管理员有权限查看代码
         // 如果不是本人或者并未分享代码，则不可查看
         // 当此次提交代码不共享
-        boolean admin = SecurityUtils.getSubject().hasRole("admin")
-                || SecurityUtils.getSubject().hasRole("problem_admin");// 是否为管理员
-        if (!judge.getShare() && !root && !admin) {
-            if (userRolesVo != null) { // 当前是登陆状态
-                // 需要判断是否为当前登陆用户自己的提交代码
-                if (!judge.getUid().equals(userRolesVo.getUid())) {
+        // 比赛提交只有比赛创建者和root账号可看代码
+        if (judge.getCid() != 0){
+
+            Contest contest = contestService.getById(judge.getCid());
+            if (!root&&!userRolesVo.getUid().equals(contest.getUid())) {
+                // 如果是比赛,那么还需要判断是否为封榜,比赛管理员和超级管理员可以有权限查看(ACM题目除外)
+                if(contest.getSealRank()
+                        && contest.getType().intValue() == Constants.Contest.TYPE_OI.getCode()
+                        && contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()
+                        && contest.getSealRankTime().before(new Date())) {
+                    result.put("submission", new Judge().setStatus(Constants.Judge.STATUS_SUBMITTED_UNKNOWN_RESULT.getStatus()));
+                    return CommonResult.successResponse(result, "获取提交数据成功！");
+                }
+                judge.setCode(null);
+            }
+        }else {
+            boolean admin = SecurityUtils.getSubject().hasRole("admin")
+                    || SecurityUtils.getSubject().hasRole("problem_admin");// 是否为管理员
+            if (!judge.getShare() && !root && !admin) {
+                if (userRolesVo != null) { // 当前是登陆状态
+                    // 需要判断是否为当前登陆用户自己的提交代码
+                    if (!judge.getUid().equals(userRolesVo.getUid())) {
+                        judge.setCode(null);
+                    }
+                } else { // 不是登陆状态，就直接无权限查看代码
                     judge.setCode(null);
                 }
-            } else { // 不是登陆状态，就直接无权限查看代码
-                judge.setCode(null);
             }
         }
 

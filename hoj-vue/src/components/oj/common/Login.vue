@@ -50,13 +50,13 @@
           :h="100"
           :accuracy="3"
           @success="handleLogin"
-          :slider-text="$t('m.Login_Verify')"
+          :slider-text="$t('m.Slide_Verify')"
           ref="slideBlock"
           v-if="!verify.loginSuccess"
         >
         </slide-verify>
         <el-alert
-          :title="$t('m.Login_Verify_Success')"
+          :title="$t('m.Slide_Verify_Success')"
           type="success"
           :description="verify.loginMsg"
           v-show="verify.loginSuccess"

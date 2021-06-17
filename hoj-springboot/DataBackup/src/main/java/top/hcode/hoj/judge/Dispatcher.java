@@ -85,7 +85,7 @@ public class Dispatcher {
                     }
                 }
 
-                if (count.get() == 90) { // 90次失败则判为提交失败
+                if (count.get() == 300) { // 300次失败则判为提交失败
                     if (isRemote) { // 远程判题需要将账号归为可用
                         UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
                         remoteJudgeAccountUpdateWrapper

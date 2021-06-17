@@ -24,11 +24,20 @@
           :title="$t('m.User')"
           min-width="150"
           show-overflow
+          align="left"
         >
           <template v-slot="{ row }">
+            <avatar
+              :username="row.username"
+              :inline="true"
+              :size="25"
+              color="#FFF"
+              :src="row.avatar"
+              class="user-avatar"
+            ></avatar>
             <a
               @click="getInfoByUsername(row.uid, row.username)"
-              style="color:rgb(87, 163, 243);"
+              style="color:#2d8cf0;"
               >{{ row.username }}</a
             >
           </template>
@@ -107,11 +116,13 @@ import api from '@/common/api';
 import utils from '@/common/utils';
 import { RULE_TYPE } from '@/common/constants';
 import { mapGetters } from 'vuex';
+import Avatar from 'vue-avatar';
 const Pagination = () => import('@/components/oj/common/Pagination');
 export default {
   name: 'acm-rank',
   components: {
     Pagination,
+    Avatar,
   },
   data() {
     return {
@@ -279,5 +290,9 @@ export default {
   /deep/.el-card__body {
     padding: 0 !important;
   }
+}
+.user-avatar {
+  margin-right: 5px !important;
+  vertical-align: middle;
 }
 </style>
