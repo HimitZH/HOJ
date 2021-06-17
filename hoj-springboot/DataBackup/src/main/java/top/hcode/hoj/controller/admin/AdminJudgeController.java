@@ -86,7 +86,12 @@ public class AdminJudgeController {
         // 设置默认值
         judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus()); // 开始进入判题队列
         judge.setVersion(judge.getVersion() + 1);
-        judge.setJudger(null).setTime(null).setMemory(null).setErrorMessage(null);
+        judge.setJudger(null)
+                .setTime(null)
+                .setMemory(null)
+                .setErrorMessage(null)
+                .setJudger(null)
+                .setScore(null);
         boolean result = judgeService.updateById(judge);
         if (result) {
             // 调用判题服务
@@ -123,7 +128,12 @@ public class AdminJudgeController {
         for (Judge judge : rejudgeList) {
             judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus()); // 开始进入判题队列
             judge.setVersion(judge.getVersion() + 1);
-            judge.setJudger(null).setTime(null).setMemory(null).setErrorMessage(null);
+            judge.setJudger(null)
+                    .setTime(null)
+                    .setMemory(null)
+                    .setErrorMessage(null)
+                    .setJudger(null)
+                    .setScore(null);
             submitIdList.add(judge.getSubmitId());
         }
         boolean resetJudgeResult = judgeService.updateBatchById(rejudgeList);

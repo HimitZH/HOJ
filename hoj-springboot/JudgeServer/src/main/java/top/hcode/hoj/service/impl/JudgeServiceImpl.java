@@ -97,6 +97,7 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
             }
 
         } else { //如果是比赛提交
+
             contestRecordService.UpdateContestRecord(uid, score, status, submitId, cid);
         }
     }

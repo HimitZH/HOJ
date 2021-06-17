@@ -41,7 +41,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
     @Override
     @Async
-    @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
+    @Transactional
     public void UpdateContestRecord(String uid, Integer score, Integer status, Long submitId, Long cid) {
         UpdateWrapper<ContestRecord> updateWrapper = new UpdateWrapper<>();
         // 如果是AC
@@ -66,7 +66,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
         updateWrapper.eq("submit_id", submitId) // submit_id一定只有一个
                 .eq("uid", uid);
-        boolean result = contestRecordMapper.update(null, updateWrapper) == 1;
+        boolean result = contestRecordMapper.update(null, updateWrapper) > 0;
         if (!result) {
             tryAgainUpdate(updateWrapper);
         }
