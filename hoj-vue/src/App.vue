@@ -57,8 +57,11 @@
           </el-row>
         </div>
         <div class="mundb-footer">
-          <a style="color:#1E9FFF" :href="websiteConfig.recordUrl"
-            >© 2020-2021</a
+          <a
+            style="color:#1E9FFF"
+            :href="websiteConfig.recordUrl"
+            target="_blank"
+            >{{ websiteConfig.recordName }}</a
           >
           Powered by
           <a

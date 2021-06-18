@@ -35,10 +35,7 @@ import top.hcode.hoj.utils.Constants;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -260,7 +257,8 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                             !oldProblemCase.getOutput().equals(problemCase.getOutput())) {
                         needUpdateProblemCaseList.add(problemCase);
                     } else if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
-                        if (oldProblemCase.getScore().intValue() != problemCase.getScore()) {
+                        // 分数变动
+                        if (!Objects.equals(oldProblemCase.getScore(), problemCase.getScore())) {
                             needUpdateProblemCaseList.add(problemCase);
                         }
                     }
@@ -451,7 +449,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             jsonObject.set("inputName", problemCase.getInput());
             jsonObject.set("outputName", problemCase.getOutput());
             // 读取输出文件
-            FileReader readFile = new FileReader(testCasesDir + File.separator  + problemCase.getOutput(), CharsetUtil.UTF_8);
+            FileReader readFile = new FileReader(testCasesDir + File.separator + problemCase.getOutput(), CharsetUtil.UTF_8);
             String output = readFile.readString().replaceAll("\r\n", "\n");
 
             // spj是根据特判程序输出判断结果，所以无需初始化测试数据
@@ -485,7 +483,6 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                                  List<ProblemCase> problemCaseList) {
 
         JSONObject result = new JSONObject();
-        System.out.println(isSpj);
         result.set("isSpj", isSpj);
         result.set("version", version);
         result.set("testCasesSize", problemCaseList.size());

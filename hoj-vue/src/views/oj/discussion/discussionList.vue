@@ -142,7 +142,10 @@
               <el-dropdown
                 style="float:right;"
                 class="hidden-xs-only"
-                v-show="isAuthenticated"
+                v-show="
+                  isAuthenticated &&
+                    (discussion.uid === userInfo.uid || isAdminRole)
+                "
                 @command="handleCommand"
               >
                 <span class="el-dropdown-link">
@@ -167,7 +170,10 @@
               <div class="hidden-sm-and-up">
                 <el-dropdown
                   style="float:right;margin-top:10px; "
-                  v-show="isAuthenticated"
+                  v-show="
+                    isAuthenticated &&
+                      (discussion.uid === userInfo.uid || isAdminRole)
+                  "
                   @command="handleCommand"
                 >
                   <span class="el-dropdown-link">
