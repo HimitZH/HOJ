@@ -382,6 +382,7 @@
               <el-radio-group
                 v-model="problem.type"
                 :disabled="disableRuleType || problem.isRemote"
+                @change="problemTypeChange"
               >
                 <el-radio :label="0">ACM</el-radio>
                 <el-radio :label="1">OI</el-radio>
@@ -507,10 +508,7 @@
                       </el-input>
                     </el-form-item>
                   </el-col>
-                  <el-col
-                    :span="24"
-                    v-show="problem.type == 1 && sample.score != null"
-                  >
+                  <el-col :span="24" v-show="problem.type == 1">
                     <el-form-item :label="$t('m.Score')">
                       <el-input
                         type="number"
@@ -961,6 +959,17 @@ export default {
     closeTag(tag) {
       this.problemTags.splice(this.problemTags.indexOf(tag), 1);
     },
+
+    problemTypeChange(type) {
+      if (type == 1) {
+        let length = this.problemSamples.length;
+        let aver = parseInt(100 / length);
+        for (let i = 0; i < length; i++) {
+          this.problemSamples[i].score = aver;
+        }
+      }
+    },
+
     // 添加题目样例
     addExample() {
       this.problem.examples.push({ input: '', output: '', isOpen: true });
@@ -974,7 +983,7 @@ export default {
         this.problemSamples.push({
           input: '',
           output: '',
-          score: 0,
+          score: this.problem.type == 0 ? null : 0,
           pid: this.pid,
           isOpen: true,
         });
@@ -982,7 +991,7 @@ export default {
         this.problemSamples.push({
           input: '',
           output: '',
-          score: null,
+          score: this.problem.type == 0 ? null : 0,
           pid: this.pid,
           isOpen: true,
         });
@@ -1120,11 +1129,23 @@ export default {
 
           // 同时是oi题目，则对应的每个测试样例的io得分不能为空或小于0
           if (this.problem.type == 1) {
-            for (let item of this.problemSamples) {
+            for (let i = 0; i < this.problemSamples.length; i++) {
+              if (this.problemSamples[i].score == '') {
+                myMessage.error(
+                  this.$i18n.t('m.Problem_Sample') +
+                    (i + 1) +
+                    ' ' +
+                    this.$i18n.t('m.Score_must_be_an_integer')
+                );
+                return;
+              }
               try {
-                if (parseInt(item.score) < 0) {
+                if (parseInt(this.problemSamples[i].score) < 0) {
                   myMessage.error(
-                    this.$i18n.t('m.Score_must_be_greater_than_or_equal_to_0')
+                    this.$i18n.t('m.Problem_Sample') +
+                      (i + 1) +
+                      ' ' +
+                      this.$i18n.t('m.Score_must_be_greater_than_or_equal_to_0')
                   );
                   return;
                 }
@@ -1149,11 +1170,23 @@ export default {
 
           // 如果是oi题目，需要检查上传的数据的得分
           if (this.problem.type == 1) {
-            for (let item of this.problem.testCaseScore) {
+            for (let i = 0; i < this.problemSamples.length; i++) {
+              if (this.problemSamples[i].score == '') {
+                myMessage.error(
+                  this.$i18n.t('m.Problem_Sample') +
+                    (i + 1) +
+                    ' ' +
+                    this.$i18n.t('m.Score_must_be_an_integer')
+                );
+                return;
+              }
               try {
-                if (parseInt(item.score) <= 0) {
+                if (parseInt(this.problemSamples[i].score) < 0) {
                   myMessage.error(
-                    this.$i18n.t('m.Score_must_be_greater_than_or_equal_to_0')
+                    this.$i18n.t('m.Problem_Sample') +
+                      (i + 1) +
+                      ' ' +
+                      this.$i18n.t('m.Score_must_be_greater_than_or_equal_to_0')
                   );
                   return;
                 }

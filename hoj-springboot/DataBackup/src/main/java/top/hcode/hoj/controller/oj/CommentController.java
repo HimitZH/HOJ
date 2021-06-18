@@ -1,10 +1,10 @@
 package top.hcode.hoj.controller.oj;
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.extra.emoji.EmojiUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.github.binarywang.java.emoji.EmojiConverter;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -45,7 +45,6 @@ public class CommentController {
     @Autowired
     private ReplyServiceImpl replyService;
 
-    private static EmojiConverter emojiConverter = EmojiConverter.getInstance();
 
     @GetMapping("/comments")
     public CommonResult getComments(@RequestParam(value = "cid", required = false) Long cid,
@@ -113,7 +112,7 @@ public class CommentController {
         }
 
         // 带有表情的字符串转换为编码
-        comment.setContent(emojiConverter.toHtml(comment.getContent()));
+        comment.setContent(EmojiUtil.toHtml(comment.getContent()));
 
         boolean isOk = commentService.saveOrUpdate(comment);
 
@@ -240,7 +239,7 @@ public class CommentController {
             reply.setFromRole("user");
         }
         // 带有表情的字符串转换为编码
-        reply.setContent(emojiConverter.toHtml(reply.getContent()));
+        reply.setContent(EmojiUtil.toHtml(reply.getContent()));
 
         boolean isOk = replyService.saveOrUpdate(reply);
 
