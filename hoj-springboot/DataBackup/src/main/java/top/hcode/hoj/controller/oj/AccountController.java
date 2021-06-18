@@ -445,6 +445,9 @@ public class AccountController {
                 resp.put("msg", "修改密码成功！您将于5秒钟后退出进行重新登录操作！");
                 // 清空记录
                 redisUtils.del(countKey);
+                // 更新session
+                userRolesVo.setPassword(SecureUtil.md5(newPassword));
+                session.setAttribute("userInfo", userRolesVo);
                 return CommonResult.successResponse(resp, "修改密码成功！");
             } else {
                 return CommonResult.errorResponse("系统错误：修改密码失败！", CommonResult.STATUS_ERROR);
@@ -537,6 +540,9 @@ public class AccountController {
                         .map());
                 // 清空记录
                 redisUtils.del(countKey);
+                // 更新session
+                userRolesVo.setEmail(newEmail);
+                session.setAttribute("userInfo", userRolesVo);
                 return CommonResult.successResponse(resp, "修改邮箱成功！");
             } else {
                 return CommonResult.errorResponse("系统错误：修改邮箱失败！", CommonResult.STATUS_ERROR);
@@ -590,6 +596,10 @@ public class AccountController {
         boolean result = userInfoDao.updateById(userInfo);
 
         if (result) {
+            // 更新session
+            UserRolesVo userRoles = userRoleDao.getUserRoles(userRolesVo.getUid(), null);
+            session.setAttribute("userInfo", userRoles);
+
             return CommonResult.successResponse(MapUtil.builder()
                     .put("uid", userRolesVo.getUid())
                     .put("username", userRolesVo.getUsername())

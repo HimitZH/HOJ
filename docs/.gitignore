@@ -1,20 +1,8 @@
-*.classpath
-
-# Package Files 
-*.jar
-*.war
-*.ear
-*.log
-*.iml
-
 .DS_Store
 node_modules
-dist/
-target/
-out/
-.idea/
-.classpath
-.project
+/dist
+/docs/.vuepress/dist
+
 
 # local env files
 .env.local
@@ -34,4 +22,3 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
-
