@@ -1,5 +1,0 @@
-2021-06-15 10:39:00 [http-nio-6688-exec-1] ERROR hoj - 系统通用异常-------------->Transaction rolled back because it has been marked as rollback-only
-2021-06-15 10:40:56 [http-nio-6688-exec-1] ERROR hoj - 系统通用异常-------------->Transaction rolled back because it has been marked as rollback-only
-2021-06-15 10:42:54 [http-nio-6688-exec-1] ERROR hoj - 系统通用异常-------------->Transaction rolled back because it has been marked as rollback-only
-2021-06-15 10:45:25 [http-nio-6688-exec-1] ERROR hoj - 系统通用异常-------------->Transaction rolled back because it has been marked as rollback-only
-2021-06-15 10:47:26 [http-nio-6688-exec-1] ERROR hoj - 系统通用异常-------------->Transaction rolled back because it has been marked as rollback-only
