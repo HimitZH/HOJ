@@ -84,7 +84,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
         List<Long> idLists = new LinkedList<>();
         for (File file : files) {
-            if(file.getDelete()) {
+            if (file.getDelete()) {
                 boolean delSuccess = FileUtil.del(file.getFilePath());
                 if (delSuccess) {
                     idLists.add(file.getId());
@@ -111,8 +111,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public void deleteTestCase() {
         boolean result = FileUtil.del(Constants.File.TESTCASE_TMP_FOLDER.getPath());
-        if (!result){
-            log.error("每日定时任务异常------------------------>{}","清除本地的题目测试数据失败!");
+        if (!result) {
+            log.error("每日定时任务异常------------------------>{}", "清除本地的题目测试数据失败!");
         }
     }
 
@@ -214,7 +214,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 // 用户信息存放在result列表中的第0个
                 JSONObject cfUserInfo = resultObject.getJSONArray("result").getJSONObject(0);
                 // 获取cf的分数
-                int cfRating = cfUserInfo.getInt("rating");
+                Integer cfRating = cfUserInfo.getInt("rating", null);
                 UpdateWrapper<UserRecord> userRecordUpdateWrapper = new UpdateWrapper<>();
                 // 将对应的cf分数修改
                 userRecordUpdateWrapper.eq("uid", uuid).set("rating", cfRating);

@@ -188,12 +188,6 @@
             <artifactId>jsoup</artifactId>
             <version>1.13.1</version>
         </dependency>
-        <!--emoji表情格式转换-->
-        <dependency>
-            <groupId>com.github.binarywang</groupId>
-            <artifactId>java-emoji-converter</artifactId>
-            <version>1.0.1</version>
-        </dependency>
 
     </dependencies>
 

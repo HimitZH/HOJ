@@ -31,7 +31,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
 import java.io.IOException;
-import java.sql.BatchUpdateException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.Set;
 
@@ -194,8 +195,8 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(value = MessagingException.class)
-    public CommonResult handler(MessagingException e) throws Exception {
-        log.error("邮箱系统异常-------------->{}", e.getMessage());
+    public CommonResult handler(MessagingException e){
+        log.error("邮箱系统异常-------------->{}", getMessage(e));
         return CommonResult.errorResponse("服务器异常，请稍后尝试！", CommonResult.STATUS_ERROR);
     }
 
@@ -205,7 +206,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(ServiceException.class)
     public CommonResult handleServiceException(ServiceException e) {
-        log.error("业务逻辑异常-------------->{}", e.getMessage());
+        log.error("业务逻辑异常-------------->{}", getMessage(e));
         return CommonResult.errorResponse("服务器异常，请稍后尝试！", CommonResult.STATUS_ERROR);
     }
 
@@ -215,7 +216,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(DataIntegrityViolationException.class)
     public CommonResult handleDataIntegrityViolationException(DataIntegrityViolationException e) {
-        log.error("操作数据库出现异常-------------->{}", e.getMessage());
+        log.error("操作数据库出现异常-------------->{}", getMessage(e));
         return CommonResult.errorResponse("服务器异常，请稍后尝试！", CommonResult.STATUS_ERROR);
     }
 
@@ -226,7 +227,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(SQLException.class)
     public CommonResult handleSQLException(SQLException e) {
-        log.error("操作数据库出现异常-------------->{}", e.getMessage());
+        log.error("操作数据库出现异常-------------->{}", getMessage(e));
         return CommonResult.errorResponse("操作失败！错误提示：" + e.getMessage(), CommonResult.STATUS_ERROR);
     }
 
@@ -236,7 +237,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(PersistenceException.class)
     public CommonResult handleBatchUpdateException(PersistenceException e) {
-        log.error("操作数据库出现异常-------------->{}", e.getMessage());
+        log.error("操作数据库出现异常-------------->{}", getMessage(e));
         return CommonResult.errorResponse("操作失败！请检查数据是否准确！可能原因：数据重复冲突，外键冲突！", CommonResult.STATUS_ERROR);
     }
 
@@ -246,7 +247,26 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public CommonResult handleException(Exception e) {
-        log.error("系统通用异常-------------->{}", e.getMessage());
+        log.error("系统通用异常-------------->{}", getMessage(e));
         return CommonResult.errorResponse("服务器异常，请稍后尝试！", CommonResult.STATUS_ERROR);
+    }
+
+
+    /**
+     * 打印异常信息
+     */
+    public static String getMessage(Exception e) {
+        String swStr = null;
+        try (StringWriter sw = new StringWriter();
+             PrintWriter pw = new PrintWriter(sw)) {
+            e.printStackTrace(pw);
+            pw.flush();
+            sw.flush();
+            swStr = sw.toString();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            log.error(ex.getMessage());
+        }
+        return swStr;
     }
 }
