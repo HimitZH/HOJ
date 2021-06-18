@@ -15,6 +15,8 @@
 
 1. 在原先运行的服务器上，修改`hoj-deploy/standAlone`文件夹里面的`docker-compose.yml`，**添加以下rsync-master服务**，数据同步密码请自行修改，如下：
 
+   **（注意：如果云服务器有防火墙请开启8848，3306，873端口）**
+
    ```yaml
    hoj-rsync-master:
        image: registry.cn-shenzhen.aliyuncs.com/hcode/hoj_rsync:1.0
@@ -30,6 +32,10 @@
    ```
 
 2. 在其它服务器（判题机服务器）中使用docker-compose运行judgeserver服务，具体操作如下：
+
+   **（注意：如果云服务器有防火墙请开启8088端口号，需要将判题服务暴露出去）**
+
+   
 
    1. 下载文件,进入到指定文件夹
 
@@ -74,8 +80,17 @@
       ```shell
       docker-compose up -d
       ```
+      
+   4. 验证：
 
+      ```
+      访问 http://ip:8088/version
+      如果返回信息正常即启动成功！
+      ```
 
+      
+
+   
 
 
 ## 分布式部署
@@ -118,6 +133,7 @@
    # 与主服务器的rsync密码一致
    RSYNC_PASSWORD=hoj123456
    ```
+   
 
 3. 修改完保存，启动即可。
 

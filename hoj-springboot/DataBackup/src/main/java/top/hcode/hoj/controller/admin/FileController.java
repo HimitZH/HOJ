@@ -8,6 +8,7 @@ import cn.hutool.core.text.UnicodeUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ZipUtil;
 import cn.hutool.core.io.file.FileWriter;
+import cn.hutool.crypto.SecureUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -165,6 +166,10 @@ public class FileController {
                 .setType("avatar")
                 .setUid(userRolesVo.getUid());
         fileService.saveOrUpdate(imgFile);
+
+        // 更新session
+        userRolesVo.setAvatar(Constants.File.IMG_API.getPath() + filename);
+        session.setAttribute("userInfo", userRolesVo);
         return CommonResult.successResponse(MapUtil.builder()
                 .put("uid", userRolesVo.getUid())
                 .put("username", userRolesVo.getUsername())
