@@ -399,7 +399,7 @@ export default {
     ...mapActions(['changeModalStatus']),
     page_width() {
       let screenWidth = window.screen.width;
-      if (screenWidth < 1080) {
+      if (screenWidth < 1050) {
         this.mobileNar = true;
       } else {
         this.mobileNar = false;

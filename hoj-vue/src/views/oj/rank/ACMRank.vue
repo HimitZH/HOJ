@@ -58,15 +58,7 @@
             </el-tag>
           </template>
         </vxe-table-column>
-        <vxe-table-column
-          field="solved"
-          :title="$t('m.Solved')"
-          min-width="80"
-        ></vxe-table-column>
-        <vxe-table-column
-          :title="$t('m.AC') + '/' + $t('m.Total')"
-          min-width="100"
-        >
+        <vxe-table-column field="ac" :title="$t('m.AC')" min-width="80">
           <template v-slot="{ row }">
             <span>
               <a
@@ -74,9 +66,10 @@
                 style="color:rgb(87, 163, 243);"
                 >{{ row.ac }}</a
               >
-              <span>/{{ row.total }}</span>
             </span>
           </template>
+        </vxe-table-column>
+        <vxe-table-column :title="$t('m.Total')" min-width="100" field="total">
         </vxe-table-column>
         <vxe-table-column :title="$t('m.Rating')" min-width="80">
           <template v-slot="{ row }">

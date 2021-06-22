@@ -299,7 +299,7 @@ a:hover {
 #nprogress .bar {
   background: #66b1ff !important;
 }
-@media screen and (min-width: 1080px) {
+@media screen and (min-width: 1050px) {
   #oj-content {
     margin-top: 80px;
     padding: 0 4%;
@@ -314,7 +314,7 @@ a:hover {
 .contest-description img {
   max-width: 100%;
 }
-@media screen and (max-width: 1080px) {
+@media screen and (max-width: 1050px) {
   #oj-content {
     margin-top: 20px;
     padding: 0 5px;

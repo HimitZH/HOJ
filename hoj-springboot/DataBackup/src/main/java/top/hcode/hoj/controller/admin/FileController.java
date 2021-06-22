@@ -795,10 +795,10 @@ public class FileController {
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
         List<ProblemDto> problemDtos = new LinkedList<>();
-        List<Tag> tagList = tagService.list();
-        HashMap<String, Long> tagMap = new HashMap<>();
+        List<Tag> tagList = tagService.list(new QueryWrapper<Tag>().eq("oj", "ME"));
+        HashMap<String, Tag> tagMap = new HashMap<>();
         for (Tag tag : tagList) {
-            tagMap.put(tag.getName(), tag.getId());
+            tagMap.put(tag.getName().toUpperCase(), tag);
         }
         for (String key : problemInfo.keySet()) {
             ImportProblemVo importProblemVo = problemVoMap.get(key);
@@ -825,6 +825,18 @@ public class FileController {
                 }
                 codeTemplates.add(new CodeTemplate().setCode(code).setStatus(true).setLid(lid));
             }
+
+            // 格式化标签
+            List<Tag> tags = new LinkedList<>();
+            for (String tagStr : importProblemVo.getTags()) {
+                Tag tag = tagMap.getOrDefault(tagStr.toUpperCase(), null);
+                if (tag == null) {
+                    tags.add(new Tag().setName(tagStr).setOj("ME"));
+                } else {
+                    tags.add(tag);
+                }
+            }
+
             Problem problem = BeanUtil.mapToBean(importProblemVo.getProblem(), Problem.class, true);
             if (problem.getAuthor() == null) {
                 problem.setAuthor(userRolesVo.getUsername());
@@ -838,7 +850,7 @@ public class FileController {
             problemDto.setIsSpj(importProblemVo.getIsSpj())
                     .setProblem(problem)
                     .setCodeTemplates(codeTemplates)
-                    .setTags(importProblemVo.getTags().stream().map(tag -> new Tag().setName(tag).setId(tagMap.getOrDefault(tag, null))).collect(Collectors.toList()))
+                    .setTags(tags)
                     .setLanguages(languages)
                     .setUploadTestcaseDir(fileDir + File.separator + key)
                     .setIsUploadTestCase(true)
@@ -948,10 +960,10 @@ public class FileController {
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        List<Tag> tagList = tagService.list();
-        HashMap<String, Long> tagMap = new HashMap<>();
+        List<Tag> tagList = tagService.list(new QueryWrapper<Tag>().eq("oj", "ME"));
+        HashMap<String, Tag> tagMap = new HashMap<>();
         for (Tag tag : tagList) {
-            tagMap.put(tag.getName(), tag.getId());
+            tagMap.put(tag.getName().toUpperCase(), tag);
         }
 
         List<ProblemDto> problemDtos = new LinkedList<>();
@@ -964,6 +976,17 @@ public class FileController {
                 languages.add(new Language().setId(lid).setName(lang));
             }
 
+            // 格式化标签
+            List<Tag> tags = new LinkedList<>();
+            for (String tagStr : qdojProblemDto.getTags()) {
+                Tag tag = tagMap.getOrDefault(tagStr.toUpperCase(), null);
+                if (tag == null) {
+                    tags.add(new Tag().setName(tagStr).setOj("ME"));
+                } else {
+                    tags.add(tag);
+                }
+            }
+
             Problem problem = qdojProblemDto.getProblem();
             if (problem.getAuthor() == null) {
                 problem.setAuthor(userRolesVo.getUsername());
@@ -972,7 +995,7 @@ public class FileController {
             problemDto.setIsSpj(qdojProblemDto.getIsSpj())
                     .setProblem(problem)
                     .setCodeTemplates(qdojProblemDto.getCodeTemplates())
-                    .setTags(qdojProblemDto.getTags().stream().map(tag -> new Tag().setName(tag).setId(tagMap.getOrDefault(tag, null))).collect(Collectors.toList()))
+                    .setTags(tags)
                     .setLanguages(languages)
                     .setUploadTestcaseDir(fileDir + File.separator + key + File.separator + "testcase")
                     .setIsUploadTestCase(true)

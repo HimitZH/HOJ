@@ -33,9 +33,6 @@ public class ACMRankVo implements Serializable {
     @ApiModelProperty(value = "头像地址")
     private String avatar;
 
-    @ApiModelProperty(value = "解决问题数")
-    private Integer solved;
-
     @ApiModelProperty(value = "总提交数")
     private Integer total;
 
