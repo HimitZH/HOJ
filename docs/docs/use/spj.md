@@ -28,8 +28,6 @@
 using namespace std;
 
 
-int spj(int user_output, FILE *output);
-
 void close_file(FILE *f){
     if(f != NULL){
         fclose(f);
@@ -37,15 +35,12 @@ void close_file(FILE *f){
 }
 
 int main(int argc, char *args[]){
-    if(argc != 3){
-        return ERROR;
-    }
     /**
     input:输入
     output:样例的输出
     user_output:用户的输出
     **/
-    FILE *input = fopen(args[1], "r")
+    FILE *input = fopen(args[1], "r");
     FILE *output = fopen(args[2], "r");
     
     double std_out;

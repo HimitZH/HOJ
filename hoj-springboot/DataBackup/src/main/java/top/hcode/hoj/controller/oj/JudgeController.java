@@ -156,13 +156,15 @@ public class JudgeController {
 
             // 管理员比赛前的提交不纳入记录
             if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()) {
-                // 先查询是否为首次可能AC提交
-                QueryWrapper<ContestRecord> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("cid", judge.getCid())
-                        .eq("status", Constants.Contest.RECORD_AC.getCode())
-                        .eq("pid", judge.getPid());
-
-                boolean FirstACAttempt = contestRecordService.count(queryWrapper) == 0;
+//               方法废弃，为了考虑比赛重测问题，不使用字段记录是否为first AC，在排行榜计算自有排序解决first AC的判断
+//                // 先查询是否为首次可能AC提交
+//                QueryWrapper<ContestRecord> queryWrapper = new QueryWrapper<>();
+//                queryWrapper.eq("cid", judge.getCid())
+//                        .eq("status", Constants.Contest.RECORD_AC.getCode())
+//                        .lt("submit_time", judge.getSubmitTime())
+//                        .eq("pid", judge.getPid());
+//
+//                boolean FirstACAttempt = contestRecordService.count(queryWrapper) == 0;
 
                 // 同时初始化写入contest_record表
                 ContestRecord contestRecord = new ContestRecord();
@@ -177,11 +179,11 @@ public class JudgeController {
                         .setSubmitTime(judge.getSubmitTime())
                         // 设置比赛开始时间到提交时间之间的秒数
                         .setTime(DateUtil.between(contest.getStartTime(), judge.getSubmitTime(), DateUnit.SECOND));
-                if (FirstACAttempt) {
-                    contestRecord.setFirstBlood(true);
-                } else {
-                    contestRecord.setFirstBlood(false);
-                }
+//                if (FirstACAttempt) {
+//                    contestRecord.setFirstBlood(true);
+//                } else {
+//                    contestRecord.setFirstBlood(false);
+//                }
                 updateContestRecord = contestRecordService.saveOrUpdate(contestRecord);
             }
 

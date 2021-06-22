@@ -144,8 +144,8 @@
             >
             </vxe-table-column>
             <vxe-table-column
-              field="solved"
-              :title="$t('m.Solved')"
+              field="total"
+              :title="$t('m.Total')"
               min-width="50"
               align="left"
             >

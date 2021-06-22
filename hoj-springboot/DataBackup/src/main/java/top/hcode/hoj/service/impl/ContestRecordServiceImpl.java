@@ -103,6 +103,8 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
         int index = 0;
 
+        HashMap<String, Long> firstACMap = new HashMap<>();
+
         for (ContestRecord contestRecord : contestRecordList) {
             ACMContestRankVo ACMContestRankVo;
             if (!uidMapIndex.containsKey(contestRecord.getUid())) { // 如果该用户信息没还记录
@@ -141,9 +143,22 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                 // 总解决题目次数ac+1
                 ACMContestRankVo.setAc(ACMContestRankVo.getAc() + 1);
 
+                // 判断是不是first AC
+                boolean isFirstAC = false;
+                Long time = firstACMap.getOrDefault(contestRecord.getDisplayId(), null);
+                if (time == null) {
+                    isFirstAC = true;
+                    firstACMap.put(contestRecord.getDisplayId(), contestRecord.getTime());
+                } else {
+                    // 相同提交时间也是first AC
+                    if (time.longValue() == contestRecord.getTime().longValue()) {
+                        isFirstAC = true;
+                    }
+                }
+
                 int errorNumber = (int) problemSubmissionInfo.getOrDefault("errorNum", 0);
                 problemSubmissionInfo.put("isAC", true);
-                problemSubmissionInfo.put("isFirstAC", contestRecord.getFirstBlood());
+                problemSubmissionInfo.put("isFirstAC", isFirstAC);
                 problemSubmissionInfo.put("ACTime", contestRecord.getTime());
                 problemSubmissionInfo.put("errorNum", errorNumber);
 
