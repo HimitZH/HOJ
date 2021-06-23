@@ -12,7 +12,7 @@
 
 基于前后端分离，分布式架构的在线测评平台（hoj），前端使用vue，后端主要使用springboot，redis，mysql，nacos等技术。
 
-在线Demo：[https://www.hcode.top](https://www.hcode.top)
+在线Demo：[https://hdoi.cn](https://hdoi.cn)
 
 在线文档：[https://www.hcode.top/docs](https://www.hcode.top/docs/)
 
