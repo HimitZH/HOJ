@@ -58,7 +58,7 @@ public class POJJudge implements RemoteJudgeStrategy {
                 .put("source", Base64.encode(userCode))
                 .put("encoded", 1).map())
                 .execute();
-        if (response.getStatus() != 302) {
+        if (response.getStatus() != 302 && response.getStatus() != 200) {
             log.error("进行题目提交时发生错误：提交题目失败，" + POJJudge.class.getName() + "，题号:" + problemId);
             return null;
         }
@@ -89,11 +89,10 @@ public class POJJudge implements RemoteJudgeStrategy {
                 .replaceAll("<.*?>", "")
                 .trim();
 
-        Constants.Judge statusType = statusTypeMap.getOrDefault(statusStr, null);
-
+        Constants.Judge statusType = statusMap.get(statusStr);
         if (statusType == null) {
             return MapUtil.builder(new HashMap<String, Object>())
-                    .put("status", Constants.Judge.STATUS_PENDING).build();
+                    .put("status", Constants.Judge.STATUS_JUDGING).build();
         }
         // 返回的结果map
         Map<String, Object> result = MapUtil.builder(new HashMap<String, Object>())
@@ -107,9 +106,9 @@ public class POJJudge implements RemoteJudgeStrategy {
         } else {
             // 如果不是CE,获取其他信息
             String executionTime = ReUtil.get("<b>Memory:</b> ([-\\d]+)", response.body(), 1);
-            result.put("time", Integer.parseInt(executionTime));
+            result.put("time", executionTime == null ? null : Integer.parseInt(executionTime));
             String executionMemory = ReUtil.get("<b>Time:</b> ([-\\d]+)", response.body(), 1);
-            result.put("memory", Integer.parseInt(executionMemory));
+            result.put("memory", executionMemory == null ? null : Integer.parseInt(executionMemory));
         }
         return result;
     }
@@ -162,7 +161,7 @@ public class POJJudge implements RemoteJudgeStrategy {
 
 
     // TODO 添加结果对应的状态
-    private static final Map<String, Constants.Judge> statusTypeMap = new HashMap<String, Constants.Judge>() {
+    private static final Map<String, Constants.Judge> statusMap = new HashMap<String, Constants.Judge>() {
         {
             put("Compiling", Constants.Judge.STATUS_COMPILING);
             put("Accepted", Constants.Judge.STATUS_ACCEPTED);

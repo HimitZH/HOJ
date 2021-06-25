@@ -60,6 +60,7 @@ public class RemoteJudgeToSubmit {
 
             UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
             remoteJudgeAccountUpdateWrapper.set("status", true)
+                    .eq("oj", remoteJudge)
                     .eq("username", username)
                     .eq("password", password);
             boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
@@ -87,10 +88,10 @@ public class RemoteJudgeToSubmit {
             return;
         }
 
-        // 提交成功顺便更新状态为-->STATUS_PENDING 等待中...
+        // 提交成功顺便更新状态为-->STATUS_JUDGING 判题中...
         judgeService.updateById(new Judge()
                 .setSubmitId(submitId)
-                .setStatus(Constants.Judge.STATUS_PENDING.getStatus())
+                .setStatus(Constants.Judge.STATUS_JUDGING.getStatus())
                 .setJudger(name)
         );
 
