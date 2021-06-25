@@ -66,6 +66,7 @@
                 {{ discussion.title }}
               </h1>
             </a>
+
             <a
               @click="toDiscussionDetail(discussion.id)"
               class="article-hlink2"
@@ -101,30 +102,30 @@
                   >ADM</span
                 >
               </span>
-              <span class="pr pl hidden-xs-only"
-                ><label class="fw"><i class="fa fa-clock-o"></i></label
+
+              <span class="pr pl"
+                ><label class="fw"><i class="el-icon-chat-round"></i></label
                 ><span>
-                  {{ $t('m.Created_Time') }}：<el-tooltip
-                    :content="discussion.gmtCreate | localtime"
-                    placement="top"
-                  >
-                    <span>{{ discussion.gmtCreate | fromNow }}</span>
-                  </el-tooltip></span
+                  <span class="hidden-xs-only"> {{ $t('m.Comment') }}:</span>
+                  {{ discussion.commentNum }}</span
                 ></span
               >
+
               <span class="pr"
                 ><label class="fw"><i class="fa fa-thumbs-o-up"></i></label
                 ><span>
-                  {{ $t('m.Likes') }}：{{ discussion.likeNum }}</span
+                  <span class="hidden-xs-only"> {{ $t('m.Likes') }}:</span>
+                  {{ discussion.likeNum }}</span
                 ></span
               >
               <span class="pr"
                 ><label class="fw"><i class="fa fa-eye"></i></label
                 ><span>
-                  {{ $t('m.Views') }}：{{ discussion.viewNum }}</span
+                  <span class="hidden-xs-only"> {{ $t('m.Views') }}:</span>
+                  {{ discussion.viewNum }}</span
                 ></span
               >
-              <span
+              <span class="pr"
                 ><label class="fw"><i class="el-icon-folder-opened"></i></label>
                 <a
                   @click="
@@ -136,6 +137,18 @@
                   "
                 >
                   {{ cidMapName[discussion.categoryId] }}</a
+                >
+              </span>
+
+              <span class="pr pl hidden-xs-only">
+                <label class="fw"><i class="fa fa-clock-o"></i></label
+                ><span>
+                  {{ $t('m.Created_Time') }}：<el-tooltip
+                    :content="discussion.gmtCreate | localtime"
+                    placement="top"
+                  >
+                    <span>{{ discussion.gmtCreate | fromNow }}</span>
+                  </el-tooltip></span
                 >
               </span>
 

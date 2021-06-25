@@ -56,7 +56,10 @@ public class Discussion {
     private Integer viewNum;
 
     @ApiModelProperty(value = "点赞数量")
-    private String likeNum;
+    private Integer likeNum;
+
+    @ApiModelProperty(value = "评论数量,包括其评论及其回复数")
+    private Integer commentNum;
 
     @ApiModelProperty(value = "优先级，是否置顶")
     private Boolean topPriority;

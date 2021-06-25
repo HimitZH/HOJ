@@ -87,17 +87,16 @@ public class RemoteJudgeToSubmit {
             return;
         }
 
-        // 提交成功顺便更新状态为-->STATUS_JUDGING 判题中...
+        // 提交成功顺便更新状态为-->STATUS_PENDING 等待中...
         judgeService.updateById(new Judge()
                 .setSubmitId(submitId)
-                .setStatus(Constants.Judge.STATUS_JUDGING.getStatus())
+                .setStatus(Constants.Judge.STATUS_PENDING.getStatus())
                 .setJudger(name)
         );
 
         // 调用获取远程判题结果
         remoteJudgeGetResult.sendTask(remoteJudge, username, submitId, uid, cid, pid,
-                (Long) submitResult.get("runId"), (String) submitResult.get("token"),
-                (HashMap<String, String>) submitResult.get("cookies"));
+                (Long) submitResult.get("runId"), (String) submitResult.get("cookies"));
 
     }
 }

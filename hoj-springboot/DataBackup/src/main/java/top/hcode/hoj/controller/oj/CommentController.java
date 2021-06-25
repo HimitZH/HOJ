@@ -12,13 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.pojo.dto.ReplyDto;
 import top.hcode.hoj.pojo.entity.Comment;
 import top.hcode.hoj.pojo.entity.CommentLike;
+import top.hcode.hoj.pojo.entity.Discussion;
 import top.hcode.hoj.pojo.entity.Reply;
 import top.hcode.hoj.pojo.vo.CommentsVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.impl.CommentLikeServiceImpl;
 import top.hcode.hoj.service.impl.CommentServiceImpl;
+import top.hcode.hoj.service.impl.DiscussionServiceImpl;
 import top.hcode.hoj.service.impl.ReplyServiceImpl;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +47,9 @@ public class CommentController {
 
     @Autowired
     private ReplyServiceImpl replyService;
+
+    @Autowired
+    private DiscussionServiceImpl discussionService;
 
 
     @GetMapping("/comments")
@@ -126,6 +132,13 @@ public class CommentController {
             commentsVo.setLikeNum(0);
             commentsVo.setGmtCreate(comment.getGmtCreate());
             commentsVo.setReplyList(new LinkedList<>());
+            // 如果是讨论区的回复，发布成功需要添加统计该讨论的回复数
+            if (comment.getDid() != null) {
+                UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<>();
+                discussionUpdateWrapper.eq("id", comment.getDid())
+                        .setSql("comment_num=comment_num+1");
+                discussionService.update(discussionUpdateWrapper);
+            }
             return CommonResult.successResponse(commentsVo, "评论成功");
         } else {
             return CommonResult.errorResponse("评论失败，请重新尝试！");
@@ -151,6 +164,13 @@ public class CommentController {
             replyService.remove(new UpdateWrapper<Reply>().eq("comment_id", comment.getId()));
 
             if (isDeleteComment) {
+                // 如果是讨论区的回复，删除成功需要减少统计该讨论的回复数
+                if (comment.getDid() != null) {
+                    UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<>();
+                    discussionUpdateWrapper.eq("id", comment.getDid())
+                            .setSql("comment_num=comment_num-1");
+                    discussionService.update(discussionUpdateWrapper);
+                }
                 return CommonResult.successResponse(null, "删除成功");
             } else {
                 return CommonResult.errorResponse("删除失败，请重新尝试");
@@ -222,11 +242,11 @@ public class CommentController {
     @PostMapping("/reply")
     @RequiresPermissions("reply_add")
     @RequiresAuthentication
-    public CommonResult addReply(@RequestBody Reply reply, HttpServletRequest request) {
+    public CommonResult addReply(@RequestBody ReplyDto replyDto, HttpServletRequest request) {
         // 获取当前登录的用户
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-
+        Reply reply = replyDto.getReply();
         reply.setFromAvatar(userRolesVo.getAvatar())
                 .setFromName(userRolesVo.getUsername())
                 .setFromUid(userRolesVo.getUid());
@@ -244,6 +264,13 @@ public class CommentController {
         boolean isOk = replyService.saveOrUpdate(reply);
 
         if (isOk) {
+            // 如果是讨论区的回复，发布成功需要增加统计该讨论的回复数
+            if (replyDto.getDid() != null) {
+                UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<>();
+                discussionUpdateWrapper.eq("id", replyDto.getDid())
+                        .setSql("comment_num=comment_num+1");
+                discussionService.update(discussionUpdateWrapper);
+            }
             return CommonResult.successResponse(reply, "评论成功");
         } else {
             return CommonResult.errorResponse("评论失败，请重新尝试！");
@@ -252,19 +279,24 @@ public class CommentController {
 
     @DeleteMapping("/reply")
     @RequiresAuthentication
-    public CommonResult deleteReply(@RequestBody Reply reply, HttpServletRequest request) {
+    public CommonResult deleteReply(@RequestBody ReplyDto replyDto, HttpServletRequest request) {
         // 获取当前登录的用户
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-
+        Reply reply = replyDto.getReply();
         // 如果不是评论本人 或者不是管理员 无权限删除该评论
         if (reply.getFromUid().equals(userRolesVo.getUid()) || SecurityUtils.getSubject().hasRole("root")
                 || SecurityUtils.getSubject().hasRole("admin") || SecurityUtils.getSubject().hasRole("problem_admin")) {
-
             // 删除该数据
             boolean isOk = replyService.removeById(reply.getId());
-
             if (isOk) {
+                // 如果是讨论区的回复，删除成功需要减少统计该讨论的回复数
+                if (replyDto.getDid() != null) {
+                    UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<>();
+                    discussionUpdateWrapper.eq("id", replyDto.getDid())
+                            .setSql("comment_num=comment_num-1");
+                    discussionService.update(discussionUpdateWrapper);
+                }
                 return CommonResult.successResponse(null, "删除成功");
             } else {
                 return CommonResult.errorResponse("删除失败，请重新尝试");

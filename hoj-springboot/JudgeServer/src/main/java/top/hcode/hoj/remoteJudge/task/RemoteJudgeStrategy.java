@@ -22,7 +22,7 @@ public interface RemoteJudgeStrategy {
      * @param username 题库的提交者的账号
      * @return 返回结果
      */
-    Map<String, Object> result(Long submitId, String username, String token, HashMap<String,String> cookies) throws Exception;
+    Map<String, Object> result(Long submitId, String username, String cookies) throws Exception;
 
     Map<String, Object> getLoginUtils(String username, String password) throws Exception;
 

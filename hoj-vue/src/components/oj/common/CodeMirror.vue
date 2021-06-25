@@ -1,14 +1,14 @@
 <template>
   <div style="margin: 0px 0px 15px 0px;font-size: 14px;">
     <el-row class="header">
-      <el-col :xs="24" :sm="14" :md="14" :lg="14">
+      <el-col :xs="24" :sm="15" :md="15" :lg="15">
         <div class="select-row">
           <span>{{ $t('m.Lang') }}:</span>
           <span>
             <el-select
               :value="this.language"
               @change="onLangChange"
-              class="adjust"
+              class="left-adjust"
               size="small"
             >
               <el-option v-for="item in languages" :key="item" :value="item"
@@ -44,13 +44,13 @@
           </span>
         </div>
       </el-col>
-      <el-col :xs="24" :sm="10" :md="10" :lg="10">
+      <el-col :xs="24" :sm="9" :md="9" :lg="9">
         <div class="select-row fl-right">
           <span>{{ $t('m.Theme') }}:</span>
           <el-select
             :value="this.theme"
             @change="onThemeChange"
-            class="adjust"
+            class="right-adjust"
             size="small"
           >
             <el-option
@@ -104,6 +104,7 @@ import 'codemirror/mode/php/php.js'; //php
 import 'codemirror/mode/ruby/ruby.js'; //ruby
 import 'codemirror/mode/rust/rust.js'; //rust
 import 'codemirror/mode/javascript/javascript.js'; //javascript
+import 'codemirror/mode/fortran/fortran.js'; //fortran
 
 // active-line.js
 import 'codemirror/addon/selection/active-line.js';
@@ -260,10 +261,15 @@ export default {
   margin-right: 5px;
   margin-left: 5px;
 }
-.header .adjust {
+.header .left-adjust {
   width: 170px;
   margin-left: 5px;
 }
+.header .right-adjust {
+  width: 140px;
+  margin-left: 5px;
+}
+
 .select-row {
   margin-top: 4px;
 }

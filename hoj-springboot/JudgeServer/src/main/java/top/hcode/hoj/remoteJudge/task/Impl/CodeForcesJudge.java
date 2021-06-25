@@ -14,7 +14,6 @@ import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.*;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Connection;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.util.Constants;
 
@@ -73,16 +72,15 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
 
         // 获取提交的题目id
 
-        Long maxRunId = getMaxRunId(null, username, problemId);
+        Long maxRunId = getMaxRunId(username, problemId);
 
         return MapUtil.builder(new HashMap<String, Object>())
                 .put("runId", maxRunId)
-                .put("token", "")
-                .put("cookies", new HashMap<String, String>())
+                .put("cookies", null)
                 .map();
     }
 
-    private Long getMaxRunId(Connection connection, String username, String problemId) throws InterruptedException {
+    private Long getMaxRunId(String username, String problemId) throws InterruptedException {
         int retryNum = 0;
         String url = String.format(SUBMISSION_RESULT_URL, username);
         HttpRequest httpRequest = HttpUtil.createGet(HOST + url);
@@ -118,7 +116,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
     }
 
     @Override
-    public Map<String, Object> result(Long submitId, String username, String token, HashMap<String, String> cookies) throws Exception {
+    public Map<String, Object> result(Long submitId, String username, String cookies) {
 
         String url = HOST + String.format(SUBMISSION_RESULT_URL, username);
 
