@@ -11,7 +11,7 @@ module.exports = {
     themeConfig: {
         sidebarDepth: 5,
         nav: [
-            { text: 'Demo', link: 'https://www.hcode.top' },
+            { text: 'Demo', link: 'https://hdoi.cn/' },
             { text: 'Gitee', link: 'https://gitee.com/himitzh0730/hoj' },
 			{ text: 'Github', link: 'https://github.com/HimitZH/HOJ' },
             { text: '作者首页', link: 'https://blog.csdn.net/weixin_43853097' },
