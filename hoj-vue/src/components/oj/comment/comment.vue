@@ -622,7 +622,10 @@ export default {
         return;
       }
       this.replyObj.content = this.replyInputComment;
-      let replyData = Object.assign({}, this.replyObj);
+      let replyData = {
+        reply: this.replyObj,
+        did: this.did,
+      };
       api.addReply(replyData).then((res) => {
         for (let i = 0; i < this.comments.length; i++) {
           if (this.comments[i].id == this.replyObj.commentId) {
@@ -715,6 +718,7 @@ export default {
         .then(() => {
           let replyDeleteData = {
             id: reply.id,
+            did: this.did,
             fromUid: reply.fromUid,
           };
           api.deleteReply(replyDeleteData).then((res) => {

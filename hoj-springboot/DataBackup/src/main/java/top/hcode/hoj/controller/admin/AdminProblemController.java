@@ -144,7 +144,7 @@ public class AdminProblemController {
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     @Transactional
-    public CommonResult updateProblem(@RequestBody ProblemDto problemDto) {
+    public CommonResult updateProblem(@RequestBody ProblemDto problemDto, HttpServletRequest request) {
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("problem_id", problemDto.getProblem().getProblemId().toUpperCase());
@@ -154,6 +154,11 @@ public class AdminProblemController {
         if (problem != null && problem.getId().longValue() != problemDto.getProblem().getId()) {
             return CommonResult.errorResponse("当前的Problem ID 已被使用，请重新更换新的！", CommonResult.STATUS_FAIL);
         }
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        // 记录修改题目的用户
+        problemDto.getProblem().setModifiedUser(userRolesVo.getUsername());
 
         boolean result = problemService.adminUpdateProblem(problemDto);
         if (result) { // 更新成功

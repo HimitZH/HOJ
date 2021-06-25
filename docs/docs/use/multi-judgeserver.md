@@ -13,7 +13,9 @@
 
 如果之前是选择了单体部署，也就是主服务器既有backend和judgeserver服务，那么部署更多不同服务器的判题机应该如下修改：
 
-1. 在原先运行的服务器上，修改`hoj-deploy/standAlone`文件夹里面的`docker-compose.yml`，**添加以下rsync-master服务**，数据同步密码请自行修改，如下：**（注意：如果云服务器有防火墙请开启8848，3306，873端口）**
+1. 在原先运行的服务器上，修改`hoj-deploy/standAlone`文件夹里面的`docker-compose.yml`，**添加以下rsync-master服务**，数据同步密码请自行修改，如下：
+
+   **（注意：如果云服务器有防火墙请开启8848，3306，873端口）**
 
    ```yaml
    hoj-rsync-master:
@@ -33,14 +35,16 @@
 
    **（注意：如果云服务器有防火墙请开启8088端口号，需要将判题服务暴露出去）**
 
-   1. 下载文件,进入到指定文件夹
    
+
+   1. 下载文件,进入到指定文件夹
+
       ```shell
-   git clone https://gitee.com/himitzh0730/hoj-deploy.git && cd hoj-deploy/distributed/judgeserver
+      git clone https://gitee.com/himitzh0730/hoj-deploy.git && cd hoj-deploy/distributed/judgeserver
       ```
 
    2. 修改配置`.env`文件,里面的nacos参数，judgeServer，rsync的参数请正确修改！
-   
+
       ```properties
       # nacos的配置
       # 修改为nacos所在服务的ip
@@ -68,24 +72,24 @@
       # 写入主服务器ip
       RSYNC_MASTER_ADDR=127.0.0.1
       # 与主服务器的rsync密码一致
-   RSYNC_PASSWORD=hoj123456
+      RSYNC_PASSWORD=hoj123456
       ```
 
    3. 启动即可
-   
+
       ```shell
       docker-compose up -d
       ```
       
    4. 验证：
-   
+
       ```
       访问 http://ip:8088/version
       如果返回信息正常即启动成功！
       ```
-   
+
       
-   
+
    
 
 
@@ -129,6 +133,7 @@
    # 与主服务器的rsync密码一致
    RSYNC_PASSWORD=hoj123456
    ```
+   
 
 3. 修改完保存，启动即可。
 

@@ -151,7 +151,8 @@ export const PROBLEM_LEVEL_RESERVE={
 
 export const REMOTE_OJ = [
   {name:'HDU',key:"HDU"},
-  {name:"Codeforces",key:"CF"}
+  {name:"Codeforces",key:"CF"},
+  {name:"POJ",key:"POJ"},
 ]
 
 export const CONTEST_STATUS = {

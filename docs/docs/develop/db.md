@@ -142,6 +142,7 @@ problem表
 | open_case_result    | boolean      |             | 是否默认开启该题目的测试样例结果查看        |
 | caseVersion         | String       |             | 题目测试数据的版本号                        |
 | is_upload_case      | boolean      |             | 是否是上传zip评测数据的                     |
+| modified_user       | String       |             | 最新修改题目的用户                          |
 | gmt_create          | datetime     |             | 创建时间                                    |
 | gmt_modified        | datetime     |             | 修改时间                                    |
 
@@ -529,6 +530,7 @@ discussion表
 | view_num     | int          |      | 浏览数量                         |
 | like_num     | int          |      | 点赞数量                         |
 | top_priority | boolean      |      | 优先级，是否置顶                 |
+| comment_num  | int          |      | 评论数量                         |
 | status       | int          |      | 是否封禁或逻辑删除该讨论         |
 | gmt_create   | datetime     |      | 创建时间                         |
 | gmt_modified | datetime     |      | 修改时间                         |

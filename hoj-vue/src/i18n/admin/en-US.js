@@ -126,6 +126,7 @@ export const m = {
   Add_Rmote_OJ_Problem:'Add Remote OJ Problem',
   Add_From_Public_Problem:'Add From Public Problem',
   Auth:'Auth',
+  Modified_User:'Modified User',
   Public_Problem:'Public Problem',
   Private_Problem:'Private Problem',
   Contest_Problem:'Contest Problem',

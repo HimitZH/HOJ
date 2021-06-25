@@ -60,7 +60,7 @@
         </vxe-table-column>
         <vxe-table-column
           field="author"
-          min-width="150"
+          min-width="130"
           :title="$t('m.Author')"
         >
         </vxe-table-column>
@@ -72,6 +72,12 @@
           <template v-slot="{ row }">
             {{ row.gmtCreate | localtime }}
           </template>
+        </vxe-table-column>
+        <vxe-table-column
+          field="modifiedUser"
+          min-width="130"
+          :title="$t('m.Modified_User')"
+        >
         </vxe-table-column>
         <vxe-table-column min-width="130" field="auth" :title="$t('m.Auth')">
           <template v-slot="{ row }">

@@ -1,12 +1,10 @@
 package top.hcode.hoj.remoteJudge.task.Impl;
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.http.*;
 import lombok.extern.slf4j.Slf4j;
-
-import org.jsoup.helper.Validate;
-
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.util.Constants;
 
@@ -16,19 +14,22 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @Author: Himit_ZH
+ * @Date: 2021/6/24 21:19
+ * @Description:
+ */
 @Slf4j(topic = "hoj")
-public class HduJudge implements RemoteJudgeStrategy {
-    public static final String HOST = "http://acm.hdu.edu.cn";
-    public static final String LOGIN_URL = "/userloginex.php?action=login";
-    public static final String SUBMIT_URL = "/submit.php?action=submit";
-    public static final String STATUS_URL = "/status.php?user=%s&pid=%s";
-    public static final String QUERY_URL = "/status.php?first=%d";
-    public static final String ERROR_URL = "/viewerror.php?rid=%d";
+public class POJJudge implements RemoteJudgeStrategy {
+    public static final String HOST = "http://poj.org";
+    public static final String LOGIN_URL = "/login";
+    public static final String SUBMIT_URL = "/submit";
+    public static final String STATUS_URL = "/status?user_id=%s&problem_id=%s";
+    public static final String QUERY_URL = "/showsource?solution_id=%s";
+    public static final String ERROR_URL = "/showcompileinfo?solution_id=%s";
     public static Map<String, String> headers = MapUtil
             .builder(new HashMap<String, String>())
-            .put("Host", "acm.hdu.edu.cn")
-            .put("origin", "http://acm.hdu.edu.cn")
-            .put("referer", "http://acm.hdu.edu.cn")
+            .put("Host", "poj.org")
             .put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36")
             .map();
 
@@ -50,16 +51,15 @@ public class HduJudge implements RemoteJudgeStrategy {
                 .addHeaders(headers)
                 .cookie(cookies);
 
-        HttpResponse response = request.form(MapUtil
-                .builder(new HashMap<String, Object>())
-                .put("check", "0")
+        HttpResponse response = request.form(MapUtil.builder(new HashMap<String, Object>())
                 .put("language", getLanguage(language))
-                .put("problemid", problemId)
-                .put("usercode", userCode)
-                .map())
+                .put("submit", "Submit")
+                .put("problem_id", problemId)
+                .put("source", Base64.encode(userCode))
+                .put("encoded", 1).map())
                 .execute();
-        if (response.getStatus() != 200) {
-            log.error("进行题目提交时发生错误：提交题目失败，" + HduJudge.class.getName() + "，题号:" + problemId);
+        if (response.getStatus() != 302) {
+            log.error("进行题目提交时发生错误：提交题目失败，" + POJJudge.class.getName() + "，题号:" + problemId);
             return null;
         }
         // 下面的请求都是GET
@@ -78,53 +78,53 @@ public class HduJudge implements RemoteJudgeStrategy {
     }
 
     @Override
-    public Map<String, Object> result(Long submitId, String username, String cookies) throws Exception {
+    public Map<String, Object> result(Long submitId, String username, String cookies) {
         String url = HOST + String.format(QUERY_URL, submitId);
         HttpRequest request = HttpUtil.createGet(url)
                 .cookie(cookies)
                 .addHeaders(headers);
         HttpResponse response = request.execute();
-        // 1提交时间 2结果 3执行时间 4执行空间 5代码长度
-        // 一般情况下 代码长度和提交时间不需要，想要也行，自行添加
-        Pattern pattern = Pattern.compile(">" + submitId + "</td><td>([\\s\\S]*?)</td><td>([\\s\\S]*?)</td><td>[\\s\\S]*?</td><td>(\\d*?)MS</td><td>(\\d*?)K</td><td>(\\d*?)B</td>");
-        Matcher matcher = pattern.matcher(response.body());
-        // 找到时
-        Validate.isTrue(matcher.find());
-        String rawStatus = matcher.group(2).replaceAll("<[\\s\\S]*?>", "").trim();
-        Constants.Judge statusType = statusTypeMap.get(rawStatus);
-        if (statusType == Constants.Judge.STATUS_PENDING) {
+
+        String statusStr = ReUtil.get("<b>Result:</b>(.+?)</td>", response.body(), 1)
+                .replaceAll("<.*?>", "")
+                .trim();
+
+        Constants.Judge statusType = statusTypeMap.getOrDefault(statusStr, null);
+
+        if (statusType == null) {
             return MapUtil.builder(new HashMap<String, Object>())
-                    .put("status", statusType.getStatus()).build();
+                    .put("status", Constants.Judge.STATUS_PENDING).build();
         }
         // 返回的结果map
         Map<String, Object> result = MapUtil.builder(new HashMap<String, Object>())
                 .put("status", statusType.getStatus()).build();
-        // 获取其他信息
-        String executionTime = matcher.group(3);
-        result.put("time", Integer.parseInt(executionTime));
-        String executionMemory = matcher.group(4);
-        result.put("memory", Integer.parseInt(executionMemory));
-        // 如果CE了，则还需要获得错误信息
+        // 如果CE了，需要获得错误信息
         if (statusType == Constants.Judge.STATUS_COMPILE_ERROR) {
             request.setUrl(HOST + String.format(ERROR_URL, submitId));
             String CEHtml = request.execute().body();
             String compilationErrorInfo = ReUtil.get("<pre>([\\s\\S]*?)</pre>", CEHtml, 1);
             result.put("CEInfo", HtmlUtil.unescape(compilationErrorInfo));
+        } else {
+            // 如果不是CE,获取其他信息
+            String executionTime = ReUtil.get("<b>Memory:</b> ([-\\d]+)", response.body(), 1);
+            result.put("time", Integer.parseInt(executionTime));
+            String executionMemory = ReUtil.get("<b>Time:</b> ([-\\d]+)", response.body(), 1);
+            result.put("memory", Integer.parseInt(executionMemory));
         }
         return result;
     }
 
 
     @Override
-    public Map<String, Object> getLoginUtils(String username, String password){
+    public Map<String, Object> getLoginUtils(String username, String password) {
 
-        HttpRequest request = HttpUtil.createPost(HOST + LOGIN_URL).addHeaders(headers);
-        HttpResponse response = request.form(MapUtil
-                .builder(new HashMap<String, Object>())
-                .put("username", username)
-                .put("login", "Sign In")
-                .put("userpass", password).map())
-                .execute();
+        HttpRequest request = HttpUtil.createPost(HOST + LOGIN_URL);
+        HttpResponse response = request.form(MapUtil.builder(new HashMap<String, Object>())
+                .put("user_id1", username)
+                .put("B1", "login")
+                .put("url", ".")
+                .put("password1", password).map()).execute();
+
         return MapUtil.builder(new HashMap<String, Object>()).put("cookie", response.getCookieStr()).map();
     }
 
@@ -135,15 +135,15 @@ public class HduJudge implements RemoteJudgeStrategy {
                 return "0";
             case "GCC":
                 return "1";
-            case "C++":
-                return "2";
-            case "C":
-                return "3";
-            case "Pascal":
-                return "4";
             case "Java":
+                return "2";
+            case "Pascal":
+                return "3";
+            case "C++":
+                return "4";
+            case "C":
                 return "5";
-            case "C#":
+            case "Fortran":
                 return "6";
             default:
                 // TODO 抛出没有这个语言的异常
@@ -152,10 +152,11 @@ public class HduJudge implements RemoteJudgeStrategy {
     }
 
 
-    public Long getMaxRunId(HttpRequest request, String userName, String problemId){
+    public Long getMaxRunId(HttpRequest request, String userName, String problemId) {
         String url = String.format(STATUS_URL, userName, problemId);
-        HttpResponse response = request.setUrl(url).execute();
-        Matcher matcher = Pattern.compile("<td height=22px>(\\d+)").matcher(response.body());
+        request.setUrl(HOST + url);
+        String html = request.execute().body();
+        Matcher matcher = Pattern.compile("<tr align=center><td>(\\d+)").matcher(html);
         return matcher.find() ? Long.parseLong(matcher.group(1)) : -1L;
     }
 
@@ -163,14 +164,15 @@ public class HduJudge implements RemoteJudgeStrategy {
     // TODO 添加结果对应的状态
     private static final Map<String, Constants.Judge> statusTypeMap = new HashMap<String, Constants.Judge>() {
         {
-            put("Submitted", Constants.Judge.STATUS_SUBMITTING);
+            put("Compiling", Constants.Judge.STATUS_COMPILING);
             put("Accepted", Constants.Judge.STATUS_ACCEPTED);
-            put("Wrong Answer", Constants.Judge.STATUS_WRONG_ANSWER);
-            put("Compilation Error", Constants.Judge.STATUS_COMPILE_ERROR);
-            put("Queuing", Constants.Judge.STATUS_PENDING);
-            put("Compiling", Constants.Judge.STATUS_PENDING);
-            put("Time Limit Exceeded", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED);
             put("Presentation Error", Constants.Judge.STATUS_PRESENTATION_ERROR);
+            put("Time Limit Exceeded", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED);
+            put("Memory Limit Exceeded", Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED);
+            put("Wrong Answer", Constants.Judge.STATUS_WRONG_ANSWER);
+            put("Runtime Error", Constants.Judge.STATUS_RUNTIME_ERROR);
+            put("Output Limit Exceeded", Constants.Judge.STATUS_RUNTIME_ERROR);
+            put("Compile Error", Constants.Judge.STATUS_COMPILE_ERROR);
         }
     };
 }

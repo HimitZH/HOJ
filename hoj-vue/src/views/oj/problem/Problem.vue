@@ -2,8 +2,8 @@
   <div>
     <div id="problem-main">
       <!--problem main-->
-      <el-row>
-        <el-col :sm="24" :md="24" :lg="12">
+      <el-row class="problem-box">
+        <el-col :sm="24" :md="24" :lg="12" class="problem-left">
           <el-card :padding="10" shadow class="problem-detail">
             <div slot="header" class="panel-title">
               <span>{{ problemData.problem.title }}</span
@@ -172,7 +172,42 @@
             </div>
           </el-card>
         </el-col>
-        <el-col :sm="24" :md="24" :lg="12">
+        <div
+          class="problem-resize hidden-md-and-down"
+          :title="$t('m.Shrink_Sidebar')"
+        >
+          <span>⋮</span>
+          <el-tooltip
+            :content="
+              toWatchProblem
+                ? $t('m.View_Problem_Content')
+                : $t('m.Only_View_Problem')
+            "
+            placement="right"
+          >
+            <el-button
+              icon="el-icon-caret-right"
+              circle
+              class="right-fold fold"
+              @click.native="onlyWatchProblem"
+              size="mini"
+            ></el-button>
+          </el-tooltip>
+          <el-tooltip
+            :content="$t('m.Put_away_the_full_screen_and_write_the_code')"
+            placement="left"
+          >
+            <el-button
+              icon="el-icon-caret-left"
+              circle
+              class="left-fold fold"
+              @click.native="resetWatch(false)"
+              size="mini"
+              v-show="toResetWatch"
+            ></el-button>
+          </el-tooltip>
+        </div>
+        <el-col :sm="24" :md="24" :lg="12" class="problem-right">
           <el-card
             :padding="10"
             id="submit-code"
@@ -432,6 +467,8 @@ export default {
       JUDGE_STATUS_RESERVE: {},
       PROBLEM_LEVEL: {},
       RULE_TYPE: {},
+      toResetWatch: false,
+      toWatchProblem: false,
     };
   },
   // 获取缓存中的该题的做题代码，代码语言，代码风格
@@ -449,6 +486,7 @@ export default {
       next();
     }
   },
+
   created() {
     this.JUDGE_STATUS_RESERVE = Object.assign({}, JUDGE_STATUS_RESERVE);
     this.PROBLEM_LEVEL = Object.assign({}, PROBLEM_LEVEL);
@@ -456,9 +494,95 @@ export default {
   },
   mounted() {
     this.init();
+    this.dragControllerDiv();
   },
   methods: {
     ...mapActions(['changeDomTitle']),
+    dragControllerDiv() {
+      var resize = document.getElementsByClassName('problem-resize');
+      var left = document.getElementsByClassName('problem-left');
+      var right = document.getElementsByClassName('problem-right');
+      var box = document.getElementsByClassName('problem-box');
+      const _this = this;
+      for (let i = 0; i < resize.length; i++) {
+        // 鼠标按下事件
+        resize[i].onmousedown = function(e) {
+          //颜色改变提醒
+          resize[i].style.background = '#818181';
+          var startX = e.clientX;
+          // 鼠标拖动事件
+          document.onmousemove = function(e) {
+            resize[i].left = startX;
+            var endX = e.clientX;
+            var moveLen = resize[i].left + (endX - startX); // （endx-startx）=移动的距离。resize[i].left+移动的距离=左边区域最后的宽度
+            var maxT = box[i].clientWidth - resize[i].offsetWidth; // 容器宽度 - 左边区域的宽度 = 右边区域的宽度
+            if (moveLen < 420) moveLen = 0; // 左边区域的最小宽度为420px
+            if (moveLen > maxT - 580) moveLen = maxT - 580; //右边区域最小宽度为580px
+            resize[i].style.left = moveLen; // 设置左侧区域的宽度
+            for (let j = 0; j < left.length; j++) {
+              left[j].style.width = moveLen + 'px';
+              let tmp = box[i].clientWidth - moveLen - 11;
+              right[j].style.width = tmp + 'px';
+              if (tmp > 0) {
+                _this.toResetWatch = false;
+              }
+              if (moveLen == 0) {
+                _this.toWatchProblem = true;
+              }
+            }
+          };
+          // 鼠标松开事件
+          document.onmouseup = function(evt) {
+            //颜色恢复
+            resize[i].style.background = '#d6d6d6';
+            document.onmousemove = null;
+            document.onmouseup = null;
+            resize[i].releaseCapture && resize[i].releaseCapture(); //当你不在需要继续获得鼠标消息就要应该调用ReleaseCapture()释放掉
+          };
+          resize[i].setCapture && resize[i].setCapture(); //该函数在属于当前线程的指定窗口里设置鼠标捕获
+          return false;
+        };
+      }
+    },
+    onlyWatchProblem() {
+      if (this.toWatchProblem) {
+        this.resetWatch(true);
+        this.toWatchProblem = false;
+        return;
+      }
+      var resize = document.getElementsByClassName('problem-resize');
+      var left = document.getElementsByClassName('problem-left');
+      var right = document.getElementsByClassName('problem-right');
+      var box = document.getElementsByClassName('problem-box');
+      for (let i = 0; i < resize.length; i++) {
+        resize[i].style.left = box[i].clientWidth - 11;
+        for (let j = 0; j < left.length; j++) {
+          left[j].style.width = box[i].clientWidth - 11 + 'px';
+          right[j].style.width = '0px';
+        }
+      }
+      this.toResetWatch = true;
+    },
+    resetWatch(minLeft = false) {
+      var resize = document.getElementsByClassName('problem-resize');
+      var left = document.getElementsByClassName('problem-left');
+      var right = document.getElementsByClassName('problem-right');
+      var box = document.getElementsByClassName('problem-box');
+      for (let i = 0; i < resize.length; i++) {
+        let leftWidth = 0;
+        if (minLeft) {
+          leftWidth = 431; // 恢复左边最小420px+滑块11px
+        } else {
+          leftWidth = box[i].clientWidth - 580; // 右边最小580px
+        }
+        resize[i].style.left = leftWidth - 11;
+        for (let j = 0; j < left.length; j++) {
+          left[j].style.width = leftWidth - 11 + 'px';
+          right[j].style.width = box[i].clientWidth - leftWidth + 'px';
+        }
+      }
+      this.toResetWatch = false;
+    },
     init() {
       if (this.$route.params.contestID) {
         this.contestID = this.$route.params.contestID;
@@ -890,6 +1014,7 @@ export default {
 #problem-main {
   flex: auto;
 }
+
 .problem-menu {
   float: left;
 }
@@ -938,6 +1063,81 @@ a {
   }
   .question-intr {
     margin-top: 6px;
+  }
+}
+
+@media screen and (min-width: 1050px) {
+  .problem-box {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  .problem-left {
+    width: calc(50% - 10px); /*左侧初始化宽度*/
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    float: left;
+  }
+  .problem-resize {
+    cursor: col-resize;
+    float: left;
+    position: relative;
+    top: 330px;
+    background-color: #d6d6d6;
+    border-radius: 5px;
+    margin-top: -10px;
+    width: 10px;
+    height: 50px;
+    background-size: cover;
+    background-position: center;
+    /*z-index: 99999;*/
+    font-size: 32px;
+    color: white;
+  }
+  .problem-resize:hover .right-fold {
+    display: block;
+  }
+  .problem-resize:hover .fold:before {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 6px;
+    height: 24px;
+    left: -6px;
+  }
+  .right-fold {
+    position: absolute;
+    display: none;
+    font-weight: bolder;
+    margin-left: 15px;
+    margin-top: -35px;
+    cursor: pointer;
+    z-index: 1000;
+    text-align: center;
+  }
+  .left-fold {
+    position: absolute;
+    font-weight: bolder;
+    margin-left: -40px;
+    margin-top: 10px;
+    cursor: pointer;
+    z-index: 1000;
+    text-align: center;
+  }
+  .fold:hover {
+    color: #409eff;
+    background: #fff;
+  }
+
+  /*拖拽区鼠标悬停样式*/
+  .problem-resize:hover {
+    color: #444444;
+  }
+  .problem-right {
+    height: 100%;
+    float: left;
+    width: 50%;
   }
 }
 
