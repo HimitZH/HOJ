@@ -63,6 +63,8 @@
    HDU_ACCOUNT_PASSWORD_LIST=
    CF_ACCOUNT_USERNAME_LIST=
    CF_ACCOUNT_PASSWORD_LIST=
+   POJ_ACCOUNT_USERNAME_LIST=
+   POJ_ACCOUNT_PASSWORD_LIST=
    
    # judgeserver的配置
    JUDGE_SERVER_IP=172.20.0.7
@@ -70,36 +72,36 @@
    JUDGE_SERVER_NAME=judger-alone
    
    # docker network的配置
-   SUBNET=172.20.0.0/16
+SUBNET=172.20.0.0/16
    ```
 
    如果不改动，则以默认参数启动
-
+   
    ```shell
-   docker-compose up -d
+docker-compose up -d
    ```
 
    **根据网速情况，大约十到二十分钟拉取镜像，全程无需人工干预，拉取完毕后，自动启动容器服务，大概需要一至两分钟的初始化。**
 
    等待命令执行完毕后，查看容器状态
-
+   
    ```shell
-   docker ps -a
+docker ps -a
    ```
 
    当看到所有的容器的状态status都为`UP`或`healthy`就代表 OJ 已经启动成功。
 
    > 以下默认参数说明
-
+   
    - 默认超级管理员账号与密码：root / hoj123456
    - 默认redis密码：hoj123456
    - 默认mysql账号与密码：root / hoj123456
    - 默认nacos管理员账号与密码：root / hoj123456
    - 默认不开启https，开启需修改文件同时提供证书文件
    - 判题并发数默认：cpu核心数*2
-   - 默认开启vj判题，需要手动修改添加账号与密码，如果不添加不能vj判题！
+- 默认开启vj判题，需要手动修改添加账号与密码，如果不添加不能vj判题！
    - vj判题并发数默认：cpu核心数*4
-
+   
    
 
 **登录root账号到后台查看服务状态以及到`http://ip/admin/conf`修改服务配置!**
@@ -199,6 +201,8 @@ Password: 开启SMTP服务后生成的随机授权码
    HDU_ACCOUNT_PASSWORD_LIST=password1,password2
    CF_ACCOUNT_USERNAME_LIST=
    CF_ACCOUNT_PASSWORD_LIST=
+   POJ_ACCOUNT_USERNAME_LIST=
+   POJ_ACCOUNT_PASSWORD_LIST=
    
    # 评测数据同步的配置
    RSYNC_PASSWORD=hoj123456 # 请修改数据同步密码

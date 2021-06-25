@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import top.hcode.hoj.remoteJudge.task.Impl.CodeForcesJudge;
 import top.hcode.hoj.remoteJudge.task.Impl.HduJudge;
+import top.hcode.hoj.remoteJudge.task.Impl.POJJudge;
 import top.hcode.hoj.util.JsoupUtils;
 
 import java.io.IOException;
@@ -87,6 +88,35 @@ public class JudgeServerApplicationTests {
                 "    return 0;\n" +
                 "}");
         System.out.println(result);
+    }
+
+
+    @Test
+    void  test03() throws Exception {
+        HduJudge hduJudge = new HduJudge();
+        Map<String, Object> submit = hduJudge.submit("账号", "密码", "1000", "GCC", "#include<stdio.h> \\n\" +\n" +
+                "                        \"int main()\\n\" +\n" +
+                "                        \"{\\n\" +\n" +
+                "                        \"\\tint a,b,sum;\\n\" +\n" +
+                "                        \"\\twhile(scanf(\\\"%d%d\\\",&a,&b)!=EOF)\\n\" +\n" +
+                "                        \"\\t{\\n\" +\n" +
+                "                        \"\\t\\tsum=a+b;\\n\" +\n" +
+                "                        \"\\t\\tprintf(\\\"%d\\\\n\\\",sum);\\n\" +\n" +
+                "                        \"\\n\" +\n" +
+                "                        \"\\t}\\n\" +\n" +
+                "                        \"\\treturn 0;\\n\" +\n" +
+                "                        \"}");
+        System.out.println(submit);
+    }
+
+    @Test
+    void  test04(){
+        POJJudge pojJudge = new POJJudge();
+        Map<String, Object> loginUtils = pojJudge.getLoginUtils("账号", "密码");
+
+        Map<String, Object> result = pojJudge.result(22716128L, "账号", (String) loginUtils.get("cookies"));
+        System.out.println(result);
+
     }
 
 

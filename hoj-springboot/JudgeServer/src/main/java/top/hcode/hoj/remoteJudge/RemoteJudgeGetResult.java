@@ -39,7 +39,6 @@ public class RemoteJudgeGetResult {
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
         AtomicInteger count = new AtomicInteger(0);
-
         Runnable getResultTask = new Runnable() {
             @Override
             @Transactional
@@ -54,7 +53,6 @@ public class RemoteJudgeGetResult {
                         Integer time = (Integer) result.getOrDefault("time", null);
                         Integer memory = (Integer) result.getOrDefault("memory", null);
                         String CEInfo = (String) result.getOrDefault("CEInfo", null);
-
                         Judge judge = new Judge();
 
                         judge.setSubmitId(submitId)

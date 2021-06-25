@@ -58,7 +58,7 @@ public class HduJudge implements RemoteJudgeStrategy {
                 .put("usercode", userCode)
                 .map())
                 .execute();
-        if (response.getStatus() != 200) {
+        if (response.getStatus() != 200 && response.getStatus() != 302) {
             log.error("进行题目提交时发生错误：提交题目失败，" + HduJudge.class.getName() + "，题号:" + problemId);
             return null;
         }
@@ -66,7 +66,6 @@ public class HduJudge implements RemoteJudgeStrategy {
         request.setMethod(Method.GET);
         // 获取提交的题目id
         Long maxRunId = getMaxRunId(request, username, problemId);
-
         if (maxRunId == -1L) { // 等待2s再次查询，如果还是失败，则表明提交失败了
             TimeUnit.SECONDS.sleep(2);
             maxRunId = getMaxRunId(request, username, problemId);
@@ -116,7 +115,7 @@ public class HduJudge implements RemoteJudgeStrategy {
 
 
     @Override
-    public Map<String, Object> getLoginUtils(String username, String password){
+    public Map<String, Object> getLoginUtils(String username, String password) {
 
         HttpRequest request = HttpUtil.createPost(HOST + LOGIN_URL).addHeaders(headers);
         HttpResponse response = request.form(MapUtil
@@ -152,11 +151,11 @@ public class HduJudge implements RemoteJudgeStrategy {
     }
 
 
-    public Long getMaxRunId(HttpRequest request, String userName, String problemId){
-        String url = String.format(STATUS_URL, userName, problemId);
-        HttpResponse response = request.setUrl(url).execute();
-        Matcher matcher = Pattern.compile("<td height=22px>(\\d+)").matcher(response.body());
-        return matcher.find() ? Long.parseLong(matcher.group(1)) : -1L;
+    public Long getMaxRunId(HttpRequest request, String userName, String problemId) {
+        String url = HOST + String.format(STATUS_URL, userName, problemId);
+        HttpResponse response = HttpUtil.createGet(url).addHeaders(headers).execute();
+        String maxRunId = ReUtil.get("<td height=22px>(\\d+)", response.body(), 1);
+        return maxRunId != null ? Long.parseLong(maxRunId) : -1L;
     }
 
 
