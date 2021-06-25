@@ -126,6 +126,7 @@ export const m = {
   Add_Rmote_OJ_Problem:'添加远程OJ题目',
   Add_From_Public_Problem:'从公共题库添加题目',
   Auth:'权限',
+  Modified_User:'最近修改者',
   Public_Problem:'公开题目',
   Private_Problem:'隐藏题目',
   Contest_Problem:'比赛题目',

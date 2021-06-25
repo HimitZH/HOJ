@@ -72,7 +72,11 @@ public class ConfigUtils {
                 "  cf:\n" +
                 "    account:\n" +
                 "      username: " + listToStr(configVo.getCfUsernameList()) + "\n" +
-                "      password: " + listToStr(configVo.getCfPasswordList());
+                "      password: " + listToStr(configVo.getCfPasswordList()) + "\n" +
+                "  poj:\n" +
+                "    account:\n" +
+                "      username: " + listToStr(configVo.getPojUsernameList()) + "\n" +
+                "      password: " + listToStr(configVo.getPojPasswordList());
     }
 
     private String listToStr(List<String> list) {

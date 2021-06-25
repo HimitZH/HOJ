@@ -164,6 +164,10 @@ export const m = {
   Good_luck_to_you:'Good luck to you!',
   
   // /views/oj/problem/Problem.vue
+  Shrink_Sidebar:'Shrink Sidebar',
+  View_Problem_Content:'View Problem Content',
+  Only_View_Problem:'Only View Problem',
+  Put_away_the_full_screen_and_write_the_code:'Put away the full screen and write the code',
   Contest_Problem:'Contest Problem',
   Show_Tags:'Show tags',
   No_tag:'No tag',

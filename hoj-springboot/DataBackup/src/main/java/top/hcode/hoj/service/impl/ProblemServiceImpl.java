@@ -19,10 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
-import top.hcode.hoj.crawler.problem.CFProblemStrategy;
-import top.hcode.hoj.crawler.problem.HDUProblemStrategy;
-import top.hcode.hoj.crawler.problem.ProblemContext;
-import top.hcode.hoj.crawler.problem.ProblemStrategy;
+import top.hcode.hoj.crawler.problem.*;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.pojo.vo.ImportProblemVo;
@@ -543,6 +540,9 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                 break;
             case "CF":
                 problemStrategy = new CFProblemStrategy();
+                break;
+            case "POJ":
+                problemStrategy = new POJProblemStrategy();
                 break;
             default:
                 throw new Exception("未知的OJ的名字，暂时不支持！");

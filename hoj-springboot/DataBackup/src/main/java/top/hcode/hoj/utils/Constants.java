@@ -58,7 +58,8 @@ public class Constants {
 
     public enum RemoteOJ {
         HDU("HDU"),
-        CODEFORCES("CF");
+        CODEFORCES("CF"),
+        POJ("POJ");
 
         private final String name;
 

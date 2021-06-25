@@ -165,6 +165,10 @@ export const m = {
   Good_luck_to_you:'祝你好运!',
 
   // /views/oj/problem/Problem.vue
+  Shrink_Sidebar:'收缩侧边栏',
+  View_Problem_Content:'查看题目内容',
+  Only_View_Problem:'只看题目内容',
+  Put_away_the_full_screen_and_write_the_code:'收起全屏，编写代码',
   Contest_Problem:'比赛题目',
   Show_Tags:'显示标签',
   No_tag:'暂无标签',
@@ -243,7 +247,7 @@ export const m = {
   OI_Ranklist: 'OI 排行榜',
 
   // /views/oj/discussion/discussionList.vue
-  Created_Time:'创建时间',
+  Created_Time:'发布时间',
   Likes:'点赞',
   Views:'浏览',
   Edit:'编辑',

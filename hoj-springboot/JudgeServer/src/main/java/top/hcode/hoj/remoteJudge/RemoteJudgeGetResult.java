@@ -32,8 +32,7 @@ public class RemoteJudgeGetResult {
 
     @Transactional
     public void sendTask(String remoteJudge, String username, Long submitId, String uid,
-                         Long cid, Long pid, Long resultSubmitId, String token,
-                         HashMap<String, String> cookies) {
+                         Long cid, Long pid, Long resultSubmitId, String cookies) {
 
         RemoteJudgeStrategy remoteJudgeStrategy = RemoteJudgeFactory.selectJudge(remoteJudge);
 
@@ -47,7 +46,7 @@ public class RemoteJudgeGetResult {
             public void run() {
                 count.getAndIncrement();
                 try {
-                    Map<String, Object> result = remoteJudgeStrategy.result(resultSubmitId, username, token, cookies);
+                    Map<String, Object> result = remoteJudgeStrategy.result(resultSubmitId, username, cookies);
                     Integer status = (Integer) result.getOrDefault("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
                     if (status.intValue() != Constants.Judge.STATUS_PENDING.getStatus() &&
                             status.intValue() != Constants.Judge.STATUS_JUDGING.getStatus()) {

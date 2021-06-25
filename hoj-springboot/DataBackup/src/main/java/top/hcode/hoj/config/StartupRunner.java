@@ -105,6 +105,12 @@ public class StartupRunner implements CommandLineRunner {
     @Value("${CF_ACCOUNT_PASSWORD_LIST:}")
     private List<String> cfPasswordList;
 
+    @Value("${POJ_ACCOUNT_USERNAME_LIST:}")
+    private List<String> pojUsernameList;
+
+    @Value("${POJ_ACCOUNT_PASSWORD_LIST:}")
+    private List<String> pojPasswordList;
+
     @Value("${spring.profiles.active}")
     private String profile;
 
@@ -151,6 +157,10 @@ public class StartupRunner implements CommandLineRunner {
 
         configVo.setCfUsernameList(cfUsernameList);
         configVo.setCfPasswordList(cfPasswordList);
+
+        configVo.setPojUsernameList(pojUsernameList);
+        configVo.setPojPasswordList(pojPasswordList);
+
         configService.sendNewConfigToNacos();
 
         if (openRemoteJudge.equals("true")) {
@@ -201,6 +211,22 @@ public class StartupRunner implements CommandLineRunner {
             boolean addCFOk = remoteJudgeAccountService.saveOrUpdateBatch(cfRemoteAccountList);
             if (!addCFOk) {
                 log.error("Codeforces账号添加失败------------>{}", "请检查配置文件，然后重新启动！");
+            }
+        }
+
+        List<RemoteJudgeAccount> pojRemoteAccountList = new LinkedList<>();
+        for (int i = 0; i < pojUsernameList.size(); i++) {
+            pojRemoteAccountList.add(new RemoteJudgeAccount()
+                    .setUsername(pojUsernameList.get(i))
+                    .setPassword(pojPasswordList.get(i))
+                    .setStatus(true)
+                    .setVersion(0L)
+                    .setOj("POJ"));
+        }
+        if (pojRemoteAccountList.size()>0) {
+            boolean addPOJOk = remoteJudgeAccountService.saveOrUpdateBatch(pojRemoteAccountList);
+            if (!addPOJOk) {
+                log.error("POJ账号添加失败------------>{}", "请检查配置文件，然后重新启动！");
             }
         }
     }

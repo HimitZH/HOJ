@@ -45,7 +45,7 @@ public class Problem implements Serializable {
     @ApiModelProperty(value = "单位ms")
     private Integer timeLimit;
 
-    @ApiModelProperty(value = "单位kb")
+    @ApiModelProperty(value = "单位mb")
     private Integer memoryLimit;
 
     @ApiModelProperty(value = "单位mb")
@@ -103,6 +103,9 @@ public class Problem implements Serializable {
 
     @ApiModelProperty(value = "题目测试数据的版本号")
     private String caseVersion;
+
+    @ApiModelProperty(value = "修改题目的管理员用户名")
+    private String modifiedUser;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;

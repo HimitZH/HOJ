@@ -119,4 +119,10 @@ public class ConfigVo {
     @Value("${hoj.cf.account.password:}")
     private List<String> cfPasswordList;
 
+    @Value("${hoj.poj.account.username:}")
+    private List<String> pojUsernameList;
+
+    @Value("${hoj.poj.account.password:}")
+    private List<String> pojPasswordList;
+
 }
