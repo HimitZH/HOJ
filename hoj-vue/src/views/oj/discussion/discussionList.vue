@@ -468,6 +468,11 @@ export default {
       });
     },
 
+    changeRoute(page) {
+      this.query.currentPage = page;
+      this.getDiscussionList();
+    },
+
     getInfoByUsername(uid, username) {
       this.$router.push({
         path: '/user-home',

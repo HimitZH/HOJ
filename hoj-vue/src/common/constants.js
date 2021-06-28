@@ -130,15 +130,15 @@ export const JUDGE_STATUS_RESERVE={
 export const PROBLEM_LEVEL={
   '0':{
     name:'Easy',
-    color:'green'
+    color:'#19be6b'
   },
   '1':{
     name:'Mid',
-    color:'blue'
+    color:'#2d8cf0'
   },
   '2':{
     name:'Hard',
-    color:'red'
+    color:'#ed3f14'
   }
 }
 

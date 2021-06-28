@@ -1,6 +1,6 @@
 import moment from 'moment'
 import api from '@/common/api'
-import { CONTEST_STATUS, USER_TYPE, CONTEST_TYPE } from '@/common/constants'
+import { CONTEST_STATUS, CONTEST_TYPE } from '@/common/constants'
 import time from '@/common/time'
 const state = {
   now: moment(),

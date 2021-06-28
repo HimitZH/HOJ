@@ -13,9 +13,9 @@ const rootState = {
     visible: false
   },
   websiteConfig:{
-    recordName:'粤ICP备×××××××号-1',
+    recordName:'© 2020-2021',
     projectName:'HOJ',
-    shortName:'HOJ',
+    shortName:'OJ',
     recordUrl:'#',
     projectUrl:'#'
   },
