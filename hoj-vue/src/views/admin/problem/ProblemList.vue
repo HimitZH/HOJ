@@ -54,7 +54,13 @@
         @row-dblclick="handleDblclick"
         align="center"
       >
-        <vxe-table-column min-width="100" field="problemId" title="ID">
+        <vxe-table-column min-width="64" field="id" title="ID">
+        </vxe-table-column>
+        <vxe-table-column
+          min-width="100"
+          field="problemId"
+          :title="$t('m.Display_ID')"
+        >
         </vxe-table-column>
         <vxe-table-column field="title" min-width="150" :title="$t('m.Title')">
         </vxe-table-column>

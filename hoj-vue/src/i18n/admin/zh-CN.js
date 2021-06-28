@@ -123,6 +123,7 @@ export const m = {
 
   // /views/admin/problem/ProblemList.vue
   Contest_Problem_List: '比赛题目列表',
+  Display_ID:'展示ID',
   Add_Rmote_OJ_Problem:'添加远程OJ题目',
   Add_From_Public_Problem:'从公共题库添加题目',
   Auth:'权限',

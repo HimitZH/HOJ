@@ -123,6 +123,7 @@ export const m = {
 
   // /views/admin/problem/ProblemList.vue
   Contest_Problem_List: 'Contest Problem List',
+  Display_ID:'Display ID',
   Add_Rmote_OJ_Problem:'Add Remote OJ Problem',
   Add_From_Public_Problem:'Add From Public Problem',
   Auth:'Auth',

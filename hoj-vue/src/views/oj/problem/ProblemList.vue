@@ -164,9 +164,11 @@
             min-width="100"
           >
             <template v-slot="{ row }">
-              <span :class="getLevelColor(row.difficulty)">{{
-                PROBLEM_LEVEL[row.difficulty].name
-              }}</span>
+              <span
+                class="el-tag el-tag--small"
+                :style="getLevelColor(row.difficulty)"
+                >{{ PROBLEM_LEVEL[row.difficulty].name }}</span
+              >
             </template>
           </vxe-table-column>
 
@@ -515,7 +517,11 @@ export default {
       });
     },
     getLevelColor(difficulty) {
-      return 'el-tag el-tag--small status-' + PROBLEM_LEVEL[difficulty].color;
+      return (
+        'color: #fff !important;background-color:' +
+        PROBLEM_LEVEL[difficulty].color +
+        ' !important;'
+      );
     },
     getIconColor(status) {
       return (
