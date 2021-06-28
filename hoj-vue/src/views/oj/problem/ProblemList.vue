@@ -517,15 +517,18 @@ export default {
       });
     },
     getLevelColor(difficulty) {
-      return (
-        'color: #fff !important;background-color:' +
-        PROBLEM_LEVEL[difficulty].color +
-        ' !important;'
-      );
+      if (difficulty != undefined && difficulty != null) {
+        return (
+          'color: #fff !important;background-color:' +
+          this.PROBLEM_LEVEL[difficulty]['color'] +
+          ' !important;'
+        );
+      }
     },
     getIconColor(status) {
       return (
-        'font-weight: 600;font-size: 16px;color:' + JUDGE_STATUS[status].rgb
+        'font-weight: 600;font-size: 16px;color:' +
+        this.JUDGE_STATUS[status].rgb
       );
     },
   },
