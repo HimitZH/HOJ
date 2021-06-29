@@ -110,7 +110,6 @@
               <div
                 class="markdown-body"
                 v-html="contentHtml"
-                v-katex
                 v-highlight
                 v-if="contentHtml"
               ></div>

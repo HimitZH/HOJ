@@ -27,7 +27,7 @@ const cdn = {
   css: [
       'https://cdn.bootcdn.net/ajax/libs/element-ui/2.14.0/theme-chalk/index.min.css',
       "https://cdn.bootcdn.net/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css",
-      "https://cdn.jsdelivr.net/npm/vxe-table@2.9.26/lib/style.css"
+      "https://cdn.jsdelivr.net/npm/vxe-table@2.9.26/lib/style.css",
   ],
   // cdn的js链接
   js: [
@@ -43,7 +43,7 @@ const cdn = {
     "https://cdn.bootcss.com/moment.js/2.29.1/locale/zh-cn.min.js",
     "https://cdn.bootcdn.net/ajax/libs/moment.js/2.29.1/locale/es-us.min.js",
     "https://cdn.bootcdn.net/ajax/libs/echarts/4.9.0-rc.1/echarts.min.js",
-    "https://cdn.bootcdn.net/ajax/libs/vue-echarts/5.0.0-beta.0/vue-echarts.min.js"
+    "https://cdn.bootcdn.net/ajax/libs/vue-echarts/5.0.0-beta.0/vue-echarts.min.js",
     // "https://unpkg.com/mavon-editor@2.9.1/dist/mavon-editor.js"
   ]
 }

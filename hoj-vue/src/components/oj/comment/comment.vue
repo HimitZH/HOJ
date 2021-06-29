@@ -717,9 +717,8 @@ export default {
       })
         .then(() => {
           let replyDeleteData = {
-            id: reply.id,
             did: this.did,
-            fromUid: reply.fromUid,
+            reply: reply,
           };
           api.deleteReply(replyDeleteData).then((res) => {
             myMessage.success(res.data.msg);

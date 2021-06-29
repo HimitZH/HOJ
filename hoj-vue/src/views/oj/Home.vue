@@ -61,7 +61,6 @@
                 <div class="contest-description">
                   <blockquote
                     v-html="contest.description"
-                    v-katex
                     v-highlight
                     class="markdown-body"
                   ></blockquote>

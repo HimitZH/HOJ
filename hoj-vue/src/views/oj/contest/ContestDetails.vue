@@ -100,7 +100,6 @@
           <el-card class="box-card">
             <div
               v-html="descriptionHtml"
-              v-katex
               v-highlight
               class="markdown-body"
             ></div>
