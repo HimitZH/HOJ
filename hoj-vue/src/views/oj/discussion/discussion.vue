@@ -96,12 +96,7 @@
         </div>
       </div>
       <div class="body-article">
-        <div
-          class="markdown-body"
-          v-html="contentHtml"
-          v-katex
-          v-highlight
-        ></div>
+        <div class="markdown-body" v-html="contentHtml" v-highlight></div>
       </div>
     </div>
     <el-dialog
@@ -325,6 +320,8 @@ export default {
     contentHtml() {
       if (this.discussion.content) {
         return this.$markDown.render(this.discussion.content);
+      } else {
+        return null;
       }
     },
   },

@@ -7,6 +7,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@iktakahiro/markdown-it-katex": "^4.0.1",
     "axios": "^0.21.0",
     "browser-detect": "^0.2.28",
     "compression-webpack-plugin": "^5.0.1",
@@ -16,7 +17,6 @@
     "font-awesome": "^4.7.0",
     "highlight.js": "^10.3.2",
     "jquery": "^3.5.1",
-    "katex": "^0.12.0",
     "mavon-editor": "^2.9.1",
     "moment": "^2.29.1",
     "muse-ui": "^3.0.2",

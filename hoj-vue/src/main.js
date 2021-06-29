@@ -10,6 +10,8 @@ import Message from 'vue-m-message'
 import 'vue-m-message/dist/index.css'
 import axios from 'axios'
 
+import Md_Katex from '@iktakahiro/markdown-it-katex'
+
 // 注释表示使用cdn引入
 // import 'xe-utils' 
 // import VXETable from 'vxe-table'
@@ -81,7 +83,7 @@ Vue.use(SlideVerify) // 滑动验证码组件
 
 Vue.prototype.$axios = axios
 
-Vue.prototype.$markDown = mavonEditor.markdownIt
+Vue.prototype.$markDown = mavonEditor.markdownIt.use(Md_Katex) // 挂载到vue
 
 Vue.config.productionTip = false
 new Vue({
