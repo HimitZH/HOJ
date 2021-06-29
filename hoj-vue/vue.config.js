@@ -27,7 +27,7 @@ const cdn = {
   css: [
       'https://cdn.bootcdn.net/ajax/libs/element-ui/2.14.0/theme-chalk/index.min.css',
       "https://cdn.bootcdn.net/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css",
-      "https://cdn.jsdelivr.net/npm/vxe-table@2.9.26/lib/style.css"
+      "https://cdn.jsdelivr.net/npm/vxe-table@2.9.26/lib/style.css",
   ],
   // cdn的js链接
   js: [

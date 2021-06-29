@@ -157,7 +157,10 @@ public class CommentController {
         if (comment.getFromUid().equals(userRolesVo.getUid()) || SecurityUtils.getSubject().hasRole("root")
                 || SecurityUtils.getSubject().hasRole("admin") || SecurityUtils.getSubject().hasRole("problem_admin")) {
 
-            // 删除该数据
+            // 获取需要删除该评论的回复数
+            int replyNum = replyService.count(new UpdateWrapper<Reply>().eq("comment_id", comment.getId()));
+
+            // 删除该数据 包括关联外键的reply表数据
             boolean isDeleteComment = commentService.remove(new UpdateWrapper<Comment>().eq("id", comment.getId()));
 
             // 同时需要删除该评论的回复表数据
@@ -168,7 +171,7 @@ public class CommentController {
                 if (comment.getDid() != null) {
                     UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<>();
                     discussionUpdateWrapper.eq("id", comment.getDid())
-                            .setSql("comment_num=comment_num-1");
+                            .setSql("comment_num=comment_num" + (replyNum + 1));
                     discussionService.update(discussionUpdateWrapper);
                 }
                 return CommonResult.successResponse(null, "删除成功");
