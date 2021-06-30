@@ -25,7 +25,12 @@
         align="center"
       >
         <vxe-table-column field="id" width="80" title="ID"> </vxe-table-column>
-        <vxe-table-column field="title" min-width="150" :title="$t('m.Title')">
+        <vxe-table-column
+          field="title"
+          min-width="150"
+          :title="$t('m.Title')"
+          show-overflow
+        >
         </vxe-table-column>
         <vxe-table-column :title="$t('m.Type')" width="100">
           <template v-slot="{ row }">
@@ -73,7 +78,7 @@
           <template v-slot="{ row }">
             <p>Start Time: {{ row.startTime | localtime }}</p>
             <p>End Time: {{ row.endTime | localtime }}</p>
-            <p>Create Time: {{ row.gmtCreate | localtime }}</p>
+            <p>Created Time: {{ row.gmtCreate | localtime }}</p>
             <p>Creator: {{ row.author }}</p>
           </template>
         </vxe-table-column>

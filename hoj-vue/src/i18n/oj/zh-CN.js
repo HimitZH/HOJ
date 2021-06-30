@@ -247,7 +247,7 @@ export const m = {
   OI_Ranklist: 'OI 排行榜',
 
   // /views/oj/discussion/discussionList.vue
-  Created_Time:'发布时间',
+  Release_Time:'发布时间',
   Likes:'点赞',
   Views:'浏览',
   Edit:'编辑',

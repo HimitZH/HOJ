@@ -208,9 +208,13 @@ public class AdminContestController {
         IPage<Problem> iPage = new Page<>(currentPage, limit);
         // 根据cid在ContestProblem表中查询到对应pid集合
         QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
-        contestProblemQueryWrapper.select("pid").eq("cid", cid);
+        contestProblemQueryWrapper.eq("cid", cid);
         List<Long> pidList = new LinkedList<>();
-        contestProblemService.list(contestProblemQueryWrapper).forEach(contestProblem -> {
+
+        List<ContestProblem> contestProblemList = contestProblemService.list(contestProblemQueryWrapper);
+        HashMap<Long, Object> contestProblemMap = new HashMap<>();
+        contestProblemList.forEach(contestProblem -> {
+            contestProblemMap.put(contestProblem.getPid(), contestProblem);
             pidList.add(contestProblem.getPid());
         });
 
@@ -241,11 +245,12 @@ public class AdminContestController {
         }
 
         IPage<Problem> problemList = problemService.page(iPage, problemQueryWrapper);
-        if (problemList.getTotal() == 0) { // 未查询到一条数据
-            return CommonResult.successResponse(problemList, "暂无数据");
-        } else {
-            return CommonResult.successResponse(problemList, "获取成功");
-        }
+        HashMap<String, Object> contestProblem = new HashMap<>();
+        contestProblem.put("problemList", problemList);
+        contestProblem.put("contestProblemMap", contestProblemMap);
+
+        return CommonResult.successResponse(contestProblem, "获取成功");
+
     }
 
     @GetMapping("/problem")
@@ -407,7 +412,7 @@ public class AdminContestController {
         contestProblemQueryWrapper.eq("cid", cid)
                 .and(QueryWrapper -> QueryWrapper.eq("pid", pid)
                         .or()
-                        .eq("display_id",displayId));
+                        .eq("display_id", displayId));
         ContestProblem contestProblem = contestProblemService.getOne(contestProblemQueryWrapper, false);
         if (contestProblem != null) {
             return CommonResult.errorResponse("添加失败，该题目已添加或者题目的比赛展示ID已存在！", CommonResult.STATUS_FAIL);
@@ -434,14 +439,14 @@ public class AdminContestController {
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     @Transactional
     public CommonResult importContestRemoteOJProblem(@RequestParam("name") String name,
-                                              @RequestParam("problemId") String problemId,
-                                              @RequestParam("cid") Long cid,
-                                              @RequestParam("displayId") String displayId,
-                                              HttpServletRequest request) {
+                                                     @RequestParam("problemId") String problemId,
+                                                     @RequestParam("cid") Long cid,
+                                                     @RequestParam("displayId") String displayId,
+                                                     HttpServletRequest request) {
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("problem_id", name.toUpperCase() + "-" + problemId);
-        Problem problem = problemService.getOne(queryWrapper,false);
+        Problem problem = problemService.getOne(queryWrapper, false);
 
         // 如果该题目不存在，需要先导入
         if (problem == null) {
@@ -467,7 +472,7 @@ public class AdminContestController {
         contestProblemQueryWrapper.eq("cid", cid)
                 .and(QueryWrapper -> queryWrapper.eq("pid", finalProblem.getId())
                         .or()
-                        .eq("display_id",displayId));
+                        .eq("display_id", displayId));
         ContestProblem contestProblem = contestProblemService.getOne(contestProblemQueryWrapper, false);
         if (contestProblem != null) {
             return CommonResult.errorResponse("添加失败，该题目已添加或者题目的比赛展示ID已存在！", CommonResult.STATUS_FAIL);

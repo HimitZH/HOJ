@@ -77,7 +77,7 @@
           >
 
           <span>
-            <i class="fa fa-clock-o"> {{ $t('m.Created_Time') }}：</i>
+            <i class="fa fa-clock-o"> {{ $t('m.Release_Time') }}：</i>
             <span>
               <el-tooltip
                 :content="discussion.gmtCreate | localtime"
