@@ -171,7 +171,7 @@ public class CommentController {
                 if (comment.getDid() != null) {
                     UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<>();
                     discussionUpdateWrapper.eq("id", comment.getDid())
-                            .setSql("comment_num=comment_num" + (replyNum + 1));
+                            .setSql("comment_num=comment_num-" + (replyNum + 1));
                     discussionService.update(discussionUpdateWrapper);
                 }
                 return CommonResult.successResponse(null, "删除成功");
