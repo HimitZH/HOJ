@@ -44,8 +44,8 @@ public class CFProblemStrategy extends ProblemStrategy {
 
         info.setTitle(ReUtil.get("<div class=\"title\">\\s*" + problemNum + "\\. ([\\s\\S]*?)</div>", html, 1).trim());
 
-
-        info.setTimeLimit(1000 * Integer.parseInt(ReUtil.get("</div>([\\d\\.]+) (seconds?|s)\\s*</div>", html, 1)));
+        double timeLimit = 1000 * Double.parseDouble(ReUtil.get("</div>([\\d\\.]+) (seconds?|s)\\s*</div>", html, 1));
+        info.setTimeLimit((int) timeLimit);
 
         info.setMemoryLimit(Integer.parseInt(ReUtil.get("</div>(\\d+) (megabytes|MB)\\s*</div>", html, 1)));
 
@@ -71,9 +71,9 @@ public class CFProblemStrategy extends ProblemStrategy {
 
         for (int i = 0; i < inputExampleList.size() && i < outputExampleList.size(); i++) {
             sb.append("<input>");
-            sb.append(inputExampleList.get(i).replace("<br>", "")).append("</input>");
+            sb.append(inputExampleList.get(i).replace("<br>", "\n")).append("</input>");
             sb.append("<output>");
-            sb.append(outputExampleList.get(i).replace("<br>", "")).append("</output>");
+            sb.append(outputExampleList.get(i).replace("<br>", "\n")).append("</output>");
         }
 
         info.setExamples(sb.toString());

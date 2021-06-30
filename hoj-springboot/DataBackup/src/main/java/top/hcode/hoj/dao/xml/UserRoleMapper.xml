@@ -95,7 +95,8 @@
 
     <!-- 主查询 -->
     <select id="getAdminUserList" resultMap="map_UserRolesList" resultType="list">
-        SELECT u.* FROM user_info u, (SELECT DISTINCT ur.uid AS uid FROM user_role ur WHERE ur.role_id=1000 OR ur.role_id=1001) t
+        SELECT u.* FROM user_info u, (SELECT DISTINCT ur.uid AS uid FROM user_role ur
+        WHERE ur.role_id=1000 OR ur.role_id=1001 OR ur.role_id=1008) t
         <where>
          t.uid = u.uuid
             <if test="keyword!=null and keyword!=''">

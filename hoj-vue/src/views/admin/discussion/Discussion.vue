@@ -43,12 +43,14 @@
         <vxe-table-column
           field="title"
           :title="$t('m.Title')"
+          show-overflow
           min-width="150"
         ></vxe-table-column>
         <vxe-table-column
           field="author"
           :title="$t('m.Author')"
           min-width="150"
+          show-overflow
         ></vxe-table-column>
         <vxe-table-column
           field="likeNum"
@@ -169,6 +171,7 @@
         <vxe-table-column
           min-width="150"
           field="reporter"
+          show-overflow
           :title="$t('m.Reporter')"
         >
         </vxe-table-column>

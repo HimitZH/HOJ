@@ -28,6 +28,7 @@
           <vxe-table-column
             min-width="150"
             field="title"
+            show-overflow
             :title="$t('m.Announcement_Title')"
           >
           </vxe-table-column>
@@ -52,6 +53,7 @@
           <vxe-table-column
             min-width="150"
             field="username"
+            show-overflow
             :title="$t('m.Author')"
           >
           </vxe-table-column>

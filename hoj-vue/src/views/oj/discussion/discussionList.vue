@@ -143,7 +143,7 @@
               <span class="pr pl hidden-xs-only">
                 <label class="fw"><i class="fa fa-clock-o"></i></label
                 ><span>
-                  {{ $t('m.Created_Time') }}：<el-tooltip
+                  {{ $t('m.Release_Time') }}：<el-tooltip
                     :content="discussion.gmtCreate | localtime"
                     placement="top"
                   >
