@@ -264,11 +264,11 @@ export default {
   methods: {
     doCopy() {
       this.$copyText(this.submission.code).then(
-        function(e) {
+        () => {
           myMessage.success(this.$i18n.t('m.Copied_successfully'));
         },
-        function(e) {
-          myMessage.success(this.$i18n.t('m.复制失败'));
+        () => {
+          myMessage.success(this.$i18n.t('m.Copied_failed'));
         }
       );
     },

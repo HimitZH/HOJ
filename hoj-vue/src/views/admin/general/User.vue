@@ -50,21 +50,25 @@
           field="uid"
           title="UUID"
           width="130"
+          show-overflow
         ></vxe-table-column>
         <vxe-table-column
           field="username"
           :title="$t('m.User')"
           min-width="140"
+          show-overflow
         ></vxe-table-column>
         <vxe-table-column
           field="realname"
           :title="$t('m.RealName')"
           min-width="140"
+          show-overflow
         ></vxe-table-column>
         <vxe-table-column
           field="email"
           :title="$t('m.Email')"
           min-width="150"
+          show-overflow
         ></vxe-table-column>
         <vxe-table-column
           field="gmtCreate"

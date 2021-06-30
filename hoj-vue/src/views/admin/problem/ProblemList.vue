@@ -49,9 +49,8 @@
         stripe
         auto-resize
         :data="problemList"
-        ref="xTable"
+        ref="adminProblemList"
         :loading="loading"
-        @row-dblclick="handleDblclick"
         align="center"
       >
         <vxe-table-column min-width="64" field="id" title="ID">
@@ -60,32 +59,73 @@
           min-width="100"
           field="problemId"
           :title="$t('m.Display_ID')"
+          v-if="!contestId"
         >
         </vxe-table-column>
-        <vxe-table-column field="title" min-width="150" :title="$t('m.Title')">
+        <vxe-table-column
+          field="title"
+          min-width="150"
+          :title="$t('m.Title')"
+          show-overflow
+          v-if="!contestId"
+        >
         </vxe-table-column>
+
+        <vxe-table-column
+          min-width="150"
+          :title="$t('m.Original_Display')"
+          v-if="isContest"
+          align="left"
+        >
+          <template v-slot="{ row }">
+            <p v-if="contestId">
+              {{ $t('m.Display_ID') }}：{{ row.problemId }}
+            </p>
+            <p v-if="contestId">{{ $t('m.Title') }}：{{ row.title }}</p>
+            <span v-else>{{ row.problemId }}</span>
+          </template>
+        </vxe-table-column>
+
+        <vxe-table-column
+          min-width="150"
+          :title="$t('m.Contest_Display')"
+          v-if="isContest"
+          align="left"
+        >
+          <template v-slot="{ row }">
+            <p v-if="contestProblemMap[row.id]">
+              {{ $t('m.Display_ID') }}：{{
+                contestProblemMap[row.id]['displayId']
+              }}
+            </p>
+            <p v-if="contestProblemMap[row.id]">
+              {{ $t('m.Title') }}：{{
+                contestProblemMap[row.id]['displayTitle']
+              }}
+            </p>
+            <span v-else>{{ row.title }}</span>
+          </template>
+        </vxe-table-column>
+
         <vxe-table-column
           field="author"
           min-width="130"
           :title="$t('m.Author')"
+          show-overflow
         >
         </vxe-table-column>
-        <vxe-table-column
-          min-width="150"
-          field="gmtCreate"
-          :title="$t('m.Created_Time')"
-        >
+        <vxe-table-column min-width="120" :title="$t('m.Created_Time')">
           <template v-slot="{ row }">
             {{ row.gmtCreate | localtime }}
           </template>
         </vxe-table-column>
         <vxe-table-column
-          field="modifiedUser"
-          min-width="130"
+          min-width="96"
           :title="$t('m.Modified_User')"
+          show-overflow
         >
         </vxe-table-column>
-        <vxe-table-column min-width="130" field="auth" :title="$t('m.Auth')">
+        <vxe-table-column min-width="100" :title="$t('m.Auth')">
           <template v-slot="{ row }">
             <el-select
               v-model="row.auth"
@@ -257,6 +297,7 @@ export default {
       pageSize: 10,
       total: 0,
       problemList: [],
+      contestProblemMap: {},
       keyword: '',
       loading: false,
       currentPage: 1,
@@ -275,18 +316,22 @@ export default {
     };
   },
   mounted() {
-    this.routeName = this.$route.name;
-    this.contestId = this.$route.params.contestId;
-    this.getProblemList(this.currentPage);
-    this.REMOTE_OJ = Object.assign({}, REMOTE_OJ);
+    this.init();
   },
   computed: {
     ...mapGetters(['userInfo', 'isSuperAdmin', 'isProblemAdmin']),
+    isContest() {
+      return !(this.routeName == 'admin-problem-list' && !this.contestId);
+    },
   },
   methods: {
-    handleDblclick(row) {
-      row.isEditing = true;
+    init() {
+      this.routeName = this.$route.name;
+      this.contestId = this.$route.params.contestId;
+      this.getProblemList(this.currentPage);
+      this.REMOTE_OJ = Object.assign({}, REMOTE_OJ);
     },
+
     goEdit(problemId) {
       if (this.routeName === 'admin-problem-list') {
         this.$router.push({
@@ -321,29 +366,36 @@ export default {
     },
     getProblemList(page = 1) {
       this.loading = true;
-      let funcName =
-        this.routeName === 'admin-problem-list'
-          ? 'admin_getProblemList'
-          : 'admin_getContestProblemList';
       let params = {
         limit: this.pageSize,
         currentPage: page,
         keyword: this.keyword,
         cid: this.contestId,
       };
-      api[funcName](params).then(
-        (res) => {
-          this.loading = false;
-          this.total = res.data.data.total;
-          for (let problem of res.data.data.records) {
-            problem.isEditing = false;
+      if (this.routeName === 'admin-problem-list') {
+        api.admin_getProblemList(params).then(
+          (res) => {
+            this.loading = false;
+            this.total = res.data.data.total;
+            this.problemList = res.data.data.records;
+          },
+          (err) => {
+            this.loading = false;
           }
-          this.problemList = res.data.data.records;
-        },
-        (err) => {
-          this.loading = false;
-        }
-      );
+        );
+      } else {
+        api.admin_getContestProblemList(params).then(
+          (res) => {
+            this.loading = false;
+            this.total = res.data.data.problemList.total;
+            this.problemList = res.data.data.problemList.records;
+            this.contestProblemMap = res.data.data.contestProblemMap;
+          },
+          (err) => {
+            this.loading = false;
+          }
+        );
+      }
     },
 
     changeProblemAuth(row) {
@@ -452,9 +504,12 @@ export default {
   },
   watch: {
     $route(newVal, oldVal) {
-      this.contestId = newVal.params.contestId;
-      this.routeName = newVal.name;
-      this.getProblemList(this.currentPage);
+      if (
+        newVal.params.contestId != oldVal.params.contestId ||
+        newVal.name != oldVal.name
+      ) {
+        this.init();
+      }
     },
   },
 };

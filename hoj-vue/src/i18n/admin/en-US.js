@@ -52,6 +52,7 @@ export const m = {
 
   // /views/admin/general/User.vue
   General_User: 'User',
+  Created_Time:'Created Time',
   Delete:'Delete',
   OnlyAdmin:'OnlyAdmin',
   User_Type: 'User Type',
@@ -124,6 +125,9 @@ export const m = {
   // /views/admin/problem/ProblemList.vue
   Contest_Problem_List: 'Contest Problem List',
   Display_ID:'Display ID',
+  Display_Title:'Display Title',
+  Original_Display:'Original Display',
+  Contest_Display:'Contest Display',
   Add_Rmote_OJ_Problem:'Add Remote OJ Problem',
   Add_From_Public_Problem:'Add From Public Problem',
   Auth:'Auth',

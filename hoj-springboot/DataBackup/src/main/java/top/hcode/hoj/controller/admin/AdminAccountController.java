@@ -60,7 +60,7 @@ public class AdminAccountController {
                 .forEach(role -> rolesList.add(role.getRole()));
 
 
-        if (rolesList.contains("admin") || rolesList.contains("root")){ // 超级管理员或管理员
+        if (rolesList.contains("admin") || rolesList.contains("root") || rolesList.contains("problem_admin")){ // 超级管理员或管理员、题目管理员
             String jwt = jwtUtils.generateToken(userRoles.getUid());
             response.setHeader("Authorization", jwt); //放到信息头部
             response.setHeader("Access-Control-Expose-Headers", "Authorization");

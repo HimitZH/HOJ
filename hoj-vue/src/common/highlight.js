@@ -6,7 +6,7 @@ export default {
     Vue.directive('highlight', {
       deep: true,
       bind: function (el, binding) {
-        Array.from(el.querySelectorAll('code')).forEach((target) => {
+        Array.from(el.querySelectorAll('pre code')).forEach((target) => {
           if (binding.value) {
             target.textContent = binding.value
           }
@@ -14,7 +14,7 @@ export default {
         })
       },
       componentUpdated: function (el, binding) {
-        Array.from(el.querySelectorAll('code')).forEach((target) => {
+        Array.from(el.querySelectorAll('pre code')).forEach((target) => {
           if (binding.value) {
             target.textContent = binding.value
           }

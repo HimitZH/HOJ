@@ -68,16 +68,35 @@
                 >
               </div>
               <div class="question-intr">
-                <span
-                  >{{ $t('m.Time_Limit') }}：C/C++
-                  {{ problemData.problem.timeLimit }}MS，{{ $t('m.Other') }}
-                  {{ problemData.problem.timeLimit * 2 }}MS</span
-                ><br />
-                <span
-                  >{{ $t('m.Memory_Limit') }}：C/C++
-                  {{ problemData.problem.memoryLimit }}MB，{{ $t('m.Other') }}
-                  {{ problemData.problem.memoryLimit * 2 }}MB</span
-                ><br />
+                <template v-if="!isCFProblem">
+                  <span
+                    >{{ $t('m.Time_Limit') }}：C/C++
+                    {{ problemData.problem.timeLimit }}MS，{{ $t('m.Other') }}
+                    {{ problemData.problem.timeLimit * 2 }}MS</span
+                  ><br />
+                  <span
+                    >{{ $t('m.Memory_Limit') }}：C/C++
+                    {{ problemData.problem.memoryLimit }}MB，{{
+                      $t('m.Other')
+                    }}
+                    {{ problemData.problem.memoryLimit * 2 }}MB</span
+                  ><br />
+                </template>
+
+                <template v-else>
+                  <span
+                    >{{ $t('m.Time_Limit') }}：{{
+                      problemData.problem.timeLimit
+                    }}MS</span
+                  >
+                  <br />
+                  <span
+                    >{{ $t('m.Memory_Limit') }}：{{
+                      problemData.problem.memoryLimit
+                    }}MB</span
+                  ><br />
+                </template>
+
                 <span
                   >{{ $t('m.Level') }}：{{
                     PROBLEM_LEVEL[problemData.problem.difficulty]['name']
@@ -979,6 +998,13 @@ export default {
           name: 'SubmissionDeatil',
           params: { submitID: this.submissionId },
         });
+      }
+    },
+    isCFProblem() {
+      if (this.problemID.indexOf('CF-') == 0) {
+        return true;
+      } else {
+        return false;
       }
     },
   },
