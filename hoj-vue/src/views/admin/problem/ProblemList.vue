@@ -121,6 +121,7 @@
         </vxe-table-column>
         <vxe-table-column
           min-width="96"
+          field="modifiedUser"
           :title="$t('m.Modified_User')"
           show-overflow
         >
