@@ -85,11 +85,11 @@ public class HduJudge implements RemoteJudgeStrategy {
         HttpResponse response = request.execute();
         // 1提交时间 2结果 3执行时间 4执行空间 5代码长度
         // 一般情况下 代码长度和提交时间不需要，想要也行，自行添加
-        Pattern pattern = Pattern.compile(">" + submitId + "</td><td>([\\s\\S]*?)</td><td>([\\s\\S]*?)</td><td>[\\s\\S]*?</td><td>(\\d*?)MS</td><td>(\\d*?)K</td><td>(\\d*?)B</td>");
+        Pattern pattern = Pattern.compile(">" + submitId + "</td><td>[\\s\\S]*?</td><td>([\\s\\S]*?)</td><td>[\\s\\S]*?</td><td>(\\d*?)MS</td><td>(\\d*?)K</td>");
         Matcher matcher = pattern.matcher(response.body());
         // 找到时
         Validate.isTrue(matcher.find());
-        String rawStatus = matcher.group(2).replaceAll("<[\\s\\S]*?>", "").trim();
+        String rawStatus = matcher.group(1).replaceAll("<[\\s\\S]*?>", "").trim();
         Constants.Judge statusType = statusTypeMap.get(rawStatus);
         if (statusType == Constants.Judge.STATUS_PENDING) {
             return MapUtil.builder(new HashMap<String, Object>())
@@ -99,10 +99,11 @@ public class HduJudge implements RemoteJudgeStrategy {
         Map<String, Object> result = MapUtil.builder(new HashMap<String, Object>())
                 .put("status", statusType.getStatus()).build();
         // 获取其他信息
-        String executionTime = matcher.group(3);
+        String executionTime = matcher.group(2);
         result.put("time", Integer.parseInt(executionTime));
-        String executionMemory = matcher.group(4);
+        String executionMemory = matcher.group(3);
         result.put("memory", Integer.parseInt(executionMemory));
+
         // 如果CE了，则还需要获得错误信息
         if (statusType == Constants.Judge.STATUS_COMPILE_ERROR) {
             request.setUrl(HOST + String.format(ERROR_URL, submitId));
