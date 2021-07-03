@@ -105,10 +105,10 @@ public class POJJudge implements RemoteJudgeStrategy {
             result.put("CEInfo", HtmlUtil.unescape(compilationErrorInfo));
         } else {
             // 如果不是CE,获取其他信息
-            String executionTime = ReUtil.get("<b>Memory:</b> ([-\\d]+)", response.body(), 1);
-            result.put("time", executionTime == null ? null : Integer.parseInt(executionTime));
-            String executionMemory = ReUtil.get("<b>Time:</b> ([-\\d]+)", response.body(), 1);
+            String executionMemory = ReUtil.get("<b>Memory:</b> ([-\\d]+)", response.body(), 1);
             result.put("memory", executionMemory == null ? null : Integer.parseInt(executionMemory));
+            String executionTime = ReUtil.get("<b>Time:</b> ([-\\d]+)", response.body(), 1);
+            result.put("time", executionTime == null ? null : Integer.parseInt(executionTime));
         }
         return result;
     }
