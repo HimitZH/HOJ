@@ -799,4 +799,9 @@ export default {
     padding-top: 10px;
   }
 }
+@media screen and (min-width: 1050px) {
+  /deep/ .vxe-table--body-wrapper {
+    overflow-x: hidden !important;
+  }
+}
 </style>

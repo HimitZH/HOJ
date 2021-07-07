@@ -143,13 +143,13 @@
           <vxe-table-column
             field="problemId"
             :title="$t('m.Problem_ID')"
-            min-width="100"
+            width="100"
           ></vxe-table-column>
 
           <vxe-table-column
             field="title"
             :title="$t('m.Problem')"
-            min-width="180"
+            min-width="150"
             show-overflow
           >
             <template v-slot="{ row }">
@@ -609,5 +609,11 @@ li {
 }
 .el-progress {
   margin-top: 15px;
+}
+
+@media screen and (min-width: 1050px) {
+  /deep/ .vxe-table--body-wrapper {
+    overflow-x: hidden !important;
+  }
 }
 </style>
