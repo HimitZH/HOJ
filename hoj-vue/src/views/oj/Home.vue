@@ -312,7 +312,7 @@ export default {
       });
     },
     getDuration(startTime, endTime) {
-      return time.duration(startTime, endTime);
+      return time.formatSpecificDuration(startTime, endTime);
     },
     getRankTagClass(rowIndex) {
       return 'rank-tag no' + (rowIndex + 1);

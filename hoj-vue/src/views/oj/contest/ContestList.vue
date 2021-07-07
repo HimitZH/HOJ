@@ -287,7 +287,7 @@ export default {
       }
     },
     getDuration(startTime, endTime) {
-      return time.duration(startTime, endTime);
+      return time.formatSpecificDuration(startTime, endTime);
     },
     getborderColor(contest) {
       return (
