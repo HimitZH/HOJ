@@ -404,4 +404,9 @@ export default {
 /deep/.el-card__header {
   padding-bottom: 0;
 }
+@media screen and (min-width: 1050px) {
+  /deep/ .vxe-table--body-wrapper {
+    overflow-x: hidden !important;
+  }
+}
 </style>

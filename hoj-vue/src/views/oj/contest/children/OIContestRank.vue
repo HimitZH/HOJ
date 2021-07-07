@@ -63,7 +63,7 @@
         ></vxe-table-column>
         <vxe-table-column
           field="username"
-          min-width="150"
+          min-width="96"
           fixed="left"
           :title="$t('m.User')"
         >
@@ -79,7 +79,7 @@
         </vxe-table-column>
         <vxe-table-column
           field="realname"
-          min-width="100"
+          min-width="96"
           fixed="left"
           :title="$t('m.RealName')"
           v-if="isContestAdmin"
@@ -104,7 +104,7 @@
           </template>
         </vxe-table-column>
         <vxe-table-column
-          min-width="80"
+          min-width="70"
           v-for="problem in contestProblems"
           :key="problem.displayId"
         >
