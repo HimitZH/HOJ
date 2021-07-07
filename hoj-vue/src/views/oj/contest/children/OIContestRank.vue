@@ -89,7 +89,7 @@
           field="totalScore"
           :title="$t('m.Total_Score')"
           fixed="left"
-          min-width="80"
+          min-width="100"
         >
           <template v-slot="{ row }">
             <span
@@ -104,7 +104,7 @@
           </template>
         </vxe-table-column>
         <vxe-table-column
-          min-width="70"
+          min-width="100"
           v-for="problem in contestProblems"
           :key="problem.displayId"
         >
