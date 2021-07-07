@@ -56,13 +56,13 @@
         <vxe-table-column
           field="id"
           type="seq"
-          min-width="50"
+          width="50"
           fixed="left"
         ></vxe-table-column>
         <vxe-table-column
           field="username"
           fixed="left"
-          min-width="150"
+          min-width="96"
           :title="$t('m.User')"
         >
           <template v-slot="{ row }">
@@ -78,7 +78,7 @@
         <vxe-table-column
           field="realname"
           fixed="left"
-          min-width="100"
+          min-width="96"
           :title="$t('m.RealName')"
           v-if="isContestAdmin"
         >

@@ -441,4 +441,10 @@ span.rank-tag {
 .cite.no2 {
   border-top: 5px solid #e6bf25;
 }
+
+@media screen and (min-width: 1050px) {
+  /deep/ .vxe-table--body-wrapper {
+    overflow-x: hidden !important;
+  }
+}
 </style>
