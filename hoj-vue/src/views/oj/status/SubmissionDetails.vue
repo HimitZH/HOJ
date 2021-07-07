@@ -73,7 +73,7 @@
         <vxe-table-column
           field="status"
           :title="$t('m.Status')"
-          min-width="170"
+          min-width="160"
         >
           <template v-slot="{ row }">
             <span :class="getStatusColor(row.status)">{{
@@ -483,5 +483,10 @@ export default {
 .test-detail-item.done {
   border-color: #25bb9b;
   color: #25bb9b;
+}
+@media screen and (min-width: 1050px) {
+  /deep/ .vxe-table--body-wrapper {
+    overflow-x: hidden !important;
+  }
 }
 </style>
