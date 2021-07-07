@@ -219,6 +219,7 @@
           <vxe-table-column
             field="language"
             :title="$t('m.Language')"
+            show-overflow
             min-width="130"
           >
             <template v-slot="{ row }">

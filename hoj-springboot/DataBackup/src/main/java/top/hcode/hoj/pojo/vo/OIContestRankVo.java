@@ -27,6 +27,12 @@ public class OIContestRankVo {
     @ApiModelProperty(value = "提交总得分")
     private Integer totalScore;
 
+    @ApiModelProperty(value = "提交总耗时，只有满分的提交才会统计")
+    private Integer totalTime;
+
     @ApiModelProperty(value = "OI的题对应提交得分")
     private HashMap<String, Integer> submissionInfo;
+
+    @ApiModelProperty(value = "OI的题得满分后对应提交最优耗时")
+    private HashMap<String, Integer> timeInfo;
 }

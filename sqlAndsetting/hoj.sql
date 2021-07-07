@@ -224,6 +224,7 @@ CREATE TABLE `contest_record` (
   `submit_time` datetime NOT NULL COMMENT '具体提交时间',
   `time` bigint(20) unsigned DEFAULT NULL COMMENT '提交时间，为提交时间减去比赛时间',
   `score` int(11) DEFAULT NULL COMMENT 'OI比赛的得分',
+  `use_time` int(11) DEFAULT NULL COMMENT '运行耗时',
   `first_blood` tinyint(1) DEFAULT '0' COMMENT '是否为一血AC',
   `checked` tinyint(1) DEFAULT '0' COMMENT 'AC是否已校验',
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,

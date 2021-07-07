@@ -85,8 +85,8 @@ export default {
         .admin_getContestProblemList(params)
         .then((res) => {
           this.loading = false;
-          this.total = res.data.data.total;
-          this.problems = res.data.data.records;
+          this.total = res.data.data.problemList.total;
+          this.problems = res.data.data.problemList.records;
         })
         .catch(() => {
           this.loading = false;

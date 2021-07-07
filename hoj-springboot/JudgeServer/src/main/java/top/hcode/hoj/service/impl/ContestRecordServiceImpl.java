@@ -42,7 +42,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
     @Override
     @Async
     @Transactional
-    public void UpdateContestRecord(String uid, Integer score, Integer status, Long submitId, Long cid) {
+    public void UpdateContestRecord(String uid, Integer score, Integer status, Long submitId, Long cid, Integer useTime) {
         UpdateWrapper<ContestRecord> updateWrapper = new UpdateWrapper<>();
         // 如果是AC
         if (status.intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
@@ -63,6 +63,8 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         if (score != null) {
             updateWrapper.set("score", score);
         }
+
+        updateWrapper.set("use_time", useTime);
 
         updateWrapper.eq("submit_id", submitId) // submit_id一定只有一个
                 .eq("uid", uid);

@@ -304,9 +304,6 @@ a:hover {
     margin-top: 80px;
     padding: 0 4%;
   }
-  .vxe-table--body-wrapper {
-    overflow-x: hidden !important;
-  }
 }
 .markdown-body img {
   max-width: 100%;

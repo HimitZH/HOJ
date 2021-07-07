@@ -10,7 +10,7 @@
       align="center"
       :data="contestProblems"
     >
-      <vxe-table-column field="pid" min-width="50" :title="$t('m.ID')">
+      <vxe-table-column field="pid" width="60" :title="$t('m.ID')">
       </vxe-table-column>
       <vxe-table-column
         field="displayId"
@@ -20,7 +20,8 @@
       <vxe-table-column
         field="displayTitle"
         :title="$t('m.Title')"
-        min-width="200"
+        min-width="150"
+        show-overflow
       >
       </vxe-table-column>
       <vxe-table-column field="ac" :title="$t('m.AC')" min-width="80">

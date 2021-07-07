@@ -313,7 +313,7 @@ public class JudgeController {
             }
         }
 
-        // 超级管理员与管理员有权限查看代码
+        // 超级管理员与题目管理员有权限查看代码
         // 如果不是本人或者并未分享代码，则不可查看
         // 当此次提交代码不共享
         // 比赛提交只有比赛创建者和root账号可看代码
@@ -332,8 +332,7 @@ public class JudgeController {
                 judge.setCode(null);
             }
         }else {
-            boolean admin = SecurityUtils.getSubject().hasRole("admin")
-                    || SecurityUtils.getSubject().hasRole("problem_admin");// 是否为管理员
+            boolean admin = SecurityUtils.getSubject().hasRole("problem_admin");// 是否为题目管理员
             if (!judge.getShare() && !root && !admin) {
                 if (userRolesVo != null) { // 当前是登陆状态
                     // 需要判断是否为当前登陆用户自己的提交代码

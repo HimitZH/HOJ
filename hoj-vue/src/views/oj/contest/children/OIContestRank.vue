@@ -50,6 +50,7 @@
         auto-resize
         size="small"
         align="center"
+        ref="OIContestRank"
         :data="dataRank"
         :cell-class-name="cellClassName"
         :seq-config="{ startIndex: (this.page - 1) * this.limit }"
@@ -63,6 +64,7 @@
         <vxe-table-column
           field="username"
           min-width="150"
+          fixed="left"
           :title="$t('m.User')"
         >
           <template v-slot="{ row }">
@@ -78,6 +80,7 @@
         <vxe-table-column
           field="realname"
           min-width="100"
+          fixed="left"
           :title="$t('m.RealName')"
           v-if="isContestAdmin"
         >
@@ -85,6 +88,7 @@
         <vxe-table-column
           field="totalScore"
           :title="$t('m.Total_Score')"
+          fixed="left"
           min-width="80"
         >
           <template v-slot="{ row }">
@@ -94,6 +98,8 @@
                 style="color:rgb(87, 163, 243);"
                 >{{ row.totalScore }}</a
               >
+              <br />
+              <span class="problem-time">({{ row.totalTime }}ms)</span>
             </span>
           </template>
         </vxe-table-column>
@@ -112,9 +118,15 @@
             >
           </template>
           <template v-slot="{ row }">
-            <span v-if="row.submissionInfo[problem.displayId]">{{
-              row.submissionInfo[problem.displayId]
-            }}</span>
+            <div v-if="row.submissionInfo[problem.displayId]">
+              <span>{{ row.submissionInfo[problem.displayId] }}</span>
+              <br />
+              <span
+                v-if="row.timeInfo && row.timeInfo[problem.displayId]"
+                style="font-size:12px;"
+                >({{ row.timeInfo[problem.displayId] }}ms)</span
+              >
+            </div>
           </template>
         </vxe-table-column>
       </vxe-table>
@@ -338,5 +350,9 @@ a.emphasis {
 }
 a.emphasis:hover {
   color: #2d8cf0;
+}
+.problem-time {
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
 }
 </style>

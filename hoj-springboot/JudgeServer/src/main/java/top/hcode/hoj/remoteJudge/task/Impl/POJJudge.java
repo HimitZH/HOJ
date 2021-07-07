@@ -71,6 +71,7 @@ public class POJJudge implements RemoteJudgeStrategy {
             TimeUnit.SECONDS.sleep(2);
             maxRunId = getMaxRunId(request, username, problemId);
         }
+
         return MapUtil.builder(new HashMap<String, Object>())
                 .put("cookies", cookies)
                 .put("runId", maxRunId)
@@ -84,6 +85,10 @@ public class POJJudge implements RemoteJudgeStrategy {
                 .cookie(cookies)
                 .addHeaders(headers);
         HttpResponse response = request.execute();
+
+        if (response.getStatus() != 200) {
+            log.error(submitId + " error:{}", response.body());
+        }
 
         String statusStr = ReUtil.get("<b>Result:</b>(.+?)</td>", response.body(), 1)
                 .replaceAll("<.*?>", "")

@@ -83,6 +83,7 @@ public class RemoteJudgeToSubmit {
                     cid,
                     uid,
                     pid,
+                    null,
                     null);
             log.error("网络错误---------------->获取不到提交ID");
             return;
