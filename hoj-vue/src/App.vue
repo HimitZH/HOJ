@@ -242,7 +242,7 @@ a:hover {
 }
 .oi-100,
 .first-ac {
-  background-color: #080;
+  background-color: #19be6b;
   color: #fff;
   font-weight: 700;
 }
@@ -254,6 +254,7 @@ a:hover {
   background-color: #a9f5af;
   color: #3c763d;
 }
+
 .oi-0,
 .wa {
   color: #a94442;
