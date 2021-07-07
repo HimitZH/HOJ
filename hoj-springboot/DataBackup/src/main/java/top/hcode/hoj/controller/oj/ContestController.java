@@ -452,7 +452,6 @@ public class ContestController {
                     // 如果已经开启了封榜模式
                     .between(isOpenSealRank, "submit_time", contest.getStartTime(), contest.getSealRankTime())
                     .between(!isOpenSealRank, "submit_time", contest.getStartTime(), contest.getEndTime())
-                    .ne("uid", "1")
                     .ne("username", contest.getAuthor())
                     .orderByAsc("time");
 

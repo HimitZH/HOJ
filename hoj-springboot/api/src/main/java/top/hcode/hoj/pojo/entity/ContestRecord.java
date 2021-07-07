@@ -68,6 +68,9 @@ public class ContestRecord implements Serializable {
     @ApiModelProperty(value = "OI比赛的得分")
     private Integer score;
 
+    @ApiModelProperty(value = "提交耗时")
+    private Integer useTime;
+
     @ApiModelProperty(value = "是否为一血AC")
     private Boolean firstBlood;
 

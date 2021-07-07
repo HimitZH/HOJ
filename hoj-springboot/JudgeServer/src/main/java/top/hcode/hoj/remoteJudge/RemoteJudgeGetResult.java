@@ -78,13 +78,13 @@ public class RemoteJudgeGetResult {
                             // 写回数据库
                             judgeService.updateById(judge);
                             // 同步其它表
-                            judgeService.updateOtherTable(submitId, status, cid, uid, pid, score);
+                            judgeService.updateOtherTable(submitId, status, cid, uid, pid, score, judge.getTime());
 
                         } else {
 
                             judgeService.updateById(judge);
                             // 同步其它表
-                            judgeService.updateOtherTable(submitId, status, cid, uid, pid, null);
+                            judgeService.updateOtherTable(submitId, status, cid, uid, pid, null, null);
                         }
 
                         scheduler.shutdown();

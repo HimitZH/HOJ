@@ -1,6 +1,7 @@
 package top.hcode.hoj.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import top.hcode.hoj.pojo.entity.UserInfo;
 import top.hcode.hoj.pojo.vo.ACMContestRankVo;
 import top.hcode.hoj.pojo.entity.ContestRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -26,5 +27,8 @@ public interface ContestRecordService extends IService<ContestRecord> {
     IPage<OIContestRankVo> getContestOIRank(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime, Date startTime, Date endTime, int currentPage, int limit);
 
     List<ContestRecord> getOIContestRecord(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime, Date startTime, Date endTime);
+
+
+    List<UserInfo> getSuperAdminList();
 
 }
