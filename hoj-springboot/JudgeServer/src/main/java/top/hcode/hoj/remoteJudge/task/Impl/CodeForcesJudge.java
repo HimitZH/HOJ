@@ -143,7 +143,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
                             .put("status", statusType.getStatus()).build();
                 }
                 resultMap.put("time", result.get("timeConsumedMillis"));
-                resultMap.put("memory", result.get("memoryConsumedBytes"));
+                resultMap.put("memory", (int) result.get("memoryConsumedBytes") / 1024);
                 Constants.Judge resultStatus = statusMap.get(verdict);
                 if (resultStatus == Constants.Judge.STATUS_COMPILE_ERROR) {
 
