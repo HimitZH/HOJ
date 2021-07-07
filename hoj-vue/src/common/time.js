@@ -17,6 +17,40 @@ function duration (startTime, endTime) {
   return duration.humanize()
 }
 
+function formatSpecificDuration(startTime, endTime){
+  let start = moment(startTime)
+  let end = moment(endTime)
+  let ms = moment.duration(start.diff(end, 'seconds'), 'seconds')
+  if (ms < 0) ms = -ms;
+  let arr=[86400000,3600000,60000,1000];
+  let en_time=['day','hour','minute','second'];
+  let zh_time=['天','小时','分','秒'];
+
+  let res = '';
+
+  if(i18n.locale=='en-US'){
+    for(let i=0;i<arr.length;i++){
+      let tmp = parseFloat((ms / arr[i]).toFixed(1));
+      if(tmp>=1){
+        res+=tmp+' '+en_time[i];
+        if(tmp!=1){
+          res+='s';
+        }
+        return res;
+      }
+    }
+  }else if(i18n.locale=='zh-CN'){
+
+    for(let i=0;i<arr.length;i++){
+      let tmp = parseFloat((ms / arr[i]).toFixed(1));
+      if(tmp>=1){
+        return tmp+zh_time[i];
+      }
+    }
+  }
+};
+
+
 function formatDuration(time){
   let duration = moment.duration(time)
   return duration.humanize()
@@ -38,6 +72,7 @@ function durationMs (startTime, endTime) {  // 计算时间段的时间戳
 export default {
   utcToLocal: utcToLocal,
   duration: duration,
+  formatSpecificDuration:formatSpecificDuration,
   secondFormat: secondFormat,
   durationMs:durationMs,
   formatDuration:formatDuration
