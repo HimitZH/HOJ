@@ -21,5 +21,5 @@ public interface JudgeService extends IService<Judge> {
 
     Boolean compileSpj(String code, Long pid, String spjLanguage) throws CompileError, SystemError;
 
-    void updateOtherTable(Long submitId, Integer status, Long cid, String uid, Long pid, Integer score);
+    void updateOtherTable(Long submitId, Integer status, Long cid, String uid, Long pid, Integer score,Integer useTime);
 }

@@ -48,7 +48,7 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     public Judge Judge(Problem problem, Judge judge) {
 
         // c和c++为一倍时间和空间，其它语言为2倍时间和空间
-        if (!judge.getLanguage().equals("C++") && !judge.getLanguage().equals("C")&&
+        if (!judge.getLanguage().equals("C++") && !judge.getLanguage().equals("C") &&
                 !judge.getLanguage().equals("C++ With O2") && !judge.getLanguage().equals("C With O2")) {
             problem.setTimeLimit(problem.getTimeLimit() * 2);
             problem.setMemoryLimit(problem.getMemoryLimit() * 2);
@@ -84,7 +84,7 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
 
     @Override
     @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
-    public void updateOtherTable(Long submitId, Integer status, Long cid, String uid, Long pid, Integer score) {
+    public void updateOtherTable(Long submitId, Integer status, Long cid, String uid, Long pid, Integer score, Integer useTime) {
 
         if (cid == 0) { // 非比赛提交
             // 如果是AC,就更新user_acproblem表,
@@ -98,7 +98,7 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
 
         } else { //如果是比赛提交
 
-            contestRecordService.UpdateContestRecord(uid, score, status, submitId, cid);
+            contestRecordService.UpdateContestRecord(uid, score, status, submitId, cid, useTime);
         }
     }
 

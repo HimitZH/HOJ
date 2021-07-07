@@ -52,7 +52,7 @@
         <vxe-table-column
           field="submitId"
           :title="$t('m.Run_ID')"
-          min-width="100"
+          width="100"
         ></vxe-table-column>
         <vxe-table-column :title="$t('m.Submit_Time')" min-width="150">
           <template v-slot="{ row }">

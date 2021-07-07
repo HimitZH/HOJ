@@ -1,8 +1,11 @@
 package top.hcode.hoj.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import top.hcode.hoj.dao.UserInfoMapper;
+import top.hcode.hoj.pojo.entity.UserInfo;
 import top.hcode.hoj.pojo.vo.ACMContestRankVo;
 import top.hcode.hoj.pojo.entity.ContestRecord;
 import top.hcode.hoj.dao.ContestRecordMapper;
@@ -30,11 +33,19 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
     @Autowired
     private ContestRecordMapper contestRecordMapper;
 
+    @Autowired
+    private UserInfoMapper userInfoMapper;
+
 
     @Override
     public IPage<ContestRecord> getACInfo(Integer currentPage, Integer limit, Integer status, Long cid) {
         Page<ContestRecord> page = new Page<>(currentPage, limit);
         return page.setRecords(contestRecordMapper.getACInfo(page, status, cid));
+    }
+
+    @Override
+    public List<UserInfo> getSuperAdminList() {
+        return userInfoMapper.getSuperAdminList();
     }
 
 
@@ -96,7 +107,13 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         return contestRecordMapper.getOIContestRecord(cid, contestAuthor, isOpenSealRank, sealTime, startTime, endTime);
     }
 
+
     public List<ACMContestRankVo> calcACMRank(List<ContestRecord> contestRecordList) {
+
+        List<UserInfo> superAdminList = getSuperAdminList();
+
+        List<String> superAdminUidList = superAdminList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
+
         List<ACMContestRankVo> result = new ArrayList<>();
 
         HashMap<String, Integer> uidMapIndex = new HashMap<>();
@@ -106,6 +123,11 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         HashMap<String, Long> firstACMap = new HashMap<>();
 
         for (ContestRecord contestRecord : contestRecordList) {
+
+            if (superAdminUidList.contains(contestRecord.getUid())) { // 超级管理员的提交不入排行榜
+                continue;
+            }
+
             ACMContestRankVo ACMContestRankVo;
             if (!uidMapIndex.containsKey(contestRecord.getUid())) { // 如果该用户信息没还记录
 
@@ -182,15 +204,44 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
     }
 
     public List<OIContestRankVo> calcOIRank(List<ContestRecord> oiContestRecord) {
+
+        List<UserInfo> superAdminList = getSuperAdminList();
+
+        List<String> superAdminUidList = superAdminList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
+
         List<OIContestRankVo> result = new ArrayList<>();
 
         HashMap<String, Integer> uidMapIndex = new HashMap<>();
 
+        HashMap<String, HashMap<String, Integer>> uidMapTime = new HashMap<>();
+
         int index = 0;
         for (ContestRecord contestRecord : oiContestRecord) {
+
+            if (superAdminUidList.contains(contestRecord.getUid())) { // 超级管理员的提交不入排行榜
+                continue;
+            }
+
+            if (contestRecord.getStatus() == 1) { // AC
+                HashMap<String, Integer> pidMapTime = uidMapTime.get(contestRecord.getUid());
+                if (pidMapTime != null) {
+                    Integer useTime = pidMapTime.get(contestRecord.getDisplayId());
+                    if (useTime != null) {
+                        if (useTime > contestRecord.getUseTime()) {  // 如果时间消耗比原来的少
+                            pidMapTime.put(contestRecord.getDisplayId(), contestRecord.getUseTime());
+                        }
+                    } else {
+                        pidMapTime.put(contestRecord.getDisplayId(), contestRecord.getUseTime());
+                    }
+                } else {
+                    HashMap<String, Integer> tmp = new HashMap<>();
+                    tmp.put(contestRecord.getDisplayId(), contestRecord.getUseTime());
+                    uidMapTime.put(contestRecord.getUid(), tmp);
+                }
+            }
+
             OIContestRankVo oiContestRankVo;
             if (!uidMapIndex.containsKey(contestRecord.getUid())) { // 如果该用户信息没还记录
-
                 // 初始化参数
                 oiContestRankVo = new OIContestRankVo();
                 oiContestRankVo.setRealname(contestRecord.getRealname())
@@ -218,9 +269,24 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
         }
 
-        // 根据总得分进行降序排序
+
+        for (OIContestRankVo oiContestRankVo : result) {
+            HashMap<String, Integer> pidMapTime = uidMapTime.get(oiContestRankVo.getUid());
+            int sumTime = 0;
+            if (pidMapTime != null) {
+                for (String key : pidMapTime.keySet()) {
+                    Integer time = pidMapTime.get(key);
+                    sumTime += time == null ? 0 : time;
+                }
+            }
+            oiContestRankVo.setTotalTime(sumTime);
+            oiContestRankVo.setTimeInfo(pidMapTime);
+        }
+
+        // 根据总得分进行降序,再根据总时耗升序排序
         List<OIContestRankVo> orderResultList = result.stream()
-                .sorted(Comparator.comparing(OIContestRankVo::getTotalScore, Comparator.reverseOrder()))
+                .sorted(Comparator.comparing(OIContestRankVo::getTotalScore, Comparator.reverseOrder())
+                        .thenComparing(OIContestRankVo::getTotalTime,Comparator.naturalOrder()))
                 .collect(Collectors.toList());
         return orderResultList;
     }

@@ -6,6 +6,8 @@ import top.hcode.hoj.pojo.dto.RegisterDto;
 import top.hcode.hoj.pojo.entity.UserInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import java.util.List;
+
 
 /**
  * <p>
@@ -19,4 +21,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 @Repository
 public interface UserInfoMapper extends BaseMapper<UserInfo> {
     int addUser(RegisterDto registerDto);
+
+    List<UserInfo> getSuperAdminList();
 }

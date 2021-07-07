@@ -150,6 +150,7 @@
             field="title"
             :title="$t('m.Problem')"
             min-width="180"
+            show-overflow
           >
             <template v-slot="{ row }">
               <a @click="getProblemUri(row.problemId)" class="title-a">{{

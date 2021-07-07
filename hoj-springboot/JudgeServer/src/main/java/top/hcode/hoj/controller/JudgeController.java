@@ -136,7 +136,8 @@ public class JudgeController {
                     finalJudge.getCid(),
                     finalJudge.getUid(),
                     finalJudge.getPid(),
-                    finalJudge.getScore());
+                    finalJudge.getScore(),
+                    finalJudge.getTime());
         }
 
 
@@ -165,7 +166,7 @@ public class JudgeController {
     public CommonResult remoteJudge(@RequestBody ToJudge toJudge) {
 
         if (!openRemoteJudge) {
-            return CommonResult.errorResponse("对不起！该判题服务器未开启远程虚拟判题功能！",CommonResult.STATUS_ACCESS_DENIED);
+            return CommonResult.errorResponse("对不起！该判题服务器未开启远程虚拟判题功能！", CommonResult.STATUS_ACCESS_DENIED);
         }
 
         if (!toJudge.getToken().equals(judgeToken)) {
