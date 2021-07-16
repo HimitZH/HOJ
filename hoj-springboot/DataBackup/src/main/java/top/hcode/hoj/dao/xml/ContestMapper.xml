@@ -16,7 +16,7 @@
                 and c.type = #{type}
             </if>
         </where>
-        order by c.start_time DESC,c.id DESC
+        order by c.status ASC, c.start_time DESC
     </select>
     <select id="getContestInfoById" resultType="top.hcode.hoj.pojo.vo.ContestVo" useCache="true">
         select c.id,c.author,c.title,c.type,c.status,c.description,c.seal_rank,c.seal_rank_time,c.source,c.auth,c.start_time,c.end_time,c.duration

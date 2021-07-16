@@ -225,7 +225,11 @@ public class AdminContestController {
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
 
         if (problemType != null) { // 必备条件 隐藏的不可取来做比赛题目
-            problemQueryWrapper.eq("type", problemType).ne("auth", 2);
+            problemQueryWrapper
+                    // vj题目不限制赛制
+                    .and(wrapper->wrapper.eq("type", problemType)
+                    .or().eq("is_remote", true))
+                    .ne("auth", 2);
         }
 
         // 逻辑判断，如果是查询已有的就应该是in，如果是查询不要重复的，使用not in
