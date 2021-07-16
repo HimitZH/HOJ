@@ -1291,6 +1291,8 @@ export default {
         // 原本是spj，但现在关闭了
         if (!this.spjRecord.spjCode) {
           problemDto['changeSpj'] = true;
+          this.problem.spjCode = null;
+          this.problem.spjLanguage = null;
         }
       }
       problemDto['problem'] = Object.assign({}, this.problem); // 深克隆

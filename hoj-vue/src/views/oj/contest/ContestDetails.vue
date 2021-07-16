@@ -166,7 +166,12 @@
           </transition>
         </el-tab-pane>
 
-        <el-tab-pane name="ContestComment" lazy :disabled="contestMenuDisabled">
+        <el-tab-pane
+          name="ContestComment"
+          lazy
+          :disabled="contestMenuDisabled"
+          v-if="contestEnded"
+        >
           <span slot="label"
             ><i class="fa fa-commenting" aria-hidden="true"></i>&nbsp;{{
               $t('m.Comment')
@@ -344,6 +349,9 @@ export default {
       if (this.contest.description) {
         return this.$markDown.render(this.contest.description);
       }
+    },
+    contestEnded() {
+      return this.contestStatus === CONTEST_STATUS.ENDED;
     },
   },
   watch: {
