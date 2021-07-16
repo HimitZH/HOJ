@@ -837,9 +837,9 @@ export default {
             data.spjCode = '';
             data.spj = false;
           }
+          data.spjLanguage = data.spjLanguage || 'C';
           this.spjRecord.spjLanguage = data.spjLanguage;
           this.spjRecord.spjCode = data.spjCode;
-          data.spjLanguage = data.spjLanguage || 'C';
           this.problem = data;
           this.problem['examples'] = utils.stringToExamples(data.examples);
           this.problem['examples'][0]['isOpen'] = true;
@@ -1280,15 +1280,18 @@ export default {
       }
 
       let problemDto = {}; // 上传给后台的数据
-      if (!this.problem.spj) {
-        this.problem.spjCode = '';
-        this.problem.spjLanguage = '';
-      }
-      if (
-        this.spjRecord.spjLanguage != this.problem.spjLanguage ||
-        this.spjRecord.spjCode != this.problem.spjCode
-      ) {
-        problemDto['changeSpj'] = true;
+      if (this.problem.spj) {
+        if (
+          this.spjRecord.spjLanguage != this.problem.spjLanguage ||
+          this.spjRecord.spjCode != this.problem.spjCode
+        ) {
+          problemDto['changeSpj'] = true;
+        }
+      } else {
+        // 原本是spj，但现在关闭了
+        if (!this.spjRecord.spjCode) {
+          problemDto['changeSpj'] = true;
+        }
       }
       problemDto['problem'] = Object.assign({}, this.problem); // 深克隆
       problemDto.problem.examples = utils.examplesToString(

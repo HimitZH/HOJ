@@ -279,7 +279,6 @@ public class FileController {
             }
             Assert.isTrue(hasTestCase, "对不起，该题目的评测数据为空！");
 
-            workDir = Constants.File.FILE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + IdUtil.simpleUUID();
             FileUtil.mkdir(workDir);
             // 写入本地
             for (int i = 0; i < problemCaseList.size(); i++) {
@@ -340,7 +339,6 @@ public class FileController {
                 e.printStackTrace();
             }
             // 清空临时文件
-            FileUtil.del(workDir);
             FileUtil.del(Constants.File.FILE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
         }
     }
