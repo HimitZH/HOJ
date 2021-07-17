@@ -132,6 +132,7 @@ export const m = {
   Add_From_Public_Problem:'Add From Public Problem',
   Auth:'Auth',
   Modified_User:'Modified User',
+  All_Problem:'All Problem',
   Public_Problem:'Public Problem',
   Private_Problem:'Private Problem',
   Contest_Problem:'Contest Problem',

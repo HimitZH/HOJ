@@ -43,6 +43,25 @@
               @keyup.enter.native="filterByKeyword"
             ></vxe-input>
           </span>
+          <span v-if="!contestId">
+            <el-select
+              v-model="problemListAuth"
+              @change="ProblemListChangeAuth"
+              size="small"
+              style="width: 180px;"
+            >
+              <el-option :label="$t('m.All_Problem')" :value="0"></el-option>
+              <el-option :label="$t('m.Public_Problem')" :value="1"></el-option>
+              <el-option
+                :label="$t('m.Private_Problem')"
+                :value="2"
+              ></el-option>
+              <el-option
+                :label="$t('m.Contest_Problem')"
+                :value="3"
+              ></el-option>
+            </el-select>
+          </span>
         </div>
       </div>
       <vxe-table
@@ -295,6 +314,7 @@ export default {
   },
   data() {
     return {
+      problemListAuth: 0,
       pageSize: 10,
       total: 0,
       problemList: [],
@@ -373,6 +393,9 @@ export default {
         keyword: this.keyword,
         cid: this.contestId,
       };
+      if (this.problemListAuth != 0) {
+        params['auth'] = this.problemListAuth;
+      }
       if (this.routeName === 'admin-problem-list') {
         api.admin_getProblemList(params).then(
           (res) => {
@@ -462,6 +485,9 @@ export default {
         this.$alert(this.$i18n.t('m.Download_Testcase_Success'), 'Tips');
       });
     },
+    ProblemListChangeAuth() {
+      this.currentChange(1);
+    },
     filterByKeyword() {
       this.currentChange(1);
     },
@@ -522,11 +548,14 @@ export default {
   margin-bottom: 5px;
 }
 .filter-row span div {
-  margin-top: 5px;
+  margin-top: 8px;
 }
 @media screen and (max-width: 768px) {
   .filter-row span {
     margin-right: 5px;
+  }
+  .filter-row span div {
+    width: 80%;
   }
 }
 @media screen and (min-width: 768px) {

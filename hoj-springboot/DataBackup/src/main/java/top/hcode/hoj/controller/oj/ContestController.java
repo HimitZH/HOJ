@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.CheckACDto;
+import top.hcode.hoj.pojo.dto.UserReadContestAnnouncementDto;
 import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.pojo.vo.*;
 import top.hcode.hoj.service.ContestRecordService;
@@ -38,6 +39,9 @@ public class ContestController {
 
     @Autowired
     private ContestProblemServiceImpl contestProblemService;
+
+    @Autowired
+    private ContestAnnouncementServiceImpl contestAnnouncementService;
 
     @Autowired
     private AnnouncementServiceImpl announcementService;
@@ -415,6 +419,7 @@ public class ContestController {
      * @Since 2020/10/28
      */
     @GetMapping("/get-contest-rank")
+    @RequiresAuthentication
     public CommonResult getContestRank(@RequestParam(value = "cid", required = true) Long cid,
                                        @RequestParam(value = "limit", required = false) Integer limit,
                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
@@ -482,6 +487,7 @@ public class ContestController {
      * @Since 2020/10/28
      */
     @GetMapping("/get-contest-announcement")
+    @RequiresAuthentication
     public CommonResult getContestAnnouncement(@RequestParam(value = "cid", required = true) Long cid,
                                                @RequestParam(value = "limit", required = false) Integer limit,
                                                @RequestParam(value = "currentPage", required = false) Integer currentPage,
@@ -496,7 +502,7 @@ public class ContestController {
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         /**
-         *  需要对该比赛做判断，是否处于开始或结束状态才可以获取题目，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
+         *  需要对该比赛做判断，是否处于开始或结束状态才可以获取公告，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
          */
         CommonResult commonResult = contestService.checkContestAuth(contest, userRolesVo, isRoot);
 
@@ -514,6 +520,41 @@ public class ContestController {
         } else {
             return CommonResult.successResponse(contestAnnouncementList, "获取成功");
         }
+    }
+
+
+    /**
+     * @param userReadContestAnnouncementDto
+     * @MethodName getContestUserNotReadAnnouncement
+     * @Description 根据前端传过来的比赛id以及已阅读的公告提示id列表，排除后获取未阅读的公告
+     * @Return
+     * @Since 2021/7/17
+     */
+    @PostMapping("/get-contest-not-read-announcement")
+    @RequiresAuthentication
+    public CommonResult getContestUserNotReadAnnouncement(@RequestBody UserReadContestAnnouncementDto userReadContestAnnouncementDto) {
+
+        Long cid = userReadContestAnnouncementDto.getCid();
+        List<Long> readAnnouncementList = userReadContestAnnouncementDto.getReadAnnouncementList();
+
+        QueryWrapper<ContestAnnouncement> contestAnnouncementQueryWrapper = new QueryWrapper<>();
+        contestAnnouncementQueryWrapper.eq("cid", cid);
+        if (readAnnouncementList != null && readAnnouncementList.size() > 0) {
+            contestAnnouncementQueryWrapper.notIn("aid", readAnnouncementList);
+        }
+        List<ContestAnnouncement> announcementList = contestAnnouncementService.list(contestAnnouncementQueryWrapper);
+
+        List<Long> aidList = announcementList.stream().map(ContestAnnouncement::getAid).collect(Collectors.toList());
+
+        if (aidList.size() > 0) {
+            QueryWrapper<Announcement> announcementQueryWrapper = new QueryWrapper<>();
+            announcementQueryWrapper.in("id", aidList).orderByDesc("gmt_create");
+            List<Announcement> announcements = announcementService.list(announcementQueryWrapper);
+            return CommonResult.successResponse(announcements, "获取成功");
+        } else {
+            return CommonResult.successResponse(new LinkedList<>(), "获取成功");
+        }
+
     }
 
     /**

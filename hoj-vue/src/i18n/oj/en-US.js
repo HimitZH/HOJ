@@ -305,6 +305,7 @@ export const m = {
   Comment:'Comment',
   Admin_Helper: 'AC Info',
   Register_contest_successfully:'Register contest successfully',
+  Please_check_the_contest_announcement_for_details:'Please check the contest announcement for details',
 
   // /views/oj/contest/children/ACMContestRank.vue
   Contest_Rank:'Contest Rank',

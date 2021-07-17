@@ -230,8 +230,10 @@ import {
   CONTEST_STATUS,
   CONTEST_TYPE_REVERSE,
   RULE_TYPE,
+  buildContestAnnounceKey,
 } from '@/common/constants';
 import myMessage from '@/common/message';
+import storage from '@/common/storage';
 export default {
   name: '',
   data() {
@@ -263,13 +265,47 @@ export default {
       this.changeDomTitle({ title: res.data.data.title });
       let data = res.data.data;
       let endTime = moment(data.endTime);
-      // 如果当前时间还是在比赛结束前的时间，需要计算倒计时
+      // 如果当前时间还是在比赛结束前的时间，需要计算倒计时，同时开启获取比赛公告的定时器
       if (endTime.isAfter(moment(data.now))) {
         // 实时更新时间
         this.timer = setInterval(() => {
           this.$store.commit('nowAdd1s');
         }, 1000);
+
+        // 每分钟获取一次是否存在未阅读的公告
+        this.announceTimer = setInterval(() => {
+          let key = buildContestAnnounceKey(this.userInfo.uid, this.contestID);
+          let readAnnouncementList = storage.get(key) || [];
+          let data = {
+            cid: this.contestID,
+            readAnnouncementList: readAnnouncementList,
+          };
+
+          api.getContestUserNotReadAnnouncement(data).then((res) => {
+            let newAnnounceList = res.data.data;
+            for (let i = 0; i < newAnnounceList.length; i++) {
+              readAnnouncementList.push(newAnnounceList[i].id);
+              this.$notify({
+                title: newAnnounceList[i].title,
+                message:
+                  '<p style="text-align:center;"><i class="el-icon-time"> ' +
+                  time.utcToLocal(newAnnounceList[i].gmtCreate) +
+                  '</i></p>' +
+                  '<p style="text-align:center;color:#409eff">' +
+                  this.$i18n.t(
+                    'm.Please_check_the_contest_announcement_for_details'
+                  ) +
+                  '</p>',
+                type: 'warning',
+                dangerouslyUseHTMLString: true,
+                duration: 0,
+              });
+            }
+            storage.set(key, readAnnouncementList);
+          });
+        }, 60 * 1000);
       }
+
       this.$nextTick((_) => {
         addCodeBtn();
       });
@@ -326,6 +362,7 @@ export default {
       'isSuperAdmin',
       'ContestRealTimePermission',
       'passwordFormVisible',
+      'userInfo',
     ]),
     progressValue: {
       get: function() {
@@ -369,6 +406,7 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.timer);
+    clearInterval(this.announceTimer);
     this.$store.commit('clearContest');
   },
 };
