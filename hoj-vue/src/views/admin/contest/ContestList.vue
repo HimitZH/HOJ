@@ -304,6 +304,9 @@ export default {
   .filter-row span {
     margin-right: 5px;
   }
+  .filter-row span div {
+    width: 80% !important;
+  }
 }
 @media screen and (min-width: 768px) {
   .filter-row span {

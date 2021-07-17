@@ -59,6 +59,7 @@ public class AdminProblemController {
     public CommonResult getProblemList(@RequestParam(value = "limit", required = false) Integer limit,
                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                        @RequestParam(value = "keyword", required = false) String keyword,
+                                       @RequestParam(value = "auth", required = false) Integer auth,
                                        @RequestParam(value = "oj", required = false) String oj) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;
@@ -70,6 +71,10 @@ public class AdminProblemController {
 
         if (oj != null && oj.equals("Mine")) {
             queryWrapper.eq("is_remote", false);
+        }
+
+        if (auth != null && auth != 0) {
+            queryWrapper.eq("auth", auth);
         }
 
         if (!StringUtils.isEmpty(keyword)) {

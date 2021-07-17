@@ -381,6 +381,14 @@ const ojApi = {
       params
     })
   },
+
+  // 获取比赛未阅读公告列表
+  getContestUserNotReadAnnouncement(data){
+    return ajax('/api/get-contest-not-read-announcement', 'post', {
+      data
+    })
+  },
+
   // 获取acm比赛ac信息
   getACMACInfo(params){
     return ajax('/api/get-contest-ac-info', 'get', {

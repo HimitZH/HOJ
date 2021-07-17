@@ -180,7 +180,7 @@ const mutations = {
   },
   nowAdd1s (state) {
     state.now = moment(state.now.add(1, 's'))
-  }
+  },
 }
 
 const actions = {

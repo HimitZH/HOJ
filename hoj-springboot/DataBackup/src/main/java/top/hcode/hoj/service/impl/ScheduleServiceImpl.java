@@ -129,7 +129,6 @@ public class ScheduleServiceImpl implements ScheduleService {
 //    @Scheduled(cron = "0/5 * * * * *")
     @Override
     public void getOjContestsList() {
-        Calendar calendar = Calendar.getInstance();
         // 待格式化的API，需要填充年月查询
         String nowcoderContestAPI = "https://ac.nowcoder.com/acm/calendar/contest?token=&month=%d-%d";
         // 将获取的比赛列表添加进这里

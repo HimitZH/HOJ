@@ -307,6 +307,7 @@ export const m = {
    Comment:'评论',
    Admin_Helper: 'AC助手',
    Register_contest_successfully:'比赛报名成功',
+   Please_check_the_contest_announcement_for_details:'具体内容请查看比赛公告',
 
    // /views/oj/contest/children/ACMContestRank.vue
    Contest_Rank:'比赛排名',
