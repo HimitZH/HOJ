@@ -132,6 +132,7 @@ export const m = {
   Contest_Display:'比赛显示',
   Auth:'权限',
   Modified_User:'最近修改者',
+  All_Problem:'全部题目',
   Public_Problem:'公开题目',
   Private_Problem:'隐藏题目',
   Contest_Problem:'比赛题目',

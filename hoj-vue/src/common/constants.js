@@ -222,7 +222,8 @@ export const USER_TYPE = {
 export const STORAGE_KEY = {
   AUTHED: 'authed',
   PROBLEM_CODE: 'hojProblemCode',
-  languages: 'languages'
+  languages: 'languages',
+  CONTEST_ANNOUNCE:'hojContestAnnounce'
 }
 
 export function buildProblemCodeKey (problemID, contestID = null) {
@@ -230,5 +231,9 @@ export function buildProblemCodeKey (problemID, contestID = null) {
     return `${STORAGE_KEY.PROBLEM_CODE}_${contestID}_${problemID}`
   }
   return `${STORAGE_KEY.PROBLEM_CODE}_NoContest_${problemID}`
+}
+
+export function buildContestAnnounceKey (uid, contestID) {
+  return `${STORAGE_KEY.CONTEST_ANNOUNCE}_${uid}_${contestID}`
 }
 
