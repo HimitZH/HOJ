@@ -88,7 +88,6 @@
         <vxe-table-column
           field="totalScore"
           :title="$t('m.Total_Score')"
-          fixed="left"
           min-width="100"
         >
           <template v-slot="{ row }">
