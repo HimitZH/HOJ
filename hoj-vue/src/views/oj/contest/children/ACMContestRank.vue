@@ -85,7 +85,6 @@
         </vxe-table-column>
         <vxe-table-column
           field="rating"
-          fixed="left"
           :title="$t('m.AC') + ' / ' + $t('m.Total')"
           min-width="80"
         >
@@ -102,7 +101,6 @@
         </vxe-table-column>
         <vxe-table-column
           field="totalTime"
-          fixed="left"
           :title="$t('m.TotalTime')"
           min-width="80"
         >
