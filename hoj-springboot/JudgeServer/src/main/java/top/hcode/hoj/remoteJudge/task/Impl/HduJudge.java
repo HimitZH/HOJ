@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 @Slf4j(topic = "hoj")
 public class HduJudge implements RemoteJudgeStrategy {
-    public static final String HOST = "http://acm.hdu.edu.cn";
+    public static final String HOST = "https://acm.hdu.edu.cn";
     public static final String LOGIN_URL = "/userloginex.php?action=login";
     public static final String SUBMIT_URL = "/submit.php?action=submit";
     public static final String STATUS_URL = "/status.php?user=%s&pid=%s";
