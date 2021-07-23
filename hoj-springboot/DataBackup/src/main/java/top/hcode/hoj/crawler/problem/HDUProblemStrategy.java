@@ -15,7 +15,7 @@ import top.hcode.hoj.utils.JsoupUtils;
  */
 public class HDUProblemStrategy extends ProblemStrategy {
     public static final String JUDGE_NAME = "HDU";
-    public static final String HOST = "http://acm.hdu.edu.cn";
+    public static final String HOST = "https://acm.hdu.edu.cn";
     public static final String PROBLEM_URL = "/showproblem.php?pid=%s";
 
     /**
