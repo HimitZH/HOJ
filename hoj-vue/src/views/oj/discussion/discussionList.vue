@@ -61,12 +61,25 @@
                 ></path>
               </svg>
             </span>
-            <a @click="toDiscussionDetail(discussion.id)" class="article-hlink">
-              <h1>
-                {{ discussion.title }}
-              </h1>
-            </a>
-
+            <h1 class="article-hlink">
+              <a @click="toDiscussionDetail(discussion.id)">{{
+                discussion.title
+              }}</a>
+              <el-button
+                type="primary"
+                size="mini"
+                style="margin-left:5px;"
+                v-if="discussion.pid"
+                @click="
+                  pushRouter(
+                    null,
+                    { problemID: discussion.pid },
+                    'ProblemDetails'
+                  )
+                "
+                >{{ $t('m.Go_to_problem') }}</el-button
+              >
+            </h1>
             <a
               @click="toDiscussionDetail(discussion.id)"
               class="article-hlink2"
@@ -688,7 +701,11 @@ export default {
   top: 0px;
   right: 0px;
 }
-.article-hlink h1 {
+.article-hlink {
+  margin: 0;
+  padding: 0;
+}
+.article-hlink a {
   font-size: 16px;
   font-weight: 600;
   color: #34495e;

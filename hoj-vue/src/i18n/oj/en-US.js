@@ -245,6 +245,7 @@ export const m = {
   OI_Ranklist: 'OI Ranklist',
 
   // /views/oj/discussion/discussionList.vue
+  Go_to_problem:"Go to Problem",
   Release_Time:'Release Time',
   Likes:'Likes',
   Views:'Views',
