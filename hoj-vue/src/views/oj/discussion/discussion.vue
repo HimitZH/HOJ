@@ -4,6 +4,14 @@
       <div class="title-article" style="text-align: left">
         <h1 class="title" id="sharetitle">
           <span>{{ discussion.title }}</span>
+          <el-button
+            type="primary"
+            size="mini"
+            style="margin-left:5px;vertical-align:middle;"
+            v-if="discussion.pid"
+            @click="toProblem(discussion.pid)"
+            >{{ $t('m.Go_to_problem') }}</el-button
+          >
         </h1>
         <div class="title-msg">
           <span>
@@ -259,6 +267,13 @@ export default {
       this.$router.push({
         path: '/discussion',
         query: { cid },
+      });
+    },
+
+    toProblem(pid) {
+      this.$router.push({
+        name: 'ProblemDetails',
+        params: { problemID: pid },
       });
     },
 
