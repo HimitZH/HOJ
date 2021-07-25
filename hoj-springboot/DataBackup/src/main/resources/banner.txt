@@ -12,5 +12,9 @@ ${AnsiColor.BRIGHT_YELLOW}
 '   : |  : ;'   ; : .'| \   \  ',  / '   : | /  ; '   :  ;/|
 |   | '  ,/ '   | '/  :  ;   :    /  |   | '` ,/  |   |    \
 ;   : ;--'  |   :    /    \   \ .'   ;   :  .'    |   :   .'
-|   ,/       \   \ .'      `---`     |   ,.'      |   | ,'  @Author Himit_ZH
+|   ,/       \   \ .'      `---`     |   ,.'      |   | ,'
 '---'         `---`                  '---'        `----'
+            Hcode Online Judge(HOJ) - Backend
+                    @Author Himit_ZH
+          ->Github<- https://www.github.com/HimitZH/HOJ
+          ->Gitee<-  https://gitee.com/himitzh0730/hoj

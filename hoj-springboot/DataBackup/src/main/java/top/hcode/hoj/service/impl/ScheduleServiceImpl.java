@@ -166,7 +166,14 @@ public class ScheduleServiceImpl implements ScheduleService {
             }
         }
         // 把比赛列表按照开始时间排序，方便查看
-        contestsList.sort((o1, o2) -> (int) (((Date) o1.get("beginTime")).getTime() - ((Date) o2.get("beginTime")).getTime()));
+        contestsList.sort((o1, o2) -> {
+
+            long beginTime1 = ((Date) o1.get("beginTime")).getTime();
+            long beginTime2 = ((Date) o2.get("beginTime")).getTime();
+
+            return Long.compare(beginTime1, beginTime2);
+        });
+
         // 获取对应的redis key
         String redisKey = Constants.Schedule.RECENT_OTHER_CONTEST.getCode();
         // 缓存时间一天
@@ -198,7 +205,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             try {
                 // 防止cf的频率限制
                 try {
-                    TimeUnit.SECONDS.sleep(5);
+                    TimeUnit.SECONDS.sleep(10);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
