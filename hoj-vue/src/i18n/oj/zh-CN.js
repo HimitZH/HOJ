@@ -157,7 +157,7 @@ export const m = {
   // /views/oj/problem/problemList.vue
   Problem_List:'题目列表',
   All:'全部',
-  My_OJ:'本OJ',
+  My_OJ:'主题库',
   Level:'难度',
   Tags:'标签',
   Pick_a_random_question:'随机选一题',
