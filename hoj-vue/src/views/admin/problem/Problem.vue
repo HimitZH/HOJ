@@ -955,9 +955,12 @@ export default {
       }
     },
 
-    // 根据tagID从题目的tags列表中移除
+    // 根据tag name从题目的tags列表中移除
     closeTag(tag) {
-      this.problemTags.splice(this.problemTags.indexOf(tag), 1);
+      this.problemTags.splice(
+        this.problemTags.map((item) => item.name).indexOf(tag),
+        1
+      );
     },
 
     problemTypeChange(type) {
