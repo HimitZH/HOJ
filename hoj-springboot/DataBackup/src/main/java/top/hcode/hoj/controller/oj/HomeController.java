@@ -20,6 +20,7 @@ import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -94,8 +95,6 @@ public class HomeController {
         List<HashMap<String, Object>> contestsList;
         // 从redis获取比赛列表
         contestsList = (ArrayList<HashMap<String, Object>>) redisUtils.get(redisKey);
-
-        HashMap<String, Object> resp = new HashMap<>();
 
         return CommonResult.successResponse(contestsList,"获取其它OJ最近比赛列表成功");
     }
