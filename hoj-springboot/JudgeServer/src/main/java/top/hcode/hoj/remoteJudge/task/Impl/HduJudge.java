@@ -27,8 +27,8 @@ public class HduJudge implements RemoteJudgeStrategy {
     public static Map<String, String> headers = MapUtil
             .builder(new HashMap<String, String>())
             .put("Host", "acm.hdu.edu.cn")
-            .put("origin", "http://acm.hdu.edu.cn")
-            .put("referer", "http://acm.hdu.edu.cn")
+            .put("origin", "https://acm.hdu.edu.cn")
+            .put("referer", "https://acm.hdu.edu.cn")
             .put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36")
             .map();
 

@@ -173,7 +173,7 @@
           isAdminRole
       "
     >
-      <el-col :span="24" style="margin-top: 13px;">
+      <el-col :span="24" style="margin-top: 13px;" v-if="submission.code">
         <Highlight
           :code="submission.code"
           :language="submission.language"

@@ -408,7 +408,7 @@ public class FileController {
         }
     }
 
-    private static final ThreadLocal<SimpleDateFormat> threadLocal = new ThreadLocal<SimpleDateFormat>() {
+    private static final ThreadLocal<SimpleDateFormat> threadLocalTime = new ThreadLocal<SimpleDateFormat>() {
         @Override
         protected SimpleDateFormat initialValue() {
             return new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
@@ -489,7 +489,7 @@ public class FileController {
 
             for (Judge judge : userSubmissionList) {
                 String filePath = userDir + File.separator + cpIdMap.getOrDefault(judge.getCpid(), "null")
-                        + "_(" + threadLocal.get().format(judge.getSubmitTime()) + ")";
+                        + "_(" + threadLocalTime.get().format(judge.getSubmitTime()) + ")";
 
                 // OI模式只取最后一次提交
                 if (!isACM) {
