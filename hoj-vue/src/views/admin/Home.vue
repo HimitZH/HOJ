@@ -432,7 +432,7 @@ export default {
     },
     page_width() {
       let screenWidth = window.screen.width;
-      if (screenWidth < 1050) {
+      if (screenWidth < 1150) {
         this.mobileNar = true;
       } else {
         this.mobileNar = false;
@@ -455,7 +455,7 @@ export default {
       'webLanguage',
     ]),
     'window.screen.width'(newVal, oldVal) {
-      if (newVal < 1050) {
+      if (newVal < 1150) {
         this.mobileNar = true;
       } else {
         this.mobileNar = false;
@@ -541,14 +541,14 @@ img {
   font-size: small;
 }
 
-@media screen and (min-width: 1050px) {
+@media screen and (min-width: 1150px) {
   .content-app {
     padding-top: 20px;
     padding-right: 10px;
     padding-left: 210px;
   }
 }
-@media screen and (max-width: 1050px) {
+@media screen and (max-width: 1150px) {
   .content-app {
     padding: 0 5px;
     margin-top: 20px;
