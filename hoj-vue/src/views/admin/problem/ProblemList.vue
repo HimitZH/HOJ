@@ -337,7 +337,7 @@ export default {
   data() {
     return {
       problemListAuth: 0,
-      oj: 'Mine',
+      oj: 'All',
       pageSize: 10,
       total: 0,
       problemList: [],
