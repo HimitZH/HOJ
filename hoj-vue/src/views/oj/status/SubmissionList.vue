@@ -349,6 +349,9 @@ export default {
       RULE_TYPE: {},
     };
   },
+  created() {
+    this.init();
+  },
   mounted() {
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
     this.JUDGE_STATUS_LIST = Object.assign({}, JUDGE_STATUS);
@@ -360,7 +363,7 @@ export default {
     delete this.JUDGE_STATUS_LIST['6'];
     delete this.JUDGE_STATUS_LIST['7'];
     delete this.JUDGE_STATUS_LIST['-10'];
-    this.init();
+    this.getData();
   },
   methods: {
     init() {
@@ -380,6 +383,9 @@ export default {
       }
       this.limit = parseInt(query.limit) || 15;
       this.routeName = this.$route.name;
+    },
+
+    getData() {
       // ACM比赛没有必要显示分数列
       if (this.contestID && this.contestRuleType == RULE_TYPE.ACM) {
         this.loadingTable = true;
@@ -392,6 +398,7 @@ export default {
       }
       this.getSubmissions();
     },
+
     buildQuery() {
       return {
         onlyMine: this.formFilter.onlyMine,
@@ -750,10 +757,12 @@ export default {
           clearInterval(this.refreshStatus);
         }
         this.init();
+        this.getData();
       }
     },
     isAuthenticated() {
       this.init();
+      this.getData();
     },
   },
   beforeRouteLeave(to, from, next) {
