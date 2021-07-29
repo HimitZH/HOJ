@@ -243,12 +243,6 @@ public class AdminContestController {
             }
         }
 
-        if (!StringUtils.isEmpty(keyword)) {
-            problemQueryWrapper.and(wrapper -> wrapper.like("title", keyword).or()
-                    .like("problem_id", keyword).or()
-                    .like("author", keyword));
-        }
-
         // 根据oj筛选过滤
         if (oj != null && !"All".equals(oj)) {
             if (!Constants.RemoteOJ.isRemoteOJ(oj)) {
@@ -256,6 +250,12 @@ public class AdminContestController {
             } else {
                 problemQueryWrapper.eq("is_remote", true).likeRight("problem_id", oj);
             }
+        }
+
+        if (!StringUtils.isEmpty(keyword)) {
+            problemQueryWrapper.and(wrapper -> wrapper.like("title", keyword).or()
+                    .like("problem_id", keyword).or()
+                    .like("author", keyword));
         }
 
         IPage<Problem> problemList = problemService.page(iPage, problemQueryWrapper);
