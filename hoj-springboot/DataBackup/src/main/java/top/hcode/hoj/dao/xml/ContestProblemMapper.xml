@@ -6,6 +6,13 @@
         (select count(*) from judge
         <where>
             cpid=cp.id and cid=cp.cid and pid=cp.pid
+            <if test="adminList!=null and adminList.size>0">
+                and uid NOT IN
+                <foreach collection="adminList" index="index" item="item"
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
             <choose>
                 <when test="isAdmin">
                     AND submit_time >= #{startTime} AND #{endTime}>submit_time
@@ -22,6 +29,13 @@
         (select count(*) from judge
         <where>
              cpid=cp.id and cid=cp.cid and pid =cp.pid and status=0
+            <if test="adminList!=null and adminList.size>0">
+                and uid NOT IN
+                <foreach collection="adminList" index="index" item="item"
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
             <choose>
                 <when test="isAdmin">
                     AND submit_time >= #{startTime} AND #{endTime}>=submit_time

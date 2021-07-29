@@ -8,6 +8,7 @@ import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.ProblemCountVo;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -29,7 +30,7 @@ public interface JudgeService extends IService<Judge> {
 
     void failToUseRedisPublishJudge(Long submitId, Long pid, Boolean isContest);
 
-    ProblemCountVo getContestProblemCount(Long pid, Long cpid, Long cid, Date startTime, Date sealRankTime);
+    ProblemCountVo getContestProblemCount(Long pid, Long cpid, Long cid, Date startTime, Date sealRankTime, List<String> adminList);
 
     ProblemCountVo getProblemCount(Long pid);
 }

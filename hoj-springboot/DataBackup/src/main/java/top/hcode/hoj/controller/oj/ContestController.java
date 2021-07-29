@@ -226,10 +226,10 @@ public class ContestController {
         if (contest.getSealRank() && contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode() &&
                 contest.getSealRankTime().before(new Date())) {
             contestProblemList = contestProblemService.getContestProblemList(cid, contest.getStartTime(), contest.getEndTime(),
-                    contest.getSealRankTime(), isAdmin);
+                    contest.getSealRankTime(), isAdmin, contest.getAuthor());
         } else {
             contestProblemList = contestProblemService.getContestProblemList(cid, contest.getStartTime(), contest.getEndTime(),
-                    null, isAdmin);
+                    null, isAdmin, contest.getAuthor());
         }
 
         if (contestProblemList.size() == 0) {
@@ -321,9 +321,15 @@ public class ContestController {
                 contest.getSealRankTime().before(new Date())) {
             sealRankTime = contest.getSealRankTime();
         }
+
+        // 筛去 比赛管理员和超级管理员的提交
+        List<UserInfo> superAdminList = contestRecordService.getSuperAdminList();
+        List<String> superAdminUidList = superAdminList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
+        superAdminUidList.add(contest.getUid());
+
         // 获取题目的提交记录
         ProblemCountVo problemCount = judgeService.getContestProblemCount(contestProblem.getPid(), contestProblem.getId(),
-                contestProblem.getCid(), contest.getStartTime(), sealRankTime);
+                contestProblem.getCid(), contest.getStartTime(), sealRankTime, superAdminUidList);
 
         // 获取题目的代码模板
         QueryWrapper<CodeTemplate> codeTemplateQueryWrapper = new QueryWrapper<>();
