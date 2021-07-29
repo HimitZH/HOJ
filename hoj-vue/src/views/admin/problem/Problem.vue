@@ -910,7 +910,6 @@ export default {
         ojName = this.problem.problemId.split('-')[0];
       }
       var restaurants = this.allTagsTmp.filter((item) => item.oj == ojName);
-      console.log(ojName);
       var results = queryString
         ? restaurants.filter(
             (item) =>
