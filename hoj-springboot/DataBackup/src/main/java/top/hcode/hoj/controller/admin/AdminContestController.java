@@ -254,7 +254,7 @@ public class AdminContestController {
             if (!Constants.RemoteOJ.isRemoteOJ(oj)) {
                 problemQueryWrapper.eq("is_remote", false);
             } else {
-                problemQueryWrapper.eq("is_remote", true).likeLeft("problem_id", oj);
+                problemQueryWrapper.eq("is_remote", true).likeRight("problem_id", oj);
             }
         }
 
