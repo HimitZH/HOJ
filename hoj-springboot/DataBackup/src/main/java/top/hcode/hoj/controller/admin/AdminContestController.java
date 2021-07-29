@@ -198,7 +198,8 @@ public class AdminContestController {
                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                        @RequestParam(value = "keyword", required = false) String keyword,
                                        @RequestParam(value = "cid", required = false) Long cid,
-                                       @RequestParam(value = "problemType", required = false) Integer problemType) {
+                                       @RequestParam(value = "problemType", required = false) Integer problemType,
+                                       @RequestParam(value = "oj", required = false) String oj) {
         if (cid == null) {
             return CommonResult.errorResponse("参数错误！", CommonResult.STATUS_NOT_FOUND);
         }
@@ -227,8 +228,8 @@ public class AdminContestController {
         if (problemType != null) { // 必备条件 隐藏的不可取来做比赛题目
             problemQueryWrapper
                     // vj题目不限制赛制
-                    .and(wrapper->wrapper.eq("type", problemType)
-                    .or().eq("is_remote", true))
+                    .and(wrapper -> wrapper.eq("type", problemType)
+                            .or().eq("is_remote", true))
                     .ne("auth", 2);
         }
 
@@ -246,6 +247,15 @@ public class AdminContestController {
             problemQueryWrapper.and(wrapper -> wrapper.like("title", keyword).or()
                     .like("problem_id", keyword).or()
                     .like("author", keyword));
+        }
+
+        // 根据oj筛选过滤
+        if (oj != null && !"All".equals(oj)) {
+            if (!Constants.RemoteOJ.isRemoteOJ(oj)) {
+                problemQueryWrapper.eq("is_remote", false);
+            } else {
+                problemQueryWrapper.eq("is_remote", true).likeLeft("problem_id", oj);
+            }
         }
 
         IPage<Problem> problemList = problemService.page(iPage, problemQueryWrapper);

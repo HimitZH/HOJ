@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import top.hcode.hoj.utils.Constants;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -71,8 +72,8 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     }
 
     @Override
-    public ProblemCountVo getContestProblemCount(Long pid, Long cpid, Long cid, Date startTime, Date sealRankTime) {
-        return judgeMapper.getContestProblemCount(pid, cpid, cid, startTime, sealRankTime);
+    public ProblemCountVo getContestProblemCount(Long pid, Long cpid, Long cid, Date startTime, Date sealRankTime, List<String> adminList) {
+        return judgeMapper.getContestProblemCount(pid, cpid, cid, startTime, sealRankTime, adminList);
     }
 
     @Override

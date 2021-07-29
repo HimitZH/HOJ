@@ -11,6 +11,7 @@ import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.ProblemCountVo;
 
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -35,7 +36,8 @@ public interface JudgeMapper extends BaseMapper<Judge> {
     int getTodayJudgeNum();
 
     ProblemCountVo getContestProblemCount(@Param("pid") Long pid, @Param("cpid") Long cpid, @Param("cid") Long cid,
-                                          @Param("startTime") Date startTime, @Param("sealRankTime") Date sealRankTime);
+                                          @Param("startTime") Date startTime, @Param("sealRankTime") Date sealRankTime,
+                                          @Param("adminList") List<String> adminList);
 
     ProblemCountVo getProblemCount(@Param("pid") Long pid);
 }

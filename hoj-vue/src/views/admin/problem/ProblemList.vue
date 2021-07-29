@@ -43,10 +43,32 @@
               @keyup.enter.native="filterByKeyword"
             ></vxe-input>
           </span>
+
+          <span>
+            <el-select
+              v-model="oj"
+              @change="ProblemListChangeFilter"
+              size="small"
+              style="width: 180px;"
+            >
+              <el-option
+                :label="$t('m.All_Problem')"
+                :value="'All'"
+              ></el-option>
+              <el-option :label="$t('m.My_OJ')" :value="'Mine'"></el-option>
+              <el-option
+                :label="remoteOj.name"
+                :key="index"
+                :value="remoteOj.key"
+                v-for="(remoteOj, index) in REMOTE_OJ"
+              ></el-option>
+            </el-select>
+          </span>
+
           <span v-if="!contestId">
             <el-select
               v-model="problemListAuth"
-              @change="ProblemListChangeAuth"
+              @change="ProblemListChangeFilter"
               size="small"
               style="width: 180px;"
             >
@@ -315,6 +337,7 @@ export default {
   data() {
     return {
       problemListAuth: 0,
+      oj: 'Mine',
       pageSize: 10,
       total: 0,
       problemList: [],
@@ -392,6 +415,7 @@ export default {
         currentPage: page,
         keyword: this.keyword,
         cid: this.contestId,
+        oj: this.oj,
       };
       if (this.problemListAuth != 0) {
         params['auth'] = this.problemListAuth;
@@ -485,7 +509,7 @@ export default {
         this.$alert(this.$i18n.t('m.Download_Testcase_Success'), 'Tips');
       });
     },
-    ProblemListChangeAuth() {
+    ProblemListChangeFilter() {
       this.currentChange(1);
     },
     filterByKeyword() {

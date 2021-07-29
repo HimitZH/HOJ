@@ -91,6 +91,13 @@
          <if test="sealRankTime!=null">
              and #{sealRankTime} > submit_time
          </if>
+         <if test="adminList!=null and adminList.size>0">
+             and uid NOT IN
+             <foreach collection="adminList" index="index" item="item"
+                      open="(" separator="," close=")">
+                 #{item}
+             </foreach>
+         </if>
         </where>
     </select>
 

@@ -294,11 +294,6 @@ export default {
         table: true,
         tag: true,
       },
-      page: {
-        currentPage: 1,
-        pageSize: 30,
-        totalResult: 300,
-      },
       filterConfig: { remote: true },
       routeName: '',
       query: {
@@ -309,6 +304,9 @@ export default {
         currentPage: 1,
       },
     };
+  },
+  created() {
+    this.init();
   },
 
   mounted() {
@@ -336,7 +334,7 @@ export default {
       this.$refs.problemList.refreshColumn();
       this.loadings.table = false;
     }, 200);
-    this.init();
+    this.getData();
   },
   methods: {
     init() {
@@ -350,10 +348,13 @@ export default {
       if (this.query.currentPage < 1) {
         this.query.currentPage = 1;
       }
-      this.getTagList(this.query.oj);
+    },
 
+    getData() {
+      this.getTagList(this.query.oj);
       this.getProblemList();
     },
+
     pushRouter() {
       this.$router.push({
         path: '/problem',
@@ -549,11 +550,13 @@ export default {
     $route(newVal, oldVal) {
       if (newVal !== oldVal) {
         this.init();
+        this.getData();
       }
     },
     isAuthenticated(newVal) {
       if (newVal === true) {
         this.init();
+        this.getData();
       }
     },
   },
