@@ -69,8 +69,13 @@ public class AdminProblemController {
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc("gmt_create");
 
-        if (oj != null && oj.equals("Mine")) {
-            queryWrapper.eq("is_remote", false);
+        // 根据oj筛选过滤
+        if (oj != null && !"All".equals(oj)) {
+            if (!Constants.RemoteOJ.isRemoteOJ(oj)) {
+                queryWrapper.eq("is_remote", false);
+            } else {
+                queryWrapper.eq("is_remote", true).likeRight("problem_id", oj);
+            }
         }
 
         if (auth != null && auth != 0) {
