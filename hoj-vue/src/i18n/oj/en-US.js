@@ -233,6 +233,9 @@ export const m = {
   Shared:'Shared',
   Unshared:'Unshared',
   Shared_successfully:'Shared successfully',
+  Input_File:'Input File',
+  Output_File:'Output File',
+  Unknown:'Unknown',
 
   // /views/oj/rank/ACMRank.vue
   ACM_Ranklist: 'ACM Ranklist',

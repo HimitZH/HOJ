@@ -123,45 +123,54 @@
             v-for="(item, index) in testCaseResult"
             :key="index"
           >
-            <div
-              class="test-detail-item"
-              :style="getTestCaseResultColor(item.status)"
-              v-if="item.status == JUDGE_STATUS_RESERVE.ac"
-            >
-              <span>Test #{{ index + 1 }}:</span>
-              <h2>{{ JUDGE_STATUS[item.status]['short'] }}</h2>
-              <div style="text-align:center;">
-                {{ item.time }}ms/{{ item.memory }}KB
+            <el-tooltip placement="top">
+              <div slot="content">
+                {{ $t('m.Input_File') }}：{{
+                  item.inputData ? item.inputData : $t('m.Unknown')
+                }}<br />{{ $t('m.Output_File') }}：{{
+                  item.outputData ? item.outputData : $t('m.Unknown')
+                }}
               </div>
-              <div class="test-run-static">
-                <span v-if="item.score != null">
-                  {{ item.score }} <i class="el-icon-success"></i>
-                </span>
-                <span v-else>
-                  <i class="el-icon-success"></i>
-                </span>
+              <div
+                class="test-detail-item"
+                :style="getTestCaseResultColor(item.status)"
+                v-if="item.status == JUDGE_STATUS_RESERVE.ac"
+              >
+                <span>Test #{{ index + 1 }}:</span>
+                <h2>{{ JUDGE_STATUS[item.status]['short'] }}</h2>
+                <div style="text-align:center;">
+                  {{ item.time }}ms/{{ item.memory }}KB
+                </div>
+                <div class="test-run-static">
+                  <span v-if="item.score != null">
+                    {{ item.score }} <i class="el-icon-success"></i>
+                  </span>
+                  <span v-else>
+                    <i class="el-icon-success"></i>
+                  </span>
+                </div>
               </div>
-            </div>
 
-            <div
-              class="test-detail-item"
-              :style="getTestCaseResultColor(item.status)"
-              v-else
-            >
-              <span>Test #{{ index + 1 }}: </span>
-              <h2>{{ JUDGE_STATUS[item.status]['short'] }}</h2>
-              <div style="text-align:center;">
-                {{ item.time }}ms/{{ item.memory }}KB
+              <div
+                class="test-detail-item"
+                :style="getTestCaseResultColor(item.status)"
+                v-else
+              >
+                <span>Test #{{ index + 1 }}: </span>
+                <h2>{{ JUDGE_STATUS[item.status]['short'] }}</h2>
+                <div style="text-align:center;">
+                  {{ item.time }}ms/{{ item.memory }}KB
+                </div>
+                <div class="test-run-static">
+                  <span v-if="item.score != null">
+                    {{ item.score }} <i class="el-icon-error"></i>
+                  </span>
+                  <span v-else>
+                    <i class="el-icon-error"></i>
+                  </span>
+                </div>
               </div>
-              <div class="test-run-static">
-                <span v-if="item.score != null">
-                  {{ item.score }} <i class="el-icon-error"></i>
-                </span>
-                <span v-else>
-                  <i class="el-icon-error"></i>
-                </span>
-              </div>
-            </div>
+            </el-tooltip>
           </el-col>
         </el-row>
       </el-card>

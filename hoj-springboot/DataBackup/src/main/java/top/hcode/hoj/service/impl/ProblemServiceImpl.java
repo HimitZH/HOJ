@@ -441,7 +441,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
         for (ProblemCase problemCase : problemCaseList) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.set("caseId", null);
+            jsonObject.set("caseId", problemCase.getId());
             jsonObject.set("score", problemCase.getScore());
             jsonObject.set("inputName", problemCase.getInput());
             jsonObject.set("outputName", problemCase.getOutput());
