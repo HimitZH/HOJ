@@ -105,7 +105,7 @@ public class JudgeStrategy {
             result.put("time", 0);
             result.put("memory", 0);
             log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生系统性的异常------------------->{}",
-                    systemError.getMessage() + "\n" + systemError.getStderr());
+                    systemError);
         } catch (SubmitError submitError) {
             result.put("code", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
             result.put("errMsg", submitError.getMessage() + ":" + submitError.getStderr());
@@ -121,7 +121,7 @@ public class JudgeStrategy {
             result.put("errMsg", "Oops, something has gone wrong with the judgeServer. Please report this to administrator.");
             result.put("time", 0);
             result.put("memory", 0);
-            log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生系统性的异常-------------------->{}", e.getMessage());
+            log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生系统性的异常-------------------->{}", e);
         } finally {
 
             // 删除tmpfs内存中的用户代码可执行文件
@@ -185,7 +185,7 @@ public class JudgeStrategy {
             Integer time = jsonObject.getLong("time").intValue();
             Integer memory = jsonObject.getLong("memory").intValue();
             Integer status = jsonObject.getInt("status");
-            Long caseId = jsonObject.getLong("caseId");
+            Long caseId = jsonObject.getLong("caseId",null);
             String inputFileName = jsonObject.getStr("inputFileName");
             String outputFileName = jsonObject.getStr("outputFileName");
             JudgeCase judgeCase = new JudgeCase();

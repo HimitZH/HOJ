@@ -57,7 +57,7 @@ public class ProblemTestCaseUtils {
         for (int index = 0; index < testCases.size(); index++) {
             JSONObject jsonObject = new JSONObject();
             String inputName = (index + 1) + ".in";
-            jsonObject.set("caseId", (long) testCases.get(index).get("caseId"));
+            jsonObject.set("caseId", testCases.get(index).get("caseId"));
             jsonObject.set("score", testCases.get(index).getOrDefault("score", null));
             jsonObject.set("inputName", inputName);
             // 生成对应文件
@@ -108,7 +108,7 @@ public class ProblemTestCaseUtils {
 
         for (ProblemCase problemCase : problemCaseList) {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.set("caseId", null);
+            jsonObject.set("caseId", problemCase.getId());
             jsonObject.set("score", problemCase.getScore());
             jsonObject.set("inputName", problemCase.getInput());
             jsonObject.set("outputName", problemCase.getOutput());
