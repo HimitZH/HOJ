@@ -13,7 +13,7 @@ public class SystemError extends Exception{
     private String stderr;
 
     public SystemError(String message, String stdout, String stderr ) {
-        super(message);
+        super(message+" "+stderr);
         this.stdout = stdout;
         this.stderr = stderr;
     }

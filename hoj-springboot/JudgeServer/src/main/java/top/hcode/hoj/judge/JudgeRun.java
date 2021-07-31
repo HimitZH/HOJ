@@ -86,23 +86,26 @@ public class JudgeRun {
         final Long testTime = time.longValue();
 
         // 用户输出的文件夹
-        String runDir = Constants.JudgeDir.RUN_WORKPLACE_DIR.getContent() + "/" + submitId;
+        String runDir = Constants.JudgeDir.RUN_WORKPLACE_DIR.getContent() + File.separator + submitId;
         for (int index = 0; index < testcaseList.size(); index++) {
+
+            JSONObject testcase = (JSONObject) testcaseList.get(index);
+
             // 将每个需要测试的线程任务加入任务列表中
             final int testCaseId = index;
-            // 测试样例的路径
-            final String testCaseInputPath = testCasesDir + "/" + ((JSONObject) testcaseList.get(index)).getStr("inputName");
-            // 数据库表的测试样例id
-            final Long caseId = ((JSONObject) testcaseList.get(index)).getLong("caseId");
-            // 该测试点的满分
-            final Integer score = ((JSONObject) testcaseList.get(index)).getInt("score", 0);
-
-            final Long maxOutputSize = Math.max(((JSONObject) testcaseList.get(index)).getLong("outputSize", 0L) * 2, 16 * 1024 * 1024L);
-
             // 输入文件名
-            final String inputFileName = ((JSONObject) testcaseList.get(index)).getStr("inputName");
+            final String inputFileName = testcase.getStr("inputName");
             // 输出文件名
-            final String outputFileName = ((JSONObject) testcaseList.get(index)).getStr("outputName");
+            final String outputFileName = testcase.getStr("outputName");
+            // 测试样例的路径
+            final String testCaseInputPath = testCasesDir + File.separator + inputFileName;
+            // 数据库表的测试样例id
+            final Long caseId = testcase.getLong("caseId",null);
+            // 该测试点的满分
+            final Integer score = testcase.getInt("score", 0);
+
+            final Long maxOutputSize = Math.max(testcase.getLong("outputSize", 0L) * 2, 16 * 1024 * 1024L);
+
             if (!isSpj) {
                 futureTasks.add(new FutureTask<>(new Callable<JSONObject>() {
                     @Override
@@ -125,7 +128,7 @@ public class JudgeRun {
                     }
                 }));
             } else {
-                final String testCaseOutputPath = testCasesDir + "/" + ((JSONObject) testcaseList.get(index)).getStr("outputName");
+                final String testCaseOutputPath = testCasesDir + "/" + outputFileName;
                 futureTasks.add(new FutureTask<>(new Callable<JSONObject>() {
                     @Override
                     public JSONObject call() throws SystemError {
