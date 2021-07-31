@@ -235,6 +235,9 @@ export const m = {
   Shared:'分享',
   Unshared:'不分享',
   Shared_successfully:'分享成功',
+  Input_File:'输入文件',
+  Output_File:'输出文件',
+  Unknown:'未知',
 
   // /views/oj/rank/ACMRank.vue
   ACM_Ranklist: 'ACM 排行榜',

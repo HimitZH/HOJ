@@ -186,9 +186,13 @@ public class JudgeStrategy {
             Integer memory = jsonObject.getLong("memory").intValue();
             Integer status = jsonObject.getInt("status");
             Long caseId = jsonObject.getLong("caseId");
+            String inputFileName = jsonObject.getStr("inputFileName");
+            String outputFileName = jsonObject.getStr("outputFileName");
             JudgeCase judgeCase = new JudgeCase();
             judgeCase.setTime(time).setMemory(memory)
                     .setStatus(status)
+                    .setInputData(inputFileName)
+                    .setOutputData(outputFileName)
                     .setPid(problem.getId())
                     .setUid(judge.getUid())
                     .setCaseId(caseId)

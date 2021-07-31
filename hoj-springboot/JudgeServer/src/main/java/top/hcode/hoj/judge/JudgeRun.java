@@ -98,6 +98,11 @@ public class JudgeRun {
             final Integer score = ((JSONObject) testcaseList.get(index)).getInt("score", 0);
 
             final Long maxOutputSize = Math.max(((JSONObject) testcaseList.get(index)).getLong("outputSize", 0L) * 2, 16 * 1024 * 1024L);
+
+            // 输入文件名
+            final String inputFileName = ((JSONObject) testcaseList.get(index)).getStr("inputName");
+            // 输出文件名
+            final String outputFileName = ((JSONObject) testcaseList.get(index)).getStr("outputName");
             if (!isSpj) {
                 futureTasks.add(new FutureTask<>(new Callable<JSONObject>() {
                     @Override
@@ -114,6 +119,8 @@ public class JudgeRun {
                                 isRemoveEOFBlank);
                         result.set("caseId", caseId);
                         result.set("score", score);
+                        result.set("inputFileName", inputFileName);
+                        result.set("outputFileName", outputFileName);
                         return result;
                     }
                 }));
@@ -136,6 +143,8 @@ public class JudgeRun {
                                 getUserOutput);
                         result.set("caseId", caseId);
                         result.set("score", score);
+                        result.set("inputFileName", inputFileName);
+                        result.set("outputFileName", outputFileName);
                         return result;
                     }
                 }));
