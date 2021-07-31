@@ -293,8 +293,8 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             if (needDeleteProblemCases.size() > 0 || newProblemCaseList.size() > 0
                     || needUpdateProblemCaseList.size() > 0 || !StringUtils.isEmpty(testcaseDir)) {
                 problem.setCaseVersion(caseVersion);
-                // 如果是选择上传测试文件的，临时文件路径不为空，则需要遍历对应文件夹，读取数据，写入数据库,先前的题目数据一并清空。
-                if (problemDto.getIsUploadTestCase() && !StringUtils.isEmpty(testcaseDir)) {
+                // 如果是选择上传测试文件的，则需要遍历对应文件夹，读取数据，写入数据库,先前的题目数据一并清空。
+                if (problemDto.getIsUploadTestCase()) {
                     // 获取代理bean对象执行异步方法===》根据测试文件初始info
                     applicationContext.getBean(ProblemServiceImpl.class).initUploadTestCase(problemDto.getIsSpj(), caseVersion, pid, testcaseDir, problemDto.getSamples());
                 } else {
@@ -428,7 +428,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         String testCasesDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + problemId;
 
         // 将之前的临时文件夹里面的评测文件全部复制到指定文件夹(覆盖)
-        if (tmpTestcaseDir != null) {
+        if (!StringUtils.isEmpty(tmpTestcaseDir)) {
             FileUtil.copyFilesFromDir(new File(tmpTestcaseDir), new File(testCasesDir), true);
         }
 

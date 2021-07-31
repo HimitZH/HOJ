@@ -3,7 +3,7 @@
 <mapper namespace="top.hcode.hoj.dao.UserRecordMapper">
     <select id="getACMRankList" resultType="top.hcode.hoj.pojo.vo.ACMRankVo" useCache="true">
         SELECT u.uuid as uid,u.nickname,u.username,u.signature,u.avatar,
-    (SELECT COUNT( DISTINCT pid ) FROM user_acproblem WHERE uid =u.uuid) AS ac,
+    (SELECT COUNT( DISTINCT pid ) FROM user_acproblem WHERE uid = u.uuid) AS ac,
     (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid AND cid=0) AS total
     FROM user_info u  WHERE u.status = 0
     ORDER BY ac DESC,total ASC
@@ -12,9 +12,9 @@
     <select id="getRecent7ACRank" resultType="top.hcode.hoj.pojo.vo.ACMRankVo">
         SELECT u.uuid as uid,u.nickname,u.username,u.signature,u.avatar,
         (SELECT COUNT( DISTINCT pid ) FROM user_acproblem WHERE uid =u.uuid
-        and DATE(gmt_create) >= DATE_SUB(CURDATE(),INTERVAL 7 DAY) ) AS ac,
+        and DATE(gmt_create) >= DATE_SUB(CURDATE(),INTERVAL 7 DAY)) AS ac,
         (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid AND cid=0
-        and DATE(gmt_create) >= DATE_SUB(CURDATE(),INTERVAL 7 DAY) )AS total
+        and DATE(submit_time) >= DATE_SUB(CURDATE(),INTERVAL 7 DAY)) AS total
         FROM user_info u WHERE u.status = 0
         ORDER BY ac DESC,total ASC LIMIT 10
     </select>
