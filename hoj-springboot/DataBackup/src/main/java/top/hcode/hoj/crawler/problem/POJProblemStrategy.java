@@ -34,7 +34,7 @@ public class POJProblemStrategy extends ProblemStrategy {
         info.setTimeLimit(Integer.parseInt(ReUtil.get("<b>Time Limit:</b> (\\d{3,})MS</td>", html, 1)));
         info.setMemoryLimit(Integer.parseInt(ReUtil.get("<b>Memory Limit:</b> (\\d{2,})K</td>", html, 1)) / 1024);
         info.setDescription(ReUtil.get("<p class=\"pst\">Description</p><div class=.*?>([\\s\\S]*?)</div><p class=\"pst\">", html, 1)
-                .replaceAll("src=\"../../", "src=\"" + HOST + "/"));
+                .replaceAll("src=\"", "src=\"" + HOST + "/"));
 
         info.setInput(ReUtil.get("<p class=\"pst\">Input</p><div class=.*?>([\\s\\S]*?)</div><p class=\"pst\">", html, 1));
         info.setOutput(ReUtil.get("<p class=\"pst\">Output</p><div class=.*?>([\\s\\S]*?)</div><p class=\"pst\">", html, 1));
