@@ -38,7 +38,7 @@
         FROM user_info ui, (
                 SELECT u.uuid AS uid, COALESCE(SUM(s.score),0) AS score
                 FROM user_info u, (
-                        SELECT MAX(score) AS score, uid, pid
+                        SELECT MAX(oi_rank_score) AS score, uid, pid
                         FROM judge
                         WHERE cid=0
                         GROUP BY pid, uid
@@ -74,7 +74,7 @@
 
     <!-- 子查询-->
     <select id="getProblemScore" resultType="java.lang.Integer">
-        SELECT MAX(score) AS sum_score FROM judge
+        SELECT MAX(oi_rank_score) AS sum_score FROM judge
         WHERE uid=#{uid} AND cid=0 AND score IS NOT NULL GROUP BY pid
     </select>
 

@@ -97,7 +97,19 @@
           v-if="isIOProblem"
         >
           <template v-slot="{ row }">
-            <span>{{ row.score }}</span>
+            <el-tooltip placement="top">
+              <div slot="content">
+                {{ $t('m.Problem_Score') }}：{{
+                  row.score != null ? row.score : $t('m.Unknown')
+                }}<br />{{ $t('m.OI_Rank_Score') }}：{{
+                  row.oiRankScore != null ? row.oiRankScore : $t('m.Unknown')
+                }}<br />
+                {{
+                  $t('m.OI_Rank_Calculation_Rule')
+                }}:(score*0.1+diffculty*2)*(ac_testcase/sum_testcase)
+              </div>
+              <span>{{ row.score }}</span>
+            </el-tooltip>
           </template>
         </vxe-table-column>
         <vxe-table-column :title="$t('m.Length')" min-width="80">
