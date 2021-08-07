@@ -226,6 +226,9 @@ export const m = {
   Enter_Author:'Enter Author',
   Run_ID:'Run ID',
   Problem:'Problem',
+  Problem_Score:'Problem Score',
+  OI_Rank_Score:'OI Rank Score',
+  OI_Rank_Calculation_Rule:'OI Rank Calculation Rule',
 
   // /views/oj/status/SubmissionDetails.vue
   Test_point_details:'Test point details',
