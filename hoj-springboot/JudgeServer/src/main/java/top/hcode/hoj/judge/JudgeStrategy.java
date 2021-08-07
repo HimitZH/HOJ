@@ -55,13 +55,13 @@ public class JudgeStrategy {
             // 对用户源代码进行编译 获取tmpfs中的fileId
             userFileId = Compiler.compile(Constants.CompileConfig.getCompilerByLanguage(judge.getLanguage()), judge.getCode(), judge.getLanguage());
             // 测试数据文件所在文件夹
-            String testCasesDir = Constants.JudgeDir.TEST_CASE_DIR.getContent() +File.separator+"problem_" + problem.getId();
+            String testCasesDir = Constants.JudgeDir.TEST_CASE_DIR.getContent() + File.separator + "problem_" + problem.getId();
             // 从文件中加载测试数据json
             JSONObject testCasesInfo = problemTestCaseUtils.loadTestCaseInfo(problem.getId(), testCasesDir, problem.getCaseVersion(), !StringUtils.isEmpty(problem.getSpjCode()));
             JSONArray testcaseList = (JSONArray) testCasesInfo.get("testCases");
             String version = testCasesInfo.getStr("version");
             // 检查是否为spj，同时是否有spj编译完成的文件，若不存在，就先编译生成该spj文件，同时也要检查版本
-            Boolean hasSpjOrNotSpj = checkOrCompileSpj(problem,version);
+            Boolean hasSpjOrNotSpj = checkOrCompileSpj(problem, version);
             // 如果该题为spj，但是没有spj程序
             if (!hasSpjOrNotSpj) {
                 result.put("code", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
@@ -133,7 +133,7 @@ public class JudgeStrategy {
     }
 
 
-    public Boolean checkOrCompileSpj(Problem problem,String version) throws CompileError, SystemError {
+    public Boolean checkOrCompileSpj(Problem problem, String version) throws CompileError, SystemError {
         // 如果是需要特判的题目，则需要检测特批程序是否已经编译，否则进行编译
         if (!StringUtils.isEmpty(problem.getSpjCode()) || !problem.getCaseVersion().equals(version)) {
             Constants.CompileConfig spjCompiler = Constants.CompileConfig.getCompilerByLanguage(problem.getSpjLanguage());
@@ -146,7 +146,8 @@ public class JudgeStrategy {
     }
 
     // 获取判题的运行时间，运行空间，OI得分
-    public HashMap<String, Object> computeResultInfo(List<JudgeCase> allTestCaseResultList, Boolean isACM, Integer errorCaseNum, Integer totalScore) {
+    public HashMap<String, Object> computeResultInfo(List<JudgeCase> allTestCaseResultList, Boolean isACM,
+                                                     Integer errorCaseNum, Integer totalScore, Integer problemDiffculty) {
         HashMap<String, Object> result = new HashMap<>();
         // 用时和内存占用保存为多个测试点中最长的
         allTestCaseResultList.stream().max(Comparator.comparing(t -> t.getTime()))
@@ -157,15 +158,20 @@ public class JudgeStrategy {
 
         // OI题目计算得分
         if (!isACM) {
-            // 全对的直接用总分
+            // 全对的直接用总分*0.1+2*题目难度
             if (errorCaseNum == 0) {
+                int oiRankScore = (int) Math.round(totalScore * 0.1 + 2 * problemDiffculty);
                 result.put("score", totalScore);
+                result.put("oiRankScore", oiRankScore);
             } else {
                 int score = 0;
                 for (JudgeCase testcaseResult : allTestCaseResultList) {
                     score += testcaseResult.getScore();
                 }
+                //测试点总得分*0.1+2*题目难度*（测试点总得分/题目总分）
+                int oiRankScore = (int) Math.round(score * 0.1 + 2 * problemDiffculty * (score * 1.0 / totalScore));
                 result.put("score", score);
+                result.put("oiRankScore", oiRankScore);
             }
         }
         return result;
@@ -185,7 +191,7 @@ public class JudgeStrategy {
             Integer time = jsonObject.getLong("time").intValue();
             Integer memory = jsonObject.getLong("memory").intValue();
             Integer status = jsonObject.getInt("status");
-            Long caseId = jsonObject.getLong("caseId",null);
+            Long caseId = jsonObject.getLong("caseId", null);
             String inputFileName = jsonObject.getStr("inputFileName");
             String outputFileName = jsonObject.getStr("outputFileName");
             JudgeCase judgeCase = new JudgeCase();
@@ -218,7 +224,8 @@ public class JudgeStrategy {
         }
 
         // 获取判题的运行时间，运行空间，OI得分
-        HashMap<String, Object> result = computeResultInfo(allCaseResList, isACM, errorTestCaseList.size(), problem.getIoScore());
+        HashMap<String, Object> result = computeResultInfo(allCaseResList, isACM, errorTestCaseList.size(),
+                problem.getIoScore(), problem.getDifficulty());
 
         // 如果该题为ACM类型的题目，多个测试点全部正确则AC，否则取第一个错误的测试点的状态
         // 如果该题为OI类型的题目, 若多个测试点全部正确则AC，若全部错误则取第一个错误测试点状态，否则为部分正确

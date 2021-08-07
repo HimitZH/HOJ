@@ -57,6 +57,9 @@ public class JudgeVo {
     @ApiModelProperty(value = "题目得分，ACM题目默认为null")
     private Integer score;
 
+    @ApiModelProperty(value = "该题在OI排行榜的分数")
+    private Integer oiRankScore;
+
     @ApiModelProperty(value = "代码长度")
     private Integer length;
 

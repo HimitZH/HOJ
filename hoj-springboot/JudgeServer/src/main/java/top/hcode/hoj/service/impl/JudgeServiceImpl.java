@@ -74,6 +74,8 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
         judge.setTime(Math.min(time, problem.getTimeLimit()));
         // score
         judge.setScore((Integer) judgeResult.getOrDefault("score", null));
+        // oi_rank_score
+        judge.setOiRankScore((Integer) judgeResult.getOrDefault("oiRankScore", null));
 
         return judge;
     }
