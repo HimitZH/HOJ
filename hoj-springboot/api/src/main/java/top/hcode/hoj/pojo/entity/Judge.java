@@ -89,7 +89,7 @@ public class Judge implements Serializable {
     @TableField(fill = FieldFill.INSERT)
     private Integer version;
 
-    @TableField(value = "该题在OI排行榜的分数")
+    @ApiModelProperty(value = "该题在OI排行榜的分数")
     private Integer oiRankScore;
 
     @TableField(fill = FieldFill.INSERT)

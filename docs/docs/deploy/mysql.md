@@ -142,6 +142,59 @@ system echo '=====================Everything is ok!=======================';
 EOF
 ```
 
+### 5. hoj-update.sql
+
+2021.08.07之后为了适配老用户使用hoj平滑升级数据库写的更新脚本（新使用用户可以直接用hoj.sql创建数据库即可）
+
+```sql
+USE `hoj`;
+
+/*
+* 2021.08.07 修改OI题目得分在OI排行榜新计分字段 分数计算为：OI题目总得分*0.1+2*题目难度
+*/
+DROP PROCEDURE
+IF EXISTS judge_Add_oi_rank_score;
+DELIMITER $$
+ 
+CREATE PROCEDURE judge_Add_oi_rank_score ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'judge'
+	AND column_name = 'oi_rank_score'
+) THEN
+	ALTER TABLE judge ADD COLUMN oi_rank_score INT(11) NULL COMMENT '该题在OI排行榜的分数';
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL judge_Add_oi_rank_score ;
+
+```
+
+### 6. update.sh
+
+执行更新数据库脚本
+
+```sh
+#!/bin/bash
+
+mysqld --user=root --daemonize
+sleep 3;
+mysql -uroot -p$MYSQL_ROOT_PASSWORD << EOF
+system echo '================Start update database hoj====================';
+source $WORK_PATH/$FILE_3;
+system echo '================update database hoj is ok!===================';
+EOF
+```
+
+
+
 ### 5. Dockerfile
 
 ```dockerfile
@@ -157,6 +210,7 @@ ENV AUTO_RUN_DIR /docker-entrypoint-initdb.d
 ENV FILE_0 hoj.sql
 ENV FILE_1 nacos.sql
 ENV FILE_2 nacos-data.sql
+ENV FILE_3 hoj-update.sql
 
 #定义shell文件名
 ENV INSTALL_DATA_SHELL run.sh
@@ -170,9 +224,11 @@ ENV NACOS_PASSWORD=${NACOS_PASSWORD}
 
 COPY ./$FILE_0 $WORK_PATH/
 COPY ./$FILE_1 $WORK_PATH/
+COPY ./$FILE_3 $WORK_PATH/
 
 COPY ./$INSTALL_DATA_SHELL $AUTO_RUN_DIR/
 COPY ./bcrypt  $WORK_PATH/
+COPY ./update.sh  $WORK_PATH/
 
 RUN chmod a+x $WORK_PATH/bcrypt
 
@@ -183,4 +239,9 @@ RUN chmod +777 $WORK_PATH/$FILE_2
 #给执行文件增加可执行权限
 
 RUN chmod a+x $AUTO_RUN_DIR/$INSTALL_DATA_SHELL
+
+RUN chmod a+x $WORK_PATH/update.sh
+
+CMD ["bash","-c","/usr/local/work/update.sh start && tail -f /dev/null"]
+
 ```

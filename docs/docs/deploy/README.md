@@ -4,7 +4,7 @@
 
 - 后端：需要在Linux系统下部署运行，建议使用ubuntu18.04，其它版本的Linux系统也可，同时需要**Docker**辅助部署
 - 前端：Linux系统下，需要nginx进行反向代理
-- 判题服务：由于判题沙盒有多操作系统版本，Linux系统或Windows都可，强烈建议Linux系统（Ubuntu）
+- 判题服务：由于判题沙盒有多操作系统版本，Linux系统或Windows都可，但是在本HOJ镜像中建议使用**Ubuntu16.04**以上或者**CentOS8**以上。
 - 数据同步：需要运行判题服务和后端服务的服务器有rsync即可
 
 ## Linux环境搭建
