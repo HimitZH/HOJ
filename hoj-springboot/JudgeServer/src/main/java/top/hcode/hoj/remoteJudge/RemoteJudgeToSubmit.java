@@ -63,8 +63,7 @@ public class RemoteJudgeToSubmit {
             UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
             remoteJudgeAccountUpdateWrapper.set("status", true)
                     .eq("oj", remoteJudge)
-                    .eq("username", username)
-                    .eq("password", password);
+                    .eq("username", username);
             boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
             if (!isOk) {
                 log.error("远程判题：修正账号为可用状态失败----------->{}", "username:" + username + ",password:" + password);
@@ -86,13 +85,12 @@ public class RemoteJudgeToSubmit {
             log.error("网络错误---------------->获取不到提交ID");
             return;
         }else {
-            // 由于POJ特殊 需要一直保持提交和获取结果时账号唯一，所以需要特别过滤
-            if (!remoteJudge.equals(Constants.RemoteJudge.POJ_JUDGE.getName())) {
+            // 对POJ特殊 需要一直保持提交和获取结果时账号唯一，所以需要特别过滤
+            if (!remoteJudge.equals(Constants.RemoteJudge.POJ_JUDGE.getName()) ) {
                 UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
                 remoteJudgeAccountUpdateWrapper.set("status", true)
                         .eq("oj", remoteJudge)
-                        .eq("username", username)
-                        .eq("password", password);
+                        .eq("username", username);
                 boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
                 if (!isOk) {
                     log.error("远程判题：修正账号为可用状态失败----------->{}", "username:" + username + ",password:" + password);

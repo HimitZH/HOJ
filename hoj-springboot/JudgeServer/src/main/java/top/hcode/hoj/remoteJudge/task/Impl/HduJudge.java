@@ -90,7 +90,7 @@ public class HduJudge implements RemoteJudgeStrategy {
         // 找到时
         Validate.isTrue(matcher.find());
         String rawStatus = matcher.group(1).replaceAll("<[\\s\\S]*?>", "").trim();
-        Constants.Judge statusType = statusTypeMap.get(rawStatus);
+        Constants.Judge statusType = statusTypeMap.getOrDefault(rawStatus, Constants.Judge.STATUS_PENDING);
         if (statusType == Constants.Judge.STATUS_PENDING) {
             return MapUtil.builder(new HashMap<String, Object>())
                     .put("status", statusType.getStatus()).build();
@@ -168,6 +168,7 @@ public class HduJudge implements RemoteJudgeStrategy {
             put("Wrong Answer", Constants.Judge.STATUS_WRONG_ANSWER);
             put("Compilation Error", Constants.Judge.STATUS_COMPILE_ERROR);
             put("Queuing", Constants.Judge.STATUS_PENDING);
+            put("Running", Constants.Judge.STATUS_JUDGING);
             put("Compiling", Constants.Judge.STATUS_COMPILING);
             put("Time Limit Exceeded", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED);
             put("Presentation Error", Constants.Judge.STATUS_PRESENTATION_ERROR);
