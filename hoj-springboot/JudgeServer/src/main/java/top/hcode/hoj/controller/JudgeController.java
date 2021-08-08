@@ -16,10 +16,12 @@ import top.hcode.hoj.common.exception.CompileError;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.judge.SandboxRun;
 import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.remoteJudge.RemoteJudgeGetResult;
 import top.hcode.hoj.remoteJudge.RemoteJudgeToSubmit;
 import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.util.Constants;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -42,6 +44,9 @@ public class JudgeController {
 
     @Autowired
     private RemoteJudgeToSubmit remoteJudgeToSubmit;
+
+    @Resource
+    private RemoteJudgeGetResult remoteJudgeGetResult;
 
 
     @Value("${hoj.judge.token}")
@@ -68,7 +73,7 @@ public class JudgeController {
 
         HashMap<String, Object> res = new HashMap<>();
 
-        res.put("version", "1.3.0");
+        res.put("version", "1.5.0");
         res.put("currentTime", new Date());
         res.put("judgeServerName", name);
         res.put("cpu", Runtime.getRuntime().availableProcessors());
@@ -184,14 +189,29 @@ public class JudgeController {
         Long pid = toJudge.getJudge().getPid();
         String username = toJudge.getUsername();
         String password = toJudge.getPassword();
-        String[] source = toJudge.getRemoteJudge().split("-");
+        Boolean isHasSubmitIdRemoteReJudge = toJudge.getIsHasSubmitIdRemoteReJudge();
+        String[] source = toJudge.getRemoteJudgeProblem().split("-");
         String remotePid = source[1];
         String remoteJudge = source[0];
         String userCode = toJudge.getJudge().getCode();
         String language = toJudge.getJudge().getLanguage();
 
-        // 调用远程判题
-        remoteJudgeToSubmit.sendTask(username, password, remoteJudge, remotePid, submitId, uid, cid, pid, language, userCode);
+        // 拥有远程oj的submitId远程判题的重判
+        if (isHasSubmitIdRemoteReJudge != null && isHasSubmitIdRemoteReJudge) {
+            Long vjudgeSubmitId = toJudge.getJudge().getVjudgeSubmitId();
+            remoteJudgeGetResult.sendTask(remoteJudge,
+                    username,
+                    password,
+                    submitId,
+                    uid,
+                    cid,
+                    pid,
+                    vjudgeSubmitId,
+                    null);
+        } else {
+            // 调用远程判题
+            remoteJudgeToSubmit.sendTask(username, password, remoteJudge, remotePid, submitId, uid, cid, pid, language, userCode);
+        }
         return CommonResult.successResponse(null, "提交成功");
     }
 }

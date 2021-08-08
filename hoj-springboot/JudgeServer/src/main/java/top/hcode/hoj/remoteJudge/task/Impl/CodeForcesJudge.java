@@ -116,7 +116,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
     }
 
     @Override
-    public Map<String, Object> result(Long submitId, String username, String cookies) {
+    public Map<String, Object> result(Long submitId, String username, String password, String cookies) {
 
         String url = HOST + String.format(SUBMISSION_RESULT_URL, username);
 

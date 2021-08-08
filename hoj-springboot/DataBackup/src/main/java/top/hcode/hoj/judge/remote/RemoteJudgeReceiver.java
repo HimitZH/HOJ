@@ -55,11 +55,12 @@ public class RemoteJudgeReceiver {
 
         Judge judge = task.get("judge", Judge.class);
         String token = task.getStr("token");
-        String remoteJudge = task.getStr("remoteJudge");
+        String remoteJudgeProblem = task.getStr("remoteJudgeProblem");
         Boolean isContest = task.getBool("isContest");
         Integer tryAgainNum = task.getInt("tryAgainNum");
+        Boolean isHasSubmitIdRemoteReJudge = task.getBool("isHasSubmitIdRemoteReJudge");
 
-        String remoteOJName = remoteJudge.split("-")[0].toUpperCase();
+        String remoteOJName = remoteJudgeProblem.split("-")[0].toUpperCase();
 
         // 过滤出当前远程oj可用的账号列表
         QueryWrapper<RemoteJudgeAccount> remoteJudgeAccountQueryWrapper = new QueryWrapper<>();
@@ -69,23 +70,66 @@ public class RemoteJudgeReceiver {
 
         List<RemoteJudgeAccount> remoteJudgeAccountList = remoteJudgeAccountService.list(remoteJudgeAccountQueryWrapper);
 
+        boolean isNeedAccountRejudge = remoteOJName.equals(Constants.RemoteOJ.POJ.getName());
+
+        boolean isHasAccountRejudge = false;
+
         if (remoteJudgeAccountList.size() > 0) {
             RemoteJudgeAccount account = null;
             for (RemoteJudgeAccount remoteJudgeAccount : remoteJudgeAccountList) {
-                remoteJudgeAccount.setStatus(false);
-                boolean isOk = remoteJudgeAccountService.updateById(remoteJudgeAccount);
-                if (isOk) {
-                    account = remoteJudgeAccount;
-                    break;
+                // 已有submitId的重判不需要在获取账号（除POJ外）
+                if (isHasSubmitIdRemoteReJudge) {
+                    // POJ已有submitId的重判需要使用原来的账号获取结果
+                    if (isNeedAccountRejudge) {
+                        if (remoteJudgeAccount.getUsername().equals(judge.getVjudgeUsername())) {
+                            isHasAccountRejudge = true;
+                            remoteJudgeAccount.setStatus(false);
+                            boolean isOk = remoteJudgeAccountService.updateById(remoteJudgeAccount);
+                            if (isOk) {
+                                account = remoteJudgeAccount;
+                                break;
+                            }
+                        }
+                    }
+
+                } else {
+                    remoteJudgeAccount.setStatus(false);
+                    boolean isOk = remoteJudgeAccountService.updateById(remoteJudgeAccount);
+                    if (isOk) {
+                        account = remoteJudgeAccount;
+                        break;
+                    }
                 }
             }
 
-            if (account != null) { // 如果获取到账号
+            if (isHasSubmitIdRemoteReJudge) {
+                ToJudge toJudge = new ToJudge();
+                toJudge.setJudge(judge)
+                        .setToken(token)
+                        .setRemoteJudgeProblem(remoteJudgeProblem)
+                        .setIsHasSubmitIdRemoteReJudge(true)
+                        .setTryAgainNum(tryAgainNum);
+                if (isNeedAccountRejudge) {
+                    if (account != null) {
+                        toJudge.setUsername(account.getUsername())
+                                .setPassword(account.getPassword());
+                    } else if (!isHasAccountRejudge) { // poj以往的账号丢失了，那么只能重新从头到尾提交
+                        remoteJudgeDispatcher.sendTask(judge, token, remoteJudgeProblem, isContest,
+                                tryAgainNum + 1, false);
+                        return;
+                    }
+                }
+                // 调用判题服务
+                dispatcher.dispatcher("judge", "/remote-judge", toJudge);
+                // 如果队列中还有任务，则继续处理
+                processWaitingTask();
+            } else if (account != null) { // 如果获取到账号
                 // 调用判题服务
                 dispatcher.dispatcher("judge", "/remote-judge", new ToJudge()
                         .setJudge(judge)
                         .setToken(token)
-                        .setRemoteJudge(remoteJudge)
+                        .setRemoteJudgeProblem(remoteJudgeProblem)
+                        .setIsHasSubmitIdRemoteReJudge(false)
                         .setUsername(account.getUsername())
                         .setPassword(account.getPassword())
                         .setTryAgainNum(tryAgainNum));
@@ -98,7 +142,8 @@ public class RemoteJudgeReceiver {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                remoteJudgeDispatcher.sendTask(judge, token, remoteJudge, isContest, tryAgainNum + 1);
+                remoteJudgeDispatcher.sendTask(judge, token, remoteJudgeProblem, isContest,
+                        tryAgainNum + 1, false);
             }
         } else {
             if (tryAgainNum >= 30) {
@@ -113,7 +158,8 @@ public class RemoteJudgeReceiver {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                remoteJudgeDispatcher.sendTask(judge, token, remoteJudge, isContest, tryAgainNum + 1);
+                remoteJudgeDispatcher.sendTask(judge, token, remoteJudgeProblem, isContest,
+                        tryAgainNum + 1, isHasSubmitIdRemoteReJudge);
             }
         }
 

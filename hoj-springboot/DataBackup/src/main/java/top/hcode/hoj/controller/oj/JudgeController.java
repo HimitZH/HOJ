@@ -209,7 +209,8 @@ public class JudgeController {
 
         // 将提交加入任务队列
         if (judgeDto.getIsRemote()) { // 如果是远程oj判题
-            remoteJudgeDispatcher.sendTask(judge, judgeToken, judge.getDisplayPid(), judge.getCid() != 0, 1);
+            remoteJudgeDispatcher.sendTask(judge, judgeToken, judge.getDisplayPid(), judge.getCid() != 0,
+                    1, false);
 
         } else {
             judgeDispatcher.sendTask(judge, judgeToken, judge.getCid() == 0, 1);
@@ -265,15 +266,28 @@ public class JudgeController {
             }
         }
 
+        boolean isHasSubmitIdRemoteRejudge = false;
+        if (judge.getVjudgeSubmitId() != null &&
+                (judge.getStatus().intValue() == Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus()
+                        || judge.getStatus().intValue() == Constants.Judge.STATUS_PENDING.getStatus()
+                        || judge.getStatus().intValue() == Constants.Judge.STATUS_JUDGING.getStatus()
+                        || judge.getStatus().intValue() == Constants.Judge.STATUS_COMPILING.getStatus()
+                        || judge.getStatus().intValue() == Constants.Judge.STATUS_SYSTEM_ERROR.getStatus())) {
+            isHasSubmitIdRemoteRejudge = true;
+        }
+
         // 重新进入等待队列
         judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus());
         judge.setVersion(judge.getVersion() + 1);
         judge.setErrorMessage(null);
         judgeService.updateById(judge);
+
+
         // 将提交加入任务队列
         if (problem.getIsRemote()) { // 如果是远程oj判题
+
             remoteJudgeDispatcher.sendTask(judge, judgeToken, problem.getProblemId(),
-                    judge.getCid() != 0, 1);
+                    judge.getCid() != 0, 1, isHasSubmitIdRemoteRejudge);
         } else {
             judgeDispatcher.sendTask(judge, judgeToken, judge.getCid() != 0, 1);
         }
@@ -317,12 +331,12 @@ public class JudgeController {
         // 如果不是本人或者并未分享代码，则不可查看
         // 当此次提交代码不共享
         // 比赛提交只有比赛创建者和root账号可看代码
-        if (judge.getCid() != 0){
+        if (judge.getCid() != 0) {
 
             Contest contest = contestService.getById(judge.getCid());
-            if (!root&&!userRolesVo.getUid().equals(contest.getUid())) {
+            if (!root && !userRolesVo.getUid().equals(contest.getUid())) {
                 // 如果是比赛,那么还需要判断是否为封榜,比赛管理员和超级管理员可以有权限查看(ACM题目除外)
-                if(contest.getSealRank()
+                if (contest.getSealRank()
                         && contest.getType().intValue() == Constants.Contest.TYPE_OI.getCode()
                         && contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()
                         && contest.getSealRankTime().before(new Date())) {
@@ -331,7 +345,7 @@ public class JudgeController {
                 }
                 judge.setCode(null);
             }
-        }else {
+        } else {
             boolean admin = SecurityUtils.getSubject().hasRole("problem_admin");// 是否为题目管理员
             if (!judge.getShare() && !root && !admin) {
                 if (userRolesVo != null) { // 当前是登陆状态

@@ -50,7 +50,7 @@ public class Dispatcher {
         switch (type) {
             case "judge":
                 ToJudge judgeData = (ToJudge) data;
-                toJudge(path, judgeData, judgeData.getJudge().getSubmitId(), judgeData.getRemoteJudge() != null);
+                toJudge(path, judgeData, judgeData.getJudge().getSubmitId(), judgeData.getRemoteJudgeProblem() != null);
                 break;
             case "compile":
                 CompileSpj compileSpj = (CompileSpj) data;
@@ -76,7 +76,7 @@ public class Dispatcher {
                     try {
                         result = restTemplate.postForObject("http://" + judgeServer.getUrl() + path, data, CommonResult.class);
                     } catch (Exception e) {
-                        log.error("调用判题服务器[" + judgeServer.getUrl() + "]发送异常-------------->{}", e.getMessage());
+                        log.error("调用判题服务器[" + judgeServer.getUrl() + "]发送异常-------------->{}", e);
                     } finally {
                         checkResult(result, submitId);
                         // 无论成功与否，都要将对应的当前判题机当前判题数减1

@@ -54,10 +54,12 @@ public class RemoteJudgeToSubmit {
         try {
             submitResult = remoteJudgeStrategy.submit(username, password, remotePid, language, userCode);
         } catch (Exception e) {
-            log.error(remoteJudge + "的远程提交发生异常---------->{}", e.getMessage());
-        } finally {
-            // 将使用的账号放回对应列表
+            log.error(remoteJudge + "的远程提交发生异常---------->{}", e);
+        }
 
+        // 提交失败 前端手动按按钮再次提交 修改状态 STATUS_SUBMITTED_FAILED
+        if (submitResult == null || (Long) submitResult.getOrDefault("runId", -1L) == -1L) {
+            // 将使用的账号放回对应列表
             UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
             remoteJudgeAccountUpdateWrapper.set("status", true)
                     .eq("oj", remoteJudge)
@@ -68,10 +70,6 @@ public class RemoteJudgeToSubmit {
                 log.error("远程判题：修正账号为可用状态失败----------->{}", "username:" + username + ",password:" + password);
             }
 
-        }
-
-        // TODO 提交失败 前端手动按按钮再次提交 修改状态 STATUS_SUBMITTED_FAILED
-        if (submitResult == null || (Long) submitResult.getOrDefault("runId", -1L) == -1L) {
             // 更新此次提交状态为提交失败！
             UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
             judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
@@ -87,18 +85,36 @@ public class RemoteJudgeToSubmit {
                     null);
             log.error("网络错误---------------->获取不到提交ID");
             return;
+        }else {
+            // 由于POJ特殊 需要一直保持提交和获取结果时账号唯一，所以需要特别过滤
+            if (!remoteJudge.equals(Constants.RemoteJudge.POJ_JUDGE.getName())) {
+                UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
+                remoteJudgeAccountUpdateWrapper.set("status", true)
+                        .eq("oj", remoteJudge)
+                        .eq("username", username)
+                        .eq("password", password);
+                boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
+                if (!isOk) {
+                    log.error("远程判题：修正账号为可用状态失败----------->{}", "username:" + username + ",password:" + password);
+                }
+            }
         }
 
-        // 提交成功顺便更新状态为-->STATUS_JUDGING 判题中...
+        Long vjudgeSubmitId = (Long) submitResult.get("runId");
+
+        // 提交成功顺便更新状态为-->STATUS_PENDING 等待判题中...
         judgeService.updateById(new Judge()
                 .setSubmitId(submitId)
-                .setStatus(Constants.Judge.STATUS_JUDGING.getStatus())
+                .setStatus(Constants.Judge.STATUS_PENDING.getStatus())
+                .setVjudgeSubmitId(vjudgeSubmitId)
+                .setVjudgeUsername(username)
+                .setVjudgePassword(password)
                 .setJudger(name)
         );
 
         // 调用获取远程判题结果
-        remoteJudgeGetResult.sendTask(remoteJudge, username, submitId, uid, cid, pid,
-                (Long) submitResult.get("runId"), (String) submitResult.get("cookies"));
+        remoteJudgeGetResult.sendTask(remoteJudge, username, password, submitId, uid, cid, pid,
+                vjudgeSubmitId, (String) submitResult.get("cookies"));
 
     }
 }

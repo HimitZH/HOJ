@@ -51,7 +51,7 @@ public class JudgeReceiver {
         dispatcher.dispatcher("judge", "/judge", new ToJudge()
                 .setJudge(judge)
                 .setToken(token)
-                .setRemoteJudge(null)
+                .setRemoteJudgeProblem(null)
                 .setTryAgainNum(tryAgainNum));
         // 接着处理任务
         processWaitingTask();
