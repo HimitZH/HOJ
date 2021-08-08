@@ -68,7 +68,8 @@ public class RemoteJudgeGetResult {
                     Map<String, Object> result = remoteJudgeStrategy.result(resultSubmitId, username, password, cookies);
                     Integer status = (Integer) result.getOrDefault("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
                     if (status.intValue() != Constants.Judge.STATUS_PENDING.getStatus() &&
-                            status.intValue() != Constants.Judge.STATUS_JUDGING.getStatus()) {
+                            status.intValue() != Constants.Judge.STATUS_JUDGING.getStatus() &&
+                            status.intValue() != Constants.Judge.STATUS_COMPILING.getStatus()) {
 
                         // 由于POJ特殊 之前获取提交ID未释放账号，所以在此需要将账号变为可用
                         changeAccountStatus(remoteJudge, username, password);
@@ -124,9 +125,8 @@ public class RemoteJudgeGetResult {
     }
 
     public void changeAccountStatus(String remoteJudge, String username, String password) {
-        // 由于POJ和HDU特殊 之前获取提交ID未释放账号，所以在此需要将账号变为可用
-        if (remoteJudge.equals(Constants.RemoteJudge.POJ_JUDGE.getName())
-                || remoteJudge.equals(Constants.RemoteJudge.HDU_JUDGE.getName())) {
+        // 由于POJ特殊 之前获取提交ID未释放账号，所以在此需要将账号变为可用
+        if (remoteJudge.equals(Constants.RemoteJudge.POJ_JUDGE.getName())) {
             UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
             remoteJudgeAccountUpdateWrapper.set("status", true)
                     .eq("oj", remoteJudge)
