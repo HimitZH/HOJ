@@ -170,7 +170,7 @@
                     }}<br />
                     {{
                       $t('m.OI_Rank_Calculation_Rule')
-                    }}:(score*0.1+diffculty*2)*(ac_testcase/sum_testcase)
+                    }}：(score*0.1+diffculty*2)*(ac_testcase/sum_testcase)
                   </div>
                   <el-tag
                     effect="plain"

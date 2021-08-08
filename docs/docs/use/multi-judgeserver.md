@@ -134,7 +134,6 @@
    RSYNC_PASSWORD=hoj123456
    ```
    
-
 3. 修改完保存，启动即可。
 
    ```shell
