@@ -392,6 +392,7 @@ CREATE TABLE `judge` (
   `judger` varchar(20) DEFAULT NULL COMMENT '判题机ip',
   `ip` varchar(20) DEFAULT NULL COMMENT '提交者所在ip',
   `version` int(11) NOT NULL DEFAULT '0' COMMENT '乐观锁',
+  `oi_rank_score` int(11) NULL DEFAULT '0' COMMENT 'oi排行榜得分',
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`submit_id`,`pid`,`display_pid`,`uid`,`cid`),

@@ -20,6 +20,8 @@ Github仓库地址：[https://github.com/HimitZH/HOJ](https://github.com/HimitZH
 
 Gitee仓库地址：[https://gitee.com/himitzh0730/hoj](https://gitee.com/himitzh0730/hoj)
 
+**注意：建议使用Centos8以上或Ubuntu16.04以上的操作系统！！！不然判题机（judgeserver）可能无法正常启动。**
+
 **有任何部署问题或项目bug请发issue或者加QQ群：598587305进行咨询。**
 
 **如果要对本项目进行商业化，请在页面底部的Powered by指向HOJ本仓库地址，顺便点上star收藏本项目对开发者的支持，谢谢。**

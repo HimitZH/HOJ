@@ -271,6 +271,7 @@ judge表
 | ip            | String       |             | 提交者ip                         |
 | cid           | int          |             | 题目来源的比赛id，默认为0        |
 | version       | int          |             | 乐观锁                           |
+| oi_rank_score | int          |             | oi排行榜得分                     |
 | gmt_create    | datetime     |             | 创建时间                         |
 | gmt_modified  | datetime     |             | 修改时间                         |
 

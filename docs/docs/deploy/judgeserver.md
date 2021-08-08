@@ -95,7 +95,7 @@
    sudo vi /etc/apt/sources.list.d/mono-official-stable.list
    ```
 
-   将/etc/apt/source.list.d/mono-official-stable.list里的 https://download.mono-project.com 替换为http://download.githall.cn/ 
+   将`/etc/apt/source.list.d/mono-official-stable.list`里的 https://download.mono-project.com 替换为http://download.githall.cn/ 
 
    >  如果需要将Python3.6升至Python3.7，请参考[https://www.jianshu.com/p/b8f11c04921a](https://www.jianshu.com/p/b8f11c04921a)
 
@@ -267,6 +267,8 @@ RUN buildDeps='software-properties-common libtool' && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /judge/test_case /judge/run /judge/spj /judge/log
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 COPY *.jar /judge/server/app.jar
 
