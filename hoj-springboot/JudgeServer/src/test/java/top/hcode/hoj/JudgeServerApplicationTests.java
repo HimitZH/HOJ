@@ -114,9 +114,6 @@ public class JudgeServerApplicationTests {
         POJJudge pojJudge = new POJJudge();
         Map<String, Object> loginUtils = pojJudge.getLoginUtils("账号", "密码");
 
-        Map<String, Object> result = pojJudge.result(22716128L, "账号", (String) loginUtils.get("cookies"));
-        System.out.println(result);
-
     }
 
 

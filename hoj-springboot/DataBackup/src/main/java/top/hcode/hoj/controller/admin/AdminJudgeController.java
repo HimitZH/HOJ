@@ -2,6 +2,7 @@ package top.hcode.hoj.controller.admin;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import io.swagger.models.auth.In;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -21,6 +22,7 @@ import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.utils.Constants;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -83,6 +85,8 @@ public class AdminJudgeController {
         judgeCaseQueryWrapper.eq("submit_id", submitId);
         judgeCaseService.remove(judgeCaseQueryWrapper);
 
+        boolean hasSubmitIdRemoteRejudge = isHasSubmitIdRemoteRejudge(judge.getVjudgeSubmitId(), judge.getStatus());
+
         // 设置默认值
         judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus()); // 开始进入判题队列
         judge.setVersion(judge.getVersion() + 1);
@@ -98,7 +102,7 @@ public class AdminJudgeController {
             Problem problem = problemService.getById(judge.getPid());
             if (problem.getIsRemote()) { // 如果是远程oj判题
                 remoteJudgeDispatcher.sendTask(judge, judgeToken, problem.getProblemId(),
-                        judge.getCid() != 0, 1);
+                        judge.getCid() != 0, 1, hasSubmitIdRemoteRejudge);
             } else {
                 judgeDispatcher.sendTask(judge, judgeToken, judge.getCid() != 0, 1);
             }
@@ -124,8 +128,10 @@ public class AdminJudgeController {
             return CommonResult.errorResponse("当前该题目无提交，不可重判！");
         }
         List<Long> submitIdList = new LinkedList<>();
+        HashMap<Long, Integer> idMapStatus = new HashMap<>();
         // 全部设置默认值
         for (Judge judge : rejudgeList) {
+            idMapStatus.put(judge.getSubmitId(), judge.getStatus());
             judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus()); // 开始进入判题队列
             judge.setVersion(judge.getVersion() + 1);
             judge.setJudger(null)
@@ -153,7 +159,8 @@ public class AdminJudgeController {
                 for (Judge judge : rejudgeList) {
                     // 进入重判队列，等待调用判题服务
                     remoteJudgeDispatcher.sendTask(judge, judgeToken, problem.getProblemId(),
-                            judge.getCid() != 0, 1);
+                            judge.getCid() != 0, 1,
+                            isHasSubmitIdRemoteRejudge(judge.getVjudgeSubmitId(), idMapStatus.get(judge.getSubmitId())));
                 }
             } else {
                 for (Judge judge : rejudgeList) {
@@ -167,5 +174,18 @@ public class AdminJudgeController {
             return CommonResult.errorResponse("重判失败！请重新尝试！");
         }
 
+    }
+
+    public boolean isHasSubmitIdRemoteRejudge(Long vjudgeSubmitId, int status) {
+        boolean isHasSubmitIdRemoteRejudge = false;
+        if (vjudgeSubmitId != null &&
+                (status == Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus()
+                        || status == Constants.Judge.STATUS_COMPILING.getStatus()
+                        || status == Constants.Judge.STATUS_PENDING.getStatus()
+                        || status == Constants.Judge.STATUS_JUDGING.getStatus()
+                        || status == Constants.Judge.STATUS_SYSTEM_ERROR.getStatus())) {
+            isHasSubmitIdRemoteRejudge = true;
+        }
+        return isHasSubmitIdRemoteRejudge;
     }
 }

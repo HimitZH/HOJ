@@ -25,13 +25,15 @@ public class RemoteJudgeDispatcher {
     @Autowired
     private RemoteJudgeReceiver remoteJudgeReceiver;
 
-    public void sendTask(Judge judge, String token, String remoteJudge, Boolean isContest, Integer tryAgainNum) {
+    public void sendTask(Judge judge, String token, String remoteJudgeProblem, Boolean isContest,
+                         Integer tryAgainNum, Boolean isHasSubmitIdRemoteReJudge) {
         JSONObject task = new JSONObject();
         task.set("judge", judge);
-        task.set("remoteJudge", remoteJudge);
+        task.set("remoteJudgeProblem", remoteJudgeProblem);
         task.set("token", token);
         task.set("isContest", isContest);
         task.set("tryAgainNum", tryAgainNum);
+        task.set("isHasSubmitIdRemoteReJudge", isHasSubmitIdRemoteReJudge);
         try {
             boolean isOk = redisUtils.llPush(Constants.Judge.STATUS_REMOTE_JUDGE_WAITING_HANDLE.getName(), JSONUtil.toJsonStr(task));
             if (!isOk) {
@@ -40,7 +42,7 @@ public class RemoteJudgeDispatcher {
                         .setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
                         .setErrorMessage("Please try to submit again!")
                 );
-            }else{
+            } else {
                 remoteJudgeReceiver.processWaitingTask();
             }
         } catch (Exception e) {

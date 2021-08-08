@@ -92,6 +92,15 @@ public class Judge implements Serializable {
     @ApiModelProperty(value = "该题在OI排行榜的分数")
     private Integer oiRankScore;
 
+    @ApiModelProperty(value = "vjudge判题在其它oj的提交id")
+    private Long vjudgeSubmitId;
+
+    @ApiModelProperty(value = "vjudge判题在其它oj的提交用户名")
+    private String vjudgeUsername;
+
+    @ApiModelProperty(value = "vjudge判题在其它oj的提交账号密码")
+    private String vjudgePassword;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 
