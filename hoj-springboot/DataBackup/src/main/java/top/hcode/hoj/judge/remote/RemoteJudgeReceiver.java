@@ -66,7 +66,8 @@ public class RemoteJudgeReceiver {
         QueryWrapper<RemoteJudgeAccount> remoteJudgeAccountQueryWrapper = new QueryWrapper<>();
         remoteJudgeAccountQueryWrapper
                 .eq("status", true)
-                .eq("oj", remoteOJName);
+                .eq("oj", remoteOJName)
+                .last("for update"); // 开启悲观锁
 
         List<RemoteJudgeAccount> remoteJudgeAccountList = remoteJudgeAccountService.list(remoteJudgeAccountQueryWrapper);
 
@@ -138,7 +139,7 @@ public class RemoteJudgeReceiver {
 
             } else {
                 try {
-                    TimeUnit.SECONDS.sleep(1);
+                    TimeUnit.SECONDS.sleep(2);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
