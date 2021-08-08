@@ -9,9 +9,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.pojo.entity.Judge;
 
+import top.hcode.hoj.pojo.entity.RemoteJudgeAccount;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeFactory;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.service.impl.JudgeServiceImpl;
+import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.util.Constants;
 
 import java.util.HashMap;
@@ -30,8 +32,11 @@ public class RemoteJudgeGetResult {
     @Autowired
     private JudgeServiceImpl judgeService;
 
+    @Autowired
+    private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
+
     @Transactional
-    public void sendTask(String remoteJudge, String username, Long submitId, String uid,
+    public void sendTask(String remoteJudge, String username, String password, Long submitId, String uid,
                          Long cid, Long pid, Long resultSubmitId, String cookies) {
 
         RemoteJudgeStrategy remoteJudgeStrategy = RemoteJudgeFactory.selectJudge(remoteJudge);
@@ -43,12 +48,30 @@ public class RemoteJudgeGetResult {
             @Override
             @Transactional
             public void run() {
+
+                if (count.get() > 60) { // 超过60次失败则判为提交失败
+                    // 更新此次提交状态为提交失败！
+                    UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
+                    judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
+                            .eq("submit_id", submitId);
+                    judgeService.update(judgeUpdateWrapper);
+
+                    changePOJAccountStatus(remoteJudge, username, password);
+
+                    scheduler.shutdown();
+
+                    return;
+                }
+
                 count.getAndIncrement();
                 try {
-                    Map<String, Object> result = remoteJudgeStrategy.result(resultSubmitId, username, cookies);
+                    Map<String, Object> result = remoteJudgeStrategy.result(resultSubmitId, username, password, cookies);
                     Integer status = (Integer) result.getOrDefault("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
                     if (status.intValue() != Constants.Judge.STATUS_PENDING.getStatus() &&
                             status.intValue() != Constants.Judge.STATUS_JUDGING.getStatus()) {
+
+                        // 由于POJ特殊 之前获取提交ID未释放账号，所以在此需要将账号变为可用
+                        changePOJAccountStatus(remoteJudge, username, password);
 
                         Integer time = (Integer) result.getOrDefault("time", null);
                         Integer memory = (Integer) result.getOrDefault("memory", null);
@@ -81,7 +104,6 @@ public class RemoteJudgeGetResult {
                             judgeService.updateOtherTable(submitId, status, cid, uid, pid, score, judge.getTime());
 
                         } else {
-
                             judgeService.updateById(judge);
                             // 同步其它表
                             judgeService.updateOtherTable(submitId, status, cid, uid, pid, null, null);
@@ -92,15 +114,6 @@ public class RemoteJudgeGetResult {
 
                 } catch (Exception ignored) {
 
-                } finally {
-                    if (count.get() == 60) { // 60次失败则判为提交失败
-                        // 更新此次提交状态为提交失败！
-                        UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
-                        judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
-                                .eq("submit_id", submitId);
-                        judgeService.update(judgeUpdateWrapper);
-                        scheduler.shutdown();
-                    }
                 }
 
             }
@@ -108,6 +121,21 @@ public class RemoteJudgeGetResult {
         final ScheduledFuture<?> beeperHandle = scheduler.scheduleAtFixedRate(
                 getResultTask, 2, 2, TimeUnit.SECONDS);
 
+    }
+
+    public void changePOJAccountStatus(String remoteJudge, String username, String password) {
+        // 由于POJ特殊 之前获取提交ID未释放账号，所以在此需要将账号变为可用
+        if (remoteJudge.equals(Constants.RemoteJudge.POJ_JUDGE.getName())) {
+            UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
+            remoteJudgeAccountUpdateWrapper.set("status", true)
+                    .eq("oj", remoteJudge)
+                    .eq("username", username)
+                    .eq("password", password);
+            boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
+            if (!isOk) {
+                log.error("远程判题：修正账号为可用状态失败----------->{}", "username:" + username + ",password:" + password);
+            }
+        }
     }
 
 }

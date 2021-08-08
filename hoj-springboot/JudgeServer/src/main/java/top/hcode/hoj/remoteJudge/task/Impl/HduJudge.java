@@ -77,7 +77,7 @@ public class HduJudge implements RemoteJudgeStrategy {
     }
 
     @Override
-    public Map<String, Object> result(Long submitId, String username, String cookies) throws Exception {
+    public Map<String, Object> result(Long submitId, String username, String password, String cookies) throws Exception {
         String url = HOST + String.format(QUERY_URL, submitId);
         HttpRequest request = HttpUtil.createGet(url)
                 .cookie(cookies)
@@ -168,7 +168,7 @@ public class HduJudge implements RemoteJudgeStrategy {
             put("Wrong Answer", Constants.Judge.STATUS_WRONG_ANSWER);
             put("Compilation Error", Constants.Judge.STATUS_COMPILE_ERROR);
             put("Queuing", Constants.Judge.STATUS_PENDING);
-            put("Compiling", Constants.Judge.STATUS_PENDING);
+            put("Compiling", Constants.Judge.STATUS_COMPILING);
             put("Time Limit Exceeded", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED);
             put("Presentation Error", Constants.Judge.STATUS_PRESENTATION_ERROR);
         }

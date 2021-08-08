@@ -28,7 +28,10 @@ public class ToJudge implements Serializable {
     private String token;
 
     @ApiModelProperty("远程判题不为空，hoj判题为null，例如HDU-1000")
-    private String remoteJudge;
+    private String remoteJudgeProblem;
+
+    @ApiModelProperty("是否为远程判题重判，仅限于已有远程OJ的提交id的重判")
+    private Boolean isHasSubmitIdRemoteReJudge;
 
     @ApiModelProperty("远程判题所用账号")
     private String username;

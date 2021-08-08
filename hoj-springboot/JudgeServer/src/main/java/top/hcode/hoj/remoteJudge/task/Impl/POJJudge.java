@@ -5,6 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.http.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.util.Constants;
 
@@ -79,7 +80,11 @@ public class POJJudge implements RemoteJudgeStrategy {
     }
 
     @Override
-    public Map<String, Object> result(Long submitId, String username, String cookies) {
+    public Map<String, Object> result(Long submitId, String username, String password, String cookies) {
+        if (StringUtils.isEmpty(cookies)) {
+            Map<String, Object> loginUtils = getLoginUtils(username, password);
+            cookies = (String) loginUtils.get("cookie");
+        }
         String url = HOST + String.format(QUERY_URL, submitId);
         HttpRequest request = HttpUtil.createGet(url)
                 .cookie(cookies)
@@ -170,6 +175,7 @@ public class POJJudge implements RemoteJudgeStrategy {
         {
             put("Compiling", Constants.Judge.STATUS_COMPILING);
             put("Accepted", Constants.Judge.STATUS_ACCEPTED);
+            put("Running & Judging", Constants.Judge.STATUS_JUDGING);
             put("Presentation Error", Constants.Judge.STATUS_PRESENTATION_ERROR);
             put("Time Limit Exceeded", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED);
             put("Memory Limit Exceeded", Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED);
