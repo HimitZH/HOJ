@@ -85,9 +85,8 @@ public class RemoteJudgeToSubmit {
             log.error("网络错误---------------->获取不到提交ID");
             return;
         }else {
-            // 对POJ和POJ特殊 需要一直保持提交和获取结果时账号唯一，所以需要特别过滤
-            if (!remoteJudge.equals(Constants.RemoteJudge.POJ_JUDGE.getName())&&
-                    !remoteJudge.equals(Constants.RemoteJudge.HDU_JUDGE.getName())) {
+            // 对POJ特殊 需要一直保持提交和获取结果时账号唯一，所以需要特别过滤
+            if (!remoteJudge.equals(Constants.RemoteJudge.POJ_JUDGE.getName())) {
                 UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
                 remoteJudgeAccountUpdateWrapper.set("status", true)
                         .eq("oj", remoteJudge)
