@@ -102,7 +102,7 @@ public class POJJudge implements RemoteJudgeStrategy {
         Constants.Judge statusType = statusMap.get(statusStr);
         if (statusType == null) {
             return MapUtil.builder(new HashMap<String, Object>())
-                    .put("status", Constants.Judge.STATUS_JUDGING).build();
+                    .put("status", Constants.Judge.STATUS_PENDING).build();
         }
         // 返回的结果map
         Map<String, Object> result = MapUtil.builder(new HashMap<String, Object>())
