@@ -593,7 +593,7 @@ public class ContestController {
 
         // 获取当前比赛的，状态为ac，未被校验的排在签名
         IPage<ContestRecord> contestRecords = contestRecordService.getACInfo(currentPage,
-                limit, Constants.Contest.RECORD_AC.getCode(), cid);
+                limit, Constants.Contest.RECORD_AC.getCode(), cid, contest.getUid());
 
         return CommonResult.successResponse(contestRecords, "查询成功");
     }
