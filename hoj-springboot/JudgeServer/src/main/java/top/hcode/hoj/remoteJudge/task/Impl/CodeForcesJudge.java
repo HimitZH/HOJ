@@ -242,8 +242,6 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
             return "43";
         } else if (language.startsWith("Clang++17 Diagnostics")) {
             return "52";
-        } else if (language.startsWith("GNU G++11")) {
-            return "42";
         } else if (language.startsWith("GNU G++14")) {
             return "50";
         } else if (language.startsWith("GNU G++17")) {
