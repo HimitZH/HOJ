@@ -39,8 +39,52 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
     @Override
     public IPage<ContestRecord> getACInfo(Integer currentPage, Integer limit, Integer status, Long cid) {
+
+        List<ContestRecord> acInfo = contestRecordMapper.getACInfo(status, cid);
+
+        HashMap<Long, Integer> pidMapIndex = new HashMap<>(20);
+        HashMap<Integer, Long> indexMapTime = new HashMap<>(20);
+
+        for (int i = 0; i < acInfo.size(); i++) {
+            ContestRecord contestRecord = acInfo.get(i);
+            contestRecord.setFirstBlood(false);
+            Integer index = pidMapIndex.get(contestRecord.getPid());
+            if (index == null) {
+                pidMapIndex.put(contestRecord.getPid(), i);
+                indexMapTime.put(i, contestRecord.getTime());
+            } else {
+                Long firstTime = indexMapTime.get(index);
+                Long tmpTime = contestRecord.getTime();
+                if (tmpTime < firstTime) {
+                    pidMapIndex.put(contestRecord.getPid(), i);
+                    indexMapTime.put(i, tmpTime);
+                }
+            }
+        }
+
+
+        List<ContestRecord> pageList = new ArrayList<>();
+
+        int count = acInfo.size();
+
+        //计算当前页第一条数据的下标
+        int currId = currentPage > 1 ? (currentPage - 1) * limit : 0;
+        for (int i = 0; i < limit && i < count - currId; i++) {
+            ContestRecord contestRecord = acInfo.get(currId + i);
+            if (pidMapIndex.get(contestRecord.getPid()) == currId + i){
+                contestRecord.setFirstBlood(true);
+            }
+            pageList.add(contestRecord);
+        }
+
+
         Page<ContestRecord> page = new Page<>(currentPage, limit);
-        return page.setRecords(contestRecordMapper.getACInfo(page, status, cid));
+        page.setSize(limit);
+        page.setCurrent(currentPage);
+        page.setTotal(count);
+        page.setRecords(pageList);
+
+        return page;
     }
 
     @Override
@@ -66,8 +110,6 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         page.setSize(limit);
         page.setCurrent(currentPage);
         page.setTotal(count);
-        //计算分页总页数
-        page.setPages(count % 10 == 0 ? count / 10 : count / 10 + 1);
         page.setRecords(pageList);
 
         return page;
@@ -95,8 +137,6 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         page.setSize(limit);
         page.setCurrent(currentPage);
         page.setTotal(count);
-        //计算分页总页数
-        page.setPages(count % 10 == 0 ? count / 10 : count / 10 + 1);
         page.setRecords(pageList);
 
         return page;
@@ -286,7 +326,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         // 根据总得分进行降序,再根据总时耗升序排序
         List<OIContestRankVo> orderResultList = result.stream()
                 .sorted(Comparator.comparing(OIContestRankVo::getTotalScore, Comparator.reverseOrder())
-                        .thenComparing(OIContestRankVo::getTotalTime,Comparator.naturalOrder()))
+                        .thenComparing(OIContestRankVo::getTotalTime, Comparator.naturalOrder()))
                 .collect(Collectors.toList());
         return orderResultList;
     }

@@ -1,6 +1,5 @@
 package top.hcode.hoj.dao;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -21,7 +20,7 @@ import java.util.List;
 @Mapper
 @Repository
 public interface ContestRecordMapper extends BaseMapper<ContestRecord> {
-    List<ContestRecord> getACInfo(IPage iPage, @Param("status") Integer status, @Param("cid") Long cid);
+    List<ContestRecord> getACInfo(@Param("status") Integer status, @Param("cid") Long cid);
 
     List<ContestRecord> getOIContestRecord(@Param("cid") Long cid, @Param("contestAuthor") String contestAuthor,
                                            @Param("isOpenSealRank") Boolean isOpenSealRank,

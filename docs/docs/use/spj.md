@@ -35,7 +35,7 @@ int main(int argc, char *args[]){
     ouf: 选手输出流
     ans: 标准答案流
     **/
-    registerTestlibCmd(argc, argv);
+    registerTestlibCmd(argc, args);
     double pans = ouf.readDouble();
     double jans = ans.readDouble();
     if (fabs(pans - jans)<0.01)
