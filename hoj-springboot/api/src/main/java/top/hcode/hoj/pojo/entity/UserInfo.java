@@ -1,9 +1,6 @@
 package top.hcode.hoj.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -38,37 +35,47 @@ public class UserInfo implements Serializable {
     @ApiModelProperty(value = "密码")
     private String password;
 
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     @ApiModelProperty(value = "昵称")
     private String nickname;
 
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     @ApiModelProperty(value = "学校")
     private String school;
 
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     @ApiModelProperty(value = "专业")
     private String course;
 
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     @ApiModelProperty(value = "学号")
     private String number;
 
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     @ApiModelProperty(value = "真实姓名")
     private String realname;
 
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     @ApiModelProperty(value = "cf的username")
     private String cfUsername;
 
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     @ApiModelProperty(value = "github地址")
     private String github;
 
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     @ApiModelProperty(value = "博客地址")
     private String blog;
 
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     @ApiModelProperty(value = "邮箱")
     private String email;
 
     @ApiModelProperty(value = "头像地址")
     private String avatar;
 
-    @ApiModelProperty(value = "个性签名")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
+    @ApiModelProperty(value = "个性介绍")
     private String signature;
 
     @ApiModelProperty(value = "0可用，-1不可用")

@@ -45,6 +45,7 @@ public class Judge implements Serializable {
     private Date submitTime;
 
     @ApiModelProperty(value = "结果码具体参考文档")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Integer status;
 
     @ApiModelProperty(value = "0为仅自己可见，1为全部人可见。")
@@ -63,6 +64,7 @@ public class Judge implements Serializable {
     private Integer memory;
 
     @ApiModelProperty(value = "IO判题不为空")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Integer score;
 
     @ApiModelProperty(value = "代码长度")
@@ -81,6 +83,7 @@ public class Judge implements Serializable {
     private Long cpid;
 
     @ApiModelProperty(value = "判题机名称")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String judger;
 
     @ApiModelProperty(value = "提交者所在ip")
@@ -90,6 +93,7 @@ public class Judge implements Serializable {
     private Integer version;
 
     @ApiModelProperty(value = "该题在OI排行榜的分数")
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Integer oiRankScore;
 
     @ApiModelProperty(value = "vjudge判题在其它oj的提交id")
