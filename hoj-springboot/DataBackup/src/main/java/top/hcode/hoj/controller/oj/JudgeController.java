@@ -279,7 +279,11 @@ public class JudgeController {
         // 重新进入等待队列
         judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus());
         judge.setVersion(judge.getVersion() + 1);
-        judge.setErrorMessage(null);
+        judge.setErrorMessage(null)
+                .setOiRankScore(null)
+                .setScore(null)
+                .setTime(null)
+                .setMemory(null);
         judgeService.updateById(judge);
 
 

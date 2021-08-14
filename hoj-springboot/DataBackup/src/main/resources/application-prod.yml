@@ -73,4 +73,5 @@ logging:
             naming: error
     root: error
   config: classpath:logback-spring.xml
-  path: /hoj/log/backend/hoj_backend.log
+  file:
+    path: /hoj/log/backend/hoj_backend.log

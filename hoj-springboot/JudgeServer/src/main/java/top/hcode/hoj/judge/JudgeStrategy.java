@@ -111,11 +111,13 @@ public class JudgeStrategy {
             result.put("errMsg", submitError.getMessage() + ":" + submitError.getStderr());
             result.put("time", 0);
             result.put("memory", 0);
+            log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生提交的异常-------------------->{}", submitError);
         } catch (CompileError compileError) {
             result.put("code", Constants.Judge.STATUS_COMPILE_ERROR.getStatus());
             result.put("errMsg", compileError.getStderr());
             result.put("time", 0);
             result.put("memory", 0);
+            log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生编译的异常-------------------->{}", compileError);
         } catch (Exception e) {
             result.put("code", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
             result.put("errMsg", "Oops, something has gone wrong with the judgeServer. Please report this to administrator.");
@@ -135,10 +137,12 @@ public class JudgeStrategy {
 
     public Boolean checkOrCompileSpj(Problem problem, String version) throws CompileError, SystemError {
         // 如果是需要特判的题目，则需要检测特批程序是否已经编译，否则进行编译
-        if (!StringUtils.isEmpty(problem.getSpjCode()) || !problem.getCaseVersion().equals(version)) {
-            Constants.CompileConfig spjCompiler = Constants.CompileConfig.getCompilerByLanguage(problem.getSpjLanguage());
-            // 如果不存在该已经编译好的特批程序，则需要再次进行编译
-            if (!FileUtil.exist(Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + "/" + problem.getId() + "/" + spjCompiler.getExeName())) {
+        if (!StringUtils.isEmpty(problem.getSpjCode())) {
+            Constants.CompileConfig spjCompiler = Constants.CompileConfig.getCompilerByLanguage("SPJ-" + problem.getSpjLanguage());
+            // 如果不存在该已经编译好的特批程序，则需要再次进行编译 版本变动也需要重新编译
+            if (!FileUtil.exist(Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + File.separator +
+                    problem.getId() + File.separator + spjCompiler.getExeName())
+                    || !problem.getCaseVersion().equals(version)) {
                 return Compiler.compileSpj(problem.getSpjCode(), problem.getId(), problem.getSpjLanguage());
             }
         }
