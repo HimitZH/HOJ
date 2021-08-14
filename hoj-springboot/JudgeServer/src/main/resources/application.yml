@@ -40,7 +40,8 @@ logging:
         nacos: error
     root: error
   config: classpath:logback-spring.xml
-  path: /hoj/log/judgeserver/hoj_judgeserver.log
+  file:
+    path: /hoj/log/judgeserver/hoj_judgeserver.log
 # 暴露监控
 management:
   endpoints:

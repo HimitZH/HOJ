@@ -11,10 +11,7 @@ import top.hcode.hoj.util.Constants;
 
 import java.io.File;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.*;
 
 /**
@@ -27,11 +24,15 @@ public class JudgeRun {
 
     private static final int cpuNum = Runtime.getRuntime().availableProcessors();
 
-    private static final int SPJ_WA = 101;
 
     private static final int SPJ_AC = 100;
 
-    private static final int SPJ_ERROR = 102;
+    private static final int SPJ_PE = 101;
+
+    private static final int SPJ_WA = 102;
+
+    private static final int SPJ_ERROR = 103;
+
 
     private Long submitId;
 
@@ -100,7 +101,7 @@ public class JudgeRun {
             // 测试样例的路径
             final String testCaseInputPath = testCasesDir + File.separator + inputFileName;
             // 数据库表的测试样例id
-            final Long caseId = testcase.getLong("caseId",null);
+            final Long caseId = testcase.getLong("caseId", null);
             // 该测试点的满分
             final Integer score = testcase.getInt("score", 0);
 
@@ -128,7 +129,7 @@ public class JudgeRun {
                     }
                 }));
             } else {
-                final String testCaseOutputPath = testCasesDir + "/" + outputFileName;
+                final String testCaseOutputPath = testCasesDir + File.separator + outputFileName;
                 futureTasks.add(new FutureTask<>(new Callable<JSONObject>() {
                     @Override
                     public JSONObject call() throws SystemError {
@@ -141,9 +142,7 @@ public class JudgeRun {
                                 maxMemory,
                                 maxOutputSize,
                                 maxStack,
-                                runConfig.getExeName(),
-                                spjExeName,
-                                getUserOutput);
+                                spjExeName);
                         result.set("caseId", caseId);
                         result.set("score", score);
                         result.set("inputFileName", inputFileName);
@@ -179,7 +178,359 @@ public class JudgeRun {
         return result;
     }
 
+
     private JSONObject spjJudgeOneCase(String userFileId,
+                                       Integer testCaseId,
+                                       String runDir,
+                                       String testCaseInputFilePath,
+                                       String testCaseOutputFilePath,
+                                       Long maxTime,
+                                       Long maxMemory,
+                                       Long maxOutputSize,
+                                       Integer maxStack,
+                                       String spjExeName) throws SystemError {
+
+        // 调用安全沙箱使用测试点对程序进行测试
+        JSONArray judgeResultList = SandboxRun.testCase(
+                parseRunCommand(runConfig.getCommand(), runConfig, null, null, null),
+                runConfig.getEnvs(),
+                testCaseInputFilePath,
+                maxTime,
+                maxOutputSize,
+                maxStack,
+                runConfig.getExeName(),
+                userFileId);
+        JSONObject result = new JSONObject();
+
+        JSONObject judgeResult = (JSONObject) judgeResultList.get(0);
+
+        // 获取跑题用户输出或错误输出
+        String userStdOut = ((JSONObject) judgeResult.get("files")).getStr("stdout");
+        String userErrOut = ((JSONObject) judgeResult.get("files")).getStr("stderr");
+
+        StringBuilder errMsg = new StringBuilder();
+
+        // 获取程序运行内存 b-->kb
+        long memory = judgeResult.getLong("memory") / 1024;
+        // 获取程序运行时间 ns->ms
+        long time = judgeResult.getLong("time") / 1000000;
+        // 异常退出的状态码
+        int exitCode = judgeResult.getInt("exitStatus");
+        // 如果测试跑题无异常
+        if (judgeResult.getInt("status").intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+
+            // 对结果的时间损耗和空间损耗与题目限制做比较，判断是否mle和tle
+            if (time >= maxTime) {
+                result.set("status", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus());
+            } else if (memory >= maxMemory) {
+                result.set("status", Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED.getStatus());
+            } else {
+
+                // 对于当前测试样例，用户程序的输出对应生成的文件
+                String userOutputFilePath = runDir + File.separator + (testCaseId + 1) + ".out";
+                FileWriter stdWriter = new FileWriter(userOutputFilePath);
+                stdWriter.write(userStdOut);
+
+                // 特判程序的路径
+                String spjExeSrc = Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + File.separator + problemId + File.separator + spjExeName;
+
+                String userOutputFileName = problemId + "_user_output";
+                String testCaseInputFileName = problemId + "_input";
+                String testCaseOutputFileName = problemId + "_output";
+                // 进行spj程序运行比对
+                JSONObject spjResult = spjCheckResult(userOutputFilePath,
+                        userOutputFileName,
+                        testCaseInputFilePath,
+                        testCaseInputFileName,
+                        testCaseOutputFilePath,
+                        testCaseOutputFileName,
+                        spjExeSrc,
+                        spjExeName,
+                        runDir);
+                int code = spjResult.getInt("code");
+                if (code == SPJ_WA) {
+                    result.set("status", Constants.Judge.STATUS_WRONG_ANSWER.getStatus());
+                } else if (code == SPJ_AC) {
+                    result.set("status", Constants.Judge.STATUS_ACCEPTED.getStatus());
+                } else if (code == SPJ_PE) {
+                    result.set("status", Constants.Judge.STATUS_PRESENTATION_ERROR.getStatus());
+                } else {
+                    result.set("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
+                }
+
+                String spjErrMsg = spjResult.getStr("errMsg");
+                if (!StringUtils.isEmpty(spjErrMsg)) {
+                    errMsg.append(spjErrMsg).append(" ");
+                }
+
+            }
+        } else if (judgeResult.getInt("status").intValue() == Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus()) {
+            result.set("status", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus());
+        } else if (exitCode != 0) {
+            result.set("status", Constants.Judge.STATUS_RUNTIME_ERROR.getStatus());
+            if (exitCode < 32) {
+                errMsg.append(String.format("ExitCode: %s (%s)\n", exitCode, SandboxRun.signals.get(exitCode)));
+            } else {
+                errMsg.append(String.format("ExitCode: %s\n", exitCode));
+            }
+        } else {
+            result.set("status", judgeResult.getInt("status"));
+        }
+
+        // b
+        result.set("memory", memory);
+        // ns->ms
+        result.set("time", time);
+
+        if (!StringUtils.isEmpty(userErrOut)) {
+            // 同时记录错误信息
+            errMsg.append(userErrOut);
+            // 对于当前测试样例，用户的错误提示生成对应文件
+            FileWriter errWriter = new FileWriter(runDir + File.separator + testCaseId + ".err");
+            errWriter.write(userErrOut);
+        }
+
+        // 记录该测试点的错误信息
+        if (!StringUtils.isEmpty(errMsg.toString())) {
+            result.set("errMsg", errMsg.toString());
+        }
+        return result;
+
+    }
+
+    private JSONObject spjCheckResult(String userOutputFilePath,
+                                      String userOutputFileName,
+                                      String testCaseInputFilePath,
+                                      String testCaseInputFileName,
+                                      String testCaseOutputFilePath,
+                                      String testCaseOutputFileName,
+                                      String spjExeSrc,
+                                      String spjExeName,
+                                      String runDir) throws SystemError {
+
+        // 调用安全沙箱运行spj程序
+        JSONArray spjJudgeResultList = SandboxRun.spjCheckResult(
+                parseRunCommand(spjRunConfig.getCommand(), spjRunConfig, testCaseInputFileName, userOutputFileName, testCaseOutputFileName),
+                spjRunConfig.getEnvs(),
+                userOutputFilePath,
+                userOutputFileName,
+                testCaseInputFilePath,
+                testCaseInputFileName,
+                testCaseOutputFilePath,
+                testCaseOutputFileName,
+                spjExeSrc,
+                spjExeName);
+
+        JSONObject result = new JSONObject();
+
+        JSONObject spjJudgeResult = (JSONObject) spjJudgeResultList.get(0);
+
+        // 获取跑题用户输出或错误输出
+        String spjErrOut = ((JSONObject) spjJudgeResult.get("files")).getStr("stderr");
+
+        if (!StringUtils.isEmpty(spjErrOut)) {
+            result.set("errMsg", spjErrOut);
+        }
+
+        // 退出状态码
+        int exitCode = spjJudgeResult.getInt("exitStatus");
+        // 如果测试跑题无异常
+        if (spjJudgeResult.getInt("status").intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+            if (exitCode == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+                result.set("code", SPJ_AC);
+            } else {
+                result.set("code", exitCode);
+            }
+        } else if (spjJudgeResult.getInt("status").intValue() == Constants.Judge.STATUS_RUNTIME_ERROR.getStatus()) {
+            if (exitCode == SPJ_WA || exitCode == SPJ_ERROR || exitCode == SPJ_AC || exitCode == SPJ_PE) {
+                result.set("code", exitCode);
+            } else {
+                if (!StringUtils.isEmpty(spjErrOut)) {
+                    // 适配testlib.h 根据错误信息前缀判断
+                    return parseTestlibErr(spjErrOut);
+                } else {
+                    result.set("code", SPJ_ERROR);
+                }
+            }
+        } else {
+            result.set("code", SPJ_ERROR);
+        }
+
+        return result;
+    }
+
+
+    private JSONObject parseTestlibErr(String err) {
+
+        JSONObject res = new JSONObject(2);
+
+        if (err.startsWith("ok ")) {
+            res.set("code", SPJ_AC);
+            res.set("errMsg", err.split("ok ")[1]);
+        } else if (err.startsWith("wrong answer ")) {
+            res.set("code", SPJ_WA);
+            res.set("errMsg", err.split("wrong answer ")[1]);
+        } else if (err.startsWith("wrong output format ")) {
+            res.set("code", SPJ_PE);
+            res.set("errMsg", err.split("wrong output format")[1]);
+        } else if (err.startsWith("FAIL ")) {
+            res.set("code", SPJ_ERROR);
+            res.set("errMsg", err.split("FAIL ")[1]);
+        } else {
+            res.set("code", SPJ_ERROR);
+            res.set("errMsg", err);
+        }
+        return res;
+    }
+
+    private JSONObject judgeOneCase(String userFileId,
+                                    Integer testCaseId,
+                                    String runDir,
+                                    String testCasePath,
+                                    Long maxTime,
+                                    Long maxMemory,
+                                    Integer maxStack,
+                                    Long maxOutputSize,
+                                    Boolean getUserOutput,
+                                    Boolean isRemoveEOFBlank) throws SystemError {
+
+        // 调用安全沙箱使用测试点对程序进行测试
+        JSONArray judgeResultList = SandboxRun.testCase(parseRunCommand(runConfig.getCommand(), runConfig, null, null, null),
+                runConfig.getEnvs(),
+                testCasePath,
+                maxTime,
+                maxOutputSize,
+                maxStack,
+                runConfig.getExeName(),
+                userFileId);
+
+        JSONObject result = new JSONObject();
+
+        JSONObject judgeResult = (JSONObject) judgeResultList.get(0);
+
+        // 获取跑题用户输出或错误输出
+        String userStdOut = ((JSONObject) judgeResult.get("files")).getStr("stdout");
+        String userErrOut = ((JSONObject) judgeResult.get("files")).getStr("stderr");
+
+        StringBuffer errMsg = new StringBuffer();
+
+        // 获取程序运行内存 b-->kb
+        long memory = judgeResult.getLong("memory") / 1024;
+        // 获取程序运行时间 ns->ms
+        long time = judgeResult.getLong("time") / 1000000;
+        // 异常退出的状态码
+        int exitCode = judgeResult.getInt("exitStatus");
+        // 如果测试跑题无异常
+        if (judgeResult.getInt("status").intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+
+            // 对结果的时间损耗和空间损耗与题目限制做比较，判断是否mle和tle
+            if (time >= maxTime) {
+                result.set("status", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus());
+            } else if (memory >= maxMemory) {
+                result.set("status", Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED.getStatus());
+            } else {
+                // 与原测试数据输出的md5进行对比 AC或者是WA
+                result.set("status", compareOutput(testCaseId, userStdOut, isRemoveEOFBlank));
+            }
+        } else if (judgeResult.getInt("status").equals(Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus())) {
+            result.set("status", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus());
+        } else if (exitCode != 0) {
+            result.set("status", Constants.Judge.STATUS_RUNTIME_ERROR.getStatus());
+            if (exitCode < 32) {
+                errMsg.append(String.format("ExitCode: %s (%s)\n", exitCode, SandboxRun.signals.get(exitCode)));
+            } else {
+                errMsg.append(String.format("ExitCode: %s\n", exitCode));
+            }
+        } else {
+            result.set("status", judgeResult.getInt("status"));
+        }
+
+        // b
+        result.set("memory", memory);
+        // ns->ms
+        result.set("time", time);
+
+        if (!StringUtils.isEmpty(userStdOut)) {
+            // 对于当前测试样例，用户程序的输出对应生成的文件
+            FileWriter stdWriter = new FileWriter(runDir + "/" + testCaseId + ".out");
+            stdWriter.write(userStdOut);
+        }
+
+        if (!StringUtils.isEmpty(userErrOut)) {
+            // 对于当前测试样例，用户的错误提示生成对应文件
+            FileWriter errWriter = new FileWriter(runDir + "/" + testCaseId + ".err");
+            errWriter.write(userErrOut);
+            // 同时记录错误信息
+            errMsg.append(userErrOut);
+        }
+
+        // 记录该测试点的错误信息
+        if (!StringUtils.isEmpty(errMsg.toString())) {
+            result.set("errMsg", errMsg.toString());
+        }
+
+        if (getUserOutput) { // 如果需要获取用户对于该题目的输出
+            result.set("output", userStdOut);
+        }
+
+        return result;
+
+    }
+
+
+    private static List<String> parseRunCommand(String command,
+                                                Constants.RunConfig runConfig,
+                                                String testCaseInputName,
+                                                String userOutputName,
+                                                String testCaseOutputName) {
+
+        command = MessageFormat.format(command, Constants.JudgeDir.TMPFS_DIR.getContent(),
+                runConfig.getExeName(), Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + testCaseInputName,
+                Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + userOutputName,
+                Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + testCaseOutputName);
+
+        return Arrays.asList(command.split(" "));
+    }
+
+
+    public JSONObject getTestCasesInfo(int testCaseId) {
+        return (JSONObject) ((JSONArray) testCasesInfo.get("testCases")).get(testCaseId);
+    }
+
+    // 根据评测结果与用户程序输出的字符串MD5进行对比
+    private Integer compareOutput(int testCaseId, String userOutput, Boolean isRemoveEOFBlank) {
+
+        // 如果当前题目选择默认去掉字符串末位空格
+        if (isRemoveEOFBlank) {
+            String userOutputMd5 = DigestUtils.md5DigestAsHex(rtrim(userOutput).getBytes());
+            if (userOutputMd5.equals(getTestCasesInfo(testCaseId).getStr("EOFStrippedOutputMd5"))) {
+                return Constants.Judge.STATUS_ACCEPTED.getStatus();
+            }
+        } else { // 不选择默认去掉文末空格 与原数据进行对比
+            String userOutputMd5 = DigestUtils.md5DigestAsHex(userOutput.getBytes());
+            if (userOutputMd5.equals(getTestCasesInfo(testCaseId).getStr("outputMd5"))) {
+                return Constants.Judge.STATUS_ACCEPTED.getStatus();
+            }
+        }
+        // 如果不AC,进行PE判断，否则为WA
+        String userOutputMd5 = DigestUtils.md5DigestAsHex(userOutput.replaceAll("\\s+", "").getBytes());
+        if (userOutputMd5.equals(getTestCasesInfo(testCaseId).getStr("allStrippedOutputMd5"))) {
+            return Constants.Judge.STATUS_PRESENTATION_ERROR.getStatus();
+        } else {
+            return Constants.Judge.STATUS_WRONG_ANSWER.getStatus();
+        }
+    }
+
+    // 去除末尾空白符
+    public static String rtrim(String value) {
+        if (value == null) return null;
+        return value.replaceAll("\\s+$", "");
+    }
+
+    /*
+        交互题 暂时不启用
+     */
+    private JSONObject interactOneCase(String userFileId,
                                        Integer testCaseId,
                                        String runDir,
                                        String testCaseInputFilePath,
@@ -193,15 +544,15 @@ public class JudgeRun {
                                        Boolean getUserOutput) throws SystemError {
 
         // 对于当前测试样例，用户程序的输出对应生成的文件（正常就输出数据，错误就是输出错误信息）
-        String realUserOutputFile = runDir + "/" + testCaseId + ".out";
+        String realUserOutputFile = runDir + File.separator + testCaseId + ".out";
 
         // 特判程序的路径
-        String spjExeSrc = Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + "/" + problemId + "/" + spjExeName;
+        String spjExeSrc = Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + File.separator + problemId + File.separator + spjExeName;
         String testCaseInputFileName = problemId + "_input";
         String testCaseOutputFileName = problemId + "_output";
 
-        JSONArray judgeResultList = SandboxRun.spjTestCase(
-                parseRunCommand(runConfig.getCommand(), runConfig, null, null),
+        JSONArray judgeResultList = SandboxRun.interactTestCase(
+                parseRunCommand(runConfig.getCommand(), runConfig, null, null, null),
                 runConfig.getEnvs(),
                 userExeName,
                 userFileId,
@@ -210,7 +561,7 @@ public class JudgeRun {
                 maxTime,
                 maxOutputSize,
                 maxStack,
-                parseRunCommand(spjRunConfig.getCommand(), spjRunConfig, testCaseInputFileName, testCaseOutputFileName),
+                parseRunCommand(spjRunConfig.getCommand(), spjRunConfig, testCaseInputFileName, null, testCaseOutputFileName),
                 spjRunConfig.getEnvs(),
                 spjExeSrc,
                 testCaseOutputFilePath,
@@ -280,144 +631,5 @@ public class JudgeRun {
         }
         return result;
 
-    }
-
-    private JSONObject judgeOneCase(String userFileId,
-                                    Integer testCaseId,
-                                    String runDir,
-                                    String testCasePath,
-                                    Long maxTime,
-                                    Long maxMemory,
-                                    Integer maxStack,
-                                    Long maxOutputSize,
-                                    Boolean getUserOutput,
-                                    Boolean isRemoveEOFBlank) throws SystemError {
-
-        // 调用安全沙箱使用测试点对程序进行测试
-        JSONArray judgeResultList = SandboxRun.testCase(parseRunCommand(runConfig.getCommand(), runConfig, null, null),
-                runConfig.getEnvs(),
-                testCasePath,
-                maxTime,
-                maxOutputSize,
-                maxStack,
-                runConfig.getExeName(),
-                userFileId);
-
-        JSONObject result = new JSONObject();
-
-        JSONObject judgeResult = (JSONObject) judgeResultList.get(0);
-
-        // 获取跑题用户输出或错误输出
-        String userStdOut = ((JSONObject) judgeResult.get("files")).getStr("stdout");
-        String userErrOut = ((JSONObject) judgeResult.get("files")).getStr("stderr");
-
-        StringBuffer errMsg = new StringBuffer();
-
-        // 获取程序运行内存 b-->kb
-        long memory = judgeResult.getLong("memory") / 1024;
-        // 获取程序运行时间 ns->ms
-        long time = judgeResult.getLong("time") / 1000000;
-        // 异常退出的状态码
-        int exitCode = judgeResult.getInt("exitStatus");
-        // 如果测试跑题无异常
-        if (judgeResult.getInt("status").intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
-
-            // 对结果的时间损耗和空间损耗与题目限制做比较，判断是否mle和tle
-            if (time >= maxTime) {
-                result.set("status", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus());
-            } else if (memory >= maxMemory) {
-                result.set("status", Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED.getStatus());
-            } else {
-                // 与原测试数据输出的md5进行对比 AC或者是WA
-                result.set("status", compareOutput(testCaseId, userStdOut, isRemoveEOFBlank));
-            }
-        } else if (judgeResult.getInt("status") == Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus()) {
-            result.set("status", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus());
-        } else if (exitCode != 0) {
-            result.set("status", Constants.Judge.STATUS_RUNTIME_ERROR.getStatus());
-            if (exitCode < 32) {
-                errMsg.append(String.format("ExitCode: %s (%s)\n", exitCode, SandboxRun.signals.get(exitCode)));
-            } else {
-                errMsg.append(String.format("ExitCode: %s\n", exitCode));
-            }
-        } else {
-            result.set("status", judgeResult.getInt("status"));
-        }
-
-        // b
-        result.set("memory", memory);
-        // ns->ms
-        result.set("time", time);
-
-        if (!StringUtils.isEmpty(userStdOut)) {
-            // 对于当前测试样例，用户程序的输出对应生成的文件
-            FileWriter stdWriter = new FileWriter(runDir + "/" + testCaseId + ".out");
-            stdWriter.write(userStdOut);
-        }
-
-        if (!StringUtils.isEmpty(userErrOut)) {
-            // 对于当前测试样例，用户的错误提示生成对应文件
-            FileWriter errWriter = new FileWriter(runDir + "/" + testCaseId + ".err");
-            errWriter.write(userErrOut);
-            // 同时记录错误信息
-            errMsg.append(userErrOut);
-        }
-
-        // 记录该测试点的错误信息
-        if (!StringUtils.isEmpty(errMsg.toString())) {
-            result.set("errMsg", errMsg.toString());
-        }
-
-        if (getUserOutput) { // 如果需要获取用户对于该题目的输出
-            result.set("output", userStdOut);
-        }
-
-        return result;
-
-    }
-
-
-    private static List<String> parseRunCommand(String command, Constants.RunConfig runConfig, String testCaseInputName,
-                                                String testCaseOutputName) {
-
-        command = MessageFormat.format(command, Constants.JudgeDir.TMPFS_DIR.getContent(),
-                runConfig.getExeName(), Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + testCaseInputName,
-                Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + testCaseOutputName);
-
-        return Arrays.asList(command.split(" "));
-    }
-
-    public JSONObject getTestCasesInfo(int testCaseId) {
-        return (JSONObject) ((JSONArray) testCasesInfo.get("testCases")).get(testCaseId);
-    }
-
-    // 根据评测结果与用户程序输出的字符串MD5进行对比
-    private Integer compareOutput(int testCaseId, String userOutput, Boolean isRemoveEOFBlank) {
-
-        // 如果当前题目选择默认去掉字符串末位空格
-        if (isRemoveEOFBlank) {
-            String userOutputMd5 = DigestUtils.md5DigestAsHex(rtrim(userOutput).getBytes());
-            if (userOutputMd5.equals(getTestCasesInfo(testCaseId).getStr("EOFStrippedOutputMd5"))) {
-                return Constants.Judge.STATUS_ACCEPTED.getStatus();
-            }
-        } else { // 不选择默认去掉文末空格 与原数据进行对比
-            String userOutputMd5 = DigestUtils.md5DigestAsHex(userOutput.getBytes());
-            if (userOutputMd5.equals(getTestCasesInfo(testCaseId).getStr("outputMd5"))) {
-                return Constants.Judge.STATUS_ACCEPTED.getStatus();
-            }
-        }
-        // 如果不AC,进行PE判断，否则为WA
-        String userOutputMd5 = DigestUtils.md5DigestAsHex(userOutput.replaceAll("\\s+", "").getBytes());
-        if (userOutputMd5.equals(getTestCasesInfo(testCaseId).getStr("allStrippedOutputMd5"))) {
-            return Constants.Judge.STATUS_PRESENTATION_ERROR.getStatus();
-        } else {
-            return Constants.Judge.STATUS_WRONG_ANSWER.getStatus();
-        }
-    }
-
-    // 去除末尾空白符
-    public static String rtrim(String value) {
-        if (value == null) return null;
-        return value.replaceAll("\\s+$", "");
     }
 }

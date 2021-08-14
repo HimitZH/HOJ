@@ -95,6 +95,7 @@ public class AdminJudgeController {
                 .setMemory(null)
                 .setErrorMessage(null)
                 .setJudger(null)
+                .setOiRankScore(null)
                 .setScore(null);
         boolean result = judgeService.updateById(judge);
         if (result) {
@@ -138,6 +139,7 @@ public class AdminJudgeController {
                     .setTime(null)
                     .setMemory(null)
                     .setErrorMessage(null)
+                    .setOiRankScore(null)
                     .setJudger(null)
                     .setScore(null);
             submitIdList.add(judge.getSubmitId());
