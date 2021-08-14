@@ -38,40 +38,51 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
 
     @Override
-    public IPage<ContestRecord> getACInfo(Integer currentPage, Integer limit, Integer status, Long cid) {
+    public IPage<ContestRecord> getACInfo(Integer currentPage, Integer limit, Integer status, Long cid, String contestCreatorId) {
 
         List<ContestRecord> acInfo = contestRecordMapper.getACInfo(status, cid);
 
-        HashMap<Long, Integer> pidMapIndex = new HashMap<>(20);
-        HashMap<Integer, Long> indexMapTime = new HashMap<>(20);
+        HashMap<Long, String> pidMapUidAndPid = new HashMap<>(12);
+        HashMap<String, Long> UidAndPidMapTime = new HashMap<>(12);
 
-        for (int i = 0; i < acInfo.size(); i++) {
-            ContestRecord contestRecord = acInfo.get(i);
+        List<UserInfo> superAdminList = getSuperAdminList();
+        List<String> superAdminUidList = superAdminList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
+
+        List<ContestRecord> userACInfo = new LinkedList<>();
+
+        for (ContestRecord contestRecord : acInfo) {
+
+            if (contestRecord.getUid().equals(contestCreatorId)
+                    || superAdminUidList.contains(contestRecord.getUid())) { // 超级管理员和比赛创建者的提交跳过
+                continue;
+            }
+
             contestRecord.setFirstBlood(false);
-            Integer index = pidMapIndex.get(contestRecord.getPid());
-            if (index == null) {
-                pidMapIndex.put(contestRecord.getPid(), i);
-                indexMapTime.put(i, contestRecord.getTime());
+            String uidAndPid = pidMapUidAndPid.get(contestRecord.getPid());
+            if (uidAndPid == null) {
+                pidMapUidAndPid.put(contestRecord.getPid(), contestRecord.getUid() + contestRecord.getPid());
+                UidAndPidMapTime.put(contestRecord.getUid() + contestRecord.getPid(), contestRecord.getTime());
             } else {
-                Long firstTime = indexMapTime.get(index);
+                Long firstTime = UidAndPidMapTime.get(uidAndPid);
                 Long tmpTime = contestRecord.getTime();
                 if (tmpTime < firstTime) {
-                    pidMapIndex.put(contestRecord.getPid(), i);
-                    indexMapTime.put(i, tmpTime);
+                    pidMapUidAndPid.put(contestRecord.getPid(), contestRecord.getUid() + contestRecord.getPid());
+                    UidAndPidMapTime.put(contestRecord.getUid() + contestRecord.getPid(), tmpTime);
                 }
             }
+            userACInfo.add(contestRecord);
         }
 
 
         List<ContestRecord> pageList = new ArrayList<>();
 
-        int count = acInfo.size();
+        int count = userACInfo.size();
 
         //计算当前页第一条数据的下标
         int currId = currentPage > 1 ? (currentPage - 1) * limit : 0;
         for (int i = 0; i < limit && i < count - currId; i++) {
-            ContestRecord contestRecord = acInfo.get(currId + i);
-            if (pidMapIndex.get(contestRecord.getPid()) == currId + i){
+            ContestRecord contestRecord = userACInfo.get(currId + i);
+            if (pidMapUidAndPid.get(contestRecord.getPid()).equals(contestRecord.getUid() + contestRecord.getPid())) {
                 contestRecord.setFirstBlood(true);
             }
             pageList.add(contestRecord);

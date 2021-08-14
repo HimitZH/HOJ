@@ -20,7 +20,7 @@ import java.util.List;
  */
 public interface ContestRecordService extends IService<ContestRecord> {
 
-    IPage<ContestRecord> getACInfo(Integer currentPage, Integer limit, Integer status, Long cid);
+    IPage<ContestRecord> getACInfo(Integer currentPage, Integer limit, Integer status, Long cid, String contestCreatorId);
 
     IPage<ACMContestRankVo> getContestACMRank(List<ContestRecord> contestRecordList, int currentPage, int limit);
 
