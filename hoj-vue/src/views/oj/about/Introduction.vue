@@ -95,7 +95,7 @@
           <ul class="result">
             <li>1. {{ $t('m.Compile_Tips1') }}</li>
             <li>2. {{ $t('m.Compile_Tips2') }}</li>
-            <li>3. {{ $t('m.Compile_Tips2') }}</li>
+            <li>3. {{ $t('m.Compile_Tips3') }}</li>
             <li>4. {{ $t('m.Compile_Tips4') }}</li>
           </ul>
         </el-card>
