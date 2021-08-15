@@ -158,7 +158,15 @@
           </vxe-table-column>
           <vxe-table-column field="score" :title="$t('m.Score')" width="64">
             <template v-slot="{ row }">
-              <template v-if="row.score != null">
+              <template v-if="contestID && row.score != null">
+                <el-tag
+                  effect="plain"
+                  size="medium"
+                  :type="JUDGE_STATUS[row.status]['type']"
+                  >{{ row.score }}</el-tag
+                >
+              </template>
+              <template v-else-if="row.score != null">
                 <el-tooltip placement="top">
                   <div slot="content">
                     {{ $t('m.Problem_Score') }}：{{
@@ -170,7 +178,7 @@
                     }}<br />
                     {{
                       $t('m.OI_Rank_Calculation_Rule')
-                    }}：(score*0.1+diffculty*2)*(ac_testcase/sum_testcase)
+                    }}：(score*0.1+difficulty*2)*(ac_cases/sum_cases)
                   </div>
                   <el-tag
                     effect="plain"

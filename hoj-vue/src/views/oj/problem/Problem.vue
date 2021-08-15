@@ -101,11 +101,22 @@
                   >{{ $t('m.Level') }}：{{
                     PROBLEM_LEVEL[problemData.problem.difficulty]['name']
                   }}</span
-                ><span
-                  v-if="problemData.problem.type == 1"
-                  style="margin-left: 10px;"
-                  >{{ $t('m.Score') }}：{{ problemData.problem.ioScore }}</span
-                ><br />
+                >
+                <br />
+                <template v-if="problemData.problem.type == 1">
+                  <span
+                    >{{ $t('m.Score') }}：{{ problemData.problem.ioScore }}
+                  </span>
+                  <span v-if="!contestID" style="margin-left:5px;">
+                    {{ $t('m.OI_Rank_Score') }}：{{
+                      calcOIRankScore(
+                        problemData.problem.ioScore,
+                        problemData.problem.difficulty
+                      )
+                    }}(0.1*{{ $t('m.Score') }}+2*{{ $t('m.Level') }})
+                  </span>
+                  <br />
+                </template>
                 <span v-show="problemData.problem.author"
                   >{{ $t('m.Created') }}：{{ problemData.problem.author }}</span
                 ><br />
@@ -952,6 +963,10 @@ export default {
           this.statusVisible = false;
         }
       );
+    },
+
+    calcOIRankScore(score, difficulty) {
+      return 0.1 * score + 2 * difficulty;
     },
 
     onCopy(event) {

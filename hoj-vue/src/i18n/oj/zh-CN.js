@@ -228,7 +228,7 @@ export const m = {
   Enter_Author:'请输入作者',
   Run_ID:'Run ID',
   Problem:'题目',
-  Problem_Score:'OI题目总得分',
+  Problem_Score:'OI题目总分数',
   OI_Rank_Score:'OI排行榜得分',
   OI_Rank_Calculation_Rule:'OI排行得分计算公式',
 
