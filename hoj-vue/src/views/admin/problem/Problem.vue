@@ -868,6 +868,7 @@ export default {
         });
       } else {
         this.addExample();
+        this.testCaseUploaded = false;
         this.title = this.$i18n.t('m.Create_Problem');
         for (let item of this.allLanguage) {
           this.problemLanguages.push(item.name);
