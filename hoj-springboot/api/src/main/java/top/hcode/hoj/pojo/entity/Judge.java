@@ -83,7 +83,6 @@ public class Judge implements Serializable {
     private Long cpid;
 
     @ApiModelProperty(value = "判题机名称")
-    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String judger;
 
     @ApiModelProperty(value = "提交者所在ip")
