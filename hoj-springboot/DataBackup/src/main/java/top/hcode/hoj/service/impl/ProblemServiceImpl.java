@@ -445,9 +445,17 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             jsonObject.set("score", problemCase.getScore());
             jsonObject.set("inputName", problemCase.getInput());
             jsonObject.set("outputName", problemCase.getOutput());
+
+            // 读取输入文件
+            FileReader inputFile = new FileReader(testCasesDir + File.separator + problemCase.getInput(), CharsetUtil.UTF_8);
+            String input = inputFile.readString().replaceAll("\r\n", "\n");
+
+            FileWriter fileWriter = new FileWriter(testCasesDir + File.separator + problemCase.getInput(), CharsetUtil.UTF_8);
+            fileWriter.write(input);
+
             // 读取输出文件
-            FileReader readFile = new FileReader(testCasesDir + File.separator + problemCase.getOutput(), CharsetUtil.UTF_8);
-            String output = readFile.readString().replaceAll("\r\n", "\n");
+            FileReader outputFile = new FileReader(testCasesDir + File.separator + problemCase.getOutput(), CharsetUtil.UTF_8);
+            String output = outputFile.readString().replaceAll("\r\n", "\n");
 
             // spj是根据特判程序输出判断结果，所以无需初始化测试数据
             if (!isSpj) {
@@ -496,7 +504,8 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             // 生成对应文件
             FileWriter infileWriter = new FileWriter(testCasesDir + "/" + inputName, CharsetUtil.UTF_8);
             // 将该测试数据的输入写入到文件
-            infileWriter.write(problemCaseList.get(index).getInput());
+            String inputData = problemCaseList.get(index).getInput().replaceAll("\r\n", "\n");
+            infileWriter.write(inputData);
 
             String outputName = (index + 1) + ".out";
             jsonObject.set("outputName", outputName);
