@@ -46,7 +46,7 @@
                   {{
                     query.status === ''
                       ? $t('m.Status')
-                      : CONTEST_STATUS_REVERSE[query.status]['name']
+                      : $t('m.' + CONTEST_STATUS_REVERSE[query.status]['name'])
                   }}
                   <i class="el-icon-caret-bottom"></i>
                 </span>
