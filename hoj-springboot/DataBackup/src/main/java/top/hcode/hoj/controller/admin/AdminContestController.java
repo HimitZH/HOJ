@@ -5,6 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -424,7 +425,7 @@ public class AdminContestController {
 
         QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
         contestProblemQueryWrapper.eq("cid", cid)
-                .and(QueryWrapper -> QueryWrapper.eq("pid", pid)
+                .and(wrapper -> wrapper.eq("pid", pid)
                         .or()
                         .eq("display_id", displayId));
         ContestProblem contestProblem = contestProblemService.getOne(contestProblemQueryWrapper, false);
@@ -484,7 +485,7 @@ public class AdminContestController {
         QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
         Problem finalProblem = problem;
         contestProblemQueryWrapper.eq("cid", cid)
-                .and(QueryWrapper -> queryWrapper.eq("pid", finalProblem.getId())
+                .and(wrapper -> wrapper.eq("pid", finalProblem.getId())
                         .or()
                         .eq("display_id", displayId));
         ContestProblem contestProblem = contestProblemService.getOne(contestProblemQueryWrapper, false);
