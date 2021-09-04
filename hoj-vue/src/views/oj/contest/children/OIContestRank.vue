@@ -46,7 +46,6 @@
     <div v-show="showTable">
       <vxe-table
         round
-        border
         auto-resize
         size="small"
         align="center"
@@ -63,7 +62,7 @@
         ></vxe-table-column>
         <vxe-table-column
           field="username"
-          min-width="96"
+          min-width="112"
           fixed="left"
           :title="$t('m.User')"
         >
@@ -103,7 +102,7 @@
           </template>
         </vxe-table-column>
         <vxe-table-column
-          min-width="100"
+          min-width="120"
           v-for="problem in contestProblems"
           :key="problem.displayId"
         >
@@ -353,5 +352,10 @@ a.emphasis:hover {
 .problem-time {
   color: rgba(0, 0, 0, 0.45);
   font-size: 12px;
+}
+
+/deep/.vxe-table .vxe-cell {
+  padding-left: 5px !important;
+  padding-right: 5px !important;
 }
 </style>
