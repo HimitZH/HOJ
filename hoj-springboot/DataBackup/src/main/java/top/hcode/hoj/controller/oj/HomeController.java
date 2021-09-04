@@ -2,6 +2,7 @@ package top.hcode.hoj.controller.oj;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.UnicodeUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,11 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.ContestMapper;
+import top.hcode.hoj.pojo.entity.File;
 import top.hcode.hoj.pojo.vo.ACMRankVo;
 import top.hcode.hoj.pojo.vo.AnnouncementVo;
 import top.hcode.hoj.pojo.vo.ConfigVo;
 import top.hcode.hoj.pojo.vo.ContestVo;
 import top.hcode.hoj.service.impl.AnnouncementServiceImpl;
+import top.hcode.hoj.service.impl.FileServiceImpl;
 import top.hcode.hoj.service.impl.UserRecordServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author: Himit_ZH
@@ -49,6 +53,9 @@ public class HomeController {
     @Autowired
     private RedisUtils redisUtils;
 
+    @Autowired
+    private FileServiceImpl fileService;
+
     /**
      * @MethodName getRecentContest
      * @Params * @param null
@@ -61,6 +68,27 @@ public class HomeController {
     public CommonResult getRecentContest() {
         List<ContestVo> contests = contestDao.getWithinNext14DaysContests();
         return CommonResult.successResponse(contests);
+    }
+
+
+
+    /**
+     * @MethodName getHomeCarousel
+     * @Params
+     * @Description 获取主页轮播图
+     * @Return
+     * @Since 2021/9/4
+     */
+    @GetMapping("/home-carousel")
+    public CommonResult getHomeCarousel() {
+        List<File> fileList = fileService.queryCarouselFileList();
+        List<HashMap<String, Object>> apiList = fileList.stream().map(f -> {
+            HashMap<String, Object> param = new HashMap<>(2);
+            param.put("id", f.getId());
+            param.put("url", Constants.File.IMG_API.getPath() + f.getName());
+            return param;
+        }).collect(Collectors.toList());
+        return CommonResult.successResponse(apiList);
     }
 
 
@@ -117,7 +145,6 @@ public class HomeController {
         IPage<AnnouncementVo> announcementList = announcementDao.getAnnouncementList(limit, currentPage, true);
         return CommonResult.successResponse(announcementList);
     }
-
 
     /**
      * @MethodName getWebConfig

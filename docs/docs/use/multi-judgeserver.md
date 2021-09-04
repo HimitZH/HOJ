@@ -31,6 +31,21 @@
          - "0.0.0.0:873:873"
    ```
 
+   **同时，需要将MySQL的配置`MYSQL_PUBLIC_HOST`改成当前服务器的公网IP**
+
+   ```shell
+   vim .env  # 修改与docker-compose.yml同目录下的配置文件
+   ```
+
+   ```yaml
+   # mysql的配置
+   MYSQL_HOST=172.20.0.3
+   # 请提供当前mysql所在服务器的公网ip
+   MYSQL_PUBLIC_HOST=***
+   MYSQL_PORT=3306
+   MYSQL_ROOT_PASSWORD=hoj123456
+   ```
+
 2. 在其它服务器（判题机服务器）中使用docker-compose运行judgeserver服务，具体操作如下：
 
    **（注意：如果云服务器有防火墙请开启8088端口号，需要将判题服务暴露出去）**

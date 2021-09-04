@@ -451,7 +451,7 @@ public class ContestController {
             return commonResult;
         }
 
-        // 校验该比赛是否开启了封榜模式
+        // 校验该比赛是否开启了封榜模式，超级管理员和比赛创建者可以直接看到实际榜单
         boolean isOpenSealRank = contestService.isSealRank(userRolesVo.getUid(), contest, forceRefresh, isRoot);
 
 
@@ -460,16 +460,13 @@ public class ContestController {
 
             QueryWrapper<ContestRecord> wrapper = new QueryWrapper<ContestRecord>().eq("cid", cid)
                     .isNotNull("status")
-                    // 如果已经开启了封榜模式
-                    .between(isOpenSealRank, "submit_time", contest.getStartTime(), contest.getSealRankTime())
-                    .between(!isOpenSealRank, "submit_time", contest.getStartTime(), contest.getEndTime())
                     .ne("username", contest.getAuthor())
                     .orderByAsc("time");
 
             List<ContestRecord> contestRecordList = contestRecordService.list(wrapper);
 
             // 进行排行榜计算以及排名分页
-            resultList = contestRecordService.getContestACMRank(contestRecordList, currentPage, limit);
+            resultList = contestRecordService.getContestACMRank(isOpenSealRank,contest, contestRecordList, currentPage, limit);
 
         } else { //OI比赛：以最后一次提交得分作为该题得分
 

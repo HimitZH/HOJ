@@ -153,6 +153,8 @@ public class Constants {
 
         USER_AVATAR_FOLDER("/hoj/file/avatar"),
 
+        HOME_CAROUSEL_FOLDER("/hoj/file/carousel"),
+
         MARKDOWN_FILE_FOLDER("/hoj/file/md"),
 
         IMG_API("/api/public/img/"),

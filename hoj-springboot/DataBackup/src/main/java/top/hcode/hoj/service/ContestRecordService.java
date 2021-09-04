@@ -1,6 +1,7 @@
 package top.hcode.hoj.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import top.hcode.hoj.pojo.entity.Contest;
 import top.hcode.hoj.pojo.entity.UserInfo;
 import top.hcode.hoj.pojo.vo.ACMContestRankVo;
 import top.hcode.hoj.pojo.entity.ContestRecord;
@@ -22,7 +23,7 @@ public interface ContestRecordService extends IService<ContestRecord> {
 
     IPage<ContestRecord> getACInfo(Integer currentPage, Integer limit, Integer status, Long cid, String contestCreatorId);
 
-    IPage<ACMContestRankVo> getContestACMRank(List<ContestRecord> contestRecordList, int currentPage, int limit);
+    IPage<ACMContestRankVo> getContestACMRank(Boolean isOpenSealRank, Contest contest, List<ContestRecord> contestRecordList, int currentPage, int limit);
 
     IPage<OIContestRankVo> getContestOIRank(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime, Date startTime, Date endTime, int currentPage, int limit);
 

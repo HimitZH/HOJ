@@ -189,6 +189,56 @@ public class FileController {
     }
 
 
+
+    @RequestMapping(value = "/upload-carouse-img", method = RequestMethod.POST)
+    @RequiresAuthentication
+    @ResponseBody
+    @Transactional
+    @RequiresRoles("root")
+    public CommonResult uploadCarouselImg(@RequestParam("file") MultipartFile image, HttpServletRequest request) {
+
+        if (image == null) {
+            return CommonResult.errorResponse("上传的图片文件不能为空！");
+        }
+
+        //获取文件后缀
+        String suffix = image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf(".") + 1);
+        if (!"jpg,jpeg,gif,png,webp,jfif,svg".toUpperCase().contains(suffix.toUpperCase())) {
+            return CommonResult.errorResponse("请选择jpg,jpeg,gif,png,webp,jfif,svg格式的头像图片！");
+        }
+        //若不存在该目录，则创建目录
+        FileUtil.mkdir(Constants.File.HOME_CAROUSEL_FOLDER.getPath());
+        //通过UUID生成唯一文件名
+        String filename = IdUtil.simpleUUID() + "." + suffix;
+        try {
+            //将文件保存指定目录
+            image.transferTo(FileUtil.file(Constants.File.HOME_CAROUSEL_FOLDER.getPath() + File.separator + filename));
+        } catch (Exception e) {
+            log.error("图片文件上传异常-------------->{}", e.getMessage());
+            return CommonResult.errorResponse("服务器异常：图片上传失败！", CommonResult.STATUS_ERROR);
+        }
+
+        // 获取当前登录用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+
+        // 插入file表记录
+        top.hcode.hoj.pojo.entity.File imgFile = new top.hcode.hoj.pojo.entity.File();
+        imgFile.setName(filename).setFolderPath(Constants.File.HOME_CAROUSEL_FOLDER.getPath())
+                .setFilePath(Constants.File.HOME_CAROUSEL_FOLDER.getPath() + File.separator + filename)
+                .setSuffix(suffix)
+                .setType("carousel")
+                .setUid(userRolesVo.getUid());
+        fileService.saveOrUpdate(imgFile);
+
+        return CommonResult.successResponse(MapUtil.builder()
+                .put("id", imgFile.getId())
+                .put("url", Constants.File.IMG_API.getPath() + filename)
+                .map(), "上传图片成功！");
+    }
+
+
     @PostMapping("/upload-testcase-zip")
     @ResponseBody
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
@@ -387,12 +437,10 @@ public class FileController {
 
             QueryWrapper<ContestRecord> wrapper = new QueryWrapper<ContestRecord>().eq("cid", cid)
                     .isNotNull("status")
-                    // 如果已经开启了封榜模式
-                    .notBetween(isOpenSealRank, "submit_time", contest.getSealRankTime(), contest.getEndTime())
                     .orderByAsc("time");
             List<ContestRecord> contestRecordList = contestRecordService.list(wrapper);
             Assert.notEmpty(contestRecordList, "比赛暂无排行榜记录！");
-            List<ACMContestRankVo> acmContestRankVoList = contestRecordService.calcACMRank(contestRecordList);
+            List<ACMContestRankVo> acmContestRankVoList = contestRecordService.calcACMRank(isOpenSealRank,contest,contestRecordList);
             EasyExcel.write(response.getOutputStream())
                     .head(fileService.getContestRankExcelHead(contestProblemDisplayIDList, true))
                     .sheet("rank")

@@ -254,6 +254,10 @@ a:hover {
   background-color: #a9f5af;
   color: #3c763d;
 }
+.try {
+  background-color: #ff9800;
+  color: #fff;
+}
 
 .oi-0,
 .wa {

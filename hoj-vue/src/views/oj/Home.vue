@@ -83,8 +83,8 @@
             arrow="always"
             indicator-position="outside"
           >
-            <el-carousel-item v-for="item in srcList" :key="item">
-              <el-image :src="item" fit="fill"></el-image>
+            <el-carousel-item v-for="item in carouselImgList" :key="item">
+              <el-image :src="item.url" fit="fill"></el-image>
             </el-carousel-item>
           </el-carousel>
         </el-card>
@@ -224,7 +224,7 @@ export default {
   },
   data() {
     return {
-      interval: 6000,
+      interval: 4000,
       otherContests: [],
       recentUserACRecord: [],
       CONTEST_STATUS_REVERSE: {},
@@ -234,9 +234,13 @@ export default {
         recent7ACRankLoading: false,
         recentOtherContestsLoading: false,
       },
-      srcList: [
-        'https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/home1.jfif',
-        'https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/home2.jpeg',
+      carouselImgList: [
+        {
+          url: 'https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/home1.jfif',
+        },
+        {
+          url: 'https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/home2.jpeg',
+        },
       ],
       srcHight: '440px',
     };
@@ -249,11 +253,20 @@ export default {
       this.srcHight = '440px';
     }
     this.CONTEST_STATUS_REVERSE = Object.assign({}, CONTEST_STATUS_REVERSE);
+    this.getHomeCarousel();
     this.getRecentContests();
     this.getRecent7ACRank();
     this.getRecentOtherContests();
   },
   methods: {
+    getHomeCarousel() {
+      api.getHomeCarousel().then((res) => {
+        if (res.data.data != null && res.data.data.length > 0) {
+          this.carouselImgList = res.data.data;
+        }
+      });
+    },
+
     getRecentContests() {
       api.getRecentContests().then((res) => {
         this.contests = res.data.data;

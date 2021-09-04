@@ -102,6 +102,70 @@
 
     <el-card style="margin-top:15px">
       <div slot="header">
+        <span class="panel-title home-title">{{
+          $t('m.Home_Rotation_Chart')
+        }}</span>
+      </div>
+
+      <ul class="el-upload-list el-upload-list--picture-card">
+        <li
+          tabindex="0"
+          class="el-upload-list__item is-ready"
+          v-for="(img, index) in carouselImgList"
+          :key="index"
+        >
+          <div>
+            <img
+              :src="img.url"
+              alt="load faild"
+              style="height:146px;width:146x"
+              class="el-upload-list__item-thumbnail"
+            /><span class="el-upload-list__item-actions">
+              <span
+                class="el-upload-list__item-preview"
+                @click="handlePictureCardPreview(img)"
+              >
+                <i class="el-icon-zoom-in"></i>
+              </span>
+              <span
+                v-if="!disabled"
+                class="el-upload-list__item-delete"
+                @click="handleDownload(img)"
+              >
+                <i class="el-icon-download"></i>
+              </span>
+              <span
+                v-if="!disabled"
+                class="el-upload-list__item-delete"
+                @click="handleRemove(img, index)"
+              >
+                <i class="el-icon-delete"></i>
+              </span>
+            </span>
+          </div>
+        </li>
+      </ul>
+
+      <el-upload
+        action="/api/file/upload-carouse-img"
+        list-type="picture-card"
+        accept="image/gif,image/jpeg,image/jpg,image/png,image/svg,image/jfif,image/webp"
+        :on-preview="handlePictureCardPreview"
+        :on-remove="handleRemove"
+        style="display: inline;"
+      >
+        <i class="el-icon-plus"></i>
+      </el-upload>
+      <el-dialog :visible.sync="dialogVisible">
+        <img width="100%" :src="dialogImageUrl" alt="" />
+      </el-dialog>
+      <el-dialog :visible.sync="dialogVisible">
+        <img width="100%" :src="dialogImageUrl" alt="" />
+      </el-dialog>
+    </el-card>
+
+    <el-card style="margin-top:15px">
+      <div slot="header">
         <span class="panel-title home-title">{{ $t('m.SMTP_Config') }}</span>
       </div>
       <el-form label-position="left" label-width="80px" :model="smtp">
@@ -279,6 +343,7 @@
 <script>
 import api from '@/common/api';
 import myMessage from '@/common/message';
+import utils from '@/common/utils';
 export default {
   name: 'SystemConfig',
   data() {
@@ -296,6 +361,10 @@ export default {
       },
       websiteConfig: {},
       databaseConfig: {},
+      dialogImageUrl: '',
+      dialogVisible: false,
+      disabled: false,
+      carouselImgList: [],
     };
   },
   mounted() {
@@ -307,6 +376,11 @@ export default {
         myMessage.warning('No STMP Config');
       }
     });
+
+    api.getHomeCarousel().then((res) => {
+      this.carouselImgList = res.data.data;
+    });
+
     api
       .admin_getWebsiteConfig()
       .then((res) => {
@@ -321,6 +395,25 @@ export default {
         .catch(() => {});
   },
   methods: {
+    handleRemove(file, index = undefined) {
+      let id = file.id;
+      if (file.response != null) {
+        id = file.response.data.id;
+      }
+      api.admin_deleteHomeCarousel(id).then((res) => {
+        myMessage.success(this.$i18n.t('m.Delete_successfully'));
+        if (index != undefined) {
+          this.carouselImgList.splice(index, 1);
+        }
+      });
+    },
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
+    },
+    handleDownload(file) {
+      utils.downloadFile(file.url);
+    },
     saveSMTPConfig() {
       api.admin_editSMTPConfig(this.smtp).then(
         (res) => {

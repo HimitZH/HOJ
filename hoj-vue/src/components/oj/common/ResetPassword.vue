@@ -111,7 +111,7 @@ export default {
     },
     countDown() {
       let i = this.time;
-      this.resetText = i + 's, ' + this.$i18n.t('m.Watting_Can_Resend_Email');
+      this.resetText = i + 's, ' + this.$i18n.t('m.Waiting_Can_Resend_Email');
       if (i == 0) {
         this.btnResetPwdDisabled = false;
         this.resetText = this.$i18n.t('m.Send_Password_Reset_Email');

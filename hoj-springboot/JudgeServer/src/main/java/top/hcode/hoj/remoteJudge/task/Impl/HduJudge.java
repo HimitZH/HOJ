@@ -163,7 +163,7 @@ public class HduJudge implements RemoteJudgeStrategy {
     // TODO 添加结果对应的状态
     private static final Map<String, Constants.Judge> statusTypeMap = new HashMap<String, Constants.Judge>() {
         {
-            put("Submitted", Constants.Judge.STATUS_SUBMITTING);
+            put("Submitted", Constants.Judge.STATUS_PENDING);
             put("Accepted", Constants.Judge.STATUS_ACCEPTED);
             put("Wrong Answer", Constants.Judge.STATUS_WRONG_ANSWER);
             put("Compilation Error", Constants.Judge.STATUS_COMPILE_ERROR);
@@ -171,6 +171,7 @@ public class HduJudge implements RemoteJudgeStrategy {
             put("Running", Constants.Judge.STATUS_JUDGING);
             put("Compiling", Constants.Judge.STATUS_COMPILING);
             put("Time Limit Exceeded", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED);
+            put("Memory Limit Exceeded", Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED);
             put("Presentation Error", Constants.Judge.STATUS_PRESENTATION_ERROR);
         }
     };

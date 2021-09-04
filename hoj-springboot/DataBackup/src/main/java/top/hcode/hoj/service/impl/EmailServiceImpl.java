@@ -169,7 +169,15 @@ public class EmailServiceImpl implements EmailService {
             context.setVariable(Constants.Email.OJ_SHORT_NAME.name(), ojShortName.toUpperCase());
             context.setVariable(Constants.Email.OJ_URL.name(), ojAddr);
             context.setVariable(Constants.Email.EMAIL_BACKGROUND_IMG.name(), ojEmailBg);
-            context.setVariable("RESET_URL", Constants.Email.OJ_URL.getValue() + "/reset-password?username=" + username + "&code=" + code);
+
+            String resetUrl;
+            if (ojAddr.endsWith("/")) {
+                resetUrl = ojAddr + "reset-password?username=" + username + "&code=" + code;
+            } else {
+                resetUrl = ojAddr + "/reset-password?username=" + username + "&code=" + code;
+            }
+
+            context.setVariable("RESET_URL", resetUrl);
             context.setVariable("EXPIRE_TIME", expireTime.toString());
             context.setVariable("USERNAME", username);
 
