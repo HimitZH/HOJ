@@ -308,6 +308,7 @@ public class JudgeController {
      */
     @GetMapping("/submission")
     public CommonResult getSubmission(@RequestParam(value = "submitId", required = true) Long submitId, HttpServletRequest request) {
+
         Judge judge = judgeService.getById(submitId);
         if (judge == null) {
             return CommonResult.errorResponse("此提交数据不存在！");
@@ -347,7 +348,10 @@ public class JudgeController {
                     result.put("submission", new Judge().setStatus(Constants.Judge.STATUS_SUBMITTED_UNKNOWN_RESULT.getStatus()));
                     return CommonResult.successResponse(result, "获取提交数据成功！");
                 }
-                judge.setCode(null);
+                // 不是本人的话不能查看代码
+                if(!userRolesVo.getUid().equals(judge.getUid())) {
+                    judge.setCode(null);
+                }
             }
         } else {
             boolean admin = SecurityUtils.getSubject().hasRole("problem_admin");// 是否为题目管理员
