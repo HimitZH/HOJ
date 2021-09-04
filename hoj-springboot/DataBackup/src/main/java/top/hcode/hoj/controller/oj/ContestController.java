@@ -1,5 +1,6 @@
 package top.hcode.hoj.controller.oj;
 
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -312,13 +313,14 @@ public class ContestController {
             tmpMap.put(language.getId(), language.getName());
         });
 
+        Date now = new Date();
         Date sealRankTime = null;
         //封榜时间除超级管理员和比赛管理员外 其它人不可看到最新数据
         if (contest.getSealRank() &&
                 !isRoot &&
                 !userRolesVo.getUid().equals(contest.getUid()) &&
                 contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode() &&
-                contest.getSealRankTime().before(new Date())) {
+                contest.getSealRankTime().before(now)) {
             sealRankTime = contest.getSealRankTime();
         }
 
@@ -340,6 +342,10 @@ public class ContestController {
             for (CodeTemplate codeTemplate : codeTemplates) {
                 LangNameAndCode.put(tmpMap.get(codeTemplate.getLid()), codeTemplate.getCode());
             }
+        }
+        if (DateUtil.isIn(now, contest.getStartTime(), contest.getEndTime())) {
+            // 比赛过程中隐藏出题人
+            problem.setAuthor(null);
         }
 
         // 将数据统一写入到一个Vo返回数据实体类中
