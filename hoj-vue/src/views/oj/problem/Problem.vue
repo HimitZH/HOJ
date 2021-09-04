@@ -117,9 +117,14 @@
                   </span>
                   <br />
                 </template>
-                <span v-show="problemData.problem.author"
-                  >{{ $t('m.Created') }}：{{ problemData.problem.author }}</span
-                ><br />
+
+                <template v-if="problemData.problem.author">
+                  <span
+                    >{{ $t('m.Created') }}：{{
+                      problemData.problem.author
+                    }}</span
+                  ><br />
+                </template>
               </div>
             </div>
 
