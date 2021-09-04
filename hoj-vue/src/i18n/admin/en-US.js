@@ -114,6 +114,7 @@ export const m = {
   Project_Url:'Project Url',
   Web_Desc: 'Web Desc',
   Allow_Register: 'Allow Register',
+  Home_Rotation_Chart:'Home Rotation Chart',
   SMTP_Config: 'SMTP Config',
   Email_BG:'BG IMG',
   Email_BG_Desc:'SMTP Template Background IMG Address',

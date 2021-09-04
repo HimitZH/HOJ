@@ -118,6 +118,10 @@ const ojApi = {
     return ajax('/api/get-website-config', 'get', {
     })
   },
+  getHomeCarousel(){
+    return ajax('/api/home-carousel', 'get', {
+    })
+  },
   getRecentContests(){
     return ajax('/api/get-recent-contest', 'get', {
     })
@@ -654,6 +658,7 @@ const adminApi = {
       data
     })
   },
+
   // 系统配置
   admin_getSMTPConfig () {
     return ajax('/api/admin/config/get-email-config', 'get')
@@ -663,6 +668,15 @@ const adminApi = {
       data
     })
   },
+
+  admin_deleteHomeCarousel(id){
+    return ajax('/api/admin/config/home-carousel', 'delete',  {
+      params:{
+        id
+      }
+    })
+  },
+
   admin_testSMTPConfig (email) {
     return ajax('/api/admin/config/test-email', 'post', {
       data: {

@@ -77,7 +77,6 @@
         </vxe-table-column>
         <vxe-table-column
           field="realname"
-          fixed="left"
           min-width="96"
           :title="$t('m.RealName')"
           v-if="isContestAdmin"
@@ -128,9 +127,32 @@
               <span v-if="row.submissionInfo[problem.displayId].isAC"
                 >{{ row.submissionInfo[problem.displayId].ACTime }}<br
               /></span>
-              <span v-if="row.submissionInfo[problem.displayId].errorNum != 0"
-                >(-{{ row.submissionInfo[problem.displayId].errorNum }})</span
+              <span
+                v-if="
+                  row.submissionInfo[problem.displayId].tryNum == null &&
+                    row.submissionInfo[problem.displayId].errorNum != 0
+                "
               >
+                (-{{
+                  row.submissionInfo[problem.displayId].errorNum > 0
+                    ? row.submissionInfo[problem.displayId].errorNum
+                    : 0
+                }})
+              </span>
+              <span v-if="row.submissionInfo[problem.displayId].tryNum != null"
+                ><template
+                  v-if="row.submissionInfo[problem.displayId].errorNum > 0"
+                >
+                  (-{{
+                    row.submissionInfo[problem.displayId].errorNum
+                  }})+</template
+                >({{ row.submissionInfo[problem.displayId].tryNum
+                }}{{
+                  row.submissionInfo[problem.displayId].tryNum > 1
+                    ? ' tries'
+                    : ' try'
+                }})
+              </span>
             </span>
           </template>
         </vxe-table-column>
@@ -301,6 +323,8 @@ export default {
             cellClass[problemID] = 'first-ac';
           } else if (status.isAC) {
             cellClass[problemID] = 'ac';
+          } else if (status.tryNum != null && status.tryNum > 0) {
+            cellClass[problemID] = 'try';
           } else if (status.errorNum != 0) {
             cellClass[problemID] = 'wa';
           }

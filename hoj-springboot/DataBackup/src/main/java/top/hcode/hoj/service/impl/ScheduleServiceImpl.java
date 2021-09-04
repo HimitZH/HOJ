@@ -10,6 +10,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.JsoupUtils;
 import top.hcode.hoj.utils.RedisUtils;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -51,7 +54,6 @@ import java.util.concurrent.TimeUnit;
  * "C" 代表“Calendar”的意思。它的意思是计划所关联的日期，如果日期没有被关联，则相当于日历中所有日期。
  */
 @Service
-@Async
 @Slf4j(topic = "hoj")
 public class ScheduleServiceImpl implements ScheduleService {
 
@@ -203,14 +205,8 @@ public class ScheduleServiceImpl implements ScheduleService {
             // 格式化api
             String ratingAPI = String.format(codeforcesUserInfoAPI, cfUsername);
             try {
-                // 防止cf的频率限制
-                try {
-                    TimeUnit.SECONDS.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 // 连接api，获取json格式对象
-                JSONObject resultObject = JsoupUtils.getJsonFromConnection(JsoupUtils.getConnectionFromUrl(ratingAPI, null, null));
+                JSONObject resultObject = getCFUserInfo(ratingAPI);
                 // 获取状态码
                 String status = resultObject.getStr("status");
                 // 如果查无此用户，则跳过
@@ -234,6 +230,13 @@ public class ScheduleServiceImpl implements ScheduleService {
             }
         }
         log.info("获取Codeforces Rating成功！");
+    }
+
+    @Retryable(value = Exception.class,
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 500))
+    public JSONObject getCFUserInfo(String url) throws Exception {
+        return JsoupUtils.getJsonFromConnection(JsoupUtils.getConnectionFromUrl(url, null, null));
     }
 
 }

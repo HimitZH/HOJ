@@ -12,6 +12,8 @@ public interface FileService extends IService<File> {
 
     List<File> queryDeleteAvatarList();
 
+    List<File> queryCarouselFileList();
+
     List<List<String>> getContestRankExcelHead(List<String> contestProblemDisplayIDList, Boolean isACM);
 
     List<List<Object>> changeACMContestRankToExcelRowList(List<ACMContestRankVo> acmContestRankVoList, List<String> contestProblemDisplayIDList);
