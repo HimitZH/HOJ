@@ -1,9 +1,6 @@
 package top.hcode.hoj.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -21,6 +18,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="File对象", description="")
+@TableName("`file`")
 public class File {
     private static final long serialVersionUID = 1L;
 
@@ -31,6 +29,7 @@ public class File {
     private String uid;
 
     @ApiModelProperty(value = "文件所属类型，例如avatar")
+    @TableField("`type`")
     private String type;
 
     @ApiModelProperty(value = "文件名")
@@ -46,6 +45,7 @@ public class File {
     private String filePath;
 
     @ApiModelProperty(value = "是否删除")
+    @TableField("`delete`")
     private Boolean delete;
 
     @ApiModelProperty(value = "创建时间")

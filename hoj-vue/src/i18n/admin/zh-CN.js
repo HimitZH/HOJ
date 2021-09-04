@@ -114,6 +114,7 @@ export const m = {
   Project_Url:'项目地址',
   Web_Desc: '网站简介',
   Allow_Register: '是否允许注册',
+  Home_Rotation_Chart:'首页轮播图',
   SMTP_Config: 'SMTP 设置',
   Email_BG:'邮件背景',
   Email_BG_Desc:'请输入邮件背景图的URL链接',

@@ -589,6 +589,7 @@ public class AccountController {
                 .setNickname(nickname)
                 .setSignature((String) params.get("signature"))
                 .setBlog((String) params.get("blog"))
+                .setEmail(userRolesVo.getEmail())
                 .setGithub((String) params.get("github"))
                 .setSchool((String) params.get("school"))
                 .setNumber((String) params.get("number"));

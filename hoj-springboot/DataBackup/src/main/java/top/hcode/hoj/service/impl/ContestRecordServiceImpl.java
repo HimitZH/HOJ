@@ -1,10 +1,12 @@
 package top.hcode.hoj.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.hcode.hoj.dao.UserInfoMapper;
+import top.hcode.hoj.pojo.entity.Contest;
 import top.hcode.hoj.pojo.entity.UserInfo;
 import top.hcode.hoj.pojo.vo.ACMContestRankVo;
 import top.hcode.hoj.pojo.entity.ContestRecord;
@@ -105,10 +107,12 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
 
     @Override
-    public IPage<ACMContestRankVo> getContestACMRank(List<ContestRecord> contestRecordList, int currentPage, int limit) {
+    public IPage<ACMContestRankVo> getContestACMRank(Boolean isOpenSealRank, Contest contest,
+                                                     List<ContestRecord> contestRecordList,
+                                                     int currentPage, int limit) {
 
         // 进行排序计算
-        List<ACMContestRankVo> orderResultList = calcACMRank(contestRecordList);
+        List<ACMContestRankVo> orderResultList = calcACMRank(isOpenSealRank, contest, contestRecordList);
         // 计算好排行榜，然后进行分页
         Page<ACMContestRankVo> page = new Page<>(currentPage, limit);
         int count = orderResultList.size();
@@ -159,7 +163,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
     }
 
 
-    public List<ACMContestRankVo> calcACMRank(List<ContestRecord> contestRecordList) {
+    public List<ACMContestRankVo> calcACMRank(boolean isOpenSealRank, Contest contest, List<ContestRecord> contestRecordList) {
 
         List<UserInfo> superAdminList = getSuperAdminList();
 
@@ -203,46 +207,60 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
             HashMap<String, Object> problemSubmissionInfo = ACMContestRankVo.getSubmissionInfo().getOrDefault(contestRecord.getDisplayId(), new HashMap<>());
 
-            // 如果该题目已经AC过了，那么只记录提交次数，其它都不记录了
             ACMContestRankVo.setTotal(ACMContestRankVo.getTotal() + 1);
-            if ((Boolean) problemSubmissionInfo.getOrDefault("isAC", false)) {
-                continue;
-            }
 
-            // 记录已经按题目提交耗时time升序了
+            // 如果是当前是开启封榜的时段和同时该提交是处于封榜时段 尝试次数+1
+            if (isOpenSealRank && isInSealTimeSubmission(contest, contestRecord.getSubmitTime())) {
 
-            // 通过的话
-            if (contestRecord.getStatus().intValue() == Constants.Contest.RECORD_AC.getCode()) {
-                // 总解决题目次数ac+1
-                ACMContestRankVo.setAc(ACMContestRankVo.getAc() + 1);
+                int tryNum = (int) problemSubmissionInfo.getOrDefault("tryNum", 0);
+                problemSubmissionInfo.put("tryNum", tryNum + 1);
 
-                // 判断是不是first AC
-                boolean isFirstAC = false;
-                Long time = firstACMap.getOrDefault(contestRecord.getDisplayId(), null);
-                if (time == null) {
-                    isFirstAC = true;
-                    firstACMap.put(contestRecord.getDisplayId(), contestRecord.getTime());
-                } else {
-                    // 相同提交时间也是first AC
-                    if (time.longValue() == contestRecord.getTime().longValue()) {
-                        isFirstAC = true;
-                    }
+            } else {
+
+                // 如果该题目已经AC过了，其它都不记录了
+                if ((Boolean) problemSubmissionInfo.getOrDefault("isAC", false)) {
+                    continue;
                 }
 
-                int errorNumber = (int) problemSubmissionInfo.getOrDefault("errorNum", 0);
-                problemSubmissionInfo.put("isAC", true);
-                problemSubmissionInfo.put("isFirstAC", isFirstAC);
-                problemSubmissionInfo.put("ACTime", contestRecord.getTime());
-                problemSubmissionInfo.put("errorNum", errorNumber);
+                // 记录已经按题目提交耗时time升序了
 
-                // 同时计算总耗时，总耗时加上 该题目未AC前的错误次数*20*60+题目AC耗时
-                ACMContestRankVo.setTotalTime(ACMContestRankVo.getTotalTime() + errorNumber * 20 * 60 + contestRecord.getTime());
+                // 通过的话
+                if (contestRecord.getStatus().intValue() == Constants.Contest.RECORD_AC.getCode()) {
+                    // 总解决题目次数ac+1
+                    ACMContestRankVo.setAc(ACMContestRankVo.getAc() + 1);
 
-                // 未通过同时需要记录罚时次数
-            } else if (contestRecord.getStatus().intValue() == Constants.Contest.RECORD_NOT_AC_PENALTY.getCode()) {
+                    // 判断是不是first AC
+                    boolean isFirstAC = false;
+                    Long time = firstACMap.getOrDefault(contestRecord.getDisplayId(), null);
+                    if (time == null) {
+                        isFirstAC = true;
+                        firstACMap.put(contestRecord.getDisplayId(), contestRecord.getTime());
+                    } else {
+                        // 相同提交时间也是first AC
+                        if (time.longValue() == contestRecord.getTime().longValue()) {
+                            isFirstAC = true;
+                        }
+                    }
 
-                int errorNumber = (int) problemSubmissionInfo.getOrDefault("errorNum", 0);
-                problemSubmissionInfo.put("errorNum", errorNumber + 1);
+                    int errorNumber = (int) problemSubmissionInfo.getOrDefault("errorNum", 0);
+                    problemSubmissionInfo.put("isAC", true);
+                    problemSubmissionInfo.put("isFirstAC", isFirstAC);
+                    problemSubmissionInfo.put("ACTime", contestRecord.getTime());
+                    problemSubmissionInfo.put("errorNum", errorNumber);
+
+                    // 同时计算总耗时，总耗时加上 该题目未AC前的错误次数*20*60+题目AC耗时
+                    ACMContestRankVo.setTotalTime(ACMContestRankVo.getTotalTime() + errorNumber * 20 * 60 + contestRecord.getTime());
+
+                    // 未通过同时需要记录罚时次数
+                } else if (contestRecord.getStatus().intValue() == Constants.Contest.RECORD_NOT_AC_PENALTY.getCode()) {
+
+                    int errorNumber = (int) problemSubmissionInfo.getOrDefault("errorNum", 0);
+                    problemSubmissionInfo.put("errorNum", errorNumber + 1);
+                }else{
+
+                    int errorNumber = (int) problemSubmissionInfo.getOrDefault("errorNum", 0);
+                    problemSubmissionInfo.put("errorNum", errorNumber);
+                }
             }
             ACMContestRankVo.getSubmissionInfo().put(contestRecord.getDisplayId(), problemSubmissionInfo);
         }
@@ -340,5 +358,10 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                         .thenComparing(OIContestRankVo::getTotalTime, Comparator.naturalOrder()))
                 .collect(Collectors.toList());
         return orderResultList;
+    }
+
+
+    private boolean isInSealTimeSubmission(Contest contest, Date submissionDate) {
+        return DateUtil.isIn(submissionDate, contest.getSealRankTime(), contest.getEndTime());
     }
 }

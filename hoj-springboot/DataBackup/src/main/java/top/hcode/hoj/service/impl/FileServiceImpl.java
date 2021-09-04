@@ -34,6 +34,11 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     }
 
     @Override
+    public List<File> queryCarouselFileList(){
+        return fileMapper.queryCarouselFileList();
+    }
+
+    @Override
     public List<List<String>> getContestRankExcelHead(List<String> contestProblemDisplayIDList, Boolean isACM) {
         List<List<String>> headList = new LinkedList<>();
         List<String> head0 = new LinkedList<>();
