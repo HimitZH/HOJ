@@ -62,7 +62,7 @@
         <vxe-table-column
           field="username"
           fixed="left"
-          min-width="96"
+          min-width="112"
           :title="$t('m.User')"
         >
           <template v-slot="{ row }">
@@ -101,14 +101,14 @@
         <vxe-table-column
           field="totalTime"
           :title="$t('m.TotalTime')"
-          min-width="80"
+          min-width="100"
         >
           <template v-slot="{ row }">
             <span>{{ parseTotalTime(row.totalTime) }}</span>
           </template>
         </vxe-table-column>
         <vxe-table-column
-          min-width="80"
+          min-width="120"
           v-for="problem in contestProblems"
           :key="problem.displayId"
         >
@@ -447,5 +447,9 @@ a.emphasis:hover {
   text-overflow: ellipsis;
   vertical-align: middle;
   border-bottom: 1px solid #e9eaec;
+}
+/deep/.vxe-table .vxe-cell {
+  padding-left: 5px !important;
+  padding-right: 5px !important;
 }
 </style>
