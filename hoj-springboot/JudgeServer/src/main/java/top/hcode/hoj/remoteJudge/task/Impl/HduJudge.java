@@ -172,6 +172,7 @@ public class HduJudge implements RemoteJudgeStrategy {
             put("Compiling", Constants.Judge.STATUS_COMPILING);
             put("Time Limit Exceeded", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED);
             put("Memory Limit Exceeded", Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED);
+            put("Output Limit Exceeded", Constants.Judge.STATUS_RUNTIME_ERROR);
             put("Presentation Error", Constants.Judge.STATUS_PRESENTATION_ERROR);
         }
     };
