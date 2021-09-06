@@ -44,8 +44,8 @@ spring:
     transaction-query-timeout: 6000 # 事务超时时间
     filters: stat,wall,log4j #数据库日志
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
-
-
+  thymeleaf:
+    encoding: UTF-8
 
 
 mybatis-plus:
