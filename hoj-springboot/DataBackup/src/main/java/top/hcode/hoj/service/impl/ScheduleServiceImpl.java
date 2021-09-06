@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.pojo.entity.File;
+import top.hcode.hoj.pojo.entity.Session;
 import top.hcode.hoj.pojo.entity.UserInfo;
 import top.hcode.hoj.pojo.entity.UserRecord;
 import top.hcode.hoj.service.ScheduleService;
@@ -25,9 +26,11 @@ import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.JsoupUtils;
 import top.hcode.hoj.utils.RedisUtils;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 /**
@@ -68,6 +71,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Autowired
     private UserRecordService userRecordDao;
+
+    @Resource
+    private SessionServiceImpl sessionService;
 
     /**
      * @MethodName deleteAvatar
@@ -237,6 +243,36 @@ public class ScheduleServiceImpl implements ScheduleService {
             backoff = @Backoff(delay = 500))
     public JSONObject getCFUserInfo(String url) throws Exception {
         return JsoupUtils.getJsonFromConnection(JsoupUtils.getConnectionFromUrl(url, null, null));
+    }
+
+
+    /**
+     * @MethodName deleteUserSession
+     * @Params * @param null
+     * @Description 每天3点定时删除用户三个月前的session表记录
+     * @Return
+     * @Since 2021/9/6
+     */
+    @Scheduled(cron = "0 0 3 * * *")
+    @Override
+    public void deleteUserSession() {
+        QueryWrapper<Session> sessionQueryWrapper = new QueryWrapper<>();
+
+        DateTime dateTime = DateUtil.offsetMonth(new Date(), -3);
+        Date threeMonthsBeforeDate = dateTime.toJdkDate();
+        sessionQueryWrapper.select("distinct uid");
+        sessionQueryWrapper.ge("gmt_create", threeMonthsBeforeDate);
+        List<Session> sessionList = sessionService.list(sessionQueryWrapper);
+
+        if (sessionList.size() > 0) {
+            List<String> uidList = sessionList.stream().map(Session::getUid).collect(Collectors.toList());
+            UpdateWrapper<Session> sessionUpdateWrapper = new UpdateWrapper<>();
+            sessionQueryWrapper.in("uid", uidList).lt("gmt_create", threeMonthsBeforeDate);
+            boolean isSuccess = sessionService.remove(sessionUpdateWrapper);
+            if (!isSuccess) {
+                log.error("=============数据库session表定时删除用户三个月前的记录失败===============");
+            }
+        }
     }
 
 }

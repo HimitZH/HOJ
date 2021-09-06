@@ -14,11 +14,7 @@
                 AND j.username like concat('%',#{username},'%')
             </if>
             <if test="status!=null">
-                AND (j.status = #{status}
-                    <if test="status==1">
-                    OR j.status = 2
-                    </if>
-                )
+                AND j.status = #{status}
             </if>
             <if test="uid!=null and uid!=''">
                 AND j.uid = #{uid}
