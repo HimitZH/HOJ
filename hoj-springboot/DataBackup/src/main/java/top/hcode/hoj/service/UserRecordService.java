@@ -1,5 +1,6 @@
 package top.hcode.hoj.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import top.hcode.hoj.pojo.vo.ACMRankVo;
 import top.hcode.hoj.pojo.entity.UserRecord;
@@ -19,11 +20,11 @@ import java.util.List;
  */
 public interface UserRecordService extends IService<UserRecord> {
 
-    Page<ACMRankVo> getACMRankList(int limit, int currentPage);
+    IPage<ACMRankVo> getACMRankList(int limit, int currentPage);
 
     List<ACMRankVo> getRecent7ACRank();
 
-    Page<OIRankVo> getOIRankList(int limit, int currentPage);
+    IPage<OIRankVo> getOIRankList(int limit, int currentPage);
 
     UserHomeVo getUserHomeInfo(String uid);
 

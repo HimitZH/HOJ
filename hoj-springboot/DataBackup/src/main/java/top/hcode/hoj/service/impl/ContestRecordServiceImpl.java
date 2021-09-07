@@ -142,12 +142,12 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         // 获取每个用户每道题最近一次提交
         if (!isOpenSealRank) {
             // 超级管理员和比赛管理员选择强制刷新 或者 比赛结束
-            return getOIContestRank(cid, contestAuthor, false, sealTime, startTime, startTime, currentPage, limit);
+            return getOIContestRank(cid, contestAuthor, false, sealTime, startTime, endTime, currentPage, limit);
         } else {
             String key = Constants.Contest.OI_CONTEST_RANK_CACHE.getName() + "_" + cid;
             Page<OIContestRankVo> page = (Page<OIContestRankVo>) redisUtils.get(key);
             if (page == null) {
-                page = getOIContestRank(cid, contestAuthor, true, sealTime, startTime, startTime, currentPage, limit);
+                page = getOIContestRank(cid, contestAuthor, true, sealTime, startTime, endTime, currentPage, limit);
                 redisUtils.set(key, page, 2 * 3600);
             }
             return page;
@@ -156,8 +156,9 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
     }
 
 
-    private Page<OIContestRankVo> getOIContestRank(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime,
+    public Page<OIContestRankVo> getOIContestRank(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime,
                                                    Date startTime, Date endTime, int currentPage, int limit) {
+
         List<ContestRecord> oiContestRecord = contestRecordMapper.getOIContestRecord(cid, contestAuthor, isOpenSealRank, sealTime, startTime, endTime);
         // 计算排名
         List<OIContestRankVo> orderResultList = calcOIRank(oiContestRecord);
