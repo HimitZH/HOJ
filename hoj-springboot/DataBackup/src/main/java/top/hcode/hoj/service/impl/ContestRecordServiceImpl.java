@@ -16,6 +16,7 @@ import top.hcode.hoj.service.ContestRecordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.utils.RedisUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -37,6 +38,9 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
     @Autowired
     private UserInfoMapper userInfoMapper;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
 
     @Override
@@ -132,11 +136,29 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
 
     @Override
-    public IPage<OIContestRankVo> getContestOIRank(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime, Date startTime, Date endTime, int currentPage, int limit) {
+    public IPage<OIContestRankVo> getContestOIRank(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime,
+                                                   Date startTime, Date endTime, int currentPage, int limit) {
 
         // 获取每个用户每道题最近一次提交
-        List<ContestRecord> oiContestRecord = contestRecordMapper.getOIContestRecord(cid, contestAuthor, isOpenSealRank, sealTime, startTime, endTime);
+        if (!isOpenSealRank) {
+            // 超级管理员和比赛管理员选择强制刷新 或者 比赛结束
+            return getOIContestRank(cid, contestAuthor, false, sealTime, startTime, startTime, currentPage, limit);
+        } else {
+            String key = Constants.Contest.OI_CONTEST_RANK_CACHE.getName() + "_" + cid;
+            Page<OIContestRankVo> page = (Page<OIContestRankVo>) redisUtils.get(key);
+            if (page == null) {
+                page = getOIContestRank(cid, contestAuthor, true, sealTime, startTime, startTime, currentPage, limit);
+                redisUtils.set(key, page, 2 * 3600);
+            }
+            return page;
+        }
 
+    }
+
+
+    private Page<OIContestRankVo> getOIContestRank(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime,
+                                                   Date startTime, Date endTime, int currentPage, int limit) {
+        List<ContestRecord> oiContestRecord = contestRecordMapper.getOIContestRecord(cid, contestAuthor, isOpenSealRank, sealTime, startTime, endTime);
         // 计算排名
         List<OIContestRankVo> orderResultList = calcOIRank(oiContestRecord);
 
@@ -153,7 +175,6 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         page.setCurrent(currentPage);
         page.setTotal(count);
         page.setRecords(pageList);
-
         return page;
     }
 
@@ -256,7 +277,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
                     int errorNumber = (int) problemSubmissionInfo.getOrDefault("errorNum", 0);
                     problemSubmissionInfo.put("errorNum", errorNumber + 1);
-                }else{
+                } else {
 
                     int errorNumber = (int) problemSubmissionInfo.getOrDefault("errorNum", 0);
                     problemSubmissionInfo.put("errorNum", errorNumber);
