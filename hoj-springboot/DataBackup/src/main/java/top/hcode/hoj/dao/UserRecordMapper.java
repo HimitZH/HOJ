@@ -1,12 +1,14 @@
 package top.hcode.hoj.dao;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.vo.ACMRankVo;
 import top.hcode.hoj.pojo.entity.UserRecord;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.OIRankVo;
 import top.hcode.hoj.pojo.vo.UserHomeVo;
 
@@ -23,9 +25,9 @@ import java.util.List;
 @Mapper
 @Repository
 public interface UserRecordMapper extends BaseMapper<UserRecord> {
-    List<ACMRankVo> getACMRankList(IPage page);
+    IPage<ACMRankVo> getACMRankList(Page<ACMRankVo> page);
     List<ACMRankVo> getRecent7ACRank();
-    List<OIRankVo> getOIRankList(IPage page);
+    IPage<OIRankVo> getOIRankList(Page<OIRankVo> page);
     UserHomeVo getUserHomeInfo(@Param("uid") String uid);
 
 }

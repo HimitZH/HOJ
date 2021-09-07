@@ -1,5 +1,6 @@
 package top.hcode.hoj.controller.oj;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +41,7 @@ public class RankController {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 30;
 
-        Page rankList = null;
+        IPage rankList = null;
         // 根据type查询不同类型的排行榜
         if (type.intValue() == Constants.Contest.TYPE_ACM.getCode()) {
             rankList = userRecordService.getACMRankList(limit, currentPage);
