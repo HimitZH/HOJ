@@ -1,5 +1,6 @@
 package top.hcode.hoj.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.hcode.hoj.pojo.vo.ACMRankVo;
@@ -36,19 +37,19 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
     private static final long cacheRankSecond = 60;
 
     @Override
-    public Page<ACMRankVo> getACMRankList(int limit, int currentPage) {
+    public IPage<ACMRankVo> getACMRankList(int limit, int currentPage) {
 
-        Page<ACMRankVo> page = new Page<>(currentPage, limit);
         String key = Constants.Account.ACM_RANK_CACHE.getCode() + "_" + limit + "_" + currentPage;
 
-        List<ACMRankVo> data = (List<ACMRankVo>) redisUtils.get(key);
+        IPage<ACMRankVo> data = (IPage<ACMRankVo>) redisUtils.get(key);
 
         if (data == null) {
+            Page<ACMRankVo> page = new Page<>(currentPage, limit);
             data = userRecordMapper.getACMRankList(page);
             redisUtils.set(key, data, cacheRankSecond);
         }
 
-        return page.setRecords(data);
+        return data;
     }
 
 
@@ -58,19 +59,19 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
     }
 
     @Override
-    public Page<OIRankVo> getOIRankList(int limit, int currentPage) {
+    public IPage<OIRankVo> getOIRankList(int limit, int currentPage) {
 
-        Page<OIRankVo> page = new Page<>(currentPage, limit);
         String key = Constants.Account.OI_RANK_CACHE.getCode() + "_" + limit + "_" + currentPage;
 
-        List<OIRankVo> data = (List<OIRankVo>) redisUtils.get(key);
+        IPage<OIRankVo> data = (IPage<OIRankVo>) redisUtils.get(key);
 
         if (data == null) {
+            Page<OIRankVo> page = new Page<>(currentPage, limit);
             data = userRecordMapper.getOIRankList(page);
             redisUtils.set(key, data, cacheRankSecond);
         }
 
-        return page.setRecords(data);
+        return data;
     }
 
     @Override
