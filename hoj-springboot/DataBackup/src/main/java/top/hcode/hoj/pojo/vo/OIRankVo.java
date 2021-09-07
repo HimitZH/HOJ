@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
  */
 @ApiModel(value="OI排行榜数据类OIRankVo", description="")
 @Data
-public class OIRankVo {
+public class OIRankVo implements Serializable {
     @ApiModelProperty(value = "用户id")
     private String uid;
 

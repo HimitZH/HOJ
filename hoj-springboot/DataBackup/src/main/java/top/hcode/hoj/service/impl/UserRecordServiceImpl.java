@@ -10,6 +10,8 @@ import top.hcode.hoj.pojo.vo.UserHomeVo;
 import top.hcode.hoj.service.UserRecordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.utils.RedisUtils;
 
 import java.util.List;
 
@@ -27,14 +29,28 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
     @Autowired
     private UserRecordMapper userRecordMapper;
 
+    @Autowired
+    private RedisUtils redisUtils;
+
+    // 排行榜缓存时间 60s
+    private static final long cacheRankSecond = 60;
+
     @Override
     public Page<ACMRankVo> getACMRankList(int limit, int currentPage) {
 
-        //新建分页
         Page<ACMRankVo> page = new Page<>(currentPage, limit);
+        String key = Constants.Account.ACM_RANK_CACHE.getCode() + "_" + limit + "_" + currentPage;
 
-        return page.setRecords(userRecordMapper.getACMRankList(page));
+        List<ACMRankVo> data = (List<ACMRankVo>) redisUtils.get(key);
+
+        if (data == null) {
+            data = userRecordMapper.getACMRankList(page);
+            redisUtils.set(key, data, cacheRankSecond);
+        }
+
+        return page.setRecords(data);
     }
+
 
     @Override
     public List<ACMRankVo> getRecent7ACRank() {
@@ -43,10 +59,18 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
 
     @Override
     public Page<OIRankVo> getOIRankList(int limit, int currentPage) {
-        //新建分页
-        Page<OIRankVo> page = new Page<>(currentPage, limit);
 
-        return page.setRecords(userRecordMapper.getOIRankList(page));
+        Page<OIRankVo> page = new Page<>(currentPage, limit);
+        String key = Constants.Account.OI_RANK_CACHE.getCode() + "_" + limit + "_" + currentPage;
+
+        List<OIRankVo> data = (List<OIRankVo>) redisUtils.get(key);
+
+        if (data == null) {
+            data = userRecordMapper.getOIRankList(page);
+            redisUtils.set(key, data, cacheRankSecond);
+        }
+
+        return page.setRecords(data);
     }
 
     @Override
