@@ -101,7 +101,9 @@ public class Constants {
 
         RECORD_NOT_AC_PENALTY(-1, "未AC通过算罚时"),
         RECORD_NOT_AC_NOT_PENALTY(0, "未AC通过不罚时"),
-        RECORD_AC(1, "AC通过");
+        RECORD_AC(1, "AC通过"),
+
+        OI_CONTEST_RANK_CACHE(null,"oi_contest_rank_cache");
 
         private final Integer code;
         private final String name;
@@ -130,7 +132,10 @@ public class Constants {
         CODE_CHANGE_PASSWORD_LOCK("change-password-lock:"),
         CODE_ACCOUNT_LOCK("account-lock:"),
         CODE_CHANGE_EMAIL_FAIL("change-email-fail:"),
-        CODE_CHANGE_EMAIL_LOCK("change-email-lock:");
+        CODE_CHANGE_EMAIL_LOCK("change-email-lock:"),
+
+        ACM_RANK_CACHE("acm_rank_cache"),
+        OI_RANK_CACHE("oi_rank_cache");
 
         private final String code;
 

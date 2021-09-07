@@ -53,7 +53,7 @@ export const m = {
   Code_Check_Required:'验证码不能为空',
   Code_Check_Length:'请输入6位数字的验证码',
   The_system_is_processing:'请稍等... 系统正在处理...',
-  Register_Send_Email_Msg:'验证码已发送至指定邮箱！如果长时间没收到邮件，请检查你的邮箱是否准确！',
+  Register_Send_Email_Msg:'发送成功！如果长时间没收到邮件，请检查你的邮箱是否准确！',
   Thanks_for_registering: '感谢您的注册，您现在可以登录了',
 
   // /components/oj/common/ResetPassword.vue 重置密码弹窗
@@ -62,7 +62,7 @@ export const m = {
   Reset_Password_Captcha: '请输入验证码',
   Send_Password_Reset_Email: '发送密码重置邮件',
   Waiting_Can_Resend_Email:'请稍等片刻，重新发送重置邮件...',
-  ResetPwd_Send_Email_Msg:'重置密码邮件已发送至指定邮箱！如果长时间没收到邮件，请检查你的邮箱是否准确！',
+  ResetPwd_Send_Email_Msg:'发送成功！如果长时间没收到邮件，请检查你的邮箱是否准确！',
   Remember_Passowrd_To_Login:'咦，好像记得密码? 请尝试登录!',
   Set_New_Password:'设置新密码',
   Set_New_Password_Msg: '请输入新密码',

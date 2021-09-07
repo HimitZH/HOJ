@@ -240,7 +240,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Retryable(value = Exception.class,
             maxAttempts = 5,
-            backoff = @Backoff(delay = 500))
+            backoff = @Backoff(delay = 500,multiplier = 1.4))
     public JSONObject getCFUserInfo(String url) throws Exception {
         return JsoupUtils.getJsonFromConnection(JsoupUtils.getConnectionFromUrl(url, null, null));
     }
