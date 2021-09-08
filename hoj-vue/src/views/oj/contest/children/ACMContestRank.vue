@@ -47,7 +47,7 @@
       <vxe-table
         round
         auto-resize
-        size="mini"
+        size="medium"
         align="center"
         :data="dataRank"
         :cell-class-name="cellClassName"
