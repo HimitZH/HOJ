@@ -47,7 +47,7 @@
       <vxe-table
         round
         auto-resize
-        size="small"
+        size="medium"
         align="center"
         ref="OIContestRank"
         :data="dataRank"
