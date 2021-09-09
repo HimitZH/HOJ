@@ -2,7 +2,9 @@
   <div class="page">
     <el-pagination
       background
+      :small="isMobile"
       :total="total"
+      :pager-count="5"
       :page-size="pageSize"
       @current-change="onChange"
       @size-change="onPageSizeChange"
@@ -39,6 +41,18 @@ export default {
       type: String,
       default: 'prev, pager, next',
     },
+    isMobile: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  created() {
+    let screenWidth = window.screen.width;
+    if (screenWidth < 768) {
+      this.isMobile = true;
+    } else {
+      this.isMobile = false;
+    }
   },
   methods: {
     onChange(page) {
@@ -59,6 +73,16 @@ export default {
 <style scoped>
 .page {
   margin: 20px;
+  margin-right: 0px;
   float: right;
+}
+.el-pagination {
+  padding-right: 0px !important;
+}
+/deep/.el-pagination__sizes {
+  margin: 0px !important;
+}
+/deep/.el-pagination .el-select .el-input {
+  margin-right: 0px !important;
 }
 </style>
