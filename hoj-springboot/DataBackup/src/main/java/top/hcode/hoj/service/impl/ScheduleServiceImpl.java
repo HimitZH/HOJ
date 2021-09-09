@@ -28,6 +28,7 @@ import top.hcode.hoj.utils.RedisUtils;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -240,7 +241,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Retryable(value = Exception.class,
             maxAttempts = 5,
-            backoff = @Backoff(delay = 500,multiplier = 1.4))
+            backoff = @Backoff(delay = 500, multiplier = 1.4))
     public JSONObject getCFUserInfo(String url) throws Exception {
         return JsoupUtils.getJsonFromConnection(JsoupUtils.getConnectionFromUrl(url, null, null));
     }
@@ -259,15 +260,17 @@ public class ScheduleServiceImpl implements ScheduleService {
         QueryWrapper<Session> sessionQueryWrapper = new QueryWrapper<>();
 
         DateTime dateTime = DateUtil.offsetMonth(new Date(), -3);
-        Date threeMonthsBeforeDate = dateTime.toJdkDate();
+        String threeMonthsBeforeDate = dateTime.toString("yyyy-MM-dd HH:mm:ss");
         sessionQueryWrapper.select("distinct uid");
-        sessionQueryWrapper.ge("gmt_create", threeMonthsBeforeDate);
+        sessionQueryWrapper.apply("UNIX_TIMESTAMP(gmt_create) >= UNIX_TIMESTAMP('{0}')", threeMonthsBeforeDate);
         List<Session> sessionList = sessionService.list(sessionQueryWrapper);
 
         if (sessionList.size() > 0) {
             List<String> uidList = sessionList.stream().map(Session::getUid).collect(Collectors.toList());
             UpdateWrapper<Session> sessionUpdateWrapper = new UpdateWrapper<>();
-            sessionQueryWrapper.in("uid", uidList).lt("gmt_create", threeMonthsBeforeDate);
+            sessionQueryWrapper.in("uid", uidList)
+                    .and(t -> t.apply("UNIX_TIMESTAMP(gmt_create) < UNIX_TIMESTAMP('{0}')", threeMonthsBeforeDate));
+
             boolean isSuccess = sessionService.remove(sessionUpdateWrapper);
             if (!isSuccess) {
                 log.error("=============数据库session表定时删除用户三个月前的记录失败===============");
