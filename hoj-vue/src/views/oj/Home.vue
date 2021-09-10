@@ -83,7 +83,10 @@
             arrow="always"
             indicator-position="outside"
           >
-            <el-carousel-item v-for="item in carouselImgList" :key="item">
+            <el-carousel-item
+              v-for="(item, index) in carouselImgList"
+              :key="index"
+            >
               <el-image :src="item.url" fit="fill"></el-image>
             </el-carousel-item>
           </el-carousel>
