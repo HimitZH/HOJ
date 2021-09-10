@@ -8,34 +8,40 @@
 [![Vue](https://img.shields.io/badge/Vue-2.6.11-success)](https://cn.vuejs.org/)
 [![QQ Group 598587305](https://img.shields.io/badge/QQ%20Group-598587305-blue)](https://qm.qq.com/cgi-bin/qm/qr?k=WWGBZ5gfDiBZOcpNvM8xnZTfUq7BT4Rs&jump_from=webapi)
 
-> 前言
+## 一、前言
 
-基于前后端分离，分布式架构的在线测评平台（hoj），前端使用vue，后端主要使用springboot，redis，mysql，nacos等技术。
+基于前后端分离，分布式架构的在线测评平台（hoj），前端使用vue，后端主要使用springboot，redis，mysql，nacos等技术，**支持HDU、POJ、Codeforces的vjudge判题，同时适配手机端、电脑端浏览。**
 
-在线Demo：[https://hdoi.cn](https://hdoi.cn)
+|              在线Demo              |                         在线文档                          |                     Github&Gitee仓库地址                     |   QQ群    |
+| :--------------------------------: | :-------------------------------------------------------: | :----------------------------------------------------------: | :-------: |
+| [https://hdoi.cn](https://hdoi.cn) | [https://www.hcode.top/docs](https://www.hcode.top/docs/) | [https://github.com/HimitZH/HOJ](https://github.com/HimitZH/HOJ)  [https://gitee.com/himitzh0730/hoj](https://gitee.com/himitzh0730/hoj) | 598587305 |
 
-在线文档：[https://www.hcode.top/docs](https://www.hcode.top/docs/)
+**注意：**
 
-Github仓库地址：[https://github.com/HimitZH/HOJ](https://github.com/HimitZH/HOJ)
+1. **建议使用Centos8以上或Ubuntu16.04以上的操作系统！！！不然判题机（judgeserver）可能无法正常启动。**
 
-Gitee仓库地址：[https://gitee.com/himitzh0730/hoj](https://gitee.com/himitzh0730/hoj)
+2. **有任何部署问题或项目bug请发issue或者加QQ群。**
 
-**注意：建议使用Centos8以上或Ubuntu16.04以上的操作系统！！！不然判题机（judgeserver）可能无法正常启动。**
+3. **如果要对本项目进行商业化，请在页面底部的Powered by指向HOJ本仓库地址，顺便点上star收藏本项目对开发者的支持，谢谢。**
 
-**有任何部署问题或项目bug请发issue或者加QQ群：598587305进行咨询。**
+## 二、部署
 
-**如果要对本项目进行商业化，请在页面底部的Powered by指向HOJ本仓库地址，顺便点上star收藏本项目对开发者的支持，谢谢。**
-
-> 部署
-
-部署文档：[基于docker-compose部署](https://gitee.com/himitzh0730/hoj-deploy/tree/master)
+部署文档：[基于docker-compose部署](https://www.hcode.top/docs/deploy/docker.html)
 
 具体请看部署文档，已安装docker和docker-compose的可以执行以下命令快速部署
 
-```shell
-git clone https://gitee.com/himitzh0730/hoj-deploy.git && cd hoj-deploy
+**注意：**
 
-cd standAlone && docker-compose up -d
+**1. 正式部署请自行修改配置，不要使用默认配置，例如mysql或redis的密码**
+
+**2. 如果已经为了测试而使用默认配置启动来部署，建议删掉当前文件夹，重新执行以下部署流程，修改默认配置**
+
+```shell
+git clone https://gitee.com/himitzh0730/hoj-deploy.git && cd hoj-deploy && cd standAlone
+
+vim .env # 建议执行这一步，对默认配置进行修改。
+
+docker-compose up -d
 ```
 
 根据网速情况，大约十到二十分钟即可安装完毕，全程无需人工干预。
@@ -59,13 +65,11 @@ docker ps # 查看当前运行的容器状态
    Password: 开启SMTP服务后生成的随机授权码
    ```
 
-其它设置与参数说明请看[基于docker-compose部署](https://gitee.com/himitzh0730/hoj-deploy/tree/master)
-
-> 更新
+## 三、更新
 
 请在docker-compose.yml当前文件夹下执行`docker-compose pull`拉取最新镜像，然后重新`docker-compose up -d`即可。
 
-> 上线日记
+## 四、上线日记
 
 | 时间       | 内容                                                         | 更新者   |
 | ---------- | ------------------------------------------------------------ | -------- |
@@ -89,6 +93,8 @@ docker ps # 查看当前运行的容器状态
 | 2021-06-14 | 完善后台管理员权限控制，恢复CF的vjudge判题                   | Himit_ZH |
 | 2021-06-25 | 丰富前端操作，增加POJ的vjudge判题                            | Himit_ZH |
 | 2021-08-14 | 增加spj对使用testlib的支持                                   | Himit_ZH |
+
+## 五、部分截图
 
 **以下截图页面均支持中英文国际化，点击底部的转换即可全网站转换，包括后台管理，同时浏览器会记住本次选择的语言**
 
