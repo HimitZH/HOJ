@@ -301,7 +301,9 @@ public class AdminContestController {
 
 
         if (result) { // 删除成功
-            FileUtil.del(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid);
+            if (cid == null) {
+                FileUtil.del(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid);
+            }
             return CommonResult.successResponse(null, "删除成功！");
         } else {
             return CommonResult.errorResponse("删除失败！", CommonResult.STATUS_FAIL);
