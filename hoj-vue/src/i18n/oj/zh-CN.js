@@ -241,6 +241,7 @@ export const m = {
   Shared_successfully:'分享成功',
   Input_File:'输入文件',
   Output_File:'输出文件',
+  Case_tips:'信息提示',
   Unknown:'未知',
 
   // /views/oj/rank/ACMRank.vue
