@@ -215,7 +215,7 @@
           </vxe-table-column>
           <vxe-table-column field="time" :title="$t('m.Time')" min-width="96">
             <template v-slot="{ row }">
-              <span v-if="!contestID">{{ submissionTimeFormat(row.time) }}</span>
+              <span>{{ submissionTimeFormat(row.time) }}</span>
             </template>
           </vxe-table-column>
           <vxe-table-column
