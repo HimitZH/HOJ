@@ -225,6 +225,8 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                 index++;
             } else {
                 ACMContestRankVo = result.get(uidMapIndex.get(contestRecord.getUid())); // 根据记录的index进行获取
+                // 保证最新提交时的真实名字
+                ACMContestRankVo.setRealname(contestRecord.getRealname());
             }
 
             HashMap<String, Object> problemSubmissionInfo = ACMContestRankVo.getSubmissionInfo().getOrDefault(contestRecord.getDisplayId(), new HashMap<>());
