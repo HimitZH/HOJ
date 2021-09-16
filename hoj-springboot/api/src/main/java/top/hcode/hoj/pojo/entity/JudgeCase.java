@@ -57,13 +57,13 @@ public class JudgeCase implements Serializable {
     @ApiModelProperty(value = "测试该样例结果状态码")
     private Integer status;
 
-    @ApiModelProperty(value = "样例输入，比赛不可看,暂不记录")
+    @ApiModelProperty(value = "样例输入，输入文件名")
     private String inputData;
 
-    @ApiModelProperty(value = "样例输出，比赛不可看，暂不记录")
+    @ApiModelProperty(value = "样例输出，输出文件名")
     private String outputData;
 
-    @ApiModelProperty(value = "用户样例输出，比赛不可看，暂不记录")
+    @ApiModelProperty(value = "用户样例输出，暂不使用，当前用于记录spj对单个测试点的输出")
     private String userOutput;
 
     @TableField(fill = FieldFill.INSERT)

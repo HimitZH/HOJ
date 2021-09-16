@@ -198,6 +198,7 @@ public class JudgeStrategy {
             Long caseId = jsonObject.getLong("caseId", null);
             String inputFileName = jsonObject.getStr("inputFileName");
             String outputFileName = jsonObject.getStr("outputFileName");
+            String msg = jsonObject.getStr("errMsg");
             JudgeCase judgeCase = new JudgeCase();
             judgeCase.setTime(time).setMemory(memory)
                     .setStatus(status)
@@ -207,6 +208,11 @@ public class JudgeStrategy {
                     .setUid(judge.getUid())
                     .setCaseId(caseId)
                     .setSubmitId(judge.getSubmitId());
+
+            if (!StringUtils.isEmpty(msg) && status != Constants.Judge.STATUS_COMPILE_ERROR.getStatus()) {
+                judgeCase.setUserOutput(msg);
+            }
+
             // 过滤出结果不是AC的测试点结果 同时如果是IO题目 则得分为0
             if (jsonObject.getInt("status").intValue() != Constants.Judge.STATUS_ACCEPTED.getStatus()) {
                 errorTestCaseList.add(jsonObject);
