@@ -142,6 +142,9 @@
                 }}<br />{{ $t('m.Output_File') }}：{{
                   item.outputData ? item.outputData : $t('m.Unknown')
                 }}
+                <br />{{ $t('m.Case_tips') }}：{{
+                  item.userOutput ? item.userOutput : $t('m.Unknown')
+                }}
               </div>
               <div
                 class="test-detail-item"

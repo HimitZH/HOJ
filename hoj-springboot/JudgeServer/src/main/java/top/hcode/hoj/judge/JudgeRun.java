@@ -282,6 +282,11 @@ public class JudgeRun {
         // ns->ms
         result.set("time", time);
 
+        // 记录该测试点的错误信息
+        if (!StringUtils.isEmpty(errMsg.toString())) {
+            result.set("errMsg", errMsg.toString());
+        }
+
         if (!StringUtils.isEmpty(userErrOut)) {
             // 同时记录错误信息
             errMsg.append(userErrOut);
@@ -290,10 +295,6 @@ public class JudgeRun {
             errWriter.write(userErrOut);
         }
 
-        // 记录该测试点的错误信息
-        if (!StringUtils.isEmpty(errMsg.toString())) {
-            result.set("errMsg", errMsg.toString());
-        }
         return result;
 
     }
