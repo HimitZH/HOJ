@@ -25,8 +25,8 @@ public class SystemConfigServiceImpl implements SystemConfigService {
         HashMap<String, Object> result = new HashMap<String, Object>();
         int cpuCores = Runtime.getRuntime().availableProcessors(); // cpu核数
 
-        double cpuLoad = OshiUtil.getCpuInfo().getToTal();
-        String percentCpuLoad = String.format("%.2f", cpuLoad * 100) + "%"; // cpu使用率
+        double cpuLoad = 100 - OshiUtil.getCpuInfo().getFree();
+        String percentCpuLoad = String.format("%.2f", cpuLoad) + "%"; // cpu使用率
 
         double totalVirtualMemory = OshiUtil.getMemory().getTotal(); // 总内存
         double freePhysicalMemorySize = OshiUtil.getMemory().getAvailable(); // 空闲内存

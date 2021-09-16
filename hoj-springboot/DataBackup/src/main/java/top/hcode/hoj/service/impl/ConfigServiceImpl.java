@@ -89,8 +89,8 @@ public class ConfigServiceImpl implements ConfigService {
         JSONObject jsonObject = JSONUtil.parseObj(response);
         // 获取当前数据后台所在机器环境
         int cores = OshiUtil.getCpuInfo().getCpuNum(); // 当前机器的cpu核数
-        double cpuLoad = OshiUtil.getCpuInfo().getToTal();
-        String percentCpuLoad = String.format("%.2f", cpuLoad * 100) + "%"; // 当前服务所在机器cpu使用率
+        double cpuLoad = 100 - OshiUtil.getCpuInfo().getFree();
+        String percentCpuLoad = String.format("%.2f", cpuLoad) + "%"; // 当前服务所在机器cpu使用率
 
         double totalVirtualMemory = OshiUtil.getMemory().getTotal(); // 当前服务所在机器总内存
         double freePhysicalMemorySize = OshiUtil.getMemory().getAvailable(); // 当前服务所在机器空闲内存
