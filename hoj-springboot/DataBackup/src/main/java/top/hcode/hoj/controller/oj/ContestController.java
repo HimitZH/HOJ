@@ -414,10 +414,22 @@ public class ContestController {
         IPage<JudgeVo> commonJudgeList = judgeService.getContestJudgeList(limit, currentPage, displayId, searchCid,
                 searchStatus, searchUsername, uid, beforeContestSubmit, rule, contest.getStartTime(), sealRankTime, userRolesVo.getUid());
 
-
         if (commonJudgeList.getTotal() == 0) { // 未查询到一条数据
             return CommonResult.successResponse(null, "暂无数据");
         } else {
+
+            // 比赛还是进行阶段，同时不是超级管理员与比赛管理员，需要将除自己之外的提交的时间、空间、长度隐藏
+            if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()
+                    && !isRoot && !userRolesVo.getUid().equals(contest.getUid())) {
+                commonJudgeList.getRecords().forEach(judgeVo -> {
+                    if (!judgeVo.getUid().equals(userRolesVo.getUid())) {
+                        judgeVo.setTime(null);
+                        judgeVo.setMemory(null);
+                        judgeVo.setLength(null);
+                    }
+                });
+            }
+
             return CommonResult.successResponse(commonJudgeList, "获取成功");
         }
     }

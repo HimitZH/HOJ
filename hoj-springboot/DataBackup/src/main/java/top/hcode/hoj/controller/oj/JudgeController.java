@@ -348,9 +348,15 @@ public class JudgeController {
                     result.put("submission", new Judge().setStatus(Constants.Judge.STATUS_SUBMITTED_UNKNOWN_RESULT.getStatus()));
                     return CommonResult.successResponse(result, "获取提交数据成功！");
                 }
-                // 不是本人的话不能查看代码
-                if(!userRolesVo.getUid().equals(judge.getUid())) {
+                // 不是本人的话不能查看代码、时间，空间，长度
+                if (!userRolesVo.getUid().equals(judge.getUid())) {
                     judge.setCode(null);
+                    // 如果还在比赛时间，不是本人不能查看时间，空间，长度
+                    if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()) {
+                        judge.setTime(null);
+                        judge.setMemory(null);
+                        judge.setLength(null);
+                    }
                 }
             }
         } else {
@@ -456,6 +462,7 @@ public class JudgeController {
 
         IPage<JudgeVo> commonJudgeList = judgeService.getCommonJudgeList(limit, currentPage, searchPid,
                 searchStatus, searchUsername, uid);
+
 
         if (commonJudgeList.getTotal() == 0) { // 未查询到一条数据
             return CommonResult.successResponse(null, "暂无数据");
