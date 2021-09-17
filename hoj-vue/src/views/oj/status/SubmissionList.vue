@@ -156,7 +156,12 @@
               </span>
             </template>
           </vxe-table-column>
-          <vxe-table-column field="score" :title="$t('m.Score')" width="64">
+          <vxe-table-column
+            field="score"
+            :title="$t('m.Score')"
+            width="64"
+            v-if="scoreColumnVisible"
+          >
             <template v-slot="{ row }">
               <template v-if="contestID && row.score != null">
                 <el-tag
@@ -408,16 +413,6 @@ export default {
     },
 
     getData() {
-      // ACM比赛没有必要显示分数列
-      if (this.contestID && this.contestRuleType == RULE_TYPE.ACM) {
-        this.loadingTable = true;
-        setTimeout(() => {
-          // 将指定列设置为隐藏状态
-          this.$refs.xTable.getColumnByField('score').visible = false;
-          this.$refs.xTable.refreshColumn();
-          this.loadingTable = false;
-        }, 200);
-      }
       this.getSubmissions();
     },
 
@@ -770,6 +765,12 @@ export default {
     },
     rejudgeColumnVisible() {
       return this.isSuperAdmin && !this.contestID;
+    },
+    scoreColumnVisible() {
+      return (
+        (this.contestID && this.contestRuleType == this.RULE_TYPE.OI) ||
+        !this.contestID
+      );
     },
   },
   watch: {

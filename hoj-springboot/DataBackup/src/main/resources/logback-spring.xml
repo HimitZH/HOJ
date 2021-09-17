@@ -30,9 +30,11 @@
             <!--按时间保存日志 修改格式可以按小时、按天、月来保存-->
             <fileNamePattern>${logging.path}/hoj.info.%d{yyyy-MM-dd}.log</fileNamePattern>
             <!--保存时长-->
-            <MaxHistory>90</MaxHistory>
-            <!--文件大小-->
-            <totalSizeCap>1GB</totalSizeCap>
+            <MaxHistory>15</MaxHistory>
+            <!--单个文件最大-->
+            <maxFileSize>200MB</maxFileSize>
+            <!--总大小-->
+            <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
     </appender>
 
@@ -49,7 +51,12 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!--路径-->
             <fileNamePattern>${logging.path}/hoj.error.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <MaxHistory>90</MaxHistory>
+            <!--保存时长-->
+            <MaxHistory>15</MaxHistory>
+            <!--单个文件最大-->
+            <maxFileSize>200MB</maxFileSize>
+            <!--总大小-->
+            <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
     </appender>
     <root level="info">
