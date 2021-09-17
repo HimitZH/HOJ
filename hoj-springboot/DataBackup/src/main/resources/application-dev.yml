@@ -73,4 +73,4 @@ logging:
             naming: info
     root: info
   file:
-    path: ./hoj_backend.log
+    path: ./hoj_backend
