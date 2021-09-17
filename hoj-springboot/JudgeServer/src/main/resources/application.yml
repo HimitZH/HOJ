@@ -41,7 +41,7 @@ logging:
     root: error
   config: classpath:logback-spring.xml
   file:
-    path: /hoj/log/judgeserver/hoj_judgeserver.log
+    path: /hoj/log/judgeserver
 # 暴露监控
 management:
   endpoints:
