@@ -332,7 +332,7 @@ hoj-frontend:
 
 > 2021.09.21之前部署hoj的请看下面操作
 
-###1、修改MySQL8.0默认的密码加密方式
+### 1、修改MySQL8.0默认的密码加密方式
 
 （1）进行hoj-mysql容器
 
@@ -369,7 +369,7 @@ mysql> FLUSH PRIVILEGES;
 
 ### 2、 添加hoj-mysql-checker模块
 
-（1）可以选择拉取仓库最新的docker-compose.yml文件（跟部署操作一样）或者访问：
+（1）可以选择拉取仓库最新的docker-compose.yml文件（跟部署操作一样,但是会覆盖之前设置的参数）或者访问：
 
 https://gitee.com/himitzh0730/hoj-deploy/blob/master/standAlone/docker-compose.yml
 
@@ -394,6 +394,8 @@ https://gitee.com/himitzh0730/hoj-deploy/blob/master/standAlone/docker-compose.y
 
 ```shell
 docker-compose down
+
+docker-compose pull
 
 docker-compose up -d
 ```
