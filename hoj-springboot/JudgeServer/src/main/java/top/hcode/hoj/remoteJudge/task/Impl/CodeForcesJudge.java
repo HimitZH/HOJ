@@ -184,7 +184,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         //CSS渲染禁止
         webClient.getOptions().setCssEnabled(false);
         //超时时间
-        webClient.getOptions().setTimeout(40000);
+        webClient.getOptions().setTimeout(3000);
 
         //设置js抛出异常:false
         webClient.getOptions().setThrowExceptionOnScriptError(false);
@@ -205,8 +205,8 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
 
         HtmlSubmitInput button = (HtmlSubmitInput) page.getByXPath("//input[@class='submit']").get(0);
 
-        HtmlPage retPage = button.click();
 
+        HtmlPage retPage = button.click();
         if (retPage.getUrl().toString().equals(HOST)) {
             return MapUtil.builder(new HashMap<String, Object>()).put("webClient", webClient).map();
         } else {
