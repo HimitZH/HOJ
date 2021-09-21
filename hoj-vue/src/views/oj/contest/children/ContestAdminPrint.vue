@@ -56,7 +56,7 @@
         :title="$t('m.Submit_Time')"
       >
         <template v-slot="{ row }">
-          <span>{{ row.submitTime | localtime }}</span>
+          <span>{{ row.gmtCreate | localtime }}</span>
         </template>
       </vxe-table-column>
       <vxe-table-column field="status" :title="$t('m.Status')" min-width="150">

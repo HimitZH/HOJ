@@ -1306,7 +1306,7 @@ public class FileController {
                                          HttpServletResponse response) {
         ContestPrint contestPrint = contestPrintService.getById(id);
         String filename =  contestPrint.getUsername() + "_Contest_Print.txt";
-        String filePath = Constants.File.CONTEST_TEXT_PRINT_FOLDER.getPath() + File.separator +filename;
+        String filePath = Constants.File.CONTEST_TEXT_PRINT_FOLDER.getPath() + File.separator +id+File.separator+filename;
         if (!FileUtil.exist(filePath)) {
 
             FileWriter fileWriter = new FileWriter(filePath);
