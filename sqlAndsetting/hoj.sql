@@ -144,6 +144,9 @@ CREATE TABLE `contest` (
   `seal_rank_time` datetime DEFAULT NULL COMMENT '封榜起始时间，一直到比赛结束，不刷新榜单',
   `status` int(11) DEFAULT NULL COMMENT '-1为未开始，0为进行中，1为已结束',
   `visible` tinyint(1) DEFAULT '1' COMMENT '是否可见',
+  `open_print` tinyint(1) DEFAULT '0' COMMENT '是否打开打印功能',
+  `open_account_limit` tinyint(1) DEFAULT '0' COMMENT '是否开启账号限制',
+  `account_limit_rule` mediumtext COMMENT '账号限制规则',
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`uid`),
@@ -187,6 +190,25 @@ CREATE TABLE `contest_explanation` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Table structure for table `contest_problem` */
+
+DROP TABLE IF EXISTS `contest_print`;
+
+CREATE TABLE `contest_print` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `username` varchar(100) DEFAULT NULL,
+  `realname` varchar(100) DEFAULT NULL,
+  `cid` bigint(20) unsigned DEFAULT NULL,
+  `content` longtext NOT NULL,
+  `status` int(11) DEFAULT '0',
+  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `cid` (`cid`),
+  KEY `username` (`username`),
+  CONSTRAINT `contest_print_ibfk_1` FOREIGN KEY (`cid`) REFERENCES `contest` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `contest_print_ibfk_2` FOREIGN KEY (`username`) REFERENCES `user_info` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 DROP TABLE IF EXISTS `contest_problem`;
 
@@ -689,7 +711,7 @@ CREATE TABLE `user_info` (
   `school` varchar(100) DEFAULT NULL COMMENT '学校',
   `course` varchar(100) DEFAULT NULL COMMENT '专业',
   `number` varchar(20) DEFAULT NULL COMMENT '学号',
-  `realname` varchar(10) DEFAULT NULL COMMENT '真实姓名',
+  `realname` varchar(100) DEFAULT NULL COMMENT '真实姓名',
   `github` varchar(255) DEFAULT NULL COMMENT 'github地址',
   `blog` varchar(255) DEFAULT NULL COMMENT '博客地址',
   `cf_username` varchar(255) DEFAULT NULL COMMENT 'cf的username',
