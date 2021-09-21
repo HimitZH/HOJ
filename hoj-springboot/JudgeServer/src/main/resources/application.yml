@@ -38,6 +38,7 @@ logging:
     com:
       alibaba:
         nacos: error
+      gargoylesoftware: off
     root: error
   config: classpath:logback-spring.xml
   file:
