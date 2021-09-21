@@ -111,6 +111,13 @@ public class RemoteJudgeGetResult {
                         }
 
                         scheduler.shutdown();
+                    }else {
+
+                        Judge judge = new Judge();
+                        judge.setSubmitId(submitId)
+                                .setStatus(status);
+                        // 写回数据库
+                        judgeService.updateById(judge);
                     }
 
                 } catch (Exception ignored) {
