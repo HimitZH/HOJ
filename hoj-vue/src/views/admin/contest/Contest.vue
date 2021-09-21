@@ -305,9 +305,11 @@ export default {
             .toString();
           let allHour = moment(this.contest.startTime).toString();
           let sealRankTime = moment(this.contest.sealRankTime).toString();
-          this.formRule = this.changeStrToAccountRule(
-            this.contest.accountLimitRule
-          );
+          if (!this.contest.accountLimitRule) {
+            this.formRule = this.changeStrToAccountRule(
+              this.contest.accountLimitRule
+            );
+          }
           switch (sealRankTime) {
             case halfHour:
               this.seal_rank_time = 0;
