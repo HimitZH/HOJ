@@ -115,51 +115,47 @@
             </el-form-item>
           </el-col>
 
-          <el-row :gutter="30">
-            <el-col :md="8" :xs="24">
-              <el-form-item :label="$t('m.Print_Func')" required>
-                <el-switch
-                  v-model="contest.openPrint"
-                  :active-text="$t('m.Support_Offline_Print')"
-                  :inactive-text="$t('m.Not_Support_Print')"
-                >
-                </el-switch>
-              </el-form-item>
-            </el-col>
-          </el-row>
+          <el-col :span="24">
+            <el-form-item :label="$t('m.Print_Func')" required>
+              <el-switch
+                v-model="contest.openPrint"
+                :active-text="$t('m.Support_Offline_Print')"
+                :inactive-text="$t('m.Not_Support_Print')"
+              >
+              </el-switch>
+            </el-form-item>
+          </el-col>
 
-          <el-row :gutter="30">
-            <el-col :md="8" :xs="24">
-              <el-form-item :label="$t('m.Contest_Auth')" required>
-                <el-select v-model="contest.auth">
-                  <el-option :label="$t('m.Public')" :value="0"></el-option>
-                  <el-option :label="$t('m.Private')" :value="1"></el-option>
-                  <el-option :label="$t('m.Protected')" :value="2"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col :md="8" :xs="24">
-              <el-form-item
-                :label="$t('m.Contest_Password')"
-                v-show="contest.auth != 0"
-                :required="contest.auth != 0"
-              >
-                <el-input
-                  v-model="contest.pwd"
-                  :placeholder="$t('m.Contest_Password')"
-                ></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :md="8" :xs="24">
-              <el-form-item
-                :label="$t('m.Account_Limit')"
-                v-show="contest.auth != 0"
-                :required="contest.auth != 0"
-              >
-                <el-switch v-model="contest.openAccountLimit"> </el-switch>
-              </el-form-item>
-            </el-col>
-          </el-row>
+          <el-col :md="8" :xs="24">
+            <el-form-item :label="$t('m.Contest_Auth')" required>
+              <el-select v-model="contest.auth">
+                <el-option :label="$t('m.Public')" :value="0"></el-option>
+                <el-option :label="$t('m.Private')" :value="1"></el-option>
+                <el-option :label="$t('m.Protected')" :value="2"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :md="8" :xs="24">
+            <el-form-item
+              :label="$t('m.Contest_Password')"
+              v-show="contest.auth != 0"
+              :required="contest.auth != 0"
+            >
+              <el-input
+                v-model="contest.pwd"
+                :placeholder="$t('m.Contest_Password')"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :md="8" :xs="24">
+            <el-form-item
+              :label="$t('m.Account_Limit')"
+              v-show="contest.auth != 0"
+              :required="contest.auth != 0"
+            >
+              <el-switch v-model="contest.openAccountLimit"> </el-switch>
+            </el-form-item>
+          </el-col>
 
           <template v-if="contest.openAccountLimit">
             <el-form :model="formRule">
@@ -281,7 +277,7 @@ export default {
       } else {
         this.title = this.$i18n.t('m.Create_Contest');
         this.disableRuleType = false;
-        this.contest = [];
+        this.contest = {};
       }
     },
   },
@@ -305,11 +301,6 @@ export default {
             .toString();
           let allHour = moment(this.contest.startTime).toString();
           let sealRankTime = moment(this.contest.sealRankTime).toString();
-          if (!this.contest.accountLimitRule) {
-            this.formRule = this.changeStrToAccountRule(
-              this.contest.accountLimitRule
-            );
-          }
           switch (sealRankTime) {
             case halfHour:
               this.seal_rank_time = 0;
@@ -320,6 +311,11 @@ export default {
             case allHour:
               this.seal_rank_time = 2;
               break;
+          }
+          if (!this.contest.accountLimitRule) {
+            this.formRule = this.changeStrToAccountRule(
+              this.contest.accountLimitRule
+            );
           }
         })
         .catch(() => {});
