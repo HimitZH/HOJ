@@ -285,6 +285,7 @@ export default {
       let searchParams = {
         currentPage: page,
         keyword: this.keyword,
+        admin: true,
       };
       api.getDiscussionList(this.pageSize, searchParams).then(
         (res) => {

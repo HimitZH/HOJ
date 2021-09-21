@@ -57,6 +57,9 @@ public class ContestVo implements Serializable {
     @ApiModelProperty(value = "是否开启封榜")
     private Boolean sealRank;
 
+    @ApiModelProperty(value = "是否打开打印功能")
+    private Boolean openPrint;
+
     @ApiModelProperty(value = "封榜起始时间，一直到比赛结束，不刷新榜单")
     private Date sealRankTime;
 }

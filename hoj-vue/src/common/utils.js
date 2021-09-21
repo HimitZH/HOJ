@@ -110,7 +110,7 @@ function getLanguages (all=true) {
 }
 
 function stringToExamples(value){
-  let reg = "<input>([\\s\\S]+?)</input><output>([\\s\\S]+?)</output>";
+  let reg = "<input>([\\s\\S]*?)</input><output>([\\s\\S]*?)</output>";
   let re = RegExp(reg,"g");
   let objList = []
   let tmp;

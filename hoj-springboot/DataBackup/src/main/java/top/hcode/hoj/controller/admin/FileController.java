@@ -91,6 +91,9 @@ public class FileController {
     @Autowired
     private TagServiceImpl tagService;
 
+    @Autowired
+    private ContestPrintServiceImpl contestPrintService;
+
 
     @RequestMapping("/generate-user-excel")
     @RequiresAuthentication
@@ -140,7 +143,7 @@ public class FileController {
             //将文件保存指定目录
             image.transferTo(FileUtil.file(Constants.File.USER_AVATAR_FOLDER.getPath() + File.separator + filename));
         } catch (Exception e) {
-            log.error("头像文件上传异常-------------->{}", e.getMessage());
+            log.error("头像文件上传异常-------------->", e);
             return CommonResult.errorResponse("服务器异常：头像上传失败！", CommonResult.STATUS_ERROR);
         }
 
@@ -187,7 +190,6 @@ public class FileController {
                 .put("roleList", userRolesVo.getRoles().stream().map(Role::getRole))
                 .map(), "设置新头像成功！");
     }
-
 
 
     @RequestMapping(value = "/upload-carouse-img", method = RequestMethod.POST)
@@ -440,7 +442,7 @@ public class FileController {
                     .orderByAsc("time");
             List<ContestRecord> contestRecordList = contestRecordService.list(wrapper);
             Assert.notEmpty(contestRecordList, "比赛暂无排行榜记录！");
-            List<ACMContestRankVo> acmContestRankVoList = contestRecordService.calcACMRank(isOpenSealRank,contest,contestRecordList);
+            List<ACMContestRankVo> acmContestRankVoList = contestRecordService.calcACMRank(isOpenSealRank, contest, contestRecordList);
             EasyExcel.write(response.getOutputStream())
                     .head(fileService.getContestRankExcelHead(contestProblemDisplayIDList, true))
                     .sheet("rank")
@@ -575,7 +577,7 @@ public class FileController {
             // 刷新缓存
             bouts.flush();
         } catch (IOException e) {
-            log.error("下载比赛AC提交代码的压缩文件异常------------>{}", e.getMessage());
+            log.error("下载比赛AC提交代码的压缩文件异常------------>", e);
             response.reset();
             response.setContentType("application/json");
             response.setCharacterEncoding("utf-8");
@@ -681,7 +683,7 @@ public class FileController {
             //将文件保存指定目录
             image.transferTo(FileUtil.file(Constants.File.MARKDOWN_FILE_FOLDER.getPath() + File.separator + filename));
         } catch (Exception e) {
-            log.error("图片文件上传异常-------------->{}", e.getMessage());
+            log.error("图片文件上传异常-------------->", e);
             return CommonResult.errorResponse("服务器异常：图片文件上传失败！", CommonResult.STATUS_ERROR);
         }
 
@@ -721,7 +723,7 @@ public class FileController {
             //将文件保存指定目录
             file.transferTo(FileUtil.file(Constants.File.MARKDOWN_FILE_FOLDER.getPath() + File.separator + filename));
         } catch (Exception e) {
-            log.error("文件上传异常-------------->{}", e.getMessage());
+            log.error("文件上传异常-------------->", e);
             return CommonResult.errorResponse("服务器异常：文件上传失败！", CommonResult.STATUS_ERROR);
         }
 
@@ -1242,7 +1244,7 @@ public class FileController {
         try {
             threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException e) {
-            log.error("线程池异常--------------->{}", e.getMessage());
+            log.error("线程池异常--------------->", e);
         }
 
         String fileName = "problem_export_" + System.currentTimeMillis() + ".zip";
@@ -1266,7 +1268,7 @@ public class FileController {
             }
             bouts.flush();
         } catch (IOException e) {
-            log.error("导出题目数据的压缩文件异常------------>{}", e.getMessage());
+            log.error("导出题目数据的压缩文件异常------------>", e);
             response.reset();
             response.setContentType("application/json");
             response.setCharacterEncoding("utf-8");
@@ -1297,5 +1299,63 @@ public class FileController {
         }
     }
 
+    @GetMapping("/download-contest-print-text")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
+    public void downloadContestPrintText(@RequestParam("id") Long id,
+                                         HttpServletResponse response) {
+        ContestPrint contestPrint = contestPrintService.getById(id);
+        String filename =  contestPrint.getUsername() + "_Contest_Print.txt";
+        String filePath = Constants.File.CONTEST_TEXT_PRINT_FOLDER.getPath() + File.separator +filename;
+        if (!FileUtil.exist(filePath)) {
 
+            FileWriter fileWriter = new FileWriter(filePath);
+            fileWriter.write(contestPrint.getContent());
+        }
+
+        FileReader zipFileReader = new FileReader(filePath);
+        BufferedInputStream bins = new BufferedInputStream(zipFileReader.getInputStream());//放到缓冲流里面
+        OutputStream outs = null;//获取文件输出IO流
+        BufferedOutputStream bouts = null;
+        try {
+            outs = response.getOutputStream();
+            bouts = new BufferedOutputStream(outs);
+            response.setContentType("application/x-download");
+            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(filename, "UTF-8"));
+            int bytesRead = 0;
+            byte[] buffer = new byte[1024 * 10];
+            //开始向网络传输文件流
+            while ((bytesRead = bins.read(buffer, 0, 1024 * 10)) != -1) {
+                bouts.write(buffer, 0, bytesRead);
+            }
+            // 刷新缓存
+            bouts.flush();
+        } catch (IOException e) {
+            log.error("下载比赛打印文本文件异常------------>", e);
+            response.reset();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            Map<String, Object> map = new HashMap<>();
+            map.put("status", CommonResult.STATUS_ERROR);
+            map.put("msg", "下载文件失败，请重新尝试！");
+            map.put("data", null);
+            try {
+                response.getWriter().println(JSONUtil.toJsonStr(map));
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        } finally {
+            try {
+                bins.close();
+                if (outs != null) {
+                    outs.close();
+                }
+                if (bouts != null) {
+                    bouts.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

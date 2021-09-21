@@ -31,8 +31,6 @@
             <fileNamePattern>${logging.path}/hoj.info.%d{yyyy-MM-dd}.log</fileNamePattern>
             <!--保存时长-->
             <MaxHistory>15</MaxHistory>
-            <!--单个文件最大-->
-            <maxFileSize>200MB</maxFileSize>
             <!--总大小-->
             <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>
@@ -53,8 +51,6 @@
             <fileNamePattern>${logging.path}/hoj.error.%d{yyyy-MM-dd}.log</fileNamePattern>
             <!--保存时长-->
             <MaxHistory>15</MaxHistory>
-            <!--单个文件最大-->
-            <maxFileSize>200MB</maxFileSize>
             <!--总大小-->
             <totalSizeCap>2GB</totalSizeCap>
         </rollingPolicy>

@@ -165,6 +165,9 @@ export const m = {
   Good_luck_to_you:'祝你好运!',
 
   // /views/oj/problem/Problem.vue
+  Problem_Description:'题目描述',
+  My_Submission:'我的提交',
+  Login_to_view_your_submission_history:'登录以查看您的提交记录',
   Shrink_Sidebar:'收缩侧边栏',
   View_Problem_Content:'查看题目内容',
   Only_View_Problem:'只看题目内容',
@@ -173,7 +176,7 @@ export const m = {
   Show_Tags:'显示标签',
   No_tag:'暂无标签',
   Statistic: '题目统计',
-  Solution:'提交记录',
+  Solutions:'全部提交',
   Problem_Discussion:'题目讨论',
   Description: '题目描述',
   Input: '输入描述',
@@ -214,7 +217,7 @@ export const m = {
   Mine:'我的',
   ID: 'ID',
   Time: '运行时间',
-  Memory: '内存',
+  Memory: '运行内存',
   Length:'代码长度',
   Language:'语言',
   View_submission_details:'查看提交详情',
@@ -314,6 +317,8 @@ export const m = {
    Submissions: '提交记录',
    Rankings: '排行榜',
    Comment:'评论',
+   Print:'打印',
+   Admin_Print:'管理打印',
    Admin_Helper: 'AC助手',
    Register_contest_successfully:'比赛报名成功',
    Please_check_the_contest_announcement_for_details:'具体内容请查看比赛公告',
@@ -338,6 +343,19 @@ export const m = {
    Not_Checked: '未检查',
    Check_It: '检查',
    Accepted:'Accepted',
+
+   // /views/oj/contest/children/ContestPrint.vue
+  Print_Title:'比赛文本打印',
+  Print_tips:'请将需要打印的文本放入内容框内提交。注意：请不要恶意提交！',
+  Content:'内容',
+  Content_cannot_be_empty:'内容不能为空',
+  The_number_of_content_cannot_be_less_than_50:'内容字符数不能低于50！',
+  Success_submit_tips:'提交成功！请耐心等待工作人员打印！',
+
+  // /views/oj/contest/children/ContestAdminPrint.vue
+  Download:'下载',
+  Printed:'已打印',
+  Not_Printed:'未打印',
 
    // /views/oj/contest/children/ContestRejudgeAdmin.vue
    Contest_Rejudge:'比赛重新测评',

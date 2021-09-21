@@ -53,9 +53,10 @@ public class DiscussionController {
                                           @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage,
                                           @RequestParam(value = "cid", required = false) Integer categoryId,
                                           @RequestParam(value = "pid", required = false) String pid,
-                                          @RequestParam(value = "onlyMine", required = false,defaultValue = "false") Boolean onlyMine,
+                                          @RequestParam(value = "onlyMine", required = false, defaultValue = "false") Boolean onlyMine,
                                           @RequestParam(value = "keyword", required = false) String keyword,
-                                          HttpServletRequest request){
+                                          @RequestParam(value = "admin", defaultValue = "false") Boolean admin,
+                                          HttpServletRequest request) {
 
         QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
 
@@ -79,15 +80,18 @@ public class DiscussionController {
             discussionQueryWrapper.eq("pid", pid);
         }
 
+
+        boolean isAdmin = SecurityUtils.getSubject().hasRole("root")
+                || SecurityUtils.getSubject().hasRole("problem_admin")
+                || SecurityUtils.getSubject().hasRole("admin");
         discussionQueryWrapper
-                .eq("status", 0)
+                .eq(!(admin && isAdmin), "status", 0)
                 .orderByDesc("top_priority")
                 .orderByDesc("gmt_modified")
                 .orderByDesc("like_num")
                 .orderByDesc("view_num");
 
-        if (onlyMine){
-            // 获取当前登录的用户
+        if (onlyMine) {
             HttpSession session = request.getSession();
             UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
             discussionQueryWrapper.eq("uid", userRolesVo.getUid());
@@ -122,7 +126,7 @@ public class DiscussionController {
             return CommonResult.errorResponse("对不起，该讨论不存在！", CommonResult.STATUS_NOT_FOUND);
         }
 
-        if (discussion.getStatus() == 2) {
+        if (discussion.getStatus() == 1) {
             return CommonResult.errorResponse("对不起，该讨论已被封禁！", CommonResult.STATUS_FORBIDDEN);
         }
 
@@ -167,11 +171,11 @@ public class DiscussionController {
     @PutMapping("/discussion")
     @RequiresPermissions("discussion_edit")
     @RequiresAuthentication
-    public CommonResult updateDiscussion(@RequestBody  Discussion discussion) {
+    public CommonResult updateDiscussion(@RequestBody Discussion discussion) {
         boolean isOk = discussionService.updateById(discussion);
-        if (isOk){
+        if (isOk) {
             return CommonResult.successResponse(null, "修改成功");
-        }else{
+        } else {
             return CommonResult.errorResponse("修改失败");
         }
     }
@@ -188,7 +192,7 @@ public class DiscussionController {
         // 如果不是是管理员,则需要附加当前用户的uid条件
         if (!SecurityUtils.getSubject().hasRole("root")
                 && !SecurityUtils.getSubject().hasRole("admin")
-                    &&!SecurityUtils.getSubject().hasRole("problem_admin")) {
+                && !SecurityUtils.getSubject().hasRole("problem_admin")) {
             discussionUpdateWrapper.eq("uid", userRolesVo.getUid());
         }
         boolean isOk = discussionService.remove(discussionUpdateWrapper);
@@ -252,14 +256,14 @@ public class DiscussionController {
 
     /**
      * @MethodName addDiscussionReport
-     * @Params  * @param uid content reporter
+     * @Params * @param uid content reporter
      * @Description 添加讨论举报
      * @Return
      * @Since 2021/5/11
      */
     @PostMapping("/discussion-report")
     @RequiresAuthentication
-    public CommonResult addDiscussionReport(@RequestBody DiscussionReport discussionReport){
+    public CommonResult addDiscussionReport(@RequestBody DiscussionReport discussionReport) {
         boolean isOk = discussionReportService.saveOrUpdate(discussionReport);
         if (isOk) {
             return CommonResult.successResponse(null, "举报成功");

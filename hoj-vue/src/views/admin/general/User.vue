@@ -172,7 +172,8 @@
           <vxe-table-column
             :title="$t('m.Username')"
             field="username"
-            min-width="150"
+            min-width="96"
+            show-overflow
           >
             <template v-slot="{ row }">
               {{ row[0] }}
@@ -182,6 +183,7 @@
             :title="$t('m.Password')"
             field="password"
             min-width="150"
+            show-overflow
           >
             <template v-slot="{ row }">
               {{ row[1] }}
@@ -190,10 +192,21 @@
           <vxe-table-column
             :title="$t('m.Email')"
             field="email"
-            min-width="150"
+            min-width="120"
+            show-overflow
           >
             <template v-slot="{ row }">
               {{ row[2] }}
+            </template>
+          </vxe-table-column>
+          <vxe-table-column
+            :title="$t('m.RealName')"
+            field="realname"
+            min-width="150"
+            show-overflow
+          >
+            <template v-slot="{ row }">
+              {{ row[3] }}
             </template>
           </vxe-table-column>
         </vxe-table>
@@ -764,7 +777,7 @@ export default {
       papa.parse(file, {
         complete: (results) => {
           let data = results.data.filter((user) => {
-            return user[0] && user[1] && user[2];
+            return user[0] && user[1];
           });
           let delta = results.data.length - data.length;
           if (delta > 0) {

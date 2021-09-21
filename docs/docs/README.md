@@ -16,5 +16,5 @@ features:
   details: 判题使用 cgroup 隔离用户程序，网站权限控制完善
 - title: 多样化
   details: 独有自身判题服务，同时支持其它知名OJ题目的提交判题
-footer: MIT Licensed | Copyright © 2021.08.08 @Author Himit_ZH  QQ Group:598587305
+footer: MIT Licensed | Copyright © 2021.09.21 @Author Himit_ZH  QQ Group:598587305
 ---
