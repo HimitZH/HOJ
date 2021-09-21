@@ -8,7 +8,8 @@ const state = {
   submitAccess:false, // 保护比赛的提交权限
   forceUpdate: false,
   contest: {
-    auth: CONTEST_TYPE.PUBLIC
+    auth: CONTEST_TYPE.PUBLIC,
+    openPrint: false,
   },
   contestProblems: [],
   itemVisible: {

@@ -169,9 +169,8 @@ export default {
 }
 body {
   background-color: #eff3f5 !important;
-  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
-    Microsoft YaHei, Arial, sans-serif !important;
-  -webkit-font-smoothing: antialiased !important;
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', '微软雅黑', Arial, sans-serif !important;
   color: #495060 !important;
   font-size: 12px !important;
 }
@@ -181,6 +180,28 @@ pre,
 samp {
   font-family: Consolas, Menlo, Courier, monospace;
 }
+::-webkit-scrollbar {
+  width: 10px;
+  height: 12px;
+  background-color: #fff;
+}
+
+::-webkit-scrollbar-thumb {
+  display: block;
+  min-height: 12px;
+  min-width: 10px;
+  border-radius: 6px;
+  background-color: rgb(217, 217, 217);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  display: block;
+  min-height: 12px;
+  min-width: 10px;
+  border-radius: 6px;
+  background-color: rgb(159, 159, 159);
+}
+
 #admin-content {
   background-color: #1e9fff;
   position: absolute;

@@ -125,6 +125,21 @@ public class ScheduleServiceImpl implements ScheduleService {
         }
     }
 
+    /**
+     * @MethodName deleteContestPrintText
+     * @Params * @param null
+     * @Description 每天4点定时删除本地的比赛打印数据
+     * @Return
+     * @Since 2021/9/19
+     */
+    @Scheduled(cron = "0 0 4 * * *")
+    @Override
+    public void deleteContestPrintText() {
+        boolean result = FileUtil.del(Constants.File.CONTEST_TEXT_PRINT_FOLDER.getPath());
+        if (!result) {
+            log.error("每日定时任务异常------------------------>{}", "清除本地的比赛打印数据失败!");
+        }
+    }
 
     /**
      * 每两小时获取其他OJ的比赛列表，并保存在redis里

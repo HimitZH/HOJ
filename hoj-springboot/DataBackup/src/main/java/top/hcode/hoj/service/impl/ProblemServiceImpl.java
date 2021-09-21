@@ -436,8 +436,8 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         result.set("isSpj", isSpj);
         result.set("version", version);
         result.set("testCasesSize", problemCaseList.size());
-        result.set("testCases", new JSONArray());
 
+        JSONArray testCaseList = new JSONArray(problemCaseList.size());
 
         for (ProblemCase problemCase : problemCaseList) {
             JSONObject jsonObject = new JSONObject();
@@ -469,8 +469,10 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                 jsonObject.set("EOFStrippedOutputMd5", DigestUtils.md5DigestAsHex(rtrim(output).getBytes()));
             }
 
-            ((JSONArray) result.get("testCases")).put(jsonObject);
+            testCaseList.add(jsonObject);
         }
+
+        result.set("testCases", testCaseList);
 
         FileWriter infoFile = new FileWriter(testCasesDir + "/info", CharsetUtil.UTF_8);
         // 写入记录文件
@@ -491,7 +493,8 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         result.set("isSpj", isSpj);
         result.set("version", version);
         result.set("testCasesSize", problemCaseList.size());
-        result.set("testCases", new JSONArray());
+
+        JSONArray testCaseList = new JSONArray(problemCaseList.size());
 
         String testCasesDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + problemId;
         FileUtil.del(testCasesDir);
@@ -530,8 +533,10 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                 jsonObject.set("EOFStrippedOutputMd5", DigestUtils.md5DigestAsHex(rtrim(outputData).getBytes()));
             }
 
-            ((JSONArray) result.get("testCases")).put(index, jsonObject);
+            testCaseList.add(jsonObject);
         }
+
+        result.set("testCases", testCaseList);
 
         FileWriter infoFile = new FileWriter(testCasesDir + "/info", CharsetUtil.UTF_8);
         // 写入记录文件

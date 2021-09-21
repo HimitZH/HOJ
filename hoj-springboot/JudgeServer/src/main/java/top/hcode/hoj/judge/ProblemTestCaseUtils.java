@@ -47,7 +47,8 @@ public class ProblemTestCaseUtils {
         result.set("isSpj", isSpj);
         result.set("version", version);
         result.set("testCasesSize", testCases.size());
-        result.set("testCases", new JSONArray());
+
+        JSONArray testCaseList = new JSONArray(testCases.size());
 
         String testCasesDir = Constants.JudgeDir.TEST_CASE_DIR.getContent() + "/problem_" + problemId;
 
@@ -84,8 +85,10 @@ public class ProblemTestCaseUtils {
                 jsonObject.set("EOFStrippedOutputMd5", DigestUtils.md5DigestAsHex(rtrim(outputData).getBytes()));
             }
 
-            ((JSONArray) result.get("testCases")).put(index, jsonObject);
+            testCaseList.add(jsonObject);
         }
+
+        result.set("testCases",testCaseList);
 
         FileWriter infoFile = new FileWriter(testCasesDir + File.separator + "info", CharsetUtil.UTF_8);
         // 写入记录文件

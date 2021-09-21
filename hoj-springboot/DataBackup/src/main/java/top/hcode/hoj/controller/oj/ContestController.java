@@ -1,6 +1,7 @@
 package top.hcode.hoj.controller.oj;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ReUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,9 +9,11 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.CheckACDto;
+import top.hcode.hoj.pojo.dto.ContestPrintDto;
 import top.hcode.hoj.pojo.dto.UserReadContestAnnouncementDto;
 import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.pojo.vo.*;
@@ -71,6 +74,9 @@ public class ContestController {
 
     @Autowired
     private CodeTemplateServiceImpl codeTemplateService;
+
+    @Autowired
+    private ContestPrintServiceImpl contestPrintService;
 
     /**
      * @MethodName getContestList
@@ -151,6 +157,19 @@ public class ContestController {
         if (!contest.getPwd().equals(password)) { // 密码不对
             return CommonResult.errorResponse("比赛密码错误！");
         }
+
+        /**
+         *
+         *  需要校验当前比赛是否开启账号规则限制，如果有，需要对当前用户的用户名进行验证
+         *
+        */
+
+        if (contest.getOpenAccountLimit()
+                &&!contestService.checkAccountRule(contest.getAccountLimitRule(),userRolesVo.getUsername())){
+            return CommonResult.errorResponse("对不起！本次比赛只允许特定账号规则的用户参赛！",CommonResult.STATUS_ACCESS_DENIED);
+        }
+
+
 
         QueryWrapper<ContestRegister> wrapper = new QueryWrapper<ContestRegister>().eq("cid", Long.valueOf(cidStr))
                 .eq("uid", userRolesVo.getUid());
@@ -415,7 +434,7 @@ public class ContestController {
                 searchStatus, searchUsername, uid, beforeContestSubmit, rule, contest.getStartTime(), sealRankTime, userRolesVo.getUid());
 
         if (commonJudgeList.getTotal() == 0) { // 未查询到一条数据
-            return CommonResult.successResponse(null, "暂无数据");
+            return CommonResult.successResponse(commonJudgeList, "暂无数据");
         } else {
 
             // 比赛还是进行阶段，同时不是超级管理员与比赛管理员，需要将除自己之外的提交的时间、空间、长度隐藏
@@ -578,75 +597,47 @@ public class ContestController {
 
     }
 
+
     /**
-     * @MethodName getContestACInfo
-     * @Params * @param null
-     * @Description 获取各个用户的ac情况，仅限于比赛管理者可查看
+     * @param contestPrintDto
+     * @param request
+     * @MethodName submitPrintText
+     * @Description 提交比赛文本打印内容
      * @Return
-     * @Since 2021/1/17
+     * @Since 2021/9/20
      */
-    @GetMapping("/get-contest-ac-info")
+    @PostMapping("/submit-print-text")
     @RequiresAuthentication
-    public CommonResult getContestACInfo(@RequestParam("cid") Long cid,
-                                         @RequestParam(value = "currentPage", required = false) Integer currentPage,
-                                         @RequestParam(value = "limit", required = false) Integer limit,
-                                         HttpServletRequest request) {
+    public CommonResult submitPrintText(@RequestBody ContestPrintDto contestPrintDto,
+                                        HttpServletRequest request) {
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
         // 获取本场比赛的状态
-        Contest contest = contestService.getById(cid);
+        Contest contest = contestService.getById(contestPrintDto.getCid());
 
         // 超级管理员或者该比赛的创建者，则为比赛管理者
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
-        if (!isRoot && !contest.getUid().equals(userRolesVo.getUid())) {
-            return CommonResult.errorResponse("对不起，你无权查看！", CommonResult.STATUS_FORBIDDEN);
+        /**
+         *  需要对该比赛做判断，是否处于开始或结束状态才可以提交打印内容，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
+         */
+        CommonResult commonResult = contestService.checkContestAuth(contest, userRolesVo, isRoot);
+
+        if (commonResult != null) {
+            return commonResult;
         }
-
-        if (currentPage == null || currentPage < 1) currentPage = 1;
-        if (limit == null || limit < 1) limit = 30;
-
-        // 获取当前比赛的，状态为ac，未被校验的排在签名
-        IPage<ContestRecord> contestRecords = contestRecordService.getACInfo(currentPage,
-                limit, Constants.Contest.RECORD_AC.getCode(), cid, contest.getUid());
-
-        return CommonResult.successResponse(contestRecords, "查询成功");
-    }
-
-
-    /**
-     * @MethodName checkContestACInfo
-     * @Params * @param null
-     * @Description 比赛管理员确定该次提交的ac情况
-     * @Return
-     * @Since 2021/1/17
-     */
-    @PutMapping("/check-contest-ac-info")
-    @RequiresAuthentication
-    public CommonResult checkContestACInfo(@RequestBody CheckACDto checkACDto,
-                                           HttpServletRequest request) {
-
-        HttpSession session = request.getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-        // 获取本场比赛的状态
-        Contest contest = contestService.getById(checkACDto.getCid());
-
-        // 超级管理员或者该比赛的创建者，则为比赛管理者
-        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-
-        if (!isRoot && !contest.getUid().equals(userRolesVo.getUid())) {
-            return CommonResult.errorResponse("对不起，你无权操作！", CommonResult.STATUS_FORBIDDEN);
-        }
-
-        boolean result = contestRecordService.updateById(
-                new ContestRecord().setChecked(checkACDto.getChecked()).setId(checkACDto.getId()));
+        boolean result = contestPrintService.saveOrUpdate(new ContestPrint().setCid(contestPrintDto.getCid())
+                .setContent(contestPrintDto.getContent())
+                .setUsername(userRolesVo.getUsername())
+                .setRealname(userRolesVo.getRealname()));
 
         if (result) {
-            return CommonResult.successResponse(null, "修改校验确定成功！");
+            return CommonResult.successResponse(null, "提交成功，请等待工作人员打印！");
         } else {
-            return CommonResult.errorResponse("修改校验确定失败！");
+            return CommonResult.errorResponse("提交失败！");
         }
 
     }
+
 
 }

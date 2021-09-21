@@ -115,42 +115,106 @@
             </el-form-item>
           </el-col>
 
-          <el-col :md="8" :xs="24">
-            <el-form-item :label="$t('m.Contest_Auth')" required>
-              <el-select v-model="contest.auth">
-                <el-option :label="$t('m.Public')" :value="0"></el-option>
-                <el-option :label="$t('m.Private')" :value="1"></el-option>
-                <el-option :label="$t('m.Protected')" :value="2"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :md="8" :xs="24">
-            <el-form-item
-              :label="$t('m.Contest_Password')"
-              v-show="contest.auth != 0"
-              :required="contest.auth != 0"
+          <el-row :gutter="30">
+            <el-col :md="8" :xs="24">
+              <el-form-item :label="$t('m.Print_Func')" required>
+                <el-switch
+                  v-model="contest.openPrint"
+                  :active-text="$t('m.Support_Offline_Print')"
+                  :inactive-text="$t('m.Not_Support_Print')"
+                >
+                </el-switch>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row :gutter="30">
+            <el-col :md="8" :xs="24">
+              <el-form-item :label="$t('m.Contest_Auth')" required>
+                <el-select v-model="contest.auth">
+                  <el-option :label="$t('m.Public')" :value="0"></el-option>
+                  <el-option :label="$t('m.Private')" :value="1"></el-option>
+                  <el-option :label="$t('m.Protected')" :value="2"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :md="8" :xs="24">
+              <el-form-item
+                :label="$t('m.Contest_Password')"
+                v-show="contest.auth != 0"
+                :required="contest.auth != 0"
+              >
+                <el-input
+                  v-model="contest.pwd"
+                  :placeholder="$t('m.Contest_Password')"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :md="8" :xs="24">
+              <el-form-item
+                :label="$t('m.Account_Limit')"
+                v-show="contest.auth != 0"
+                :required="contest.auth != 0"
+              >
+                <el-switch v-model="contest.openAccountLimit"> </el-switch>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <template v-if="contest.openAccountLimit">
+            <el-form :model="formRule">
+              <el-col :md="6" :xs="24">
+                <el-form-item :label="$t('m.Prefix')" prop="prefix">
+                  <el-input
+                    v-model="formRule.prefix"
+                    placeholder="Prefix"
+                  ></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :md="6" :xs="24">
+                <el-form-item :label="$t('m.Suffix')" prop="suffix">
+                  <el-input
+                    v-model="formRule.suffix"
+                    placeholder="Suffix"
+                  ></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :md="6" :xs="24">
+                <el-form-item :label="$t('m.Start_Number')" prop="number_from">
+                  <el-input-number
+                    v-model="formRule.number_from"
+                    style="width: 100%"
+                  ></el-input-number>
+                </el-form-item>
+              </el-col>
+              <el-col :md="6" :xs="24">
+                <el-form-item :label="$t('m.End_Number')" prop="number_to">
+                  <el-input-number
+                    v-model="formRule.number_to"
+                    style="width: 100%"
+                  ></el-input-number>
+                </el-form-item>
+              </el-col>
+            </el-form>
+            <div
+              class="userPreview"
+              v-if="formRule.number_from <= formRule.number_to"
             >
-              <el-input
-                v-model="contest.pwd"
-                :placeholder="$t('m.Contest_Password')"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-          <!-- <el-col :span="24">
-            <el-form-item label="Allowed IP Ranges">
-              <div v-for="(range, index) in contest.allowed_ip_ranges" :key="index">
-                <el-row :gutter="20" style="margin-bottom: 15px">
-                  <el-col :span="8">
-                    <el-input v-model="range.value" placeholder="CIDR Network"></el-input>
-                  </el-col>
-                  <el-col :span="10">
-                    <el-button  icon="el-icon-plus" @click="addIPRange" type="primary"></el-button>
-                    <el-button  icon="el-icon-delete-solid" @click.native="removeIPRange(range)" type="danger"></el-button>
-                  </el-col>
-                </el-row>
-              </div>
-            </el-form-item>
-          </el-col> -->
+              {{ $t('m.The_allowed_account_will_be') }}
+              {{ formRule.prefix + formRule.number_from + formRule.suffix }},
+              <span v-if="formRule.number_from + 1 < formRule.number_to">
+                {{
+                  formRule.prefix +
+                    (formRule.number_from + 1) +
+                    formRule.suffix +
+                    '...'
+                }}
+              </span>
+              <span v-if="formRule.number_from + 1 <= formRule.number_to">
+                {{ formRule.prefix + formRule.number_to + formRule.suffix }}
+              </span>
+            </div>
+          </template>
         </el-row>
       </el-form>
       <el-button type="primary" @click.native="saveContest">{{
@@ -189,9 +253,15 @@ export default {
         sealRank: true,
         sealRankTime: '', //封榜时间
         auth: 0,
-        // allowed_ip_ranges: [{
-        //   value: ''
-        // }]
+        openPrint: false,
+        openAccountLimit: false,
+        accountLimitRule: '',
+      },
+      formRule: {
+        prefix: '',
+        suffix: '',
+        number_from: 0,
+        number_to: 10,
       },
     };
   },
@@ -224,14 +294,6 @@ export default {
         .admin_getContest(this.$route.params.contestId)
         .then((res) => {
           let data = res.data.data;
-          // let ranges = []
-          // for (let v of data.allowed_ip_ranges) {
-          //   ranges.push({value: v})
-          // }
-          // if (ranges.length === 0) {
-          //   ranges.push({value: ''})
-          // }
-          // data.allowed_ip_ranges = ranges
           this.contest = data;
           this.changeDuration();
           // 封榜时间转换
@@ -243,6 +305,9 @@ export default {
             .toString();
           let allHour = moment(this.contest.startTime).toString();
           let sealRankTime = moment(this.contest.sealRankTime).toString();
+          this.formRule = this.changeStrToAccountRule(
+            this.contest.accountLimitRule
+          );
           switch (sealRankTime) {
             case halfHour:
               this.seal_rank_time = 0;
@@ -302,6 +367,12 @@ export default {
         return;
       }
 
+      if (this.contest.openAccountLimit) {
+        this.contest.accountLimitRule = this.changeAccountRuleToStr(
+          this.formRule
+        );
+      }
+
       let funcName =
         this.$route.name === 'admin-edit-contest'
           ? 'admin_editContest'
@@ -324,13 +395,6 @@ export default {
           this.contest.sealRankTime = moment(this.contest.startTime);
       }
       let data = Object.assign({}, this.contest);
-      // let ranges = []
-      // for (let v of data.allowed_ip_ranges) {
-      //   if (v.value !== '') {
-      //     ranges.push(v.value)
-      //   }
-      // }
-      // data.allowed_ip_ranges = ranges
       if (funcName === 'admin_createContest') {
         data['uid'] = this.userInfo.uid;
         data['author'] = this.userInfo.username;
@@ -360,15 +424,41 @@ export default {
         this.contest.duration = durationMS;
       }
     },
-    // addIPRange () {
-    //   this.contest.allowed_ip_ranges.push({value: ''})
-    // },
-    //   removeIPRange (range) {
-    //     let index = this.contest.allowed_ip_ranges.indexOf(range)
-    //     if (index !== -1) {
-    //       this.contest.allowed_ip_ranges.splice(index, 1)
-    //     }
-    //   }
+    changeAccountRuleToStr(formRule) {
+      let result =
+        '<prefix>' +
+        formRule.prefix +
+        '</prefix><suffix>' +
+        formRule.suffix +
+        '</suffix><start>' +
+        formRule.number_from +
+        '</start><end>' +
+        formRule.number_to +
+        '</end>';
+      return result;
+    },
+    changeStrToAccountRule(value) {
+      let reg =
+        '<prefix>([\\s\\S]*?)</prefix><suffix>([\\s\\S]*?)</suffix><start>([\\s\\S]*?)</start><end>([\\s\\S]*?)</end>';
+      let re = RegExp(reg, 'g');
+      let tmp = re.exec(value);
+      return {
+        prefix: tmp[1],
+        suffix: tmp[2],
+        number_from: tmp[3],
+        number_to: tmp[4],
+      };
+    },
   },
 };
 </script>
+<style scoped>
+.userPreview {
+  padding-left: 10px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  color: red;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+</style>
