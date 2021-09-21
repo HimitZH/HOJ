@@ -1,8 +1,10 @@
 package top.hcode.hoj.service.impl;
 
+import cn.hutool.core.util.ReUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.ContestRegister;
 import top.hcode.hoj.pojo.vo.ContestVo;
@@ -14,7 +16,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.utils.Constants;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -65,6 +69,11 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
 
         if (!isRoot && !contest.getUid().equals(userRolesVo.getUid())) { // 若不是比赛管理者
 
+            if (contest.getOpenAccountLimit()
+                    &&!checkAccountRule(contest.getAccountLimitRule(),userRolesVo.getUsername())){
+                return CommonResult.errorResponse("对不起！本次比赛只允许特定账号规则的用户参赛！",CommonResult.STATUS_ACCESS_DENIED);
+            }
+
             // 判断一下比赛的状态，还未开始不能查看题目。
             if (contest.getStatus().intValue() != Constants.Contest.STATUS_RUNNING.getCode() &&
                     contest.getStatus().intValue() != Constants.Contest.STATUS_ENDED.getCode()) {
@@ -112,5 +121,29 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
             }
         }
         return null;
+    }
+
+    @Override
+    public boolean checkAccountRule(String accountRule, String username) {
+
+        String prefix = ReUtil.get("<prefix>([\\s\\S]*?)</prefix>",
+                accountRule, 1);
+        String suffix = ReUtil.get("<suffix>([\\s\\S]*?)</suffix>",
+                accountRule, 1);
+        String start = ReUtil.get("<start>([\\s\\S]*?)</start>",
+                accountRule, 1);
+        String end = ReUtil.get("<end>([\\s\\S]*?)</end>",
+                accountRule, 1);
+
+        int startNum = Integer.parseInt(start);
+        int endNum = Integer.parseInt(end);
+
+        for (int i = startNum; i <= endNum; i++) {
+            if (username.equals(prefix + i + suffix)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -164,6 +164,9 @@ export const m = {
   Good_luck_to_you:'Good luck to you!',
   
   // /views/oj/problem/Problem.vue
+  Problem_Description:'Problem Description',
+  My_Submission:'My Submission',
+  Login_to_view_your_submission_history:'Login to view your submission history',
   Shrink_Sidebar:'Shrink Sidebar',
   View_Problem_Content:'View Problem Content',
   Only_View_Problem:'Only View Problem',
@@ -172,7 +175,7 @@ export const m = {
   Show_Tags:'Show tags',
   No_tag:'No tag',
   Statistic: 'Statistic',
-  Solution:'Solution',
+  Solutions:'Solutions',
   Problem_Discussion:'Discussion',
   Description: 'Description',
   Input: 'Input',
@@ -311,6 +314,8 @@ export const m = {
   Submissions: 'Submissions',
   Rankings: 'Rankings',
   Comment:'Comment',
+  Print:'Print',
+  Admin_Print:'Admin Print',
   Admin_Helper: 'AC Info',
   Register_contest_successfully:'Register contest successfully',
   Please_check_the_contest_announcement_for_details:'Please check the contest announcement for details',
@@ -335,6 +340,19 @@ export const m = {
   Not_Checked: 'Not Checked',
   Check_It: 'Check It',
   Accepted:'Accepted',
+
+  // /views/oj/contest/children/ContestPrint.vue
+  Print_Title:'Contest Text Printing',
+  Print_tips:'Please put the text to be printed into the content box, and then submit. Note: please do not submit maliciously!',
+  Content:'Content',
+  Content_cannot_be_empty:'Tne content cannot be empty!',
+  The_number_of_content_cannot_be_less_than_50:'The number of words cannot be less than 50',
+  Success_submit_tips:'Submitted successfully! Please wait patiently for the staff to print!',
+
+  // /views/oj/contest/children/ContestAdminPrint.vue
+  Download:'Download',
+  Printed:'Printed',
+  Not_Printed:'Not Printed',
 
   // /views/oj/contest/children/ContestRejudgeAdmin.vue
   Contest_Rejudge:'Contest Rejudge',

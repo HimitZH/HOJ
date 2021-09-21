@@ -183,6 +183,20 @@
         </el-tab-pane>
 
         <el-tab-pane
+          name="ContestPrint"
+          lazy
+          :disabled="contestMenuDisabled"
+          v-if="contest.openPrint"
+        >
+          <span slot="label"
+            ><i class="el-icon-printer"></i>&nbsp;{{ $t('m.Print') }}</span
+          >
+          <transition name="el-zoom-in-bottom">
+            <router-view v-if="route_name === 'ContestPrint'"></router-view>
+          </transition>
+        </el-tab-pane>
+
+        <el-tab-pane
           name="ContestACInfo"
           lazy
           :disabled="contestMenuDisabled"
@@ -195,6 +209,24 @@
           >
           <transition name="el-zoom-in-bottom">
             <router-view v-if="route_name === 'ContestACInfo'"></router-view>
+          </transition>
+        </el-tab-pane>
+
+        <el-tab-pane
+          name="ContestAdminPrint"
+          lazy
+          :disabled="contestMenuDisabled"
+          v-if="isSuperAdmin && contest.openPrint"
+        >
+          <span slot="label"
+            ><i class="el-icon-printer"></i>&nbsp;{{
+              $t('m.Admin_Print')
+            }}</span
+          >
+          <transition name="el-zoom-in-bottom">
+            <router-view
+              v-if="route_name === 'ContestAdminPrint'"
+            ></router-view>
           </transition>
         </el-tab-pane>
 

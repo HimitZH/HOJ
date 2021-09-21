@@ -1,7 +1,7 @@
 <template>
   <el-card shadow="always">
     <div slot="header">
-      <span class="panel-title">{{ $t('m.Admin_Helper') }}</span>
+      <span class="panel-title">{{ $t('m.Admin_Print') }}</span>
       <div class="filter-row">
         <span>
           {{ $t('m.Auto_Refresh') }}(10s)
@@ -13,7 +13,7 @@
         <span>
           <el-button
             type="primary"
-            @click="getACInfo(1)"
+            @click="getContestPrint(1)"
             size="small"
             icon="el-icon-refresh"
             :loading="btnLoading"
@@ -22,41 +22,14 @@
         </span>
       </div>
     </div>
+
     <vxe-table
       border="inner"
       stripe
       auto-resize
       align="center"
-      :data="acInfoList"
+      :data="printList"
     >
-      <vxe-table-column
-        field="submitTime"
-        min-width="150"
-        :title="$t('m.AC_Time')"
-      >
-        <template v-slot="{ row }">
-          <span>{{ row.submitTime | localtime }}</span>
-        </template>
-      </vxe-table-column>
-      <vxe-table-column
-        field="displayId"
-        :title="$t('m.Problem_ID')"
-        min-width="100"
-      ></vxe-table-column>
-      <vxe-table-column
-        field="first_blood"
-        :title="'AC' + $t('m.Status')"
-        min-width="80"
-      >
-        <template v-slot="{ row }">
-          <el-tag effect="dark" color="#ed3f14" v-if="row.firstBlood">{{
-            $t('m.First_Blood')
-          }}</el-tag>
-          <el-tag effect="dark" color="#19be6b" v-else>{{
-            $t('m.Accepted')
-          }}</el-tag>
-        </template>
-      </vxe-table-column>
       <vxe-table-column
         field="username"
         :title="$t('m.Username')"
@@ -77,13 +50,22 @@
         :title="$t('m.RealName')"
         min-width="150"
       ></vxe-table-column>
-      <vxe-table-column field="checked" :title="$t('m.Status')" min-width="150">
+      <vxe-table-column
+        field="gmtCreate"
+        min-width="150"
+        :title="$t('m.Submit_Time')"
+      >
         <template v-slot="{ row }">
-          <el-tag effect="dark" color="#19be6b" v-if="row.checked">{{
-            $t('m.Checked')
+          <span>{{ row.submitTime | localtime }}</span>
+        </template>
+      </vxe-table-column>
+      <vxe-table-column field="status" :title="$t('m.Status')" min-width="150">
+        <template v-slot="{ row }">
+          <el-tag effect="dark" color="#19be6b" v-if="row.status == 1">{{
+            $t('m.Printed')
           }}</el-tag>
-          <el-tag effect="dark" color="#f90" v-else>{{
-            $t('m.Not_Checked')
+          <el-tag effect="dark" color="#f90" v-if="row.status == 0">{{
+            $t('m.Not_Printed')
           }}</el-tag>
         </template>
       </vxe-table-column>
@@ -92,10 +74,18 @@
           <el-button
             type="primary"
             size="small"
-            icon="el-icon-circle-check"
-            @click="updateCheckedStatus(row)"
+            icon="el-icon-download"
+            @click="downloadSubmissions(row.id)"
             round
-            >{{ $t('m.Check_It') }}</el-button
+            >{{ $t('m.Download') }}</el-button
+          >
+          <el-button
+            type="success"
+            size="small"
+            icon="el-icon-circle-check"
+            @click="updateStatus(row.id)"
+            round
+            >{{ $t('m.OK') }}</el-button
           >
         </template>
       </vxe-table-column>
@@ -104,76 +94,75 @@
       :total="total"
       :page-size.sync="limit"
       :current.sync="page"
-      @on-change="getACInfo"
+      @on-change="getContestPrint"
     ></Pagination>
   </el-card>
 </template>
+
 <script>
 import api from '@/common/api';
 import myMessage from '@/common/message';
+import utils from '@/common/utils';
 const Pagination = () => import('@/components/oj/common/Pagination');
+
 export default {
-  name: 'ACM-Info-Admin',
+  name: 'Contest-Print-Admin',
   components: {
     Pagination,
   },
   data() {
     return {
       page: 1,
-      limit: 20,
+      limit: 15,
       total: 0,
       btnLoading: false,
       autoRefresh: false,
-      acInfoList: [],
+      contestID: null,
+      printList: [],
     };
   },
   mounted() {
-    this.getACInfo(1);
+    this.contestID = this.$route.params.contestID;
+    this.getContestPrint(1);
   },
   methods: {
-    getUserTotalSubmit(username) {
-      this.$router.push({
-        name: 'ContestSubmissionList',
-        query: { username: username },
+    updateStatus(id) {
+      let params = {
+        id: id,
+        cid: this.contestID,
+      };
+      api.updateContestPrintStatus(params).then((res) => {
+        myMessage.success(this.$i18n.t('m.Update_Successfully'));
+        this.getContestPrint(1);
       });
     },
-    getACInfo(page = 1) {
-      this.btnLoading = true;
+    getContestPrint(page = 1) {
       let params = {
-        cid: this.$route.params.contestID,
-        limit: this.limit,
+        cid: this.contestID,
         currentPage: page,
+        limit: this.limit,
       };
+      this.btnLoading = true;
       api
-        .getACMACInfo(params)
+        .getContestPrintList(params)
         .then((res) => {
           this.btnLoading = false;
-          this.acInfoList = res.data.data.records;
+          this.printList = res.data.data.records;
           this.total = res.data.data.total;
         })
         .catch(() => {
           this.btnLoading = false;
         });
     },
-    updateCheckedStatus(row) {
-      let data = {
-        id: row.id,
-        checked: !row.checked,
-        cid: row.cid,
-      };
-      api
-        .updateACInfoCheckedStatus(data)
-        .then((res) => {
-          myMessage.success(this.$i18n.t('m.Update_Successfully'));
-          this.getACInfo();
-        })
-        .catch(() => {});
+    downloadSubmissions(id) {
+      let url = `/api/file/download-contest-print-text?id=${id}`;
+      utils.downloadFile(url);
     },
     handleAutoRefresh() {
       if (this.autoRefresh) {
         this.refreshFunc = setInterval(() => {
           this.page = 1;
-          this.getACInfo();
+          this.getContestPrint(1);
         }, 10000);
       } else {
         clearInterval(this.refreshFunc);
@@ -185,6 +174,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .filter-row {
   float: right;

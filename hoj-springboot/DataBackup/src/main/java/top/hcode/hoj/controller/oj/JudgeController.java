@@ -465,7 +465,7 @@ public class JudgeController {
 
 
         if (commonJudgeList.getTotal() == 0) { // 未查询到一条数据
-            return CommonResult.successResponse(null, "暂无数据");
+            return CommonResult.successResponse(commonJudgeList, "暂无数据");
         } else {
             return CommonResult.successResponse(commonJudgeList, "获取成功");
         }

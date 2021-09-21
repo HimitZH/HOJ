@@ -131,7 +131,7 @@
       <el-row :gutter="30" justify="space-around">
         <el-col :md="10" :xs="24">
           <el-form-item :label="$t('m.RealName')">
-            <el-input v-model="formProfile.realname" :maxlength="10" />
+            <el-input v-model="formProfile.realname" :maxlength="50" />
           </el-form-item>
           <el-form-item :label="$t('m.Nickname')">
             <el-input v-model="formProfile.nickname" :maxlength="20" />
@@ -140,7 +140,7 @@
             <el-input v-model="formProfile.school" :maxlength="50" />
           </el-form-item>
           <el-form-item :label="$t('m.Student_Number')">
-            <el-input v-model="formProfile.number" :maxlength="25" />
+            <el-input v-model="formProfile.number" :maxlength="20" />
           </el-form-item>
         </el-col>
         <el-col :md="4" :lg="4">

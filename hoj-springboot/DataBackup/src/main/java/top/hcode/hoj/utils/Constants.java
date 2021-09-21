@@ -162,6 +162,8 @@ public class Constants {
 
         MARKDOWN_FILE_FOLDER("/hoj/file/md"),
 
+        CONTEST_TEXT_PRINT_FOLDER("/hoj/file/contest_print"),
+
         IMG_API("/api/public/img/"),
 
         FILE_API("/api/public/file/"),

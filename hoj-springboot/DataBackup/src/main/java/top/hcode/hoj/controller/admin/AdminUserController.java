@@ -10,6 +10,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.UserInfo;
@@ -136,7 +137,8 @@ public class AdminUserController {
                         .setUuid(uuid)
                         .setUsername(user.get(0))
                         .setPassword(SecureUtil.md5(user.get(1)))
-                        .setEmail(user.get(2)));
+                        .setEmail(StringUtils.isEmpty(user.get(2)) ? null : user.get(2))
+                        .setRealname(user.get(3)));
                 userRoleList.add(new UserRole()
                         .setRoleId(1002L)
                         .setUid(uuid));

@@ -405,6 +405,29 @@ const ojApi = {
       data
     })
   },
+
+  // 提交打印文本
+  submitPrintText(data){
+    return ajax('/api/submit-print-text', 'post', {
+      data
+    })
+  },
+
+  // 获取比赛打印文本列表
+  getContestPrintList(params){
+    return ajax('/api/get-contest-print', 'get', {
+      params
+    })
+  },
+
+  // 更新比赛打印的状态
+  updateContestPrintStatus(params){
+    return ajax('/api/check-contest-print-status', 'put', {
+      params
+    })
+  },
+
+
   // 比赛题目对应的提交重判
   ContestRejudgeProblem(params){
     return ajax('/api/admin/judge/rejudge-contest-problem', 'get', {

@@ -62,8 +62,8 @@ export const m = {
   Delete_User:'删除用户',
   Import_User: '导入用户',
   Import_User_Tips1:'用户数据导入仅支持csv格式的用户数据。',
-  Import_User_Tips2:'共三列数据:用户名，密码，邮箱，任一列不能为空，否则该行数据可能导入失败。',
-  Import_User_Tips3:'第一行不必写(“用户名”，“密码”，“邮箱”)这三个列名',
+  Import_User_Tips2:'共三列数据：用户名和密码不能为空，邮箱和真实姓名可选填，否则该行数据可能导入失败。',
+  Import_User_Tips3:'第一行不必写(“用户名”，“密码”，“邮箱”，"真实姓名")这三个列名',
   Import_User_Tips4:'请导入保存为UTF-8编码的文件，否则中文可能会乱码。',
   Choose_File:'选择文件',
   Password: '密码',
@@ -88,7 +88,7 @@ export const m = {
   The_number_of_users_selected_cannot_be_empty:'选择的用户不能为空',
   Error_Please_check_your_choice:'错误，请检查你的输入或选择是否准确',
   Generate_User_Success:'所有用户已经被成功创建, 用户的列表数据文件将下载到你的电脑里',
-  Generate_Skipped_Reason:'行用户数据被过滤，原因是可能为空行或某个列值为空',
+  Generate_Skipped_Reason:'行用户数据被过滤，原因是可能为空行或某个列值(用户名或密码)为空',
   Upload_Users_Successfully:'上传用户成功',
 
   // /views/admin/general/Announcement.vue
@@ -241,6 +241,11 @@ export const m = {
   Create_Contest:'创建比赛',
   Contest_Duration_Check:'比赛时长不能小于0',
   Contets_Time_Check:'开始时间应该早于结束时间',
+  Print_Func:'打印功能',
+  Not_Support_Print:'不支持打印',
+  Support_Offline_Print:'支持线下打印',
+  Account_Limit:'账号限制',
+  The_allowed_account_will_be:'允许参加比赛的用户名是：',
 
    // /views/admin/discussion/Discussion.vue
   Discussion_ID:'讨论ID',

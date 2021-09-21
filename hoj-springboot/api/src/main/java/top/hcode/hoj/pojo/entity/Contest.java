@@ -78,6 +78,15 @@ public class Contest implements Serializable {
     @ApiModelProperty(value = "是否可见")
     private Boolean visible;
 
+    @ApiModelProperty(value = "是否打开打印功能")
+    private Boolean openPrint;
+
+    @ApiModelProperty(value = "是否打开账号限制")
+    private Boolean openAccountLimit;
+
+    @ApiModelProperty(value = "账号限制规则 <prefix>**</prefix><suffix>**</suffix><start>**</start><end>**</end>")
+    private String accountLimitRule;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 

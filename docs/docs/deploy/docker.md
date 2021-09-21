@@ -324,5 +324,79 @@ hoj-frontend:
 
 ## 四、更新最新版本
 
+> 2021.09.21之后部署hoj的请看下面操作
+
 请在对应的docker-compose.yml当前文件夹下执行`docker-compose pull`拉取最新镜像，然后重新`docker-compose up -d`即可。
+
+
+
+> 2021.09.21之前部署hoj的请看下面操作
+
+###1、修改MySQL8.0默认的密码加密方式
+
+（1）进行hoj-mysql容器
+
+```shell
+docker exec -it hoj-mysql bash
+```
+
+  (2) 输入对应的mysql密码，进入mysql数据库
+
+  注意：-p 后面跟着数据库密码例如hoj123456
+
+```shell
+mysql -uroot -p数据库密码
+```
+
+（3）成功进入后，执行以下命令
+
+```shell
+mysql> use mysql;
+
+mysql> grant all PRIVILEGES on *.* to root@'%' WITH GRANT OPTION;
+
+ 
+mysql> ALTER user 'root'@'%' IDENTIFIED BY '数据库密码' PASSWORD EXPIRE NEVER;
+
+ 
+mysql> ALTER user 'root'@'%' IDENTIFIED WITH mysql_native_password BY '数据库密码';
+
+ 
+mysql> FLUSH PRIVILEGES;
+```
+
+（4） 两次exit 退出mysql和容器
+
+### 2、 添加hoj-mysql-checker模块
+
+（1）可以选择拉取仓库最新的docker-compose.yml文件（跟部署操作一样）或者访问：
+
+https://gitee.com/himitzh0730/hoj-deploy/blob/master/standAlone/docker-compose.yml
+
+（2）或者编辑docker-compose.yml文件，手动添加新模块
+
+```yaml
+  hoj-mysql-checker:
+    image: registry.cn-shenzhen.aliyuncs.com/hcode/hoj_database_checker
+    container_name: hoj-mysql-checker
+    depends_on:
+      - hoj-mysql
+    links:
+      - hoj-mysql:mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-hoj123456}
+    networks:
+      hoj-network:
+        ipv4_address: 172.20.0.8
+```
+
+(3)  保存后重启容器即可
+
+```shell
+docker-compose down
+
+docker-compose up -d
+```
+
+
 

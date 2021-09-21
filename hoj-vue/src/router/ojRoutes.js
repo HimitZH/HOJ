@@ -16,6 +16,8 @@ import ContestRank from "@/views/oj/contest/children/ContestRank.vue"
 import ACMInfoAdmin from "@/views/oj/contest/children/ACMInfoAdmin.vue"
 import Announcements from "@/components/oj/common/Announcements.vue"
 import ContestComment from "@/views/oj/contest/children/ContestComment.vue"
+import ContestPrint from "@/views/oj/contest/children/ContestPrint.vue"
+import ContestAdminPrint from "@/views/oj/contest/children/ContestAdminPrint.vue"
 import ContestRejudgeAdmin from "@/views/oj/contest/children/ContestRejudgeAdmin.vue"
 import DiscussionList from "@/views/oj/discussion/discussionList.vue"
 import Discussion from "@/views/oj/discussion/discussion.vue"
@@ -161,6 +163,18 @@ const ojRoutes = [
         path:'comment',
         component: ContestComment,
         meta: { title: 'Contest Comment'}
+      },
+      {
+        name: 'ContestPrint',
+        path:'print',
+        component: ContestPrint,
+        meta: { title: 'Contest Print'}
+      },
+      {
+        name: 'ContestAdminPrint',
+        path:'admin-print',
+        component: ContestAdminPrint,
+        meta: { title: 'Contest Admin Print'}
       }
     ]
   },

@@ -62,8 +62,8 @@ export const m = {
   Delete_User:'Delete User',
   Import_User: 'Import User',
   Import_User_Tips1:'The imported user data only supports user data in CSV format.',
-  Import_User_Tips2:'There are three columns of data: user name, password, and mailbox. Any column cannot be empty, otherwise the data in this row may fail to be imported.',
-  Import_User_Tips3:'The first line does not need to write the three column names ("username", "password", "email").',
+  Import_User_Tips2:'There are three columns of data: username, password, email, and realname. The username and password cannot be empty, email and realname can be enmpty, otherwise the data in this row may fail to be imported.',
+  Import_User_Tips3:'The first line does not need to write the three column names ("username", "password", "email","realname").',
   Import_User_Tips4:'Please import the file saved as UTF-8 code, otherwise Chinese may be garbled.',
   Choose_File:'Choose File',
   Password: 'Password',
@@ -88,7 +88,7 @@ export const m = {
   The_number_of_users_selected_cannot_be_empty:'The number of users selected cannot be empty',
   Error_Please_check_your_choice:'Wrong, please check your choice.',
   Generate_User_Success:'All users in the specified format have been created successfully, and the user table has been downloaded to your computer successfully!',
-  Generate_Skipped_Reason:'rows user data are filtered because it may be an empty row or a column value is empty.',
+  Generate_Skipped_Reason:'rows user data are filtered because it may be an empty row or a column(username or password) value is empty.',
   Upload_Users_Successfully:'Upload Users Successfully',
 
   // /views/admin/general/Announcement.vue
@@ -222,7 +222,6 @@ export const m = {
   View_Contest_Announcement_List:'View Contest Announcement List',
   Download_Contest_AC_Submission:'Download Contest AC Submissions',
   Exclude_admin_submissions:'Exclude admin submissions',
-
   Delete_Contest_Tips:'This operation will delete the contest and its submission, discussion, announcement, record and other data. Do you want to continue?',
 
   // /views/admin/contest/Contest.vue
@@ -244,6 +243,11 @@ export const m = {
   Create_Contest:'Create Contest',
   Contest_Duration_Check:'The duration of the contest cannot be less than or equal to zero!',
   Contets_Time_Check:'The start time should be earlier than the end time!',
+  Print_Func:'Print Function',
+  Not_Support_Print:'Not Support Print',
+  Support_Offline_Print:'Support Offline Print',
+  Account_Limit:'Account Limit',
+  The_allowed_account_will_be:'The allowed username will be ',
 
   // /views/admin/discussion/Discussion.vue
   Discussion_ID:'Discussion ID',

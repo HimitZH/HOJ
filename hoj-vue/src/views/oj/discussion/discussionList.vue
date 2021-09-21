@@ -401,7 +401,7 @@ export default {
   data() {
     return {
       total: 0,
-      limit: 15,
+      limit: 10,
       currentPage: 1,
       showEditDiscussionDialog: false,
       discussion: {
