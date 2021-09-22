@@ -166,12 +166,7 @@
           </transition>
         </el-tab-pane>
 
-        <el-tab-pane
-          name="ContestComment"
-          lazy
-          :disabled="contestMenuDisabled"
-          v-if="contestEnded"
-        >
+        <el-tab-pane name="ContestComment" lazy :disabled="contestMenuDisabled">
           <span slot="label"
             ><i class="fa fa-commenting" aria-hidden="true"></i>&nbsp;{{
               $t('m.Comment')

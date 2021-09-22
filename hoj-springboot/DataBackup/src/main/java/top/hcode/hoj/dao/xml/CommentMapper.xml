@@ -29,6 +29,13 @@
                 AND c.did=#{did}
             </if>
 
+            <if test="onlyMineAndAdmin">
+                AND c.from_uid in
+                <foreach item="uid" collection="myAndAdminUidList" separator="," open="(" close=")" index="">
+                    #{uid}
+                </foreach>
+            </if>
+
         </where>
         order by c.like_num desc,c.gmt_create desc
     </select>

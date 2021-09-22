@@ -9,6 +9,8 @@ import top.hcode.hoj.pojo.entity.Comment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import top.hcode.hoj.pojo.vo.CommentsVo;
 
+import java.util.List;
+
 
 /**
  * <p>
@@ -22,5 +24,7 @@ import top.hcode.hoj.pojo.vo.CommentsVo;
 @Repository
 public interface CommentMapper extends BaseMapper<Comment> {
 
-    IPage<CommentsVo> getCommentList(Page<CommentsVo> page, @Param("cid") Long cid, @Param("did") Integer did);
+    IPage<CommentsVo> getCommentList(Page<CommentsVo> page, @Param("cid") Long cid, @Param("did") Integer did,
+                                     @Param("onlyMineAndAdmin") Boolean onlyMineAndAdmin,
+                                     @Param("myAndAdminUidList") List<String> myAndAdminUidList);
 }
