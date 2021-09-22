@@ -136,6 +136,16 @@ public class JudgeController {
                 if (checkResult != null) {
                     return checkResult;
                 }
+
+                /**
+                 *  需要校验当前比赛是否为保护比赛，同时是否开启账号规则限制，如果有，需要对当前用户的用户名进行验证
+                 */
+
+                if (contest.getAuth().equals(Constants.Contest.AUTH_PROTECT.getCode())
+                        && contest.getOpenAccountLimit()
+                        && !contestService.checkAccountRule(contest.getAccountLimitRule(), userRolesVo.getUsername())) {
+                    return CommonResult.errorResponse("对不起！本次比赛只允许特定账号规则的用户参赛！", CommonResult.STATUS_ACCESS_DENIED);
+                }
             }
 
             // 查询获取对应的pid和cpid

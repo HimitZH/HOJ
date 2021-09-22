@@ -59,11 +59,14 @@ public class CommentController {
                                     @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage,
                                     HttpServletRequest request) {
 
-        IPage<CommentsVo> commentList = commentService.getCommentList(limit, currentPage, cid, did);
-
-        // 获取当前登录的用户
+        // 如果有登录，则获取当前登录的用户
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        IPage<CommentsVo> commentList = commentService.getCommentList(limit, currentPage, cid, did, isRoot,
+                userRolesVo != null ? userRolesVo.getUid() : null);
 
         HashMap<Integer, Boolean> commentLikeMap = new HashMap<>();
 
@@ -231,13 +234,17 @@ public class CommentController {
     }
 
     @GetMapping("/reply")
-    public CommonResult getAllReply(@RequestParam("commentId") Integer commentId) {
+    public CommonResult getAllReply(@RequestParam("commentId") Integer commentId,
+                                    @RequestParam("cid") Long cid,
+                                    HttpServletRequest request) {
 
-        QueryWrapper<Reply> replyQueryWrapper = new QueryWrapper<>();
-        replyQueryWrapper.eq("comment_id", commentId);
-        replyQueryWrapper.orderByDesc("gmt_create");
+        // 如果有登录，则获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
-        List<Reply> replyList = replyService.list(replyQueryWrapper);
+        List<Reply> replyList = commentService.getAllReplyByCommentId(cid, userRolesVo != null ? userRolesVo.getUid() : null,
+                isRoot, commentId);
 
         return CommonResult.successResponse(replyList, "获取全部回复列表成功");
     }

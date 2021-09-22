@@ -967,8 +967,13 @@ export default {
       if (type == 1) {
         let length = this.problemSamples.length;
         let aver = parseInt(100 / length);
+        let add_1_num = 100 - aver;
         for (let i = 0; i < length; i++) {
-          this.problemSamples[i].score = aver;
+          if (i >= length - add_1_num) {
+            this.problemSamples[i].score = aver + 1;
+          } else {
+            this.problemSamples[i].score = aver;
+          }
         }
       }
     },
@@ -1019,16 +1024,20 @@ export default {
       }
       myMessage.success(this.$i18n.t('m.Upload_Testcase_Successfully'));
       let fileList = response.data.fileList;
-      let averSorce = (100 / fileList.length).toFixed(0);
-
-      for (let file of fileList) {
+      let averSorce = parseInt(100 / fileList.length);
+      let add_1_num = 100 - averSorce;
+      for (let i = 0; i < fileList.length; i++) {
         if (averSorce) {
-          file.score = averSorce;
+          if (i >= fileList.length - add_1_num) {
+            fileList[i].score = averSorce + 1;
+          } else {
+            fileList[i].score = averSorce;
+          }
         }
-        if (!file.output && this.problem.spj) {
-          file.output = '-';
+        if (!fileList[i].output && this.problem.spj) {
+          fileList[i].output = '-';
         }
-        file.pid = this.problem.id;
+        fileList[i].pid = this.problem.id;
       }
       this.problem.testCaseScore = fileList;
       this.testCaseUploaded = true;
@@ -1132,6 +1141,7 @@ export default {
 
           // 同时是oi题目，则对应的每个测试样例的io得分不能为空或小于0
           if (this.problem.type == 1) {
+            let sumScore = 0;
             for (let i = 0; i < this.problemSamples.length; i++) {
               if (this.problemSamples[i].score == '') {
                 myMessage.error(
@@ -1156,7 +1166,9 @@ export default {
                 myMessage.error(this.$i18n.t('m.Score_must_be_an_integer'));
                 return;
               }
+              sumScore += this.problemSamples[i].score;
             }
+            this.problem['ioScore'] = sumScore;
           }
         } else {
           // 选择上传文件
@@ -1173,6 +1185,7 @@ export default {
 
           // 如果是oi题目，需要检查上传的数据的得分
           if (this.problem.type == 1) {
+            let sumScore = 0;
             for (let i = 0; i < this.problemSamples.length; i++) {
               if (this.problemSamples[i].score == '') {
                 myMessage.error(
@@ -1197,7 +1210,9 @@ export default {
                 myMessage.error(this.$i18n.t('m.Score_must_be_an_integer'));
                 return;
               }
+              sumScore += this.problemSamples[i].score;
             }
+            this.problem['ioScore'] = sumScore;
           }
         }
       }
