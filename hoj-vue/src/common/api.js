@@ -577,10 +577,11 @@ const ojApi = {
     })
   },
 
-  getAllReply(commentId){
+  getAllReply(commentId,cid){
     return ajax("/api/reply",'get',{
       params:{
-        commentId
+        commentId,
+        cid
       }
     })
   }

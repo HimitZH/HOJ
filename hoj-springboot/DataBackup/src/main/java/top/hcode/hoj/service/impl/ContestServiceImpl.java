@@ -69,11 +69,6 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
 
         if (!isRoot && !contest.getUid().equals(userRolesVo.getUid())) { // 若不是比赛管理者
 
-            if (contest.getOpenAccountLimit()
-                    &&!checkAccountRule(contest.getAccountLimitRule(),userRolesVo.getUsername())){
-                return CommonResult.errorResponse("对不起！本次比赛只允许特定账号规则的用户参赛！",CommonResult.STATUS_ACCESS_DENIED);
-            }
-
             // 判断一下比赛的状态，还未开始不能查看题目。
             if (contest.getStatus().intValue() != Constants.Contest.STATUS_RUNNING.getCode() &&
                     contest.getStatus().intValue() != Constants.Contest.STATUS_ENDED.getCode()) {
@@ -85,6 +80,11 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
                     ContestRegister register = contestRegisterService.getOne(registerQueryWrapper);
                     if (register == null) { // 如果数据为空，表示未注册私有赛，不可访问
                         return CommonResult.errorResponse("对不起，请先到比赛首页输入比赛密码进行注册！", CommonResult.STATUS_FORBIDDEN);
+                    }
+
+                    if (contest.getOpenAccountLimit()
+                            && !checkAccountRule(contest.getAccountLimitRule(), userRolesVo.getUsername())) {
+                        return CommonResult.errorResponse("对不起！本次比赛只允许特定账号规则的用户参赛！", CommonResult.STATUS_ACCESS_DENIED);
                     }
                 }
             }

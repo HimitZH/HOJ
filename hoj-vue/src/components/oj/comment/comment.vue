@@ -1,6 +1,26 @@
 <!--评论模块-->
 <template>
   <div>
+    <div v-if="cid" class="comment-top container">
+      <el-alert type="warning" effect="dark" center :closable="false">
+        <template slot="title">
+          <span class="title">{{
+            $i18n.t('m.Announcement_of_contest_Q_and_A_area')
+          }}</span></template
+        >
+        <template slot>
+          <p>
+            1. {{ $i18n.t('m.Announcement_of_contest_Q_and_A_area_tips1') }}
+          </p>
+          <p>
+            2. {{ $i18n.t('m.Announcement_of_contest_Q_and_A_area_tips2') }}
+          </p>
+          <p>
+            3. {{ $i18n.t('m.Announcement_of_contest_Q_and_A_area_tips3') }}
+          </p>
+        </template>
+      </el-alert>
+    </div>
     <div class="container">
       <div class="own-input">
         <el-input
@@ -210,6 +230,9 @@
             <span
               class="comment-opt comment-reply"
               @click="showCommentInput(item)"
+              v-if="
+                !cid || (item.fromRole != 'root' && item.fromUid != contest.uid)
+              "
             >
               <i class="iconfont el-icon-chat-square"></i>
               <span>{{ $t('m.Reply') }}</span>
@@ -474,7 +497,7 @@
 
 <script>
 import Avatar from 'vue-avatar';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import myMessage from '@/common/message';
 import api from '@/common/api';
 import { addCodeBtn } from '@/common/codeblock';
@@ -723,22 +746,24 @@ export default {
           api.deleteReply(replyDeleteData).then((res) => {
             myMessage.success(res.data.msg);
             if (!this.comments[commentIndex].backupReplyList) {
-              api.getAllReply(this.comments[commentIndex].id).then((res) => {
-                this.comments[commentIndex].backupReplyList = res.data.data;
-                if (res.data.data && res.data.data.length > 3) {
-                  this.comments[commentIndex].replyList = res.data.data.slice(
-                    0,
-                    3
-                  );
-                } else {
-                  this.comments[commentIndex].replyList = res.data.data;
-                }
-                this.totalComment +=
-                  res.data.data.length -
-                  this.comments[commentIndex].totalReplyNum;
-                this.comments[commentIndex].totalReplyNum =
-                  res.data.data.length;
-              });
+              api
+                .getAllReply(this.comments[commentIndex].id, this.cid)
+                .then((res) => {
+                  this.comments[commentIndex].backupReplyList = res.data.data;
+                  if (res.data.data && res.data.data.length > 3) {
+                    this.comments[commentIndex].replyList = res.data.data.slice(
+                      0,
+                      3
+                    );
+                  } else {
+                    this.comments[commentIndex].replyList = res.data.data;
+                  }
+                  this.totalComment +=
+                    res.data.data.length -
+                    this.comments[commentIndex].totalReplyNum;
+                  this.comments[commentIndex].totalReplyNum =
+                    res.data.data.length;
+                });
             } else {
               this.comments[commentIndex].backupReplyList.splice(replyIndex, 1);
               if (this.comments[commentIndex].backupReplyList.length > 3) {
@@ -833,7 +858,7 @@ export default {
 
     showAllReply(item) {
       if (!item.backupReplyList) {
-        api.getAllReply(item.id).then((res) => {
+        api.getAllReply(item.id, this.cid).then((res) => {
           item.replyList = res.data.data;
           item.backupReplyList = res.data.data;
           item.hadOpen = true;
@@ -860,6 +885,9 @@ export default {
     },
   },
   computed: {
+    ...mapState({
+      contest: (state) => state.contest.contest,
+    }),
     ...mapGetters(['isAuthenticated', 'userInfo', 'isAdminRole']),
     showloading() {
       if (this.query.currentPage * this.query.limit >= this.total) {
@@ -887,6 +915,18 @@ export default {
 </style>
 
 <style scoped>
+.comment-top {
+  margin-bottom: 15px;
+}
+.comment-top .title {
+  font-size: 20px;
+  margin-left: 3.5em;
+}
+.comment-top p {
+  margin: 5px;
+  padding: 0;
+}
+
 .face-box {
   height: 200px !important;
   width: 300px !important;

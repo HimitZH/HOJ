@@ -412,7 +412,11 @@ export const m = {
   solarized: 'Molarized Light',
   material: 'Material',
 
-  // /components/oj/comment/CodeMirror.vue
+  // /components/oj/comment/comment.vue
+  Announcement_of_contest_Q_and_A_area:'Announcement of Contest Q & A Area',
+  Announcement_of_contest_Q_and_A_area_tips1:"Please don't ask questions irrelevant to the contest. No irrigation!",
+  Announcement_of_contest_Q_and_A_area_tips2:'During the contest, only the comments of yourself and the contest administrator can be seen!',
+  Announcement_of_contest_Q_and_A_area_tips3:"The contest administrator's comments cannot be replied. The comments return to normal at the end of the contest!",
   Come_and_write_down_your_comments:'Come and write down your comments',
   Inline_Code:'Inline Code',
   Code_Block:'Code Block',
