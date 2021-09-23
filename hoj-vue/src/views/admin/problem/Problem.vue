@@ -967,7 +967,7 @@ export default {
       if (type == 1) {
         let length = this.problemSamples.length;
         let aver = parseInt(100 / length);
-        let add_1_num = 100 - aver;
+        let add_1_num = 100 - aver * length;
         for (let i = 0; i < length; i++) {
           if (i >= length - add_1_num) {
             this.problemSamples[i].score = aver + 1;
@@ -1025,7 +1025,7 @@ export default {
       myMessage.success(this.$i18n.t('m.Upload_Testcase_Successfully'));
       let fileList = response.data.fileList;
       let averSorce = parseInt(100 / fileList.length);
-      let add_1_num = 100 - averSorce;
+      let add_1_num = 100 - averSorce * fileList.length;
       for (let i = 0; i < fileList.length; i++) {
         if (averSorce) {
           if (i >= fileList.length - add_1_num) {
