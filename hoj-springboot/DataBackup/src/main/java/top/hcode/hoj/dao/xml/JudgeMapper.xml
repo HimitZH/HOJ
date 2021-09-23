@@ -8,7 +8,12 @@
         <where>
             p.id = j.pid AND j.cid = 0 AND j.cpid = 0
             <if test="searchPid!=null">
-                AND p.problem_id like concat('%',#{searchPid},'%')
+                <if test="completeProblemID != true">
+                    AND p.problem_id like concat('%',#{searchPid},'%')
+                </if>
+                <if test="completeProblemID">
+                    AND p.problem_id = #{searchPid}
+                </if>
             </if>
             <if test="username!='' and username!=null">
                 AND j.username like concat('%',#{username},'%')
@@ -34,7 +39,12 @@
                AND j.cid = #{cid}
             </if>
             <if test="displayId!=null and displayId!=''">
-                AND cp.display_id like concat('%',#{displayId},'%')
+                <if test="completeProblemID != true">
+                    AND cp.display_id like concat('%',#{displayId},'%')
+                </if>
+                <if test="completeProblemID">
+                    AND cp.display_id = #{displayId}
+                </if>
             </if>
             <if test="username!='' and username!=null">
                 AND j.username like concat('%',#{username},'%')

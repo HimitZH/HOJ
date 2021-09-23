@@ -1007,12 +1007,12 @@ export default {
         this.$router.push({
           name: 'ContestSubmissionList',
           params: { contestID: this.contestID },
-          query: { problemID: this.problemID },
+          query: { problemID: this.problemID, completeProblemID: true },
         });
       } else {
         this.$router.push({
           name: 'SubmissionList',
-          query: { problemID: this.problemID },
+          query: { problemID: this.problemID, completeProblemID: true },
         });
       }
     },

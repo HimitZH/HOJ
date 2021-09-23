@@ -22,10 +22,11 @@ import java.util.List;
 
 public interface JudgeService extends IService<Judge> {
     IPage<JudgeVo> getCommonJudgeList(Integer limit, Integer currentPage, String searchPid, Integer status, String username,
-                                      String uid);
+                                      String uid, Boolean completeProblemID);
 
-    IPage<JudgeVo> getContestJudgeList(Integer limit, Integer currentPage, String displayId, Long cid, Integer status, String username,
-                                       String uid, Boolean beforeContestSubmit, String rule, Date startTime, Date sealRankTime, String sealTimeUid);
+    IPage<JudgeVo> getContestJudgeList(Integer limit, Integer currentPage, String displayId, Long cid, Integer status,
+                                       String username, String uid, Boolean beforeContestSubmit, String rule,
+                                       Date startTime, Date sealRankTime, String sealTimeUid, Boolean completeProblemID);
 
 
     void failToUseRedisPublishJudge(Long submitId, Long pid, Boolean isContest);

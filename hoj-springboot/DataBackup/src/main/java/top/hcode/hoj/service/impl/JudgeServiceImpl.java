@@ -37,20 +37,22 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
 
     @Override
     public IPage<JudgeVo> getCommonJudgeList(Integer limit, Integer currentPage, String searchPid, Integer status, String username,
-                                             String uid) {
+                                             String uid, Boolean completeProblemID) {
         //新建分页
         Page<JudgeVo> page = new Page<>(currentPage, limit);
 
-        return judgeMapper.getCommonJudgeList(page, searchPid, status, username, uid);
+        return judgeMapper.getCommonJudgeList(page, searchPid, status, username, uid, completeProblemID);
     }
 
     @Override
-    public IPage<JudgeVo> getContestJudgeList(Integer limit, Integer currentPage, String displayId, Long cid, Integer status, String username,
-                                              String uid, Boolean beforeContestSubmit, String rule, Date startTime, Date sealRankTime, String sealTimeUid) {
+    public IPage<JudgeVo> getContestJudgeList(Integer limit, Integer currentPage, String displayId, Long cid, Integer status,
+                                              String username, String uid, Boolean beforeContestSubmit, String rule,
+                                              Date startTime, Date sealRankTime, String sealTimeUid, Boolean completeProblemID) {
         //新建分页
         Page<JudgeVo> page = new Page<>(currentPage, limit);
 
-        return judgeMapper.getContestJudgeList(page, displayId, cid, status, username, uid, beforeContestSubmit, rule, startTime, sealRankTime, sealTimeUid);
+        return judgeMapper.getContestJudgeList(page, displayId, cid, status, username, uid, beforeContestSubmit,
+                rule, startTime, sealRankTime, sealTimeUid, completeProblemID);
     }
 
 
