@@ -162,13 +162,12 @@ public class ContestController {
          *
          *  需要校验当前比赛是否开启账号规则限制，如果有，需要对当前用户的用户名进行验证
          *
-        */
+         */
 
         if (contest.getOpenAccountLimit()
-                &&!contestService.checkAccountRule(contest.getAccountLimitRule(),userRolesVo.getUsername())){
-            return CommonResult.errorResponse("对不起！本次比赛只允许特定账号规则的用户参赛！",CommonResult.STATUS_ACCESS_DENIED);
+                && !contestService.checkAccountRule(contest.getAccountLimitRule(), userRolesVo.getUsername())) {
+            return CommonResult.errorResponse("对不起！本次比赛只允许特定账号规则的用户参赛！", CommonResult.STATUS_ACCESS_DENIED);
         }
-
 
 
         QueryWrapper<ContestRegister> wrapper = new QueryWrapper<ContestRegister>().eq("cid", Long.valueOf(cidStr))
@@ -383,6 +382,7 @@ public class ContestController {
                                               @RequestParam(value = "username", required = false) String searchUsername,
                                               @RequestParam(value = "contestID", required = true) Long searchCid,
                                               @RequestParam(value = "beforeContestSubmit", required = true) Boolean beforeContestSubmit,
+                                              @RequestParam(value = "completeProblemID", defaultValue = "false") Boolean completeProblemID,
                                               HttpServletRequest request) {
 
         HttpSession session = request.getSession();
@@ -431,7 +431,8 @@ public class ContestController {
         }
         // OI比赛封榜期间不更新，ACM比赛封榜期间可看到自己的提交，但是其它人的不更新
         IPage<JudgeVo> commonJudgeList = judgeService.getContestJudgeList(limit, currentPage, displayId, searchCid,
-                searchStatus, searchUsername, uid, beforeContestSubmit, rule, contest.getStartTime(), sealRankTime, userRolesVo.getUid());
+                searchStatus, searchUsername, uid, beforeContestSubmit, rule, contest.getStartTime(),
+                sealRankTime, userRolesVo.getUid(), completeProblemID);
 
         if (commonJudgeList.getTotal() == 0) { // 未查询到一条数据
             return CommonResult.successResponse(commonJudgeList, "暂无数据");
