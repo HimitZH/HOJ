@@ -73,8 +73,8 @@
                 :placeholder="$t('m.Enter_Problem_ID')"
                 type="search"
                 size="medium"
-                @keyup.enter.native="handleQueryChange"
-                @search-click="handleQueryChange"
+                @keyup.enter.native="handleQueryChange('probemID')"
+                @search-click="handleQueryChange('probemID')"
               ></vxe-input>
             </el-col>
             <el-col :xs="24" :sm="12" :md="5" :lg="5" class="search">
@@ -84,8 +84,8 @@
                 :placeholder="$t('m.Enter_Author')"
                 type="search"
                 size="medium"
-                @keyup.enter.native="handleQueryChange"
-                @search-click="handleQueryChange"
+                @keyup.enter.native="handleQueryChange('username')"
+                @search-click="handleQueryChange('username')"
               ></vxe-input>
             </el-col>
           </el-row>
@@ -400,6 +400,7 @@ export default {
       this.formFilter.username = query.username || '';
       this.formFilter.onlyMine = query.onlyMine + '' == 'true' ? true : false; // 统一换成字符串判断
       this.formFilter.status = query.status;
+      this.formFilter.completeProblemID = query.completeProblemID || false;
       if (this.formFilter.onlyMine) {
         // 当前为搜索自己的提交 那么不可搜索别人的提交
         this.formFilter.username = '';
@@ -424,6 +425,7 @@ export default {
         problemID: this.formFilter.problemID,
         currentPage: this.currentPage,
         limit: this.limit,
+        completeProblemID: this.formFilter.completeProblemID,
       };
     },
 
@@ -639,7 +641,10 @@ export default {
       this.currentPage = 1;
       this.changeRoute();
     },
-    handleQueryChange() {
+    handleQueryChange(searchParam) {
+      if (searchParam == 'probemID') {
+        this.formFilter.completeProblemID = false; // 并非走完全检索displayID了
+      }
       this.currentPage = 1;
       this.changeRoute();
     },

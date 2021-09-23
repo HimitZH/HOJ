@@ -446,6 +446,7 @@ public class JudgeController {
                                      @RequestParam(value = "problemID", required = false) String searchPid,
                                      @RequestParam(value = "status", required = false) Integer searchStatus,
                                      @RequestParam(value = "username", required = false) String searchUsername,
+                                     @RequestParam(value = "completeProblemID",defaultValue = "false")Boolean completeProblemID,
                                      HttpServletRequest request) {
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
@@ -471,7 +472,7 @@ public class JudgeController {
         }
 
         IPage<JudgeVo> commonJudgeList = judgeService.getCommonJudgeList(limit, currentPage, searchPid,
-                searchStatus, searchUsername, uid);
+                searchStatus, searchUsername, uid,completeProblemID);
 
 
         if (commonJudgeList.getTotal() == 0) { // 未查询到一条数据
