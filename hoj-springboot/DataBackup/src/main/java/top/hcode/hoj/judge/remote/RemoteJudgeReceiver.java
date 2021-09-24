@@ -4,17 +4,21 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.judge.Dispatcher;
 import top.hcode.hoj.pojo.entity.Judge;
 import top.hcode.hoj.pojo.entity.RemoteJudgeAccount;
 import top.hcode.hoj.pojo.entity.ToJudge;
 import top.hcode.hoj.service.impl.JudgeServiceImpl;
+import top.hcode.hoj.service.impl.ProblemServiceImpl;
 import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -37,6 +41,9 @@ public class RemoteJudgeReceiver {
     @Autowired
     private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
 
+    @Resource
+    private ApplicationContext applicationContext;
+
     @Async("judgeTaskAsyncPool")
     public void processWaitingTask() {
         // 如果队列中还有任务，则继续处理
@@ -44,23 +51,33 @@ public class RemoteJudgeReceiver {
             String taskJsonStr = (String) redisUtils.lrPop(Constants.Judge.STATUS_REMOTE_JUDGE_WAITING_HANDLE.getName());
             // 再次检查
             if (taskJsonStr != null) {
-                handleJudgeMsg(taskJsonStr);
+
+                JSONObject task = JSONUtil.parseObj(taskJsonStr);
+
+                Judge judge = task.get("judge", Judge.class);
+                String token = task.getStr("token");
+                String remoteJudgeProblem = task.getStr("remoteJudgeProblem");
+                Boolean isContest = task.getBool("isContest");
+                Integer tryAgainNum = task.getInt("tryAgainNum");
+                Boolean isHasSubmitIdRemoteReJudge = task.getBool("isHasSubmitIdRemoteReJudge");
+
+                String remoteOJName = remoteJudgeProblem.split("-")[0].toUpperCase();
+
+                applicationContext.getBean(RemoteJudgeReceiver.class)
+                        .handleJudgeMsg(judge,
+                                token,
+                                remoteJudgeProblem,
+                                isContest,
+                                tryAgainNum,
+                                isHasSubmitIdRemoteReJudge,
+                                remoteOJName);
             }
         }
     }
 
-    public void handleJudgeMsg(String taskJsonStr) {
-
-        JSONObject task = JSONUtil.parseObj(taskJsonStr);
-
-        Judge judge = task.get("judge", Judge.class);
-        String token = task.getStr("token");
-        String remoteJudgeProblem = task.getStr("remoteJudgeProblem");
-        Boolean isContest = task.getBool("isContest");
-        Integer tryAgainNum = task.getInt("tryAgainNum");
-        Boolean isHasSubmitIdRemoteReJudge = task.getBool("isHasSubmitIdRemoteReJudge");
-
-        String remoteOJName = remoteJudgeProblem.split("-")[0].toUpperCase();
+    @Transactional
+    public void handleJudgeMsg(Judge judge, String token, String remoteJudgeProblem, Boolean isContest, Integer tryAgainNum,
+                               Boolean isHasSubmitIdRemoteReJudge, String remoteOJName) {
 
         // 过滤出当前远程oj可用的账号列表
         QueryWrapper<RemoteJudgeAccount> remoteJudgeAccountQueryWrapper = new QueryWrapper<>();
@@ -83,6 +100,7 @@ public class RemoteJudgeReceiver {
                     // POJ已有submitId的重判需要使用原来的账号获取结果
                     if (isNeedAccountRejudge) {
                         if (remoteJudgeAccount.getUsername().equals(judge.getVjudgeUsername())) {
+                            judge.setVjudgePassword(remoteJudgeAccount.getPassword()); // 避免账号改密码
                             isHasAccountRejudge = true;
                             remoteJudgeAccount.setStatus(false);
                             boolean isOk = remoteJudgeAccountService.updateById(remoteJudgeAccount);
