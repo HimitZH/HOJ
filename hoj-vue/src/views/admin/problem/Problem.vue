@@ -1141,7 +1141,6 @@ export default {
 
           // 同时是oi题目，则对应的每个测试样例的io得分不能为空或小于0
           if (this.problem.type == 1) {
-            let sumScore = 0;
             for (let i = 0; i < this.problemSamples.length; i++) {
               if (this.problemSamples[i].score == '') {
                 myMessage.error(
@@ -1166,9 +1165,7 @@ export default {
                 myMessage.error(this.$i18n.t('m.Score_must_be_an_integer'));
                 return;
               }
-              sumScore += this.problemSamples[i].score;
             }
-            this.problem['ioScore'] = sumScore;
           }
         } else {
           // 选择上传文件
@@ -1185,7 +1182,6 @@ export default {
 
           // 如果是oi题目，需要检查上传的数据的得分
           if (this.problem.type == 1) {
-            let sumScore = 0;
             for (let i = 0; i < this.problemSamples.length; i++) {
               if (this.problemSamples[i].score == '') {
                 myMessage.error(
@@ -1210,9 +1206,7 @@ export default {
                 myMessage.error(this.$i18n.t('m.Score_must_be_an_integer'));
                 return;
               }
-              sumScore += this.problemSamples[i].score;
             }
-            this.problem['ioScore'] = sumScore;
           }
         }
       }

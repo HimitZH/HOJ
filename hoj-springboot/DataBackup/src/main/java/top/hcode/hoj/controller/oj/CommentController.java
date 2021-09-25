@@ -161,10 +161,10 @@ public class CommentController {
                 || SecurityUtils.getSubject().hasRole("admin") || SecurityUtils.getSubject().hasRole("problem_admin")) {
 
             // 获取需要删除该评论的回复数
-            int replyNum = replyService.count(new UpdateWrapper<Reply>().eq("comment_id", comment.getId()));
+            int replyNum = replyService.count(new QueryWrapper<Reply>().eq("comment_id", comment.getId()));
 
             // 删除该数据 包括关联外键的reply表数据
-            boolean isDeleteComment = commentService.remove(new UpdateWrapper<Comment>().eq("id", comment.getId()));
+            boolean isDeleteComment = commentService.removeById(comment.getId());
 
             // 同时需要删除该评论的回复表数据
             replyService.remove(new UpdateWrapper<Reply>().eq("comment_id", comment.getId()));
@@ -235,7 +235,7 @@ public class CommentController {
 
     @GetMapping("/reply")
     public CommonResult getAllReply(@RequestParam("commentId") Integer commentId,
-                                    @RequestParam("cid") Long cid,
+                                    @RequestParam(value = "cid", required = false) Long cid,
                                     HttpServletRequest request) {
 
         // 如果有登录，则获取当前登录的用户

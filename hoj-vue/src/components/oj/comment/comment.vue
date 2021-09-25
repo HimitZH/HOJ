@@ -716,6 +716,7 @@ export default {
           let commentDeleteData = {
             id: comment.id,
             fromUid: comment.fromUid,
+            did: this.did,
           };
           api.deleteComment(commentDeleteData).then((res) => {
             this.totalComment--;
