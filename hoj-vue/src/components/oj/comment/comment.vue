@@ -165,6 +165,7 @@
         id="commentbox"
         v-for="(item, commentIndex) in comments"
         :key="commentIndex"
+        v-loading="loading"
       >
         <div class="info">
           <span
@@ -322,7 +323,7 @@
               </div>
             </div>
             <div class="view-more item" v-if="item.totalReplyNum > 3">
-              {{ $t('m.Reply_Total') }}<b>{{ item.totalReplyNum }}</b
+              {{ $t('m.Reply_Total') }}<b> {{ item.totalReplyNum }} </b
               >{{ $t('m.Replies') }},
               <a
                 class="btn-more"
@@ -541,6 +542,9 @@ export default {
         toName: '',
         toAvatar: '',
       },
+      replyQuoteId: null,
+      replyQuoteType: 'Comment',
+      loading: false,
     };
   },
 
@@ -568,20 +572,27 @@ export default {
       this.replyPlaceholder = this.$i18n.t(
         'm.Come_and_write_down_your_comments'
       );
-      api.getCommentList(queryParams).then((res) => {
-        let moreCommentList = res.data.data.commentList.records;
-        for (let i = 0; i < moreCommentList.length; i++) {
-          this.totalComment += 1 + moreCommentList[i].totalReplyNum;
+      this.loading = true;
+      api.getCommentList(queryParams).then(
+        (res) => {
+          let moreCommentList = res.data.data.commentList.records;
+          for (let i = 0; i < moreCommentList.length; i++) {
+            this.totalComment += 1 + moreCommentList[i].totalReplyNum;
+          }
+          this.comments = this.comments.concat(moreCommentList);
+          this.total = res.data.data.commentList.total;
+          this.commentLikeMap = res.data.data.commentLikeMap;
+          if (this.comments.length > 0) {
+            this.$nextTick((_) => {
+              addCodeBtn();
+            });
+          }
+          this.loading = false;
+        },
+        (err) => {
+          this.loading = false;
         }
-        this.comments = this.comments.concat(moreCommentList);
-        this.total = res.data.data.commentList.total;
-        this.commentLikeMap = res.data.data.commentLikeMap;
-        if (this.comments.length > 0) {
-          this.$nextTick((_) => {
-            addCodeBtn();
-          });
-        }
-      });
+      );
     },
 
     /**
@@ -590,7 +601,16 @@ export default {
     likeClick(item) {
       // 没有赞过则表明想去进行点赞
       let toLike = this.commentLikeMap[item.id] != true;
-      api.toLikeComment(item.id, toLike).then((res) => {
+
+      let sourceId = this.did;
+      let sourceType = 'Discussion';
+
+      if (this.cid != null) {
+        sourceId = this.cid;
+        sourceType = 'Contest';
+      }
+
+      api.toLikeComment(item.id, toLike, sourceId, sourceType).then((res) => {
         if (toLike) {
           this.commentLikeMap[item.id] = true;
           item.likeNum++;
@@ -648,6 +668,8 @@ export default {
       let replyData = {
         reply: this.replyObj,
         did: this.did,
+        quoteId: this.replyQuoteId,
+        quoteType: this.replyQuoteType,
       };
       api.addReply(replyData).then((res) => {
         for (let i = 0; i < this.comments.length; i++) {
@@ -690,6 +712,8 @@ export default {
         this.replyObj.toUid = reply.fromUid;
         this.replyObj.toName = reply.fromName;
         this.replyObj.toAvatar = reply.fromAvatar;
+        this.replyQuoteId = reply.id;
+        this.replyQuoteType = 'Reply';
       } else {
         this.replyPlaceholder = this.$i18n.t(
           'm.Come_and_write_down_your_comments'
@@ -698,6 +722,8 @@ export default {
         this.replyObj.toUid = item.fromUid;
         this.replyObj.toName = item.fromName;
         this.replyObj.toAvatar = item.fromAvatar;
+        this.replyQuoteId = item.id;
+        this.replyQuoteType = 'Comment';
       }
       this.showItemId = item.id;
     },
@@ -965,6 +991,8 @@ export default {
   display: flex;
   flex-wrap: wrap;
   padding: 5px;
+  height: 200px;
+  overflow-y: scroll;
 }
 .emotionItem {
   width: 10%;

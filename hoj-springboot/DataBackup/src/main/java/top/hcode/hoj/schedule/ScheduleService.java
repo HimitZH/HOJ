@@ -1,4 +1,4 @@
-package top.hcode.hoj.service;
+package top.hcode.hoj.schedule;
 
 public interface ScheduleService {
     void deleteAvatar();
@@ -12,4 +12,6 @@ public interface ScheduleService {
     void getCodeforcesRating();
 
     void deleteUserSession();
+
+    void syncNoticeToRecentHalfYearUser();
 }

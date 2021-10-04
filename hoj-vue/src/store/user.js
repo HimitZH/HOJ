@@ -4,11 +4,19 @@ const state = {
   userInfo:  storage.get('userInfo'),
   token: localStorage.getItem('token'),
   loginFailNum:0,
+  unreadMessage:{
+    comment:0,
+    reply:0,
+    like:0,
+    sys:0,
+    mine:0
+  }
 }
 
 const getters = {
   userInfo: state => state.userInfo || {},
   token: state => state.token ||'',
+  unreadMessage:state => state.unreadMessage || {},
   loginFailNum:state=>state.loginFailNum || 0,
   isAuthenticated: (state, getters) => {
     return !!getters.token
@@ -60,6 +68,13 @@ const mutations = {
     state.userInfo = {}
     state.loginFailNum = 0
     storage.clear()
+  },
+  updateUnreadMessageCount(state, {unreadMessage}){
+    state.unreadMessage = unreadMessage
+  },
+  substractUnreadMessageCount(state,{needSubstractMsg}){
+    // 负数也没关系
+    state.unreadMessage[needSubstractMsg.name] = state.unreadMessage[needSubstractMsg.name]-needSubstractMsg.num;
   }
 }
 
@@ -75,6 +90,16 @@ const actions = {
   clearUserInfoAndToken ({commit}) {
     commit('clearUserInfoAndToken')
   },
+  updateUnreadMessageCount({commit},unreadMessage){
+    commit('updateUnreadMessageCount', {
+      unreadMessage: unreadMessage
+    })
+  },
+  substractUnreadMessageCount({commit},needSubstractMsg){
+    commit('substractUnreadMessageCount', {
+      needSubstractMsg: needSubstractMsg
+    })
+  }
 }
 
 export default {

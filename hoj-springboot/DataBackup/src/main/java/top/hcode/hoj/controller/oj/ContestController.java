@@ -300,10 +300,16 @@ public class ContestController {
             return CommonResult.errorResponse("该比赛题目当前不可访问！", CommonResult.STATUS_FORBIDDEN);
         }
 
+        // 设置比赛题目的标题为设置展示标题
+        problem.setTitle(contestProblem.getDisplayTitle());
+
         List<String> tagsStr = new LinkedList<>();
-        // 比赛结束后才开放标签和source
+
+        // 比赛结束后才开放标签和source、出题人、难度
         if (contest.getStatus().intValue() != Constants.Contest.STATUS_ENDED.getCode()) {
             problem.setSource(null);
+            problem.setAuthor(null);
+            problem.setDifficulty(null);
             QueryWrapper<ProblemTag> problemTagQueryWrapper = new QueryWrapper<>();
             problemTagQueryWrapper.eq("pid", contestProblem.getPid());
             // 获取该题号对应的标签id
@@ -361,11 +367,6 @@ public class ContestController {
                 LangNameAndCode.put(tmpMap.get(codeTemplate.getLid()), codeTemplate.getCode());
             }
         }
-        if (DateUtil.isIn(now, contest.getStartTime(), contest.getEndTime())) {
-            // 比赛过程中隐藏出题人
-            problem.setAuthor(null);
-        }
-
         // 将数据统一写入到一个Vo返回数据实体类中
         ProblemInfoVo problemInfoVo = new ProblemInfoVo(problem, tagsStr, languagesStr, problemCount, LangNameAndCode);
         return CommonResult.successResponse(problemInfoVo, "获取成功");

@@ -33,6 +33,8 @@ import top.hcode.hoj.utils.Constants;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -680,10 +682,15 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         return importProblemVo;
     }
 
-    // 去除末尾的空白符
+    // 去除每行末尾的空白符
     public static String rtrim(String value) {
         if (value == null) return null;
-        return value.replaceAll("\\s+$", "");
+        StringBuilder sb = new StringBuilder();
+        String[] strArr = value.split("\n");
+        for (String str : strArr) {
+            sb.append(str.replaceAll("\\s+$", "")).append("\n");
+        }
+        return sb.toString().replaceAll("\\s+$", "");
     }
 
 }

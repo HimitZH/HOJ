@@ -11,6 +11,7 @@
       :layout="layout"
       :page-sizes="[10, 15, 30, 50, 100]"
       :current-page="current"
+      :hide-on-single-page="total == 0"
     ></el-pagination>
   </div>
 </template>

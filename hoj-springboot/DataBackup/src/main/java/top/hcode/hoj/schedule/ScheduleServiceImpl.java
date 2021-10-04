@@ -1,4 +1,4 @@
-package top.hcode.hoj.service.impl;
+package top.hcode.hoj.schedule;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
@@ -12,25 +12,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import top.hcode.hoj.pojo.entity.File;
-import top.hcode.hoj.pojo.entity.Session;
-import top.hcode.hoj.pojo.entity.UserInfo;
-import top.hcode.hoj.pojo.entity.UserRecord;
-import top.hcode.hoj.service.ScheduleService;
+import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.service.UserInfoService;
 import top.hcode.hoj.service.UserRecordService;
+import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.JsoupUtils;
 import top.hcode.hoj.utils.RedisUtils;
 
 import javax.annotation.Resource;
-import java.io.IOException;
-import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -75,6 +68,13 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Resource
     private SessionServiceImpl sessionService;
+
+    @Resource
+    private AdminSysNoticeServiceImpl adminSysNoticeService;
+
+    @Resource
+    private UserSysNoticeServiceImpl userSysNoticeService;
+
 
     /**
      * @MethodName deleteAvatar
@@ -265,7 +265,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     /**
      * @MethodName deleteUserSession
      * @Params * @param null
-     * @Description 每天3点定时删除用户三个月前的session表记录
+     * @Description 每天3点定时删除用户半年的session表记录
      * @Return
      * @Since 2021/9/6
      */
@@ -274,7 +274,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     public void deleteUserSession() {
         QueryWrapper<Session> sessionQueryWrapper = new QueryWrapper<>();
 
-        DateTime dateTime = DateUtil.offsetMonth(new Date(), -3);
+        DateTime dateTime = DateUtil.offsetMonth(new Date(), -6);
         String threeMonthsBeforeDate = dateTime.toString("yyyy-MM-dd HH:mm:ss");
         sessionQueryWrapper.select("distinct uid");
         sessionQueryWrapper.apply("UNIX_TIMESTAMP(gmt_create) >= UNIX_TIMESTAMP('{0}')", threeMonthsBeforeDate);
@@ -288,9 +288,70 @@ public class ScheduleServiceImpl implements ScheduleService {
 
             boolean isSuccess = sessionService.remove(sessionUpdateWrapper);
             if (!isSuccess) {
-                log.error("=============数据库session表定时删除用户三个月前的记录失败===============");
+                log.error("=============数据库session表定时删除用户6个月前的记录失败===============");
             }
         }
+    }
+
+
+    /**
+     * @MethodName syncNoticeToUser
+     * @Description 每一小时拉取系统通知表admin_sys_notice到表user_sys_notice(只推送给半年内有登录过的用户)
+     * @Return
+     * @Since 2021/10/3
+     */
+    @Override
+    @Scheduled(cron = "0 0 0/1 * * *")
+    public void syncNoticeToRecentHalfYearUser() {
+        QueryWrapper<AdminSysNotice> adminSysNoticeQueryWrapper = new QueryWrapper<>();
+        adminSysNoticeQueryWrapper.eq("state", false);
+        List<AdminSysNotice> adminSysNotices = adminSysNoticeService.list(adminSysNoticeQueryWrapper);
+        if (adminSysNotices.size() == 0) {
+            return;
+        }
+
+        QueryWrapper<Session> sessionQueryWrapper = new QueryWrapper<>();
+        sessionQueryWrapper.select("DISTINCT uid");
+        List<Session> sessionList = sessionService.list(sessionQueryWrapper);
+        List<String> userIds = sessionList.stream().map(Session::getUid).collect(Collectors.toList());
+
+        for (AdminSysNotice adminSysNotice : adminSysNotices) {
+            switch (adminSysNotice.getType()) {
+                case "All":
+                    List<UserSysNotice> userSysNoticeList = new ArrayList<>();
+                    for (String uid : userIds) {
+                        UserSysNotice userSysNotice = new UserSysNotice();
+                        userSysNotice.setRecipientId(uid)
+                                .setType("Sys")
+                                .setSysNoticeId(adminSysNotice.getId());
+                        userSysNoticeList.add(userSysNotice);
+                    }
+                    boolean isOk1 = userSysNoticeService.saveOrUpdateBatch(userSysNoticeList);
+                    if (isOk1) {
+                        adminSysNotice.setState(true);
+                    }
+                    break;
+                case "Single":
+                    UserSysNotice userSysNotice = new UserSysNotice();
+                    userSysNotice.setRecipientId(adminSysNotice.getRecipientId())
+                            .setType("Mine")
+                            .setSysNoticeId(adminSysNotice.getId());
+                    boolean isOk2 = userSysNoticeService.saveOrUpdate(userSysNotice);
+                    if (isOk2) {
+                        adminSysNotice.setState(true);
+                    }
+                    break;
+                case "Admin":
+                    break;
+            }
+
+        }
+
+        boolean isUpdateNoticeOk = adminSysNoticeService.saveOrUpdateBatch(adminSysNotices);
+        if (!isUpdateNoticeOk) {
+            log.error("=============推送系统通知更新状态失败===============");
+        }
+
     }
 
 }

@@ -31,6 +31,7 @@ import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.JwtUtils;
 import top.hcode.hoj.utils.RedisUtils;
 
+import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -72,10 +73,13 @@ public class AccountController {
     private ProblemServiceImpl problemService;
 
     @Autowired
-    private SessionMapper sessionDao;
+    private SessionServiceImpl sessionService;
 
     @Autowired
     private ConfigVo configVo;
+
+    @Resource
+    private AdminSysNoticeServiceImpl adminSysNoticeService;
 
     /**
      * @MethodName getRegisterCode
@@ -89,7 +93,7 @@ public class AccountController {
         if (!configVo.getRegister()) { // 需要判断一下网站是否开启注册
             return CommonResult.errorResponse("对不起！本站暂未开启注册功能！", CommonResult.STATUS_ACCESS_DENIED);
         }
-        if (!emailService.isOk()){
+        if (!emailService.isOk()) {
             return CommonResult.errorResponse("对不起！本站邮箱系统未配置，暂不支持注册！", CommonResult.STATUS_ACCESS_DENIED);
         }
         QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
@@ -164,7 +168,7 @@ public class AccountController {
         if (StringUtils.isEmpty(captcha) || StringUtils.isEmpty(email) || StringUtils.isEmpty(captchaKey)) {
             return CommonResult.errorResponse("邮箱或验证码不能为空");
         }
-        if (!emailService.isOk()){
+        if (!emailService.isOk()) {
             return CommonResult.errorResponse("对不起！本站邮箱系统未配置，暂不支持重置密码！", CommonResult.STATUS_ACCESS_DENIED);
         }
         // 获取redis中的验证码
@@ -264,6 +268,7 @@ public class AccountController {
         int result3 = userRecordDao.insert(new UserRecord().setUid(uuid));
         if (result1 == 1 && result2 == 1 && result3 == 1) {
             redisUtils.del(registerDto.getEmail());
+            adminSysNoticeService.syncNoticeToNewRegisterUser(uuid);
             return CommonResult.successResponse(null, "谢谢你的注册！");
         } else {
             return CommonResult.errorResponse("注册失败！", CommonResult.STATUS_ERROR); // 插入数据库失败，返回500
@@ -304,10 +309,12 @@ public class AccountController {
         response.setHeader("Access-Control-Expose-Headers", "Authorization");
 
         // 会话记录
-        sessionDao.insert(new Session()
+        sessionService.save(new Session()
                 .setUid(userRoles.getUid())
                 .setIp(IpUtils.getUserIpAddr(request))
                 .setUserAgent(request.getHeader("User-Agent")));
+        // 异步检查是否异地登录
+        sessionService.checkRemoteLogin(userRoles.getUid());
 
         return CommonResult.successResponse(MapUtil.builder()
                 .put("uid", userRoles.getUid())
@@ -352,7 +359,8 @@ public class AccountController {
      * @Since 2021/01/07
      */
     @GetMapping("/get-user-home-info")
-    public CommonResult getUserHomeInfo(@RequestParam(value = "uid", required = false) String uid, HttpServletRequest request) {
+    public CommonResult getUserHomeInfo(@RequestParam(value = "uid", required = false) String uid,
+                                        HttpServletRequest request) {
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
         // 如果没有uid，默认查询当前登录用户的
@@ -360,6 +368,9 @@ public class AccountController {
             uid = userRolesVo.getUid();
         }
         UserHomeVo userHomeInfo = userRecordDao.getUserHomeInfo(uid);
+        if (userHomeInfo == null) {
+            return CommonResult.errorResponse("用户不存在");
+        }
         QueryWrapper<UserAcproblem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("uid", uid).select("distinct pid");
         List<Long> pidList = new LinkedList<>();
@@ -383,7 +394,7 @@ public class AccountController {
         QueryWrapper<Session> sessionQueryWrapper = new QueryWrapper<>();
         sessionQueryWrapper.eq("uid", uid).orderByDesc("gmt_create").last("limit 1");
 
-        Session recentSession = sessionDao.selectOne(sessionQueryWrapper);
+        Session recentSession = sessionService.getOne(sessionQueryWrapper, false);
         if (recentSession != null) {
             userHomeInfo.setRecentLoginTime(recentSession.getGmtCreate());
         }

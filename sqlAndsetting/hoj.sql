@@ -776,6 +776,69 @@ CREATE TABLE `remote_judge_account` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+DROP TABLE IF EXISTS `admin_sys_notice`;
+
+CREATE TABLE `admin_sys_notice` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) DEFAULT NULL COMMENT '标题',
+  `content` longtext COMMENT '内容',
+  `type` varchar(255) DEFAULT NULL COMMENT '发给哪些用户类型',
+  `state` tinyint(1) DEFAULT '0' COMMENT '是否已拉取给用户',
+  `recipient_id` varchar(32) DEFAULT NULL COMMENT '接受通知的用户id',
+  `admin_id` varchar(32) DEFAULT NULL COMMENT '发送通知的管理员id',
+  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  PRIMARY KEY (`id`),
+  KEY `recipient_id` (`recipient_id`),
+  KEY `admin_id` (`admin_id`),
+  CONSTRAINT `admin_sys_notice_ibfk_1` FOREIGN KEY (`recipient_id`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `admin_sys_notice_ibfk_2` FOREIGN KEY (`admin_id`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Table structure for table `msg_remind` */
+
+DROP TABLE IF EXISTS `msg_remind`;
+
+CREATE TABLE `msg_remind` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `action` varchar(255) NOT NULL COMMENT '动作类型，如点赞讨论帖Like_Post、点赞评论Like_Discuss、评论Discuss、回复Reply等',
+  `source_id` int(10) unsigned DEFAULT NULL COMMENT '消息来源id，讨论id或比赛id',
+  `source_type` varchar(255) DEFAULT NULL COMMENT '事件源类型：''Discussion''、''Contest''等',
+  `source_content` varchar(255) DEFAULT NULL COMMENT '事件源的内容，比如回复的内容，评论的帖子标题等等',
+  `quote_id` int(10) unsigned DEFAULT NULL COMMENT '事件引用上一级评论或回复id',
+  `quote_type` varchar(255) DEFAULT NULL COMMENT '事件引用上一级的类型：Comment、Reply',
+  `url` varchar(255) DEFAULT NULL COMMENT '事件所发生的地点链接 url',
+  `state` tinyint(1) DEFAULT '0' COMMENT '是否已读',
+  `sender_id` varchar(32) DEFAULT NULL COMMENT '操作者的id',
+  `recipient_id` varchar(32) DEFAULT NULL COMMENT '接受消息的用户id',
+  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  PRIMARY KEY (`id`),
+  KEY `sender_id` (`sender_id`),
+  KEY `recipient_id` (`recipient_id`),
+  CONSTRAINT `msg_remind_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `msg_remind_ibfk_2` FOREIGN KEY (`recipient_id`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Table structure for table `user_sys_notice` */
+
+DROP TABLE IF EXISTS `user_sys_notice`;
+
+CREATE TABLE `user_sys_notice` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `sys_notice_id` bigint(20) unsigned DEFAULT NULL COMMENT '系统通知的id',
+  `recipient_id` varchar(32) DEFAULT NULL COMMENT '接受通知的用户id',
+  `type` varchar(255) DEFAULT NULL COMMENT '消息类型，系统通知sys、我的信息mine',
+  `state` tinyint(1) DEFAULT '0' COMMENT '是否已读',
+  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '读取时间',
+  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `sys_notice_id` (`sys_notice_id`),
+  KEY `recipient_id` (`recipient_id`),
+  CONSTRAINT `user_sys_notice_ibfk_1` FOREIGN KEY (`sys_notice_id`) REFERENCES `admin_sys_notice` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `user_sys_notice_ibfk_2` FOREIGN KEY (`recipient_id`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 /* Trigger structure for table `contest` */
 
