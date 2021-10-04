@@ -82,9 +82,9 @@ public class JudgeRun {
         List<FutureTask<JSONObject>> futureTasks = new ArrayList<>();
         JSONArray testcaseList = (JSONArray) testCasesInfo.get("testCases");
         Boolean isSpj = testCasesInfo.getBool("isSpj");
-        // 默认给1.1倍题目限制时间用来测评
-        Double time = maxTime * 1.1;
-        final Long testTime = time.longValue();
+
+        // 默认给题目限制时间+200ms用来测评
+        final Long testTime = maxTime + 200;
 
         // 用户输出的文件夹
         String runDir = Constants.JudgeDir.RUN_WORKPLACE_DIR.getContent() + File.separator + submitId;
@@ -115,7 +115,8 @@ public class JudgeRun {
                                 testCaseId,
                                 runDir,
                                 testCaseInputPath,
-                                testTime,// 默认给1.1倍题目限制时间用来测评
+                                testTime,// 默认给题目限制时间+200ms用来测评
+                                maxTime,
                                 maxMemory,
                                 maxStack,
                                 maxOutputSize,
@@ -138,7 +139,8 @@ public class JudgeRun {
                                 runDir,
                                 testCaseInputPath,
                                 testCaseOutputPath,
-                                testTime,// 默认给1.1倍题目限制时间用来测评
+                                testTime,// 默认给题目限制时间+200ms用来测评
+                                maxTime,
                                 maxMemory,
                                 maxOutputSize,
                                 maxStack,
@@ -184,6 +186,7 @@ public class JudgeRun {
                                        String runDir,
                                        String testCaseInputFilePath,
                                        String testCaseOutputFilePath,
+                                       Long testTime,
                                        Long maxTime,
                                        Long maxMemory,
                                        Long maxOutputSize,
@@ -195,7 +198,7 @@ public class JudgeRun {
                 parseRunCommand(runConfig.getCommand(), runConfig, null, null, null),
                 runConfig.getEnvs(),
                 testCaseInputFilePath,
-                maxTime,
+                testTime,
                 maxOutputSize,
                 maxStack,
                 runConfig.getExeName(),
@@ -388,6 +391,7 @@ public class JudgeRun {
                                     Integer testCaseId,
                                     String runDir,
                                     String testCasePath,
+                                    Long testTime,
                                     Long maxTime,
                                     Long maxMemory,
                                     Integer maxStack,
@@ -399,7 +403,7 @@ public class JudgeRun {
         JSONArray judgeResultList = SandboxRun.testCase(parseRunCommand(runConfig.getCommand(), runConfig, null, null, null),
                 runConfig.getEnvs(),
                 testCasePath,
-                maxTime,
+                testTime,
                 maxOutputSize,
                 maxStack,
                 runConfig.getExeName(),
@@ -522,10 +526,15 @@ public class JudgeRun {
         }
     }
 
-    // 去除末尾空白符
+    // 去除行末尾空白符
     public static String rtrim(String value) {
         if (value == null) return null;
-        return value.replaceAll("\\s+$", "");
+        StringBuilder sb = new StringBuilder();
+        String[] strArr = value.split("\n");
+        for (String str : strArr) {
+            sb.append(str.replaceAll("\\s+$", "")).append("\n");
+        }
+        return sb.toString().replaceAll("\\s+$", "");
     }
 
     /*

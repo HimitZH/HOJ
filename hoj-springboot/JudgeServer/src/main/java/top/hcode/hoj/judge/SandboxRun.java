@@ -70,7 +70,7 @@ public class SandboxRun {
 
     private static final int maxProcessNumber = 128;
 
-    private static final int TIME_LIMIT_MS = 8000;
+    private static final int TIME_LIMIT_MS = 16000;
 
     private static final int MEMORY_LIMIT_MB = 512;
 

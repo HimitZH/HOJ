@@ -111,6 +111,62 @@
             :src="avatar"
             class="drop-avatar"
           ></avatar>
+          <el-dropdown
+            class="drop-msg"
+            @command="handleRoute"
+            placement="bottom"
+          >
+            <span class="el-dropdown-link">
+              <i class="el-icon-message-solid"></i>
+              <svg
+                v-if="
+                  unreadMessage.comment > 0 ||
+                    unreadMessage.reply > 0 ||
+                    unreadMessage.like > 0 ||
+                    unreadMessage.sys > 0 ||
+                    unreadMessage.mine > 0
+                "
+                width="10"
+                height="10"
+                style="vertical-align: top;margin-left: -11px;margin-top: 3px;"
+              >
+                <circle cx="5" cy="5" r="5" style="fill: red;"></circle>
+              </svg>
+            </span>
+
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="/message/discuss">
+                <span>{{ $t('m.DiscussMsg') }}</span>
+                <span class="drop-msg-count" v-if="unreadMessage.comment > 0">
+                  <MsgSvg :total="unreadMessage.comment"></MsgSvg>
+                </span>
+              </el-dropdown-item>
+              <el-dropdown-item command="/message/reply">
+                <span>{{ $t('m.ReplyMsg') }}</span>
+                <span class="drop-msg-count" v-if="unreadMessage.reply > 0">
+                  <MsgSvg :total="unreadMessage.reply"></MsgSvg>
+                </span>
+              </el-dropdown-item>
+              <el-dropdown-item command="/message/like">
+                <span>{{ $t('m.LikeMsg') }}</span>
+                <span class="drop-msg-count" v-if="unreadMessage.like > 0">
+                  <MsgSvg :total="unreadMessage.like"></MsgSvg>
+                </span>
+              </el-dropdown-item>
+              <el-dropdown-item command="/message/sys">
+                <span>{{ $t('m.SysMsg') }}</span>
+                <span class="drop-msg-count" v-if="unreadMessage.sys > 0">
+                  <MsgSvg :total="unreadMessage.sys"></MsgSvg>
+                </span>
+              </el-dropdown-item>
+              <el-dropdown-item command="/message/mine">
+                <span>{{ $t('m.MineMsg') }}</span>
+                <span class="drop-msg-count" v-if="unreadMessage.mine > 0">
+                  <MsgSvg :total="unreadMessage.mine"></MsgSvg>
+                </span>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-menu>
     </div>
@@ -138,13 +194,98 @@
           >{{ $t('m.NavBar_Register') }}</mu-button
         >
 
+        <mu-menu slot="right" v-show="isAuthenticated" :open.sync="openmsgmenu">
+          <mu-button flat>
+            <mu-icon value=":el-icon-message-solid" size="24"></mu-icon>
+            <svg
+              v-if="
+                unreadMessage.comment > 0 ||
+                  unreadMessage.reply > 0 ||
+                  unreadMessage.like > 0 ||
+                  unreadMessage.sys > 0 ||
+                  unreadMessage.mine > 0
+              "
+              width="10"
+              height="10"
+              style="margin-left: -11px;margin-top: -13px;"
+            >
+              <circle cx="5" cy="5" r="5" style="fill: red;"></circle>
+            </svg>
+          </mu-button>
+          <mu-list slot="content" @change="handleCommand">
+            <mu-list-item button value="/message/discuss">
+              <mu-list-item-content>
+                <mu-list-item-title>
+                  {{ $t('m.DiscussMsg') }}
+                  <span class="drop-msg-count" v-if="unreadMessage.comment > 0">
+                    <MsgSvg :total="unreadMessage.comment"></MsgSvg>
+                  </span>
+                </mu-list-item-title>
+              </mu-list-item-content>
+            </mu-list-item>
+            <mu-divider></mu-divider>
+            <mu-list-item button value="/message/reply">
+              <mu-list-item-content>
+                <mu-list-item-title>
+                  {{ $t('m.ReplyMsg') }}
+                  <span class="drop-msg-count" v-if="unreadMessage.reply > 0">
+                    <MsgSvg :total="unreadMessage.reply"></MsgSvg>
+                  </span>
+                </mu-list-item-title>
+              </mu-list-item-content>
+            </mu-list-item>
+            <mu-divider></mu-divider>
+            <mu-list-item button value="/message/like">
+              <mu-list-item-content>
+                <mu-list-item-title>
+                  {{ $t('m.LikeMsg') }}
+                  <span class="drop-msg-count" v-if="unreadMessage.like > 0">
+                    <MsgSvg :total="unreadMessage.like"></MsgSvg>
+                  </span>
+                </mu-list-item-title>
+              </mu-list-item-content>
+            </mu-list-item>
+            <mu-divider></mu-divider>
+            <mu-list-item button value="/message/sys">
+              <mu-list-item-content>
+                <mu-list-item-title>
+                  {{ $t('m.SysMsg') }}
+                  <span class="drop-msg-count" v-if="unreadMessage.sys > 0">
+                    <MsgSvg :total="unreadMessage.sys"></MsgSvg>
+                  </span>
+                </mu-list-item-title>
+              </mu-list-item-content>
+            </mu-list-item>
+            <mu-divider></mu-divider>
+
+            <mu-list-item button value="/message/mine">
+              <mu-list-item-content>
+                <mu-list-item-title>
+                  {{ $t('m.MineMsg') }}
+                  <span class="drop-msg-count" v-if="unreadMessage.mine > 0">
+                    <MsgSvg :total="unreadMessage.mine"></MsgSvg>
+                  </span>
+                </mu-list-item-title>
+              </mu-list-item-content>
+            </mu-list-item>
+          </mu-list>
+        </mu-menu>
+
         <mu-menu
           slot="right"
           v-show="isAuthenticated"
           :open.sync="openusermenu"
         >
           <mu-button flat>
-            {{ userInfo.username }}<i class="el-icon-caret-bottom"></i>
+            <avatar
+              :username="userInfo.username"
+              :inline="true"
+              :size="30"
+              color="#FFF"
+              :src="userInfo.avatar"
+              :title="userInfo.username"
+            ></avatar>
+            <i class="el-icon-caret-bottom"></i>
           </mu-button>
           <mu-list slot="content" @change="handleCommand">
             <mu-list-item button value="/user-home">
@@ -154,7 +295,7 @@
                 }}</mu-list-item-title>
               </mu-list-item-content>
             </mu-list-item>
-
+            <mu-divider></mu-divider>
             <mu-list-item button value="/status?onlyMine=true">
               <mu-list-item-content>
                 <mu-list-item-title>{{
@@ -162,6 +303,7 @@
                 }}</mu-list-item-title>
               </mu-list-item-content>
             </mu-list-item>
+            <mu-divider></mu-divider>
             <mu-list-item button value="/setting">
               <mu-list-item-content>
                 <mu-list-item-title>{{
@@ -169,7 +311,7 @@
                 }}</mu-list-item-title>
               </mu-list-item-content>
             </mu-list-item>
-
+            <mu-divider></mu-divider>
             <mu-list-item button value="/admin" v-show="isAdminRole">
               <mu-list-item-content>
                 <mu-list-item-title>{{
@@ -367,21 +509,32 @@
 import Login from '@/components/oj/common/Login';
 import Register from '@/components/oj/common/Register';
 import ResetPwd from '@/components/oj/common/ResetPassword';
+import MsgSvg from '@/components/oj/msg/msgSvg';
 import { mapGetters, mapActions } from 'vuex';
 import Avatar from 'vue-avatar';
-
+import api from '@/common/api';
 export default {
   components: {
     Login,
     Register,
     ResetPwd,
     Avatar,
+    MsgSvg,
   },
   mounted() {
     window.onresize = () => {
       this.page_width();
     };
     this.page_width();
+    if (this.isAuthenticated) {
+      this.getUnreadMsgCount();
+      this.msgTimer = setInterval(() => {
+        this.getUnreadMsgCount();
+      }, 120 * 1000);
+    }
+  },
+  beforeDestroy() {
+    clearInterval(this.msgTimer);
   },
   data() {
     return {
@@ -389,8 +542,10 @@ export default {
       mobileNar: false,
       opendrawer: false,
       openusermenu: false,
+      openmsgmenu: false,
       openSideMenu: '',
       imgUrl: require('@/assets/logo.png'),
+
       avatarStyle:
         'display: inline-flex;width: 30px;height: 30px;border-radius: 50%;align-items: center;justify-content: center;text-align: center;user-select: none;',
     };
@@ -422,11 +577,17 @@ export default {
     handleCommand(route) {
       // 移动端导航栏路由跳转事件
       this.openusermenu = false;
+      this.openmsgmenu = false;
       if (route && route.split('/')[1] != 'admin') {
         this.$router.push(route);
       } else {
         window.open('/admin/');
       }
+    },
+    getUnreadMsgCount() {
+      api.getUnreadMsgCount().then((res) => {
+        this.$store.dispatch('updateUnreadMessageCount', res.data.data);
+      });
     },
   },
   computed: {
@@ -437,6 +598,7 @@ export default {
       'isAdminRole',
       'token',
       'websiteConfig',
+      'unreadMessage',
     ]),
     avatar() {
       return this.$store.getters.userInfo.avatar;
@@ -534,6 +696,16 @@ export default {
   margin-right: 15px;
   position: relative;
   margin-top: 16px;
+}
+.drop-msg {
+  float: right;
+  font-size: 25px;
+  margin-right: 10px;
+  position: relative;
+  margin-top: 13px;
+}
+.drop-msg-count {
+  margin-left: 2px;
 }
 .btn-menu {
   font-size: 16px;

@@ -23,6 +23,9 @@ import DiscussionList from "@/views/oj/discussion/discussionList.vue"
 import Discussion from "@/views/oj/discussion/discussion.vue"
 import Introduction from "@/views/oj/about/Introduction.vue"
 import Developer from "@/views/oj/about/Developer.vue"
+import Message from "@/views/oj/message/message.vue"
+import UserMsg from "@/views/oj/message/UserMsg.vue"
+import SysMsg from "@/views/oj/message/SysMsg.vue"
 import NotFound from "@/views/404.vue"
 
 const ojRoutes = [
@@ -205,6 +208,44 @@ const ojRoutes = [
     path: '/developer',
     meta: {title: 'Developer'},
     component:Developer,
+  },
+  {
+    name:'Message',
+    path:'/message/',
+    component:Message,
+    meta: { requireAuth: false, title: 'Message' },
+    children: [
+      {
+        name: 'DiscussMsg',
+        path: 'discuss',
+        component: UserMsg,
+        meta: { requireAuth: false,title: 'Discuss Message' }
+      },
+      {
+        name: 'ReplyMsg',
+        path: 'reply',
+        component: UserMsg,
+        meta: { requireAuth: false,title: 'Reply Message' }
+      },
+      {
+        name: 'LikeMsg',
+        path: 'like',
+        component: UserMsg,
+        meta: { requireAuth: false,title: 'Like Message' }
+      },
+      {
+        name: 'SysMsg',
+        path: 'sys',
+        component: SysMsg,
+        meta: { requireAuth: false,title: 'System Message' }
+      },
+      {
+        name: 'MineMsg',
+        path: 'mine',
+        component: SysMsg,
+        meta: { requireAuth: false,title: 'Mine Message' }
+      },
+    ]
   },
   {
     path: '*',

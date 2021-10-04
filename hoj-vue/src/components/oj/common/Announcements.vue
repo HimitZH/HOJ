@@ -29,7 +29,7 @@
         v-if="!announcements.length"
         key="no-announcement"
       >
-        <p>{{ $t('m.No_Announcements') }}</p>
+        <el-empty :description="$t('m.No_Announcements')"></el-empty>
       </div>
       <template v-if="listVisible">
         <ul class="announcements-container" key="list">

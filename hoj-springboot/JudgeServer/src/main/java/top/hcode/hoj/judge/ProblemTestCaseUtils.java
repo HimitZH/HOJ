@@ -88,7 +88,7 @@ public class ProblemTestCaseUtils {
             testCaseList.add(jsonObject);
         }
 
-        result.set("testCases",testCaseList);
+        result.set("testCases", testCaseList);
 
         FileWriter infoFile = new FileWriter(testCasesDir + File.separator + "info", CharsetUtil.UTF_8);
         // 写入记录文件
@@ -194,9 +194,14 @@ public class ProblemTestCaseUtils {
         }
     }
 
-    // 去除末尾的空白符
+    // 去除每行末尾的空白符
     public static String rtrim(String value) {
         if (value == null) return null;
-        return value.replaceAll("\\s+$", "");
+        StringBuilder sb = new StringBuilder();
+        String[] strArr = value.split("\n");
+        for (String str : strArr) {
+            sb.append(str.replaceAll("\\s+$", "")).append("\n");
+        }
+        return sb.toString().replaceAll("\\s+$", "");
     }
 }

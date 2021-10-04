@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container">
+    <div class="container" v-loading="loading">
       <div class="title-article" style="text-align: left">
         <h1 class="title" id="sharetitle">
           <span>{{ discussion.title }}</span>
@@ -236,6 +236,7 @@ export default {
         tagList: [],
         content: '',
       },
+      loading: false,
     };
   },
   mounted() {
@@ -246,14 +247,20 @@ export default {
     init() {
       this.routeName = this.$route.name;
       this.discussionID = this.$route.params.discussionID || '';
-
-      api.getDiscussion(this.discussionID).then((res) => {
-        this.discussion = res.data.data;
-        this.changeDomTitle({ title: this.discussion.title });
-        this.$nextTick((_) => {
-          addCodeBtn();
-        });
-      });
+      this.loading = true;
+      api.getDiscussion(this.discussionID).then(
+        (res) => {
+          this.discussion = res.data.data;
+          this.changeDomTitle({ title: this.discussion.title });
+          this.$nextTick((_) => {
+            addCodeBtn();
+          });
+          this.loading = false;
+        },
+        (err) => {
+          this.loading = false;
+        }
+      );
     },
 
     getInfoByUsername(uid, username) {

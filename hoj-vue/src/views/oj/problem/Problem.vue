@@ -118,13 +118,14 @@
                         }}MB</span
                       ><br />
                     </template>
-
-                    <span
-                      >{{ $t('m.Level') }}：{{
-                        PROBLEM_LEVEL[problemData.problem.difficulty]['name']
-                      }}</span
-                    >
-                    <br />
+                    <template v-if="problemData.problem.difficulty != null">
+                      <span
+                        >{{ $t('m.Level') }}：{{
+                          PROBLEM_LEVEL[problemData.problem.difficulty]['name']
+                        }}</span
+                      >
+                      <br />
+                    </template>
                     <template v-if="problemData.problem.type == 1">
                       <span
                         >{{ $t('m.Score') }}：{{ problemData.problem.ioScore }}

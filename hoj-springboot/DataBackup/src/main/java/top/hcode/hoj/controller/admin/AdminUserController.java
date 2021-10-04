@@ -4,6 +4,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -17,13 +18,20 @@ import top.hcode.hoj.pojo.entity.UserInfo;
 import top.hcode.hoj.pojo.entity.UserRecord;
 import top.hcode.hoj.pojo.entity.UserRole;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.service.AdminSysNoticeService;
 import top.hcode.hoj.service.UserInfoService;
 import top.hcode.hoj.service.UserRecordService;
 import top.hcode.hoj.service.impl.UserRoleServiceImpl;
 import top.hcode.hoj.utils.RedisUtils;
 import top.hcode.hoj.utils.ShiroUtils;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static oshi.util.GlobalConfig.set;
 
 /**
  * @Author: Himit_ZH
@@ -45,6 +53,9 @@ public class AdminUserController {
 
     @Autowired
     private RedisUtils redisUtils;
+
+    @Resource
+    private AdminSysNoticeService adminSysNoticeService;
 
 
     @GetMapping("/get-user-list")
@@ -72,7 +83,8 @@ public class AdminUserController {
     @RequiresPermissions("user_admin")
     @RequiresAuthentication
     @Transactional
-    public CommonResult editUser(@RequestBody Map<String, Object> params) {
+    public CommonResult editUser(@RequestBody Map<String, Object> params,
+                                 HttpServletRequest request) {
         String username = (String) params.get("username");
         String uid = (String) params.get("uid");
         String realname = (String) params.get("realname");
@@ -91,9 +103,15 @@ public class AdminUserController {
                 .set("status", status);
         boolean result1 = userInfoService.update(updateWrapper1);
 
-        UpdateWrapper<UserRole> updateWrapper2 = new UpdateWrapper<>();
-        updateWrapper2.eq("uid", uid).set("role_id", type);
-        boolean result2 = userRoleService.update(updateWrapper2);
+        QueryWrapper<UserRole> userRoleQueryWrapper = new QueryWrapper<>();
+        userRoleQueryWrapper.eq("uid", uid);
+        UserRole userRole = userRoleService.getOne(userRoleQueryWrapper, false);
+        boolean result2 = false;
+        int oldType = userRole.getRoleId().intValue();
+        if (userRole.getRoleId().intValue() != type) {
+            userRole.setRoleId(Long.valueOf(type));
+            result2 = userRoleService.updateById(userRole);
+        }
         if (result1) {
             // 需要重新登录
             userRoleService.deleteCache(uid, true);
@@ -102,10 +120,16 @@ public class AdminUserController {
             userRoleService.deleteCache(uid, false);
         }
 
-        if (result1 && result2) {
-            return CommonResult.successResponse(null, "修改成功！");
+        if (result2) {
+            // 获取当前登录的用户
+            HttpSession session = request.getSession();
+            UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+            String title = "权限变更通知(Authority Change Notice)";
+            String content = userRoleService.getAuthChangeContent(oldType, type);
+            adminSysNoticeService.addSingleNoticeToUser(userRolesVo.getUid(), uid, title, content, "Sys");
         }
-        return CommonResult.errorResponse("修改失败！");
+
+        return CommonResult.successResponse(null, "修改成功！");
     }
 
     @DeleteMapping("/delete-user")
@@ -148,6 +172,9 @@ public class AdminUserController {
             boolean result2 = userRoleService.saveBatch(userRoleList);
             boolean result3 = userRecordService.saveBatch(userRecordList);
             if (result1 && result2 && result3) {
+                // 异步同步系统通知
+                List<String> uidList = userInfoList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
+                adminSysNoticeService.syncNoticeToNewRegisterBatchUser(uidList);
                 return CommonResult.successResponse(null, "添加成功！");
             } else {
                 return CommonResult.errorResponse("删除失败");
@@ -193,6 +220,9 @@ public class AdminUserController {
         if (result1 && result2 && result3) {
             String key = IdUtil.simpleUUID();
             redisUtils.hmset(key, userInfo, 1800); // 存储半小时
+            // 异步同步系统通知
+            List<String> uidList = userInfoList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
+            adminSysNoticeService.syncNoticeToNewRegisterBatchUser(uidList);
             return CommonResult.successResponse(MapUtil.builder()
                     .put("key", key).map(), "生成指定用户成功！");
         } else {

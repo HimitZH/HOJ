@@ -237,21 +237,25 @@
         <div slot="header" style="text-align: center;">
           <span class="taglist-title">{{ OJName + ' ' + $t('m.Tags') }}</span>
         </div>
-        <el-button
-          v-for="tag in tagList"
-          :key="tag.id"
-          @click="filterByTag(tag.id)"
-          type="ghost"
-          :disabled="query.tagId == tag.id"
-          size="mini"
-          class="tag-btn"
-          >{{ tag.name }}
-        </el-button>
-
-        <el-button long id="pick-one" @click="pickone">
-          <i class="fa fa-random"></i>
-          {{ $t('m.Pick_a_random_question') }}
-        </el-button>
+        <template v-if="tagList.length > 0" v-loading="loadings.tag">
+          <el-button
+            v-for="tag in tagList"
+            :key="tag.id"
+            @click="filterByTag(tag.id)"
+            type="ghost"
+            :disabled="query.tagId == tag.id"
+            size="mini"
+            class="tag-btn"
+            >{{ tag.name }}
+          </el-button>
+          <el-button long id="pick-one" @click="pickone">
+            <i class="fa fa-random"></i>
+            {{ $t('m.Pick_a_random_question') }}
+          </el-button>
+        </template>
+        <template v-else
+          ><el-empty :description="$t('m.No_Data')"></el-empty>
+        </template>
       </el-card>
     </el-col>
   </el-row>
@@ -460,6 +464,7 @@ export default {
       if (oj == 'Mine') {
         oj = 'ME';
       }
+      this.loadings.tag = true;
       api.getProblemTagList(oj).then(
         (res) => {
           this.tagList = res.data.data;

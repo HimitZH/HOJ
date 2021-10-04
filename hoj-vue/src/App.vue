@@ -515,6 +515,15 @@ footer h1 {
     display: none !important;
   }
 }
+.el-empty {
+  max-width: 256px;
+  margin: 0 auto;
+}
+.el-empty__description {
+  text-align: center;
+  color: #3498db;
+  font-size: 13px;
+}
 </style>
 <style>
 .markdown-body pre {

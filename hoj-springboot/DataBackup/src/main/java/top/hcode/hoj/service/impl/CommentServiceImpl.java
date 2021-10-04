@@ -4,17 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
-import top.hcode.hoj.pojo.entity.Comment;
+import org.springframework.scheduling.annotation.Async;
+import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.dao.CommentMapper;
-import top.hcode.hoj.pojo.entity.Contest;
-import top.hcode.hoj.pojo.entity.Reply;
-import top.hcode.hoj.pojo.entity.UserInfo;
 import top.hcode.hoj.pojo.vo.CommentsVo;
 import top.hcode.hoj.service.CommentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.utils.Constants;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,6 +39,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Autowired
     private ReplyServiceImpl replyService;
+
+    @Resource
+    private MsgRemindServiceImpl msgRemindService;
 
     @Override
     public IPage<CommentsVo> getCommentList(int limit, int currentPage, Long cid, Integer did, Boolean isRoot, String uid) {
@@ -83,5 +85,37 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         }
         replyQueryWrapper.orderByDesc("gmt_create");
         return replyService.list(replyQueryWrapper);
+    }
+
+    @Async
+    public void updateCommentMsg(String recipientId, String senderId, String content, Integer discussionId) {
+
+        if (content.length() > 200) {
+            content = content.substring(0, 200) + "...";
+        }
+
+        MsgRemind msgRemind = new MsgRemind();
+        msgRemind.setAction("Discuss")
+                .setRecipientId(recipientId)
+                .setSenderId(senderId)
+                .setSourceContent(content)
+                .setSourceId(discussionId)
+                .setSourceType("Discussion")
+                .setUrl("/discussion-detail/" + discussionId);
+        msgRemindService.saveOrUpdate(msgRemind);
+    }
+
+
+    @Async
+    public void updateCommentLikeMsg(String recipientId, String senderId, Integer sourceId, String sourceType) {
+
+        MsgRemind msgRemind = new MsgRemind();
+        msgRemind.setAction("Like_Discuss")
+                .setRecipientId(recipientId)
+                .setSenderId(senderId)
+                .setSourceId(sourceId)
+                .setSourceType(sourceType)
+                .setUrl(sourceType.equals("Discussion") ? "/discussion-detail/" + sourceId : "/contest/" + sourceId + "/comment");
+        msgRemindService.saveOrUpdate(msgRemind);
     }
 }

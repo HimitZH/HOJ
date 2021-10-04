@@ -192,7 +192,7 @@ export const m = {
   Use_Manual_Input:'Use Manual Input',
   Hint: 'Hint',
   Source: 'Source',
-  Auto_Remove_the_Blank_at_the_End_of_Code:'Auto Remove the Blank at the End of Code',
+  Auto_Remove_the_Blank_at_the_End_of_Code:'Automatically Remove Whitespace at The End of Each Line of Code',
   Publish_the_Judging_Result_of_Test_Data:'Publish the Judging Result of Test Data',
   Edit_Problem: 'Edit Problme',
   Create_Problme: 'Create Problem',

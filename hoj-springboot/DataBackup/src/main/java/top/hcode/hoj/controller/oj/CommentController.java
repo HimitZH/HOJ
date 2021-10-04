@@ -102,6 +102,7 @@ public class CommentController {
     @PostMapping("/comment")
     @RequiresPermissions("comment_add")
     @RequiresAuthentication
+    @Transactional
     public CommonResult addComment(@RequestBody Comment comment, HttpServletRequest request) {
         // 获取当前登录的用户
         HttpSession session = request.getSession();
@@ -137,10 +138,17 @@ public class CommentController {
             commentsVo.setReplyList(new LinkedList<>());
             // 如果是讨论区的回复，发布成功需要添加统计该讨论的回复数
             if (comment.getDid() != null) {
-                UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<>();
-                discussionUpdateWrapper.eq("id", comment.getDid())
-                        .setSql("comment_num=comment_num+1");
-                discussionService.update(discussionUpdateWrapper);
+                Discussion discussion = discussionService.getById(comment.getDid());
+                if (discussion != null) {
+                    discussion.setCommentNum(discussion.getCommentNum() + 1);
+                    discussionService.updateById(discussion);
+                    // 更新消息
+                    commentService.updateCommentMsg(discussion.getUid(),
+                            userRolesVo.getUid(),
+                            comment.getContent(),
+                            comment.getDid());
+                }
+
             }
             return CommonResult.successResponse(commentsVo, "评论成功");
         } else {
@@ -192,6 +200,8 @@ public class CommentController {
     @Transactional
     public CommonResult addDiscussionLike(@RequestParam("cid") Integer cid,
                                           @RequestParam("toLike") Boolean toLike,
+                                          @RequestParam("sourceId") Integer sourceId,
+                                          @RequestParam("sourceType") String sourceType,
                                           HttpServletRequest request) {
 
         // 获取当前登录的用户
@@ -213,9 +223,12 @@ public class CommentController {
                 }
             }
             // 点赞+1
-            UpdateWrapper<Comment> commentUpdateWrapper = new UpdateWrapper<>();
-            commentUpdateWrapper.setSql("like_num=like_num+1").eq("id", cid);
-            commentService.update(commentUpdateWrapper);
+            Comment comment = commentService.getById(cid);
+            if (comment != null) {
+                comment.setLikeNum(comment.getLikeNum() + 1);
+                commentService.updateById(comment);
+                commentService.updateCommentLikeMsg(comment.getFromUid(), userRolesVo.getUid(), sourceId, sourceType);
+            }
             return CommonResult.successResponse(null, "点赞成功");
         } else { // 取消点赞
             if (commentLike != null) { // 如果存在就删除
@@ -280,6 +293,14 @@ public class CommentController {
                 discussionUpdateWrapper.eq("id", replyDto.getDid())
                         .setSql("comment_num=comment_num+1");
                 discussionService.update(discussionUpdateWrapper);
+                // 更新消息
+                replyService.updateReplyMsg(replyDto.getDid(),
+                        "Discussion",
+                        reply.getContent(),
+                        replyDto.getQuoteId(),
+                        replyDto.getQuoteType(),
+                        reply.getToUid(),
+                        reply.getFromUid());
             }
             return CommonResult.successResponse(reply, "评论成功");
         } else {

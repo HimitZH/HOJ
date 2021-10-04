@@ -102,6 +102,16 @@ export const m = {
   Announcement_Content: '公告内容',
   Announcement_visible: '是否可见',
   Delete_Announcement_Tips:'你确实是否删除该公告？',
+
+   // /views/admin/general/SysNotice.vue
+   SysNotice: '系统通知',
+   Edit_Notice:'编辑通知',
+   Create_Notice:'创建通知',
+   Delete_Notice:'删除通知',
+   Notice_Title: '通知标题',
+   Notice_Content: '通知内容',
+   Notice_Push:'已推送',
+   Delete_Notice_Tips:'你确实是否删除该通知？',
   
   // /views/admin/general/SystemConfig.vue
   Website_Config:'网站设置',
@@ -190,7 +200,7 @@ export const m = {
   Use_Manual_Input:'使用手动输入',
   Hint: '提示',
   Source: '来源',
-  Auto_Remove_the_Blank_at_the_End_of_Code:'自动去除代码末尾空白符',
+  Auto_Remove_the_Blank_at_the_End_of_Code:'自动去除代码每行末尾空白符',
   Publish_the_Judging_Result_of_Test_Data:'公开评测点数据结果',
   Edit_Problem: '编辑题目',
   Create_Problme: '创建题目',

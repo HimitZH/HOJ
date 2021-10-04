@@ -382,6 +382,7 @@ public class AdminContestController {
     public CommonResult setContestProblem(@RequestBody ContestProblem contestProblem) {
         boolean result = contestProblemService.saveOrUpdate(contestProblem);
         if (result) {
+            contestProblemService.syncContestRecord(contestProblem.getPid(), contestProblem.getCid(), contestProblem.getDisplayId());
             return CommonResult.successResponse(contestProblem, "更新成功！");
         } else {
             return CommonResult.errorResponse("更新失败", CommonResult.STATUS_FAIL);
