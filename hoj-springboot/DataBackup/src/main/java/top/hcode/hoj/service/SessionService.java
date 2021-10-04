@@ -4,4 +4,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import top.hcode.hoj.pojo.entity.Session;
 
 public interface SessionService extends IService<Session> {
+    public void checkRemoteLogin(String uid);
 }

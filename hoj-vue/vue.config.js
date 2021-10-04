@@ -35,7 +35,7 @@ const cdn = {
     "https://cdn.bootcdn.net/ajax/libs/vue-router/3.2.0/vue-router.min.js",
     "https://cdn.bootcdn.net/ajax/libs/axios/0.21.0/axios.min.js",
     "https://cdn.bootcdn.net/ajax/libs/vuex/3.5.1/vuex.min.js",
-    "https://cdn.bootcdn.net/ajax/libs/element-ui/2.14.0/index.min.js",
+    "https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.3/index.min.js",
     "https://cdn.bootcdn.net/ajax/libs/highlight.js/10.3.2/highlight.min.js",
     "https://cdn.jsdelivr.net/npm/xe-utils",
     "https://cdn.jsdelivr.net/npm/vxe-table@2.9.26",

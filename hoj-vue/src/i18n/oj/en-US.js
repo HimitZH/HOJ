@@ -435,5 +435,24 @@ export const m = {
   Delete_Reply_Tips:'This operation will delete the reply. Do you want to continue?',
 
 
-  
+  // /views/oj/message/message.vue
+  Message_Center:'Message Center',
+  No_Data:'No Data',
+
+  // /views/oj/message/UserMsg.vue
+  Msg_Total:'Total',
+  Msg_Messages:'messages',
+  DiscussMsg:'Discuss',
+  ReplyMsg:'Reply',
+  LikeMsg:'Likes',
+  SysMsg:'System',
+  MineMsg:'Mine',
+  Clean_All:'Clean All',
+  Action_Like_Discuss:'Praised My Comment',
+  Action_Like_Post:'Praised My Discussion Post',
+  Action_Discuss:'Commented on My Discussion Post',
+  Action_Reply:'Responded to My Comment',
+  From_Discussion_Post:'From Discussion Post',
+  From_the_Contest:'From the Contest',
+  Delete_Msg_Tips:'Are you sure you want to delete the message?'
 }

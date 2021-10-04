@@ -227,9 +227,13 @@ public class DiscussionController {
                 }
             }
             // 点赞+1
-            UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<>();
-            discussionUpdateWrapper.setSql("like_num=like_num+1").eq("id", did);
-            discussionService.update(discussionUpdateWrapper);
+            Discussion discussion = discussionService.getById(did);
+            if (discussion != null) {
+                discussion.setLikeNum(discussion.getLikeNum() + 1);
+                discussionService.updateById(discussion);
+                // 更新点赞消息
+                discussionService.updatePostLikeMsg(discussion.getUid(), userRolesVo.getUid(), did);
+            }
             return CommonResult.successResponse(null, "点赞成功");
         } else { // 取消点赞
             if (discussionLike != null) { // 如果存在就删除

@@ -556,11 +556,13 @@ const ojApi = {
     })
   },
 
-  toLikeComment(cid,toLike){
+  toLikeComment(cid,toLike,sourceId,sourceType){
     return ajax("/api/comment-like",'get',{
       params:{
         cid,
-        toLike
+        toLike,
+        sourceId,
+        sourceType
       }
     })
   },
@@ -584,6 +586,71 @@ const ojApi = {
         cid
       }
     })
+  },
+
+
+  // 站内消息
+
+  getUnreadMsgCount(){
+    return ajax("/api/msg/unread",'get')
+  },
+
+  getMsgList(routerName,searchParams){
+    let params ={};
+    Object.keys(searchParams).forEach((element) => {
+      if (searchParams[element]!==''&&searchParams[element]!==null&&searchParams[element]!==undefined) {
+        params[element] = searchParams[element]
+      }
+    })
+    switch(routerName){
+      case "DiscussMsg":
+        return ajax("/api/msg/comment",'get',{
+          params
+        });
+      case "ReplyMsg":
+        return ajax("/api/msg/reply",'get',{
+          params
+        });
+      case "LikeMsg":
+        return ajax("/api/msg/like",'get',{
+          params
+        });
+      case "SysMsg":
+        return ajax("/api/msg/sys",'get',{
+          params
+      });
+      case "MineMsg":
+        return ajax("/api/msg/mine",'get',{
+          params
+      });
+    }
+  },
+
+  cleanMsg(routerName,id){
+    let params ={};
+    if(id){
+      params.id=id;
+    }
+    switch(routerName){
+      case "DiscussMsg":
+        params.type = 'Discuss';
+        break;
+      case "ReplyMsg":
+        params.type = 'Reply';
+        break;
+      case "LikeMsg":
+        params.type = 'Like';
+        break;
+      case "SysMsg":
+        params.type = 'Sys';
+        break;
+      case "MineMsg":
+        params.type = 'Mine';
+        break;
+    }
+    return ajax("/api/msg/clean",'delete',{
+      params
+    });
   }
   
 }

@@ -80,9 +80,9 @@
           </div>
         </div>
         <p id="no-contest" v-show="contests.length == 0">
-          {{ $t('m.No_contest') }}
+          <el-empty :description="$t('m.No_contest')"></el-empty>
         </p>
-        <ol id="contest-list">
+        <ol id="contest-list" v-loading="loading">
           <li
             v-for="contest in contests"
             :key="contest.title"
@@ -227,6 +227,7 @@ export default {
       CONTEST_TYPE_REVERSE: CONTEST_TYPE_REVERSE,
       acmSrc: require('@/assets/acm.jpg'),
       oiSrc: require('@/assets/oi.jpg'),
+      loading: true,
     };
   },
   mounted() {
@@ -244,10 +245,17 @@ export default {
       this.getContestList();
     },
     getContestList(page = 1) {
-      api.getContestList(page, this.limit, this.query).then((res) => {
-        this.contests = res.data.data.records;
-        this.total = res.data.data.total;
-      });
+      this.loading = true;
+      api.getContestList(page, this.limit, this.query).then(
+        (res) => {
+          this.contests = res.data.data.records;
+          this.total = res.data.data.total;
+          this.loading = false;
+        },
+        (err) => {
+          this.loading = false;
+        }
+      );
     },
     filterByChange() {
       let query = Object.assign({}, this.query);

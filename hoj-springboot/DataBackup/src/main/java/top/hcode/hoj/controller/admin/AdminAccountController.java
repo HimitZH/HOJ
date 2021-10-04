@@ -15,6 +15,7 @@ import top.hcode.hoj.dao.*;
 import top.hcode.hoj.pojo.dto.LoginDto;
 import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.service.impl.SessionServiceImpl;
 import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.JwtUtils;
 
@@ -37,7 +38,7 @@ public class AdminAccountController {
     private UserRoleMapper userRoleDao;
 
     @Autowired
-    private SessionMapper sessionDao;
+    private SessionServiceImpl sessionService;
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -65,8 +66,10 @@ public class AdminAccountController {
             response.setHeader("Authorization", jwt); //放到信息头部
             response.setHeader("Access-Control-Expose-Headers", "Authorization");
             // 会话记录
-            sessionDao.insert(new Session().setUid(userRoles.getUid())
+            sessionService.save(new Session().setUid(userRoles.getUid())
                     .setIp(IpUtils.getUserIpAddr(request)).setUserAgent(request.getHeader("User-Agent")));
+            // 异步检查是否异地登录
+            sessionService.checkRemoteLogin(userRoles.getUid());
             return CommonResult.successResponse(MapUtil.builder()
                     .put("uid", userRoles.getUid())
                     .put("username", userRoles.getUsername())

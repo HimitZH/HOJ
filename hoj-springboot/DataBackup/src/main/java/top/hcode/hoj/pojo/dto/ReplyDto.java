@@ -15,5 +15,9 @@ public class ReplyDto {
 
     private Reply reply;
 
-    private Long did;
+    private Integer did;
+
+    private Integer quoteId;
+
+    private String quoteType;
 }

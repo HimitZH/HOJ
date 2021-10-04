@@ -1,8 +1,12 @@
 package top.hcode.hoj.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.annotation.Async;
 import top.hcode.hoj.pojo.entity.ContestProblem;
 import top.hcode.hoj.dao.ContestProblemMapper;
+import top.hcode.hoj.pojo.entity.ContestRecord;
 import top.hcode.hoj.pojo.entity.UserInfo;
 import top.hcode.hoj.pojo.vo.ContestProblemVo;
 import top.hcode.hoj.service.ContestProblemService;
@@ -38,5 +42,15 @@ public class ContestProblemServiceImpl extends ServiceImpl<ContestProblemMapper,
         superAdminUidList.add(contestAuthorUid);
 
         return contestProblemMapper.getContestProblemList(cid, startTime, endTime, sealTime, isAdmin, superAdminUidList);
+    }
+
+    @Async
+    public void syncContestRecord(Long pid, Long cid, String displayId) {
+
+        UpdateWrapper<ContestRecord> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("pid", pid)
+                .eq("cid", cid)
+                .set("display_id", displayId);
+        contestRecordService.update(updateWrapper);
     }
 }

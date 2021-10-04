@@ -2,11 +2,15 @@ package top.hcode.hoj.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.dao.DiscussionMapper;
 import top.hcode.hoj.pojo.entity.Discussion;
+import top.hcode.hoj.pojo.entity.MsgRemind;
 import top.hcode.hoj.pojo.vo.DiscussionVo;
 import top.hcode.hoj.service.DiscussionService;
+
+import javax.annotation.Resource;
 
 /**
  * @Author: Himit_ZH
@@ -22,5 +26,21 @@ public class DiscussionServiceImpl extends ServiceImpl<DiscussionMapper, Discuss
     @Override
     public DiscussionVo getDiscussion(Integer did, String uid) {
         return discussionMapper.getDiscussion(did, uid);
+    }
+
+    @Resource
+    private MsgRemindServiceImpl msgRemindService;
+
+    @Async
+    public void updatePostLikeMsg(String recipientId, String senderId, Integer discussionId) {
+
+        MsgRemind msgRemind = new MsgRemind();
+        msgRemind.setAction("Like_Post")
+                .setRecipientId(recipientId)
+                .setSenderId(senderId)
+                .setSourceId(discussionId)
+                .setSourceType("Discussion")
+                .setUrl("/discussion-detail/" + discussionId);
+        msgRemindService.saveOrUpdate(msgRemind);
     }
 }

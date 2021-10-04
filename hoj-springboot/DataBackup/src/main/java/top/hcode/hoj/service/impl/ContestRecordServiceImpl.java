@@ -157,7 +157,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
 
     public Page<OIContestRankVo> getOIContestRank(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime,
-                                                   Date startTime, Date endTime, int currentPage, int limit) {
+                                                  Date startTime, Date endTime, int currentPage, int limit) {
 
         List<ContestRecord> oiContestRecord = contestRecordMapper.getOIContestRecord(cid, contestAuthor, isOpenSealRank, sealTime, startTime, endTime);
         // 计算排名
@@ -353,12 +353,18 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                 oiContestRankVo = result.get(uidMapIndex.get(contestRecord.getUid())); // 根据记录的index进行获取
             }
 
-            // 记录已经是每道題最新的提交了
-            oiContestRankVo.getSubmissionInfo().put(contestRecord.getDisplayId(), contestRecord.getScore());
+            // 记录总分
+            HashMap<String, Integer> submissionInfo = oiContestRankVo.getSubmissionInfo();
+            Integer score = submissionInfo.get(contestRecord.getDisplayId());
 
-            if (contestRecord.getScore() != null) { // 一般來说不可能出现，status已经筛掉没有评分的提交记录
-                oiContestRankVo.setTotalScore(oiContestRankVo.getTotalScore() + contestRecord.getScore());
+            if (contestRecord.getScore() != null) {
+                if (score != null) { // 为了避免同个提交时间的重复计算
+                    oiContestRankVo.setTotalScore(oiContestRankVo.getTotalScore() - score + contestRecord.getScore());
+                } else {
+                    oiContestRankVo.setTotalScore(oiContestRankVo.getTotalScore() + contestRecord.getScore());
+                }
             }
+            submissionInfo.put(contestRecord.getDisplayId(), contestRecord.getScore());
 
         }
 

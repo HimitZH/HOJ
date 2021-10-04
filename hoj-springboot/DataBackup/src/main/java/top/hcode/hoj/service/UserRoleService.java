@@ -16,4 +16,6 @@ import top.hcode.hoj.pojo.vo.UserRolesVo;
 public interface UserRoleService extends IService<UserRole> {
     IPage<UserRolesVo> getUserList(int limit, int currentPage, String keyword,Boolean onlyAdmin);
     void deleteCache(String uid, boolean isRemoveSession);
+
+    String getAuthChangeContent(int oldType,int newType);
 }
