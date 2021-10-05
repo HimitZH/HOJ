@@ -49,7 +49,7 @@ public class DiscussionController {
     private DiscussionReportServiceImpl discussionReportService;
 
     @GetMapping("/discussions")
-    public CommonResult getDiscussionList(@RequestParam(value = "limit", required = false, defaultValue = "15") Integer limit,
+    public CommonResult getDiscussionList(@RequestParam(value = "limit", required = false, defaultValue = "8") Integer limit,
                                           @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage,
                                           @RequestParam(value = "cid", required = false) Integer categoryId,
                                           @RequestParam(value = "pid", required = false) String pid,
