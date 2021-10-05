@@ -28,6 +28,7 @@ public class JwtUtils {
 
     @Autowired
     private RedisUtils redisUtils;
+
     /**
      * 生成jwt token
      */
@@ -43,8 +44,8 @@ public class JwtUtils {
                 .setExpiration(expireDate)
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
-        redisUtils.set(TOKEN_REFRESH+userId, token,checkRefreshExpire);
-        redisUtils.set(TOKEN_KEY+userId,token,expire);
+        redisUtils.set(TOKEN_REFRESH + userId, token, checkRefreshExpire);
+        redisUtils.set(TOKEN_KEY + userId, token, expire);
         return token;
     }
 
@@ -54,7 +55,7 @@ public class JwtUtils {
                     .setSigningKey(secret)
                     .parseClaimsJws(token)
                     .getBody();
-        }catch (Exception e){
+        } catch (Exception e) {
             log.debug("validate is token error ", e);
             return null;
         }
@@ -62,7 +63,8 @@ public class JwtUtils {
 
     /**
      * token是否过期
-     * @return  true：过期
+     *
+     * @return true：过期
      */
     public boolean isTokenExpired(Date expiration) {
         return expiration.before(new Date());

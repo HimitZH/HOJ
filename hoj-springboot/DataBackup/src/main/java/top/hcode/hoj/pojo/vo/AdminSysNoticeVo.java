@@ -35,4 +35,6 @@ public class AdminSysNoticeVo {
     private String adminUsername;
 
     private Date gmtCreate;
+
+    private Date gmtModified;
 }

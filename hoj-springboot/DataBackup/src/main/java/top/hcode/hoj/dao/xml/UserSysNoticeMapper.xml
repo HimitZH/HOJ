@@ -17,7 +17,7 @@
         u.id as id,
         u.type as type,
         u.state as state,
-        a.gmt_create as gmt_create,
+        u.gmt_create as gmt_create,
         a.title as title,
         a.content as content,
         a.admin_id as admin_id
@@ -31,6 +31,6 @@
              and u.type = #{type}
          </if>
         </where>
-        order by u.state asc,a.gmt_create desc
+        order by u.state asc,u.gmt_create desc
     </select>
 </mapper>
