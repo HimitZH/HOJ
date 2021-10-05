@@ -54,10 +54,14 @@ public class SessionServiceImpl extends ServiceImpl<SessionMapper, Session> impl
         Session lastSession = sessionList.get(1);
         // 如果两次登录的ip不相同，需要发通知给用户
         if (!nowSession.getIp().equals(lastSession.getIp())) {
+            String remoteLoginContent = getRemoteLoginContent(lastSession.getIp(), nowSession.getIp(), nowSession.getGmtCreate());
+            if (remoteLoginContent == null) {
+                return;
+            }
             AdminSysNotice adminSysNotice = new AdminSysNotice();
             adminSysNotice
                     .setType("Single")
-                    .setContent(getRemoteLoginContent(nowSession.getIp(), nowSession.getGmtCreate()))
+                    .setContent(remoteLoginContent)
                     .setTitle("账号异地登录通知(Account Remote Login Notice)")
                     .setAdminId("1")
                     .setState(false)
@@ -78,16 +82,29 @@ public class SessionServiceImpl extends ServiceImpl<SessionMapper, Session> impl
         }
     }
 
-    private String getRemoteLoginContent(String newIp, Date loginDate) {
+    private String getRemoteLoginContent(String oldIp, String newIp, Date loginDate) {
         String dateStr = DateUtil.format(loginDate, "yyyy-MM-dd HH:mm:ss");
         StringBuilder sb = new StringBuilder();
         sb.append("亲爱的用户，您好！您的账号于").append(dateStr);
         String addr = null;
         try {
-            String res = HttpUtil.get("https://whois.pconline.com.cn/ipJson.jsp?ip=" + newIp + "&json=true");
-            JSONObject resJson = JSONUtil.parseObj(res);
-            addr = resJson.getStr("addr");
+            String newRes = HttpUtil.get("https://whois.pconline.com.cn/ipJson.jsp?ip=" + newIp + "&json=true");
+            JSONObject newResJson = JSONUtil.parseObj(newRes);
+            addr = newResJson.getStr("addr");
+
+            String newCityCode = newResJson.getStr("cityCode");
+
+            String oldRes = HttpUtil.get("https://whois.pconline.com.cn/ipJson.jsp?ip=" + oldIp + "&json=true");
+            JSONObject oldResJson = JSONUtil.parseObj(oldRes);
+
+            String oldCityCode = oldResJson.getStr("cityCode");
+
+            if (newCityCode == null || oldCityCode == null || newCityCode.equals(oldCityCode)) {
+                return null;
+            }
+
         } catch (Exception ignored) {
+            return null;
         }
         if (!StringUtils.isEmpty(addr)) {
             sb.append("在【")
