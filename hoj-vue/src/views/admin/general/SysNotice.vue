@@ -3,6 +3,9 @@
     <el-card>
       <div slot="header">
         <span class="panel-title home-title">{{ $t('m.SysNotice') }}</span>
+        <div style="font-size:13px;margin-top: 5px;color: red;">
+          {{ $t('m.Push_System_Notification_Every_Hour') }}
+        </div>
       </div>
       <div class="create">
         <el-button
@@ -50,7 +53,7 @@
           </vxe-table-column>
           <vxe-table-column
             min-width="150"
-            field="username"
+            field="adminUsername"
             show-overflow
             :title="$t('m.Author')"
           >
@@ -61,7 +64,7 @@
             :title="$t('m.Notice_Push')"
           >
           </vxe-table-column>
-          <vxe-table-column title="Option" min-width="150">
+          <vxe-table-column :title="$t('m.Option')" min-width="150">
             <template v-slot="row">
               <el-tooltip
                 class="item"
@@ -95,7 +98,6 @@
 
         <div class="panel-options">
           <el-pagination
-            v-if="!contestID"
             class="page"
             layout="prev, pager, next"
             @current-change="currentChange"
@@ -107,7 +109,7 @@
       </div>
     </el-card>
 
-    <!--编辑公告对话框-->
+    <!--编辑通知对话框-->
     <el-dialog
       :title="noticeDialogTitle"
       :visible.sync="showEditNoticeDialog"
@@ -127,15 +129,18 @@
           <Editor :value.sync="notice.content"></Editor>
         </el-form-item>
         <div class="visible-box">
-          <span>{{ $t('m.Notice_visible') }}</span>
-          <el-switch
-            v-model="notice.status"
-            :active-value="0"
-            :inactive-value="1"
-            active-text=""
-            inactive-text=""
-          >
-          </el-switch>
+          <span>{{ $t('m.Notice_Recipient') }}</span>
+          <span>
+            <el-radio v-model="notice.type" label="All">{{
+              $t('m.All_User')
+            }}</el-radio>
+            <el-radio v-model="notice.type" label="Single" disabled>{{
+              $t('m.Designated_User')
+            }}</el-radio>
+            <el-radio v-model="notice.type" label="Admin" disabled>{{
+              $t('m.All_Admin')
+            }}</el-radio>
+          </span>
         </div>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -163,30 +168,30 @@ export default {
   data() {
     return {
       contestID: '',
-      // 显示编辑公告对话框
+      // 显示编辑通知对话框
       showEditNoticeDialog: false,
-      // 公告列表
+      // 通知列表
       noticeList: [],
-      // 一页显示的公告数
-      pageSize: 15,
-      // 总公告数
+      // 一页显示的通知数
+      pageSize: 10,
+      // 总通知数
       total: 0,
       mode: 'create',
-      // 公告 (new | edit) model
+      // 通知 (new | edit) model
 
       notice: {
         id: null,
         title: '',
         content: '',
-        status: 0,
-        uid: '',
+        type: '',
+        adminId: '',
       },
       // 对话框标题
       noticeDialogTitle: 'Edit Notice',
       // 是否显示loading
       loading: false,
       // 当前页码
-      currentPage: 0,
+      currentPage: 1,
     };
   },
   mounted() {
@@ -208,7 +213,7 @@ export default {
 
     getNoticeList(page) {
       this.loading = true;
-      api.admin_getNoticeList(page, this.pageSize).then(
+      api.admin_getNoticeList(page, this.pageSize, 'All').then(
         (res) => {
           this.loading = false;
           this.total = res.data.data.total;
@@ -241,7 +246,7 @@ export default {
       }
       let funcName =
         this.mode === 'edit' ? 'admin_updateNotice' : 'admin_createNotice';
-      let = requestData = data;
+      let requestData = data;
 
       api[funcName](requestData)
         .then((res) => {
@@ -284,22 +289,11 @@ export default {
       } else {
         this.noticeDialogTitle = this.$i18n.t('m.Create_Notice');
         this.notice.title = '';
-        this.notice.status = 0;
         this.notice.content = '';
-        this.notice.uid = this.userInfo.uid;
-        this.notice.username = this.userInfo.username;
+        this.notice.type = 'All';
+        this.notice.adminId = this.userInfo.uid;
         this.mode = 'create';
       }
-    },
-    handleVisibleSwitch(row) {
-      this.mode = 'edit';
-      this.submitNotice({
-        id: row.id,
-        title: row.title,
-        content: row.content,
-        status: row.status,
-        uid: row.uid,
-      });
     },
   },
   watch: {
@@ -320,7 +314,6 @@ export default {
 
 .visible-box {
   margin-top: 10px;
-  width: 205px;
   float: left;
 }
 .visible-box span {

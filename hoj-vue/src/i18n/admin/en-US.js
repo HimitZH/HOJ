@@ -102,6 +102,22 @@ export const m = {
   Announcement_Content: 'Content',
   Announcement_visible: 'Visible',
   Delete_Announcement_Tips:'Are you sure you want to delete this announcement?',
+
+   // /views/admin/general/SysNotice.vue
+   SysNotice: 'Notification',
+   Notice_Admin:'Notification',
+   Push_System_Notification_Every_Hour:'Tips: Push System Notification Every Hour',
+   Edit_Notice:'Edit Notification',
+   Create_Notice:'Create Notification',
+   Delete_Notice:'Delete Notification',
+   Notice_Title: 'Notification Title',
+   Notice_Content: 'Notification Content',
+   Notice_Push:'Pushed',
+   Notice_Recipient:'Recipient',
+   All_User:'All User',
+   Designated_User:'Designated User',
+   All_Admin:'Admin',
+   Delete_Notice_Tips:'Are you sure you want to delete this notification?',
   
   // /views/admin/general/SystemConfig.vue
   Website_Config:'Website Config',

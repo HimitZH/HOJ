@@ -198,11 +198,12 @@ export default {
   float: right;
 }
 .msg-list-item {
-  line-height: 24px;
+  line-height: 30px;
 }
 .title {
   color: #333;
   font-weight: 700;
+  font-size: 14px;
 }
 .extra {
   color: #999;

@@ -1,5 +1,5 @@
 <template>
-  <div class="markdown-body">
+  <div class="markdown-body submission-detail">
     <pre
       v-highlight="code"
       :style="styleObject"
@@ -40,8 +40,11 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .hljs {
   padding: 0 !important;
+}
+.submission-detail pre {
+  padding-left: 55px !important;
 }
 </style>
