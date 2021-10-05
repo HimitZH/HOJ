@@ -213,37 +213,37 @@ const ojRoutes = [
     name:'Message',
     path:'/message/',
     component:Message,
-    meta: { requireAuth: false, title: 'Message' },
+    meta: { requireAuth: true, title: 'Message' },
     children: [
       {
         name: 'DiscussMsg',
         path: 'discuss',
         component: UserMsg,
-        meta: { requireAuth: false,title: 'Discuss Message' }
+        meta: { requireAuth: true,title: 'Discuss Message' }
       },
       {
         name: 'ReplyMsg',
         path: 'reply',
         component: UserMsg,
-        meta: { requireAuth: false,title: 'Reply Message' }
+        meta: { requireAuth: true,title: 'Reply Message' }
       },
       {
         name: 'LikeMsg',
         path: 'like',
         component: UserMsg,
-        meta: { requireAuth: false,title: 'Like Message' }
+        meta: { requireAuth: true,title: 'Like Message' }
       },
       {
         name: 'SysMsg',
         path: 'sys',
         component: SysMsg,
-        meta: { requireAuth: false,title: 'System Message' }
+        meta: { requireAuth: true,title: 'System Message' }
       },
       {
         name: 'MineMsg',
         path: 'mine',
         component: SysMsg,
-        meta: { requireAuth: false,title: 'Mine Message' }
+        meta: { requireAuth: true,title: 'Mine Message' }
       },
     ]
   },
