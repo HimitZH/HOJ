@@ -497,7 +497,7 @@ export default {
     getDiscussionList() {
       let queryParams = Object.assign({}, this.query);
       this.loading.discussion = true;
-      api.getDiscussionList(this.limit, queryParams).then(
+      api.getDiscussionList(this.query.limit, queryParams).then(
         (res) => {
           this.total = res.data.data.total;
           this.discussionList = res.data.data.records;
