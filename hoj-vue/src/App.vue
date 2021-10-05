@@ -530,7 +530,7 @@ footer h1 {
   display: block;
   border-radius: 3px !important;
   border: 1px solid #c3ccd0;
-  padding: 0 16px 0 55px !important;
+  padding: 0 16px 0 35px !important;
   position: relative !important;
   overflow-y: hidden !important;
   font-size: 1rem !important;
@@ -643,5 +643,15 @@ footer h1 {
   padding: 15px;
   margin: 5px 0;
   box-shadow: inset 0 0 12px rgb(219 219 219);
+}
+.markdown-body p {
+  font-size: 14px;
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+  line-height: 20px;
+}
+.hljs {
+  padding: 0 !important;
 }
 </style>

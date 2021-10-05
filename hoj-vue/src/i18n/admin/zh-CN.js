@@ -101,17 +101,23 @@ export const m = {
   Announcement_Title: '公告标题',
   Announcement_Content: '公告内容',
   Announcement_visible: '是否可见',
-  Delete_Announcement_Tips:'你确实是否删除该公告？',
+  Delete_Announcement_Tips:'你是否确实删除该公告？',
 
    // /views/admin/general/SysNotice.vue
-   SysNotice: '系统通知',
+   SysNotice: '通知管理',
+   Notice_Admin:'通知管理',
+   Push_System_Notification_Every_Hour:'提示：每小时推送一次系统通知',
    Edit_Notice:'编辑通知',
    Create_Notice:'创建通知',
    Delete_Notice:'删除通知',
    Notice_Title: '通知标题',
    Notice_Content: '通知内容',
    Notice_Push:'已推送',
-   Delete_Notice_Tips:'你确实是否删除该通知？',
+   Notice_Recipient:'接收者',
+   All_User:'所有用户',
+   Designated_User:'指定用户',
+   All_Admin:'管理员',
+   Delete_Notice_Tips:'你是否确实删除该通知？',
   
   // /views/admin/general/SystemConfig.vue
   Website_Config:'网站设置',

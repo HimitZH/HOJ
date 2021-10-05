@@ -750,6 +750,38 @@ const adminApi = {
     })
   },
 
+
+  // 获取公告列表
+  admin_getNoticeList (currentPage, limit,type) {
+    return ajax('/api/admin/msg/notice', 'get', {
+      params: {
+        currentPage,
+        limit,
+        type
+      }
+    })
+  },
+  // 删除公告
+  admin_deleteNotice (id) {
+    return ajax('/api/admin/msg/notice', 'delete', {
+      params: {
+        id
+      }
+    })
+  },
+  // 修改公告
+  admin_updateNotice (data) {
+    return ajax('/api/admin/msg/notice', 'put', {
+      data
+    })
+  },
+  // 添加公告
+  admin_createNotice (data) {
+    return ajax('/api/admin/msg/notice', 'post', {
+      data
+    })
+  },
+
   // 系统配置
   admin_getSMTPConfig () {
     return ajax('/api/admin/config/get-email-config', 'get')

@@ -10,6 +10,7 @@
         <result column="state" property="state"></result>
         <result column="username" property="adminUsername"></result>
         <result column="gmt_create" property="gmtCreate"></result>
+        <result column="gmt_modified" property="gmtModified"></result>
     </resultMap>
 
     <select id="getAdminSysNotice" resultMap="map_AdminSysNoticeList">
@@ -20,6 +21,7 @@
         a.type as type,
         a.state as state,
         a.gmt_create as gmt_create,
+        a.gmt_modified as gmt_modified,
         u.username as username
         from admin_sys_notice a, user_info u
         <where>
