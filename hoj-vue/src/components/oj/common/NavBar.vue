@@ -634,6 +634,21 @@ export default {
       },
     },
   },
+  watch: {
+    isAuthenticated() {
+      if (this.isAuthenticated) {
+        if (this.msgTimer) {
+          clearInterval(this.msgTimer);
+        }
+        this.getUnreadMsgCount();
+        this.msgTimer = setInterval(() => {
+          this.getUnreadMsgCount();
+        }, 120 * 1000);
+      } else {
+        clearInterval(this.msgTimer);
+      }
+    },
+  },
 };
 </script>
 <style scoped>
