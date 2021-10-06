@@ -28,7 +28,7 @@
     <select id="getOIContestRecord" resultType="top.hcode.hoj.pojo.vo.ContestRecordVo">
         SELECT cr.id,cr.cid,cr.uid,cr.pid,cr.cpid,cr.display_id,cr.submit_id,cr.username,cr.status,cr.submit_time,
         cr.time,cr.score,cr.use_time,cr.checked,cr.gmt_create,cr.gmt_modified,
-        u.gender,u.realname as realname,u.avatar,u.school
+        u.gender,u.realname as realname,u.avatar,u.school,u.nickname
         FROM
         (SELECT uid,pid,cpid,MAX(time) AS time FROM contest_record
         <where>
@@ -54,7 +54,7 @@
     <select id="getACMContestRecord" resultType="top.hcode.hoj.pojo.vo.ContestRecordVo">
         SELECT cr.id,cr.cid,cr.uid,cr.pid,cr.cpid,cr.display_id,cr.submit_id,cr.username,cr.status,cr.submit_time,
         cr.time,cr.score,cr.use_time,cr.checked,cr.gmt_create,cr.gmt_modified,
-        u.gender,u.realname as realname,u.avatar,u.school
+        u.gender,u.realname as realname,u.avatar,u.school,u.nickname
         FROM contest_record cr,user_info u
         WHERE cr.uid = u.uuid
         AND cr.cid = #{cid}

@@ -10,6 +10,7 @@ const state = {
   contest: {
     auth: CONTEST_TYPE.PUBLIC,
     openPrint: false,
+    rankShowName:'username'
   },
   contestProblems: [],
   itemVisible: {

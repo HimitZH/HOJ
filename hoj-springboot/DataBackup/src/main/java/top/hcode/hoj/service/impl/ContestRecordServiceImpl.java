@@ -223,6 +223,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                         .setGender(contestRecord.getGender())
                         .setUid(contestRecord.getUid())
                         .setUsername(contestRecord.getUsername())
+                        .setNickname(contestRecord.getNickname())
                         .setAc(0)
                         .setTotalTime(0L)
                         .setTotal(0);
@@ -351,6 +352,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                         .setSchool(contestRecord.getSchool())
                         .setAvatar(contestRecord.getAvatar())
                         .setGender(contestRecord.getGender())
+                        .setNickname(contestRecord.getNickname())
                         .setTotalScore(0);
 
 
