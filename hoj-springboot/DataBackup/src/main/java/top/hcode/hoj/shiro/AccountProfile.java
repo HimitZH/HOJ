@@ -28,6 +28,8 @@ public class AccountProfile implements Serializable {
 
     private String number;
 
+    private String gender;
+
     private String realname;
 
     private String cfUsername;

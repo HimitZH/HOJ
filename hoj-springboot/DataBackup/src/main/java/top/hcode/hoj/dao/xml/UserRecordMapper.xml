@@ -67,7 +67,7 @@
     </resultMap>
 
     <select id="getUserHomeInfo" resultMap="map_UserHomeVo">
-        SELECT u.uuid as uid,u.username,u.nickname,u.signature,u.school,u.github,u.blog,u.avatar,ur.rating,
+        SELECT u.uuid as uid,u.username,u.nickname,u.gender,u.signature,u.school,u.github,u.blog,u.avatar,ur.rating,
         (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid AND cid=0) AS total
         FROM user_info u,user_record ur WHERE u.uuid = ur.uid AND u.status = 0 AND u.uuid = #{uid}
     </select>

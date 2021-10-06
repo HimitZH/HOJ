@@ -49,15 +49,13 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
             updateWrapper.set("status", Constants.Contest.RECORD_AC.getCode());
             // 部分通过
         } else if (status.intValue() == Constants.Judge.STATUS_PARTIAL_ACCEPTED.getStatus()) {
-            updateWrapper.set("first_blood", false)
-                    .set("status", Constants.Contest.RECORD_NOT_AC_NOT_PENALTY.getCode());
+            updateWrapper.set("status", Constants.Contest.RECORD_NOT_AC_NOT_PENALTY.getCode());
             // 需要被罚时的状态
         } else if (penaltyStatus.contains(status)) {
-            updateWrapper.set("status", Constants.Contest.RECORD_NOT_AC_PENALTY.getCode())
-                    .set("first_blood", false);
+            updateWrapper.set("status", Constants.Contest.RECORD_NOT_AC_PENALTY.getCode());
+
         } else {
-            updateWrapper.set("status", Constants.Contest.RECORD_NOT_AC_NOT_PENALTY.getCode())
-                    .set("first_blood", false);
+            updateWrapper.set("status", Constants.Contest.RECORD_NOT_AC_NOT_PENALTY.getCode());
         }
 
         if (score != null) {

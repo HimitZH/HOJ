@@ -9,7 +9,7 @@
             type="border-card"
             @tab-click="handleClickTab"
           >
-            <el-tab-pane name="problemDetail">
+            <el-tab-pane name="problemDetail" v-loading="loading">
               <span slot="label"
                 ><i class="fa fa-list-alt"></i>
                 {{ $t('m.Problem_Description') }}</span
@@ -693,6 +693,7 @@ export default {
       mySubmission_limit: 15,
       mySubmission_currentPage: 1,
       mySubmissions: [],
+      loading: false,
     };
   },
   // 获取缓存中的该题的做题代码，代码语言，代码风格
@@ -887,6 +888,7 @@ export default {
         this.$route.name === 'ProblemDetails'
           ? 'getProblem'
           : 'getContestProblem';
+      this.loading = true;
       api[func](this.problemID, this.contestID).then(
         (res) => {
           let result = res.data.data;
@@ -955,8 +957,11 @@ export default {
           this.$nextTick((_) => {
             addCodeBtn();
           });
+          this.loading = false;
         },
-        () => {}
+        (err) => {
+          this.loading = false;
+        }
       );
     },
     changePie(problemData) {

@@ -211,3 +211,35 @@ DELIMITER ;
 CALL Add_msg_table;
 
 DROP PROCEDURE Add_msg_table;
+
+
+
+
+/*
+* 2021.10.06 user_info增加性别列gender
+			 
+*/
+DROP PROCEDURE
+IF EXISTS user_info_Add_gender;
+DELIMITER $$
+ 
+CREATE PROCEDURE user_info_Add_gender ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'user_info'
+	AND column_name = 'gender'
+) THEN
+	ALTER TABLE user_info ADD COLUMN gender varchar(20) DEFAULT 'secrecy'  NOT NULL COMMENT '性别';
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL user_info_Add_gender ;
+
+DROP PROCEDURE user_info_Add_gender;

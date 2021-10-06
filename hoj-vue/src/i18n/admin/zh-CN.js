@@ -62,9 +62,10 @@ export const m = {
   Delete_User:'删除用户',
   Import_User: '导入用户',
   Import_User_Tips1:'用户数据导入仅支持csv格式的用户数据。',
-  Import_User_Tips2:'共四列数据：用户名和密码不能为空，邮箱和真实姓名可选填，否则该行数据可能导入失败。',
-  Import_User_Tips3:'第一行不必写(“用户名”，“密码”，“邮箱”，"真实姓名")这四个列名',
-  Import_User_Tips4:'请导入保存为UTF-8编码的文件，否则中文可能会乱码。',
+  Import_User_Tips2:'共五列数据：用户名和密码不能为空，邮箱、真实姓名和性别可选填，否则该行数据可能导入失败。',
+  Import_User_Tips3:'第一行不必写(“用户名”，“密码”，“邮箱”，"真实姓名"，“性别”)这四个列名',
+  Import_User_Tips4:'性别为男请使用“male”或“0”，女请使用“female”或“1”，不填默认为“secrecy”。',
+  Import_User_Tips5:'请导入保存为UTF-8编码的文件，否则中文可能会乱码。',
   Choose_File:'选择文件',
   Password: '密码',
   Upload_All:'上传全部',
@@ -226,7 +227,8 @@ export const m = {
   Export_Problem:'导出题目',
   Export:'导出',
   Import_Problem:'导入题目',
-  Import_QDOJ_Problem:'导入QDOJ题目',
+  Import_QDOJ_Problem:'导入QDUOJ的题目',
+  Import_FPS_Problem:'导入FPS格式的题目',
   Export_Problem_NULL_Tips:'选择导出的题目不能为空',
 
   // /views/admin/contest/ContestList.vue
