@@ -46,6 +46,7 @@
     <div v-show="showTable">
       <vxe-table
         round
+        border
         auto-resize
         size="medium"
         align="center"
@@ -62,17 +63,33 @@
         ></vxe-table-column>
         <vxe-table-column
           field="username"
-          min-width="112"
           fixed="left"
+          min-width="300"
           :title="$t('m.User')"
+          header-align="center"
+          align="left"
         >
           <template v-slot="{ row }">
-            <span
-              ><a
-                @click="getUserHomeByUsername(row.uid, row.username)"
-                style="color:rgb(87, 163, 243);"
-                >{{ row.username }}</a
-              >
+            <avatar
+              :username="row.username"
+              :inline="true"
+              :size="37"
+              color="#FFF"
+              :src="row.avatar"
+              :title="row.username"
+            ></avatar>
+
+            <span style="float:right;text-align:right">
+              <a @click="getUserHomeByUsername(row.uid, row.username)">
+                <span class="contest-username"
+                  ><span class="female-flag" v-if="row.gender == 'female'"
+                    >Girl</span
+                  >{{ row.username }}</span
+                >
+                <span class="contest-school" v-if="row.school">{{
+                  row.school
+                }}</span>
+              </a>
             </span>
           </template>
         </vxe-table-column>
@@ -140,6 +157,7 @@
   </el-card>
 </template>
 <script>
+import Avatar from 'vue-avatar';
 import { mapActions } from 'vuex';
 import ContestRankMixin from './contestRankMixin';
 import utils from '@/common/utils';
@@ -148,6 +166,7 @@ export default {
   name: 'OIContestRank',
   components: {
     Pagination,
+    Avatar,
   },
   mixins: [ContestRankMixin],
   data() {
@@ -226,6 +245,10 @@ export default {
     ...mapActions(['getContestProblems']),
 
     cellClassName({ row, rowIndex, column, columnIndex }) {
+      if (column.property === 'username' && row.userCellClassName) {
+        return row.userCellClassName;
+      }
+
       if (
         column.property !== 'id' &&
         column.property !== 'totalScore' &&
@@ -290,6 +313,9 @@ export default {
           }
         });
         dataRank[i].cellClassName = cellClass;
+        if (dataRank[i].gender == 'female') {
+          dataRank[i].userCellClassName = 'bg-female';
+        }
       });
       this.dataRank = dataRank;
     },

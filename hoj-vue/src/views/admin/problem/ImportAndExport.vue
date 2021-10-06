@@ -137,6 +137,43 @@
         >
       </el-upload>
     </el-card>
+
+    <el-card style="margin-top:15px">
+      <div slot="header">
+        <span class="panel-title home-title">{{
+          $t('m.Import_FPS_Problem')
+        }}</span>
+      </div>
+      <el-upload
+        ref="FPS"
+        action="/api/file/import-fps-problem"
+        name="file"
+        :file-list="fileList3"
+        :show-file-list="true"
+        :with-credentials="true"
+        :limit="3"
+        :on-change="onFile3Change"
+        :auto-upload="false"
+        :on-success="uploadSucceeded"
+        :on-error="uploadFailed"
+      >
+        <el-button
+          size="small"
+          type="primary"
+          slot="trigger"
+          icon="el-icon-folder-opened"
+          >{{ $t('m.Choose_File') }}</el-button
+        >
+        <el-button
+          style="margin-left: 10px;"
+          size="small"
+          type="success"
+          @click="submitUpload('FPS')"
+          icon="el-icon-upload"
+          >{{ $t('m.Upload') }}</el-button
+        >
+      </el-upload>
+    </el-card>
   </div>
 </template>
 <script>
@@ -149,6 +186,7 @@ export default {
     return {
       fileList1: [],
       fileList2: [],
+      fileList3: [],
       page: 1,
       limit: 10,
       total: 0,
@@ -207,6 +245,9 @@ export default {
     },
     onFile2Change(file, fileList) {
       this.fileList2 = fileList.slice(-1);
+    },
+    onFile3Change(file, fileList) {
+      this.fileList3 = fileList.slice(-1);
     },
     uploadSucceeded(response) {
       console.log(response);

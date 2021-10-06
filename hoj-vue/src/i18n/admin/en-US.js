@@ -62,9 +62,10 @@ export const m = {
   Delete_User:'Delete User',
   Import_User: 'Import User',
   Import_User_Tips1:'The imported user data only supports user data in CSV format.',
-  Import_User_Tips2:'There are three columns of data: username, password, email, and realname. The username and password cannot be empty, email and realname can be enmpty, otherwise the data in this row may fail to be imported.',
-  Import_User_Tips3:'The first line does not need to write the three column names ("username", "password", "email","realname").',
-  Import_User_Tips4:'Please import the file saved as UTF-8 code, otherwise Chinese may be garbled.',
+  Import_User_Tips2:'There are five columns of data: username, password, email, realname and gender. The username and password cannot be empty, others can be enmpty, otherwise the data in this row may fail to be imported.',
+  Import_User_Tips3:'The first line does not need to write the three column names ("username", "password", "email","realname","gender").',
+  Import_User_Tips4:'If the gender is male, please use "male" or "0", if the gender is female, please use "female" or "1". If it is not filled in, it is assumed to be "secrecy".',
+  Import_User_Tips5:'Please import the file saved as UTF-8 code, otherwise Chinese may be garbled.',
   Choose_File:'Choose File',
   Password: 'Password',
   Upload_All:'Upload All',
@@ -229,6 +230,7 @@ export const m = {
   Export:'Export',
   Import_Problem:'Import Problem',
   Import_QDOJ_Problem:'Import QDOJ Problem',
+  Import_FPS_Problem:'Import FPS Problem',
   Export_Problem_NULL_Tips:'The problem selected for export cannot be empty',
 
   // /views/admin/contest/ContestList.vue

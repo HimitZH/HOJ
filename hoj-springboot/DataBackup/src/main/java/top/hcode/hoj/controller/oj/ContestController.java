@@ -497,15 +497,8 @@ public class ContestController {
         IPage resultList;
         if (contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) { // ACM比赛
 
-            QueryWrapper<ContestRecord> wrapper = new QueryWrapper<ContestRecord>().eq("cid", cid)
-                    .isNotNull("status")
-                    .ne("username", contest.getAuthor())
-                    .orderByAsc("time");
-
-            List<ContestRecord> contestRecordList = contestRecordService.list(wrapper);
-
             // 进行排行榜计算以及排名分页
-            resultList = contestRecordService.getContestACMRank(isOpenSealRank, contest, contestRecordList, currentPage, limit);
+            resultList = contestRecordService.getContestACMRank(isOpenSealRank, contest, currentPage, limit);
 
         } else { //OI比赛：以最后一次提交得分作为该题得分
 

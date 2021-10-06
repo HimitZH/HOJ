@@ -396,19 +396,24 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
         // 为新的题目添加对应的tag，可能tag是原表已有，也可能是新的，所以需要判断。
         List<ProblemTag> problemTagList = new LinkedList<>();
-        for (Tag tag : problemDto.getTags()) {
-            if (tag.getId() == null) { //id为空 表示为原tag表中不存在的 插入后可以获取到对应的tagId
-                tag.setOj("ME");
-                try {
-                    tagService.save(tag);
-                } catch (Exception ignored) {
-                    tag = tagService.getOne(new QueryWrapper<Tag>().eq("name", tag.getName())
-                            .eq("oj", "ME"));
+        if (problemDto.getTags() != null) {
+            for (Tag tag : problemDto.getTags()) {
+                if (tag.getId() == null) { //id为空 表示为原tag表中不存在的 插入后可以获取到对应的tagId
+                    tag.setOj("ME");
+                    try {
+                        tagService.save(tag);
+                    } catch (Exception ignored) {
+                        tag = tagService.getOne(new QueryWrapper<Tag>().eq("name", tag.getName())
+                                .eq("oj", "ME"));
+                    }
                 }
+                problemTagList.add(new ProblemTag().setTid(tag.getId()).setPid(pid));
             }
-            problemTagList.add(new ProblemTag().setTid(tag.getId()).setPid(pid));
         }
-        boolean addTagsToProblemResult = problemTagService.saveOrUpdateBatch(problemTagList);
+        boolean addTagsToProblemResult = true;
+        if (problemTagList.size() > 0) {
+            addTagsToProblemResult = problemTagService.saveOrUpdateBatch(problemTagList);
+        }
 
 
         if (addProblemResult && addCasesToProblemResult && addLangToProblemResult

@@ -156,6 +156,7 @@
       <p>2. {{ $t('m.Import_User_Tips2') }}</p>
       <p>3. {{ $t('m.Import_User_Tips3') }}</p>
       <p>4. {{ $t('m.Import_User_Tips4') }}</p>
+      <p>5. {{ $t('m.Import_User_Tips5') }}</p>
       <el-upload
         v-if="!uploadUsers.length"
         action=""

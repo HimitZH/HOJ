@@ -24,6 +24,15 @@ public class ACMContestRankVo {
     @ApiModelProperty(value = "用户真实姓名")
     private String realname;
 
+    @ApiModelProperty(value = "学校")
+    private String school;
+
+    @ApiModelProperty(value = "性别")
+    private String gender;
+
+    @ApiModelProperty(value = "头像")
+    private String avatar;
+
     @ApiModelProperty(value = "提交总罚时")
     private Long totalTime;
 

@@ -11,6 +11,7 @@ import top.hcode.hoj.pojo.entity.UserInfo;
 import top.hcode.hoj.pojo.vo.ACMContestRankVo;
 import top.hcode.hoj.pojo.entity.ContestRecord;
 import top.hcode.hoj.dao.ContestRecordMapper;
+import top.hcode.hoj.pojo.vo.ContestRecordVo;
 import top.hcode.hoj.pojo.vo.OIContestRankVo;
 import top.hcode.hoj.service.ContestRecordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -112,11 +113,12 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
     @Override
     public IPage<ACMContestRankVo> getContestACMRank(Boolean isOpenSealRank, Contest contest,
-                                                     List<ContestRecord> contestRecordList,
                                                      int currentPage, int limit) {
 
+        List<ContestRecordVo> acmContestRecord = getACMContestRecord(contest.getAuthor(), contest.getId());
+
         // 进行排序计算
-        List<ACMContestRankVo> orderResultList = calcACMRank(isOpenSealRank, contest, contestRecordList);
+        List<ACMContestRankVo> orderResultList = calcACMRank(isOpenSealRank, contest, acmContestRecord);
         // 计算好排行榜，然后进行分页
         Page<ACMContestRankVo> page = new Page<>(currentPage, limit);
         int count = orderResultList.size();
@@ -159,7 +161,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
     public Page<OIContestRankVo> getOIContestRank(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime,
                                                   Date startTime, Date endTime, int currentPage, int limit) {
 
-        List<ContestRecord> oiContestRecord = contestRecordMapper.getOIContestRecord(cid, contestAuthor, isOpenSealRank, sealTime, startTime, endTime);
+        List<ContestRecordVo> oiContestRecord = contestRecordMapper.getOIContestRecord(cid, contestAuthor, isOpenSealRank, sealTime, startTime, endTime);
         // 计算排名
         List<OIContestRankVo> orderResultList = calcOIRank(oiContestRecord);
 
@@ -180,12 +182,17 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
     }
 
     @Override
-    public List<ContestRecord> getOIContestRecord(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime, Date startTime, Date endTime) {
+    public List<ContestRecordVo> getOIContestRecord(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime, Date startTime, Date endTime) {
         return contestRecordMapper.getOIContestRecord(cid, contestAuthor, isOpenSealRank, sealTime, startTime, endTime);
     }
 
+    @Override
+    public List<ContestRecordVo> getACMContestRecord(String username, Long cid) {
+        return contestRecordMapper.getACMContestRecord(username, cid);
+    }
 
-    public List<ACMContestRankVo> calcACMRank(boolean isOpenSealRank, Contest contest, List<ContestRecord> contestRecordList) {
+
+    public List<ACMContestRankVo> calcACMRank(boolean isOpenSealRank, Contest contest, List<ContestRecordVo> contestRecordList) {
 
         List<UserInfo> superAdminList = getSuperAdminList();
 
@@ -199,7 +206,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
         HashMap<String, Long> firstACMap = new HashMap<>();
 
-        for (ContestRecord contestRecord : contestRecordList) {
+        for (ContestRecordVo contestRecord : contestRecordList) {
 
             if (superAdminUidList.contains(contestRecord.getUid())) { // 超级管理员的提交不入排行榜
                 continue;
@@ -211,6 +218,9 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                 // 初始化参数
                 ACMContestRankVo = new ACMContestRankVo();
                 ACMContestRankVo.setRealname(contestRecord.getRealname())
+                        .setAvatar(contestRecord.getAvatar())
+                        .setSchool(contestRecord.getSchool())
+                        .setGender(contestRecord.getGender())
                         .setUid(contestRecord.getUid())
                         .setUsername(contestRecord.getUsername())
                         .setAc(0)
@@ -225,8 +235,6 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                 index++;
             } else {
                 ACMContestRankVo = result.get(uidMapIndex.get(contestRecord.getUid())); // 根据记录的index进行获取
-                // 保证最新提交时的真实名字
-                ACMContestRankVo.setRealname(contestRecord.getRealname());
             }
 
             HashMap<String, Object> problemSubmissionInfo = ACMContestRankVo.getSubmissionInfo().getOrDefault(contestRecord.getDisplayId(), new HashMap<>());
@@ -296,7 +304,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         return orderResultList;
     }
 
-    public List<OIContestRankVo> calcOIRank(List<ContestRecord> oiContestRecord) {
+    public List<OIContestRankVo> calcOIRank(List<ContestRecordVo> oiContestRecord) {
 
         List<UserInfo> superAdminList = getSuperAdminList();
 
@@ -309,7 +317,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         HashMap<String, HashMap<String, Integer>> uidMapTime = new HashMap<>();
 
         int index = 0;
-        for (ContestRecord contestRecord : oiContestRecord) {
+        for (ContestRecordVo contestRecord : oiContestRecord) {
 
             if (superAdminUidList.contains(contestRecord.getUid())) { // 超级管理员的提交不入排行榜
                 continue;
@@ -340,6 +348,9 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                 oiContestRankVo.setRealname(contestRecord.getRealname())
                         .setUid(contestRecord.getUid())
                         .setUsername(contestRecord.getUsername())
+                        .setSchool(contestRecord.getSchool())
+                        .setAvatar(contestRecord.getAvatar())
+                        .setGender(contestRecord.getGender())
                         .setTotalScore(0);
 
 

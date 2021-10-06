@@ -29,6 +29,15 @@
             ><i class="fa fa-user-circle-o" aria-hidden="true"></i>
             {{ profile.username }}</span
           >
+          <span class="gender-male male" v-if="profile.gender == 'male'">
+            <i class="fa fa-mars"></i>
+          </span>
+          <span
+            class="gender-male female"
+            v-else-if="profile.gender == 'female'"
+          >
+            <i class="fa fa-venus"></i>
+          </span>
         </p>
         <p>
           <span v-if="profile.nickname">
@@ -164,6 +173,7 @@ export default {
       profile: {
         username: '',
         nickname: '',
+        gender: '',
         avatar: '',
         school: '',
         signature: '',
@@ -349,5 +359,19 @@ export default {
   text-align: left;
   font-size: 14px;
   line-height: 1.6;
+}
+.gender-male {
+  font-size: 16px;
+  margin-left: 5px;
+
+  color: white;
+  border-radius: 4px;
+  padding: 2px;
+}
+.male {
+  background-color: #409eff;
+}
+.female {
+  background-color: pink;
 }
 </style>

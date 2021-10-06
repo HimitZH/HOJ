@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.ContestRecord;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import top.hcode.hoj.pojo.vo.ContestRecordVo;
 
 import java.util.Date;
 import java.util.List;
@@ -22,8 +23,10 @@ import java.util.List;
 public interface ContestRecordMapper extends BaseMapper<ContestRecord> {
     List<ContestRecord> getACInfo(@Param("status") Integer status, @Param("cid") Long cid);
 
-    List<ContestRecord> getOIContestRecord(@Param("cid") Long cid, @Param("contestAuthor") String contestAuthor,
+    List<ContestRecordVo> getOIContestRecord(@Param("cid") Long cid, @Param("contestAuthor") String contestAuthor,
                                            @Param("isOpenSealRank") Boolean isOpenSealRank,
                                            @Param("sealTime") Date sealTime, @Param("startTime") Date startTime,
                                            @Param("endTime") Date endTime);
+
+    List<ContestRecordVo> getACMContestRecord(@Param("username") String username, @Param("cid") Long cid);
 }

@@ -667,7 +667,7 @@ export default {
   position: fixed;
   left: 0px;
   top: 0px;
-  z-index: 1000;
+  z-index: 1800;
   height: auto;
   width: 100%;
 }

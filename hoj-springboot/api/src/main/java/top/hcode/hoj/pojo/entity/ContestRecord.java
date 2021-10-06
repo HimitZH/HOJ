@@ -53,7 +53,7 @@ public class ContestRecord implements Serializable {
     @ApiModelProperty(value = "用户名")
     private String username;
 
-    @ApiModelProperty(value = "真实姓名")
+    @ApiModelProperty(value = "真实姓名（废弃）")
     private String realname;
 
     @ApiModelProperty(value = "提交结果，0表示未AC通过不罚时，1表示AC通过，-1为未AC通过算罚时")
@@ -71,7 +71,7 @@ public class ContestRecord implements Serializable {
     @ApiModelProperty(value = "提交耗时")
     private Integer useTime;
 
-    @ApiModelProperty(value = "是否为一血AC")
+    @ApiModelProperty(value = "是否为一血AC（废弃）")
     private Boolean firstBlood;
 
     @ApiModelProperty(value = "AC是否已校验")

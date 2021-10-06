@@ -261,6 +261,10 @@ a:hover {
 .home-title {
   color: #409eff;
 }
+.bg-female {
+  background-color: rgb(255, 153, 203);
+}
+
 .oi-100,
 .first-ac {
   background-color: #19be6b;
@@ -530,7 +534,7 @@ footer h1 {
   display: block;
   border-radius: 3px !important;
   border: 1px solid #c3ccd0;
-  padding: 0 16px 0 35px !important;
+  padding: 0 16px 0 50px !important;
   position: relative !important;
   overflow-y: hidden !important;
   font-size: 1rem !important;
@@ -648,8 +652,7 @@ footer h1 {
   font-size: 14px;
   word-wrap: break-word;
   word-break: break-word;
-  white-space: pre-wrap;
-  line-height: 20px;
+  line-height: 1.8;
 }
 .hljs {
   padding: 0 !important;

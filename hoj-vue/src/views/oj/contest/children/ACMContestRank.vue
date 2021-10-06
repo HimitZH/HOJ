@@ -46,6 +46,7 @@
     <div v-show="showTable">
       <vxe-table
         round
+        border
         auto-resize
         size="medium"
         align="center"
@@ -62,16 +63,32 @@
         <vxe-table-column
           field="username"
           fixed="left"
-          min-width="112"
+          min-width="300"
           :title="$t('m.User')"
+          header-align="center"
+          align="left"
         >
           <template v-slot="{ row }">
-            <span
-              ><a
-                @click="getUserHomeByUsername(row.uid, row.username)"
-                style="color:rgb(87, 163, 243);"
-                >{{ row.username }}</a
-              >
+            <avatar
+              :username="row.username"
+              :inline="true"
+              :size="37"
+              color="#FFF"
+              :src="row.avatar"
+              :title="row.username"
+            ></avatar>
+
+            <span style="float:right;text-align:right">
+              <a @click="getUserHomeByUsername(row.uid, row.username)">
+                <span class="contest-username"
+                  ><span class="female-flag" v-if="row.gender == 'female'"
+                    >Girl</span
+                  >{{ row.username }}</span
+                >
+                <span class="contest-school" v-if="row.school">{{
+                  row.school
+                }}</span>
+              </a>
             </span>
           </template>
         </vxe-table-column>
@@ -169,6 +186,7 @@
   </el-card>
 </template>
 <script>
+import Avatar from 'vue-avatar';
 import moment from 'moment';
 import { mapActions } from 'vuex';
 const Pagination = () => import('@/components/oj/common/Pagination');
@@ -181,6 +199,7 @@ export default {
   mixins: [ContestRankMixin],
   components: {
     Pagination,
+    Avatar,
   },
   data() {
     return {
@@ -290,6 +309,10 @@ export default {
       });
     },
     cellClassName({ row, rowIndex, column, columnIndex }) {
+      if (column.property === 'username' && row.userCellClassName) {
+        return row.userCellClassName;
+      }
+
       if (
         column.property !== 'id' &&
         column.property !== 'rating' &&
@@ -330,6 +353,9 @@ export default {
           }
         });
         dataRank[i].cellClassName = cellClass;
+        if (dataRank[i].gender == 'female') {
+          dataRank[i].userCellClassName = 'bg-female';
+        }
       });
       this.dataRank = dataRank;
     },
@@ -446,10 +472,30 @@ a.emphasis:hover {
   text-align: left;
   text-overflow: ellipsis;
   vertical-align: middle;
-  border-bottom: 1px solid #e9eaec;
 }
 /deep/.vxe-table .vxe-cell {
   padding-left: 5px !important;
   padding-right: 5px !important;
+}
+</style>
+<style>
+.contest-username {
+  display: block;
+  overflow: hidden;
+  color: black;
+  font-size: 13.5px;
+  font-weight: 550;
+}
+.contest-school {
+  font-size: 12px;
+  font-weight: normal;
+  color: dimgrey;
+}
+.female-flag {
+  margin-right: 20px !important;
+  background-color: rgb(255, 193, 10);
+  border-radius: 4px;
+  color: rgb(73, 36, 0);
+  padding: 1px 3px !important;
 }
 </style>

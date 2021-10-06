@@ -144,6 +144,7 @@
             field="problemId"
             :title="$t('m.Problem_ID')"
             width="100"
+            show-overflow
           ></vxe-table-column>
 
           <vxe-table-column
@@ -331,6 +332,7 @@ export default {
       { status: -2, count: 100 },
       { status: 4, count: 100 },
     ];
+    this.getTagList(this.query.oj);
     this.loadings.table = true;
     setTimeout(() => {
       // 将指定列设置为隐藏状态
@@ -355,7 +357,6 @@ export default {
     },
 
     getData() {
-      this.getTagList(this.query.oj);
       this.getProblemList();
     },
 
@@ -409,7 +410,6 @@ export default {
       this.currentProblemTitle = problem.title;
     },
     getProblemList() {
-      this.loadings.table = true;
       let queryParams = Object.assign({}, this.query);
       if (queryParams.difficulty == 'All') {
         queryParams.difficulty = '';
@@ -423,9 +423,9 @@ export default {
       } else if (!queryParams.oj) {
         queryParams.oj = 'Mine';
       }
+      this.loadings.table = true;
       api.getProblemList(this.limit, queryParams).then(
         (res) => {
-          this.loadings.table = false;
           this.total = res.data.data.total;
           this.problemList = res.data.data.records;
           if (this.isAuthenticated) {
@@ -454,6 +454,7 @@ export default {
                 });
             }
           }
+          this.loadings.table = false;
         },
         (res) => {
           this.loadings.table = false;
