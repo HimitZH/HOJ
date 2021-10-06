@@ -9,6 +9,7 @@
         <result column="school" property="school"></result>
         <result column="course" property="course"></result>
         <result column="number" property="number"></result>
+        <result column="gender" property="gender"></result>
         <result column="realname" property="realname"></result>
         <result column="cf_username" property="cfUsername"></result>
         <result column="github" property="github"></result>

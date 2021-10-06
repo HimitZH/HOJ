@@ -52,6 +52,10 @@ public class UserInfo implements Serializable {
     private String number;
 
     @TableField(updateStrategy = FieldStrategy.IGNORED)
+    @ApiModelProperty(value = "性别")
+    private String gender;
+
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     @ApiModelProperty(value = "真实姓名")
     private String realname;
 

@@ -157,6 +157,19 @@
           <el-form-item :label="$t('m.Github')">
             <el-input v-model="formProfile.github" :maxlength="255" />
           </el-form-item>
+          <el-form-item :label="$t('m.Gender')">
+            <el-radio-group v-model="formProfile.gender">
+              <el-radio label="male" border size="small">{{
+                $t('m.Male')
+              }}</el-radio>
+              <el-radio label="female" border size="small">{{
+                $t('m.Female')
+              }}</el-radio>
+              <el-radio label="secrecy" border size="small">{{
+                $t('m.Secrecy')
+              }}</el-radio>
+            </el-radio-group>
+          </el-form-item>
         </el-col>
       </el-row>
       <el-row>
@@ -213,6 +226,7 @@ export default {
         realname: '',
         username: '',
         cfUsername: '',
+        gender: '',
         nickname: '',
         signature: '',
         number: '',

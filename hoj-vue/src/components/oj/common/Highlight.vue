@@ -45,6 +45,6 @@ export default {
   padding: 0 !important;
 }
 .submission-detail pre {
-  padding-left: 55px !important;
+  padding-left: 50px !important;
 }
 </style>

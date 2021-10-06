@@ -157,12 +157,26 @@ public class AdminUserController {
         if (users != null) {
             for (List<String> user : users) {
                 String uuid = IdUtil.simpleUUID();
-                userInfoList.add(new UserInfo()
+                UserInfo userInfo = new UserInfo()
                         .setUuid(uuid)
                         .setUsername(user.get(0))
                         .setPassword(SecureUtil.md5(user.get(1)))
-                        .setEmail(StringUtils.isEmpty(user.get(2)) ? null : user.get(2))
-                        .setRealname(user.get(3)));
+                        .setEmail(StringUtils.isEmpty(user.get(2)) ? null : user.get(2));
+
+                if (user.size() >= 4) {
+                    userInfo.setRealname(user.get(3));
+                }
+
+                if (user.size() >= 5) {
+                    String gender = user.get(4);
+                    if ("male".equals(gender.toLowerCase()) || "0".equals(gender)) {
+                        userInfo.setGender("male");
+                    } else if ("female".equals(gender.toLowerCase()) || "1".equals(gender)) {
+                        userInfo.setGender("female");
+                    }
+                }
+
+                userInfoList.add(userInfo);
                 userRoleList.add(new UserRole()
                         .setRoleId(1002L)
                         .setUid(uuid));

@@ -41,6 +41,9 @@ public class UserRolesVo implements Serializable {
     @ApiModelProperty(value = "学号")
     private String number;
 
+    @ApiModelProperty(value = "性别")
+    private String gender;
+
     @ApiModelProperty(value = "真实姓名")
     private String realname;
 
