@@ -164,7 +164,10 @@ public class AdminUserController {
                         .setEmail(StringUtils.isEmpty(user.get(2)) ? null : user.get(2));
 
                 if (user.size() >= 4) {
-                    userInfo.setRealname(user.get(3));
+                    String realname = user.get(3);
+                    if (!StringUtils.isEmpty(realname)) {
+                        userInfo.setRealname(user.get(3));
+                    }
                 }
 
                 if (user.size() >= 5) {
@@ -173,6 +176,20 @@ public class AdminUserController {
                         userInfo.setGender("male");
                     } else if ("female".equals(gender.toLowerCase()) || "1".equals(gender)) {
                         userInfo.setGender("female");
+                    }
+                }
+
+                if (user.size() >= 6) {
+                    String nickname = user.get(5);
+                    if (!StringUtils.isEmpty(nickname)) {
+                        userInfo.setNickname(nickname);
+                    }
+                }
+
+                if (user.size() >= 7) {
+                    String school = user.get(6);
+                    if (!StringUtils.isEmpty(school)) {
+                        userInfo.setSchool(school);
                     }
                 }
 
