@@ -83,7 +83,7 @@
                 <span class="contest-username"
                   ><span class="female-flag" v-if="row.gender == 'female'"
                     >Girl</span
-                  >{{ row.username }}</span
+                  >{{ row[contest.rankShowName] }}</span
                 >
                 <span class="contest-school" v-if="row.school">{{
                   row.school
@@ -416,6 +416,11 @@ export default {
       if (newVal.length != 0) {
         this.addChartCategory(this.contestProblems);
       }
+    },
+  },
+  computed: {
+    contest() {
+      return this.$store.state.contest.contest;
     },
   },
 };

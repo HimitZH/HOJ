@@ -24,6 +24,9 @@ public class OIContestRankVo {
     @ApiModelProperty(value = "用户真实姓名")
     private String realname;
 
+    @ApiModelProperty(value = "昵称")
+    private String nickname;
+
     @ApiModelProperty(value = "性别")
     private String gender;
 

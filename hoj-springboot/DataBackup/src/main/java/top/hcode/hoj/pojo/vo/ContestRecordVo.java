@@ -53,6 +53,9 @@ public class ContestRecordVo implements Serializable {
     @ApiModelProperty(value = "真实姓名")
     private String realname;
 
+    @ApiModelProperty(value = "昵称")
+    private String nickname;
+
     @ApiModelProperty(value = "提交结果，0表示未AC通过不罚时，1表示AC通过，-1为未AC通过算罚时")
     private Integer status;
 

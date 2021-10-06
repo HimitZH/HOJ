@@ -126,6 +126,22 @@
             </el-form-item>
           </el-col>
 
+          <el-col :span="24">
+            <el-form-item :label="$t('m.Rank_Show_Name')" required>
+              <el-radio-group v-model="contest.rankShowName">
+                <el-radio label="username">{{
+                  $t('m.Show_Username')
+                }}</el-radio>
+                <el-radio label="nickname">{{
+                  $t('m.Show_Nickname')
+                }}</el-radio>
+                <el-radio label="realname">{{
+                  $t('m.Show_Realname')
+                }}</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+
           <el-col :md="8" :xs="24">
             <el-form-item :label="$t('m.Contest_Auth')" required>
               <el-select v-model="contest.auth">
@@ -250,6 +266,7 @@ export default {
         sealRankTime: '', //封榜时间
         auth: 0,
         openPrint: false,
+        rankShowName: 'username',
         openAccountLimit: false,
         accountLimitRule: '',
       },

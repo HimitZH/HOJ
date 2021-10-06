@@ -62,4 +62,7 @@ public class ContestVo implements Serializable {
 
     @ApiModelProperty(value = "封榜起始时间，一直到比赛结束，不刷新榜单")
     private Date sealRankTime;
+
+    @ApiModelProperty(value = "排行榜显示（username、nickname、realname）")
+    private String rankShowName;
 }

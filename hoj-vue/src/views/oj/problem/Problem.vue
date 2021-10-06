@@ -918,7 +918,10 @@ export default {
               result.problem.hint.toString()
             );
           }
+
           this.problemData = result;
+
+          this.loading = false;
 
           if (this.isAuthenticated) {
             let pidList = [result.problem.id];
@@ -957,7 +960,6 @@ export default {
           this.$nextTick((_) => {
             addCodeBtn();
           });
-          this.loading = false;
         },
         (err) => {
           this.loading = false;
