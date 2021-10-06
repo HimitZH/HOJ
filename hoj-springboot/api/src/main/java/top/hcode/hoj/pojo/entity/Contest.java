@@ -87,6 +87,9 @@ public class Contest implements Serializable {
     @ApiModelProperty(value = "账号限制规则 <prefix>**</prefix><suffix>**</suffix><start>**</start><end>**</end>")
     private String accountLimitRule;
 
+    @ApiModelProperty(value = "排行榜显示（username、nickname、realname）")
+    private String rankShowName;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 

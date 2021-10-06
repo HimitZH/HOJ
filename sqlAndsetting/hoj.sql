@@ -147,6 +147,7 @@ CREATE TABLE `contest` (
   `open_print` tinyint(1) DEFAULT '0' COMMENT '是否打开打印功能',
   `open_account_limit` tinyint(1) DEFAULT '0' COMMENT '是否开启账号限制',
   `account_limit_rule` mediumtext COMMENT '账号限制规则',
+  `rank_show_name` varchar(20) DEFAULT 'username' COMMENT '排行榜显示（username、nickname、realname）',
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`uid`),

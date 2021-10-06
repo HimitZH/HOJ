@@ -84,7 +84,7 @@
                 <span class="contest-username"
                   ><span class="female-flag" v-if="row.gender == 'female'"
                     >Girl</span
-                  >{{ row.username }}</span
+                  >{{ row[contest.rankShowName] }}</span
                 >
                 <span class="contest-school" v-if="row.school">{{
                   row.school
@@ -240,6 +240,11 @@ export default {
   mounted() {
     this.contestID = this.$route.params.contestID;
     this.getContestRankData(1);
+  },
+  computed: {
+    contest() {
+      return this.$store.state.contest.contest;
+    },
   },
   methods: {
     ...mapActions(['getContestProblems']),
