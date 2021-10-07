@@ -117,7 +117,6 @@ public class JudgeStrategy {
             result.put("errMsg", compileError.getStderr());
             result.put("time", 0);
             result.put("memory", 0);
-            log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生编译的异常-------------------->{}", compileError);
         } catch (Exception e) {
             result.put("code", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
             result.put("errMsg", "Oops, something has gone wrong with the judgeServer. Please report this to administrator.");

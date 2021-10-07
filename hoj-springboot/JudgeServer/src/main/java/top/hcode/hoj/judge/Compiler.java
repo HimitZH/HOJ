@@ -21,7 +21,7 @@ public class Compiler {
     public static String compile(Constants.CompileConfig compileConfig, String code, String language) throws SystemError, CompileError, SubmitError {
 
         if (compileConfig == null) {
-            throw new CompileError("Unsupported language " + language, null, null);
+            throw new RuntimeException("Unsupported language " + language);
         }
 
         // 调用安全沙箱进行编译
@@ -52,11 +52,11 @@ public class Compiler {
         return fileId;
     }
 
-    public static Boolean compileSpj(String code, Long pid, String spjLanguage) throws SystemError, CompileError {
+    public static Boolean compileSpj(String code, Long pid, String spjLanguage) throws SystemError {
 
         Constants.CompileConfig spjCompiler = Constants.CompileConfig.getCompilerByLanguage("SPJ-" + spjLanguage);
         if (spjCompiler == null) {
-            throw new CompileError("Unsupported language " + spjLanguage, null, null);
+            throw new RuntimeException("Unsupported language " + spjLanguage);
         }
 
         boolean copyOutExe = true;

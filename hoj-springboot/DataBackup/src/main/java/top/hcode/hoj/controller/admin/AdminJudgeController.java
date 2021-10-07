@@ -69,8 +69,11 @@ public class AdminJudgeController {
     public CommonResult rejudge(@RequestParam("submitId") Long submitId) {
         Judge judge = judgeService.getById(submitId);
 
+        boolean isContestSubmission = judge.getCid() != 0;
+        boolean resetContestRecordResult = true;
+
         // 如果是非比赛题目
-        if (judge.getCid() == 0 && judge.getCpid() == 0) {
+        if (!isContestSubmission) {
             // 重判前，需要将该题目对应记录表一并更新
             // 如果该题已经是AC通过状态，更新该题目的用户ac做题表 user_acproblem
             if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus().intValue()) {
@@ -78,6 +81,11 @@ public class AdminJudgeController {
                 userAcproblemQueryWrapper.eq("submit_id", judge.getSubmitId());
                 userAcproblemService.remove(userAcproblemQueryWrapper);
             }
+        } else {
+            // 将对应比赛记录设置成默认值
+            UpdateWrapper<ContestRecord> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq("submit_id", submitId).setSql("status=null,score=null");
+            resetContestRecordResult = contestRecordService.update(updateWrapper);
         }
 
         // 清除该提交对应的测试点结果
@@ -85,7 +93,6 @@ public class AdminJudgeController {
         judgeCaseQueryWrapper.eq("submit_id", submitId);
         judgeCaseService.remove(judgeCaseQueryWrapper);
 
-        boolean hasSubmitIdRemoteRejudge = isHasSubmitIdRemoteRejudge(judge.getVjudgeSubmitId(), judge.getStatus());
 
         // 设置默认值
         judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus()); // 开始进入判题队列
@@ -97,15 +104,19 @@ public class AdminJudgeController {
                 .setJudger(null)
                 .setOiRankScore(null)
                 .setScore(null);
+
         boolean result = judgeService.updateById(judge);
-        if (result) {
+
+        boolean hasSubmitIdRemoteRejudge = isHasSubmitIdRemoteRejudge(judge.getVjudgeSubmitId(), judge.getStatus());
+
+        if (result && resetContestRecordResult) {
             // 调用判题服务
             Problem problem = problemService.getById(judge.getPid());
             if (problem.getIsRemote()) { // 如果是远程oj判题
                 remoteJudgeDispatcher.sendTask(judge, judgeToken, problem.getProblemId(),
-                        judge.getCid() != 0, 1, hasSubmitIdRemoteRejudge);
+                        isContestSubmission, 1, hasSubmitIdRemoteRejudge);
             } else {
-                judgeDispatcher.sendTask(judge, judgeToken, judge.getCid() != 0, 1);
+                judgeDispatcher.sendTask(judge, judgeToken, isContestSubmission, 1);
             }
             return CommonResult.successResponse(judge, "重判成功！该提交已进入判题队列！");
         } else {
