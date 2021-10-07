@@ -769,7 +769,7 @@ export default {
         : this.$i18n.t('m.Status');
     },
     rejudgeColumnVisible() {
-      return this.isSuperAdmin && !this.contestID;
+      return this.isSuperAdmin;
     },
     scoreColumnVisible() {
       return (

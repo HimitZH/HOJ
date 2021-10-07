@@ -41,7 +41,6 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
     @Override
     @Async
-    @Transactional
     public void UpdateContestRecord(String uid, Integer score, Integer status, Long submitId, Long cid, Integer useTime) {
         UpdateWrapper<ContestRecord> updateWrapper = new UpdateWrapper<>();
         // 如果是AC
@@ -72,7 +71,6 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         }
     }
 
-    @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
     public void tryAgainUpdate(UpdateWrapper<ContestRecord> updateWrapper) {
         boolean retryable;
         int attemptNumber = 0;
@@ -88,7 +86,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                     break;
                 }
                 try {
-                    Thread.sleep(300);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     log.error(e.getMessage());
                 }

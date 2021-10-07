@@ -71,12 +71,12 @@
         >
           <template v-slot="{ row }">
             <avatar
-              :username="row.username"
+              :username="row[contest.rankShowName]"
               :inline="true"
               :size="37"
               color="#FFF"
               :src="row.avatar"
-              :title="row.username"
+              :title="row[contest.rankShowName]"
             ></avatar>
 
             <span style="float:right;text-align:right">
