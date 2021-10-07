@@ -124,6 +124,8 @@ public class RemoteJudgeReceiver {
             if (isHasSubmitIdRemoteReJudge) {
                 ToJudge toJudge = new ToJudge();
                 toJudge.setJudge(judge)
+                        .setUsername(judge.getVjudgeUsername()) // 初始化原来的提交账号参数
+                        .setPassword(judge.getVjudgePassword())
                         .setToken(token)
                         .setRemoteJudgeProblem(remoteJudgeProblem)
                         .setIsHasSubmitIdRemoteReJudge(true)
