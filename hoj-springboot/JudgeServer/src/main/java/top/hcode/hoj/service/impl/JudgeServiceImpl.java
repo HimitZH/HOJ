@@ -85,7 +85,6 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
     public void updateOtherTable(Long submitId, Integer status, Long cid, String uid, Long pid, Integer score, Integer useTime) {
 
         if (cid == 0) { // 非比赛提交
@@ -99,7 +98,6 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
             }
 
         } else { //如果是比赛提交
-
             contestRecordService.UpdateContestRecord(uid, score, status, submitId, cid, useTime);
         }
     }
