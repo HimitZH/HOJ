@@ -166,7 +166,8 @@ export const m = {
   Enter_The_Problem_Display_ID_in_the_Contest:'Enter The Problem Display ID in the Contest',
   Problem_ID_is_required:'Problem ID is required',
   The_Problem_Display_ID_in_the_Contest_is_required:'The Problem Display ID in the Contest is required',
-
+  Balloon_Color:'Balloon Color',
+  Update_Balloon_Color_Successfully:'Update the Balloon color of the problem successfully!',
 
   // /views/admin/problem/Problem.vue
   Problem_Display_ID: 'Problem Display ID',

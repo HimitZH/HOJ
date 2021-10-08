@@ -63,6 +63,39 @@
         <vxe-table-column
           field="username"
           fixed="left"
+          v-if="!isMobileView"
+          min-width="300"
+          :title="$t('m.User')"
+          header-align="center"
+          align="left"
+        >
+          <template v-slot="{ row }">
+            <avatar
+              :username="row[contest.rankShowName]"
+              :inline="true"
+              :size="37"
+              color="#FFF"
+              :src="row.avatar"
+              :title="row[contest.rankShowName]"
+            ></avatar>
+
+            <span style="float:right;text-align:right">
+              <a @click="getUserHomeByUsername(row.uid, row.username)">
+                <span class="contest-username"
+                  ><span class="female-flag" v-if="row.gender == 'female'"
+                    >Girl</span
+                  >{{ row[contest.rankShowName] }}</span
+                >
+                <span class="contest-school" v-if="row.school">{{
+                  row.school
+                }}</span>
+              </a>
+            </span>
+          </template>
+        </vxe-table-column>
+        <vxe-table-column
+          field="username"
+          v-else
           min-width="300"
           :title="$t('m.User')"
           header-align="center"
@@ -130,6 +163,24 @@
           :key="problem.displayId"
         >
           <template v-slot:header>
+            <span style="vertical-align: top;" v-if="problem.color">
+              <svg
+                t="1633685184463"
+                class="icon"
+                viewBox="0 0 1088 1024"
+                version="1.1"
+                xmlns="http://www.w3.org/2000/svg"
+                p-id="5840"
+                width="25"
+                height="25"
+              >
+                <path
+                  d="M575.872 849.408c-104.576 0-117.632-26.56-119.232-31.808-6.528-22.528 32.896-70.592 63.744-96.768l-1.728-2.624c137.6-42.688 243.648-290.112 243.648-433.472A284.544 284.544 0 0 0 478.016 0a284.544 284.544 0 0 0-284.288 284.736c0 150.4 116.352 415.104 263.744 438.336-25.152 29.568-50.368 70.784-39.104 108.928 12.608 43.136 62.72 63.232 157.632 63.232 7.872 0 11.52 9.408 4.352 19.52-21.248 29.248-77.888 63.424-167.68 63.424V1024c138.944 0 215.936-74.816 215.936-126.528a46.72 46.72 0 0 0-16.32-36.608 56.32 56.32 0 0 0-36.416-11.456zM297.152 297.472c0 44.032-38.144 25.344-38.144-38.656 0-108.032 85.248-195.712 190.592-195.712 62.592 0 81.216 39.232 38.08 39.232-105.152 0.064-190.528 87.04-190.528 195.136z"
+                  :fill="problem.color"
+                  p-id="5841"
+                ></path>
+              </svg>
+            </span>
             <span
               ><a
                 @click="getContestProblemById(problem.displayId)"
@@ -422,6 +473,9 @@ export default {
     contest() {
       return this.$store.state.contest.contest;
     },
+    isMobileView() {
+      return window.screen.width < 768;
+    },
   },
 };
 </script>
@@ -481,26 +535,5 @@ a.emphasis:hover {
 /deep/.vxe-table .vxe-cell {
   padding-left: 5px !important;
   padding-right: 5px !important;
-}
-</style>
-<style>
-.contest-username {
-  display: block;
-  overflow: hidden;
-  color: black;
-  font-size: 13.5px;
-  font-weight: 550;
-}
-.contest-school {
-  font-size: 12px;
-  font-weight: normal;
-  color: dimgrey;
-}
-.female-flag {
-  margin-right: 20px !important;
-  background-color: rgb(255, 193, 10);
-  border-radius: 4px;
-  color: rgb(73, 36, 0);
-  padding: 1px 3px !important;
 }
 </style>

@@ -144,6 +144,22 @@
                 contestProblemMap[row.id]['displayTitle']
               }}
             </p>
+            <span v-if="contestProblemMap[row.id]">
+              {{ $t('m.Balloon_Color') }}：<el-color-picker
+                v-model="contestProblemMap[row.id].color"
+                show-alpha
+                :predefine="predefineColors"
+                size="small"
+                style="vertical-align: middle;"
+                @change="
+                  changeContestProblemColor(
+                    contestProblemMap[row.id].id,
+                    contestProblemMap[row.id].color
+                  )
+                "
+              >
+              </el-color-picker>
+            </span>
             <span v-else>{{ row.title }}</span>
           </template>
         </vxe-table-column>
@@ -357,6 +373,16 @@ export default {
       otherOJProblemId: '',
       REMOTE_OJ: {},
       displayId: '',
+
+      predefineColors: [
+        '#ff4500',
+        '#ff8c00',
+        '#ffd700',
+        '#90ee90',
+        '#00ced1',
+        '#1e90ff',
+        '#c71585',
+      ],
     };
   },
   mounted() {
@@ -551,6 +577,15 @@ export default {
           this.addRemoteOJproblemLoading = false;
         }
       );
+    },
+    changeContestProblemColor(id, color) {
+      let data = {
+        id: id,
+        color: color,
+      };
+      api.admin_setContestProblemInfo(data).then((res) => {
+        myMessage.success(this.$i18n.t('m.Update_Balloon_Color_Successfully'));
+      });
     },
   },
   watch: {

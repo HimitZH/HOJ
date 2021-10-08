@@ -17,6 +17,7 @@ const state = {
     table: true,
     chart: true,
   },
+  disPlayIdMapColor:{} // 展示id对应的气球颜色
 }
 
 const getters = {
@@ -154,7 +155,12 @@ const mutations = {
     state.forceUpdate = payload.value
   },
   changeContestProblems(state, payload) {
-    state.contestProblems = payload.contestProblems
+    state.contestProblems = payload.contestProblems;
+    let tmp={};
+    for(var j = 0,len = payload.contestProblems.length; j < len; j++){
+      tmp[payload.contestProblems[j].displayId] = payload.contestProblems[j].color;
+    }
+    state.disPlayIdMapColor = tmp;
   },
   changeContestRankLimit(state, payload) {
     state.rankLimit = payload.rankLimit

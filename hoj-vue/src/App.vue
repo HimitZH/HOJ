@@ -261,6 +261,27 @@ a:hover {
 .home-title {
   color: #409eff;
 }
+
+.contest-username {
+  display: block;
+  overflow: hidden;
+  color: black;
+  font-size: 13.5px;
+  font-weight: 550;
+}
+.contest-school {
+  font-size: 12px;
+  font-weight: normal;
+  color: dimgrey;
+}
+.female-flag {
+  margin-right: 20px !important;
+  background-color: rgb(255, 193, 10);
+  border-radius: 4px;
+  color: rgb(73, 36, 0);
+  padding: 1px 3px !important;
+}
+
 .bg-female {
   background-color: rgb(255, 153, 203);
 }
