@@ -440,9 +440,6 @@ export default {
 </script>
 <style scoped>
 @media screen and (min-width: 768px) {
-  .contest-body {
-    padding: 0 3%;
-  }
   .contest-time .left {
     text-align: left;
   }

@@ -166,6 +166,8 @@ export const m = {
   Enter_The_Problem_Display_ID_in_the_Contest:'请输入该题目在比赛中展示ID',
   Problem_ID_is_required:'题目ID不能为空',
   The_Problem_Display_ID_in_the_Contest_is_required:'题目在比赛中的展示ID不能为空',
+  Balloon_Color:'气球颜色',
+  Update_Balloon_Color_Successfully:'更新该题气球颜色成功！',
 
   // /views/admin/problem/Problem.vue
   Problem_Display_ID: '题目展示ID',

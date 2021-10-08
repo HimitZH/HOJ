@@ -44,6 +44,8 @@ public class ContestProblem implements Serializable {
     @ApiModelProperty(value = "该题目在比赛中的标题，默认为原名字")
     private String displayTitle;
 
+    @ApiModelProperty(value = "气球的颜色")
+    private String color;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;

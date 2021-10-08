@@ -82,6 +82,12 @@ public class UserInfo implements Serializable {
     @ApiModelProperty(value = "个性介绍")
     private String signature;
 
+    @ApiModelProperty(value = "头衔、称号")
+    private String titleName;
+
+    @ApiModelProperty(value = "头衔、称号的颜色")
+    private String titleColor;
+
     @ApiModelProperty(value = "0可用，-1不可用")
     private int status;
 
