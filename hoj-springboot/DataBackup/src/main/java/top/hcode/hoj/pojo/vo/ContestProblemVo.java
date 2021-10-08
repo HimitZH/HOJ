@@ -33,6 +33,9 @@ public class ContestProblemVo implements Serializable {
     @ApiModelProperty(value = "该题目在比赛中的标题，默认为原名字")
     private String displayTitle;
 
+    @ApiModelProperty(value = "该题目在比赛中的气球颜色")
+    private String color;
+
     @ApiModelProperty(value = "该题目的ac通过数")
     private Integer ac;
 
