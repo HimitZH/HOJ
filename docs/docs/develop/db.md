@@ -14,10 +14,15 @@ user_info表
 | course       | String       |      | 专业                 |
 | number       | String       |      | 学号                 |
 | realname     | String       |      | 真实名字             |
-| email        | Srting       |      | 邮箱                 |
+| email        | String       |      | 邮箱                 |
+| gender       | String       |      | 性别                 |
 | avatar       | String       |      | 头像图片地址         |
 | signature    | String       |      | 个性签名             |
-| cf_name      | String       |      | codeforces的username |
+| cf_username  | String       |      | codeforces的username |
+| blog         | String       |      | 博客地址             |
+| github       | String       |      | github地址           |
+| title_name   | String       |      | 称号、头衔           |
+| title_color  | String       |      | 称号、头衔的背景颜色 |
 | status       | int          |      | 0可用，1不可用       |
 | gmt_create   | datetime     |      | 创建时间             |
 | gmt_modified | datetime     |      | 修改时间             |
@@ -150,15 +155,15 @@ problem表
 
 problem_case表
 
-| 列名         | 实体属性类型 | 键          | 备注               |
-| ------------ | ------------ | ----------- | ------------------ |
-| id           | long         | primary key | auto_increment     |
-| pid          | long         | 外键        | 题目id             |
-| input        | String       |             | 测试样例的输入     |
-| output       | String       |             | 测试样例的输出     |
-| status       | String       |             | 状态0可用，1不可用 |
-| gmt_create   | datetime     |             | 创建时间           |
-| gmt_modified | datetime     |             | 修改时间           |
+| 列名         | 实体属性类型 | 键          | 备注                 |
+| ------------ | ------------ | ----------- | -------------------- |
+| id           | long         | primary key | auto_increment       |
+| pid          | long         | 外键        | 题目id               |
+| input        | String       |             | 测试样例的输入文件名 |
+| output       | String       |             | 测试样例的输出文件名 |
+| status       | String       |             | 状态0可用，1不可用   |
+| gmt_create   | datetime     |             | 创建时间             |
+| gmt_modified | datetime     |             | 修改时间             |
 
 
 
@@ -197,6 +202,7 @@ language表
 | template        | String       |      | A+B题目模板                  |
 | code_template   | String       |      | 语言对应的代码模板           |
 | is_spj          | boolean      |      | 是否可作为特殊判题的一种语言 |
+| oj              | String       |      | 该语言属于哪个oj，自身oj用ME |
 | gmt_create      | datetime     |      | 创建时间                     |
 | gmt_modified    | datetime     |      | 修改时间                     |
 
@@ -270,29 +276,29 @@ judge表
 | judger        | String       |             | 判题机ip                         |
 | ip            | String       |             | 提交者ip                         |
 | cid           | int          |             | 题目来源的比赛id，默认为0        |
-| version       | int          |             | 乐观锁                           |
+| version       | int          |             | 乐观锁（废弃）                   |
 | oi_rank_score | int          |             | oi排行榜得分                     |
 | gmt_create    | datetime     |             | 创建时间                         |
 | gmt_modified  | datetime     |             | 修改时间                         |
 
  
 
-jugdeCase表 评测单个样例结果表
+jugde_case表 评测单个样例结果表
 
-| 列名         | 实体属性类型 | 键   | 备注                     |
-| ------------ | ------------ | ---- | ------------------------ |
-| submit_id    | long         | 外键 | 提交id                   |
-| problemId    | String       | 外键 | 题目id                   |
-| userId       | String       | 外键 | 提交用户的id             |
-| Status       | String       |      | 单个样例评测结果         |
-| time         | int          |      | 运行时间                 |
-| memory       | int          |      | 运行内存                 |
-| case_id      | String       |      | 测试样例id               |
-| input_data   | String       |      | 样例输入，比赛不可看     |
-| Output_data  | String       |      | 样例输出，比赛不可看     |
-| user_output  | Srting       |      | 用户样例输出，比赛不可看 |
-| gmt_create   | datetime     |      | 创建时间                 |
-| gmt_modified | datetime     |      | 修改时间                 |
+| 列名         | 实体属性类型 | 键   | 备注             |
+| ------------ | ------------ | ---- | ---------------- |
+| submit_id    | long         | 外键 | 提交id           |
+| problemId    | String       | 外键 | 题目id           |
+| userId       | String       | 外键 | 提交用户的id     |
+| Status       | String       |      | 单个样例评测结果 |
+| time         | int          |      | 运行时间         |
+| memory       | int          |      | 运行内存         |
+| case_id      | String       |      | 测试样例id       |
+| input_data   | String       |      | 样例输入的文件名 |
+| Output_data  | String       |      | 样例输出的文件名 |
+| user_output  | Srting       |      | 暂时用作信息提示 |
+| gmt_create   | datetime     |      | 创建时间         |
+| gmt_modified | datetime     |      | 修改时间         |
 
  
 
@@ -368,42 +374,45 @@ ALTER EVENT contest_event ON  COMPLETION PRESERVE DISABLE;  -- 关闭事件
 
 contest表
 
-| 列名           | 实体属性类型 | 键   | 备注                                                  |
-| -------------- | ------------ | ---- | ----------------------------------------------------- |
-| id             | long         | 主键 | auto_increment  1000起步                              |
-| uid            | String       | 外键 | 创建者id                                              |
-| author         | String       |      | 比赛创建者的用户名                                    |
-| title          | String       |      | 比赛标题                                              |
-| type           | int          |      | Acm赛制或者Rating                                     |
-| source         | int          |      | 比赛来源，原创为0，克隆赛为比赛id                     |
-| auth           | int          |      | 0为公开赛，1为私有赛（有密码），3为保护赛（有密码）。 |
-| pwd            | string       |      | 比赛密码                                              |
-| start_time     | datetime     |      | 开始时间                                              |
-| end_time       | datetime     |      | 结束时间                                              |
-| duration       | long         |      | 比赛时长（s）                                         |
-| description    | Srting       |      | 比赛说明                                              |
-| seal_rank      | boolean      |      | 是否开启封榜                                          |
-| seal_rank_time | datetime     |      | 封榜起始时间，一直到比赛结束，不刷新榜单。            |
-| status         | int          |      | -1为未开始，0为进行中，1为已结束                      |
-| visible        | boolean      |      | 是否可见                                              |
-| gmt_create     | datetime     |      | 创建时间                                              |
-| gmt_modified   | datetime     |      | 修改时间                                              |
-
- 
+| 列名               | 实体属性类型 | 键   | 备注                                                  |
+| ------------------ | ------------ | ---- | ----------------------------------------------------- |
+| id                 | long         | 主键 | auto_increment  1000起步                              |
+| uid                | String       | 外键 | 创建者id                                              |
+| author             | String       |      | 比赛创建者的用户名                                    |
+| title              | String       |      | 比赛标题                                              |
+| type               | int          |      | Acm赛制或者Rating                                     |
+| source             | int          |      | 比赛来源，原创为0，克隆赛为比赛id                     |
+| auth               | int          |      | 0为公开赛，1为私有赛（有密码），3为保护赛（有密码）。 |
+| pwd                | string       |      | 比赛密码                                              |
+| start_time         | datetime     |      | 开始时间                                              |
+| end_time           | datetime     |      | 结束时间                                              |
+| duration           | long         |      | 比赛时长（s）                                         |
+| description        | Srting       |      | 比赛说明                                              |
+| seal_rank          | boolean      |      | 是否开启封榜                                          |
+| seal_rank_time     | datetime     |      | 封榜起始时间，一直到比赛结束，不刷新榜单。            |
+| status             | int          |      | -1为未开始，0为进行中，1为已结束                      |
+| visible            | boolean      |      | 是否可见                                              |
+| open_print         | boolean      |      | 是否打开打印功能                                      |
+| open_account_limit | boolean      |      | 是否开启账号限制                                      |
+| account_limit_rule | String       |      | 账号限制规则                                          |
+| rank_show_name     | String       |      | 排行榜显示（username、nickname、realname）            |
+| gmt_create         | datetime     |      | 创建时间                                              |
+| gmt_modified       | datetime     |      | 修改时间                                              |
 
  
 
 contest_problem表
 
-| 列名         | 实体属性类型 | 键   | 备注                   |
-| ------------ | ------------ | ---- | ---------------------- |
-| id           | long         | 主键 | auto_increment         |
-| display_id   | String       |      | 展示的id               |
-| cid          | int          | 外键 | 比赛id                 |
-| pid          | int          | 外键 | 题目id                 |
-| cp_name      | String       |      | 用于当场比赛的题目标题 |
-| gmt_create   | datetime     |      | 创建时间               |
-| gmt_modified | datetime     |      | 修改时间               |
+| 列名          | 实体属性类型 | 键   | 备注                               |
+| ------------- | ------------ | ---- | ---------------------------------- |
+| id            | long         | 主键 | auto_increment                     |
+| display_id    | String       |      | 展示的id                           |
+| cid           | long         | 外键 | 比赛id                             |
+| pid           | long         | 外键 | 题目id                             |
+| display_title | String       |      | 该题目在比赛中的标题，默认为原名字 |
+| color         | String       |      | 气球颜色，不设置则不显示           |
+| gmt_create    | datetime     |      | 创建时间                           |
+| gmt_modified  | datetime     |      | 修改时间                           |
 
  
 
@@ -412,20 +421,20 @@ contest_register表 比赛报名表
 | 列名         | 实体属性类型 | 键   | 备注                       |
 | ------------ | ------------ | ---- | -------------------------- |
 | id           | long         | 主键 | auto_increment             |
-| cid          | int          | 外键 | 比赛id                     |
-| uid          | int          | 外键 | 用户id                     |
+| cid          | long         | 外键 | 比赛id                     |
+| uid          | String       | 外键 | 用户id                     |
 | Status       | int          |      | 默认为0表示正常，1为失效。 |
 | gmt_create   | datetime     |      | 创建时间                   |
 | gmt_modified | datetime     |      | 修改时间                   |
 
 
 
-contest_score表 rating赛制中获得的分数更改记录表
+contest_score表 rating赛制中获得的分数更改记录表（未使用）
 
 | 列名         | 实体属性类型 | 键   | 备注              |
 | ------------ | ------------ | ---- | ----------------- |
 | id           | long         | 主键 | auto_increment    |
-| cid          | int          | 外键 | 比赛id            |
+| cid          | long         | 外键 | 比赛id            |
 | last         | int          |      | 比赛前的score得分 |
 | change       | int          |      | Score比分变化     |
 | now          | int          |      | 现在的score       |
@@ -439,7 +448,7 @@ contest_record表 比赛记录表
 | 列名         | 实体属性类型 | 键   | 备注                                                         |
 | ------------ | ------------ | ---- | ------------------------------------------------------------ |
 | id           | long         | 主键 | auto_increment                                               |
-| cid          | int          | 外键 | 比赛id                                                       |
+| cid          | long         | 外键 | 比赛id                                                       |
 | uid          | String       | 外键 | 用户id                                                       |
 | pid          | int          | 外键 | 题目id                                                       |
 | cpid         | int          | 外键 | 比赛中的题目id                                               |
@@ -447,15 +456,32 @@ contest_record表 比赛记录表
 | display_id   | String       |      | 比赛展示的id                                                 |
 | username     | String       |      | 用户名                                                       |
 | realname     | String       |      | 真实姓名                                                     |
-| status       | String       |      | 提交结果，0表示未AC通过不罚时，1表示AC通过，-1为未AC通过算罚时 |
+| status       | int          |      | 提交结果，0表示未AC通过不罚时，1表示AC通过，-1为未AC通过算罚时 |
 | time         | int          |      | 提交时间，为提交时间减去比赛时间，时间戳                     |
 | score        | int          |      | OI比赛得分                                                   |
-| first_blood  | Boolean      |      | 是否为一血AC                                                 |
+| first_blood  | Boolean      |      | 是否为一血AC（废弃）                                         |
 | checked      | Boolean      |      | AC是否已校验                                                 |
 | gmt_create   | datetime     |      | 创建时间                                                     |
 | gmt_modified | datetime     |      | 修改时间                                                     |
 
- announcement表 
+ 
+
+contest_print表 比赛打印表
+
+| 列名         | 实体属性类型 | 键   | 备注               |
+| ------------ | ------------ | ---- | ------------------ |
+| id           | long         | 主键 | auto_increment     |
+| cid          | long         | 外键 | 比赛id             |
+| username     | String       |      | 提交打印文本的用户 |
+| realname     | String       |      | 真实姓名           |
+| content      | String       |      | 需要打印的文本内容 |
+| status       | int          |      | 状态 是否已打印    |
+| gmt_create   | datetime     |      | 创建时间           |
+| gmt_modified | datetime     |      | 修改时间           |
+
+
+
+announcement表 
 
 | 列名         | 实体属性类型 | 键   | 备注                                           |
 | ------------ | ------------ | ---- | ---------------------------------------------- |
@@ -613,6 +639,56 @@ reply表
 | gmt_create   | datetime     |      | 创建时间                               |
 | gmt_modified | datetime     |      | 修改时间                               |
 
+
+
+## 站内消息模块
+
+admin_sys_notice表
+
+| 列名         | 实体属性类型 | 键   | 备注                                                         |
+| ------------ | ------------ | ---- | ------------------------------------------------------------ |
+| id           | int          | 主键 | auto_increment                                               |
+| title        | String       |      | 通知标题                                                     |
+| content      | String       |      | 通知内容                                                     |
+| type         | String       |      | 发给哪些用户类型,例如全部用户All，指定单个用户Single，管理员Admin |
+| state        | boolean      |      | 是否已被拉取过，如果已经拉取过，就无需再次拉取               |
+| recipient_id | String       | 外键 | 接受通知的用户的id，如果type为single，那么recipient 为该用户的id;否则recipient为null |
+| admin_id     | String       | 外键 | 发布通知的管理员id                                           |
+| gmt_create   | datetime     |      | 创建时间                                                     |
+| gmt_modified | datetime     |      | 修改时间                                                     |
+
+user_sys_notice表
+
+| 列名          | 实体属性类型 | 键   | 备注                                |
+| ------------- | ------------ | ---- | ----------------------------------- |
+| id            | int          | 主键 | auto_increment                      |
+| sys_notice_id | long         | 外键 | 系统通知的id                        |
+| recipient_id  | String       | 外键 | 接受通知的用户的id                  |
+| type          | String       |      | 消息类型，系统通知Sys、我的信息Mine |
+| state         | boolean      |      | 是否已读                            |
+| gmt_create    | datetime     |      | 创建时间                            |
+| gmt_modified  | datetime     |      | 修改时间                            |
+
+
+
+msg_remind表
+
+| 列名           | 实体属性类型 | 键   | 备注                                                         |
+| -------------- | ------------ | ---- | ------------------------------------------------------------ |
+| id             | int          | 主键 | auto_increment                                               |
+| action         | String       |      | 动作类型，如点赞讨论帖Like_Post、点赞评论Like_Discuss、评论Discuss、回复Reply等 |
+| source_id      | int          |      | 消息来源id，讨论id或比赛id                                   |
+| source_type    | String       |      | 事件源类型：'Discussion'、'Contest'等                        |
+| source_content | String       |      | 事件源的内容，比如回复的内容，回复的评论等等,不超过250字符，超过使用... |
+| quote_id       | int          |      | 事件引用上一级评论或回复id                                   |
+| quote_type     | String       |      | 事件引用上一级的类型：Comment、Reply                         |
+| url            | String       |      | 事件所发生的地点链接 url                                     |
+| recipient_id   | String       | 外键 | 接受通知的用户的id                                           |
+| sender_id      | String       | 外键 | 动作执行者的id                                               |
+| state          | boolean      |      | 是否已读                                                     |
+| gmt_create     | datetime     |      | 创建时间                                                     |
+| gmt_modified   | datetime     |      | 修改时间                                                     |
+
 ## 文件模块
 
 file表
@@ -649,3 +725,16 @@ judge_server表
 | is_remote       | boolean      |      | 是否为远程判题vj          |
 | gmt_create      | datetime     |      | 创建时间                  |
 | gmt_modified    | datetime     |      | 修改时间                  |
+
+remote_judge_account表
+
+| 列名         | 实体属性类型 | 键   | 备注               |
+| ------------ | ------------ | ---- | ------------------ |
+| id           | int          | 主键 | auto_increment     |
+| oj           | String       |      | vjudge交题的oj名字 |
+| username     | String       |      | vjudge登录的账号   |
+| password     | int          |      | vjudge登录的密码   |
+| status       | int          |      | 0可用，1不可用     |
+| version      | long         |      | 版本控制           |
+| gmt_create   | datetime     |      | 创建时间           |
+| gmt_modified | datetime     |      | 修改时间           |
