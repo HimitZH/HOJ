@@ -420,7 +420,7 @@ export default {
     applyToChart(rankData) {
       let [users, seriesData] = [[], []];
       rankData.forEach((rank) => {
-        users.push(rank.username);
+        users.push(rank[this.contest.rankShowName]);
         let info = rank.submissionInfo;
         // 提取出已AC题目的时间
         let timeData = [];
