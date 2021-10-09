@@ -443,7 +443,7 @@ export default {
           data.push([realTime, index + 1]);
         }
         seriesData.push({
-          name: rank.username,
+          name: rank[this.contest.rankShowName],
           type: 'line',
           data,
         });
