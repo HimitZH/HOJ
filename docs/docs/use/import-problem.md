@@ -96,11 +96,14 @@
 }
 ```
 
-## 二、导入qdoj的题目
+## 二、导入QDUOJ或FPS格式的题目
 
-请严格按照青岛oj的后台导出的压缩文件来上传。
+1. 请严格按照青岛oj的后台导出的压缩文件来上传。
+2. 请使用标准的FPS格式的题目数据文件(.xml)
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210530212411781.png)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/57c6518fb9fe426088c064d85dd110d3.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+
 
 ## 三、导入其它OJ题目
 
