@@ -1,8 +1,10 @@
 # 比赛介绍
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210523221519574.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/623ce2411bb54e31a8f9848143105d97.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
 
 
+
+**后台可以选择开启比赛赛制、是否封榜、是否开启打印功能、榜单显示用户何种信息、比赛权限等。**
 
 ## 两种赛制
 
@@ -36,3 +38,8 @@
 - **保护赛**：所有用户都可以查看比赛详情、比赛题目、比赛提交，比赛排行榜、比赛讨论等，但在比赛阶段提交需要提供该比赛的密码！
 - **私有赛**：仅支持有比赛密码的用户进入比赛，查看查看比赛详情、比赛题目、比赛提交，比赛排行榜、比赛讨论等，包括提交。
 
+
+
+## 比赛题目
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/2a8354a553d547d786e37d41050d3b95.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)

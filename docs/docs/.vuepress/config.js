@@ -60,6 +60,7 @@ module.exports = {
 					'use/import-problem',
 					'use/import-user',
 					'use/admin-user',
+					'use/notice-announcement',
 					'use/discussion-admin',
 					'use/multi-judgeserver',
 					'use/update-fe',
