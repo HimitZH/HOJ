@@ -346,12 +346,12 @@ export default {
       });
     },
     applyToChart(rankData) {
-      let [usernames, scores] = [[], []];
+      let [user, scores] = [[], []];
       rankData.forEach((ele) => {
-        usernames.push(ele.username);
+        user.push(ele[this.contest.rankShowName]);
         scores.push(ele.totalScore);
       });
-      this.options.xAxis[0].data = usernames;
+      this.options.xAxis[0].data = user;
       this.options.series[0].data = scores;
     },
     applyToTable(data) {
