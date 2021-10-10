@@ -160,7 +160,7 @@ public class DiscussionController {
             Integer num = (Integer) redisUtils.get(lockKey);
             if (num == null) {
                 redisUtils.set(lockKey, 1, 3600 * 24);
-            } else if (num > 5) {
+            } else if (num >= 5) {
                 return CommonResult.errorResponse("对不起，您今天发帖次数已超过5次，已被限制！", CommonResult.STATUS_FORBIDDEN);
             } else {
                 redisUtils.incr(lockKey, 1);
