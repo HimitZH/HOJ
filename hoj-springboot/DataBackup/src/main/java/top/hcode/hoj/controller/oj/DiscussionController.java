@@ -22,6 +22,8 @@ import top.hcode.hoj.service.impl.CategoryServiceImpl;
 import top.hcode.hoj.service.impl.DiscussionLikeServiceImpl;
 import top.hcode.hoj.service.impl.DiscussionReportServiceImpl;
 import top.hcode.hoj.service.impl.DiscussionServiceImpl;
+import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.utils.RedisUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -47,6 +49,9 @@ public class DiscussionController {
 
     @Autowired
     private DiscussionReportServiceImpl discussionReportService;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
     @GetMapping("/discussions")
     public CommonResult getDiscussionList(@RequestParam(value = "limit", required = false, defaultValue = "8") Integer limit,
@@ -87,7 +92,7 @@ public class DiscussionController {
         discussionQueryWrapper
                 .eq(!(admin && isAdmin), "status", 0)
                 .orderByDesc("top_priority")
-                .orderByDesc("gmt_modified")
+                .orderByDesc("gmt_create")
                 .orderByDesc("like_num")
                 .orderByDesc("view_num");
 
@@ -146,6 +151,21 @@ public class DiscussionController {
         // 获取当前登录的用户
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        // 除管理员外 其它用户都限制一天只能发帖5次
+        if (!SecurityUtils.getSubject().hasRole("root")
+                && !SecurityUtils.getSubject().hasRole("admin")
+                && !SecurityUtils.getSubject().hasRole("problem_admin")) {
+            String lockKey = Constants.Account.DISCUSSION_ADD_NUM_LOCK.getCode() + userRolesVo.getUid();
+            Long num = (Long) redisUtils.get(lockKey);
+            if (num == null) {
+                redisUtils.set(lockKey, 1, 3600 * 24);
+            } else if (num > 5) {
+                return CommonResult.errorResponse("对不起，您今天发帖次数已超过5次，已被限制！", CommonResult.STATUS_FORBIDDEN);
+            } else {
+                redisUtils.incr(lockKey, 1);
+            }
+        }
 
         discussion.setAuthor(userRolesVo.getUsername())
                 .setAvatar(userRolesVo.getAvatar())
