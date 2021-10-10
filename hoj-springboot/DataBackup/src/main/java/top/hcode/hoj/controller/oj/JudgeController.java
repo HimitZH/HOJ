@@ -29,6 +29,7 @@ import top.hcode.hoj.service.ProblemService;
 import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
+import top.hcode.hoj.utils.RedisUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -80,6 +81,9 @@ public class JudgeController {
     @Autowired
     private RemoteJudgeDispatcher remoteJudgeDispatcher;
 
+    @Autowired
+    private RedisUtils redisUtils;
+
 
     /**
      * @MethodName submitProblemJudge
@@ -91,12 +95,25 @@ public class JudgeController {
     @RequiresAuthentication
     @RequiresPermissions("submit")
     @RequestMapping(value = "/submit-problem-judge", method = RequestMethod.POST)
-    @Transactional(rollbackFor = Exception.class, isolation = Isolation.REPEATABLE_READ)
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult submitProblemJudge(@RequestBody ToJudgeDto judgeDto, HttpServletRequest request) {
 
         // 需要获取一下该token对应用户的数据
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        boolean isContestSubmission = judgeDto.getCid() != 0;
+
+        if (!isContestSubmission) { // 非比赛提交限制5秒提交一次
+            String lockKey = Constants.Account.SUBMIT_NON_CONTEST_LOCK.getCode() + userRolesVo.getUid();
+            boolean isRestricted = redisUtils.hasKey(lockKey);
+            if (isRestricted) {
+                return CommonResult.errorResponse("对不起，您的提交频率过快，请稍后再尝试！", CommonResult.STATUS_FORBIDDEN);
+            }
+            redisUtils.set(lockKey, 1, 5);
+        }
+
+
         // 将提交先写入数据库，准备调用判题服务器
         Judge judge = new Judge();
         judge.setShare(false) // 默认设置代码为单独自己可见
@@ -113,7 +130,7 @@ public class JudgeController {
         boolean updateContestRecord = true;
         int result = 0;
         // 如果比赛id不等于0，则说明为比赛提交，需要查询对应的contest_problem的主键
-        if (judgeDto.getCid() != 0) {
+        if (isContestSubmission) {
 
             // 首先判断一下比赛的状态是否是正在进行，结束状态都不能提交，比赛前比赛管理员可以提交
             Contest contest = contestService.getById(judgeDto.getCid());
@@ -204,11 +221,11 @@ public class JudgeController {
 
         // 将提交加入任务队列
         if (judgeDto.getIsRemote()) { // 如果是远程oj判题
-            remoteJudgeDispatcher.sendTask(judge, judgeToken, judge.getDisplayPid(), judge.getCid() != 0,
+            remoteJudgeDispatcher.sendTask(judge, judgeToken, judge.getDisplayPid(), isContestSubmission,
                     1, false);
 
         } else {
-            judgeDispatcher.sendTask(judge, judgeToken, judge.getCid() == 0, 1);
+            judgeDispatcher.sendTask(judge, judgeToken, isContestSubmission, 1);
         }
 
         return CommonResult.successResponse(judge, "代码提交成功！");
@@ -431,7 +448,7 @@ public class JudgeController {
                                      @RequestParam(value = "problemID", required = false) String searchPid,
                                      @RequestParam(value = "status", required = false) Integer searchStatus,
                                      @RequestParam(value = "username", required = false) String searchUsername,
-                                     @RequestParam(value = "completeProblemID",defaultValue = "false")Boolean completeProblemID,
+                                     @RequestParam(value = "completeProblemID", defaultValue = "false") Boolean completeProblemID,
                                      HttpServletRequest request) {
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
@@ -457,7 +474,7 @@ public class JudgeController {
         }
 
         IPage<JudgeVo> commonJudgeList = judgeService.getCommonJudgeList(limit, currentPage, searchPid,
-                searchStatus, searchUsername, uid,completeProblemID);
+                searchStatus, searchUsername, uid, completeProblemID);
 
 
         if (commonJudgeList.getTotal() == 0) { // 未查询到一条数据

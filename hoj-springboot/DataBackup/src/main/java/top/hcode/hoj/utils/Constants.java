@@ -135,7 +135,10 @@ public class Constants {
         CODE_CHANGE_EMAIL_LOCK("change-email-lock:"),
 
         ACM_RANK_CACHE("acm_rank_cache"),
-        OI_RANK_CACHE("oi_rank_cache");
+        OI_RANK_CACHE("oi_rank_cache"),
+
+        SUBMIT_NON_CONTEST_LOCK("submit_non_contest_lock:"),
+        DISCUSSION_ADD_NUM_LOCK("discussion_add_num_lock:");
 
         private final String code;
 
