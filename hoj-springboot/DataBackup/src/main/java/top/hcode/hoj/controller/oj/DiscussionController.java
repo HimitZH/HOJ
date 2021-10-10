@@ -157,13 +157,13 @@ public class DiscussionController {
                 && !SecurityUtils.getSubject().hasRole("admin")
                 && !SecurityUtils.getSubject().hasRole("problem_admin")) {
             String lockKey = Constants.Account.DISCUSSION_ADD_NUM_LOCK.getCode() + userRolesVo.getUid();
-            Long num = (Long) redisUtils.get(lockKey);
+            Integer num = (Integer) redisUtils.get(lockKey);
             if (num == null) {
-                redisUtils.set(lockKey, 1L, 3600 * 24);
+                redisUtils.set(lockKey, 1, 3600 * 24);
             } else if (num > 5) {
                 return CommonResult.errorResponse("对不起，您今天发帖次数已超过5次，已被限制！", CommonResult.STATUS_FORBIDDEN);
             } else {
-                redisUtils.incr(lockKey, 1L);
+                redisUtils.incr(lockKey, 1);
             }
         }
 
