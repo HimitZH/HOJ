@@ -25,6 +25,7 @@ import top.hcode.hoj.utils.Constants;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author: Himit_ZH
@@ -191,7 +192,7 @@ public class AdminJudgeController {
 
     public boolean isHasSubmitIdRemoteRejudge(Long vjudgeSubmitId, int status) {
         boolean isHasSubmitIdRemoteRejudge = false;
-        if (vjudgeSubmitId != null &&
+        if (Objects.nonNull(vjudgeSubmitId) &&
                 (status == Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus()
                         || status == Constants.Judge.STATUS_COMPILING.getStatus()
                         || status == Constants.Judge.STATUS_PENDING.getStatus()
