@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.JudgeMapper;
@@ -36,6 +37,7 @@ import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author: Himit_ZH
@@ -110,7 +112,11 @@ public class JudgeController {
             if (isRestricted) {
                 return CommonResult.errorResponse("对不起，您的提交频率过快，请稍后再尝试！", CommonResult.STATUS_FORBIDDEN);
             }
-            redisUtils.set(lockKey, 1, 5);
+            redisUtils.set(lockKey, 1, 8);
+        }
+
+        if (judgeDto.getCode().length() < 50 && !judgeDto.getLanguage().contains("Py")) {
+            return CommonResult.errorResponse("提交的代码是无效的，代码长度请不要低于50！", CommonResult.STATUS_FORBIDDEN);
         }
 
 
@@ -279,7 +285,7 @@ public class JudgeController {
         }
 
         boolean isHasSubmitIdRemoteRejudge = false;
-        if (judge.getVjudgeSubmitId() != null &&
+        if (Objects.nonNull(judge.getVjudgeSubmitId()) &&
                 (judge.getStatus().intValue() == Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus()
                         || judge.getStatus().intValue() == Constants.Judge.STATUS_PENDING.getStatus()
                         || judge.getStatus().intValue() == Constants.Judge.STATUS_JUDGING.getStatus()
