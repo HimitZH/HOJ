@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.pojo.entity.Judge;
@@ -36,6 +37,7 @@ public class RemoteJudgeGetResult {
     private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
 
     @Transactional
+    @Async
     public void sendTask(String remoteJudge, String username, String password, Long submitId, String uid,
                          Long cid, Long pid, Long resultSubmitId, String cookies) {
 
