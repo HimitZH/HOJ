@@ -11,12 +11,14 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.dao.*;
+import top.hcode.hoj.pojo.bo.EmailRuleBo;
 import top.hcode.hoj.pojo.dto.LoginDto;
 import top.hcode.hoj.pojo.dto.RegisterDto;
 import top.hcode.hoj.common.result.CommonResult;
@@ -81,6 +83,9 @@ public class AccountController {
     @Resource
     private AdminSysNoticeServiceImpl adminSysNoticeService;
 
+    @Resource
+    private EmailRuleBo emailRuleBo;
+
     /**
      * @MethodName getRegisterCode
      * @Params * @param null
@@ -89,12 +94,21 @@ public class AccountController {
      * @Since 2020/10/26
      */
     @RequestMapping(value = "/get-register-code", method = RequestMethod.GET)
-    public CommonResult getRegisterCode(@RequestParam(value = "email", required = true) String email) throws MessagingException {
+    public CommonResult getRegisterCode(@RequestParam(value = "email", required = true) String email) {
         if (!configVo.getRegister()) { // 需要判断一下网站是否开启注册
             return CommonResult.errorResponse("对不起！本站暂未开启注册功能！", CommonResult.STATUS_ACCESS_DENIED);
         }
         if (!emailService.isOk()) {
             return CommonResult.errorResponse("对不起！本站邮箱系统未配置，暂不支持注册！", CommonResult.STATUS_ACCESS_DENIED);
+        }
+        email = email.trim();
+        boolean isEmail = Validator.isEmail(email);
+        if (!isEmail) {
+            return CommonResult.errorResponse("对不起！您的邮箱格式不正确！", CommonResult.STATUS_FAIL);
+        }
+        boolean isBlackEmail = emailRuleBo.getBlackList().stream().anyMatch(email::endsWith);
+        if (isBlackEmail) {
+            return CommonResult.errorResponse("对不起！您的邮箱无法注册本网站！", CommonResult.STATUS_FORBIDDEN);
         }
         QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("email", email);
@@ -126,6 +140,7 @@ public class AccountController {
         boolean rightEmail = false;
         boolean rightUsername = false;
         if (!StringUtils.isEmpty(email)) {
+            email = email.trim();
             boolean isEmail = Validator.isEmail(email);
             if (!isEmail) {
                 rightEmail = false;
@@ -140,6 +155,7 @@ public class AccountController {
             }
         }
         if (!StringUtils.isEmpty(username)) {
+            username = username.trim();
             QueryWrapper<UserInfo> wrapper = new QueryWrapper<UserInfo>().eq("username", username);
             UserInfo user = userInfoDao.getOne(wrapper);
             if (user != null) {
@@ -259,7 +275,9 @@ public class AccountController {
         String uuid = IdUtil.simpleUUID();
         //为新用户设置uuid
         registerDto.setUuid(uuid);
-        registerDto.setPassword(SecureUtil.md5(registerDto.getPassword())); // 将密码MD5加密写入数据库
+        registerDto.setPassword(SecureUtil.md5(registerDto.getPassword().trim())); // 将密码MD5加密写入数据库
+        registerDto.setUsername(registerDto.getUsername().trim());
+        registerDto.setEmail(registerDto.getEmail().trim());
         //往user_info表插入数据
         int result1 = userInfoDao.addUser(registerDto);
         //往user_role表插入数据
@@ -622,7 +640,7 @@ public class AccountController {
                     .put("avatar", userRolesVo.getAvatar())
                     .put("email", userRolesVo.getEmail())
                     .put("number", userInfo.getNumber())
-                    .put("gender",userInfo.getGender())
+                    .put("gender", userInfo.getGender())
                     .put("school", userInfo.getSchool())
                     .put("course", userRolesVo.getCourse())
                     .put("signature", userInfo.getSignature())

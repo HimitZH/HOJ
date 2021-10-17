@@ -13,16 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ReplyDto;
-import top.hcode.hoj.pojo.entity.Comment;
-import top.hcode.hoj.pojo.entity.CommentLike;
-import top.hcode.hoj.pojo.entity.Discussion;
-import top.hcode.hoj.pojo.entity.Reply;
+import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.pojo.vo.CommentsVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.impl.CommentLikeServiceImpl;
-import top.hcode.hoj.service.impl.CommentServiceImpl;
-import top.hcode.hoj.service.impl.DiscussionServiceImpl;
-import top.hcode.hoj.service.impl.ReplyServiceImpl;
+import top.hcode.hoj.service.impl.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -50,6 +44,10 @@ public class CommentController {
 
     @Autowired
     private DiscussionServiceImpl discussionService;
+
+    @Autowired
+    private UserAcproblemServiceImpl userAcproblemService;
+
 
 
     @GetMapping("/comments")
@@ -107,6 +105,21 @@ public class CommentController {
         // 获取当前登录的用户
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        // 比赛外的评论 除管理员外 只有AC 10道以上才可评论
+        if (comment.getCid() == null ) {
+            if (!SecurityUtils.getSubject().hasRole("root")
+                    && !SecurityUtils.getSubject().hasRole("admin")
+                    && !SecurityUtils.getSubject().hasRole("problem_admin")) {
+                QueryWrapper<UserAcproblem> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
+                int userAcProblemCount = userAcproblemService.count(queryWrapper);
+
+                if (userAcProblemCount < 10) {
+                    return CommonResult.errorResponse("对不起，您暂时不能评论！请先去提交题目通过10道以上~", CommonResult.STATUS_FORBIDDEN);
+                }
+            }
+        }
 
         comment.setFromAvatar(userRolesVo.getAvatar())
                 .setFromName(userRolesVo.getUsername())

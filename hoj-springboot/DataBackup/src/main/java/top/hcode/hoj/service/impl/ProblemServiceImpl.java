@@ -54,7 +54,6 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     @Autowired
     private ProblemCaseServiceImpl problemCaseService;
 
-
     @Autowired
     private ProblemLanguageServiceImpl problemLanguageService;
 
