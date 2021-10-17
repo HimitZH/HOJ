@@ -12,21 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.Category;
-import top.hcode.hoj.pojo.entity.Discussion;
-import top.hcode.hoj.pojo.entity.DiscussionLike;
-import top.hcode.hoj.pojo.entity.DiscussionReport;
+import top.hcode.hoj.pojo.entity.*;
 import top.hcode.hoj.pojo.vo.DiscussionVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.impl.CategoryServiceImpl;
-import top.hcode.hoj.service.impl.DiscussionLikeServiceImpl;
-import top.hcode.hoj.service.impl.DiscussionReportServiceImpl;
-import top.hcode.hoj.service.impl.DiscussionServiceImpl;
+import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -52,6 +47,9 @@ public class DiscussionController {
 
     @Autowired
     private RedisUtils redisUtils;
+
+    @Autowired
+    private UserAcproblemServiceImpl userAcproblemService;
 
     @GetMapping("/discussions")
     public CommonResult getDiscussionList(@RequestParam(value = "limit", required = false, defaultValue = "8") Integer limit,
@@ -152,10 +150,19 @@ public class DiscussionController {
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        // 除管理员外 其它用户都限制一天只能发帖5次
+        // 除管理员外 其它用户需要AC20道题目以上才可发帖，同时限制一天只能发帖5次
         if (!SecurityUtils.getSubject().hasRole("root")
                 && !SecurityUtils.getSubject().hasRole("admin")
                 && !SecurityUtils.getSubject().hasRole("problem_admin")) {
+
+            QueryWrapper<UserAcproblem> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
+            int userAcProblemCount = userAcproblemService.count(queryWrapper);
+
+            if (userAcProblemCount < 20) {
+                return CommonResult.errorResponse("对不起，您暂时无权限发帖！请先去提交题目通过20道以上~", CommonResult.STATUS_FORBIDDEN);
+            }
+
             String lockKey = Constants.Account.DISCUSSION_ADD_NUM_LOCK.getCode() + userRolesVo.getUid();
             Integer num = (Integer) redisUtils.get(lockKey);
             if (num == null) {

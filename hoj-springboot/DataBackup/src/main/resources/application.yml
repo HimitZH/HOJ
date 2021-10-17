@@ -85,4 +85,3 @@ logging:
   config: classpath:logback-spring.xml
   file:
     path: /hoj/log/backend
-
