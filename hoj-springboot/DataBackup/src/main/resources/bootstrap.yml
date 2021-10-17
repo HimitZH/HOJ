@@ -37,3 +37,4 @@ spring:
 service-url:
   hoj-judge-server: http://hoj-judgeserver # 服务访问base_url
   name: hoj-judgeserver # 服务名
+
