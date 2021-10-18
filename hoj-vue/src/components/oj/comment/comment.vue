@@ -637,6 +637,10 @@ export default {
         this.$store.dispatch('changeModalStatus', { visible: true });
         return;
       }
+      if (this.ownInputComment.replace(/(^s*)|(s*$)/g, '').length == 0) {
+        myMessage.warning(this.$i18n.t('m.Content_cannot_be_empty'));
+        return;
+      }
       let comment = {
         content: this.ownInputComment,
         cid: this.cid,
@@ -662,6 +666,10 @@ export default {
       if (!this.isAuthenticated) {
         myMessage.warning(this.$i18n.t('m.Please_login_first'));
         this.$store.dispatch('changeModalStatus', { visible: true });
+        return;
+      }
+      if (this.replyInputComment.replace(/(^s*)|(s*$)/g, '').length == 0) {
+        myMessage.warning(this.$i18n.t('m.Content_cannot_be_empty'));
         return;
       }
       this.replyObj.content = this.replyInputComment;
