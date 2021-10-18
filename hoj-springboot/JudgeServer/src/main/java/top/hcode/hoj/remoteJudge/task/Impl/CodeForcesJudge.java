@@ -179,12 +179,14 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         webClient.setCssErrorHandler(new SilentCssErrorHandler());
         //设置ajax
         webClient.setAjaxController(new NicelyResynchronizingAjaxController());
-        //设置禁止js
-        webClient.getOptions().setJavaScriptEnabled(false);
+        //设置js
+        webClient.getOptions().setJavaScriptEnabled(true);
+        webClient.getOptions().setWebSocketEnabled(false);
+        webClient.getOptions().setDownloadImages(false);
         //CSS渲染禁止
         webClient.getOptions().setCssEnabled(false);
         //超时时间
-        webClient.getOptions().setTimeout(4000);
+        webClient.getOptions().setTimeout(2000);
 
         //设置js抛出异常:false
         webClient.getOptions().setThrowExceptionOnScriptError(false);
