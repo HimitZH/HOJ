@@ -1,6 +1,11 @@
 package top.hcode.hoj.crawler.problem;
 
 import cn.hutool.core.util.ReUtil;
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
+import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.springframework.util.StringUtils;
@@ -34,53 +39,80 @@ public class CFProblemStrategy extends ProblemStrategy {
         }
 
         String url = HOST + String.format(PROBLEM_URL, contestId, problemNum);
-        Connection connection = JsoupUtils.getConnectionFromUrl(url, null, null);
-        Document document = JsoupUtils.getDocument(connection, null);
-        String html = document.html();
 
+        // 模拟一个浏览器
+        WebClient webClient = new WebClient(BrowserVersion.CHROME);
+        // 设置webClient的相关参数
+        webClient.setCssErrorHandler(new SilentCssErrorHandler());
+        webClient.getOptions().setActiveXNative(false);
+        //设置ajax
+        webClient.setAjaxController(new NicelyResynchronizingAjaxController());
+        //设置禁止js
+        webClient.getOptions().setJavaScriptEnabled(true);
+        webClient.getOptions().setWebSocketEnabled(false);
+        webClient.getOptions().setDownloadImages(false);
+        //CSS渲染禁止
+        webClient.getOptions().setCssEnabled(false);
+        //超时时间
+        webClient.getOptions().setTimeout(4000);
+        webClient.setJavaScriptTimeout(500);
+
+        //设置js抛出异常:false
+        webClient.getOptions().setThrowExceptionOnScriptError(false);
+        //允许重定向
+        webClient.getOptions().setRedirectEnabled(true);
+        //允许cookie
+        webClient.getCookieManager().setCookiesEnabled(true);
+
+        webClient.getOptions().setUseInsecureSSL(true);
+        // 模拟浏览器打开一个目标网址
+        HtmlPage page = webClient.getPage(url);
+        String html = page.asXml();
+        webClient.close();
 
         Problem info = new Problem();
         info.setProblemId(JUDGE_NAME + "-" + problemId);
 
         info.setTitle(ReUtil.get("<div class=\"title\">\\s*" + problemNum + "\\. ([\\s\\S]*?)</div>", html, 1).trim());
 
-        double timeLimit = 1000 * Double.parseDouble(ReUtil.get("</div>([\\d\\.]+) (seconds?|s)\\s*</div>", html, 1));
+        double timeLimit = 1000 * Double.parseDouble(ReUtil.get("</div>\\s*([\\d\\.]+) (seconds?|s)\\s*</div>", html, 1));
         info.setTimeLimit((int) timeLimit);
 
-        info.setMemoryLimit(Integer.parseInt(ReUtil.get("</div>(\\d+) (megabytes|MB)\\s*</div>", html, 1)));
+        info.setMemoryLimit(Integer.parseInt(ReUtil.get("</div>\\s*(\\d+) (megabytes|MB)\\s*</div>", html, 1)));
 
-        String tmpDesc = ReUtil.get("standard output\\s*</div></div><div>([\\s\\S]*?)</div><div class=\"input-specification",
+        String tmpDesc = ReUtil.get("standard output\\s*</div>\\s*</div>\\s*<div>([\\s\\S]*?)</div>\\s*<div class=\"input-specification",
                 html, 1);
         if (StringUtils.isEmpty(tmpDesc)) {
             tmpDesc = ReUtil.get("<div class=\"input-file\">([\\s\\S]*?)</div><div class=\"input-specification", html, 1);
         }
-
+        tmpDesc = tmpDesc.trim();
         info.setDescription(tmpDesc.replaceAll("\\$\\$\\$", "\\$").replaceAll("src=\"../../", "src=\"" + HOST + "/"));
 
+        String inputDesc = ReUtil.get("<div class=\"section-title\">\\s*Input\\s*</div>([\\s\\S]*?)</div>\\s*<div class=\"output-specification\">", html, 1).replaceAll("\\$\\$\\$", "\\$");
+        info.setInput(inputDesc.trim());
 
-        info.setInput(ReUtil.get("<div class=\"section-title\">\\s*Input\\s*</div>([\\s\\S]*?)</div><div class=\"output-specification\">", html, 1).replaceAll("\\$\\$\\$", "\\$"));
+        String outputDesc = ReUtil.get("<div class=\"section-title\">\\s*Output\\s*</div>([\\s\\S]*?)</div>\\s*<div class=\"sample-tests\">", html, 1).replaceAll("\\$\\$\\$", "\\$");
+        info.setOutput(outputDesc.trim());
 
-        info.setOutput(ReUtil.get("<div class=\"section-title\">\\s*Output\\s*</div>([\\s\\S]*?)</div><div class=\"sample-tests\">", html, 1).replaceAll("\\$\\$\\$", "\\$"));
+        List<String> inputExampleList = ReUtil.findAll(Pattern.compile("<div class=\"input\">\\s*<div class=\"title\">\\s*Input\\s*</div>\\s*<pre>([\\s\\S]*?)</pre>\\s*</div>"), html, 1);
 
-        List<String> inputExampleList = ReUtil.findAll(Pattern.compile("<div class=\"input\"><div class=\"title\">Input</div><pre>([\\s\\S]*?)</pre></div>"), html, 1);
-
-        List<String> outputExampleList = ReUtil.findAll(Pattern.compile("<div class=\"output\"><div class=\"title\">Output</div><pre>([\\s\\S]*?)</pre></div>"), html, 1);
+        List<String> outputExampleList = ReUtil.findAll(Pattern.compile("<div class=\"output\">\\s*<div class=\"title\">\\s*Output\\s*</div>\\s*<pre>([\\s\\S]*?)</pre>\\s*</div>"), html, 1);
 
 
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < inputExampleList.size() && i < outputExampleList.size(); i++) {
             sb.append("<input>");
-            sb.append(inputExampleList.get(i).replace("<br>", "\n")).append("</input>");
+            sb.append(inputExampleList.get(i).replace("<br>", "\n").trim()).append("</input>");
             sb.append("<output>");
-            sb.append(outputExampleList.get(i).replace("<br>", "\n")).append("</output>");
+            sb.append(outputExampleList.get(i).replace("<br>", "\n").trim()).append("</output>");
         }
 
         info.setExamples(sb.toString());
 
-        String tmpHint = ReUtil.get("<div class=\"section-title\">\\s*Note\\s*</div>([\\s\\S]*?)</div></div>", html, 1);
+        String tmpHint = ReUtil.get("<div class=\"section-title\">\\s*Note\\s*</div>([\\s\\S]*?)</div>\\s*</div>", html, 1);
         if (tmpHint != null) {
-            info.setHint(tmpHint.replaceAll("\\$\\$\\$", "\\$"));
+            info.setHint(tmpHint.replaceAll("\\$\\$\\$", "\\$").trim());
         }
 
         info.setIsRemote(true);

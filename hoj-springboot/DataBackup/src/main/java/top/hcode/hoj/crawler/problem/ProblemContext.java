@@ -23,7 +23,7 @@ public class ProblemContext {
         try {
             return problemStrategy.getProblemInfo(problemId, author);
         } catch (Exception e) {
-            log.error("获取题目详情失败---------------->{}", e.getMessage());
+            log.error("获取题目详情失败---------------->{}", e);
         }
         return null;
     }
