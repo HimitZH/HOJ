@@ -186,7 +186,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         //CSS渲染禁止
         webClient.getOptions().setCssEnabled(false);
         //超时时间
-        webClient.getOptions().setTimeout(2000);
+        webClient.getOptions().setTimeout(3000);
 
         //设置js抛出异常:false
         webClient.getOptions().setThrowExceptionOnScriptError(false);
@@ -219,6 +219,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
 
     public void submitCode(WebClient webClient, String problemID, String languageID, String code) throws IOException {
         webClient.getOptions().setTimeout(40000);
+        webClient.getOptions().setJavaScriptEnabled(false);
         // 模拟浏览器打开一个目标网址
         HtmlPage page = webClient.getPage(HOST + SUBMIT_URL);
 

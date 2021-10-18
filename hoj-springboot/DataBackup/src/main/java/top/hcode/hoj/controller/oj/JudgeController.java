@@ -34,6 +34,7 @@ import top.hcode.hoj.utils.RedisUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -500,9 +501,15 @@ public class JudgeController {
      */
     @RequestMapping(value = "/check-submissions-status", method = RequestMethod.POST)
     public CommonResult checkCommonJudgeResult(@RequestBody SubmitIdListDto submitIdListDto) {
+        List<Long> submitIds = submitIdListDto.getSubmitIds();
+
+        if (submitIds.size() == 0) {
+            return CommonResult.successResponse(new HashMap<>(), "已无数据可查询！");
+        }
+
         QueryWrapper<Judge> queryWrapper = new QueryWrapper<>();
         // lambada表达式过滤掉code
-        queryWrapper.select(Judge.class, info -> !info.getColumn().equals("code")).in("submit_id", submitIdListDto.getSubmitIds());
+        queryWrapper.select(Judge.class, info -> !info.getColumn().equals("code")).in("submit_id", submitIds);
         List<Judge> judgeList = judgeService.list(queryWrapper);
         HashMap<Long, Object> result = new HashMap<>();
         for (Judge judge : judgeList) {
