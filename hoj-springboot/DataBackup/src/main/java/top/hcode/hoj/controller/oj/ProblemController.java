@@ -79,14 +79,8 @@ public class ProblemController {
         if (limit == null || limit < 1) limit = 10;
 
         // 关键词查询不为空
-//        Long pid = null;
         if (!StringUtils.isEmpty(keyword)) {
             keyword = keyword.trim();
-            Pattern pattern = Pattern.compile("[0-9]*");
-            Matcher isNum = pattern.matcher(keyword);
-//            if (isNum.matches()) { // 利用正则表达式判断keyword是否为纯数字
-//                pid = Long.valueOf(keyword);
-//            }
         }
         if (oj != null && !Constants.RemoteOJ.isRemoteOJ(oj)) {
             oj = "Mine";
@@ -239,7 +233,7 @@ public class ProblemController {
         QueryWrapper<Problem> wrapper = new QueryWrapper<Problem>().eq("problem_id", problemId);
 
         //查询题目详情，题目标签，题目语言，题目做题情况
-        Problem problem = problemService.getOne(wrapper);
+        Problem problem = problemService.getOne(wrapper,false);
         if (problem == null) {
             return CommonResult.errorResponse("该题号对应的题目不存在", CommonResult.STATUS_NOT_FOUND);
         }
