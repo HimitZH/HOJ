@@ -394,6 +394,7 @@ export default {
   },
   methods: {
     init() {
+      this.checkStatusNum = 0;
       this.contestID = this.$route.params.contestID;
       let query = this.$route.query;
       this.formFilter.problemID = query.problemID;

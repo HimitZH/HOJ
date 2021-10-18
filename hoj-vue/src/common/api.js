@@ -13,7 +13,7 @@ Vue.prototype.$http = axios
 
 
 // 请求超时时间
-axios.defaults.timeout = 40000;
+axios.defaults.timeout = 90000;
 
 axios.interceptors.request.use(
 

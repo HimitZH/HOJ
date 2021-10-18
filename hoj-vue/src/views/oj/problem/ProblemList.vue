@@ -501,6 +501,7 @@ export default {
         this.query.tagId = '';
       }
       this.query.currentPage = 1;
+      this.getTagList(this.query.oj);
       this.pushRouter();
     },
     filterByKeyword() {
