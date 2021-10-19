@@ -167,15 +167,16 @@ public class RemoteJudgeReceiver {
                         tryAgainNum + 1, false);
             }
         } else {
-            if (tryAgainNum >= 30) {
+            if (tryAgainNum >= 120) {
                 // 获取调用多次失败可能为系统忙碌，判为提交失败
                 judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
-                judge.setErrorMessage("Failed to connect the judgeServer. Please resubmit this submission again!");
+                judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
+                        "Cause: Waiting for account scheduling timeout");
                 judgeService.updateById(judge);
             } else {
 
                 try {
-                    TimeUnit.SECONDS.sleep(1);
+                    TimeUnit.SECONDS.sleep(2);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
