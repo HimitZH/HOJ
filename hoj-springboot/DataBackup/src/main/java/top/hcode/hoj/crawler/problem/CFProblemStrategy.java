@@ -67,8 +67,8 @@ public class CFProblemStrategy extends ProblemStrategy {
         webClient.getOptions().setUseInsecureSSL(true);
         // 模拟浏览器打开一个目标网址
         HtmlPage page = webClient.getPage(url);
-        String html = page.asXml();
         webClient.close();
+        String html = page.getWebResponse().getContentAsString();
 
         Problem info = new Problem();
         info.setProblemId(JUDGE_NAME + "-" + problemId);
@@ -103,9 +103,15 @@ public class CFProblemStrategy extends ProblemStrategy {
 
         for (int i = 0; i < inputExampleList.size() && i < outputExampleList.size(); i++) {
             sb.append("<input>");
-            sb.append(inputExampleList.get(i).replace("<br>", "\n").trim()).append("</input>");
+            String input = inputExampleList.get(i)
+                    .replaceAll("<br>", "\n")
+                    .replaceAll("<br />", "\n");
+            sb.append(input).append("</input>");
             sb.append("<output>");
-            sb.append(outputExampleList.get(i).replace("<br>", "\n").trim()).append("</output>");
+            String output = outputExampleList.get(i)
+                    .replaceAll("<br>", "\n")
+                    .replaceAll("<br />", "\n");
+            sb.append(output).append("</output>");
         }
 
         info.setExamples(sb.toString());
