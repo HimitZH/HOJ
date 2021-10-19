@@ -46,7 +46,7 @@ public class RemoteJudgeDispatcher {
                 remoteJudgeReceiver.processWaitingTask();
             }
         } catch (Exception e) {
-            log.error("调用redis将判题纳入判题等待队列异常,此次判题任务判为系统错误--------------->{}", e.getMessage());
+            log.error("调用redis将判题纳入判题等待队列异常,此次判题任务判为系统错误--------------->{}", e);
             judgeService.failToUseRedisPublishJudge(judge.getSubmitId(), judge.getPid(), isContest);
         }
     }
