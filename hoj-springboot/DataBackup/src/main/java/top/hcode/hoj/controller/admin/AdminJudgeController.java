@@ -94,6 +94,7 @@ public class AdminJudgeController {
         judgeCaseQueryWrapper.eq("submit_id", submitId);
         judgeCaseService.remove(judgeCaseQueryWrapper);
 
+        boolean hasSubmitIdRemoteRejudge = isHasSubmitIdRemoteRejudge(judge.getVjudgeSubmitId(), judge.getStatus());
 
         // 设置默认值
         judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus()); // 开始进入判题队列
@@ -108,7 +109,6 @@ public class AdminJudgeController {
 
         boolean result = judgeService.updateById(judge);
 
-        boolean hasSubmitIdRemoteRejudge = isHasSubmitIdRemoteRejudge(judge.getVjudgeSubmitId(), judge.getStatus());
 
         if (result && resetContestRecordResult) {
             // 调用判题服务
