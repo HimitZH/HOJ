@@ -63,7 +63,7 @@ public class Dispatcher {
 
 
     public void toJudge(String path, ToJudge data, Long submitId, Boolean isRemote) {
-        // 尝试30s
+        // 尝试600s
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         AtomicInteger count = new AtomicInteger(0);
         Runnable getResultTask = new Runnable() {
