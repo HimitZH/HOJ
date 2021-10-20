@@ -112,12 +112,6 @@
             <artifactId>jsoup</artifactId>
             <version>1.13.1</version>
         </dependency>
-        <!-- 爬虫模拟框架-->
-        <dependency>
-            <groupId>net.sourceforge.htmlunit</groupId>
-            <artifactId>htmlunit</artifactId>
-            <version>2.50.0</version>
-        </dependency>
 
         <!--单元测试-->
         <dependency>
