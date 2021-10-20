@@ -65,7 +65,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
 
         String contestId;
         String problemNum;
-        if (NumberUtil.isNumber(problemId)) {
+        if (NumberUtil.isInteger(problemId)) {
             contestId = ReUtil.get("([0-9]+)[0-9]{2}", problemId, 1);
             problemNum = ReUtil.get("[0-9]+([0-9]{2})", problemId, 1);
         } else {
