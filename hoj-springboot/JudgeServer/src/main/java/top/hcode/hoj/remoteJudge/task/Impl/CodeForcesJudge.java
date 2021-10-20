@@ -5,32 +5,28 @@ import cn.hutool.core.util.ReUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.http.Method;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
-import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.*;
 import lombok.extern.slf4j.Slf4j;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.util.Constants;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.net.HttpCookie;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j(topic = "hoj")
 public class CodeForcesJudge implements RemoteJudgeStrategy {
+    public static final String IMAGE_HOST = "https://codeforces.ml/";
     public static final String HOST = "https://codeforces.com/";
     public static final String LOGIN_URL = "enter";
     public static final String SUBMIT_URL = "problemset/submit";
     public static final String SUBMISSION_RESULT_URL = "api/user.status?handle=%s&from=1&count=30";
     public static final String CE_INFO_URL = "data/submitSource";
+    private List<HttpCookie> cookies = new LinkedList<>();
+
 
     private static final Map<String, Constants.Judge> statusMap = new HashMap<String, Constants.Judge>() {{
         put("FAILED", Constants.Judge.STATUS_SUBMITTED_FAILED);
@@ -60,18 +56,18 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         }
 
         Map<String, Object> loginUtils = getLoginUtils(username, password);
-
-        if (loginUtils == null) {
+        int status = (int) loginUtils.get("status");
+        if (status != 302) {
             log.error("进行题目提交时发生错误：登录失败，可能原因账号或密码错误，登录失败！" + CodeForcesJudge.class.getName() + "，题号:" + problemId);
             return null;
         }
 
-        try (WebClient webClient = (WebClient) loginUtils.getOrDefault("webClient", null)) {
-            submitCode(webClient, problemId, getLanguage(language), userCode);
-        }
+        String contestId = ReUtil.get("([0-9]+)[A-Z]{1}[0-9]{0,1}", problemId, 1);
+        String problemNum = ReUtil.get("[0-9]+([A-Z]{1}[0-9]{0,1})", problemId, 1);
+
+        submitCode(contestId, problemNum, getLanguage(language), userCode);
 
         // 获取提交的题目id
-
         Long maxRunId = getMaxRunId(username, problemId);
 
         return MapUtil.builder(new HashMap<String, Object>())
@@ -109,7 +105,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
             }
         } catch (Exception e) {
             log.error("进行题目获取runID发生错误：获取提交ID失败，" + CodeForcesJudge.class.getName()
-                    + "，题号:" + problemId + "，异常描述：" + e.getMessage());
+                    + "，题号:" + problemId + "，异常描述：" + e);
             return -1L;
         }
         return -1L;
@@ -171,73 +167,58 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         return resultMap;
     }
 
-    @Override
-    public Map<String, Object> getLoginUtils(String username, String password) throws Exception {
-        // 模拟一个浏览器
-        WebClient webClient = new WebClient(BrowserVersion.CHROME);
-        // 设置webClient的相关参数
-        webClient.setCssErrorHandler(new SilentCssErrorHandler());
-        //设置ajax
-        webClient.setAjaxController(new NicelyResynchronizingAjaxController());
-        //设置js
-        webClient.getOptions().setJavaScriptEnabled(true);
-        webClient.getOptions().setWebSocketEnabled(false);
-        webClient.getOptions().setDownloadImages(false);
-        //CSS渲染禁止
-        webClient.getOptions().setCssEnabled(false);
-        //超时时间
-        webClient.getOptions().setTimeout(3000);
-
-        //设置js抛出异常:false
-        webClient.getOptions().setThrowExceptionOnScriptError(false);
-        //允许重定向
-        webClient.getOptions().setRedirectEnabled(true);
-        //允许cookie
-        webClient.getCookieManager().setCookiesEnabled(true);
-
-        webClient.getOptions().setUseInsecureSSL(true);
-        // 模拟浏览器打开一个目标网址
-        HtmlPage page = webClient.getPage(HOST + LOGIN_URL);
-
-        HtmlForm form = (HtmlForm) page.getElementById("enterForm");
-        HtmlTextInput usernameInput = form.getInputByName("handleOrEmail");
-        HtmlPasswordInput passwordInput = form.getInputByName("password");
-        usernameInput.setValueAttribute(username);  //用户名
-        passwordInput.setValueAttribute(password);  //密码
-
-        HtmlSubmitInput button = (HtmlSubmitInput) page.getByXPath("//input[@class='submit']").get(0);
-
-
-        HtmlPage retPage = button.click();
-        if (retPage.getUrl().toString().equals(HOST)) {
-            return MapUtil.builder(new HashMap<String, Object>()).put("webClient", webClient).map();
-        } else {
-            webClient.close();
-            return null;
-        }
+    public String getCsrfToken(String url) {
+        HttpRequest request = HttpUtil.createGet(url);
+        request.cookie(this.cookies);
+        HttpResponse response = request.execute();
+        this.cookies = response.getCookies();
+        String body = response.body();
+        return ReUtil.get("data-csrf='(\\w+)'", body, 1);
     }
 
-    public void submitCode(WebClient webClient, String problemID, String languageID, String code) throws IOException {
-        webClient.getOptions().setTimeout(40000);
-        webClient.getOptions().setJavaScriptEnabled(false);
-        // 模拟浏览器打开一个目标网址
-        HtmlPage page = webClient.getPage(HOST + SUBMIT_URL);
+    @Override
+    public Map<String, Object> getLoginUtils(String username, String password) {
+        String csrf_token = getCsrfToken(IMAGE_HOST + LOGIN_URL);
+        HttpRequest httpRequest = new HttpRequest(IMAGE_HOST + LOGIN_URL);
+        httpRequest.setMethod(Method.POST);
+        httpRequest.cookie(this.cookies);
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("csrf_token", csrf_token);
+        hashMap.put("action", "enter");
+        hashMap.put("ftaa", "");
+        hashMap.put("bfaa", "");
+        hashMap.put("handleOrEmail", username);
+        hashMap.put("password", password);
+        hashMap.put("remember", "on");
+        httpRequest.form(hashMap);
+        HttpResponse response = httpRequest.execute();
+        this.cookies = response.getCookies();
+        return MapUtil.builder(new HashMap<String, Object>()).put("status", response.getStatus()).map();
+    }
 
-        HtmlForm form = (HtmlForm) page.getByXPath("//form[@class='submit-form']").get(0);
-
-        // 题号
-        HtmlTextInput problemCode = form.getInputByName("submittedProblemCode");
-        problemCode.setValueAttribute(problemID);
-        // 编程语言
-        HtmlSelect programTypeId = form.getSelectByName("programTypeId");
-        HtmlOption optionByValue = programTypeId.getOptionByValue(languageID);
-        optionByValue.click();
-        // 代码
-        HtmlTextArea source = form.getTextAreaByName("source");
-        source.setText(code + getRandomBlankString());
-
-        HtmlSubmitInput button = (HtmlSubmitInput) page.getByXPath("//input[@class='submit']").get(0);
-        button.click();
+    public void submitCode(String contestId, String problemID, String languageID, String code) {
+        String csrfToken = getCsrfToken(IMAGE_HOST + SUBMIT_URL);
+        HashMap<String, Object> paramMap = new HashMap<>();
+        paramMap.put("csrf_token", csrfToken);
+        paramMap.put("_tta", 594);
+        paramMap.put("bfaa", "f1b3f18c715565b589b7823cda7448ce");
+        paramMap.put("ftaa", "");
+        paramMap.put("action", "submitSolutionFormSubmitted");
+        paramMap.put("submittedProblemIndex", problemID);
+        paramMap.put("contestId", contestId);
+        paramMap.put("programTypeId", languageID);
+        paramMap.put("tabsize", 4);
+        paramMap.put("source", code + getRandomBlankString());
+        paramMap.put("sourceCodeConfirmed", true);
+        paramMap.put("doNotShowWarningAgain", "on");
+        HttpRequest request = HttpUtil.createPost(IMAGE_HOST + SUBMIT_URL + "?csrf_token=" + csrfToken);
+        request.form(paramMap);
+        request.cookie(this.cookies);
+        request.header("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36");
+        HttpResponse response = request.execute();
+        if (response.getStatus() != 302) {
+            throw new RuntimeException("Codeforces提交代码失败，题号为：" + contestId + problemID);
+        }
     }
 
     @Override

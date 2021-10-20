@@ -1,21 +1,14 @@
 package top.hcode.hoj.crawler.problem;
 
 import cn.hutool.core.util.ReUtil;
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
-import com.gargoylesoftware.htmlunit.SilentCssErrorHandler;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.jsoup.Connection;
-import org.jsoup.nodes.Document;
+import cn.hutool.http.HttpUtil;
+
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.pojo.entity.Problem;
 import top.hcode.hoj.pojo.entity.Tag;
-import top.hcode.hoj.utils.JsoupUtils;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 import java.util.regex.Pattern;
 
 /**
@@ -40,35 +33,7 @@ public class CFProblemStrategy extends ProblemStrategy {
 
         String url = HOST + String.format(PROBLEM_URL, contestId, problemNum);
 
-        // 模拟一个浏览器
-        WebClient webClient = new WebClient(BrowserVersion.CHROME);
-        // 设置webClient的相关参数
-        webClient.setCssErrorHandler(new SilentCssErrorHandler());
-        webClient.getOptions().setActiveXNative(false);
-        //设置ajax
-        webClient.setAjaxController(new NicelyResynchronizingAjaxController());
-        //设置禁止js
-        webClient.getOptions().setJavaScriptEnabled(true);
-        webClient.getOptions().setWebSocketEnabled(false);
-        webClient.getOptions().setDownloadImages(false);
-        //CSS渲染禁止
-        webClient.getOptions().setCssEnabled(false);
-        //超时时间
-        webClient.getOptions().setTimeout(4000);
-        webClient.setJavaScriptTimeout(500);
-
-        //设置js抛出异常:false
-        webClient.getOptions().setThrowExceptionOnScriptError(false);
-        //允许重定向
-        webClient.getOptions().setRedirectEnabled(true);
-        //允许cookie
-        webClient.getCookieManager().setCookiesEnabled(true);
-
-        webClient.getOptions().setUseInsecureSSL(true);
-        // 模拟浏览器打开一个目标网址
-        HtmlPage page = webClient.getPage(url);
-        webClient.close();
-        String html = page.getWebResponse().getContentAsString();
+        String html = HttpUtil.get(url);
 
         Problem info = new Problem();
         info.setProblemId(JUDGE_NAME + "-" + problemId);
@@ -105,12 +70,14 @@ public class CFProblemStrategy extends ProblemStrategy {
             sb.append("<input>");
             String input = inputExampleList.get(i)
                     .replaceAll("<br>", "\n")
-                    .replaceAll("<br />", "\n");
+                    .replaceAll("<br />", "\n")
+                    .trim();
             sb.append(input).append("</input>");
             sb.append("<output>");
             String output = outputExampleList.get(i)
                     .replaceAll("<br>", "\n")
-                    .replaceAll("<br />", "\n");
+                    .replaceAll("<br />", "\n")
+                    .trim();
             sb.append(output).append("</output>");
         }
 
