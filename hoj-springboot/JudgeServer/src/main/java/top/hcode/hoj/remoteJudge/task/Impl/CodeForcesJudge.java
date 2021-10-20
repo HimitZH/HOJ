@@ -1,6 +1,7 @@
 package top.hcode.hoj.remoteJudge.task.Impl;
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
@@ -62,8 +63,15 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
             return null;
         }
 
-        String contestId = ReUtil.get("([0-9]+)[A-Z]{1}[0-9]{0,1}", problemId, 1);
-        String problemNum = ReUtil.get("[0-9]+([A-Z]{1}[0-9]{0,1})", problemId, 1);
+        String contestId;
+        String problemNum;
+        if (NumberUtil.isNumber(problemId)) {
+            contestId = ReUtil.get("([0-9]+)[0-9]{2}", problemId, 1);
+            problemNum = ReUtil.get("[0-9]+([0-9]{2})", problemId, 1);
+        } else {
+            contestId = ReUtil.get("([0-9]+)[A-Z]{1}[0-9]{0,1}", problemId, 1);
+            problemNum = ReUtil.get("[0-9]+([A-Z]{1}[0-9]{0,1})", problemId, 1);
+        }
 
         submitCode(contestId, problemNum, getLanguage(language), userCode);
 

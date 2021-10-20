@@ -1,5 +1,6 @@
 package top.hcode.hoj.crawler.problem;
 
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.http.HttpUtil;
 
@@ -25,8 +26,16 @@ public class CFProblemStrategy extends ProblemStrategy {
     @Override
     public RemoteProblemInfo getProblemInfo(String problemId, String author) throws Exception {
 
-        String contestId = ReUtil.get("([0-9]+)[A-Z]{1}[0-9]{0,1}", problemId, 1);
-        String problemNum = ReUtil.get("[0-9]+([A-Z]{1}[0-9]{0,1})", problemId, 1);
+        String contestId;
+        String problemNum;
+        if (NumberUtil.isNumber(problemId)) {
+            contestId = ReUtil.get("([0-9]+)[0-9]{2}", problemId, 1);
+            problemNum = ReUtil.get("[0-9]+([0-9]{2})", problemId, 1);
+        } else {
+            contestId = ReUtil.get("([0-9]+)[A-Z]{1}[0-9]{0,1}", problemId, 1);
+            problemNum = ReUtil.get("[0-9]+([A-Z]{1}[0-9]{0,1})", problemId, 1);
+        }
+
         if (contestId == null || problemNum == null) {
             throw new Exception("Codeforces的题号格式错误！");
         }
@@ -40,24 +49,59 @@ public class CFProblemStrategy extends ProblemStrategy {
 
         info.setTitle(ReUtil.get("<div class=\"title\">\\s*" + problemNum + "\\. ([\\s\\S]*?)</div>", html, 1).trim());
 
-        double timeLimit = 1000 * Double.parseDouble(ReUtil.get("</div>\\s*([\\d\\.]+) (seconds?|s)\\s*</div>", html, 1));
+        String timeLimitStr = ReUtil.get("</div>\\s*([\\d\\.]+) (seconds?|s)\\s*</div>", html, 1);
+        if (StringUtils.isEmpty(timeLimitStr)) {
+            timeLimitStr = ReUtil.get("</div>\\s*<span .*?>(\\d+) (seconds?|s)\\s*</span>\\s*</div>", html, 1);
+        }
+
+        double timeLimit = 1000 * Double.parseDouble(timeLimitStr);
         info.setTimeLimit((int) timeLimit);
 
-        info.setMemoryLimit(Integer.parseInt(ReUtil.get("</div>\\s*(\\d+) (megabytes|MB)\\s*</div>", html, 1)));
+        String memoryLimitStr = ReUtil.get("</div>\\s*(\\d+) (megabytes|MB)\\s*</div>", html, 1);
+        if (StringUtils.isEmpty(memoryLimitStr)) {
+            memoryLimitStr = ReUtil.get("</div>\\s*<span .*?>(\\d+) (megabytes|MB)\\s*</span>\\s*</div>", html, 1);
+        }
+
+        info.setMemoryLimit(Integer.parseInt(memoryLimitStr));
 
         String tmpDesc = ReUtil.get("standard output\\s*</div>\\s*</div>\\s*<div>([\\s\\S]*?)</div>\\s*<div class=\"input-specification",
                 html, 1);
         if (StringUtils.isEmpty(tmpDesc)) {
             tmpDesc = ReUtil.get("<div class=\"input-file\">([\\s\\S]*?)</div><div class=\"input-specification", html, 1);
         }
-        tmpDesc = tmpDesc.trim();
-        info.setDescription(tmpDesc.replaceAll("\\$\\$\\$", "\\$").replaceAll("src=\"../../", "src=\"" + HOST + "/"));
 
-        String inputDesc = ReUtil.get("<div class=\"section-title\">\\s*Input\\s*</div>([\\s\\S]*?)</div>\\s*<div class=\"output-specification\">", html, 1).replaceAll("\\$\\$\\$", "\\$");
-        info.setInput(inputDesc.trim());
+        if (StringUtils.isEmpty(tmpDesc)){
+            // 交互题
+            tmpDesc = ReUtil.get("standard output\\s*</div>\\s*</div>\\s*<div>([\\s\\S]*?)</div>\\s*<div>\\s*<div class=\"section-title", html, 1);
+        }
 
-        String outputDesc = ReUtil.get("<div class=\"section-title\">\\s*Output\\s*</div>([\\s\\S]*?)</div>\\s*<div class=\"sample-tests\">", html, 1).replaceAll("\\$\\$\\$", "\\$");
-        info.setOutput(outputDesc.trim());
+        if (!StringUtils.isEmpty(tmpDesc)){
+            tmpDesc = tmpDesc.replaceAll("\\$\\$\\$", "\\$")
+                    .replaceAll("src=\"../../", "src=\"" + HOST + "/")
+                    .trim();
+        }
+
+        info.setDescription(tmpDesc);
+
+        String inputDesc = ReUtil.get("<div class=\"section-title\">\\s*Input\\s*</div>([\\s\\S]*?)</div>\\s*<div class=\"output-specification\">", html, 1);
+
+        if (StringUtils.isEmpty(inputDesc)){
+            inputDesc = ReUtil.get("<div class=\"section-title\">\\s*Interaction\\s*</div>([\\s\\S]*?)</div>\\s*<div class=\"sample-tests\">", html, 1);
+        }
+        if (StringUtils.isEmpty(inputDesc)){
+            inputDesc = ReUtil.get("<div class=\"input-specification\">\\s*<div class=\"section-title\">\\s*Input\\s*</div>([\\s\\S]*?)</div>", html, 1);
+        }
+        if (!StringUtils.isEmpty(inputDesc)){
+            inputDesc = inputDesc.replaceAll("\\$\\$\\$", "\\$").trim();
+        }
+
+        info.setInput(inputDesc);
+
+        String outputDesc = ReUtil.get("<div class=\"section-title\">\\s*Output\\s*</div>([\\s\\S]*?)</div>\\s*<div class=\"sample-tests\">", html, 1);
+        if (!StringUtils.isEmpty(outputDesc)){
+            outputDesc = outputDesc.replaceAll("\\$\\$\\$", "\\$").trim();
+        }
+        info.setOutput(outputDesc);
 
         List<String> inputExampleList = ReUtil.findAll(Pattern.compile("<div class=\"input\">\\s*<div class=\"title\">\\s*Input\\s*</div>\\s*<pre>([\\s\\S]*?)</pre>\\s*</div>"), html, 1);
 
