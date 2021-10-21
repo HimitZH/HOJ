@@ -845,14 +845,16 @@ export default {
           this.problem['examples'][0]['isOpen'] = true;
           this.testCaseUploaded = true;
 
-          api.admin_getProblemCases(this.pid).then((res) => {
-            if (this.problem.isUploadCase) {
-              this.problem.testCaseScore = res.data.data;
-            } else {
-              this.problemSamples = res.data.data;
-              this.problemSamples[0]['isOpen'] = true;
-            }
-          });
+          api
+            .admin_getProblemCases(this.pid, this.problem.isUploadCase)
+            .then((res) => {
+              if (this.problem.isUploadCase) {
+                this.problem.testCaseScore = res.data.data;
+              } else {
+                this.problemSamples = res.data.data;
+                this.problemSamples[0]['isOpen'] = true;
+              }
+            });
         });
         if (funcName === 'admin_getContestProblem') {
           api
