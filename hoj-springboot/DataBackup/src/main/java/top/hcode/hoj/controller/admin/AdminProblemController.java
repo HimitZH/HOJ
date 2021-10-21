@@ -186,7 +186,7 @@ public class AdminProblemController {
         QueryWrapper<ProblemCase> problemCaseQueryWrapper = new QueryWrapper<>();
         problemCaseQueryWrapper.eq("pid", pid).eq("status", 0);
         if (isUpload) {
-            problemCaseQueryWrapper.orderByAsc("input");
+            problemCaseQueryWrapper.last("order by length(input) asc,input asc");
         }
         List<ProblemCase> problemCases = problemCaseService.list(problemCaseQueryWrapper);
         if (problemCases != null && problemCases.size() > 0) {
