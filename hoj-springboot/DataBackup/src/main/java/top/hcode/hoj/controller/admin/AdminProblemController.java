@@ -181,11 +181,14 @@ public class AdminProblemController {
     @GetMapping("/get-problem-cases")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult getProblemCases(@Valid @RequestParam("pid") Long pid) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("pid", pid);
-        map.put("status", 0);
-        List<ProblemCase> problemCases = (List<ProblemCase>) problemCaseService.listByMap(map);
+    public CommonResult getProblemCases(@RequestParam("pid") Long pid,
+                                        @RequestParam(value = "isUpload", defaultValue = "true") Boolean isUpload) {
+        QueryWrapper<ProblemCase> problemCaseQueryWrapper = new QueryWrapper<>();
+        problemCaseQueryWrapper.eq("pid", pid).eq("status", 0);
+        if (isUpload) {
+            problemCaseQueryWrapper.orderByAsc("input");
+        }
+        List<ProblemCase> problemCases = problemCaseService.list(problemCaseQueryWrapper);
         if (problemCases != null && problemCases.size() > 0) {
             return CommonResult.successResponse(problemCases, "获取该题目的评测样例列表成功！");
         } else {
