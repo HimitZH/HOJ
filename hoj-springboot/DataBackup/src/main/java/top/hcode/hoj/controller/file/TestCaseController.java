@@ -25,10 +25,8 @@ import top.hcode.hoj.utils.Constants;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author: Himit_ZH
@@ -108,8 +106,21 @@ public class TestCaseController {
             problemCaseList.add(testcaseMap);
         }
 
+        List<HashMap<String, String>> fileList = problemCaseList.stream()
+                .sorted((o1, o2) -> {
+                    String a = o1.get("input").split("\\.")[0];
+                    String b = o2.get("input").split("\\.")[0];
+                    if (a.length() > b.length()) {
+                        return 1;
+                    } else if (a.length() < b.length()) {
+                        return -1;
+                    }
+                    return a.compareTo(b);
+                })
+                .collect(Collectors.toList());
+
         return CommonResult.successResponse(MapUtil.builder()
-                        .put("fileList", problemCaseList)
+                        .put("fileList", fileList)
                         .put("fileListDir", fileDir)
                         .map()
                 , "上传测试数据成功！");
