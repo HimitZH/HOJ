@@ -907,10 +907,11 @@ const adminApi = {
       }
     })
   },
-  admin_getProblemCases(pid){
+  admin_getProblemCases(pid,isUpload){
     return ajax('/api/admin/problem/get-problem-cases', 'get',{
       params: {
-        pid
+        pid,
+        isUpload
       }
     })
   },

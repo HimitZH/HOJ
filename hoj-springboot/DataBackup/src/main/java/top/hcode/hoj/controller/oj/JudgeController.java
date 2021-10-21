@@ -606,7 +606,8 @@ public class JudgeController {
         }
 
 
-        QueryWrapper<JudgeCase> wrapper = new QueryWrapper<JudgeCase>().eq("submit_id", submitId).orderByAsc("case_id");
+        QueryWrapper<JudgeCase> wrapper = new QueryWrapper<JudgeCase>().eq("submit_id", submitId)
+                .orderByAsc("input_data");
 
         // 当前所有测试点只支持 空间 时间 状态码 IO得分 输出文件名 输入文件名和错误信息提示查看而已
         List<JudgeCase> judgeCaseList = judgeCaseService.list(wrapper);
