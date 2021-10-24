@@ -79,109 +79,127 @@
             </span>
           </div>
         </div>
-        <p id="no-contest" v-show="contests.length == 0">
-          <el-empty :description="$t('m.No_contest')"></el-empty>
-        </p>
-        <ol id="contest-list" v-loading="loading">
-          <li
-            v-for="contest in contests"
-            :key="contest.title"
-            :style="getborderColor(contest)"
-          >
-            <el-row type="flex" justify="space-between" align="middle">
-              <el-col :xs="10" :sm="4" :md="3" :lg="2">
-                <img
-                  v-show="contest.type == 0"
-                  class="trophy"
-                  :src="acmSrc"
-                  width="95px"
-                />
-                <img
-                  v-show="contest.type == 1"
-                  class="trophy"
-                  :src="oiSrc"
-                  width="95px"
-                />
-              </el-col>
-              <el-col :xs="10" :sm="16" :md="19" :lg="20" class="contest-main">
-                <p class="title">
-                  <a class="entry" @click.stop="toContest(contest)">
-                    {{ contest.title }}
-                  </a>
-                  <template v-if="contest.auth == 1">
-                    <i class="el-icon-lock" size="20" style="color:#d9534f"></i>
-                  </template>
-                  <template v-if="contest.auth == 2">
-                    <i class="el-icon-lock" size="20" style="color:#f0ad4e"></i>
-                  </template>
-                </p>
-                <ul class="detail">
-                  <li>
-                    <i
-                      class="fa fa-calendar"
-                      aria-hidden="true"
-                      style="color: #3091f2"
-                    ></i>
-                    {{ contest.startTime | localtime }}
-                  </li>
-                  <li>
-                    <i
-                      class="fa fa-clock-o"
-                      aria-hidden="true"
-                      style="color: #3091f2"
-                    ></i>
-                    {{ getDuration(contest.startTime, contest.endTime) }}
-                  </li>
-                  <li>
-                    <el-button
-                      size="mini"
-                      round
-                      @click="onRuleChange(contest.type)"
-                    >
-                      {{ contest.type | parseContestType }}
-                    </el-button>
-                  </li>
-                  <li>
-                    <el-tooltip
-                      :content="
-                        $t('m.' + CONTEST_TYPE_REVERSE[contest.auth].tips)
-                      "
-                      placement="top"
-                      effect="light"
-                    >
-                      <el-tag
-                        :type="CONTEST_TYPE_REVERSE[contest.auth]['color']"
-                        effect="plain"
-                      >
-                        {{
-                          $t('m.' + CONTEST_TYPE_REVERSE[contest.auth]['name'])
-                        }}
-                      </el-tag>
-                    </el-tooltip>
-                  </li>
-                </ul>
-              </el-col>
-              <el-col
-                :xs="4"
-                :sm="4"
-                :md="2"
-                :lg="2"
-                style="text-align: center"
-              >
-                <el-tag
-                  effect="dark"
-                  :color="CONTEST_STATUS_REVERSE[contest.status]['color']"
-                  size="medium"
+        <div v-loading="loading">
+          <p id="no-contest" v-show="contests.length == 0">
+            <el-empty :description="$t('m.No_contest')"></el-empty>
+          </p>
+          <ol id="contest-list">
+            <li
+              v-for="contest in contests"
+              :key="contest.title"
+              :style="getborderColor(contest)"
+            >
+              <el-row type="flex" justify="space-between" align="middle">
+                <el-col :xs="10" :sm="4" :md="3" :lg="2">
+                  <img
+                    v-show="contest.type == 0"
+                    class="trophy"
+                    :src="acmSrc"
+                    width="95px"
+                  />
+                  <img
+                    v-show="contest.type == 1"
+                    class="trophy"
+                    :src="oiSrc"
+                    width="95px"
+                  />
+                </el-col>
+                <el-col
+                  :xs="10"
+                  :sm="16"
+                  :md="19"
+                  :lg="20"
+                  class="contest-main"
                 >
-                  <i class="fa fa-circle" aria-hidden="true"></i>
-                  {{
-                    $t('m.' + CONTEST_STATUS_REVERSE[contest.status]['name'])
-                  }}
-                </el-tag>
-              </el-col>
-            </el-row>
-          </li>
-        </ol>
+                  <p class="title">
+                    <a class="entry" @click.stop="toContest(contest)">
+                      {{ contest.title }}
+                    </a>
+                    <template v-if="contest.auth == 1">
+                      <i
+                        class="el-icon-lock"
+                        size="20"
+                        style="color:#d9534f"
+                      ></i>
+                    </template>
+                    <template v-if="contest.auth == 2">
+                      <i
+                        class="el-icon-lock"
+                        size="20"
+                        style="color:#f0ad4e"
+                      ></i>
+                    </template>
+                  </p>
+                  <ul class="detail">
+                    <li>
+                      <i
+                        class="fa fa-calendar"
+                        aria-hidden="true"
+                        style="color: #3091f2"
+                      ></i>
+                      {{ contest.startTime | localtime }}
+                    </li>
+                    <li>
+                      <i
+                        class="fa fa-clock-o"
+                        aria-hidden="true"
+                        style="color: #3091f2"
+                      ></i>
+                      {{ getDuration(contest.startTime, contest.endTime) }}
+                    </li>
+                    <li>
+                      <el-button
+                        size="mini"
+                        round
+                        @click="onRuleChange(contest.type)"
+                      >
+                        {{ contest.type | parseContestType }}
+                      </el-button>
+                    </li>
+                    <li>
+                      <el-tooltip
+                        :content="
+                          $t('m.' + CONTEST_TYPE_REVERSE[contest.auth].tips)
+                        "
+                        placement="top"
+                        effect="light"
+                      >
+                        <el-tag
+                          :type="CONTEST_TYPE_REVERSE[contest.auth]['color']"
+                          effect="plain"
+                        >
+                          {{
+                            $t(
+                              'm.' + CONTEST_TYPE_REVERSE[contest.auth]['name']
+                            )
+                          }}
+                        </el-tag>
+                      </el-tooltip>
+                    </li>
+                  </ul>
+                </el-col>
+                <el-col
+                  :xs="4"
+                  :sm="4"
+                  :md="2"
+                  :lg="2"
+                  style="text-align: center"
+                >
+                  <el-tag
+                    effect="dark"
+                    :color="CONTEST_STATUS_REVERSE[contest.status]['color']"
+                    size="medium"
+                  >
+                    <i class="fa fa-circle" aria-hidden="true"></i>
+                    {{
+                      $t('m.' + CONTEST_STATUS_REVERSE[contest.status]['name'])
+                    }}
+                  </el-tag>
+                </el-col>
+              </el-row>
+            </li>
+          </ol>
+        </div>
       </el-card>
       <Pagination
         :total="total"

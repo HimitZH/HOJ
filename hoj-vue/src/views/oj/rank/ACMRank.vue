@@ -84,11 +84,7 @@
           align="left"
         >
           <template v-slot="{ row }">
-            <span
-              v-html="row.signature"
-              v-katex
-              class="rank-signature-body"
-            ></span>
+            <span v-katex class="rank-signature-body">{{ row.signature }}</span>
           </template>
         </vxe-table-column>
       </vxe-table>
