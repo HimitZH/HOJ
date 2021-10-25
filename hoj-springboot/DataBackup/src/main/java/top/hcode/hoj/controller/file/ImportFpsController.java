@@ -29,7 +29,6 @@ import top.hcode.hoj.utils.Constants;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.xml.xpath.XPathConstants;
 import java.io.File;
 
 import java.io.IOException;
@@ -120,9 +119,9 @@ public class ImportFpsController {
                     .setAuth(1)
                     .setProblemId(String.valueOf(System.currentTimeMillis()));
 
-            Object title = XmlUtil.getByXPath("//item/title", item, XPathConstants.STRING);
+            Element title = XmlUtil.getElement(item, "title");
             // 标题
-            problem.setTitle((String) title);
+            problem.setTitle(title.getTextContent());
 
             HashMap<String, String> srcMapUrl = new HashMap<>();
             List<Element> images = XmlUtil.getElements(item, "img");
@@ -142,21 +141,24 @@ public class ImportFpsController {
                 srcMapUrl.put(src, Constants.File.IMG_API.getPath() + fileName);
             }
 
-            String description = (String) XmlUtil.getByXPath("//item/description", item, XPathConstants.STRING);
+            Element descriptionElement = XmlUtil.getElement(item, "description");
+            String description = descriptionElement.getTextContent();
             for (Map.Entry<String, String> entry : srcMapUrl.entrySet()) {
                 description = description.replaceAll(entry.getKey(), entry.getValue());
             }
             // 题目描述
             problem.setDescription(description);
 
-            String input = (String) XmlUtil.getByXPath("//item/input", item, XPathConstants.STRING);
+            Element inputElement = XmlUtil.getElement(item, "input");
+            String input = inputElement.getTextContent();
             for (Map.Entry<String, String> entry : srcMapUrl.entrySet()) {
                 input = input.replaceAll(entry.getKey(), entry.getValue());
             }
             // 输入描述
             problem.setInput(input);
 
-            String output = (String) XmlUtil.getByXPath("//item/output", item, XPathConstants.STRING);
+            Element outputElement = XmlUtil.getElement(item, "output");
+            String output = outputElement.getTextContent();
             for (Map.Entry<String, String> entry : srcMapUrl.entrySet()) {
                 output = output.replaceAll(entry.getKey(), entry.getValue());
             }
@@ -164,14 +166,16 @@ public class ImportFpsController {
             problem.setOutput(output);
 
             // 提示
-            String hint = (String) XmlUtil.getByXPath("//item/hint", item, XPathConstants.STRING);
+            Element hintElement = XmlUtil.getElement(item, "hint");
+            String hint = hintElement.getTextContent();
             for (Map.Entry<String, String> entry : srcMapUrl.entrySet()) {
                 hint = hint.replaceAll(entry.getKey(), entry.getValue());
             }
             problem.setHint(hint);
 
             // 来源
-            String source = (String) XmlUtil.getByXPath("//item/source", item, XPathConstants.STRING);
+            Element sourceElement = XmlUtil.getElement(item, "source");
+            String source = sourceElement.getTextContent();
             problem.setSource(source);
 
             // ms
