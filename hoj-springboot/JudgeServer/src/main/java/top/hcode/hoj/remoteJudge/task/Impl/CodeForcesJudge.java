@@ -24,7 +24,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
     public static final String HOST = "https://codeforces.com/";
     public static final String LOGIN_URL = "enter";
     public static final String SUBMIT_URL = "problemset/submit";
-    public static final String SUBMISSION_RESULT_URL = "api/user.status?handle=%s&from=1&count=300";
+    public static final String SUBMISSION_RESULT_URL = "api/user.status?handle=%s&from=1&count=1000";
     public static final String CE_INFO_URL = "data/submitSource";
     private List<HttpCookie> cookies = new LinkedList<>();
 
