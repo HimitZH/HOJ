@@ -192,7 +192,7 @@ public class AdminJudgeController {
 
     public boolean isHasSubmitIdRemoteRejudge(Long vjudgeSubmitId, int status) {
         boolean isHasSubmitIdRemoteRejudge = false;
-        if (Objects.nonNull(vjudgeSubmitId) &&
+        if (vjudgeSubmitId != null &&
                 (status == Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus()
                         || status == Constants.Judge.STATUS_COMPILING.getStatus()
                         || status == Constants.Judge.STATUS_PENDING.getStatus()
