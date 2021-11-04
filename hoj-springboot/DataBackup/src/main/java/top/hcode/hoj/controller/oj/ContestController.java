@@ -303,7 +303,7 @@ public class ContestController {
         // 设置比赛题目的标题为设置展示标题
         problem.setTitle(contestProblem.getDisplayTitle());
 
-        List<String> tagsStr = new LinkedList<>();
+        List<Tag> tags = new LinkedList<>();
 
         // 比赛结束后才开放标签和source、出题人、难度
         if (contest.getStatus().intValue() != Constants.Contest.STATUS_ENDED.getCode()) {
@@ -318,9 +318,7 @@ public class ContestController {
                 tidList.add(problemTag.getTid());
             });
             if (tidList.size() != 0) {
-                tagService.listByIds(tidList).forEach(tag -> {
-                    tagsStr.add(tag.getName());
-                });
+                tags = (List<Tag>) tagService.listByIds(tidList);
             }
         }
         // 记录 languageId对应的name
@@ -368,7 +366,7 @@ public class ContestController {
             }
         }
         // 将数据统一写入到一个Vo返回数据实体类中
-        ProblemInfoVo problemInfoVo = new ProblemInfoVo(problem, tagsStr, languagesStr, problemCount, LangNameAndCode);
+        ProblemInfoVo problemInfoVo = new ProblemInfoVo(problem, tags, languagesStr, problemCount, LangNameAndCode);
         return CommonResult.successResponse(problemInfoVo, "获取成功");
     }
 

@@ -182,8 +182,11 @@
           >
             <template v-slot="{ row }">
               <span
-                class="el-tag el-tag--medium el-tag--light is-hit"
-                style="margin-right: 7px;margin-top:4px"
+                class="el-tag el-tag--small"
+                :style="
+                  'margin-right:7px;color:#FFF;background-color:' +
+                    (tag.color ? tag.color : '#409eff')
+                "
                 v-for="tag in row.tags"
                 :key="tag.id"
                 >{{ tag.name }}</span
@@ -247,6 +250,10 @@
             :disabled="query.tagId == tag.id"
             size="mini"
             class="tag-btn"
+            :style="
+              'color:#FFF;background-color:' +
+                (tag.color ? tag.color : '#409eff')
+            "
             >{{ tag.name }}
           </el-button>
           <el-button long id="pick-one" @click="pickone">

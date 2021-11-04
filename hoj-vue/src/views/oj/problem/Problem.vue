@@ -41,12 +41,13 @@
                         >{{ $t('m.Show_Tags') }}</el-tag
                       >
                       <el-tag
-                        v-for="tag in problemData.tags"
-                        :key="tag"
-                        effect="plain"
+                        v-for="(tag, index) in problemData.tags"
+                        :key="index"
                         size="small"
+                        :color="tag.color ? tag.color : '#409eff'"
+                        effect="dark"
                         style="margin-right:5px;margin-top:2px"
-                        >{{ tag }}</el-tag
+                        >{{ tag.name }}</el-tag
                       >
                     </el-popover>
                   </div>

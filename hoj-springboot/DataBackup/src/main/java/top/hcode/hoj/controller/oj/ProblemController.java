@@ -21,8 +21,6 @@ import top.hcode.hoj.utils.Constants;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -233,7 +231,7 @@ public class ProblemController {
         QueryWrapper<Problem> wrapper = new QueryWrapper<Problem>().eq("problem_id", problemId);
 
         //查询题目详情，题目标签，题目语言，题目做题情况
-        Problem problem = problemService.getOne(wrapper,false);
+        Problem problem = problemService.getOne(wrapper, false);
         if (problem == null) {
             return CommonResult.errorResponse("该题号对应的题目不存在", CommonResult.STATUS_NOT_FOUND);
         }
@@ -248,12 +246,9 @@ public class ProblemController {
         problemTagService.list(problemTagQueryWrapper).forEach(problemTag -> {
             tidList.add(problemTag.getTid());
         });
-        List<String> tagsStr = new LinkedList<>();
-        if (tidList.size() != 0) {
-            tagService.listByIds(tidList).forEach(tag -> {
-                tagsStr.add(tag.getName());
-            });
-        }
+
+        List<Tag> tags = (List<Tag>) tagService.listByIds(tidList);
+
         // 记录 languageId对应的name
         HashMap<Long, String> tmpMap = new HashMap<>();
 
@@ -282,7 +277,7 @@ public class ProblemController {
             }
         }
         // 将数据统一写入到一个Vo返回数据实体类中
-        ProblemInfoVo problemInfoVo = new ProblemInfoVo(problem, tagsStr, languagesStr, problemCount, LangNameAndCode);
+        ProblemInfoVo problemInfoVo = new ProblemInfoVo(problem, tags, languagesStr, problemCount, LangNameAndCode);
         return CommonResult.successResponse(problemInfoVo, "获取成功");
     }
 
