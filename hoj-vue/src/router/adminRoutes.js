@@ -9,6 +9,7 @@ const SysNotice= ()=>import('@/views/admin/general/SysNotice')
 const SystemConfig= ()=>import('@/views/admin/general/SystemConfig')
 const ProblemList= ()=>import('@/views/admin/problem/ProblemList')
 const Problem= ()=>import('@/views/admin/problem/Problem')
+const Tag= ()=>import('@/views/admin/problem/Tag')
 const ProblemImportAndExport= ()=>import('@/views/admin/problem/ImportAndExport')
 const Contest= ()=>import('@/views/admin/contest/Contest')
 const ContestList= ()=>import('@/views/admin/contest/ContestList')
@@ -78,6 +79,12 @@ const adminRoutes= [
           name: 'admin-edit-problem',
           component: Problem,
           meta: { title:'Edit Problem'},
+        },
+        {
+          path: 'problem/tag',
+          name: 'admin-problem-tag',
+          component: Tag,
+          meta: { title:'Admin Tag'},
         },
         {
           path: 'problem/batch-operation',

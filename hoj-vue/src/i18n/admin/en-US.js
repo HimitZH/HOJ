@@ -226,6 +226,17 @@ export const m = {
   Spj_Code_not_Compile_Success:'Spj Code was not compiled successfully, please compile again!',
 
 
+  // /views/admin/problem/tag
+  Admin_Tag:'Admin Tag',
+  Add_Tag:'Add Tag',
+  Update_Tag:'Update Tag',
+  To_Add:'Add',
+  To_Update:'Update',
+  Tag_Name:'Tag Name',
+  Tag_Color:'Tag Color',
+  Tag_Attribution:'Tag Attribution',
+  Delete_Tag_Tips:'Are you sure you want to delete this tag?',
+
   // /views/admin/problem/ImportAndExport.vue
   Export_Problem:'Export Problem',
   Export:'Export',

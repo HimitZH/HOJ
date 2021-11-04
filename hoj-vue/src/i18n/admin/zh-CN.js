@@ -225,6 +225,17 @@ export const m = {
   Spj_Code_not_Compile_Success:'Spj代码没有编译成功，请重新编译！',
 
 
+  // /views/admin/problem/tag
+  Admin_Tag:'标签管理',
+  Add_Tag:'添加标签',
+  Update_Tag:'修改标签',
+  To_Add:'添加',
+  To_Update:'更新',
+  Tag_Name:'标签名称',
+  Tag_Color:'标签颜色',
+  Tag_Attribution:'标签归属',
+  Delete_Tag_Tips:'你是否确定删除该标签？',
+
   // /views/admin/problem/ImportAndExport.vue
   Export_Problem:'导出题目',
   Export:'导出',
