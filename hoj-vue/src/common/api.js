@@ -978,6 +978,26 @@ const adminApi = {
     })
   },
 
+  admin_addTag (data) {
+    return ajax('/api/admin/tag', 'post', {
+      data
+    })
+  },
+
+  admin_updateTag (data) {
+    return ajax('/api/admin/tag', 'put', {
+      data
+    })
+  },
+
+  admin_deleteTag (tid) {
+    return ajax('/api/admin/tag', 'delete', {
+      params: {
+        tid
+      }
+    })
+  },
+
   exportProblems (data) {
     return ajax('export_problem', 'post', {
       data

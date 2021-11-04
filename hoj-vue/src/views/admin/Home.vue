@@ -43,6 +43,9 @@
           <el-menu-item index="/admin/problem/create">{{
             $t('m.Create_Problem')
           }}</el-menu-item>
+          <el-menu-item index="/admin/problem/tag">{{
+            $t('m.Admin_Tag')
+          }}</el-menu-item>
           <el-menu-item
             index="/admin/problem/batch-operation"
             v-if="isSuperAdmin"
@@ -275,6 +278,17 @@
               }}</mu-list-item-title>
             </mu-list-item>
             <mu-list-item
+              v-if="isSuperAdmin || isProblemAdmin"
+              button
+              :ripple="false"
+              slot="nested"
+              to="/admin/problem/tag"
+              @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
+            >
+              <mu-list-item-title>{{ $t('m.Admin_Tag') }}</mu-list-item-title>
+            </mu-list-item>
+            <mu-list-item
               v-if="isSuperAdmin"
               button
               :ripple="false"
@@ -463,6 +477,7 @@ export default {
     ...mapGetters([
       'userInfo',
       'isSuperAdmin',
+      'isProblemAdmin',
       'isAuthenticated',
       'websiteConfig',
       'webLanguage',

@@ -3,7 +3,7 @@ package top.hcode.hoj.pojo.vo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import top.hcode.hoj.pojo.entity.Problem;
-
+import top.hcode.hoj.pojo.entity.Tag;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ProblemInfoVo {
     private Problem problem;
-    private List<String> tags;
+    private List<Tag> tags;
     private List<String> languages;
     private ProblemCountVo problemCount;
     private HashMap<String, String> codeTemplate;
