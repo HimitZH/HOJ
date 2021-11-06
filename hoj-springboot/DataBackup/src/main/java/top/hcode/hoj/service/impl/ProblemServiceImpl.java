@@ -564,6 +564,9 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             case "POJ":
                 problemStrategy = new POJProblemStrategy();
                 break;
+            case "GYM":
+                problemStrategy = new GYMProblemStrategy();
+                break;
             default:
                 throw new Exception("未知的OJ的名字，暂时不支持！");
         }
@@ -581,7 +584,11 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         boolean addProblemResult = problemMapper.insert(problem) == 1;
         // 为新的其它oj题目添加对应的language
         QueryWrapper<Language> languageQueryWrapper = new QueryWrapper<>();
-        languageQueryWrapper.eq("oj", OJName);
+        if (OJName.equals("GYM")) {
+            languageQueryWrapper.eq("oj", "CF");
+        } else {
+            languageQueryWrapper.eq("oj", OJName);
+        }
         List<Language> OJLanguageList = languageService.list(languageQueryWrapper);
         List<ProblemLanguage> problemLanguageList = new LinkedList<>();
         for (Language language : OJLanguageList) {

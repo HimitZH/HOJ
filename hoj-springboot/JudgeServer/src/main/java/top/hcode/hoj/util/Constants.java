@@ -67,6 +67,8 @@ public class Constants {
 
         CF_JUDGE("CF"),
 
+        GYM_JUDGE("GYM"),
+
         POJ_JUDGE("POJ"),
 
         HDU_REMOTE_JUDGE_ACCOUNT("Hdu Remote Judge Account"),

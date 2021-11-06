@@ -143,7 +143,7 @@
           <vxe-table-column
             field="problemId"
             :title="$t('m.Problem_ID')"
-            width="100"
+            width="150"
             show-overflow
           ></vxe-table-column>
 

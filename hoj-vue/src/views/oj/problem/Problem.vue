@@ -153,64 +153,73 @@
                 </div>
 
                 <div id="problem-content">
-                  <p class="title">{{ $t('m.Description') }}</p>
-                  <p
-                    class="content markdown-body"
-                    v-html="problemData.problem.description"
-                    v-katex
-                    v-highlight
-                  ></p>
-                  <p class="title">{{ $t('m.Input') }}</p>
-                  <p
-                    class="content markdown-body"
-                    v-html="problemData.problem.input"
-                    v-katex
-                    v-highlight
-                  ></p>
+                  <template v-if="problemData.problem.description">
+                    <p class="title">{{ $t('m.Description') }}</p>
+                    <p
+                      class="content markdown-body"
+                      v-html="problemData.problem.description"
+                      v-katex
+                      v-highlight
+                    ></p>
+                  </template>
 
-                  <p class="title">{{ $t('m.Output') }}</p>
-                  <p
-                    class="content markdown-body"
-                    v-html="problemData.problem.output"
-                    v-katex
-                    v-highlight
-                  ></p>
+                  <template v-if="problemData.problem.input">
+                    <p class="title">{{ $t('m.Input') }}</p>
+                    <p
+                      class="content markdown-body"
+                      v-html="problemData.problem.input"
+                      v-katex
+                      v-highlight
+                    ></p>
+                  </template>
 
-                  <div
-                    v-for="(example, index) of problemData.problem.examples"
-                    :key="index"
-                  >
-                    <div class="flex-container example">
-                      <div class="example-input">
-                        <p class="title">
-                          {{ $t('m.Sample_Input') }} {{ index + 1 }}
-                          <a
-                            class="copy"
-                            v-clipboard:copy="example.input"
-                            v-clipboard:success="onCopy"
-                            v-clipboard:error="onCopyError"
-                          >
-                            <i class="el-icon-document-copy"></i>
-                          </a>
-                        </p>
-                        <pre>{{ example.input }}</pre>
-                      </div>
-                      <div class="example-output">
-                        <p class="title">
-                          {{ $t('m.Sample_Output') }} {{ index + 1 }}
-                          <a
-                            class="copy"
-                            v-clipboard:copy="example.output"
-                            v-clipboard:success="onCopy"
-                            v-clipboard:error="onCopyError"
-                          >
-                            <i class="el-icon-document-copy"></i>
-                          </a>
-                        </p>
-                        <pre>{{ example.output }}</pre>
+                  <template v-if="problemData.problem.output">
+                    <p class="title">{{ $t('m.Output') }}</p>
+                    <p
+                      class="content markdown-body"
+                      v-html="problemData.problem.output"
+                      v-katex
+                      v-highlight
+                    ></p>
+                  </template>
+
+                  <template v-if="problemData.problem.examples">
+                    <div
+                      v-for="(example, index) of problemData.problem.examples"
+                      :key="index"
+                    >
+                      <div class="flex-container example">
+                        <div class="example-input">
+                          <p class="title">
+                            {{ $t('m.Sample_Input') }} {{ index + 1 }}
+                            <a
+                              class="copy"
+                              v-clipboard:copy="example.input"
+                              v-clipboard:success="onCopy"
+                              v-clipboard:error="onCopyError"
+                            >
+                              <i class="el-icon-document-copy"></i>
+                            </a>
+                          </p>
+                          <pre>{{ example.input }}</pre>
+                        </div>
+                        <div class="example-output">
+                          <p class="title">
+                            {{ $t('m.Sample_Output') }} {{ index + 1 }}
+                            <a
+                              class="copy"
+                              v-clipboard:copy="example.output"
+                              v-clipboard:success="onCopy"
+                              v-clipboard:error="onCopyError"
+                            >
+                              <i class="el-icon-document-copy"></i>
+                            </a>
+                          </p>
+                          <pre>{{ example.output }}</pre>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </template>
 
                   <template v-if="problemData.problem.hint">
                     <p class="title">{{ $t('m.Hint') }}</p>
@@ -1289,7 +1298,10 @@ export default {
       }
     },
     isCFProblem() {
-      if (this.problemID.indexOf('CF-') == 0) {
+      if (
+        this.problemID.indexOf('CF-') == 0 ||
+        this.problemID.indexOf('GYM-') == 0
+      ) {
         return true;
       } else {
         return false;

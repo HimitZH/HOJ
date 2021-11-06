@@ -23,6 +23,22 @@ public class CFProblemStrategy extends ProblemStrategy {
     public static final String HOST = "https://codeforces.com";
     public static final String PROBLEM_URL = "/problemset/problem/%s/%s";
 
+    public String getJudgeName() {
+        return JUDGE_NAME;
+    }
+
+    public String getProblemUrl(String contestId, String problemNum) {
+        return HOST + String.format(PROBLEM_URL, contestId, problemNum);
+    }
+
+    public String getProblemSource(String html, String problemId, String contestId, String problemNum) {
+        return String.format("<p>Problem：<a style='color:#1A5CC8' href='https://codeforces.com/problemset/problem/%s/%s'>%s</a></p><p>" +
+                        "Contest：" + ReUtil.get("(<a[^<>]+/contest/\\d+\">.+?</a>)", html, 1)
+                        .replace("/contest", HOST + "/contest")
+                        .replace("color: black", "color: #009688;") + "</p>",
+                contestId, problemNum, getJudgeName() + "-" + problemId);
+    }
+
     @Override
     public RemoteProblemInfo getProblemInfo(String problemId, String author) throws Exception {
 
@@ -40,12 +56,11 @@ public class CFProblemStrategy extends ProblemStrategy {
             throw new Exception("Codeforces的题号格式错误！");
         }
 
-        String url = HOST + String.format(PROBLEM_URL, contestId, problemNum);
 
-        String html = HttpUtil.get(url);
+        String html = HttpUtil.get(getProblemUrl(contestId, problemNum));
 
         Problem info = new Problem();
-        info.setProblemId(JUDGE_NAME + "-" + problemId);
+        info.setProblemId(getJudgeName() + "-" + problemId);
 
         info.setTitle(ReUtil.get("<div class=\"title\">\\s*" + problemNum + "\\. ([\\s\\S]*?)</div>", html, 1).trim());
 
@@ -70,12 +85,18 @@ public class CFProblemStrategy extends ProblemStrategy {
             tmpDesc = ReUtil.get("<div class=\"input-file\">([\\s\\S]*?)</div><div class=\"input-specification", html, 1);
         }
 
-        if (StringUtils.isEmpty(tmpDesc)){
+        if (StringUtils.isEmpty(tmpDesc)) {
             // 交互题
             tmpDesc = ReUtil.get("standard output\\s*</div>\\s*</div>\\s*<div>([\\s\\S]*?)</div>\\s*<div>\\s*<div class=\"section-title", html, 1);
         }
 
-        if (!StringUtils.isEmpty(tmpDesc)){
+        if (StringUtils.isEmpty(tmpDesc)) {
+            // 单单只有题面描述
+            tmpDesc = ReUtil.get("standard output\\s*</div>\\s*</div>\\s*<div>([\\s\\S]*?)</div>",
+                    html, 1);
+        }
+
+        if (!StringUtils.isEmpty(tmpDesc)) {
             tmpDesc = tmpDesc.replaceAll("\\$\\$\\$", "\\$")
                     .replaceAll("src=\"../../", "src=\"" + HOST + "/")
                     .trim();
@@ -85,20 +106,20 @@ public class CFProblemStrategy extends ProblemStrategy {
 
         String inputDesc = ReUtil.get("<div class=\"section-title\">\\s*Input\\s*</div>([\\s\\S]*?)</div>\\s*<div class=\"output-specification\">", html, 1);
 
-        if (StringUtils.isEmpty(inputDesc)){
+        if (StringUtils.isEmpty(inputDesc)) {
             inputDesc = ReUtil.get("<div class=\"section-title\">\\s*Interaction\\s*</div>([\\s\\S]*?)</div>\\s*<div class=\"sample-tests\">", html, 1);
         }
-        if (StringUtils.isEmpty(inputDesc)){
+        if (StringUtils.isEmpty(inputDesc)) {
             inputDesc = ReUtil.get("<div class=\"input-specification\">\\s*<div class=\"section-title\">\\s*Input\\s*</div>([\\s\\S]*?)</div>", html, 1);
         }
-        if (!StringUtils.isEmpty(inputDesc)){
+        if (!StringUtils.isEmpty(inputDesc)) {
             inputDesc = inputDesc.replaceAll("\\$\\$\\$", "\\$").trim();
         }
 
         info.setInput(inputDesc);
 
         String outputDesc = ReUtil.get("<div class=\"section-title\">\\s*Output\\s*</div>([\\s\\S]*?)</div>\\s*<div class=\"sample-tests\">", html, 1);
-        if (!StringUtils.isEmpty(outputDesc)){
+        if (!StringUtils.isEmpty(outputDesc)) {
             outputDesc = outputDesc.replaceAll("\\$\\$\\$", "\\$").trim();
         }
         info.setOutput(outputDesc);
@@ -134,10 +155,7 @@ public class CFProblemStrategy extends ProblemStrategy {
 
         info.setIsRemote(true);
 
-        info.setSource(String.format("<p>Problem：<a style='color:#1A5CC8' href='https://codeforces.com/problemset/problem/%s/%s'>%s</a></p><p>" +
-                        "Contest：" + ReUtil.get("(<a[^<>]+/contest/\\d+\">.+?</a>)", html, 1).replace("/contest", HOST + "/contest")
-                        .replace("color: black", "color: #009688;") + "</p>",
-                contestId, problemNum, JUDGE_NAME + "-" + problemId));
+        info.setSource(getProblemSource(html, problemId, contestId, problemNum));
 
         info.setType(0)
                 .setAuth(1)

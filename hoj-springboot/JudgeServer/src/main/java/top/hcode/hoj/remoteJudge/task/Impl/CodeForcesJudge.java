@@ -26,8 +26,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
     public static final String SUBMIT_URL = "problemset/submit";
     public static final String SUBMISSION_RESULT_URL = "api/user.status?handle=%s&from=1&count=1000";
     public static final String CE_INFO_URL = "data/submitSource";
-    private List<HttpCookie> cookies = new LinkedList<>();
-
+    protected List<HttpCookie> cookies = new LinkedList<>();
 
     private static final Map<String, Constants.Judge> statusMap = new HashMap<String, Constants.Judge>() {{
         put("FAILED", Constants.Judge.STATUS_SUBMITTED_FAILED);
@@ -204,8 +203,12 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         return MapUtil.builder(new HashMap<String, Object>()).put("status", response.getStatus()).map();
     }
 
+    protected String getSubmitUrl(String contestNum) {
+        return IMAGE_HOST + SUBMIT_URL;
+    }
+
     public void submitCode(String contestId, String problemID, String languageID, String code) {
-        String csrfToken = getCsrfToken(IMAGE_HOST + SUBMIT_URL);
+        String csrfToken = getCsrfToken(getSubmitUrl(contestId));
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("csrf_token", csrfToken);
         paramMap.put("_tta", 594);
@@ -219,7 +222,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         paramMap.put("source", code + getRandomBlankString());
         paramMap.put("sourceCodeConfirmed", true);
         paramMap.put("doNotShowWarningAgain", "on");
-        HttpRequest request = HttpUtil.createPost(IMAGE_HOST + SUBMIT_URL + "?csrf_token=" + csrfToken);
+        HttpRequest request = HttpUtil.createPost(getSubmitUrl(contestId) + "?csrf_token=" + csrfToken);
         request.form(paramMap);
         request.cookie(this.cookies);
         request.header("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36");

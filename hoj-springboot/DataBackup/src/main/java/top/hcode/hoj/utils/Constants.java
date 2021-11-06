@@ -59,6 +59,7 @@ public class Constants {
     public enum RemoteOJ {
         HDU("HDU"),
         CODEFORCES("CF"),
+        GYM("GYM"),
         POJ("POJ");
 
         private final String name;
@@ -164,6 +165,8 @@ public class Constants {
         HOME_CAROUSEL_FOLDER("/hoj/file/carousel"),
 
         MARKDOWN_FILE_FOLDER("/hoj/file/md"),
+
+        PROBLEM_FILE_FOLDER("/hoj/file/problem"),
 
         CONTEST_TEXT_PRINT_FOLDER("/hoj/file/contest_print"),
 

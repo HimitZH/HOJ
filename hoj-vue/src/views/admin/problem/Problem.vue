@@ -1108,7 +1108,7 @@ export default {
         }
       }
 
-      if (!this.problem.examples.length) {
+      if (!this.problem.examples.length && !this.problem.isRemote) {
         myMessage.error(
           this.$i18n.t('m.Problem_Examples') +
             ' ' +
