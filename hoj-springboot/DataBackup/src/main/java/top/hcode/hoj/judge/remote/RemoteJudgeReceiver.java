@@ -82,6 +82,11 @@ public class RemoteJudgeReceiver {
         boolean isNeedAccountRejudge = remoteOJName.equals(Constants.RemoteOJ.POJ.getName())
                 && isHasSubmitIdRemoteReJudge;
 
+        String remoteOJAccountType = remoteOJName; // GYM与CF共用账号
+        if (remoteOJName.equals(Constants.RemoteOJ.GYM.getName())) {
+            remoteOJAccountType = Constants.RemoteOJ.CODEFORCES.getName();
+        }
+
         ToJudge toJudge = new ToJudge();
         toJudge.setJudge(judge)
                 .setTryAgainNum(tryAgainNum)
@@ -101,7 +106,7 @@ public class RemoteJudgeReceiver {
             QueryWrapper<RemoteJudgeAccount> remoteJudgeAccountQueryWrapper = new QueryWrapper<>();
             remoteJudgeAccountQueryWrapper
                     .eq("status", true)
-                    .eq("oj", remoteOJName)
+                    .eq("oj", remoteOJAccountType)
                     .last("for update"); // 开启悲观锁
 
             List<RemoteJudgeAccount> remoteJudgeAccountList = remoteJudgeAccountService.list(remoteJudgeAccountQueryWrapper);
@@ -165,7 +170,7 @@ public class RemoteJudgeReceiver {
             } else {
 
                 if (isNeedAccountRejudge) {
-                    if (StringUtils.isEmpty(judge.getVjudgeUsername())){
+                    if (StringUtils.isEmpty(judge.getVjudgeUsername())) {
                         // poj以往的账号丢失了，那么只能重新从头到尾提交
                         remoteJudgeDispatcher.sendTask(judge, token, remoteJudgeProblem, isContest,
                                 tryAgainNum + 1, false);
@@ -173,9 +178,9 @@ public class RemoteJudgeReceiver {
                     }
 
                     QueryWrapper<RemoteJudgeAccount> queryWrapper = new QueryWrapper<>();
-                    queryWrapper.eq("oj", remoteOJName).eq("username", judge.getVjudgeUsername());
+                    queryWrapper.eq("oj", remoteOJAccountType).eq("username", judge.getVjudgeUsername());
                     int count = remoteJudgeAccountService.count(queryWrapper);
-                    if (count == 0){
+                    if (count == 0) {
                         // poj以往的账号丢失了，那么只能重新从头到尾提交
                         remoteJudgeDispatcher.sendTask(judge, token, remoteJudgeProblem, isContest,
                                 tryAgainNum + 1, false);

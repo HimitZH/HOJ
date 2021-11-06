@@ -67,14 +67,14 @@ public class CommonController {
 
 
     @GetMapping("/get-all-problem-tags")
-    public CommonResult getAllProblemTagsList(@RequestParam(value = "oj",defaultValue = "ME")String oj) {
+    public CommonResult getAllProblemTagsList(@RequestParam(value = "oj", defaultValue = "ME") String oj) {
         List<Tag> tagList;
         oj = oj.toUpperCase();
-        if (oj.equals("ALL")){
+        if (oj.equals("ALL")) {
             tagList = tagService.list();
-        }else {
+        } else {
             QueryWrapper<Tag> tagQueryWrapper = new QueryWrapper<>();
-            tagQueryWrapper.eq( "oj", oj);
+            tagQueryWrapper.eq("oj", oj);
             tagList = tagService.list(tagQueryWrapper);
         }
         if (tagList != null) {
@@ -110,6 +110,10 @@ public class CommonController {
             }
         }
 
+        if (OJ.equals("GYM")) {  // GYM用与CF一样的编程语言列表
+            OJ = "CF";
+        }
+
         QueryWrapper<Language> queryWrapper = new QueryWrapper<>();
         // 获取对应OJ支持的语言列表
         queryWrapper.eq(all != null && !all, "oj", OJ);
@@ -143,7 +147,7 @@ public class CommonController {
         if (codeTemplates != null && codeTemplates.size() > 0) {
             return CommonResult.successResponse(codeTemplates, "获取该题目的代码模板列表成功！");
         } else {
-            return CommonResult.successResponse(codeTemplates,"获取该题目的代码模板列表失败！");
+            return CommonResult.successResponse(codeTemplates, "获取该题目的代码模板列表失败！");
         }
     }
 

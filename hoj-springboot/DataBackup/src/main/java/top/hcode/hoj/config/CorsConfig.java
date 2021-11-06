@@ -28,9 +28,10 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // /api/public/img/** /api/public/file/**
-        registry.addResourceHandler(Constants.File.IMG_API.getPath() + "**",Constants.File.FILE_API.getPath() + "**")
+        registry.addResourceHandler(Constants.File.IMG_API.getPath() + "**", Constants.File.FILE_API.getPath() + "**")
                 .addResourceLocations("file:" + Constants.File.USER_AVATAR_FOLDER.getPath() + File.separator,
                         "file:" + Constants.File.MARKDOWN_FILE_FOLDER.getPath() + File.separator,
-                        "file:" + Constants.File.HOME_CAROUSEL_FOLDER.getPath() + File.separator);
+                        "file:" + Constants.File.HOME_CAROUSEL_FOLDER.getPath() + File.separator,
+                        "file:" + Constants.File.PROBLEM_FILE_FOLDER.getPath() + File.separator);
     }
 }

@@ -153,6 +153,7 @@ export const REMOTE_OJ = [
   {name:'HDU',key:"HDU"},
   {name:"Codeforces",key:"CF"},
   {name:"POJ",key:"POJ"},
+  {name:"GYM",key:"GYM"},
 ]
 
 export const CONTEST_STATUS = {

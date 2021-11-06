@@ -74,7 +74,7 @@ public class JudgeController {
 
         HashMap<String, Object> res = new HashMap<>();
 
-        res.put("version", "1.6.0");
+        res.put("version", "1.7.0");
         res.put("currentTime", new Date());
         res.put("judgeServerName", name);
         res.put("cpu", Runtime.getRuntime().availableProcessors());
