@@ -63,7 +63,8 @@ public class RemoteJudgeToSubmit {
             // 将使用的账号放回对应列表
             UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
             remoteJudgeAccountUpdateWrapper.set("status", true)
-                    .eq("username", username);
+                    .eq("username", username)
+                    .eq("status", false);
             if (remoteJudge.equals("GYM")) {
                 remoteJudgeAccountUpdateWrapper.eq("oj", "CF");
             } else {
@@ -94,7 +95,8 @@ public class RemoteJudgeToSubmit {
             if (!remoteJudge.equals(Constants.RemoteJudge.POJ_JUDGE.getName())) {
                 UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
                 remoteJudgeAccountUpdateWrapper.set("status", true)
-                        .eq("username", username);
+                        .eq("username", username)
+                        .eq("status", false);
                 if (remoteJudge.equals("GYM")) {
                     remoteJudgeAccountUpdateWrapper.eq("oj", "CF");
                 } else {

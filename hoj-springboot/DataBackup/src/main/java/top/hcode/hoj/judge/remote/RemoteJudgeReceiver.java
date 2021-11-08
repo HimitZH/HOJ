@@ -45,6 +45,7 @@ public class RemoteJudgeReceiver {
     private ApplicationContext applicationContext;
 
     @Async("judgeTaskAsyncPool")
+    @Transactional
     public void processWaitingTask() {
         // 如果队列中还有任务，则继续处理
         if (redisUtils.lGetListSize(Constants.Judge.STATUS_REMOTE_JUDGE_WAITING_HANDLE.getName()) > 0) {
