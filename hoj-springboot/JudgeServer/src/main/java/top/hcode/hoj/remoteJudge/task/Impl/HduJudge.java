@@ -12,6 +12,7 @@ import top.hcode.hoj.util.Constants;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,7 +56,7 @@ public class HduJudge implements RemoteJudgeStrategy {
                 .put("check", "0")
                 .put("language", getLanguage(language))
                 .put("problemid", problemId)
-                .put("usercode", userCode)
+                .put("usercode", userCode + getRandomBlankString())
                 .map())
                 .execute();
         if (response.getStatus() != 200 && response.getStatus() != 302) {
@@ -177,4 +178,14 @@ public class HduJudge implements RemoteJudgeStrategy {
             put("Presentation Error", Constants.Judge.STATUS_PRESENTATION_ERROR);
         }
     };
+
+    protected String getRandomBlankString() {
+        StringBuilder string = new StringBuilder("\n");
+        int random = new Random().nextInt(Integer.MAX_VALUE);
+        while (random > 0) {
+            string.append(random % 2 == 0 ? ' ' : '\t');
+            random /= 2;
+        }
+        return string.toString();
+    }
 }

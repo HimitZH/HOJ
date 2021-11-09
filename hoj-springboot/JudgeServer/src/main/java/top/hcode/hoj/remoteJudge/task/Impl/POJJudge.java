@@ -11,6 +11,7 @@ import top.hcode.hoj.util.Constants;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -56,7 +57,7 @@ public class POJJudge implements RemoteJudgeStrategy {
                 .put("language", getLanguage(language))
                 .put("submit", "Submit")
                 .put("problem_id", problemId)
-                .put("source", Base64.encode(userCode))
+                .put("source", Base64.encode(userCode+getRandomBlankString()))
                 .put("encoded", 1).map())
                 .execute();
         if (response.getStatus() != 302 && response.getStatus() != 200) {
@@ -185,4 +186,14 @@ public class POJJudge implements RemoteJudgeStrategy {
             put("Compile Error", Constants.Judge.STATUS_COMPILE_ERROR);
         }
     };
+
+    protected String getRandomBlankString() {
+        StringBuilder string = new StringBuilder("\n");
+        int random = new Random().nextInt(Integer.MAX_VALUE);
+        while (random > 0) {
+            string.append(random % 2 == 0 ? ' ' : '\t');
+            random /= 2;
+        }
+        return string.toString();
+    }
 }

@@ -36,7 +36,7 @@ public class RemoteJudgeAccount {
     @ApiModelProperty(value = "是否可用")
     private Boolean status;
 
-    @TableField(fill = FieldFill.INSERT)
+    @ApiModelProperty(value = "废弃")
     private Long version;
 
     @TableField(fill = FieldFill.INSERT)

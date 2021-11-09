@@ -278,11 +278,10 @@ public class ImportFpsController {
         }
         if ("1.1".equals(version)) {
             return Integer.parseInt(timeLimit) * (int) Math.pow(1000, index);
-        } else if ("1.2".equals(version)) {
+        } else {
             double tmp = (Double.parseDouble(timeLimit) * Math.pow(1000, index));
             return (int) tmp;
         }
-        throw new RuntimeException("Invalid fps version:" + version);
     }
 
     private Integer getMemoryLimit(Element item) {
