@@ -75,7 +75,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         submitCode(contestId, problemNum, getLanguage(language), userCode);
         TimeUnit.SECONDS.sleep(3);
         // 获取提交的题目id
-        Long maxRunId = getMaxRunId(username, problemId);
+        Long maxRunId = getMaxRunId(username, contestId, problemNum, problemId);
 
         return MapUtil.builder(new HashMap<String, Object>())
                 .put("runId", maxRunId)
@@ -83,7 +83,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
                 .map();
     }
 
-    private Long getMaxRunId(String username, String problemId) throws InterruptedException {
+    private Long getMaxRunId(String username, String contestNum, String problemNum, String problemId) throws InterruptedException {
         int retryNum = 0;
         String url = String.format("api/user.status?handle=%s&from=1&count=10", username);
         HttpRequest httpRequest = HttpUtil.createGet(HOST + url);
@@ -95,16 +95,6 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
             TimeUnit.SECONDS.sleep(3);
             httpResponse = httpRequest.execute();
             retryNum++;
-        }
-
-        String contestNum;
-        String problemNum;
-        if (NumberUtil.isInteger(problemId)) {
-            contestNum = ReUtil.get("([0-9]+)[0-9]{2}", problemId, 1);
-            problemNum = ReUtil.get("[0-9]+([0-9]{2})", problemId, 1);
-        } else {
-            contestNum = ReUtil.get("([0-9]+)[A-Z]{1}[0-9]{0,1}", problemId, 1);
-            problemNum = ReUtil.get("[0-9]+([A-Z]{1}[0-9]{0,1})", problemId, 1);
         }
 
         try {

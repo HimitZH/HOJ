@@ -3,6 +3,7 @@ package top.hcode.hoj.remoteJudge.task;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 
 /**

@@ -3,6 +3,7 @@ package top.hcode.hoj.judge.remote;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
@@ -119,17 +120,23 @@ public class RemoteJudgeReceiver {
                     // POJ已有submitId的重判需要使用原来的账号获取结果
                     if (isNeedAccountRejudge) {
                         if (remoteJudgeAccount.getUsername().equals(judge.getVjudgeUsername())) {
+                            UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
+                            remoteJudgeAccountUpdateWrapper.eq("id", remoteJudgeAccount.getId())
+                                    .eq("status", true)
+                                    .set("status", false);
                             judge.setVjudgePassword(remoteJudgeAccount.getPassword()); // 避免账号改密码
-                            remoteJudgeAccount.setStatus(false);
-                            boolean isOk = remoteJudgeAccountService.updateById(remoteJudgeAccount);
+                            boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
                             if (isOk) {
                                 account = remoteJudgeAccount;
                                 break;
                             }
                         }
                     } else {
-                        remoteJudgeAccount.setStatus(false);
-                        boolean isOk = remoteJudgeAccountService.updateById(remoteJudgeAccount);
+                        UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
+                        remoteJudgeAccountUpdateWrapper.eq("id", remoteJudgeAccount.getId())
+                                .eq("status", true)
+                                .set("status", false);
+                        boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
                         if (isOk) {
                             account = remoteJudgeAccount;
                             break;
