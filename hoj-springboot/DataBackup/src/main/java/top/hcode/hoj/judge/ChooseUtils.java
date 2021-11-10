@@ -5,13 +5,16 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.pojo.entity.JudgeServer;
+import top.hcode.hoj.pojo.entity.RemoteJudgeAccount;
 import top.hcode.hoj.service.impl.JudgeServerServiceImpl;
+import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +27,7 @@ import java.util.List;
  */
 @Component
 @Slf4j(topic = "hoj")
-public class ChooseServer {
+public class ChooseUtils {
 
     @Autowired
     private NacosDiscoveryProperties discoveryProperties;
@@ -35,6 +38,9 @@ public class ChooseServer {
     @Autowired
     private JudgeServerServiceImpl judgeServerService;
 
+    @Autowired
+    private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
+
     /**
      * @param
      * @MethodName chooseServer
@@ -43,7 +49,7 @@ public class ChooseServer {
      * @Since 2021/4/15
      */
     @Transactional
-    public JudgeServer choose(Boolean isRemote) {
+    public JudgeServer chooseServer(Boolean isRemote) {
         // 获取该微服务的所有健康实例
         List<Instance> instances = getInstances(JudgeServiceName);
         if (instances.size() <= 0) {
@@ -100,6 +106,50 @@ public class ChooseServer {
             log.error("获取微服务健康实例发生异常--------->{}", e);
             return Collections.emptyList();
         }
+    }
+
+    @Transactional
+    public RemoteJudgeAccount chooseRemoteAccount(String remoteOJAccountType, String vjudgeUsername, Boolean isNeedAccountRejudge) {
+        // 过滤出当前远程oj可用的账号列表
+        QueryWrapper<RemoteJudgeAccount> remoteJudgeAccountQueryWrapper = new QueryWrapper<>();
+        remoteJudgeAccountQueryWrapper
+                .eq("status", true)
+                .eq("oj", remoteOJAccountType)
+                .last("for update"); // 开启悲观锁
+
+        List<RemoteJudgeAccount> remoteJudgeAccountList = remoteJudgeAccountService.list(remoteJudgeAccountQueryWrapper);
+
+        RemoteJudgeAccount account = null;
+
+        if (remoteJudgeAccountList.size() > 0) {
+            for (RemoteJudgeAccount remoteJudgeAccount : remoteJudgeAccountList) {
+                // POJ已有submitId的重判需要使用原来的账号获取结果
+                if (isNeedAccountRejudge) {
+                    if (remoteJudgeAccount.getUsername().equals(vjudgeUsername)) {
+                        UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
+                        remoteJudgeAccountUpdateWrapper.eq("id", remoteJudgeAccount.getId())
+                                .eq("status", true)
+                                .set("status", false);
+                        boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
+                        if (isOk) {
+                            account = remoteJudgeAccount;
+                            break;
+                        }
+                    }
+                } else {
+                    UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
+                    remoteJudgeAccountUpdateWrapper.eq("id", remoteJudgeAccount.getId())
+                            .eq("status", true)
+                            .set("status", false);
+                    boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
+                    if (isOk) {
+                        account = remoteJudgeAccount;
+                        break;
+                    }
+                }
+            }
+        }
+        return account;
     }
 
 }
