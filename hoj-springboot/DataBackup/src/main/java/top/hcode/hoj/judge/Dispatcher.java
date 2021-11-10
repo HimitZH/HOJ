@@ -5,8 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.*;
@@ -16,7 +14,6 @@ import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 
-import java.net.SocketTimeoutException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +38,7 @@ public class Dispatcher {
     private JudgeServiceImpl judgeService;
 
     @Autowired
-    private ChooseServer chooseServer;
+    private ChooseUtils chooseUtils;
 
     @Autowired
     private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
@@ -70,7 +67,7 @@ public class Dispatcher {
             @Override
             public void run() {
                 count.getAndIncrement();
-                JudgeServer judgeServer = chooseServer.choose(isRemote);
+                JudgeServer judgeServer = chooseUtils.chooseServer(isRemote);
                 if (judgeServer != null) { // 获取到判题机资源
                     CommonResult result = null;
                     try {
@@ -105,7 +102,7 @@ public class Dispatcher {
 
     public CommonResult toCompile(String path, CompileSpj data) {
         CommonResult result = CommonResult.errorResponse("没有可用的判题服务器，请重新尝试！");
-        JudgeServer judgeServer = chooseServer.choose(false);
+        JudgeServer judgeServer = chooseUtils.chooseServer(false);
         if (judgeServer != null) {
             try {
                 result = restTemplate.postForObject("http://" + judgeServer.getUrl() + path, data, CommonResult.class);
