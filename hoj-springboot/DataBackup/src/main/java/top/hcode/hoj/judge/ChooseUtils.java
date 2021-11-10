@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
+
 /**
  * @Author: Himit_ZH
  * @Date: 2021/5/24 17:30
@@ -108,14 +110,14 @@ public class ChooseUtils {
         }
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class, isolation = READ_COMMITTED)
     public RemoteJudgeAccount chooseRemoteAccount(String remoteOJAccountType, String vjudgeUsername, Boolean isNeedAccountRejudge) {
         // 过滤出当前远程oj可用的账号列表
         QueryWrapper<RemoteJudgeAccount> remoteJudgeAccountQueryWrapper = new QueryWrapper<>();
         remoteJudgeAccountQueryWrapper
                 .eq("status", true)
                 .eq("oj", remoteOJAccountType)
-                .last("for update"); // 开启悲观锁
+                .last("for update");
 
         List<RemoteJudgeAccount> remoteJudgeAccountList = remoteJudgeAccountService.list(remoteJudgeAccountQueryWrapper);
 
@@ -127,7 +129,9 @@ public class ChooseUtils {
                 if (isNeedAccountRejudge) {
                     if (remoteJudgeAccount.getUsername().equals(vjudgeUsername)) {
                         UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
-                        remoteJudgeAccountUpdateWrapper.eq("id", remoteJudgeAccount.getId())
+                        remoteJudgeAccountUpdateWrapper
+                                .eq("username", remoteJudgeAccount.getUsername())
+                                .eq("oj", remoteOJAccountType)
                                 .eq("status", true)
                                 .set("status", false);
                         boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
@@ -138,7 +142,9 @@ public class ChooseUtils {
                     }
                 } else {
                     UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
-                    remoteJudgeAccountUpdateWrapper.eq("id", remoteJudgeAccount.getId())
+                    remoteJudgeAccountUpdateWrapper
+                            .eq("username", remoteJudgeAccount.getUsername())
+                            .eq("oj", remoteOJAccountType)
                             .eq("status", true)
                             .set("status", false);
                     boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);

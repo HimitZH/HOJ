@@ -113,7 +113,7 @@ public class RemoteJudgeGetResult {
                         }
 
                         scheduler.shutdown();
-                    }else {
+                    } else {
 
                         Judge judge = new Judge();
                         judge.setSubmitId(submitId)
@@ -134,17 +134,20 @@ public class RemoteJudgeGetResult {
     }
 
     public void changeAccountStatus(String remoteJudge, String username, String password) {
-        // 由于POJ特殊 之前获取提交ID未释放账号，所以在此需要将账号变为可用
-        if (remoteJudge.equals(Constants.RemoteJudge.POJ_JUDGE.getName())) {
-            UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
-            remoteJudgeAccountUpdateWrapper.set("status", true)
-                    .eq("oj", remoteJudge)
-                    .eq("username", username);
-            boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
-            if (!isOk) {
-                log.error("远程判题：修正账号为可用状态失败----------->{}", "username:" + username + ",password:" + password);
-            }
+        UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
+        remoteJudgeAccountUpdateWrapper.set("status", true)
+                .eq("username", username);
+        if (remoteJudge.equals("GYM")) {
+            remoteJudgeAccountUpdateWrapper.eq("oj", "CF");
+        } else {
+            remoteJudgeAccountUpdateWrapper.eq("oj", remoteJudge);
         }
+        boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
+        if (!isOk) {
+            log.error("远程判题：修正账号为可用状态失败----------->{}", "username:" + username + ",password:" + password);
+        }
+
     }
+
 
 }

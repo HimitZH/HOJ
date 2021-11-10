@@ -88,7 +88,7 @@ public class Judge implements Serializable {
     @ApiModelProperty(value = "提交者所在ip")
     private String ip;
 
-    @TableField(fill = FieldFill.INSERT)
+    @ApiModelProperty(value = "废弃")
     private Integer version;
 
     @ApiModelProperty(value = "该题在OI排行榜的分数")
