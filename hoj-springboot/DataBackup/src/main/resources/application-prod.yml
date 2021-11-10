@@ -51,6 +51,8 @@ spring:
 mybatis-plus:
   mapper-locations: classpath*:top/hcode/hoj/dao/xml/**Mapper.xml
   type-aliases-package: top.hcode.hoj.pojo.entity
+  configuration:
+    cache-enabled: false
 
 shiro-redis:
   enabled: true
