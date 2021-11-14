@@ -11,6 +11,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpStatus;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.util.Constants;
 
@@ -51,15 +52,19 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
 
     @Override
     public Map<String, Object> submit(String username, String password, String problemId, String language, String userCode) throws Exception {
+
         if (problemId == null || userCode == null) {
             return null;
         }
 
-        Map<String, Object> loginUtils = getLoginUtils(username, password);
-        int status = (int) loginUtils.get("status");
-        if (status != 302) {
-            log.error("进行题目提交时发生错误：登录失败，可能原因账号或密码错误，登录失败！" + CodeForcesJudge.class.getName() + "，题号:" + problemId);
-            return null;
+        if (!HttpUtil.get(HOST).contains("/logout\">")) {
+
+            Map<String, Object> loginUtils = getLoginUtils(username, password);
+            int status = (int) loginUtils.get("status");
+            if (status != HttpStatus.SC_MOVED_TEMPORARILY) {
+                log.error("进行题目提交时发生错误：登录失败，可能原因账号或密码错误，登录失败！" + CodeForcesJudge.class.getName() + "，题号:" + problemId);
+                return null;
+            }
         }
 
         String contestId;
@@ -73,7 +78,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         }
 
         submitCode(contestId, problemNum, getLanguage(language), userCode);
-        TimeUnit.SECONDS.sleep(3);
+        TimeUnit.MILLISECONDS.sleep(1500);
         // 获取提交的题目id
         Long maxRunId = getMaxRunId(username, contestId, problemNum, problemId);
 
@@ -83,20 +88,20 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
                 .map();
     }
 
+    @SuppressWarnings("unchecked")
     private Long getMaxRunId(String username, String contestNum, String problemNum, String problemId) throws InterruptedException {
         int retryNum = 0;
         String url = String.format("api/user.status?handle=%s&from=1&count=10", username);
         HttpRequest httpRequest = HttpUtil.createGet(HOST + url);
         httpRequest.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36 Edg/91.0.864.48");
-        httpRequest.disableCache();
         HttpResponse httpResponse = httpRequest.execute();
+
         // 防止cf的nginx限制访问频率，重试10次
         while (httpResponse.getStatus() != 200 && retryNum != 10) {
             TimeUnit.SECONDS.sleep(3);
             httpResponse = httpRequest.execute();
             retryNum++;
         }
-
         try {
             Map<String, Object> json = JSONUtil.parseObj(httpResponse.body());
             List<Map<String, Object>> results = (List<Map<String, Object>>) json.get("result");
@@ -225,8 +230,19 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         request.cookie(this.cookies);
         request.header("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36");
         HttpResponse response = request.execute();
-        if (response.getStatus() != 302) {
-            throw new RuntimeException("Codeforces提交代码失败，题号为：" + contestId + problemID);
+
+
+        if (response.getStatus() != HttpStatus.SC_MOVED_TEMPORARILY) {
+            if (response.body().contains("error for__programTypeId")) {
+                String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `Language Rejected`", contestId, problemID);
+                throw new RuntimeException(log);
+            }
+            if (response.body().contains("error for__source")) {
+                String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `Source Code Error`", contestId, problemID);
+                throw new RuntimeException(log);
+            }
+            String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `Unknown`", contestId, problemID);
+            throw new RuntimeException(log);
         }
     }
 

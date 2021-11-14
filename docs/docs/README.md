@@ -7,7 +7,7 @@ actionText: 快速了解 →
 actionLink: /introducition/
 features:
 - title: 分布式
-  details: 支持多台判题服务随时增减
+  details: 支持多台判题服务弹性增减
 - title: 高效化
   details: 采用前后端分离，开发迅速，使用高性能可复用判题沙盒
 - title: 定制化
@@ -16,5 +16,5 @@ features:
   details: 判题使用 cgroup 隔离用户程序，网站权限控制完善
 - title: 多样化
   details: 独有自身判题服务，同时支持其它知名OJ题目的提交判题
-footer: MIT Licensed | Copyright © 2021.10.09 @Author Himit_ZH  QQ Group:598587305
+footer: MIT Licensed | Copyright © 2021.11.11 @Author Himit_ZH  QQ Group:598587305
 ---

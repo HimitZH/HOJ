@@ -32,12 +32,14 @@ module.exports = {
                 children: [
                     'deploy/',
 					'deploy/docker',
-                    'deploy/frontend',
 					'deploy/mysql',
+					'deploy/mysql-checker',
 					'deploy/redis',
 					'deploy/nacos',
                     'deploy/backend',
+                    'deploy/backend',
                     'deploy/judgeserver',
+					'deploy/frontend',
                     'deploy/rsync'
                 ]
             },

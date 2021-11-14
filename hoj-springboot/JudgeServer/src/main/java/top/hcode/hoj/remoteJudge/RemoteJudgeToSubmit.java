@@ -52,10 +52,12 @@ public class RemoteJudgeToSubmit {
         }
 
         Map<String, Object> submitResult = null;
+        String errLog = null;
         try {
             submitResult = remoteJudgeStrategy.submit(username, password, remotePid, language, userCode);
         } catch (Exception e) {
-            log.error(remoteJudge + "的远程提交发生异常---------->{}", e);
+            log.error("{%s}", e);
+            errLog = e.getMessage();
         }
 
         // 提交失败 前端手动按按钮再次提交 修改状态 STATUS_SUBMITTED_FAILED
@@ -78,6 +80,7 @@ public class RemoteJudgeToSubmit {
             // 更新此次提交状态为提交失败！
             UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
             judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
+                    .set("error_message", errLog)
                     .eq("submit_id", submitId);
             judgeService.update(judgeUpdateWrapper);
             // 更新其它表
