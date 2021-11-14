@@ -1,20 +1,20 @@
 package top.hcode.hoj.judge;
 
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import top.hcode.hoj.dao.RemoteJudgeAccountMapper;
 import top.hcode.hoj.pojo.entity.JudgeServer;
 import top.hcode.hoj.pojo.entity.RemoteJudgeAccount;
 import top.hcode.hoj.service.impl.JudgeServerServiceImpl;
-import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +41,7 @@ public class ChooseUtils {
     private JudgeServerServiceImpl judgeServerService;
 
     @Autowired
-    private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
+    private RemoteJudgeAccountMapper remoteJudgeAccountMapper;
 
     /**
      * @param
@@ -112,50 +112,28 @@ public class ChooseUtils {
 
     @Transactional(rollbackFor = Exception.class, isolation = READ_COMMITTED)
     public RemoteJudgeAccount chooseRemoteAccount(String remoteOJAccountType, String vjudgeUsername, Boolean isNeedAccountRejudge) {
-        // 过滤出当前远程oj可用的账号列表
-        QueryWrapper<RemoteJudgeAccount> remoteJudgeAccountQueryWrapper = new QueryWrapper<>();
-        remoteJudgeAccountQueryWrapper
-                .eq("status", true)
-                .eq("oj", remoteOJAccountType)
-                .last("for update");
 
-        List<RemoteJudgeAccount> remoteJudgeAccountList = remoteJudgeAccountService.list(remoteJudgeAccountQueryWrapper);
+        // 过滤出当前远程oj可用的账号列表 悲观锁
+        List<RemoteJudgeAccount> remoteJudgeAccountList = remoteJudgeAccountMapper.getAvailableAccount(remoteOJAccountType);
 
-        RemoteJudgeAccount account = null;
-
-        if (remoteJudgeAccountList.size() > 0) {
-            for (RemoteJudgeAccount remoteJudgeAccount : remoteJudgeAccountList) {
-                // POJ已有submitId的重判需要使用原来的账号获取结果
-                if (isNeedAccountRejudge) {
-                    if (remoteJudgeAccount.getUsername().equals(vjudgeUsername)) {
-                        UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
-                        remoteJudgeAccountUpdateWrapper
-                                .eq("username", remoteJudgeAccount.getUsername())
-                                .eq("oj", remoteOJAccountType)
-                                .eq("status", true)
-                                .set("status", false);
-                        boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
-                        if (isOk) {
-                            account = remoteJudgeAccount;
-                            break;
-                        }
+        for (RemoteJudgeAccount remoteJudgeAccount : remoteJudgeAccountList) {
+            // POJ已有submitId的重判需要使用原来的账号获取结果
+            if (isNeedAccountRejudge) {
+                if (remoteJudgeAccount.getUsername().equals(vjudgeUsername)) {
+                    int count = remoteJudgeAccountMapper.updateAccountStatusById(remoteJudgeAccount.getId());
+                    if (count > 0) {
+                        return remoteJudgeAccount;
                     }
-                } else {
-                    UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
-                    remoteJudgeAccountUpdateWrapper
-                            .eq("username", remoteJudgeAccount.getUsername())
-                            .eq("oj", remoteOJAccountType)
-                            .eq("status", true)
-                            .set("status", false);
-                    boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
-                    if (isOk) {
-                        account = remoteJudgeAccount;
-                        break;
-                    }
+                }
+            } else {
+                int count = remoteJudgeAccountMapper.updateAccountStatusById(remoteJudgeAccount.getId());
+                if (count > 0) {
+                    return remoteJudgeAccount;
                 }
             }
         }
-        return account;
+
+        return null;
     }
 
 }

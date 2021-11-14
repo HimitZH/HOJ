@@ -80,14 +80,19 @@ public class Dispatcher {
                         reduceCurrentTaskNum(judgeServer.getId());
                         scheduler.shutdown();
                     }
+                    return;
                 }
 
                 if (count.get() == 300) { // 300次失败则判为提交失败
                     if (isRemote) { // 远程判题需要将账号归为可用
                         UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
+                        String oj = data.getRemoteJudgeProblem().split("-")[0];
+                        if (oj.equals("GYM")){
+                            oj = "CF";
+                        }
                         remoteJudgeAccountUpdateWrapper
+                                .eq("oj", oj)
                                 .eq("username", data.getUsername())
-                                .eq("password", data.getPassword())
                                 .set("status", true);
                         remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
                     }

@@ -136,6 +136,7 @@ public class RemoteJudgeGetResult {
     public void changeAccountStatus(String remoteJudge, String username, String password) {
         UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
         remoteJudgeAccountUpdateWrapper.set("status", true)
+                .eq("status", false)
                 .eq("username", username);
         if (remoteJudge.equals("GYM")) {
             remoteJudgeAccountUpdateWrapper.eq("oj", "CF");
