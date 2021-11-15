@@ -44,6 +44,7 @@ public class HduJudge implements RemoteJudgeStrategy {
         if (problemId == null || userCode == null) {
             return null;
         }
+
         Map<String, Object> loginUtils = getLoginUtils(username, password);
         String cookies = (String) loginUtils.get("cookie");
 
@@ -118,6 +119,15 @@ public class HduJudge implements RemoteJudgeStrategy {
 
     @Override
     public Map<String, Object> getLoginUtils(String username, String password) {
+
+        HttpRequest homeRequest = HttpUtil.createGet(HOST);
+        HttpResponse homeResponse = homeRequest.execute();
+        String homePage = homeResponse.body();
+
+        if (homePage.contains("href=\"/userloginex.php?action=logout\"")) {
+            return MapUtil.builder(new HashMap<String, Object>())
+                    .put("cookie", homeResponse.getCookieStr()).map();
+        }
 
         HttpRequest request = HttpUtil.createPost(HOST + LOGIN_URL).addHeaders(headers);
         HttpResponse response = request.form(MapUtil
