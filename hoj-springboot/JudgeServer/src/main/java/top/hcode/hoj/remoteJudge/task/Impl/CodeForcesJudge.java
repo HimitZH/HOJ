@@ -1,5 +1,6 @@
 package top.hcode.hoj.remoteJudge.task.Impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ReUtil;
@@ -57,14 +58,19 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
             return null;
         }
 
-        if (!HttpUtil.get(HOST).contains("/logout\">")) {
-
+        HttpRequest httpRequest = HttpUtil.createGet(IMAGE_HOST);
+        httpRequest.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36 Edg/91.0.864.48");
+        HttpResponse httpResponse = httpRequest.execute();
+        String homePage = httpResponse.body();
+        if (!homePage.contains("/logout\">") || !homePage.contains("<a href=\"/profile/" + username + "\"")) {
             Map<String, Object> loginUtils = getLoginUtils(username, password);
             int status = (int) loginUtils.get("status");
             if (status != HttpStatus.SC_MOVED_TEMPORARILY) {
                 log.error("进行题目提交时发生错误：登录失败，可能原因账号或密码错误，登录失败！" + CodeForcesJudge.class.getName() + "，题号:" + problemId);
                 return null;
             }
+        } else {
+            this.cookies = httpResponse.getCookies();
         }
 
         String contestId;
@@ -78,9 +84,9 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         }
 
         submitCode(contestId, problemNum, getLanguage(language), userCode);
-        TimeUnit.MILLISECONDS.sleep(1500);
+        TimeUnit.SECONDS.sleep(2);
         // 获取提交的题目id
-        Long maxRunId = getMaxRunId(username, contestId, problemNum, problemId);
+        Long maxRunId = getMaxRunId(username);
 
         return MapUtil.builder(new HashMap<String, Object>())
                 .put("runId", maxRunId)
@@ -89,36 +95,12 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
     }
 
     @SuppressWarnings("unchecked")
-    private Long getMaxRunId(String username, String contestNum, String problemNum, String problemId) throws InterruptedException {
-        int retryNum = 0;
-        String url = String.format("api/user.status?handle=%s&from=1&count=10", username);
-        HttpRequest httpRequest = HttpUtil.createGet(HOST + url);
-        httpRequest.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36 Edg/91.0.864.48");
+    private Long getMaxRunId(String username) {
+        HttpRequest httpRequest = HttpUtil.createGet(IMAGE_HOST + "submissions/" + username);
+        httpRequest.cookie(this.cookies);
         HttpResponse httpResponse = httpRequest.execute();
-
-        // 防止cf的nginx限制访问频率，重试10次
-        while (httpResponse.getStatus() != 200 && retryNum != 10) {
-            TimeUnit.SECONDS.sleep(3);
-            httpResponse = httpRequest.execute();
-            retryNum++;
-        }
-        try {
-            Map<String, Object> json = JSONUtil.parseObj(httpResponse.body());
-            List<Map<String, Object>> results = (List<Map<String, Object>>) json.get("result");
-            for (Map<String, Object> result : results) {
-                Long runId = Long.valueOf(result.get("id").toString());
-                Map<String, Object> problem = (Map<String, Object>) result.get("problem");
-                if (contestNum.equals(problem.get("contestId").toString()) &&
-                        problemNum.equals(problem.get("index").toString())) {
-                    return runId;
-                }
-            }
-        } catch (Exception e) {
-            log.error("进行题目获取runID发生错误：获取提交ID失败，" + CodeForcesJudge.class.getName()
-                    + "，题号:" + problemId + "，异常描述：" + e);
-            return -1L;
-        }
-        return -1L;
+        String maxRunId = ReUtil.get("<tr data-submission-id=\"(.*?)\" data-a=\".*?\" partyMemberIds=\".*?\">", httpResponse.body(), 1);
+        return maxRunId != null ? Long.parseLong(maxRunId) : -1L;
     }
 
     @Override
@@ -230,8 +212,6 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         request.cookie(this.cookies);
         request.header("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36");
         HttpResponse response = request.execute();
-
-
         if (response.getStatus() != HttpStatus.SC_MOVED_TEMPORARILY) {
             if (response.body().contains("error for__programTypeId")) {
                 String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `Language Rejected`", contestId, problemID);

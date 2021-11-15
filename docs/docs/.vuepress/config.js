@@ -37,7 +37,6 @@ module.exports = {
 					'deploy/redis',
 					'deploy/nacos',
                     'deploy/backend',
-                    'deploy/backend',
                     'deploy/judgeserver',
 					'deploy/frontend',
                     'deploy/rsync'

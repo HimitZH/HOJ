@@ -135,7 +135,8 @@ public class POJJudge implements RemoteJudgeStrategy {
                 .put("url", ".")
                 .put("password1", password).map()).execute();
 
-        return MapUtil.builder(new HashMap<String, Object>()).put("cookie", response.getCookieStr()).map();
+        return MapUtil.builder(new HashMap<String, Object>())
+                .put("cookie", response.getCookieStr()).map();
     }
 
     @Override

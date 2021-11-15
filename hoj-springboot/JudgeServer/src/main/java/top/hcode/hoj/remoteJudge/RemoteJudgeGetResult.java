@@ -143,11 +143,7 @@ public class RemoteJudgeGetResult {
         } else {
             remoteJudgeAccountUpdateWrapper.eq("oj", remoteJudge);
         }
-        boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
-        if (!isOk) {
-            log.error("远程判题：修正账号为可用状态失败----------->{}", "username:" + username + ",password:" + password);
-        }
-
+        remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
     }
 
 
