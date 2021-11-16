@@ -134,16 +134,16 @@ public class RemoteJudgeGetResult {
     }
 
     public void changeAccountStatus(String remoteJudge, String username, String password) {
-        UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
-        remoteJudgeAccountUpdateWrapper.set("status", true)
-                .eq("status", false)
-                .eq("username", username);
-        if (remoteJudge.equals("GYM")) {
-            remoteJudgeAccountUpdateWrapper.eq("oj", "CF");
-        } else {
-            remoteJudgeAccountUpdateWrapper.eq("oj", remoteJudge);
+        // 非CF的提交需要在获取结果后，归还账号
+        if (!remoteJudge.equals(Constants.RemoteJudge.GYM_JUDGE.getName())&&
+                !remoteJudge.equals(Constants.RemoteJudge.CF_JUDGE.getName())) {
+            UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
+            remoteJudgeAccountUpdateWrapper.set("status", true)
+                    .eq("oj", remoteJudge)
+                    .eq("status", false)
+                    .eq("username", username);
+            remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
         }
-        remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
     }
 
 
