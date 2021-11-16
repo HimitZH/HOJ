@@ -93,26 +93,22 @@ public class RemoteJudgeToSubmit {
                     null);
             log.error("网络错误---------------->获取不到提交ID");
             return;
+        } else {
+            if (remoteJudge.equals(Constants.RemoteJudge.GYM_JUDGE.getName())
+                    || remoteJudge.equals(Constants.RemoteJudge.CF_JUDGE.getName())) {
+                // 对CF特殊，提交完就归还账号
+                UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
+                remoteJudgeAccountUpdateWrapper.set("status", true)
+                        .eq("username", username)
+                        .eq("oj", "CF")
+                        .eq("status", false);
+                boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
+                if (!isOk) {
+                    log.error("远程判题：修正CF账号为可用状态失败----------->{}", "username:" + username + ",password:" + password);
+                }
+
+            }
         }
-        // 以下代码暂时废除。
-//        } else {
-//            // 对POJ特殊 需要一直保持提交和获取结果时账号唯一，所以需要特别过滤
-//            if (!remoteJudge.equals(Constants.RemoteJudge.POJ_JUDGE.getName())) {
-//                UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
-//                remoteJudgeAccountUpdateWrapper.set("status", true)
-//                        .eq("username", username)
-//                        .eq("status", false);
-//                if (remoteJudge.equals("GYM")) {
-//                    remoteJudgeAccountUpdateWrapper.eq("oj", "CF");
-//                } else {
-//                    remoteJudgeAccountUpdateWrapper.eq("oj", remoteJudge);
-//                }
-//                boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
-//                if (!isOk) {
-//                    log.error("远程判题：修正账号为可用状态失败----------->{}", "username:" + username + ",password:" + password);
-//                }
-//            }
-//        }
 
         Long vjudgeSubmitId = (Long) submitResult.get("runId");
 
