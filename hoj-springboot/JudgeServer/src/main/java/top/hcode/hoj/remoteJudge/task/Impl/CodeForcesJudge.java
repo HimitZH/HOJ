@@ -94,44 +94,44 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
     }
 
     @SuppressWarnings("unchecked")
-    private synchronized Long getMaxRunId(String username, String contestNum, String problemNum, String problemId) {
+    private static synchronized Long getMaxRunId(String username, String contestNum, String problemNum, String problemId) {
         // CF的这个接口有每两秒的访问限制，所以需要加锁，保证2秒内只有一次查询
         try {
-            TimeUnit.MILLISECONDS.sleep(2500);
+            TimeUnit.SECONDS.sleep(3);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         int retryNum = 0;
-        String url = String.format("api/user.status?handle=%s&from=1&count=10", username);
+        String url = String.format("api/user.status?handle=%s&from=1&count=1", username);
         HttpRequest httpRequest = HttpUtil.createGet(HOST + url);
         httpRequest.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36 Edg/91.0.864.48");
-        HttpResponse httpResponse = httpRequest.execute();
 
         // 防止cf的nginx限制访问频率，重试10次
-        while (httpResponse.getStatus() != 200 && retryNum != 10) {
+        while (retryNum != 10) {
+            HttpResponse httpResponse = httpRequest.execute();
+            try {
+                Map<String, Object> json = JSONUtil.parseObj(httpResponse.body());
+                List<Map<String, Object>> results = (List<Map<String, Object>>) json.get("result");
+                for (Map<String, Object> result : results) {
+                    Long runId = Long.valueOf(result.get("id").toString());
+                    Map<String, Object> problem = (Map<String, Object>) result.get("problem");
+                    if (contestNum.equals(problem.get("contestId").toString()) &&
+                            problemNum.equals(problem.get("index").toString())) {
+                        return runId;
+                    }
+                }
+            } catch (Exception e) {
+                log.error("进行题目获取runID发生错误：获取提交ID失败，" + CodeForcesJudge.class.getName()
+                        + "，题号:" + problemId + "，异常描述：" + e);
+                return -1L;
+            }
+
             try {
                 TimeUnit.SECONDS.sleep(3);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            httpResponse = httpRequest.execute();
             retryNum++;
-        }
-        try {
-            Map<String, Object> json = JSONUtil.parseObj(httpResponse.body());
-            List<Map<String, Object>> results = (List<Map<String, Object>>) json.get("result");
-            for (Map<String, Object> result : results) {
-                Long runId = Long.valueOf(result.get("id").toString());
-                Map<String, Object> problem = (Map<String, Object>) result.get("problem");
-                if (contestNum.equals(problem.get("contestId").toString()) &&
-                        problemNum.equals(problem.get("index").toString())) {
-                    return runId;
-                }
-            }
-        } catch (Exception e) {
-            log.error("进行题目获取runID发生错误：获取提交ID失败，" + CodeForcesJudge.class.getName()
-                    + "，题号:" + problemId + "，异常描述：" + e);
-            return -1L;
         }
         return -1L;
     }
