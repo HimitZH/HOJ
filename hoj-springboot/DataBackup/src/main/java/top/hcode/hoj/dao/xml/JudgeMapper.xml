@@ -6,7 +6,7 @@
         j.time,j.memory,j.score,j.oi_rank_score,j.length,j.language,j.cid,j.cpid,j.judger,p.problem_id as display_pid,p.title
         from judge j,problem p
         <where>
-            p.id = j.pid AND j.cid = 0 AND j.cpid = 0
+            p.id = j.pid AND j.cid = 0 AND j.cpid = 0 AND p.auth = 1
             <if test="searchPid!=null">
                 <if test="completeProblemID != true">
                     AND p.problem_id like concat('%',#{searchPid},'%')

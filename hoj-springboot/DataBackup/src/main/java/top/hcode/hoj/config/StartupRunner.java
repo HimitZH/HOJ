@@ -14,6 +14,9 @@ import top.hcode.hoj.pojo.entity.RemoteJudgeAccount;
 import top.hcode.hoj.pojo.vo.ConfigVo;
 import top.hcode.hoj.service.impl.ConfigServiceImpl;
 import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
+import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.utils.RedisUtils;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,6 +37,9 @@ public class StartupRunner implements CommandLineRunner {
 
     @Autowired
     private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
     @Value("${OPEN_REMOTE_JUDGE:true}")
     private String openRemoteJudge;
@@ -114,10 +120,11 @@ public class StartupRunner implements CommandLineRunner {
     @Value("${spring.profiles.active}")
     private String profile;
 
+
     @Override
     public void run(String... args) throws Exception {
 
-        if (profile.equals("dev")){
+        if (profile.equals("dev")) {
             return;
         }
 
@@ -164,18 +171,18 @@ public class StartupRunner implements CommandLineRunner {
         configService.sendNewConfigToNacos();
 
         if (openRemoteJudge.equals("true")) {
-            addRemoteJudgeAccountToRedis();
+            addRemoteJudgeAccountToRedisAndMySQL();
         }
     }
 
     /**
      * @MethodName addRemoteJudgeAccountToRedis
      * @Params * @param null
-     * @Description 将传入的对应oj账号写入到mysql
+     * @Description 将传入的对应oj账号写入到mysql和redis
      * @Return
      * @Since 2021/5/18
      */
-    private void addRemoteJudgeAccountToRedis() {
+    private void addRemoteJudgeAccountToRedisAndMySQL() {
 
         // 初始化清空表
         remoteJudgeAccountService.remove(new QueryWrapper<>());
@@ -191,7 +198,8 @@ public class StartupRunner implements CommandLineRunner {
                     .setOj("HDU"));
 
         }
-        if (hduRemoteAccountList.size()>0) {
+
+        if (hduRemoteAccountList.size() > 0) {
             boolean addHduOk = remoteJudgeAccountService.saveOrUpdateBatch(hduRemoteAccountList);
             if (!addHduOk) {
                 log.error("HDU账号添加失败------------>{}", "请检查配置文件，然后重新启动！");
@@ -207,7 +215,7 @@ public class StartupRunner implements CommandLineRunner {
                     .setVersion(0L)
                     .setOj("CF"));
         }
-        if (cfRemoteAccountList.size()>0) {
+        if (cfRemoteAccountList.size() > 0) {
             boolean addCFOk = remoteJudgeAccountService.saveOrUpdateBatch(cfRemoteAccountList);
             if (!addCFOk) {
                 log.error("Codeforces账号添加失败------------>{}", "请检查配置文件，然后重新启动！");
@@ -223,7 +231,7 @@ public class StartupRunner implements CommandLineRunner {
                     .setVersion(0L)
                     .setOj("POJ"));
         }
-        if (pojRemoteAccountList.size()>0) {
+        if (pojRemoteAccountList.size() > 0) {
             boolean addPOJOk = remoteJudgeAccountService.saveOrUpdateBatch(pojRemoteAccountList);
             if (!addPOJOk) {
                 log.error("POJ账号添加失败------------>{}", "请检查配置文件，然后重新启动！");

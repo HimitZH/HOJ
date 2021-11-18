@@ -196,6 +196,8 @@ public class JudgeController {
         String remoteJudge = source[0];
         String userCode = toJudge.getJudge().getCode();
         String language = toJudge.getJudge().getLanguage();
+        String serverIp = toJudge.getJudgeServerIp();
+        Integer serverPort = toJudge.getJudgeServerPort();
 
         // 拥有远程oj的submitId远程判题的重判
         if (isHasSubmitIdRemoteReJudge != null && isHasSubmitIdRemoteReJudge) {
@@ -208,10 +210,16 @@ public class JudgeController {
                     cid,
                     pid,
                     vjudgeSubmitId,
+                    null,
+                    null,
                     null);
         } else {
             // 调用远程判题
-            remoteJudgeToSubmit.sendTask(username, password, remoteJudge, remotePid, submitId, uid, cid, pid, language, userCode);
+            remoteJudgeToSubmit.sendTask(username, password,
+                    remoteJudge, remotePid,
+                    submitId, uid,
+                    cid, pid, language, userCode,
+                    serverIp, serverPort);
         }
         return CommonResult.successResponse(null, "提交成功");
     }

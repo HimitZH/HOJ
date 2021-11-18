@@ -51,6 +51,9 @@ public class JudgeServer {
     @ApiModelProperty(value = "是否为远程判题vj")
     private Boolean isRemote;
 
+    @ApiModelProperty(value = "是否可提交CF")
+    private Boolean cfSubmittable;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 
