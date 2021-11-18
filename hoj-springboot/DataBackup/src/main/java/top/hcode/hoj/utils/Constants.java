@@ -139,7 +139,9 @@ public class Constants {
         OI_RANK_CACHE("oi_rank_cache"),
 
         SUBMIT_NON_CONTEST_LOCK("submit_non_contest_lock:"),
-        DISCUSSION_ADD_NUM_LOCK("discussion_add_num_lock:");
+        DISCUSSION_ADD_NUM_LOCK("discussion_add_num_lock:"),
+
+        REMOTE_JUDGE_CF_ACCOUNT_NUM("remote_judge_cf_account:");
 
         private final String code;
 

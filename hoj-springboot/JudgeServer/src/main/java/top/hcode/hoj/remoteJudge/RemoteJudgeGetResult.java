@@ -8,11 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import top.hcode.hoj.pojo.entity.Judge;
 
+import top.hcode.hoj.pojo.entity.JudgeServer;
 import top.hcode.hoj.pojo.entity.RemoteJudgeAccount;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeFactory;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
+import top.hcode.hoj.service.impl.JudgeServerServiceImpl;
 import top.hcode.hoj.service.impl.JudgeServiceImpl;
 import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.util.Constants;
@@ -36,10 +39,16 @@ public class RemoteJudgeGetResult {
     @Autowired
     private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
 
+    @Autowired
+    private JudgeServerServiceImpl judgeServerService;
+
     @Transactional
     @Async
-    public void sendTask(String remoteJudge, String username, String password, Long submitId, String uid,
-                         Long cid, Long pid, Long resultSubmitId, String cookies) {
+    public void sendTask(String remoteJudge, String username, String password,
+                         Long submitId, String uid,
+                         Long cid, Long pid,
+                         Long resultSubmitId, String cookies,
+                         String ip, Integer port) {
 
         RemoteJudgeStrategy remoteJudgeStrategy = RemoteJudgeFactory.selectJudge(remoteJudge);
 
@@ -58,8 +67,8 @@ public class RemoteJudgeGetResult {
                             .eq("submit_id", submitId);
                     judgeService.update(judgeUpdateWrapper);
 
-                    changeAccountStatus(remoteJudge, username, password);
-
+                    changeAccountStatus(remoteJudge, username);
+                    changeServerSubmitCFStatus(ip, port);
                     scheduler.shutdown();
 
                     return;
@@ -73,8 +82,9 @@ public class RemoteJudgeGetResult {
                             status.intValue() != Constants.Judge.STATUS_JUDGING.getStatus() &&
                             status.intValue() != Constants.Judge.STATUS_COMPILING.getStatus()) {
 
-                        // 由于POJ特殊 之前获取提交ID未释放账号，所以在此需要将账号变为可用
-                        changeAccountStatus(remoteJudge, username, password);
+                        // 将账号变为可用
+                        changeAccountStatus(remoteJudge, username);
+                        changeServerSubmitCFStatus(ip, port);
 
                         Integer time = (Integer) result.getOrDefault("time", null);
                         Integer memory = (Integer) result.getOrDefault("memory", null);
@@ -133,16 +143,39 @@ public class RemoteJudgeGetResult {
 
     }
 
-    public void changeAccountStatus(String remoteJudge, String username, String password) {
-        // 非CF的提交需要在获取结果后，归还账号
-        if (!remoteJudge.equals(Constants.RemoteJudge.GYM_JUDGE.getName())&&
-                !remoteJudge.equals(Constants.RemoteJudge.CF_JUDGE.getName())) {
-            UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
-            remoteJudgeAccountUpdateWrapper.set("status", true)
-                    .eq("oj", remoteJudge)
-                    .eq("status", false)
-                    .eq("username", username);
-            remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
+    public void changeAccountStatus(String remoteJudge, String username) {
+
+        UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
+        remoteJudgeAccountUpdateWrapper.set("status", true)
+                .eq("status", false)
+                .eq("username", username);
+        if (remoteJudge.equals("GYM")) {
+            remoteJudgeAccountUpdateWrapper.eq("oj", "CF");
+        } else {
+            remoteJudgeAccountUpdateWrapper.eq("oj", remoteJudge);
+        }
+
+        boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
+
+        if (!isOk) {
+            log.error("远程判题：修正账号为可用状态失败----------->{}", "oj:" + remoteJudge + ",username:" + username);
+        }
+    }
+
+    public void changeServerSubmitCFStatus(String ip, Integer port) {
+
+        if (StringUtils.isEmpty(ip) || port == null) {
+            return;
+        }
+        UpdateWrapper<JudgeServer> JudgeServerUpdateWrapper = new UpdateWrapper<>();
+        JudgeServerUpdateWrapper.set("cf_submittable", true)
+                .eq("ip", ip)
+                .eq("is_remote", true)
+                .eq("port", port);
+        boolean isOk = judgeServerService.update(JudgeServerUpdateWrapper);
+
+        if (!isOk) {
+            log.error("远程判题：修正判题机对CF可提交状态为可用的状态失败----------->{}", "ip:" + ip + ",port:" + port);
         }
     }
 

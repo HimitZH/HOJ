@@ -18,6 +18,7 @@ import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -98,7 +99,19 @@ public class RemoteJudgeReceiver {
             processWaitingTask();
 
         } else {
-            RemoteJudgeAccount account = chooseUtils.chooseRemoteAccount(remoteOJAccountType, judge.getVjudgeUsername(), isNeedAccountRejudge);
+            RemoteJudgeAccount account = null;
+            int index = 0;
+            int size = 0;
+            if (remoteOJAccountType.equals(Constants.RemoteOJ.CODEFORCES.getName())) {
+                HashMap<String, Object> result = chooseUtils.chooseFixedAccount(remoteOJAccountType);
+                if (result != null) {
+                    account = (RemoteJudgeAccount) result.get("account");
+                    index = (int) result.get("index");
+                    size = (int) result.get("size");
+                }
+            } else {
+                account = chooseUtils.chooseRemoteAccount(remoteOJAccountType, judge.getVjudgeUsername(), isNeedAccountRejudge);
+            }
 
             if (account == null) {
                 if (tryAgainNum >= 200) {
@@ -142,6 +155,8 @@ public class RemoteJudgeReceiver {
                 toJudge.setUsername(account.getUsername())
                         .setPassword(account.getPassword());
                 toJudge.setIsHasSubmitIdRemoteReJudge(isNeedAccountRejudge);
+                toJudge.setIndex(index);
+                toJudge.setSize(size);
                 // 调用判题服务
                 dispatcher.dispatcher("judge", "/remote-judge", toJudge);
                 // 如果队列中还有任务，则继续处理

@@ -60,15 +60,37 @@ public class Dispatcher {
 
 
     public void toJudge(String path, ToJudge data, Long submitId, Boolean isRemote) {
+
+        String oj = null;
+        if (isRemote) {
+            oj = data.getRemoteJudgeProblem().split("-")[0];
+            if (oj.equals("GYM")) {
+                oj = "CF";
+            }
+        }
+
+        // 如果是vj判題，同时不是已有提交id的获取结果操作，归属于CF的判題，需要控制判题机的权限，一机一题
+        boolean isCFFirstSubmit = isRemote && !data.getIsHasSubmitIdRemoteReJudge()
+                && Constants.RemoteOJ.CODEFORCES.getName().equals(oj);
+
         // 尝试600s
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         AtomicInteger count = new AtomicInteger(0);
+        final String finalOj = oj;
         Runnable getResultTask = new Runnable() {
             @Override
             public void run() {
                 count.getAndIncrement();
-                JudgeServer judgeServer = chooseUtils.chooseServer(isRemote);
+                JudgeServer judgeServer = null;
+                if (!isCFFirstSubmit) {
+                    judgeServer = chooseUtils.chooseServer(isRemote);
+                } else {
+                    judgeServer = chooseUtils.chooseFixedServer(isRemote, "cf_submittable", data.getIndex(), data.getSize());
+                }
+
                 if (judgeServer != null) { // 获取到判题机资源
+                    data.setJudgeServerIp(judgeServer.getIp());
+                    data.setJudgeServerPort(judgeServer.getPort());
                     CommonResult result = null;
                     try {
                         result = restTemplate.postForObject("http://" + judgeServer.getUrl() + path, data, CommonResult.class);
@@ -76,8 +98,10 @@ public class Dispatcher {
                         log.error("调用判题服务器[" + judgeServer.getUrl() + "]发送异常-------------->{}", e);
                     } finally {
                         checkResult(result, submitId);
-                        // 无论成功与否，都要将对应的当前判题机当前判题数减1
-                        reduceCurrentTaskNum(judgeServer.getId());
+                        if (!isCFFirstSubmit) {
+                            // 无论成功与否，都要将对应的当前判题机当前判题数减1
+                            reduceCurrentTaskNum(judgeServer.getId());
+                        }
                         scheduler.shutdown();
                     }
                     return;
@@ -86,12 +110,8 @@ public class Dispatcher {
                 if (count.get() == 300) { // 300次失败则判为提交失败
                     if (isRemote) { // 远程判题需要将账号归为可用
                         UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
-                        String oj = data.getRemoteJudgeProblem().split("-")[0];
-                        if (oj.equals("GYM")){
-                            oj = "CF";
-                        }
                         remoteJudgeAccountUpdateWrapper
-                                .eq("oj", oj)
+                                .eq("oj", finalOj)
                                 .eq("username", data.getUsername())
                                 .set("status", true);
                         remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
