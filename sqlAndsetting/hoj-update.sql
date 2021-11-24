@@ -300,3 +300,33 @@ DELIMITER ;
 CALL contest_problem_Add_color ;
 
 DROP PROCEDURE contest_problem_Add_color;
+
+
+/*
+* 2021.11.17 judge_server增加cf_submittable控制单台判题机只能一个账号提交CF
+			 
+*/
+DROP PROCEDURE
+IF EXISTS judge_server_Add_cf_submittable;
+DELIMITER $$
+ 
+CREATE PROCEDURE judge_serverm_Add_cf_submittable ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'judge_server'
+	AND column_name = 'cf_submittable'
+) THEN
+	ALTER TABLE `hoj`.`judge_server`  ADD COLUMN `cf_submittable` BOOLEAN DEFAULT 1  NULL  COMMENT '是否可提交CF';
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL judge_serverm_Add_cf_submittable ;
+
+DROP PROCEDURE judge_serverm_Add_cf_submittable;
