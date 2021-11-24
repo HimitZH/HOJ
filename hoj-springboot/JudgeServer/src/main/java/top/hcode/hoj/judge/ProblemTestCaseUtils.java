@@ -11,8 +11,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
+import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.SystemError;
-import top.hcode.hoj.pojo.entity.ProblemCase;
+import top.hcode.hoj.pojo.entity.problem.ProblemCase;
 import top.hcode.hoj.service.impl.ProblemCaseServiceImpl;
 import top.hcode.hoj.util.Constants;
 
@@ -170,8 +171,11 @@ public class ProblemTestCaseUtils {
         }
 
         // 可能是zip上传记录的是文件名，
-        if (problemCases.get(0).getInput().endsWith(".in") && (problemCases.get(0).getOutput().endsWith(".out") ||
-                problemCases.get(0).getOutput().endsWith(".ans"))) {
+        if (StringUtils.isEmpty(problemCases.get(0).getInput())
+                || StringUtils.isEmpty(problemCases.get(0).getOutput())
+                || (problemCases.get(0).getInput().endsWith(".in")
+                && (problemCases.get(0).getOutput().endsWith(".out")
+                || problemCases.get(0).getOutput().endsWith(".ans")))) {
 
             if (FileUtil.isEmpty(new File(testCasesDir))) { //如果本地对应文件夹也为空，说明文件丢失了
                 throw new SystemError("problemID:[" + problemId + "] test case has not found.", null, null);

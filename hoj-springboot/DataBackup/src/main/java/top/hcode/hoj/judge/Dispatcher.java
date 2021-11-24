@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.*;
-import top.hcode.hoj.service.impl.JudgeServerServiceImpl;
-import top.hcode.hoj.service.impl.JudgeServiceImpl;
-import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
+import top.hcode.hoj.pojo.entity.judge.*;
+import top.hcode.hoj.service.judge.impl.JudgeServerServiceImpl;
+import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
+import top.hcode.hoj.service.judge.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 

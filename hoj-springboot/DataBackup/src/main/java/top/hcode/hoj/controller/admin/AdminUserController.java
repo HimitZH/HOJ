@@ -14,24 +14,21 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.UserInfo;
-import top.hcode.hoj.pojo.entity.UserRecord;
-import top.hcode.hoj.pojo.entity.UserRole;
+import top.hcode.hoj.pojo.entity.user.UserInfo;
+import top.hcode.hoj.pojo.entity.user.UserRecord;
+import top.hcode.hoj.pojo.entity.user.UserRole;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.AdminSysNoticeService;
-import top.hcode.hoj.service.UserInfoService;
-import top.hcode.hoj.service.UserRecordService;
-import top.hcode.hoj.service.impl.UserRoleServiceImpl;
+import top.hcode.hoj.service.msg.AdminSysNoticeService;
+import top.hcode.hoj.service.user.UserInfoService;
+import top.hcode.hoj.service.user.UserRecordService;
+import top.hcode.hoj.service.user.impl.UserRoleServiceImpl;
 import top.hcode.hoj.utils.RedisUtils;
-import top.hcode.hoj.utils.ShiroUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static oshi.util.GlobalConfig.set;
 
 /**
  * @Author: Himit_ZH
@@ -82,7 +79,7 @@ public class AdminUserController {
     @PutMapping("/edit-user")
     @RequiresPermissions("user_admin")
     @RequiresAuthentication
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult editUser(@RequestBody Map<String, Object> params,
                                  HttpServletRequest request) {
         String username = (String) params.get("username");
@@ -148,7 +145,7 @@ public class AdminUserController {
     @PostMapping("/insert-batch-user")
     @RequiresPermissions("user_admin")
     @RequiresAuthentication
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult insertBatchUser(@RequestBody Map<String, Object> params) {
         List<List<String>> users = (List<List<String>>) params.get("users");
         List<UserInfo> userInfoList = new LinkedList<>();
@@ -218,7 +215,7 @@ public class AdminUserController {
     @PostMapping("/generate-user")
     @RequiresPermissions("user_admin")
     @RequiresAuthentication
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult generateUser(@RequestBody Map<String, Object> params) {
         String prefix = (String) params.getOrDefault("prefix", "");
         String suffix = (String) params.getOrDefault("suffix", "");

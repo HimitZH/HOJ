@@ -1,7 +1,6 @@
 package top.hcode.hoj.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -9,14 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.dao.ProblemCountMapper;
-import top.hcode.hoj.pojo.entity.Judge;
-import top.hcode.hoj.pojo.entity.ProblemCount;
-import top.hcode.hoj.pojo.entity.UserRecord;
+import top.hcode.hoj.pojo.entity.problem.ProblemCount;
 import top.hcode.hoj.service.ProblemCountService;
 import top.hcode.hoj.util.Constants;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 
 /**

@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.*;
-import top.hcode.hoj.service.impl.*;
+import top.hcode.hoj.pojo.entity.problem.*;
+import top.hcode.hoj.pojo.entity.training.TrainingCategory;
+import top.hcode.hoj.service.problem.impl.*;
+import top.hcode.hoj.service.training.TrainingCategoryService;
 import top.hcode.hoj.utils.RedisUtils;
 
 import javax.validation.Valid;
@@ -51,6 +53,9 @@ public class CommonController {
     @Autowired
     private CodeTemplateServiceImpl codeTemplateService;
 
+    @Autowired
+    private TrainingCategoryService trainingCategoryService;
+
 
     @GetMapping("/captcha")
     public CommonResult getCaptcha() {
@@ -65,6 +70,18 @@ public class CommonController {
                 .put("captchaKey", key).map(), "获取成功");
     }
 
+    /**
+     * @MethodName getTrainingCategory
+     * @Params null
+     * @Description 获取训练的分类列表
+     * @Return
+     * @Since 2021/11/22
+     */
+    @GetMapping("/get-training-category")
+    public CommonResult getTrainingCategory() {
+        List<TrainingCategory> categoryList = trainingCategoryService.list();
+        return CommonResult.successResponse(categoryList, "success");
+    }
 
     @GetMapping("/get-all-problem-tags")
     public CommonResult getAllProblemTagsList(@RequestParam(value = "oj", defaultValue = "ME") String oj) {

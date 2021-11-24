@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-import top.hcode.hoj.pojo.entity.Role;
-import top.hcode.hoj.pojo.entity.UserRole;
+import top.hcode.hoj.pojo.entity.user.Role;
+import top.hcode.hoj.pojo.entity.user.UserRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 

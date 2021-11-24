@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.dao.ProblemCountMapper">
-    <select id="getContestProblemCount" resultType="top.hcode.hoj.pojo.entity.ProblemCount">
+    <select id="getContestProblemCount" resultType="top.hcode.hoj.pojo.entity.problem.ProblemCount">
         SELECT COUNT(IF(status=-3,status,NULL)) AS pe,
                COUNT(IF(status=-2,status,NULL)) AS ce,
                COUNT(IF(status=-1,status,NULL)) AS wa,

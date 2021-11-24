@@ -49,7 +49,7 @@
 
         <vxe-table-column field="gmtCreate" :title="$t('m.Created_Time')">
           <template v-slot="{ row }">
-            {{ row.create_time | localtime }}
+            {{ row.gmtCreate | localtime }}
           </template>
         </vxe-table-column>
       </vxe-table>

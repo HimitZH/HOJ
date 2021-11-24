@@ -1,7 +1,5 @@
 package top.hcode.hoj.controller.oj;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.ReUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,16 +7,20 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.CheckACDto;
 import top.hcode.hoj.pojo.dto.ContestPrintDto;
 import top.hcode.hoj.pojo.dto.UserReadContestAnnouncementDto;
-import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.pojo.entity.common.Announcement;
+import top.hcode.hoj.pojo.entity.problem.*;
+import top.hcode.hoj.pojo.entity.user.UserInfo;
+import top.hcode.hoj.pojo.entity.contest.*;
 import top.hcode.hoj.pojo.vo.*;
-import top.hcode.hoj.service.ContestRecordService;
-import top.hcode.hoj.service.impl.*;
+import top.hcode.hoj.service.common.impl.AnnouncementServiceImpl;
+import top.hcode.hoj.service.contest.ContestRecordService;
+import top.hcode.hoj.service.contest.impl.*;
+import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
+import top.hcode.hoj.service.problem.impl.*;
 import top.hcode.hoj.utils.Constants;
 
 import javax.servlet.http.HttpServletRequest;
@@ -147,15 +149,15 @@ public class ContestController {
         // 获取当前登录的用户
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-
-        Contest contest = contestService.getById(Long.valueOf(cidStr));
+        Long cid = Long.valueOf(cidStr);
+        Contest contest = contestService.getById(cid);
 
         if (contest == null || !contest.getVisible()) {
             return CommonResult.errorResponse("对不起，该比赛不存在!");
         }
 
         if (!contest.getPwd().equals(password)) { // 密码不对
-            return CommonResult.errorResponse("比赛密码错误！");
+            return CommonResult.errorResponse("比赛密码错误，请重新输入！");
         }
 
         /**
@@ -170,14 +172,14 @@ public class ContestController {
         }
 
 
-        QueryWrapper<ContestRegister> wrapper = new QueryWrapper<ContestRegister>().eq("cid", Long.valueOf(cidStr))
+        QueryWrapper<ContestRegister> wrapper = new QueryWrapper<ContestRegister>().eq("cid", cid)
                 .eq("uid", userRolesVo.getUid());
-        if (contestRegisterService.getOne(wrapper) != null) {
+        if (contestRegisterService.getOne(wrapper,false) != null) {
             return CommonResult.errorResponse("您已注册过该比赛，请勿重复注册！");
         }
 
         boolean result = contestRegisterService.saveOrUpdate(new ContestRegister()
-                .setCid(Long.valueOf(cidStr))
+                .setCid(cid)
                 .setUid(userRolesVo.getUid()));
 
         if (!result) {
@@ -203,7 +205,7 @@ public class ContestController {
 
         QueryWrapper<ContestRegister> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("cid", cid).eq("uid", userRolesVo.getUid());
-        ContestRegister contestRegister = contestRegisterService.getOne(queryWrapper);
+        ContestRegister contestRegister = contestRegisterService.getOne(queryWrapper,false);
         HashMap<String, Object> result = new HashMap<>();
         result.put("access", contestRegister != null);
         return CommonResult.successResponse(result);

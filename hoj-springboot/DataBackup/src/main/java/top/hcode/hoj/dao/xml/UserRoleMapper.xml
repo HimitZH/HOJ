@@ -20,7 +20,7 @@
         <result column="avatar" property="avatar"></result>
         <result column="gmt_create" property="gmtCreate"></result>
         <result column="gmt_modified" property="gmtModified"></result>
-        <collection property="roles" ofType="top.hcode.hoj.pojo.entity.Role">
+        <collection property="roles" ofType="top.hcode.hoj.pojo.entity.user.Role">
             <id column="role_id" property="id"></id>
             <result column="role" property="role"></result>
             <result column="description" property="description"></result>
@@ -47,7 +47,7 @@
 
     </select>
 
-    <select id="getRolesByUid" resultType="top.hcode.hoj.pojo.entity.Role">
+    <select id="getRolesByUid" resultType="top.hcode.hoj.pojo.entity.user.Role">
         select r.* from role r,user_role ur where r.id=ur.role_id and ur.uid = #{uid}
     </select>
 
@@ -70,7 +70,7 @@
         <result column="avatar" property="avatar"></result>
         <result column="gmt_create" property="gmtCreate"></result>
         <result column="gmt_modified" property="gmtModified"></result>
-        <collection property="roles" ofType="top.hcode.hoj.pojo.entity.Role" select="getUserListRoles"
+        <collection property="roles" ofType="top.hcode.hoj.pojo.entity.user.Role" select="getUserListRoles"
                     column="uuid=uuid">
         </collection>
     </resultMap>
@@ -90,7 +90,7 @@
     </select>
 
     <!-- 子查询 -->
-    <select id="getUserListRoles" resultType="top.hcode.hoj.pojo.entity.Role">
+    <select id="getUserListRoles" resultType="top.hcode.hoj.pojo.entity.user.Role">
         select  r.* from role r,user_role ur where ur.uid=#{uuid} and ur.role_id = r.id
     </select>
 

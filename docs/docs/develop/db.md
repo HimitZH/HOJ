@@ -423,7 +423,7 @@ contest_register表 比赛报名表
 | id           | long         | 主键 | auto_increment             |
 | cid          | long         | 外键 | 比赛id                     |
 | uid          | String       | 外键 | 用户id                     |
-| Status       | int          |      | 默认为0表示正常，1为失效。 |
+| status       | int          |      | 默认为0表示正常，1为失效。 |
 | gmt_create   | datetime     |      | 创建时间                   |
 | gmt_modified | datetime     |      | 修改时间                   |
 
@@ -455,10 +455,12 @@ contest_record表 比赛记录表
 | submit_id    | int          | 外键 | 提交id，用于可重判                                           |
 | display_id   | String       |      | 比赛展示的id                                                 |
 | username     | String       |      | 用户名                                                       |
-| realname     | String       |      | 真实姓名                                                     |
+| realname     | String       |      | 真实姓名（废弃）                                             |
 | status       | int          |      | 提交结果，0表示未AC通过不罚时，1表示AC通过，-1为未AC通过算罚时 |
+| submit_time  | datetime     |      | 具体提交时间                                                 |
 | time         | int          |      | 提交时间，为提交时间减去比赛时间，时间戳                     |
 | score        | int          |      | OI比赛得分                                                   |
+| use_time     | int          |      | 提交的程序运行耗时                                           |
 | first_blood  | Boolean      |      | 是否为一血AC（废弃）                                         |
 | checked      | Boolean      |      | AC是否已校验                                                 |
 | gmt_create   | datetime     |      | 创建时间                                                     |
@@ -494,8 +496,6 @@ announcement表
 
 
 
-
-
 contest_announcement表 比赛时的通知表
 
 | 列名         | 实体属性类型 | 键   | 备注           |
@@ -520,6 +520,88 @@ contest_explanation表 赛后题解表**(未使用)**
 | gmt_modified | datetime     |      | 修改时间                                     |
 
  
+
+##训练(题单)模块
+
+题单训练表 training
+
+| 列名         | 实体属性类型 | 键   | 备注                              |
+| ------------ | ------------ | ---- | --------------------------------- |
+| id           | long         | 主键 |                                   |
+| title        | string       |      | 训练题单名称                      |
+| description  | string       |      | 训练题单简介                      |
+| author       | string       | 外键 | 训练题单创建者用户名              |
+| auth         | string       |      | 训练题单权限类型：Public、Private |
+| private_pwd  | string       |      | 训练题单权限为Private时的密码     |
+| rank         | int          |      | 编号，升序                        |
+| status       | boolean      |      | 是否可用                          |
+| gmt_create   | datetime     |      | 创建时间                          |
+| gmt_modified | datetime     |      | 修改时间                          |
+
+
+
+训练注册表 training_register
+
+| 列名         | 实体属性类型 | 键   | 备注     |
+| ------------ | ------------ | ---- | -------- |
+| id           | long         | 主键 |          |
+| tid          | long         | 外键 | 训练id   |
+| uid          | long         | 外键 | 用户id   |
+| status       | boolean      |      | 是否可用 |
+| gmt_create   | datetime     |      | 创建时间 |
+| gmt_modified | datetime     |      | 修改时间 |
+
+
+
+训练与题目关联表 training_problem
+
+| 列名         | 实体属性类型 | 键   | 备注          |
+| ------------ | ------------ | ---- | ------------- |
+| id           | long         | 主键 |               |
+| tid          | long         | 外键 | 训练id        |
+| pid          | long         | 外键 | 题目id        |
+| display_id   | string       |      | 排序用 展示id |
+| gmt_create   | datetime     |      | 创建时间      |
+| gmt_modified | datetime     |      | 修改时间      |
+
+
+
+训练记录表 training_record
+
+| 列名         | 实体属性类型 | 键   | 备注       |
+| ------------ | ------------ | ---- | ---------- |
+| id           | long         | 主键 |            |
+| tid          | long         | 外键 | 训练id     |
+| tpid         | long         | 外键 | 训练题目id |
+| pid          | long         | 外键 | 题目id     |
+| uid          | string       | 外键 | 用户id     |
+| submit_id    | long         | 外键 | 提交id     |
+| gmt_create   | datetime     |      | 创建时间   |
+| gmt_modified | datetime     |      | 修改时间   |
+
+
+
+训练分类表 training_category
+
+| 列名         | 实体属性类型 | 键   | 备注         |
+| ------------ | ------------ | ---- | ------------ |
+| id           | long         | 主键 |              |
+| name         | string       |      | 分类名称     |
+| color        | string       |      | 分类背景颜色 |
+| gmt_create   | datetime     |      | 创建时间     |
+| gmt_modified | datetime     |      | 修改时间     |
+
+
+
+训练分类关联表 mapping_training_category
+
+| 列名         | 实体属性类型 | 键   | 备注                            |
+| ------------ | ------------ | ---- | ------------------------------- |
+| id           | long         | 主键 |                                 |
+| tid          | long         | 外键 | 训练id                          |
+| cid          | long         | 外键 | 训练分类id（training_category） |
+| gmt_create   | datetime     |      | 创建时间                        |
+| gmt_modified | datetime     |      | 修改时间                        |
 
  
 
@@ -710,21 +792,22 @@ file表
 
 judge_server表
 
-| 列名            | 实体属性类型 | 键   | 备注                      |
-| --------------- | ------------ | ---- | ------------------------- |
-| id              | int          | 主键 | auto_increment            |
-| name            | String       |      | 判题服务名字              |
-| ip              | String       |      | 判题机ip                  |
-| port            | int          |      | 判题机端口号              |
-| url             | String       |      | ip:port                   |
-| cpu_core        | int          |      | 判题机所在服务器cpu核心数 |
-| task_number     | int          |      | 当前判题数                |
-| max_task_number | int          |      | 判题并发最大数            |
-| status          | int          |      | 0可用，1不可用            |
-| version         | long         |      | 版本控制                  |
-| is_remote       | boolean      |      | 是否为远程判题vj          |
-| gmt_create      | datetime     |      | 创建时间                  |
-| gmt_modified    | datetime     |      | 修改时间                  |
+| 列名            | 实体属性类型 | 键   | 备注                                             |
+| --------------- | ------------ | ---- | ------------------------------------------------ |
+| id              | int          | 主键 | auto_increment                                   |
+| name            | String       |      | 判题服务名字                                     |
+| ip              | String       |      | 判题机ip                                         |
+| port            | int          |      | 判题机端口号                                     |
+| url             | String       |      | ip:port                                          |
+| cpu_core        | int          |      | 判题机所在服务器cpu核心数                        |
+| task_number     | int          |      | 当前判题数                                       |
+| max_task_number | int          |      | 判题并发最大数                                   |
+| status          | int          |      | 0可用，1不可用                                   |
+| version         | long         |      | 版本控制                                         |
+| is_remote       | boolean      |      | 是否为远程判题vj                                 |
+| cf_submittable  | boolean      |      | 当前机器是否可提交cf，控制机器一次只能一账号交题 |
+| gmt_create      | datetime     |      | 创建时间                                         |
+| gmt_modified    | datetime     |      | 修改时间                                         |
 
 remote_judge_account表
 

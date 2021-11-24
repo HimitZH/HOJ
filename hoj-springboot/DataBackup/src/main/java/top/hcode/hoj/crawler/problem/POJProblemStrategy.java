@@ -4,7 +4,7 @@ import cn.hutool.core.util.ReUtil;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.springframework.util.Assert;
-import top.hcode.hoj.pojo.entity.Problem;
+import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.utils.JsoupUtils;
 
 /**

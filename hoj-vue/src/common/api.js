@@ -455,9 +455,9 @@ const ojApi = {
     })
   },
   // userhome页的请求
-  getUserInfo(uid){
+  getUserInfo(uid,username){
     return ajax("/api/get-user-home-info",'get',{
-      params:{uid}
+      params:{uid,username}
     })
   },
   // setting页的请求

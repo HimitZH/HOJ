@@ -12,9 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.dao.RemoteJudgeAccountMapper;
-import top.hcode.hoj.pojo.entity.JudgeServer;
-import top.hcode.hoj.pojo.entity.RemoteJudgeAccount;
-import top.hcode.hoj.service.impl.JudgeServerServiceImpl;
+import top.hcode.hoj.pojo.entity.judge.JudgeServer;
+import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
+import top.hcode.hoj.service.judge.impl.JudgeServerServiceImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;

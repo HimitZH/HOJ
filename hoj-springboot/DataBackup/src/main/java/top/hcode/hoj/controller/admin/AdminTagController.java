@@ -6,8 +6,8 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.Tag;
-import top.hcode.hoj.service.impl.TagServiceImpl;
+import top.hcode.hoj.pojo.entity.problem.Tag;
+import top.hcode.hoj.service.problem.impl.TagServiceImpl;
 
 import javax.annotation.Resource;
 

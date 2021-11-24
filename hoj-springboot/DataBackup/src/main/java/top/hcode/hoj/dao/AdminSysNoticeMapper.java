@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-import top.hcode.hoj.pojo.entity.AdminSysNotice;
+import top.hcode.hoj.pojo.entity.msg.AdminSysNotice;
 import top.hcode.hoj.pojo.vo.AdminSysNoticeVo;
 
 @Mapper

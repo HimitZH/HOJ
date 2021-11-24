@@ -3,8 +3,8 @@ package top.hcode.hoj.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.hcode.hoj.common.exception.CompileError;
 import top.hcode.hoj.common.exception.SystemError;
-import top.hcode.hoj.pojo.entity.Judge;
-import top.hcode.hoj.pojo.entity.Problem;
+import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.problem.Problem;
 
 
 /**

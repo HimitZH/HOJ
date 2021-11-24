@@ -5,7 +5,6 @@ import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -18,10 +17,17 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.crawler.problem.ProblemStrategy;
 import top.hcode.hoj.pojo.dto.AnnouncementDto;
 import top.hcode.hoj.pojo.dto.ProblemDto;
-import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.pojo.entity.contest.Contest;
+import top.hcode.hoj.pojo.entity.contest.ContestAnnouncement;
+import top.hcode.hoj.pojo.entity.contest.ContestProblem;
+import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.vo.AnnouncementVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.impl.*;
+import top.hcode.hoj.service.common.impl.AnnouncementServiceImpl;
+import top.hcode.hoj.service.contest.impl.ContestAnnouncementServiceImpl;
+import top.hcode.hoj.service.contest.impl.ContestProblemServiceImpl;
+import top.hcode.hoj.service.contest.impl.ContestServiceImpl;
+import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 import javax.servlet.http.HttpServletRequest;
@@ -89,10 +95,13 @@ public class AdminContestController {
     @GetMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult getContest(@Valid @RequestParam("cid") Long cid, HttpServletRequest request) {
+    public CommonResult getContest(@RequestParam("cid") Long cid, HttpServletRequest request) {
 
         // 获取本场比赛的状态
         Contest contest = contestService.getById(cid);
+        if (contest == null) { // 查询不存在
+            return CommonResult.errorResponse("查询失败：该比赛不存在,请检查参数cid是否准确！");
+        }
         // 获取当前登录的用户
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
@@ -103,18 +112,14 @@ public class AdminContestController {
         if (!isRoot && !userRolesVo.getUid().equals(contest.getUid())) {
             return CommonResult.errorResponse("对不起，你无权限操作！", CommonResult.STATUS_FORBIDDEN);
         }
+        return CommonResult.successResponse(contest, "查询成功！");
 
-        if (contest != null) { // 查询成功
-            return CommonResult.successResponse(contest, "查询成功！");
-        } else {
-            return CommonResult.errorResponse("查询失败！", CommonResult.STATUS_FAIL);
-        }
     }
 
     @DeleteMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = "root") // 只有超级管理员能删除比赛
-    public CommonResult deleteContest(@Valid @RequestParam("cid") Long cid) {
+    public CommonResult deleteContest(@RequestParam("cid") Long cid) {
         boolean result = contestService.removeById(cid);
         /*
         contest的id为其他表的外键的表中的对应数据都会被一起删除！
@@ -154,7 +159,7 @@ public class AdminContestController {
         }
 
         boolean result = contestService.saveOrUpdate(contest);
-        if (result) { // 添加成功
+        if (result) {
             return CommonResult.successResponse(null, "修改成功！");
         } else {
             return CommonResult.errorResponse("修改失败", CommonResult.STATUS_FAIL);
@@ -194,7 +199,7 @@ public class AdminContestController {
     @GetMapping("/get-problem-list")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult getProblemList(@RequestParam(value = "limit", required = false) Integer limit,
                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                        @RequestParam(value = "keyword", required = false) String keyword,
@@ -313,7 +318,7 @@ public class AdminContestController {
     @PostMapping("/problem")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult addProblem(@RequestBody ProblemDto problemDto) {
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
@@ -337,7 +342,7 @@ public class AdminContestController {
     @PutMapping("/problem")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult updateProblem(@RequestBody ProblemDto problemDto, HttpServletRequest request) {
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
@@ -455,7 +460,7 @@ public class AdminContestController {
     @GetMapping("/import-remote-oj-problem")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult importContestRemoteOJProblem(@RequestParam("name") String name,
                                                      @RequestParam("problemId") String problemId,
                                                      @RequestParam("cid") Long cid,
@@ -549,7 +554,7 @@ public class AdminContestController {
     @PostMapping("/announcement")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult addAnnouncement(@RequestBody AnnouncementDto announcementDto) {
         boolean result1 = announcementService.save(announcementDto.getAnnouncement());
         boolean result2 = contestAnnouncementService.saveOrUpdate(new ContestAnnouncement().setAid(announcementDto.getAnnouncement().getId())

@@ -1,13 +1,9 @@
 package top.hcode.hoj.pojo.vo;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import top.hcode.hoj.pojo.entity.Reply;
+import top.hcode.hoj.pojo.entity.discussion.Reply;
 
 import java.util.Date;
 import java.util.List;

@@ -7,6 +7,7 @@ import top.hcode.hoj.common.exception.CompileError;
 import top.hcode.hoj.common.exception.SubmitError;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.util.Constants;
+import top.hcode.hoj.util.JudgeUtils;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
@@ -40,13 +41,13 @@ public class Compiler {
         );
         JSONObject compileResult = (JSONObject) result.get(0);
         if (compileResult.getInt("status").intValue() != Constants.Judge.STATUS_ACCEPTED.getStatus()) {
-            throw new CompileError("Compile Error.", ((JSONObject) compileResult.get("files")).getStr("stderr"),
+            throw new CompileError("Compile Error.", ((JSONObject) compileResult.get("files")).getStr("stdout"),
                     ((JSONObject) compileResult.get("files")).getStr("stderr"));
         }
 
         String fileId = ((JSONObject) compileResult.get("fileIds")).getStr(compileConfig.getExeName());
         if (StringUtils.isEmpty(fileId)) {
-            throw new SubmitError("Executable file not found.",  ((JSONObject) compileResult.get("files")).getStr("stderr"),
+            throw new SubmitError("Executable file not found.",  ((JSONObject) compileResult.get("files")).getStr("stdout"),
                     ((JSONObject) compileResult.get("files")).getStr("stderr"));
         }
         return fileId;
@@ -80,7 +81,7 @@ public class Compiler {
         );
         JSONObject compileResult = (JSONObject) res.get(0);
         if (compileResult.getInt("status").intValue() != Constants.Judge.STATUS_ACCEPTED.getStatus()) {
-            throw new SystemError("Special Judge Code Compile Error.", ((JSONObject) compileResult.get("files")).getStr("stderr"),
+            throw new SystemError("Special Judge Code Compile Error.", ((JSONObject) compileResult.get("files")).getStr("stdout"),
                     ((JSONObject) compileResult.get("files")).getStr("stderr"));
         }
         return true;
@@ -90,7 +91,6 @@ public class Compiler {
 
         command = MessageFormat.format(command, Constants.JudgeDir.TMPFS_DIR.getContent(),
                 compileConfig.getSrcName(), compileConfig.getExeName());
-
-        return Arrays.asList(command.split(" "));
+        return JudgeUtils.translateCommandline(command);
     }
 }

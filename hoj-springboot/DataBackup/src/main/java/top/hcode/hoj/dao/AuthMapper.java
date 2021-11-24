@@ -1,6 +1,6 @@
 package top.hcode.hoj.dao;
 
-import top.hcode.hoj.pojo.entity.Auth;
+import top.hcode.hoj.pojo.entity.user.Auth;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

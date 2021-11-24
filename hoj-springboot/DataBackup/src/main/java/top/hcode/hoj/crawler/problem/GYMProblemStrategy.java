@@ -3,7 +3,7 @@ package top.hcode.hoj.crawler.problem;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.http.HttpUtil;
-import top.hcode.hoj.pojo.entity.Problem;
+import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.utils.Constants;
 
 import java.io.File;

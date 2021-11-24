@@ -236,4 +236,27 @@ public class Constants {
 
         }
     }
+
+    /**
+     * @Description 训练题单的一些常量
+     * @Since 2021/11/20
+     */
+    public enum Training {
+
+        AUTH_PRIVATE("Private"),
+        AUTH_PUBLIC("Public"),
+
+        MAP_REDIS_KEY_PRE("training_TPId_map_DisplayId:");
+
+        private final String value;
+
+        Training(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
 }

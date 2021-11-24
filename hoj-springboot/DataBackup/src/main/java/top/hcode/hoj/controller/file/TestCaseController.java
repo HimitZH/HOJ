@@ -18,8 +18,8 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.ProblemCase;
-import top.hcode.hoj.service.impl.ProblemCaseServiceImpl;
+import top.hcode.hoj.pojo.entity.problem.ProblemCase;
+import top.hcode.hoj.service.problem.impl.ProblemCaseServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 import javax.servlet.http.HttpServletResponse;

@@ -1,12 +1,11 @@
 package top.hcode.hoj.dao;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.vo.ProblemVo;
-import top.hcode.hoj.pojo.entity.Problem;
+import top.hcode.hoj.pojo.entity.problem.Problem;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 import java.util.List;

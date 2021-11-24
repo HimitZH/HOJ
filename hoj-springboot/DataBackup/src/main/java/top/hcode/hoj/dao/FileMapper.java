@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
-import top.hcode.hoj.pojo.entity.File;
+import top.hcode.hoj.pojo.entity.common.File;
 
 import java.util.List;
 

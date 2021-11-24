@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.dao.ContestRecordMapper">
 
-    <select id="getACInfo" resultType="top.hcode.hoj.pojo.entity.ContestRecord">
+    <select id="getACInfo" resultType="top.hcode.hoj.pojo.entity.contest.ContestRecord">
         SELECT c.id,c.uid,c.username,c.display_id,c.cid,u.realname,c.pid,c.time,c.status,c.checked,c.submit_id,
         c.submit_time FROM contest_record c,user_info u,
         (SELECT status,uid,pid,cpid,

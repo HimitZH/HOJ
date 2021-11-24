@@ -2,7 +2,7 @@ package top.hcode.hoj.pojo.dto;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import top.hcode.hoj.pojo.entity.Reply;
+import top.hcode.hoj.pojo.entity.discussion.Reply;
 
 /**
  * @Author: Himit_ZH

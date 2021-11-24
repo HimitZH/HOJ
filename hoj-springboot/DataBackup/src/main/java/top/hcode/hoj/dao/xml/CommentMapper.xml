@@ -12,7 +12,7 @@
         <result column="like_num" property="likeNum"></result>
         <result column="total_reply_num" property="totalReplyNum"></result>
         <result column="gmt_create" property="gmtCreate"></result>
-        <collection property="replyList" ofType="top.hcode.hoj.pojo.entity.Reply" select="getCommentListReply" column="id">
+        <collection property="replyList" ofType="top.hcode.hoj.pojo.entity.discussion.Reply" select="getCommentListReply" column="id">
         </collection>
     </resultMap>
 
@@ -41,7 +41,7 @@
     </select>
 
     <!-- 子查询 -->
-    <select id="getCommentListReply" resultType="top.hcode.hoj.pojo.entity.Reply">
+    <select id="getCommentListReply" resultType="top.hcode.hoj.pojo.entity.discussion.Reply">
         select r.* from reply r where r.comment_id=#{id} and r.status=0 order by r.gmt_create desc LIMIT 3
     </select>
 </mapper>

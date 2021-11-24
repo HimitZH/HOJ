@@ -2,7 +2,6 @@ package top.hcode.hoj.controller.admin;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import io.swagger.models.auth.In;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -18,14 +17,21 @@ import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.judge.remote.RemoteJudgeDispatcher;
 import top.hcode.hoj.judge.self.JudgeDispatcher;
-import top.hcode.hoj.pojo.entity.*;
-import top.hcode.hoj.service.impl.*;
+import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.judge.JudgeCase;
+import top.hcode.hoj.pojo.entity.user.UserAcproblem;
+import top.hcode.hoj.pojo.entity.contest.ContestRecord;
+import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.service.contest.impl.ContestRecordServiceImpl;
+import top.hcode.hoj.service.judge.impl.JudgeCaseServiceImpl;
+import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
+import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
+import top.hcode.hoj.service.user.impl.UserAcproblemServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @Author: Himit_ZH
@@ -129,7 +135,7 @@ public class AdminJudgeController {
     @RequiresAuthentication
     @RequiresRoles("root")  // 只有超级管理员能操作
     @RequiresPermissions("rejudge")
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult rejudgeContestProblem(@RequestParam("cid") Long cid, @RequestParam("pid") Long pid) {
 
 

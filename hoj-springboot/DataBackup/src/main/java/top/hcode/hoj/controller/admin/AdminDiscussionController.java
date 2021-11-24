@@ -9,10 +9,10 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.Discussion;
-import top.hcode.hoj.pojo.entity.DiscussionReport;
-import top.hcode.hoj.service.impl.DiscussionReportServiceImpl;
-import top.hcode.hoj.service.impl.DiscussionServiceImpl;
+import top.hcode.hoj.pojo.entity.discussion.Discussion;
+import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
+import top.hcode.hoj.service.discussion.impl.DiscussionReportServiceImpl;
+import top.hcode.hoj.service.discussion.impl.DiscussionServiceImpl;
 
 import java.util.List;
 
