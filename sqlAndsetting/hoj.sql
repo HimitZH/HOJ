@@ -475,6 +475,7 @@ CREATE TABLE `judge_server` (
   `max_task_number` int(11) NOT NULL COMMENT '判题并发最大数',
   `status` int(11) DEFAULT '0' COMMENT '0可用，1不可用',
   `is_remote` tinyint(1) DEFAULT NULL COMMENT '是否开启远程判题vj',
+  `cf_submittable` tinyint(1) DEFAULT 1 NULL COMMENT '是否可提交CF',
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
