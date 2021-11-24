@@ -8,7 +8,7 @@
         <result column="status" property="status"></result>
         <result column="gmt_create" property="gmtCreate"></result>
         <result column="gmt_modified" property="gmtModified"></result>
-        <collection property="auths" ofType="top.hcode.hoj.pojo.entity.Auth">
+        <collection property="auths" ofType="top.hcode.hoj.pojo.entity.user.Auth">
             <id column="auth_id" property="id"></id>
             <result column="name" property="name"></result>
             <result column="permission" property="permission"></result>

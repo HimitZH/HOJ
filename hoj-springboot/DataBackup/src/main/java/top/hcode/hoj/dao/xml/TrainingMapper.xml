@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.dao.TrainingMapper">
+
+    <resultMap id="map_TrainingList" type="top.hcode.hoj.pojo.vo.TrainingVo">
+        <id column="id" property="id"></id>
+        <result column="title" property="title"></result>
+        <result column="description" property="description"></result>
+        <result column="author" property="author"></result>
+        <result column="auth" property="auth"></result>
+        <result column="rank" property="rank"></result>
+        <result column="category_name" property="categoryName"></result>
+        <result column="category_color" property="categoryColor"></result>
+        <result column="problem_count" property="problemCount"></result>
+    </resultMap>
+
+    <select id="getTrainingList" resultMap="map_TrainingList">
+        select t.*,tc.name as category_name,tc.color as category_color
+        (
+        select count(*) from training_problem tp,problem p
+        where tp.tid = t.id and tp.pid = p.id and p.auth = 1
+        )
+        as problem_count
+        from training t,mapping_training_category mtc,training_category tc
+        <where>
+            t.status = true and t.id = mtc.tid and mtc.cid = tc.id
+            <if test="categoryId != null">
+                and tc.id = #{categoryId}
+            </if>
+            <if test="auth != null">
+                and t.auth = #{auth}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                and (
+                t.title like concat('%',#{keyword},'%') or t.author like concat('%',#{keyword},'%')
+                )
+            </if>
+        </where>
+        order by t.rank asc
+    </select>
+</mapper>

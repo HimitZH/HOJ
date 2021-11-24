@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.vo.ContestVo;
-import top.hcode.hoj.pojo.entity.Contest;
+import top.hcode.hoj.pojo.entity.contest.Contest;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 import java.util.List;

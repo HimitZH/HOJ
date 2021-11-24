@@ -3,7 +3,7 @@ package top.hcode.hoj.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.dao.JudgeServerMapper;
-import top.hcode.hoj.pojo.entity.JudgeServer;
+import top.hcode.hoj.pojo.entity.judge.JudgeServer;
 import top.hcode.hoj.service.JudgeServerService;
 
 /**

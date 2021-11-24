@@ -1,15 +1,13 @@
 package top.hcode.hoj.controller.oj;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.vo.ACMRankVo;
-import top.hcode.hoj.service.impl.UserRecordServiceImpl;
+import top.hcode.hoj.service.user.impl.UserRecordServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 /**

@@ -1,36 +1,24 @@
 package top.hcode.hoj.judge;
 
 import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.io.file.FileReader;
-import cn.hutool.core.io.file.FileWriter;
-import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
-import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.CompileError;
 import top.hcode.hoj.common.exception.SubmitError;
 import top.hcode.hoj.common.exception.SystemError;
-import top.hcode.hoj.pojo.entity.Judge;
-import top.hcode.hoj.pojo.entity.JudgeCase;
-import top.hcode.hoj.pojo.entity.Problem;
-import top.hcode.hoj.pojo.entity.ProblemCase;
+import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.judge.JudgeCase;
+import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.service.impl.JudgeCaseServiceImpl;
 import top.hcode.hoj.service.impl.JudgeServiceImpl;
-import top.hcode.hoj.service.impl.ProblemCaseServiceImpl;
 import top.hcode.hoj.util.Constants;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.text.MessageFormat;
 import java.util.*;
-import java.util.concurrent.*;
 
 @Slf4j(topic = "hoj")
 @Component
@@ -108,13 +96,13 @@ public class JudgeStrategy {
                     systemError);
         } catch (SubmitError submitError) {
             result.put("code", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
-            result.put("errMsg", submitError.getMessage() + ":" + submitError.getStderr());
+            result.put("errMsg", mergeNonEmptyStrings(submitError.getMessage(), submitError.getStdout(), submitError.getStderr()));
             result.put("time", 0);
             result.put("memory", 0);
             log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生提交的异常-------------------->{}", submitError);
         } catch (CompileError compileError) {
             result.put("code", Constants.Judge.STATUS_COMPILE_ERROR.getStatus());
-            result.put("errMsg", compileError.getStderr());
+            result.put("errMsg", mergeNonEmptyStrings(compileError.getStdout(), compileError.getStderr()));
             result.put("time", 0);
             result.put("memory", 0);
         } catch (Exception e) {
@@ -247,6 +235,16 @@ public class JudgeStrategy {
             result.put("code", Constants.Judge.STATUS_PARTIAL_ACCEPTED.getStatus());
         }
         return result;
+    }
+
+    public String mergeNonEmptyStrings(String... strings) {
+        StringBuffer sb = new StringBuffer();
+        for (String str : strings) {
+            if (!StringUtils.isEmpty(str)) {
+                sb.append(str.substring(0, Math.min(1024 * 1024, str.length()))).append("\n");
+            }
+        }
+        return sb.toString();
     }
 
 }

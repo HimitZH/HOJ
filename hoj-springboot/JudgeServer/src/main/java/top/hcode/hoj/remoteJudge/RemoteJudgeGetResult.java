@@ -1,7 +1,6 @@
 package top.hcode.hoj.remoteJudge;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -9,10 +8,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import top.hcode.hoj.pojo.entity.Judge;
+import top.hcode.hoj.pojo.entity.judge.Judge;
 
-import top.hcode.hoj.pojo.entity.JudgeServer;
-import top.hcode.hoj.pojo.entity.RemoteJudgeAccount;
+import top.hcode.hoj.pojo.entity.judge.JudgeServer;
+import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeFactory;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.service.impl.JudgeServerServiceImpl;
@@ -20,7 +19,6 @@ import top.hcode.hoj.service.impl.JudgeServiceImpl;
 import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.util.Constants;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

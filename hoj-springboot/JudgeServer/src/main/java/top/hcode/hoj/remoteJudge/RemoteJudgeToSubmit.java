@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import top.hcode.hoj.pojo.entity.Judge;
-import top.hcode.hoj.pojo.entity.JudgeServer;
-import top.hcode.hoj.pojo.entity.RemoteJudgeAccount;
+import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.judge.JudgeServer;
+import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeFactory;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.service.impl.JudgeServerServiceImpl;
@@ -16,7 +16,6 @@ import top.hcode.hoj.service.impl.JudgeServiceImpl;
 import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.util.Constants;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Component

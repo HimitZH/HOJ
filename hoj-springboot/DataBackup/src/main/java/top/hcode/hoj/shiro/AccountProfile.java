@@ -1,7 +1,7 @@
 package top.hcode.hoj.shiro;
 
 import lombok.Data;
-import top.hcode.hoj.pojo.entity.Role;
+import top.hcode.hoj.pojo.entity.user.Role;
 
 import java.io.Serializable;
 import java.util.Date;

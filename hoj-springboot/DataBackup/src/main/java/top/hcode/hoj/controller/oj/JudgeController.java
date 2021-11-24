@@ -2,7 +2,6 @@ package top.hcode.hoj.controller.oj;
 
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.NumberUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -12,9 +11,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.JudgeMapper;
@@ -22,19 +19,29 @@ import top.hcode.hoj.judge.remote.RemoteJudgeDispatcher;
 import top.hcode.hoj.judge.self.JudgeDispatcher;
 import top.hcode.hoj.pojo.dto.SubmitIdListDto;
 import top.hcode.hoj.pojo.dto.ToJudgeDto;
-import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.judge.JudgeCase;
+import top.hcode.hoj.pojo.entity.user.UserAcproblem;
+import top.hcode.hoj.pojo.entity.contest.Contest;
+import top.hcode.hoj.pojo.entity.contest.ContestProblem;
+import top.hcode.hoj.pojo.entity.contest.ContestRecord;
+import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 
-import top.hcode.hoj.service.ProblemService;
-import top.hcode.hoj.service.impl.*;
+import top.hcode.hoj.service.contest.impl.ContestProblemServiceImpl;
+import top.hcode.hoj.service.contest.impl.ContestRecordServiceImpl;
+import top.hcode.hoj.service.contest.impl.ContestServiceImpl;
+import top.hcode.hoj.service.judge.impl.JudgeCaseServiceImpl;
+import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
+import top.hcode.hoj.service.problem.ProblemService;
+import top.hcode.hoj.service.user.impl.UserAcproblemServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.RedisUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -248,7 +255,7 @@ public class JudgeController {
      */
     @RequiresAuthentication
     @GetMapping(value = "/resubmit")
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult resubmit(@RequestParam("submitId") Long submitId,
                                  HttpServletRequest request) {
 

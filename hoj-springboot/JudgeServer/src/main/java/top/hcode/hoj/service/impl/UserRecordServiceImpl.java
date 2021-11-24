@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.dao.UserRecordMapper;
-import top.hcode.hoj.pojo.entity.Judge;
-import top.hcode.hoj.pojo.entity.UserRecord;
+import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.user.UserRecord;
 
 import top.hcode.hoj.service.UserRecordService;
 

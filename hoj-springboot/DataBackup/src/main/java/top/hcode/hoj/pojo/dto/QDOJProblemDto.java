@@ -2,12 +2,11 @@ package top.hcode.hoj.pojo.dto;
 
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import top.hcode.hoj.pojo.entity.CodeTemplate;
-import top.hcode.hoj.pojo.entity.Problem;
-import top.hcode.hoj.pojo.entity.ProblemCase;
+import top.hcode.hoj.pojo.entity.problem.CodeTemplate;
+import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.pojo.entity.problem.ProblemCase;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 
 /**

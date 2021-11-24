@@ -6,8 +6,8 @@ import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import top.hcode.hoj.pojo.entity.Judge;
-import top.hcode.hoj.service.impl.JudgeServiceImpl;
+import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 

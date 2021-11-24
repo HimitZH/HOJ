@@ -4,13 +4,10 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.AdminSysNotice;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.impl.AdminSysNoticeServiceImpl;
+import top.hcode.hoj.pojo.entity.msg.AdminSysNotice;
+import top.hcode.hoj.service.msg.impl.AdminSysNoticeServiceImpl;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
  * @Author: Himit_ZH

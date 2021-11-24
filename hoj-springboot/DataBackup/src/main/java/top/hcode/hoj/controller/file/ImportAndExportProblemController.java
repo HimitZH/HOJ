@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ProblemDto;
-import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.pojo.entity.problem.*;
 import top.hcode.hoj.pojo.vo.ImportProblemVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.impl.LanguageServiceImpl;
-import top.hcode.hoj.service.impl.ProblemCaseServiceImpl;
-import top.hcode.hoj.service.impl.ProblemServiceImpl;
-import top.hcode.hoj.service.impl.TagServiceImpl;
+import top.hcode.hoj.service.problem.impl.LanguageServiceImpl;
+import top.hcode.hoj.service.problem.impl.ProblemCaseServiceImpl;
+import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
+import top.hcode.hoj.service.problem.impl.TagServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 import javax.servlet.http.HttpServletRequest;
@@ -70,7 +70,7 @@ public class ImportAndExportProblemController {
     @RequiresRoles("root")
     @RequiresAuthentication
     @ResponseBody
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @PostMapping("/import-problem")
     public CommonResult importProblem(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
 

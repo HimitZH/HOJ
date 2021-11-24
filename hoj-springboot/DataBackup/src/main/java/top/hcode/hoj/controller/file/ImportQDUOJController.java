@@ -23,14 +23,14 @@ import org.springframework.web.multipart.MultipartFile;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.dto.QDOJProblemDto;
-import top.hcode.hoj.pojo.entity.Language;
-import top.hcode.hoj.pojo.entity.Problem;
-import top.hcode.hoj.pojo.entity.ProblemCase;
-import top.hcode.hoj.pojo.entity.Tag;
+import top.hcode.hoj.pojo.entity.problem.Language;
+import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.pojo.entity.problem.ProblemCase;
+import top.hcode.hoj.pojo.entity.problem.Tag;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.impl.LanguageServiceImpl;
-import top.hcode.hoj.service.impl.ProblemServiceImpl;
-import top.hcode.hoj.service.impl.TagServiceImpl;
+import top.hcode.hoj.service.problem.impl.LanguageServiceImpl;
+import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
+import top.hcode.hoj.service.problem.impl.TagServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 import javax.servlet.http.HttpServletRequest;
@@ -73,7 +73,7 @@ public class ImportQDUOJController {
     @RequiresRoles("root")
     @RequiresAuthentication
     @ResponseBody
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @PostMapping("/import-qdoj-problem")
     public CommonResult importQDOJProblem(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
 

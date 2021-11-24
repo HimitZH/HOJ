@@ -2,8 +2,8 @@ package top.hcode.hoj.crawler.problem;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import top.hcode.hoj.pojo.entity.Problem;
-import top.hcode.hoj.pojo.entity.Tag;
+import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.pojo.entity.problem.Tag;
 
 import java.util.List;
 

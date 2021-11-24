@@ -3,7 +3,6 @@ package top.hcode.hoj.controller.oj;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -11,7 +10,6 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -22,12 +20,17 @@ import top.hcode.hoj.pojo.bo.EmailRuleBo;
 import top.hcode.hoj.pojo.dto.LoginDto;
 import top.hcode.hoj.pojo.dto.RegisterDto;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.pojo.entity.user.*;
+import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.vo.ConfigVo;
 import top.hcode.hoj.pojo.vo.UserHomeVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.UserInfoService;
-import top.hcode.hoj.service.impl.*;
+import top.hcode.hoj.service.common.impl.EmailServiceImpl;
+import top.hcode.hoj.service.msg.impl.AdminSysNoticeServiceImpl;
+import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
+import top.hcode.hoj.service.user.impl.SessionServiceImpl;
+import top.hcode.hoj.service.user.impl.UserAcproblemServiceImpl;
+import top.hcode.hoj.service.user.impl.UserInfoServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.JwtUtils;
@@ -253,7 +256,7 @@ public class AccountController {
      * @Since 2020/10/24
      */
     @PostMapping("/register")
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult register(@Validated @RequestBody RegisterDto registerDto) {
 
         if (!configVo.getRegister()) { // 需要判断一下网站是否开启注册
@@ -379,19 +382,25 @@ public class AccountController {
      */
     @GetMapping("/get-user-home-info")
     public CommonResult getUserHomeInfo(@RequestParam(value = "uid", required = false) String uid,
+                                        @RequestParam(value = "username", required = false) String username,
                                         HttpServletRequest request) {
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
         // 如果没有uid，默认查询当前登录用户的
-        if (uid == null) {
+        if (uid == null && userRolesVo != null) {
             uid = userRolesVo.getUid();
         }
-        UserHomeVo userHomeInfo = userRecordDao.getUserHomeInfo(uid);
+
+        if (StringUtils.isEmpty(uid) && StringUtils.isEmpty(username)) {
+            return CommonResult.errorResponse("请求参数错误：uid和username不能都为空！");
+        }
+
+        UserHomeVo userHomeInfo = userRecordDao.getUserHomeInfo(uid, username);
         if (userHomeInfo == null) {
             return CommonResult.errorResponse("用户不存在");
         }
         QueryWrapper<UserAcproblem> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("uid", uid).select("distinct pid");
+        queryWrapper.eq("uid", userHomeInfo.getUid()).select("distinct pid");
         List<Long> pidList = new LinkedList<>();
         List<UserAcproblem> acProblemList = userAcproblemService.list(queryWrapper);
         acProblemList.forEach(acProblem -> {
@@ -411,7 +420,9 @@ public class AccountController {
 
         userHomeInfo.setSolvedList(disPlayIdList);
         QueryWrapper<Session> sessionQueryWrapper = new QueryWrapper<>();
-        sessionQueryWrapper.eq("uid", uid).orderByDesc("gmt_create").last("limit 1");
+        sessionQueryWrapper.eq("uid", userHomeInfo.getUid())
+                .orderByDesc("gmt_create")
+                .last("limit 1");
 
         Session recentSession = sessionService.getOne(sessionQueryWrapper, false);
         if (recentSession != null) {

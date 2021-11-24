@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.*;
 import top.hcode.hoj.pojo.dto.LoginDto;
-import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.pojo.entity.user.Session;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.impl.SessionServiceImpl;
+import top.hcode.hoj.service.user.impl.SessionServiceImpl;
 import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.JwtUtils;
 

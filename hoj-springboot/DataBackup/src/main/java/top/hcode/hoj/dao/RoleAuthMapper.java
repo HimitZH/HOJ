@@ -3,7 +3,7 @@ package top.hcode.hoj.dao;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-import top.hcode.hoj.pojo.entity.RoleAuth;
+import top.hcode.hoj.pojo.entity.user.RoleAuth;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import top.hcode.hoj.pojo.vo.RoleAuthsVo;
 

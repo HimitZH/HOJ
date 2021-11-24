@@ -6,11 +6,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.dao.ContestRecordMapper;
-import top.hcode.hoj.pojo.entity.ContestRecord;
-import top.hcode.hoj.pojo.entity.Judge;
+import top.hcode.hoj.pojo.entity.contest.ContestRecord;
 import top.hcode.hoj.service.ContestRecordService;
 import top.hcode.hoj.util.Constants;
 

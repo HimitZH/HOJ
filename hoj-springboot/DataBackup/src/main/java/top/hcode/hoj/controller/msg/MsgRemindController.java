@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.pojo.vo.UserUnreadMsgCountVo;
-import top.hcode.hoj.service.impl.MsgRemindServiceImpl;
+import top.hcode.hoj.service.msg.impl.MsgRemindServiceImpl;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;

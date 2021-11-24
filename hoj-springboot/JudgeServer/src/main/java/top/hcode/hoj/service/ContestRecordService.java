@@ -1,8 +1,7 @@
 package top.hcode.hoj.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import top.hcode.hoj.pojo.entity.ContestRecord;
-import top.hcode.hoj.pojo.entity.Judge;
+import top.hcode.hoj.pojo.entity.contest.ContestRecord;
 
 /**
  * <p>

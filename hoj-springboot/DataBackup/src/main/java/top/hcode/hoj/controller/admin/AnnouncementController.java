@@ -7,12 +7,11 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.Announcement;
+import top.hcode.hoj.pojo.entity.common.Announcement;
 import top.hcode.hoj.pojo.vo.AnnouncementVo;
-import top.hcode.hoj.service.impl.AnnouncementServiceImpl;
+import top.hcode.hoj.service.common.impl.AnnouncementServiceImpl;
 
 import javax.validation.Valid;
-import java.util.Map;
 
 /**
  * @Author: Himit_ZH

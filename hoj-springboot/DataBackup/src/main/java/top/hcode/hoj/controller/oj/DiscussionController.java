@@ -12,16 +12,23 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.pojo.entity.problem.Category;
+import top.hcode.hoj.pojo.entity.user.UserAcproblem;
+import top.hcode.hoj.pojo.entity.discussion.Discussion;
+import top.hcode.hoj.pojo.entity.discussion.DiscussionLike;
+import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
 import top.hcode.hoj.pojo.vo.DiscussionVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.impl.*;
+import top.hcode.hoj.service.discussion.impl.DiscussionLikeServiceImpl;
+import top.hcode.hoj.service.discussion.impl.DiscussionReportServiceImpl;
+import top.hcode.hoj.service.discussion.impl.DiscussionServiceImpl;
+import top.hcode.hoj.service.problem.impl.CategoryServiceImpl;
+import top.hcode.hoj.service.user.impl.UserAcproblemServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -232,7 +239,7 @@ public class DiscussionController {
     }
 
     @GetMapping("/discussion-like")
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @RequiresAuthentication
     public CommonResult addDiscussionLike(@RequestParam("did") Integer did,
                                           @RequestParam("toLike") Boolean toLike,

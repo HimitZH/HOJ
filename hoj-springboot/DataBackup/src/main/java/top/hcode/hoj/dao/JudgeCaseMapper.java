@@ -2,7 +2,7 @@ package top.hcode.hoj.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
-import top.hcode.hoj.pojo.entity.JudgeCase;
+import top.hcode.hoj.pojo.entity.judge.JudgeCase;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

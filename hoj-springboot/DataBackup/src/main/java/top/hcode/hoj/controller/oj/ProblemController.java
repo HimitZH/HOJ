@@ -10,12 +10,16 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.PidListDto;
-import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.pojo.entity.contest.Contest;
+import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.problem.*;
 import top.hcode.hoj.pojo.vo.ProblemCountVo;
 import top.hcode.hoj.pojo.vo.ProblemInfoVo;
 import top.hcode.hoj.pojo.vo.ProblemVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.impl.*;
+import top.hcode.hoj.service.contest.impl.ContestServiceImpl;
+import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
+import top.hcode.hoj.service.problem.impl.*;
 import top.hcode.hoj.utils.Constants;
 
 import javax.servlet.http.HttpServletRequest;

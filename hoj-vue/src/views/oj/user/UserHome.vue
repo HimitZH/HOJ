@@ -190,8 +190,9 @@ export default {
   methods: {
     ...mapActions(['changeDomTitle']),
     init() {
-      this.uid = this.$route.query.uid;
-      api.getUserInfo(this.uid).then((res) => {
+      let uid = this.$route.query.uid;
+      let username = this.$route.query.username;
+      api.getUserInfo(uid, username).then((res) => {
         this.changeDomTitle({ title: res.data.username });
         this.profile = res.data.data;
         this.$nextTick((_) => {

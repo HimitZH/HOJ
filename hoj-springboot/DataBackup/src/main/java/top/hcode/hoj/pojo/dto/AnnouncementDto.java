@@ -1,7 +1,7 @@
 package top.hcode.hoj.pojo.dto;
 
 import lombok.Data;
-import top.hcode.hoj.pojo.entity.Announcement;
+import top.hcode.hoj.pojo.entity.common.Announcement;
 
 import javax.validation.constraints.NotBlank;
 

@@ -7,14 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import top.hcode.hoj.pojo.entity.RemoteJudgeAccount;
+import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
 import top.hcode.hoj.pojo.vo.ConfigVo;
-import top.hcode.hoj.service.impl.ConfigServiceImpl;
-import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
-import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.service.common.impl.ConfigServiceImpl;
+import top.hcode.hoj.service.judge.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.utils.RedisUtils;
 
 import java.util.LinkedList;

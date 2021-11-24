@@ -20,10 +20,13 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ProblemDto;
-import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.pojo.entity.problem.CodeTemplate;
+import top.hcode.hoj.pojo.entity.problem.Language;
+import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.pojo.entity.problem.ProblemCase;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.impl.LanguageServiceImpl;
-import top.hcode.hoj.service.impl.ProblemServiceImpl;
+import top.hcode.hoj.service.problem.impl.LanguageServiceImpl;
+import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
@@ -74,7 +77,7 @@ public class ImportFpsController {
     @RequiresRoles("root")
     @RequiresAuthentication
     @ResponseBody
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @PostMapping("/import-fps-problem")
     public CommonResult importFPSProblem(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException {
         String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);

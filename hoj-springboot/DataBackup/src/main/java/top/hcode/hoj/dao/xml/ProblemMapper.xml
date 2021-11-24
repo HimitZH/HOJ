@@ -18,7 +18,7 @@
         <result column="wa" property="wa"></result>
         <result column="se" property="se"></result>
         <result column="pa" property="pa"></result>
-        <collection property="tags" ofType="top.hcode.hoj.pojo.entity.Tag" select="getProblemTag" column="pid">
+        <collection property="tags" ofType="top.hcode.hoj.pojo.entity.problem.Tag" select="getProblemTag" column="pid">
         </collection>
     </resultMap>
 
@@ -81,7 +81,7 @@
     </select>
 
     <!-- 子查询 :为了防止分页总数据数出错-->
-    <select id="getProblemTag" resultType="top.hcode.hoj.pojo.entity.Tag">
+    <select id="getProblemTag" resultType="top.hcode.hoj.pojo.entity.problem.Tag">
         select t.* from tag t,problem_tag pt where t.id = pt.tid and pt.pid = #{pid}
     </select>
 

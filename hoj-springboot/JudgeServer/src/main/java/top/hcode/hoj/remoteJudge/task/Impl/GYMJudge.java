@@ -9,6 +9,6 @@ package top.hcode.hoj.remoteJudge.task.Impl;
 public class GYMJudge extends CodeForcesJudge {
     @Override
     protected String getSubmitUrl(String contestNum) {
-        return HOST + "gym/" + contestNum + "/submit";
+        return IMAGE_HOST + "gym/" + contestNum + "/submit";
     }
 }

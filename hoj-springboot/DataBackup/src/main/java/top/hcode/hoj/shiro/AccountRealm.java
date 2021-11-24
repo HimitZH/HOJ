@@ -1,8 +1,6 @@
 package top.hcode.hoj.shiro;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.google.common.base.Splitter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
@@ -15,18 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import top.hcode.hoj.dao.RoleAuthMapper;
-import top.hcode.hoj.dao.RoleMapper;
 import top.hcode.hoj.dao.UserRoleMapper;
-import top.hcode.hoj.pojo.entity.Auth;
-import top.hcode.hoj.pojo.entity.Role;
-import top.hcode.hoj.pojo.entity.UserInfo;
-import top.hcode.hoj.pojo.entity.UserRole;
+import top.hcode.hoj.pojo.entity.user.Auth;
+import top.hcode.hoj.pojo.entity.user.Role;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.impl.UserInfoServiceImpl;
 import top.hcode.hoj.utils.JwtUtils;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 

@@ -3,20 +3,19 @@ package top.hcode.hoj.controller;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import top.hcode.hoj.common.CommonResult;
 import top.hcode.hoj.common.exception.CompileError;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.judge.SandboxRun;
-import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.pojo.entity.judge.CompileSpj;
+import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.judge.ToJudge;
+import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.remoteJudge.RemoteJudgeGetResult;
 import top.hcode.hoj.remoteJudge.RemoteJudgeToSubmit;
 import top.hcode.hoj.service.impl.*;
@@ -74,7 +73,7 @@ public class JudgeController {
 
         HashMap<String, Object> res = new HashMap<>();
 
-        res.put("version", "1.7.0");
+        res.put("version", "1.8.0");
         res.put("currentTime", new Date());
         res.put("judgeServerName", name);
         res.put("cpu", Runtime.getRuntime().availableProcessors());

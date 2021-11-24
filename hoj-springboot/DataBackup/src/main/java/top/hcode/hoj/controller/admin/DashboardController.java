@@ -14,9 +14,9 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.ContestMapper;
 import top.hcode.hoj.dao.JudgeMapper;
 import top.hcode.hoj.dao.SessionMapper;
-import top.hcode.hoj.pojo.entity.Session;
+import top.hcode.hoj.pojo.entity.user.Session;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.UserInfoService;
+import top.hcode.hoj.service.user.UserInfoService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;

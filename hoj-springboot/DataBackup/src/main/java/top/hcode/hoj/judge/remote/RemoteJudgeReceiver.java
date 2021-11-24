@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.judge.ChooseUtils;
 import top.hcode.hoj.judge.Dispatcher;
-import top.hcode.hoj.pojo.entity.Judge;
-import top.hcode.hoj.pojo.entity.RemoteJudgeAccount;
-import top.hcode.hoj.pojo.entity.ToJudge;
-import top.hcode.hoj.service.impl.JudgeServiceImpl;
-import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
+import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
+import top.hcode.hoj.pojo.entity.judge.ToJudge;
+import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
+import top.hcode.hoj.service.judge.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 

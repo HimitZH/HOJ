@@ -1,6 +1,6 @@
 package top.hcode.hoj.dao;
 
-import top.hcode.hoj.pojo.entity.ContestExplanation;
+import top.hcode.hoj.pojo.entity.contest.ContestExplanation;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**

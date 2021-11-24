@@ -3,7 +3,8 @@ package top.hcode.hoj.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;;
 import top.hcode.hoj.dao.ContestMapper;
-import top.hcode.hoj.pojo.entity.Contest;
+
+import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.service.ContestService;
 
 /**

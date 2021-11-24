@@ -3,7 +3,7 @@ package top.hcode.hoj.pojo.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import top.hcode.hoj.pojo.entity.Role;
+import top.hcode.hoj.pojo.entity.user.Role;
 
 import java.io.Serializable;
 import java.util.Date;

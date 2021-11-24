@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import top.hcode.hoj.pojo.entity.JudgeServer;
+import top.hcode.hoj.pojo.entity.judge.JudgeServer;
 import top.hcode.hoj.service.impl.JudgeServerServiceImpl;
 import top.hcode.hoj.util.IpUtils;
 

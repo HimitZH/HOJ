@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.Role;
-import top.hcode.hoj.pojo.entity.UserInfo;
+import top.hcode.hoj.pojo.entity.user.Role;
+import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.impl.FileServiceImpl;
-import top.hcode.hoj.service.impl.UserInfoServiceImpl;
+import top.hcode.hoj.service.common.impl.FileServiceImpl;
+import top.hcode.hoj.service.user.impl.UserInfoServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +46,7 @@ public class ImageController {
     @RequestMapping(value = "/upload-avatar", method = RequestMethod.POST)
     @RequiresAuthentication
     @ResponseBody
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult uploadAvatar(@RequestParam("image") MultipartFile image, HttpServletRequest request) {
         if (image == null) {
             return CommonResult.errorResponse("上传的头像图片文件不能为空！");
@@ -86,7 +86,7 @@ public class ImageController {
         userInfoService.update(userInfoUpdateWrapper);
 
         // 插入file表记录
-        top.hcode.hoj.pojo.entity.File imgFile = new top.hcode.hoj.pojo.entity.File();
+        top.hcode.hoj.pojo.entity.common.File imgFile = new top.hcode.hoj.pojo.entity.common.File();
         imgFile.setName(filename).setFolderPath(Constants.File.USER_AVATAR_FOLDER.getPath())
                 .setFilePath(Constants.File.USER_AVATAR_FOLDER.getPath() + File.separator + filename)
                 .setSuffix(suffix)
@@ -119,7 +119,7 @@ public class ImageController {
     @RequestMapping(value = "/upload-carouse-img", method = RequestMethod.POST)
     @RequiresAuthentication
     @ResponseBody
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @RequiresRoles("root")
     public CommonResult uploadCarouselImg(@RequestParam("file") MultipartFile image, HttpServletRequest request) {
 
@@ -150,7 +150,7 @@ public class ImageController {
 
 
         // 插入file表记录
-        top.hcode.hoj.pojo.entity.File imgFile = new top.hcode.hoj.pojo.entity.File();
+        top.hcode.hoj.pojo.entity.common.File imgFile = new top.hcode.hoj.pojo.entity.common.File();
         imgFile.setName(filename).setFolderPath(Constants.File.HOME_CAROUSEL_FOLDER.getPath())
                 .setFilePath(Constants.File.HOME_CAROUSEL_FOLDER.getPath() + File.separator + filename)
                 .setSuffix(suffix)

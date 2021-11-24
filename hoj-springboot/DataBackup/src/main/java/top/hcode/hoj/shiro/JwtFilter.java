@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.service.impl.UserInfoServiceImpl;
+import top.hcode.hoj.service.user.impl.UserInfoServiceImpl;
 import top.hcode.hoj.utils.JwtUtils;
 import top.hcode.hoj.utils.RedisUtils;
 

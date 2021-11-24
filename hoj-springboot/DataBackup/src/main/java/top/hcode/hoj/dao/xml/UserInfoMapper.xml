@@ -6,7 +6,7 @@
            #{uuid}, #{username},#{password},#{email}
         )
     </insert>
-    <select id="getSuperAdminList" resultType="top.hcode.hoj.pojo.entity.UserInfo" useCache="true">
+    <select id="getSuperAdminList" resultType="top.hcode.hoj.pojo.entity.user.UserInfo" useCache="true">
         select * from user_info u,user_role ur where u.uuid = ur.uid and ur.role_id = 1000
     </select>
 </mapper>

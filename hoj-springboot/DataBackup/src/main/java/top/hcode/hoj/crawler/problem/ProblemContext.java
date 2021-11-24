@@ -1,7 +1,6 @@
 package top.hcode.hoj.crawler.problem;
 
 import lombok.extern.slf4j.Slf4j;
-import top.hcode.hoj.pojo.entity.Problem;
 
 /**
  * @Author: Himit_ZH

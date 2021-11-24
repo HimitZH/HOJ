@@ -8,6 +8,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.util.Constants;
+import top.hcode.hoj.util.JudgeUtils;
 
 import java.io.File;
 import java.text.MessageFormat;
@@ -494,7 +495,7 @@ public class JudgeRun {
                 Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + userOutputName,
                 Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + testCaseOutputName);
 
-        return Arrays.asList(command.split(" "));
+        return JudgeUtils.translateCommandline(command);
     }
 
 

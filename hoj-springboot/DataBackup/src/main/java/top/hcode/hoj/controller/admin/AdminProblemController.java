@@ -4,7 +4,6 @@ import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -18,9 +17,12 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.crawler.problem.ProblemStrategy;
 import top.hcode.hoj.judge.Dispatcher;
 import top.hcode.hoj.pojo.dto.ProblemDto;
-import top.hcode.hoj.pojo.entity.*;
+import top.hcode.hoj.pojo.entity.judge.CompileSpj;
+import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.pojo.entity.problem.ProblemCase;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.impl.*;
+import top.hcode.hoj.service.problem.impl.ProblemCaseServiceImpl;
+import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 
@@ -153,7 +155,7 @@ public class AdminProblemController {
     @PutMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult updateProblem(@RequestBody ProblemDto problemDto, HttpServletRequest request) {
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
@@ -213,7 +215,7 @@ public class AdminProblemController {
     @GetMapping("/import-remote-oj-problem")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult importRemoteOJProblem(@RequestParam("name") String name,
                                               @RequestParam("problemId") String problemId,
                                               HttpServletRequest request) {

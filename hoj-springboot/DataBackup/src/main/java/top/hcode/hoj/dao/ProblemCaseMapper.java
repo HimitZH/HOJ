@@ -3,7 +3,7 @@ package top.hcode.hoj.dao;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
-import top.hcode.hoj.pojo.entity.ProblemCase;
+import top.hcode.hoj.pojo.entity.problem.ProblemCase;
 
 /**
  * @Author: Himit_ZH
