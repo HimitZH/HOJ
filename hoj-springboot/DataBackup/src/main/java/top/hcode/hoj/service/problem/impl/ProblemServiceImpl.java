@@ -430,7 +430,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
         // 将之前的临时文件夹里面的评测文件全部复制到指定文件夹(覆盖)
         if (!StringUtils.isEmpty(tmpTestcaseDir)) {
-            FileUtil.clean(tmpTestcaseDir);
+            FileUtil.clean(testCasesDir);
             FileUtil.copyFilesFromDir(new File(tmpTestcaseDir), new File(testCasesDir), true);
         }
 
