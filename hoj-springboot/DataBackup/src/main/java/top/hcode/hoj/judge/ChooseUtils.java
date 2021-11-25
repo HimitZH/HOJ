@@ -50,7 +50,7 @@ public class ChooseUtils {
      * @Return
      * @Since 2021/4/15
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public JudgeServer chooseServer(Boolean isRemote) {
         // 获取该微服务的所有健康实例
         List<Instance> instances = getInstances(JudgeServiceName);
@@ -94,7 +94,7 @@ public class ChooseUtils {
     }
 
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public JudgeServer chooseFixedServer(Boolean isRemote, String fixedTag, Integer index, Integer total) {
         // 获取该微服务的所有健康实例
         List<Instance> instances = getInstances(JudgeServiceName);
@@ -159,7 +159,7 @@ public class ChooseUtils {
         }
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public RemoteJudgeAccount chooseRemoteAccount(String remoteOJAccountType, String username, Boolean isNeedAccountRejudge) {
 
         // 过滤出当前远程oj可用的账号列表 悲观锁
@@ -185,7 +185,7 @@ public class ChooseUtils {
         return null;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public HashMap<String, Object> chooseFixedAccount(String remoteOJAccountType) {
         List<Instance> instances = getInstances(JudgeServiceName);
         // 过滤出当前远程可用的账号列表 悲观锁
