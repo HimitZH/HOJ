@@ -293,15 +293,15 @@ public class SandboxRun {
 
 
     public static JSONArray spjCheckResult(List<String> args,
-                                        List<String> envs,
-                                        String userOutputFilePath,
-                                        String userOutputFileName,
-                                        String testCaseInputFilePath,
-                                        String testCaseInputFileName,
-                                        String testCaseOutputFilePath,
-                                        String testCaseOutputFileName,
-                                        String spjExeSrc,
-                                        String spjExeName) throws SystemError {
+                                           List<String> envs,
+                                           String userOutputFilePath,
+                                           String userOutputFileName,
+                                           String testCaseInputFilePath,
+                                           String testCaseInputFileName,
+                                           String testCaseOutputFilePath,
+                                           String testCaseOutputFileName,
+                                           String spjExeSrc,
+                                           String spjExeName) throws SystemError {
         JSONObject cmd = new JSONObject();
         cmd.set("args", args);
         cmd.set("env", envs);
@@ -371,20 +371,19 @@ public class SandboxRun {
            交互跑题 暂时不启用
      */
     public static JSONArray interactTestCase(List<String> args,
-                                        List<String> envs,
-                                        String userExeName,
-                                        String userFileId,
-                                        String testCaseInputPath,
-                                        String testCaseInputFileName,
-                                        Long maxTime,
-                                        Long maxOutputSize,
-                                        Integer maxStack,
-                                        List<String> spjArgs,
-                                        List<String> spjEnvs,
-                                        String spjExeSrc,
-                                        String testCaseOutputFilePath,
-                                        String testCaseOutputFileName,
-                                        String spjExeName) throws SystemError {
+                                             List<String> envs,
+                                             String userExeName,
+                                             String userFileId,
+                                             String testCaseInputPath,
+                                             String testCaseInputFileName,
+                                             Long maxTime,
+                                             Integer maxStack,
+                                             List<String> spjArgs,
+                                             List<String> spjEnvs,
+                                             String spjExeSrc,
+                                             String testCaseOutputFilePath,
+                                             String testCaseOutputFileName,
+                                             String spjExeName) throws SystemError {
 
         /**
          *  注意：用户源代码需要先编译，若是通过编译需要先将文件存入内存，再利用管道判题，同时特殊判题程序必须已编译且存在（否则判题失败，系统错误）！
@@ -485,11 +484,14 @@ public class SandboxRun {
         JSONObject in = new JSONObject();
         in.set("index", 0);
         in.set("fd", 1);
-        in.set("max", maxOutputSize);
+        in.set("proxy", true);
+        in.set("max", 32 * 1024 * 1024);
 
         JSONObject out = new JSONObject();
         out.set("index", 1);
         out.set("fd", 0);
+        out.set("proxy", true);
+        out.set("max", 32 * 1024 * 1024);
 
         JSONObject pipe = new JSONObject();
         pipe.set("in", in);
