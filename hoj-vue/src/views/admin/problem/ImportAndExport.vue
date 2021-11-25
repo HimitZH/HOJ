@@ -85,6 +85,7 @@
       >
         <el-button
           size="small"
+          :loading="loading.HOJ"
           type="primary"
           slot="trigger"
           icon="el-icon-folder-opened"
@@ -95,6 +96,8 @@
           size="small"
           type="success"
           @click="submitUpload('HOJ')"
+          :loading="loading.HOJ"
+          :disabled="!fileList1.length"
           icon="el-icon-upload"
           >{{ $t('m.Upload') }}</el-button
         >
@@ -124,6 +127,7 @@
           size="small"
           type="primary"
           slot="trigger"
+          :loading="loading.QDOJ"
           icon="el-icon-folder-opened"
           >{{ $t('m.Choose_File') }}</el-button
         >
@@ -132,7 +136,9 @@
           size="small"
           type="success"
           @click="submitUpload('QDOJ')"
+          :loading="loading.QDOJ"
           icon="el-icon-upload"
+          :disabled="!fileList2.length"
           >{{ $t('m.Upload') }}</el-button
         >
       </el-upload>
@@ -161,6 +167,7 @@
           size="small"
           type="primary"
           slot="trigger"
+          :loading="loading.FPS"
           icon="el-icon-folder-opened"
           >{{ $t('m.Choose_File') }}</el-button
         >
@@ -169,7 +176,9 @@
           size="small"
           type="success"
           @click="submitUpload('FPS')"
+          :loading="loading.FPS"
           icon="el-icon-upload"
+          :disabled="!fileList3.length"
           >{{ $t('m.Upload') }}</el-button
         >
       </el-upload>
@@ -195,6 +204,11 @@ export default {
       keyword: '',
       problems: [],
       selected_problems: [],
+      loading: {
+        HOJ: false,
+        qdoj: false,
+        fps: false,
+      },
     };
   },
   mounted() {
@@ -238,6 +252,7 @@ export default {
       utils.downloadFile(url);
     },
     submitUpload(ref) {
+      this.loading[ref] = true;
       this.$refs[ref].submit();
     },
     onFile1Change(file, fileList) {
@@ -250,7 +265,9 @@ export default {
       this.fileList3 = fileList.slice(-1);
     },
     uploadSucceeded(response) {
-      console.log(response);
+      this.loading.HOJ = false;
+      this.loading.QDOJ = false;
+      this.loading.FPS = false;
       if (response.status != 200) {
         myMessage.error(response.msg);
       } else {
@@ -259,6 +276,9 @@ export default {
       }
     },
     uploadFailed() {
+      this.loading.HOJ = false;
+      this.loading.QDOJ = false;
+      this.loading.FPS = false;
       myMessage.error('Upload failed');
     },
     filterByKeyword() {
