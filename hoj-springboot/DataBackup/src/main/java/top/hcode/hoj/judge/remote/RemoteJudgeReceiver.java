@@ -4,6 +4,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -24,8 +25,8 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RemoteJudgeReceiver {
 
-
     @Autowired
+    @Lazy
     private RemoteJudgeDispatcher remoteJudgeDispatcher;
 
     @Autowired
