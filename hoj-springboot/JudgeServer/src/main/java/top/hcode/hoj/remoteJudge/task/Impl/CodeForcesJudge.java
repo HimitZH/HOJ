@@ -82,9 +82,16 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
             contestId = ReUtil.get("([0-9]+)[A-Z]{1}[0-9]{0,1}", problemId, 1);
             problemNum = ReUtil.get("[0-9]+([A-Z]{1}[0-9]{0,1})", problemId, 1);
         }
+        long nowTime = DateUtil.currentSeconds();
         submitCode(contestId, problemNum, getLanguage(language), userCode);
+        try {
+            TimeUnit.MILLISECONDS.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         // 获取提交的题目id
-        Long maxRunId = getMaxRunId(username, contestId, problemNum, problemId);
+        Long maxRunId = getMaxRunId(username, contestId, problemNum, problemId, nowTime);
 
         return MapUtil.builder(new HashMap<String, Object>())
                 .put("runId", maxRunId)
@@ -93,10 +100,10 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
     }
 
     @SuppressWarnings("unchecked")
-    private Long getMaxRunId(String username, String contestNum, String problemNum, String problemId) {
+    private Long getMaxRunId(String username, String contestNum, String problemNum, String problemId, long nowTime) {
         int retryNum = 0;
-        // 防止cf的nginx限制访问频率，重试10次
-        while (retryNum != 10) {
+        // 防止cf的nginx限制访问频率，重试5次
+        while (retryNum != 5) {
             HttpResponse httpResponse = getSubmissionResult(username, 10);
             if (httpResponse.getStatus() == 200) {
                 try {
@@ -104,6 +111,10 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
                     List<Map<String, Object>> results = (List<Map<String, Object>>) json.get("result");
                     for (Map<String, Object> result : results) {
                         Long runId = Long.valueOf(result.get("id").toString());
+                        long creationTimeSeconds = Long.parseLong(result.get("creationTimeSeconds").toString());
+                        if (creationTimeSeconds < nowTime && retryNum < 4) {
+                            continue;
+                        }
                         Map<String, Object> problem = (Map<String, Object>) result.get("problem");
                         if (contestNum.equals(problem.get("contestId").toString()) &&
                                 problemNum.equals(problem.get("index").toString())) {
@@ -116,18 +127,18 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
                     return -1L;
                 }
             }
+            try {
+                TimeUnit.MILLISECONDS.sleep(2500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             retryNum++;
         }
         return -1L;
     }
 
-    // CF的这个接口有每两秒的访问限制，所以需要加锁，保证2秒内只有一次查询
+    // CF的这个接口有每两秒的访问限制，所以需要加锁，保证只有一次查询
     public static synchronized HttpResponse getSubmissionResult(String username, Integer count) {
-        try {
-            TimeUnit.MILLISECONDS.sleep(2500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         String url = HOST + String.format(SUBMISSION_RESULT_URL, username, count);
         return HttpUtil.createGet(url)
                 .timeout(30000)
