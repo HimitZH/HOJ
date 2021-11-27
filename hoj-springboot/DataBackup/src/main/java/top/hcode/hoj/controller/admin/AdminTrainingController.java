@@ -7,20 +7,23 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.TrainingDto;
-import top.hcode.hoj.pojo.entity.contest.Contest;
+import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.training.Training;
-import top.hcode.hoj.pojo.vo.TrainingVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
+import top.hcode.hoj.service.training.impl.TrainingProblemServiceImpl;
 import top.hcode.hoj.service.training.impl.TrainingServiceImpl;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.HashMap;
 
 /**
  * @Author: Himit_ZH
@@ -33,6 +36,12 @@ public class AdminTrainingController {
 
     @Resource
     private TrainingServiceImpl trainingService;
+
+    @Resource
+    private TrainingProblemServiceImpl trainingProblemService;
+
+    @Resource
+    private ProblemServiceImpl problemService;
 
     @GetMapping("/list")
     @RequiresAuthentication
@@ -134,6 +143,34 @@ public class AdminTrainingController {
             return CommonResult.successResponse(null, "修改成功！");
         } else {
             return CommonResult.errorResponse("修改失败", CommonResult.STATUS_FAIL);
+        }
+    }
+
+    @GetMapping("/get-problem-list")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult getProblemList(@RequestParam(value = "limit", required = false) Integer limit,
+                                       @RequestParam(value = "currentPage", required = false) Integer currentPage,
+                                       @RequestParam(value = "keyword", required = false) String keyword,
+                                       @RequestParam(value = "queryExisted", defaultValue = "false") Boolean queryExisted,
+                                       @RequestParam(value = "tid", required = true) Long tid) {
+
+        if (currentPage == null || currentPage < 1) currentPage = 1;
+        if (limit == null || limit < 1) limit = 10;
+        HashMap<String, Object> trainingProblemMap = trainingProblemService.getAdminTrainingProblemList(limit, currentPage, keyword, tid, queryExisted);
+        return CommonResult.successResponse(trainingProblemMap, "获取成功");
+    }
+
+    @GetMapping("/problem")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
+    public CommonResult getProblem(@Valid @RequestParam("pid") Long pid) {
+        Problem problem = problemService.getById(pid);
+        if (problem != null) { // 查询成功
+            return CommonResult.successResponse(problem, "查询成功！");
+        } else {
+            return CommonResult.errorResponse("查询失败！", CommonResult.STATUS_FAIL);
         }
     }
 

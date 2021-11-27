@@ -203,13 +203,9 @@ public class AdminContestController {
     public CommonResult getProblemList(@RequestParam(value = "limit", required = false) Integer limit,
                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                        @RequestParam(value = "keyword", required = false) String keyword,
-                                       @RequestParam(value = "cid", required = false) Long cid,
+                                       @RequestParam(value = "cid", required = true) Long cid,
                                        @RequestParam(value = "problemType", required = false) Integer problemType,
                                        @RequestParam(value = "oj", required = false) String oj) {
-        if (cid == null) {
-            return CommonResult.errorResponse("参数错误！", CommonResult.STATUS_NOT_FOUND);
-        }
-
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;
         IPage<Problem> iPage = new Page<>(currentPage, limit);
@@ -225,8 +221,11 @@ public class AdminContestController {
             pidList.add(contestProblem.getPid());
         });
 
+        HashMap<String, Object> contestProblem = new HashMap<>();
         if (pidList.size() == 0 && problemType == null) { // 该比赛原本就无题目数据
-            return CommonResult.successResponse(iPage, "获取成功");
+            contestProblem.put("problemList", pidList);
+            contestProblem.put("contestProblemMap", contestProblemMap);
+            return CommonResult.successResponse(contestProblem, "获取成功");
         }
 
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
@@ -240,14 +239,13 @@ public class AdminContestController {
         }
 
         // 逻辑判断，如果是查询已有的就应该是in，如果是查询不要重复的，使用not in
-        if (pidList.size() > 0) {
-            if (problemType != null) {
-                // 同时需要与比赛相同类型的题目，权限需要是公开的（隐藏的，比赛中不可加入！）
-                problemQueryWrapper.notIn("id", pidList);
-            } else {
-                problemQueryWrapper.in("id", pidList);
-            }
+        if (problemType != null) {
+            // 同时需要与比赛相同类型的题目，权限需要是公开的（隐藏的，比赛中不可加入！）
+            problemQueryWrapper.notIn("id", pidList);
+        } else {
+            problemQueryWrapper.in("id", pidList);
         }
+
 
         // 根据oj筛选过滤
         if (oj != null && !"All".equals(oj)) {
@@ -265,7 +263,6 @@ public class AdminContestController {
         }
 
         IPage<Problem> problemList = problemService.page(iPage, problemQueryWrapper);
-        HashMap<String, Object> contestProblem = new HashMap<>();
         contestProblem.put("problemList", problemList);
         contestProblem.put("contestProblemMap", contestProblemMap);
 

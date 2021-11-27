@@ -24,7 +24,7 @@ function formatSpecificDuration(startTime, endTime){
   if (ms < 0) ms = -ms;
   let arr=[86400000,3600000,60000,1000];
   let en_time=['day','hour','minute','second'];
-  let zh_time=['天','小时','分','秒'];
+  let zh_time=['天','小时','分钟','秒'];
 
   let res = '';
 

@@ -75,6 +75,8 @@ export const m = {
   Suffix:'Suffix',
   Start_Number:'Start Number',
   End_Number:'End Number',
+  Extra_Account: 'Extra Accounts Allowed to The Contest',
+  Extra_Account_Tips:'Please enter the username of the account allowed to enter to the contest, separated by spaces.',
   Password_Length:'Password Length',
   Generate_and_Export:'Generate & Export',
   The_usernames_will_be:'The usernames will be',
