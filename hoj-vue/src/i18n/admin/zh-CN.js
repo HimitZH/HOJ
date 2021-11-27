@@ -75,6 +75,8 @@ export const m = {
   Suffix:'后缀',
   Start_Number:'开始数字',
   End_Number:'结束数字',
+  Extra_Account: '额外允许参加比赛的账号列表',
+  Extra_Account_Tips:'请输入允许参加比赛账号的用户名，并用空格隔开。',
   Password_Length:'密码长度',
   Generate_and_Export:'生成 & 导出',
   The_usernames_will_be:'生成的用户名将会是',

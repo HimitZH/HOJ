@@ -207,25 +207,38 @@
                   ></el-input-number>
                 </el-form-item>
               </el-col>
+
+              <div
+                class="userPreview"
+                v-if="formRule.number_from <= formRule.number_to"
+              >
+                {{ $t('m.The_allowed_account_will_be') }}
+                {{ formRule.prefix + formRule.number_from + formRule.suffix }},
+                <span v-if="formRule.number_from + 1 < formRule.number_to">
+                  {{
+                    formRule.prefix +
+                      (formRule.number_from + 1) +
+                      formRule.suffix +
+                      '...'
+                  }}
+                </span>
+                <span v-if="formRule.number_from + 1 <= formRule.number_to">
+                  {{ formRule.prefix + formRule.number_to + formRule.suffix }}
+                </span>
+              </div>
+
+              <el-col :md="24" :xs="24">
+                <el-form-item :label="$t('m.Extra_Account')" prop="prefix">
+                  <el-input
+                    type="textarea"
+                    :placeholder="$t('m.Extra_Account_Tips')"
+                    :rows="8"
+                    v-model="formRule.extra_account"
+                  >
+                  </el-input>
+                </el-form-item>
+              </el-col>
             </el-form>
-            <div
-              class="userPreview"
-              v-if="formRule.number_from <= formRule.number_to"
-            >
-              {{ $t('m.The_allowed_account_will_be') }}
-              {{ formRule.prefix + formRule.number_from + formRule.suffix }},
-              <span v-if="formRule.number_from + 1 < formRule.number_to">
-                {{
-                  formRule.prefix +
-                    (formRule.number_from + 1) +
-                    formRule.suffix +
-                    '...'
-                }}
-              </span>
-              <span v-if="formRule.number_from + 1 <= formRule.number_to">
-                {{ formRule.prefix + formRule.number_to + formRule.suffix }}
-              </span>
-            </div>
           </template>
         </el-row>
       </el-form>
@@ -275,6 +288,7 @@ export default {
         suffix: '',
         number_from: 0,
         number_to: 10,
+        extra_account: '',
       },
     };
   },
@@ -435,7 +449,7 @@ export default {
         return;
       }
       if (start != '' && end != '') {
-        this.durationText = time.duration(start, end);
+        this.durationText = time.formatSpecificDuration(start, end);
         this.contest.duration = durationMS;
       }
     },
@@ -449,12 +463,14 @@ export default {
         formRule.number_from +
         '</start><end>' +
         formRule.number_to +
-        '</end>';
+        '</end><extra>' +
+        formRule.extra_account +
+        '</extra>';
       return result;
     },
     changeStrToAccountRule(value) {
       let reg =
-        '<prefix>([\\s\\S]*?)</prefix><suffix>([\\s\\S]*?)</suffix><start>([\\s\\S]*?)</start><end>([\\s\\S]*?)</end>';
+        '<prefix>([\\s\\S]*?)</prefix><suffix>([\\s\\S]*?)</suffix><start>([\\s\\S]*?)</start><end>([\\s\\S]*?)</end><extra>([\\s\\S]*?)</extra>';
       let re = RegExp(reg, 'g');
       let tmp = re.exec(value);
       return {
@@ -462,6 +478,7 @@ export default {
         suffix: tmp[2],
         number_from: tmp[3],
         number_to: tmp[4],
+        extra_account: tmp[5],
       };
     },
   },

@@ -4,6 +4,7 @@ import cn.hutool.core.util.ReUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.contest.ContestRegister;
 import top.hcode.hoj.pojo.vo.ContestVo;
@@ -131,6 +132,8 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
                 accountRule, 1);
         String end = ReUtil.get("<end>([\\s\\S]*?)</end>",
                 accountRule, 1);
+        String extra = ReUtil.get("<extra>([\\s\\S]*?)</extra>",
+                accountRule, 1);
 
         int startNum = Integer.parseInt(start);
         int endNum = Integer.parseInt(end);
@@ -138,6 +141,15 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
         for (int i = startNum; i <= endNum; i++) {
             if (username.equals(prefix + i + suffix)) {
                 return true;
+            }
+        }
+        // 额外账号列表
+        if (!StringUtils.isEmpty(extra)) {
+            String[] accountList = extra.trim().split(" ");
+            for (String account : accountList) {
+                if (username.equals(account)){
+                    return true;
+                }
             }
         }
 
