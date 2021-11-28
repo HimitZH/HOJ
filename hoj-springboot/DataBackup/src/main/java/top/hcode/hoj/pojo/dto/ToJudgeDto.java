@@ -25,6 +25,8 @@ public class ToJudgeDto {
     @NotBlank(message = "提交的比赛id所属不能为空，若并非比赛提交，请设置为0")
     private Long cid;
 
+    private Long tid;
+
     private Boolean isRemote;
 
 }

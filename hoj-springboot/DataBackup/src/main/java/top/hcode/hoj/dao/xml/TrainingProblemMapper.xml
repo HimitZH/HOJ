@@ -22,7 +22,7 @@
     </resultMap>
 
     <select id="getTrainingProblemList" resultMap="map_TrainingProblemList">
-        SELECT DISTINCT p.id AS pid, tp.display_id, p.title, p.difficulty, p.type
+        SELECT DISTINCT p.id AS pid, p.problem_id, p.title, p.difficulty, p.type
         , COALESCE(j.ac, 0) AS ac
         , COALESCE(j.total, 0) AS total
         FROM problem p,
@@ -39,7 +39,7 @@
         and j.pid = p.id
         and p.auth = 1
         and tp.tid = #{tid}
-        order by tp.display_id asc
+        order by tp.rank asc
     </select>
 
     <!-- 子查询 :为了防止分页总数据数出错-->

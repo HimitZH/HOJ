@@ -5,11 +5,22 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.TrainingRecordMapper;
+import top.hcode.hoj.pojo.dto.ToJudgeDto;
+import top.hcode.hoj.pojo.entity.contest.Contest;
+import top.hcode.hoj.pojo.entity.contest.ContestProblem;
+import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
 import top.hcode.hoj.pojo.entity.training.TrainingRecord;
 import top.hcode.hoj.pojo.vo.TrainingRankVo;
 import top.hcode.hoj.pojo.vo.TrainingRecordVo;
+import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
+import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
 import top.hcode.hoj.service.training.TrainingRecordService;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
@@ -35,6 +46,57 @@ public class TrainingRecordServiceImpl extends ServiceImpl<TrainingRecordMapper,
 
     @Resource
     private TrainingRecordMapper trainingRecordMapper;
+
+    @Resource
+    private TrainingServiceImpl trainingService;
+
+    @Resource
+    private TrainingRegisterServiceImpl trainingRegisterService;
+
+    @Resource
+    private ProblemServiceImpl problemService;
+
+    @Resource
+    private JudgeServiceImpl judgeService;
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult submitTrainingProblem(ToJudgeDto judgeDto, UserRolesVo userRolesVo, Judge judge) {
+
+        Training training = trainingService.getById(judgeDto.getTid());
+        if (training == null || !training.getStatus()) {
+            return CommonResult.errorResponse("该训练不存在或不允许显示！");
+        }
+
+        CommonResult result = trainingRegisterService.checkTrainingAuth(training, userRolesVo);
+        if (result != null) {
+            return result;
+        }
+
+        // 查询获取对应的pid和cpid
+        QueryWrapper<TrainingProblem> trainingProblemQueryWrapper = new QueryWrapper<>();
+        trainingProblemQueryWrapper.eq("tid", judgeDto.getTid())
+                .eq("display_id", judgeDto.getPid());
+        TrainingProblem trainingProblem = trainingProblemService.getOne(trainingProblemQueryWrapper);
+        judge.setPid(trainingProblem.getPid());
+
+        Problem problem = problemService.getById(trainingProblem.getPid());
+        if (problem.getAuth() == 2) {
+            return CommonResult.errorResponse("错误！当前题目不可提交！", CommonResult.STATUS_FORBIDDEN);
+        }
+        judge.setDisplayPid(problem.getProblemId());
+
+        // 将新提交数据插入数据库
+        judgeService.saveOrUpdate(judge);
+        TrainingRecord trainingRecord = new TrainingRecord();
+        trainingRecord.setPid(problem.getId())
+                .setTid(judge.getTid())
+                .setTpid(trainingProblem.getId())
+                .setSubmitId(judge.getSubmitId())
+                .setUid(userRolesVo.getUid());
+        trainingRecordMapper.insert(trainingRecord);
+        return null;
+    }
 
     @Override
     public IPage<TrainingRankVo> getTrainingRank(Long tid, int currentPage, int limit) {

@@ -85,10 +85,23 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         if (!problemDto.getIsSpj()) {
             problem.setSpjLanguage(null).setSpjCode(null);
         }
+
         String ojName = "ME";
         if (problem.getIsRemote()) {
             String problemId = problem.getProblemId();
             ojName = problemId.split("-")[0];
+        }
+
+        /**
+         *  problem_id唯一性检查
+         */
+        String problemId = problem.getProblemId().toUpperCase();
+        QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
+        problemQueryWrapper.eq("problem_id", problemId);
+        int existedProblem = problemMapper.selectCount(problemQueryWrapper);
+
+        if (existedProblem > 0) {
+            throw new RuntimeException("The problem_id [" + problemId + "] already exists. Do not reuse it!");
         }
 
         problem.setProblemId(problem.getProblemId().toUpperCase());
@@ -331,9 +344,21 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             problem.setSpjLanguage(null).setSpjCode(null);
         }
 
+        /**
+         *  problem_id唯一性检查
+         */
+        String problemId = problem.getProblemId().toUpperCase();
+        QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
+        problemQueryWrapper.eq("problem_id", problemId);
+        int existedProblem = problemMapper.selectCount(problemQueryWrapper);
+        if (existedProblem > 0) {
+            throw new RuntimeException("The problem_id [" + problemId + "] already exists. Do not reuse it!");
+        }
+
+
         // 设置测试样例的版本号
         problem.setCaseVersion(String.valueOf(System.currentTimeMillis()));
-        problem.setProblemId(problem.getProblemId().toUpperCase());
+        problem.setProblemId(problemId);
         boolean addProblemResult = problemMapper.insert(problem) == 1;
         long pid = problem.getId();
         // 为新的题目添加对应的language
@@ -398,7 +423,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                         tagService.save(tag);
                     } catch (Exception ignored) {
                         tag = tagService.getOne(new QueryWrapper<Tag>().eq("name", tag.getName())
-                                .eq("oj", "ME"),false);
+                                .eq("oj", "ME"), false);
                     }
                 }
                 problemTagList.add(new ProblemTag().setTid(tag.getId()).setPid(pid));

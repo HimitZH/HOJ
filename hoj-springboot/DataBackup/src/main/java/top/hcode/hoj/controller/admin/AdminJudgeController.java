@@ -109,7 +109,6 @@ public class AdminJudgeController {
                 .setTime(null)
                 .setMemory(null)
                 .setErrorMessage(null)
-                .setJudger(null)
                 .setOiRankScore(null)
                 .setScore(null);
 

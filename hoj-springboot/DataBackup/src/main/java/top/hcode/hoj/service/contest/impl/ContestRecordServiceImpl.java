@@ -1,23 +1,39 @@
 package top.hcode.hoj.service.contest.impl;
 
+import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.transaction.annotation.Transactional;
+import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.dao.ContestProblemMapper;
+import top.hcode.hoj.dao.JudgeMapper;
 import top.hcode.hoj.dao.UserInfoMapper;
+import top.hcode.hoj.pojo.dto.ToJudgeDto;
 import top.hcode.hoj.pojo.entity.contest.Contest;
+import top.hcode.hoj.pojo.entity.contest.ContestProblem;
+import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.vo.ACMContestRankVo;
 import top.hcode.hoj.pojo.entity.contest.ContestRecord;
 import top.hcode.hoj.dao.ContestRecordMapper;
 import top.hcode.hoj.pojo.vo.ContestRecordVo;
 import top.hcode.hoj.pojo.vo.OIContestRankVo;
+import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.contest.ContestRecordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
+import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,6 +58,92 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
     @Autowired
     private RedisUtils redisUtils;
 
+    @Resource
+    private ContestServiceImpl contestService;
+
+    @Resource
+    private ContestProblemMapper contestProblemMapper;
+
+    @Resource
+    private ProblemServiceImpl problemService;
+
+    @Resource
+    private JudgeMapper judgeMapper;
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public CommonResult submitContestProblem(ToJudgeDto judgeDto, UserRolesVo userRolesVo, Judge judge) {
+        // 首先判断一下比赛的状态是否是正在进行，结束状态都不能提交，比赛前比赛管理员可以提交
+        Contest contest = contestService.getById(judgeDto.getCid());
+
+        if (contest == null) {
+            return CommonResult.errorResponse("对不起，该比赛不存在！");
+        }
+
+        if (contest.getStatus().intValue() == Constants.Contest.STATUS_ENDED.getCode()) {
+            return CommonResult.errorResponse("比赛已结束，不可再提交！");
+        }
+
+        // 是否为超级管理员或者该比赛的创建者，则为比赛管理者
+        boolean root = SecurityUtils.getSubject().hasRole("root");
+        if (!root && !contest.getUid().equals(userRolesVo.getUid())) {
+            if (contest.getStatus().intValue() == Constants.Contest.STATUS_SCHEDULED.getCode()) {
+                return CommonResult.errorResponse("比赛未开始，不可提交！");
+            }
+            // 需要检查是否有权限在当前比赛进行提交
+            CommonResult checkResult = contestService.checkJudgeAuth(contest, userRolesVo.getUid());
+            if (checkResult != null) {
+                return checkResult;
+            }
+
+            /**
+             *  需要校验当前比赛是否为保护比赛，同时是否开启账号规则限制，如果有，需要对当前用户的用户名进行验证
+             */
+
+            if (contest.getAuth().equals(Constants.Contest.AUTH_PROTECT.getCode())
+                    && contest.getOpenAccountLimit()
+                    && !contestService.checkAccountRule(contest.getAccountLimitRule(), userRolesVo.getUsername())) {
+                return CommonResult.errorResponse("对不起！本次比赛只允许特定账号规则的用户参赛！", CommonResult.STATUS_ACCESS_DENIED);
+            }
+        }
+
+        // 查询获取对应的pid和cpid
+        QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
+        contestProblemQueryWrapper.eq("cid", judgeDto.getCid()).eq("display_id", judgeDto.getPid());
+        ContestProblem contestProblem = contestProblemMapper.selectOne(contestProblemQueryWrapper);
+        judge.setCpid(contestProblem.getId())
+                .setPid(contestProblem.getPid());
+
+        Problem problem = problemService.getById(contestProblem.getPid());
+        if (problem.getAuth() == 2) {
+            return CommonResult.errorResponse("错误！当前题目不可提交！", CommonResult.STATUS_FORBIDDEN);
+        }
+        judge.setDisplayPid(problem.getProblemId());
+
+        // 将新提交数据插入数据库
+        judgeMapper.insert(judge);
+
+        // 管理员比赛前的提交不纳入记录
+        if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()) {
+            // 同时初始化写入contest_record表
+            ContestRecord contestRecord = new ContestRecord();
+            contestRecord.setDisplayId(judgeDto.getPid())
+                    .setCpid(contestProblem.getId())
+                    .setSubmitId(judge.getSubmitId())
+                    .setPid(judge.getPid())
+                    .setUsername(userRolesVo.getUsername())
+                    .setRealname(userRolesVo.getRealname())
+                    .setUid(userRolesVo.getUid())
+                    .setCid(judge.getCid())
+                    .setSubmitTime(judge.getSubmitTime())
+                    // 设置比赛开始时间到提交时间之间的秒数
+                    .setTime(DateUtil.between(contest.getStartTime(), judge.getSubmitTime(), DateUnit.SECOND));
+            contestRecordMapper.insert(contestRecord);
+
+        }
+        return null;
+    }
 
     @Override
     public IPage<ContestRecord> getACInfo(Integer currentPage, Integer limit, Integer status, Long cid, String contestCreatorId) {
