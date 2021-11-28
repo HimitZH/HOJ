@@ -98,15 +98,16 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         String problemId = problem.getProblemId().toUpperCase();
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
         problemQueryWrapper.eq("problem_id", problemId);
-        int existedProblem = problemMapper.selectCount(problemQueryWrapper);
-
-        if (existedProblem > 0) {
-            throw new RuntimeException("The problem_id [" + problemId + "] already exists. Do not reuse it!");
-        }
+        Problem existedProblem = problemMapper.selectOne(problemQueryWrapper);
 
         problem.setProblemId(problem.getProblemId().toUpperCase());
         // 后面许多表的更新或删除需要用到题目id
         long pid = problemDto.getProblem().getId();
+
+        if (existedProblem != null && existedProblem.getId() != pid) {
+            throw new RuntimeException("The problem_id [" + problemId + "] already exists. Do not reuse it!");
+        }
+
         Map<String, Object> map = new HashMap<>();
         map.put("pid", pid);
         //查询出原来题目的关联表数据
