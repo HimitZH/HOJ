@@ -85,7 +85,6 @@ public class Judge implements Serializable {
     @ApiModelProperty(value = "训练id，非训练提交默认为null")
     private Long tid;
 
-    @TableField(updateStrategy = FieldStrategy.IGNORED)
     @ApiModelProperty(value = "判题机名称")
     private String judger;
 

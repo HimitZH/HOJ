@@ -105,7 +105,7 @@ public class AdminJudgeController {
         // 设置默认值
         judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus()); // 开始进入判题队列
         judge.setVersion(judge.getVersion() + 1);
-        judge.setJudger(null)
+        judge.setJudger("")
                 .setTime(null)
                 .setMemory(null)
                 .setErrorMessage(null)
@@ -152,12 +152,11 @@ public class AdminJudgeController {
             idMapStatus.put(judge.getSubmitId(), judge.getStatus());
             judge.setStatus(Constants.Judge.STATUS_PENDING.getStatus()); // 开始进入判题队列
             judge.setVersion(judge.getVersion() + 1);
-            judge.setJudger(null)
+            judge.setJudger("")
                     .setTime(null)
                     .setMemory(null)
                     .setErrorMessage(null)
                     .setOiRankScore(null)
-                    .setJudger(null)
                     .setScore(null);
             submitIdList.add(judge.getSubmitId());
         }
