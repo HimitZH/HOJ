@@ -232,7 +232,7 @@ public class JudgeController {
                 .setOiRankScore(null)
                 .setScore(null)
                 .setTime(null)
-                .setJudger(null)
+                .setJudger("")
                 .setMemory(null);
         judgeService.updateById(judge);
 

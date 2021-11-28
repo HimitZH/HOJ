@@ -233,7 +233,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         String csrfToken = getCsrfToken(getSubmitUrl(contestId));
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("csrf_token", csrfToken);
-        paramMap.put("_tta", 594);
+        paramMap.put("_tta", 140);
         paramMap.put("bfaa", "f1b3f18c715565b589b7823cda7448ce");
         paramMap.put("ftaa", "");
         paramMap.put("action", "submitSolutionFormSubmitted");
@@ -258,7 +258,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
                 String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `Source Code Error`", contestId, problemID);
                 throw new RuntimeException(log);
             }
-            String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `Unknown`", contestId, problemID);
+            String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `%s`", contestId, problemID,response.body());
             throw new RuntimeException(log);
         }
     }
