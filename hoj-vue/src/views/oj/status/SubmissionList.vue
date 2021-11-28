@@ -385,10 +385,11 @@ export default {
     this.JUDGE_STATUS_RESERVE = Object.assign({}, JUDGE_STATUS_RESERVE);
     this.CONTEST_STATUS = Object.assign({}, CONTEST_STATUS);
     this.RULE_TYPE = Object.assign({}, RULE_TYPE);
-    // 去除下拉框选择中的Compiling,Judging,Submitting,Not Submitted,四种状态（pending为了管理员易筛选用来重判失败提交重新进入判题队列）
-    delete this.JUDGE_STATUS_LIST['5'];
+    // 去除下拉框选择中的Compiling,Judging,Submitting,Not Submitted,Submitted Unknown Result 五种状态
     delete this.JUDGE_STATUS_LIST['6'];
     delete this.JUDGE_STATUS_LIST['7'];
+    delete this.JUDGE_STATUS_LIST['9'];
+    delete this.JUDGE_STATUS_LIST['-5'];
     delete this.JUDGE_STATUS_LIST['-10'];
     this.getData();
   },
