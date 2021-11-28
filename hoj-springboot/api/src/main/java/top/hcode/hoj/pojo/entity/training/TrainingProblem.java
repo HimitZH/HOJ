@@ -36,8 +36,11 @@ public class TrainingProblem implements Serializable {
     @ApiModelProperty(value = "题目源id")
     private Long pid;
 
-    @ApiModelProperty(value = "排序用 展示id")
+    @ApiModelProperty(value = "题目展示id")
     private String displayId;
+
+    @ApiModelProperty(value = "排序用")
+    private Integer rank;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;

@@ -24,6 +24,9 @@
             <if test="uid!=null and uid!=''">
                 AND j.uid = #{uid}
             </if>
+            <if test="tid!=null">
+                AND j.tid = #{tid}
+            </if>
         </where>
         order by j.submit_time DESC,j.submit_id DESC
     </select>

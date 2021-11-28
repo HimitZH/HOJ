@@ -1,13 +1,17 @@
 package top.hcode.hoj.service.contest;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.pojo.dto.ToJudgeDto;
 import top.hcode.hoj.pojo.entity.contest.Contest;
+import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.vo.ACMContestRankVo;
 import top.hcode.hoj.pojo.entity.contest.ContestRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.hcode.hoj.pojo.vo.ContestRecordVo;
 import top.hcode.hoj.pojo.vo.OIContestRankVo;
+import top.hcode.hoj.pojo.vo.UserRolesVo;
 
 import java.util.Date;
 import java.util.List;
@@ -21,6 +25,8 @@ import java.util.List;
  * @since 2020-10-23
  */
 public interface ContestRecordService extends IService<ContestRecord> {
+
+    CommonResult submitContestProblem(ToJudgeDto judgeDto, UserRolesVo userRolesVo, Judge judge);
 
     IPage<ContestRecord> getACInfo(Integer currentPage, Integer limit, Integer status, Long cid, String contestCreatorId);
 

@@ -1,20 +1,26 @@
 package top.hcode.hoj.service.judge.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.pojo.dto.ToJudgeDto;
 import top.hcode.hoj.pojo.entity.contest.ContestRecord;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.dao.JudgeMapper;
+import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.ProblemCountVo;
 import top.hcode.hoj.service.contest.impl.ContestRecordServiceImpl;
 import top.hcode.hoj.service.judge.JudgeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -36,13 +42,40 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     @Autowired
     private ContestRecordServiceImpl contestRecordService;
 
+    @Resource
+    private ProblemServiceImpl problemService;
+
     @Override
-    public IPage<JudgeVo> getCommonJudgeList(Integer limit, Integer currentPage, String searchPid, Integer status, String username,
-                                             String uid, Boolean completeProblemID) {
+    public CommonResult submitProblem(ToJudgeDto judgeDto, Judge judge) {
+
+        QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
+        problemQueryWrapper.eq("problem_id", judgeDto.getPid());
+        Problem problem = problemService.getOne(problemQueryWrapper,false);
+
+        if (problem.getAuth() == 2) {
+            return CommonResult.errorResponse("错误！当前题目不可提交！", CommonResult.STATUS_FORBIDDEN);
+        }
+
+        judge.setCpid(0L).setPid(problem.getId()).setDisplayPid(problem.getProblemId());
+
+        // 将新提交数据插入数据库
+        judgeMapper.insert(judge);
+        return null;
+    }
+
+    @Override
+    public IPage<JudgeVo> getCommonJudgeList(Integer limit,
+                                             Integer currentPage,
+                                             String searchPid,
+                                             Integer status,
+                                             String username,
+                                             String uid,
+                                             Long tid,
+                                             Boolean completeProblemID) {
         //新建分页
         Page<JudgeVo> page = new Page<>(currentPage, limit);
 
-        return judgeMapper.getCommonJudgeList(page, searchPid, status, username, uid, completeProblemID);
+        return judgeMapper.getCommonJudgeList(page, searchPid, status, username, uid, tid, completeProblemID);
     }
 
     @Override

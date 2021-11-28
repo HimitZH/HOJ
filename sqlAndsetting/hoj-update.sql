@@ -330,3 +330,127 @@ DELIMITER ;
 CALL judge_serverm_Add_cf_submittable ;
 
 DROP PROCEDURE judge_serverm_Add_cf_submittable;
+
+
+
+/*
+* 2021.11.29 增加训练模块
+*/
+
+DROP PROCEDURE
+IF EXISTS Add_training_table;
+DELIMITER $$
+ 
+CREATE PROCEDURE Add_training_table ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'training'
+) THEN
+	
+	CREATE TABLE `training` (
+	  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+	  `title` varchar(255) DEFAULT NULL COMMENT '训练题单名称',
+	  `description` longtext COMMENT '训练题单简介',
+	  `author` varchar(255) NOT NULL COMMENT '训练题单创建者用户名',
+	  `auth` varchar(255) NOT NULL COMMENT '训练题单权限类型：Public、Private',
+	  `private_pwd` varchar(255) DEFAULT NULL COMMENT '训练题单权限为Private时的密码',
+	  `rank` int DEFAULT '0' COMMENT '编号，升序',
+	  `status` tinyint(1) DEFAULT '1' COMMENT '是否可用',
+	  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+	  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+	CREATE TABLE `training_category` (
+	  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+	  `name` varchar(255) DEFAULT NULL,
+	  `color` varchar(255) DEFAULT NULL,
+	  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+	  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`id`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+	CREATE TABLE `training_problem` (
+	  `id` bigint unsigned NOT NULL,
+	  `tid` bigint unsigned NOT NULL COMMENT '训练id',
+	  `pid` bigint unsigned NOT NULL COMMENT '题目id',
+	  `rank` int DEFAULT '0' COMMENT '排序用',
+	  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+	  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`id`),
+	  KEY `tid` (`tid`),
+	  KEY `pid` (`pid`),
+	  CONSTRAINT `training_problem_ibfk_1` FOREIGN KEY (`tid`) REFERENCES `training` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+	  CONSTRAINT `training_problem_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+	CREATE TABLE `training_record` (
+	  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+	  `tid` bigint unsigned NOT NULL,
+	  `tpid` bigint unsigned NOT NULL,
+	  `pid` bigint unsigned NOT NULL,
+	  `uid` varchar(255) NOT NULL,
+	  `submit_id` bigint unsigned NOT NULL,
+	  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+	  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`id`),
+	  KEY `tid` (`tid`),
+	  KEY `tpid` (`tpid`),
+	  KEY `pid` (`pid`),
+	  KEY `uid` (`uid`),
+	  KEY `submit_id` (`submit_id`),
+	  CONSTRAINT `training_record_ibfk_1` FOREIGN KEY (`tid`) REFERENCES `training` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+	  CONSTRAINT `training_record_ibfk_2` FOREIGN KEY (`tpid`) REFERENCES `training_problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+	  CONSTRAINT `training_record_ibfk_3` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+	  CONSTRAINT `training_record_ibfk_4` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
+	  CONSTRAINT `training_record_ibfk_5` FOREIGN KEY (`submit_id`) REFERENCES `judge` (`submit_id`) ON DELETE CASCADE ON UPDATE CASCADE
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+	CREATE TABLE `training_register` (
+	  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+	  `tid` bigint unsigned NOT NULL COMMENT '训练id',
+	  `uid` varchar(255) NOT NULL COMMENT '用户id',
+	  `status` tinyint(1) DEFAULT '1' COMMENT '是否可用',
+	  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+	  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`id`),
+	  KEY `tid` (`tid`),
+	  KEY `uid` (`uid`),
+	  CONSTRAINT `training_register_ibfk_1` FOREIGN KEY (`tid`) REFERENCES `training` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+	  CONSTRAINT `training_register_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+	CREATE TABLE `mapping_training_category` (
+	  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+	  `tid` bigint unsigned NOT NULL,
+	  `cid` bigint unsigned NOT NULL,
+	  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+	  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`id`),
+	  KEY `tid` (`tid`),
+	  KEY `cid` (`cid`),
+	  CONSTRAINT `mapping_training_category_ibfk_1` FOREIGN KEY (`tid`) REFERENCES `training` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+	  CONSTRAINT `mapping_training_category_ibfk_2` FOREIGN KEY (`cid`) REFERENCES `training_category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	
+	ALTER TABLE `hoj`.`judge` ADD COLUMN `tid` BIGINT UNSIGNED NULL AFTER `cpid`,
+	ADD FOREIGN KEY (`tid`) REFERENCES `hoj`.`training`(`id`) ON UPDATE CASCADE ON DELETE CASCADE;
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL Add_training_table;
+
+DROP PROCEDURE Add_training_table;
+
+

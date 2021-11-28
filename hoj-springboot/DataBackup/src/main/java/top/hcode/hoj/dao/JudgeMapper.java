@@ -25,19 +25,34 @@ import java.util.List;
 @Mapper
 @Repository
 public interface JudgeMapper extends BaseMapper<Judge> {
-    IPage<JudgeVo> getCommonJudgeList(Page<JudgeVo> page, @Param("searchPid") String searchPid, @Param("status") Integer status,
-                                      @Param("username") String username, @Param("uid") String uid,
+    IPage<JudgeVo> getCommonJudgeList(Page<JudgeVo> page,
+                                      @Param("searchPid") String searchPid,
+                                      @Param("status") Integer status,
+                                      @Param("username") String username,
+                                      @Param("uid") String uid,
+                                      @Param("tid") Long tid,
                                       @Param("completeProblemID") Boolean completeProblemID);
 
-    IPage<JudgeVo> getContestJudgeList(Page<JudgeVo> page, @Param("displayId") String displayId, @Param("cid") Long cid, @Param("status") Integer status,
-                                       @Param("username") String username, @Param("uid") String uid, @Param("beforeContestSubmit") Boolean beforeContestSubmit,
-                                       @Param("rule") String rule, @Param("startTime") Date startTime, @Param("sealRankTime") Date sealRankTime,
-                                       @Param("sealTimeUid") String sealTimeUid,@Param("completeProblemID")Boolean completeProblemID);
+    IPage<JudgeVo> getContestJudgeList(Page<JudgeVo> page,
+                                       @Param("displayId") String displayId,
+                                       @Param("cid") Long cid,
+                                       @Param("status") Integer status,
+                                       @Param("username") String username,
+                                       @Param("uid") String uid,
+                                       @Param("beforeContestSubmit") Boolean beforeContestSubmit,
+                                       @Param("rule") String rule,
+                                       @Param("startTime") Date startTime,
+                                       @Param("sealRankTime") Date sealRankTime,
+                                       @Param("sealTimeUid") String sealTimeUid,
+                                       @Param("completeProblemID")Boolean completeProblemID);
 
     int getTodayJudgeNum();
 
-    ProblemCountVo getContestProblemCount(@Param("pid") Long pid, @Param("cpid") Long cpid, @Param("cid") Long cid,
-                                          @Param("startTime") Date startTime, @Param("sealRankTime") Date sealRankTime,
+    ProblemCountVo getContestProblemCount(@Param("pid") Long pid,
+                                          @Param("cpid") Long cpid,
+                                          @Param("cid") Long cid,
+                                          @Param("startTime") Date startTime,
+                                          @Param("sealRankTime") Date sealRankTime,
                                           @Param("adminList") List<String> adminList);
 
     ProblemCountVo getProblemCount(@Param("pid") Long pid);

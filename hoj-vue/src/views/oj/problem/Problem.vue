@@ -745,6 +745,7 @@ export default {
         currentPage: this.mySubmission_currentPage,
         problemID: this.problemID,
         contestID: this.contestID,
+        tid: this.trainingID,
         limit: this.mySubmission_limit,
       };
       if (this.contestID) {
@@ -894,6 +895,9 @@ export default {
         this.contestID = this.$route.params.contestID;
       }
       this.problemID = this.$route.params.problemID;
+      if (this.$route.params.trainingID) {
+        this.trainingID = this.$route.params.trainingID;
+      }
       let func =
         this.$route.name === 'ProblemDetails'
           ? 'getProblem'

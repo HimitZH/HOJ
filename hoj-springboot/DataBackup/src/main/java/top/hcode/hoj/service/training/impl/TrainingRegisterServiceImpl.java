@@ -32,15 +32,17 @@ public class TrainingRegisterServiceImpl extends ServiceImpl<TrainingRegisterMap
 
     @Override
     public CommonResult checkTrainingAuth(Training training, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        return checkTrainingAuth(training, userRolesVo);
+    }
 
+    @Override
+    public CommonResult checkTrainingAuth(Training training, UserRolesVo userRolesVo) {
         if (Constants.Training.AUTH_PRIVATE.getValue().equals(training.getAuth())) {
-            HttpSession session = request.getSession();
-            UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-
             if (userRolesVo == null) {
                 return CommonResult.errorResponse("该训练属于私有题单，请先登录以校验权限！", CommonResult.STATUS_ACCESS_DENIED);
             }
-
             boolean root = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
             boolean isAuthor = training.getAuthor().equals(userRolesVo.getUsername()); // 是否为该私有训练的创建者
 

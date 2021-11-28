@@ -35,6 +35,7 @@ import top.hcode.hoj.service.contest.impl.ContestServiceImpl;
 import top.hcode.hoj.service.judge.impl.JudgeCaseServiceImpl;
 import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
 import top.hcode.hoj.service.problem.ProblemService;
+import top.hcode.hoj.service.training.impl.TrainingRecordServiceImpl;
 import top.hcode.hoj.service.user.impl.UserAcproblemServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
@@ -62,16 +63,13 @@ public class JudgeController {
     private JudgeServiceImpl judgeService;
 
     @Autowired
-    private JudgeMapper judgeMapper;
-
-    @Autowired
     private JudgeCaseServiceImpl judgeCaseService;
 
     @Autowired
     private ProblemService problemService;
 
     @Autowired
-    private ContestProblemServiceImpl contestProblemService;
+    private TrainingRecordServiceImpl trainingRecordService;
 
     @Autowired
     private ContestServiceImpl contestService;
@@ -114,7 +112,9 @@ public class JudgeController {
 
         boolean isContestSubmission = judgeDto.getCid() != 0;
 
-        if (!isContestSubmission) { // 非比赛提交限制5秒提交一次
+        boolean isTrainingSubmission = judgeDto.getTid() != null;
+
+        if (!isContestSubmission) { // 非比赛提交限制8秒提交一次
             String lockKey = Constants.Account.SUBMIT_NON_CONTEST_LOCK.getCode() + userRolesVo.getUid();
             boolean isRestricted = redisUtils.hasKey(lockKey);
             if (isRestricted) {
@@ -133,6 +133,7 @@ public class JudgeController {
         judge.setShare(false) // 默认设置代码为单独自己可见
                 .setCode(judgeDto.getCode())
                 .setCid(judgeDto.getCid())
+                .setTid(judgeDto.getTid())
                 .setLanguage(judgeDto.getLanguage())
                 .setLength(judgeDto.getCode().length())
                 .setUid(userRolesVo.getUid())
@@ -141,103 +142,25 @@ public class JudgeController {
                 .setSubmitTime(new Date())
                 .setVersion(0)
                 .setIp(IpUtils.getUserIpAddr(request));
-        boolean updateContestRecord = true;
-        int result = 0;
-        // 如果比赛id不等于0，则说明为比赛提交，需要查询对应的contest_problem的主键
+
+        CommonResult result = null;
+        // 如果比赛id不等于0，则说明为比赛提交
         if (isContestSubmission) {
-
-            // 首先判断一下比赛的状态是否是正在进行，结束状态都不能提交，比赛前比赛管理员可以提交
-            Contest contest = contestService.getById(judgeDto.getCid());
-
-            if (contest == null) {
-                return CommonResult.errorResponse("对不起，该比赛不存在！");
-            }
-
-            if (contest.getStatus().intValue() == Constants.Contest.STATUS_ENDED.getCode()) {
-                return CommonResult.errorResponse("比赛已结束，不可再提交！");
-            }
-            // 是否为超级管理员或者该比赛的创建者，则为比赛管理者
-            boolean root = SecurityUtils.getSubject().hasRole("root");
-            if (!root && !contest.getUid().equals(userRolesVo.getUid())) {
-                if (contest.getStatus().intValue() == Constants.Contest.STATUS_SCHEDULED.getCode()) {
-                    return CommonResult.errorResponse("比赛未开始，不可提交！");
-                }
-                // 需要检查是否有权限在当前比赛进行提交
-                CommonResult checkResult = contestService.checkJudgeAuth(contest, userRolesVo.getUid());
-                if (checkResult != null) {
-                    return checkResult;
-                }
-
-                /**
-                 *  需要校验当前比赛是否为保护比赛，同时是否开启账号规则限制，如果有，需要对当前用户的用户名进行验证
-                 */
-
-                if (contest.getAuth().equals(Constants.Contest.AUTH_PROTECT.getCode())
-                        && contest.getOpenAccountLimit()
-                        && !contestService.checkAccountRule(contest.getAccountLimitRule(), userRolesVo.getUsername())) {
-                    return CommonResult.errorResponse("对不起！本次比赛只允许特定账号规则的用户参赛！", CommonResult.STATUS_ACCESS_DENIED);
-                }
-            }
-
-            // 查询获取对应的pid和cpid
-            QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
-            contestProblemQueryWrapper.eq("cid", judgeDto.getCid()).eq("display_id", judgeDto.getPid());
-            ContestProblem contestProblem = contestProblemService.getOne(contestProblemQueryWrapper);
-            judge.setCpid(contestProblem.getId())
-                    .setPid(contestProblem.getPid());
-
-            Problem problem = problemService.getById(contestProblem.getPid());
-            if (problem.getAuth() == 2) {
-                return CommonResult.errorResponse("错误！当前题目不可提交！", CommonResult.STATUS_FORBIDDEN);
-            }
-            judge.setDisplayPid(problem.getProblemId());
-
-            // 将新提交数据插入数据库
-            result = judgeMapper.insert(judge);
-
-            // 管理员比赛前的提交不纳入记录
-            if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()) {
-                // 同时初始化写入contest_record表
-                ContestRecord contestRecord = new ContestRecord();
-                contestRecord.setDisplayId(judgeDto.getPid())
-                        .setCpid(contestProblem.getId())
-                        .setSubmitId(judge.getSubmitId())
-                        .setPid(judge.getPid())
-                        .setUsername(userRolesVo.getUsername())
-                        .setRealname(userRolesVo.getRealname())
-                        .setUid(userRolesVo.getUid())
-                        .setCid(judge.getCid())
-                        .setSubmitTime(judge.getSubmitTime())
-                        // 设置比赛开始时间到提交时间之间的秒数
-                        .setTime(DateUtil.between(contest.getStartTime(), judge.getSubmitTime(), DateUnit.SECOND));
-                updateContestRecord = contestRecordService.saveOrUpdate(contestRecord);
-            }
-
-        } else { // 如果不是比赛提交
-
-            QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
-            problemQueryWrapper.eq("problem_id", judgeDto.getPid());
-            Problem problem = problemService.getOne(problemQueryWrapper);
-
-            if (problem.getAuth() == 2) {
-                return CommonResult.errorResponse("错误！当前题目不可提交！", CommonResult.STATUS_FORBIDDEN);
-            }
-
-            judge.setCpid(0L).setPid(problem.getId()).setDisplayPid(problem.getProblemId());
-
-            // 将新提交数据插入数据库
-            result = judgeMapper.insert(judge);
+            result = contestRecordService.submitContestProblem(judgeDto, userRolesVo, judge);
+        } else if (isTrainingSubmission) {
+            result = trainingRecordService.submitTrainingProblem(judgeDto, userRolesVo, judge);
+        } else { // 如果不是比赛提交和训练提交
+            result = judgeService.submitProblem(judgeDto, judge);
         }
 
-        if (result != 1 || !updateContestRecord) {
-            return CommonResult.errorResponse("代码提交失败！", CommonResult.STATUS_ERROR);
+        if (result != null) {
+            return result;
         }
 
         // 将提交加入任务队列
         if (judgeDto.getIsRemote()) { // 如果是远程oj判题
             remoteJudgeDispatcher.sendTask(judge, judgeToken, judge.getDisplayPid(), isContestSubmission,
                     1, false);
-
         } else {
             judgeDispatcher.sendTask(judge, judgeToken, isContestSubmission, 1);
         }
@@ -309,6 +232,7 @@ public class JudgeController {
                 .setOiRankScore(null)
                 .setScore(null)
                 .setTime(null)
+                .setJudger(null)
                 .setMemory(null);
         judgeService.updateById(judge);
 
@@ -460,6 +384,7 @@ public class JudgeController {
                                      @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                      @RequestParam(value = "onlyMine", required = false) Boolean onlyMine,
                                      @RequestParam(value = "problemID", required = false) String searchPid,
+                                     @RequestParam(value = "tid", required = false) Long tid,
                                      @RequestParam(value = "status", required = false) Integer searchStatus,
                                      @RequestParam(value = "username", required = false) String searchUsername,
                                      @RequestParam(value = "completeProblemID", defaultValue = "false") Boolean completeProblemID,
@@ -487,9 +412,14 @@ public class JudgeController {
             searchUsername = searchUsername.trim();
         }
 
-        IPage<JudgeVo> commonJudgeList = judgeService.getCommonJudgeList(limit, currentPage, searchPid,
-                searchStatus, searchUsername, uid, completeProblemID);
-
+        IPage<JudgeVo> commonJudgeList = judgeService.getCommonJudgeList(limit,
+                currentPage,
+                searchPid,
+                searchStatus,
+                searchUsername,
+                uid,
+                tid,
+                completeProblemID);
 
         if (commonJudgeList.getTotal() == 0) { // 未查询到一条数据
             return CommonResult.successResponse(commonJudgeList, "暂无数据");
