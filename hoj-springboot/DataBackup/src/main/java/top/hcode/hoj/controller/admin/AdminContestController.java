@@ -236,15 +236,14 @@ public class AdminContestController {
                     // vj题目不限制赛制
                     .and(wrapper -> wrapper.eq("type", problemType)
                             .or().eq("is_remote", true))
-                    .ne("auth", 2);
+                    .ne("auth", 2); // 同时需要与比赛相同类型的题目，权限需要是公开的（隐藏的不可加入！）
         }
 
         // 逻辑判断，如果是查询已有的就应该是in，如果是查询不要重复的，使用not in
         if (problemType != null) {
-            // 同时需要与比赛相同类型的题目，权限需要是公开的（隐藏的，比赛中不可加入！）
-            problemQueryWrapper.notIn("id", pidList);
+            problemQueryWrapper.notIn(pidList.size() > 0, "id", pidList);
         } else {
-            problemQueryWrapper.in("id", pidList);
+            problemQueryWrapper.in(pidList.size() > 0, "id", pidList);
         }
 
 
@@ -395,7 +394,7 @@ public class AdminContestController {
     @PutMapping("/change-problem-auth")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "problem_admin", "admin"}, logical = Logical.OR)
-    public CommonResult changeProblemAuth(@RequestBody Problem problem,HttpServletRequest request) {
+    public CommonResult changeProblemAuth(@RequestBody Problem problem, HttpServletRequest request) {
 
         // 普通管理员只能将题目变成隐藏题目和比赛题目
         boolean root = SecurityUtils.getSubject().hasRole("root");
@@ -412,7 +411,7 @@ public class AdminContestController {
         UpdateWrapper<Problem> problemUpdateWrapper = new UpdateWrapper<>();
         problemUpdateWrapper.eq("id", problem.getId())
                 .set("auth", problem.getAuth())
-                .set("modified_user",userRolesVo.getUsername());
+                .set("modified_user", userRolesVo.getUsername());
 
         boolean result = problemService.update(problemUpdateWrapper);
         if (result) { // 更新成功

@@ -74,9 +74,9 @@ public class TrainingProblemServiceImpl extends ServiceImpl<TrainingProblemMappe
 
         // 逻辑判断，如果是查询已有的就应该是in，如果是查询不要重复的，使用not in
         if (queryExisted) {
-            problemQueryWrapper.in("id", pidList);
+            problemQueryWrapper.in(pidList.size() > 0, "id", pidList);
         } else {
-            problemQueryWrapper.notIn("id", pidList);
+            problemQueryWrapper.notIn(pidList.size() > 0, "id", pidList);
         }
 
         if (!StringUtils.isEmpty(keyword)) {
