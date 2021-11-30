@@ -120,9 +120,9 @@
    - 默认mysql账号与密码：root / hoj123456
    - 默认nacos管理员账号与密码：root / hoj123456
    - 默认不开启https，开启需修改文件同时提供证书文件
-   - 判题并发数默认：cpu核心数*2
+   - 判题并发数默认：cpu核心数+1
 - 默认开启vj判题，需要手动修改添加账号与密码，如果不添加不能vj判题！
-   - vj判题并发数默认：cpu核心数*4
+   - vj判题并发数默认：cpu核心数*2+1
    
    
 
@@ -264,9 +264,9 @@ Password: 开启SMTP服务后生成的随机授权码
    JUDGE_SERVER_IP=172.20.0.7 # 修改为当前的服务器公网ip
    JUDGE_SERVER_PORT=8088  # judgeserver启动端口号
    JUDGE_SERVER_NAME=judger-1
-   MAX_TASK_NUM=-1 # -1表示最大并行任务数为cpu核心数*2
+   MAX_TASK_NUM=-1 # -1表示最大并行任务数为cpu核心数+1
    REMOTE_JUDGE_OPEN=true # 当前判题服务器是否开启远程虚拟判题功能
-   REMOTE_JUDGE_MAX_TASK_NUM=-1 # -1表示最大并行任务数为(cpu核心数*2)*2
+   REMOTE_JUDGE_MAX_TASK_NUM=-1 # -1表示最大并行任务数为cpu核心数*2+1
    
    # rsync评测数据同步的配置
    RSYNC_MASTER_ADDR=127.0.0.1 # 写入主服务器ip

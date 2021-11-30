@@ -12,14 +12,14 @@
 
    ```yaml
    hoj-judge-server:
-     max-task-num: -1 # -1表示最大并行任务数为cpu核心数*2
+     max-task-num: -1 # -1表示最大并行任务数为cpu核心数+1
      ip: 127.0.0.1 # -1表示使用默认本地ipv4，若是部署其它服务器，务必使用公网ip
      port: 8088  # 端口号
      name: hoj-judger-1 # 判题机名字 唯一不可重复！！！
      nacos-url: 127.0.0.1:8848  # nacos地址
      remote-judge:
        open: true # 当前判题服务器是否开启远程虚拟判题功能
-       max-task-num: -1 # -1表示最大并行任务数为(cpu核心数*2)*2
+       max-task-num: -1 # -1表示最大并行任务数为cpu核心数*2+1
    ```
 
 3. 使用cmd打开当前JudgeServer文件夹路径，然后使用mvn命令进行打包成jar包
@@ -196,9 +196,9 @@ services:
       - NACOS_URL=172.20.0.4:8848 # nacos的url
       - NACOS_USERNAME=nacos # nacos的管理员账号
       - NACOS_PASSWORD=nacos # naocs的管理员账号密码
-      - MAX_TASK_NUM=-1 # -1表示最大并行任务数为cpu核心数*2
+      - MAX_TASK_NUM=-1 # -1表示最大并行任务数为cpu核心数+1
       - REMOTE_JUDGE_OPEN=true # 当前判题服务器是否开启远程虚拟判题功能
-      - REMOTE_JUDGE_MAX_TASK_NUM=-1 # -1表示最大并行任务数为(cpu核心数*2)*2
+      - REMOTE_JUDGE_MAX_TASK_NUM=-1 # -1表示最大并行任务数为cpu核心数*2+1
     ports:
       - "0.0.0.0:8088:8088"
       # - "0.0.0.0:5050:5050" # 一般不开放安全沙盒端口
