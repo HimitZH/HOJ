@@ -37,7 +37,6 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
 
     @Override
-    @Async
     public void UpdateContestRecord(String uid, Integer score, Integer status, Long submitId, Long cid, Integer useTime) {
         UpdateWrapper<ContestRecord> updateWrapper = new UpdateWrapper<>();
         // 如果是AC
@@ -61,6 +60,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         updateWrapper.set("use_time", useTime);
 
         updateWrapper.eq("submit_id", submitId) // submit_id一定只有一个
+                .eq("cid", cid)
                 .eq("uid", uid);
         boolean result = contestRecordMapper.update(null, updateWrapper) > 0;
         if (!result) {
@@ -74,7 +74,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         do {
             boolean result = contestRecordMapper.update(null, updateWrapper) > 0;
             if (result) {
-                return;
+                break;
             } else {
                 attemptNumber++;
                 retryable = attemptNumber < 8;
@@ -83,7 +83,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                     break;
                 }
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(300);
                 } catch (InterruptedException e) {
                     log.error(e.getMessage());
                 }
