@@ -49,7 +49,7 @@ public class StartupRunner implements CommandLineRunner {
     public void run(String... args) {
 
         if (maxTaskNum == -1) {
-            maxTaskNum = cpuNum * 2;
+            maxTaskNum = cpuNum + 1;
         }
         if (ip.equals("-1")) {
             ip = IpUtils.getLocalIpv4Address();
@@ -68,7 +68,7 @@ public class StartupRunner implements CommandLineRunner {
         boolean isOk2 = true;
         if (openRemoteJudge) {
             if (maxRemoteTaskNum == -1) {
-                maxRemoteTaskNum = (cpuNum * 2 ) * 2;
+                maxRemoteTaskNum = cpuNum * 2 + 1;
             }
             isOk2 = judgeServerService.save(new JudgeServer()
                     .setCpuCore(cpuNum)

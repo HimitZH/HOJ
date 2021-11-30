@@ -128,7 +128,6 @@ public class JudgeController {
         }
         // 进行判题操作
         Problem problem = problemService.getById(judge.getPid());
-
         Judge finalJudge = judgeService.Judge(problem, judge);
 
         // 更新该次提交

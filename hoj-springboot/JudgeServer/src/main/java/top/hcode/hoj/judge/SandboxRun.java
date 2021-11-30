@@ -68,7 +68,7 @@ public class SandboxRun {
 
     public static final HashMap<String, Integer> RESULT_MAP_STATUS = new HashMap<>();
 
-    private static final int maxProcessNumber = 128;
+    private static final int maxProcessNumber = 32;
 
     private static final int TIME_LIMIT_MS = 16000;
 
