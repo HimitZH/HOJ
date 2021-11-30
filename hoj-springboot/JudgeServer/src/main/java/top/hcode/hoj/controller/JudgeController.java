@@ -79,14 +79,14 @@ public class JudgeController {
         res.put("cpu", Runtime.getRuntime().availableProcessors());
 
         if (maxTaskNum == -1) {
-            res.put("maxTaskNum", Runtime.getRuntime().availableProcessors() * 2);
+            res.put("maxTaskNum", Runtime.getRuntime().availableProcessors() + 1);
         } else {
             res.put("maxTaskNum", maxTaskNum);
         }
         if (isOpenRemoteJudge) {
             res.put("isOpenRemoteJudge", true);
             if (RemoteJudgeMaxTaskNum == -1) {
-                res.put("remoteJudgeMaxTaskNum", Runtime.getRuntime().availableProcessors() * 4);
+                res.put("remoteJudgeMaxTaskNum", Runtime.getRuntime().availableProcessors() * 2 + 1);
             } else {
                 res.put("remoteJudgeMaxTaskNum", RemoteJudgeMaxTaskNum);
             }
