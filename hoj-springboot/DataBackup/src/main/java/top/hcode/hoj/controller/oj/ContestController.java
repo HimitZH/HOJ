@@ -174,7 +174,7 @@ public class ContestController {
 
         QueryWrapper<ContestRegister> wrapper = new QueryWrapper<ContestRegister>().eq("cid", cid)
                 .eq("uid", userRolesVo.getUid());
-        if (contestRegisterService.getOne(wrapper,false) != null) {
+        if (contestRegisterService.getOne(wrapper, false) != null) {
             return CommonResult.errorResponse("您已注册过该比赛，请勿重复注册！");
         }
 
@@ -205,9 +205,24 @@ public class ContestController {
 
         QueryWrapper<ContestRegister> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("cid", cid).eq("uid", userRolesVo.getUid());
-        ContestRegister contestRegister = contestRegisterService.getOne(queryWrapper,false);
+        ContestRegister contestRegister = contestRegisterService.getOne(queryWrapper, false);
+
+        boolean access = false;
+        if (contestRegister != null) {
+            access = true;
+            Contest contest = contestService.getById(cid);
+            if (contest == null || !contest.getVisible()) {
+                return CommonResult.errorResponse("对不起，该比赛不存在!");
+            }
+            if (contest.getOpenAccountLimit()
+                    && !contestService.checkAccountRule(contest.getAccountLimitRule(), userRolesVo.getUsername())) {
+                access = false;
+                contestRecordService.removeById(contestRegister.getId());
+            }
+        }
+
         HashMap<String, Object> result = new HashMap<>();
-        result.put("access", contestRegister != null);
+        result.put("access", access);
         return CommonResult.successResponse(result);
     }
 
@@ -438,7 +453,6 @@ public class ContestController {
         if (commonJudgeList.getTotal() == 0) { // 未查询到一条数据
             return CommonResult.successResponse(commonJudgeList, "暂无数据");
         } else {
-
             // 比赛还是进行阶段，同时不是超级管理员与比赛管理员，需要将除自己之外的提交的时间、空间、长度隐藏
             if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()
                     && !isRoot && !userRolesVo.getUid().equals(contest.getUid())) {

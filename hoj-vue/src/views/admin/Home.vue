@@ -52,6 +52,27 @@
             >{{ $t('m.Export_Import_Problem') }}</el-menu-item
           >
         </el-submenu>
+
+        <el-submenu index="training">
+          <template slot="title"
+            ><i
+              class="el-icon-s-claim"
+              aria-hidden="true"
+              style="font-size: 20px;"
+            ></i
+            >{{ $t('m.Training_Admin') }}</template
+          >
+          <el-menu-item index="/admin/training">{{
+            $t('m.Training_List')
+          }}</el-menu-item>
+          <el-menu-item index="/admin/training/create">{{
+            $t('m.Create_Training')
+          }}</el-menu-item>
+          <el-menu-item index="/admin/training/category">{{
+            $t('m.Admin_Category')
+          }}</el-menu-item>
+        </el-submenu>
+
         <el-submenu index="contest">
           <template slot="title"
             ><i class="fa fa-trophy fa-size" aria-hidden="true"></i
@@ -84,7 +105,7 @@
                   $t('m.Home_Page')
                 }}</el-breadcrumb-item>
                 <el-breadcrumb-item v-for="item in routeList" :key="item.path">
-                  {{ $t('m.' + item.meta.title.replace(' ', '_')) }}
+                  {{ $t('m.' + item.meta.title.replaceAll(' ', '_')) }}
                 </el-breadcrumb-item>
               </el-breadcrumb>
             </div>
@@ -299,6 +320,65 @@
             >
               <mu-list-item-title>{{
                 $t('m.Export_Import_Problem')
+              }}</mu-list-item-title>
+            </mu-list-item>
+          </mu-list-item>
+
+          <mu-list-item
+            button
+            :ripple="false"
+            nested
+            :open="openSideMenu === 'training'"
+            @toggle-nested="openSideMenu = arguments[0] ? 'training' : ''"
+          >
+            <mu-list-item-action>
+              <mu-icon value=":el-icon-s-claim fa-size"></mu-icon>
+            </mu-list-item-action>
+            <mu-list-item-title>{{
+              $t('m.Training_Admin')
+            }}</mu-list-item-title>
+            <mu-list-item-action>
+              <mu-icon
+                class="toggle-icon"
+                size="24"
+                value="keyboard_arrow_down"
+              ></mu-icon>
+            </mu-list-item-action>
+            <mu-list-item
+              button
+              :ripple="false"
+              slot="nested"
+              to="/admin/training"
+              @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
+            >
+              <mu-list-item-title>{{
+                $t('m.Training_List')
+              }}</mu-list-item-title>
+            </mu-list-item>
+            <mu-list-item
+              button
+              :ripple="false"
+              slot="nested"
+              to="/admin/training/create"
+              @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
+            >
+              <mu-list-item-title>{{
+                $t('m.Create_Training')
+              }}</mu-list-item-title>
+            </mu-list-item>
+
+            <mu-list-item
+              button
+              :ripple="false"
+              slot="nested"
+              to="/admin/training/category"
+              @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
+            >
+              <mu-list-item-title>{{
+                $t('m.Admin_Category')
               }}</mu-list-item-title>
             </mu-list-item>
           </mu-list-item>

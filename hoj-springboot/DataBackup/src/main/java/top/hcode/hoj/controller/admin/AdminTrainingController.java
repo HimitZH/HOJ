@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.crawler.problem.ProblemStrategy;
 import top.hcode.hoj.pojo.dto.TrainingDto;
+import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
+import top.hcode.hoj.pojo.vo.TrainingVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
 import top.hcode.hoj.service.training.impl.TrainingProblemServiceImpl;
@@ -64,10 +66,11 @@ public class AdminTrainingController {
             keyword = keyword.trim();
             queryWrapper
                     .like("title", keyword).or()
-                    .like("id", keyword);
+                    .like("id", keyword).or()
+                    .like("`rank`", keyword);
         }
 
-        queryWrapper.orderByAsc("rank");
+        queryWrapper.orderByAsc("`rank`");
 
         IPage<Training> TrainingPager = trainingService.page(iPage, queryWrapper);
         if (TrainingPager.getTotal() == 0) { // 未查询到一条数据
@@ -81,30 +84,14 @@ public class AdminTrainingController {
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult getTraining(@RequestParam("tid") Long tid, HttpServletRequest request) {
-
-        // 获取本场训练的信息
-        Training training = trainingService.getById(tid);
-        if (training == null) { // 查询不存在
-            return CommonResult.errorResponse("查询失败：该训练不存在,请检查参数tid是否准确！");
-        }
-
-        // 获取当前登录的用户
-        HttpSession session = request.getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-        // 是否为超级管理员
-        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-        // 只有超级管理员和训练拥有者才能操作
-        if (!isRoot && !userRolesVo.getUsername().equals(training.getAuthor())) {
-            return CommonResult.errorResponse("对不起，你无权限操作！", CommonResult.STATUS_FORBIDDEN);
-        }
-        return CommonResult.successResponse(training, "查询成功！");
+        return trainingService.getAdminTrainingDto(tid, request);
     }
 
     @DeleteMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = "root") // 只有超级管理员能删除训练
-    public CommonResult deleteTraining(@RequestParam("cid") Long cid) {
-        boolean result = trainingService.removeById(cid);
+    public CommonResult deleteTraining(@RequestParam("tid") Long tid) {
+        boolean result = trainingService.removeById(tid);
         /*
         Training的id为其他表的外键的表中的对应数据都会被一起删除！
          */
@@ -151,6 +138,33 @@ public class AdminTrainingController {
         }
     }
 
+
+    @PutMapping("/change-training-status")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
+    public CommonResult changeTrainingStatus(@RequestParam(value = "tid", required = true) Long tid,
+                                             @RequestParam(value = "author", required = true) String author,
+                                             @RequestParam(value = "status", required = true) Boolean status,
+                                             HttpServletRequest request) {
+
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        // 是否为超级管理员
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        // 只有超级管理员和比赛拥有者才能操作
+        if (!isRoot && !userRolesVo.getUsername().equals(author)) {
+            return CommonResult.errorResponse("对不起，你无权限操作！", CommonResult.STATUS_FORBIDDEN);
+        }
+
+        boolean result = trainingService.saveOrUpdate(new Training().setId(tid).setStatus(status));
+        if (result) { // 添加成功
+            return CommonResult.successResponse(null, "修改成功！");
+        } else {
+            return CommonResult.errorResponse("修改失败", CommonResult.STATUS_FAIL);
+        }
+    }
+
     @GetMapping("/get-problem-list")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
@@ -167,15 +181,16 @@ public class AdminTrainingController {
         return CommonResult.successResponse(trainingProblemMap, "获取成功");
     }
 
-    @GetMapping("/problem")
+
+    @PutMapping("/problem")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult getProblem(@Valid @RequestParam("pid") Long pid) {
-        Problem problem = problemService.getById(pid);
-        if (problem != null) { // 查询成功
-            return CommonResult.successResponse(problem, "查询成功！");
+    @RequiresRoles(value = {"root", "problem_admin"}, logical = Logical.OR)
+    public CommonResult updateProblem(@RequestBody TrainingProblem trainingProblem) {
+        boolean isOk = trainingProblemService.saveOrUpdate(trainingProblem);
+        if (isOk) { // 删除成功
+            return CommonResult.successResponse(null, "修改成功！");
         } else {
-            return CommonResult.errorResponse("查询失败！", CommonResult.STATUS_FAIL);
+            return CommonResult.errorResponse("修改失败！", CommonResult.STATUS_FAIL);
         }
     }
 
@@ -249,9 +264,9 @@ public class AdminTrainingController {
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     @Transactional(rollbackFor = Exception.class)
     public CommonResult importTrainingRemoteOJProblem(@RequestParam("name") String name,
-                                                     @RequestParam("problemId") String problemId,
-                                                     @RequestParam("tid") Long tid,
-                                                     HttpServletRequest request) {
+                                                      @RequestParam("problemId") String problemId,
+                                                      @RequestParam("tid") Long tid,
+                                                      HttpServletRequest request) {
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("problem_id", name.toUpperCase() + "-" + problemId);

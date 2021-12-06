@@ -39,7 +39,7 @@
         and j.pid = p.id
         and p.auth = 1
         and tp.tid = #{tid}
-        order by tp.rank asc
+        order by tp.`rank` asc
     </select>
 
     <!-- 子查询 :为了防止分页总数据数出错-->

@@ -17,6 +17,10 @@ export const m = {
   Problem_List: '题目列表',
   Create_Problem: '增加题目',
   Export_Import_Problem: '导入|导出题目',
+  Training_Admin: '训练管理',
+  Training_List: '训练列表',
+  Create_Training: '创建训练',
+  Admin_Category:'分类管理',
   Contest_Admin: '比赛管理',
   Contest_List: '比赛列表',
   Create_Contest: '创建比赛',
@@ -162,7 +166,7 @@ export const m = {
   Add:'添加',
   Remove:'移除',
   Delete_Problem_Tips:'确定要删除此题目吗？注意：该问题的相关数据也将被彻底删除，包括题目详情、题目的提交记录等！',
-  Remove_Problem_Tips:'你是否确定要将该题目移出比赛？',
+  Remove_Contest_Problem_Tips:'你是否确定要将该题目移出比赛？',
   Add_Successfully:'添加成功',
   Download_Testcase_Success:'该题目的评测数据已经被成功下载！',
   Enter_The_Problem_Display_ID_in_the_Contest:'请输入该题目在比赛中展示ID',
@@ -246,6 +250,41 @@ export const m = {
   Import_FPS_Problem:'导入FPS格式的题目',
   Export_Problem_NULL_Tips:'选择导出的题目不能为空',
 
+   // /views/admin/training/TrainingList.vue
+   Order_Number:'序号',
+   View_Training_Problem_List:'查看训练题目列表',
+   Delete_Training_Tips:'此操作将删除该训练提交记录、榜单等数据, 是否继续?',
+ 
+   // /views/admin/training/Training.vue
+   Training_rank:'训练排序编号(升序)',
+   Training_Title: '训练标题',
+   Training_Description: '训练描述',
+   Training_Auth: '训练权限',
+   Training_Category:'训练分类',
+   Public_Training: '公开训练',
+   Private_Training: '私有训练',
+   Training_Password:'训练密码',
+   Edit_Training:'编辑训练',
+   Create_Training:'创建训练',
+   Redirect_To_Category:'当前训练的分类列表为空，请先前往创建分类！',
+   Redirect:'重定向',
+
+  // /views/admin/training/TrainingProblemList.vue
+  Training_Problem_List:'训练题目列表',
+  Add_Training_Problem:'添加训练题目',
+  Remove_Training_Problem_Tips:'你是否确定要将该题目移出训练？',
+  Training_Problem_Rank:'题目显示顺序(升序)',
+ 
+   // /views/admin/training/Category.vue
+   Add_Category:'添加分类',
+   Update_Category:'修改分类',
+   To_Add:'添加',
+   To_Update:'更新',
+   Create_Training:'创建训练',
+   Category_Name:'分类名称',
+   Category_Color:'分类颜色',
+   Delete_Category_Tips:'你是否确定删除该分类？',
+
   // /views/admin/contest/ContestList.vue
   Visible:'是否可见',
   Info:'信息',
@@ -270,6 +309,9 @@ export const m = {
   Contest_Seal_Half_Hour:'比赛结束前半小时',
   Contest_Seal_An_Hour:'比赛结束前一小时',
   Contest_Seal_All_Hour:'比赛全程',
+  Auto_Real_Rank:'自动取消封榜',
+  Real_Rank_After_Contest:'比赛完取消封榜',
+  Seal_Rank_After_Contest:'比赛完继续封榜',
   Edit_Contest:'编辑比赛',
   Create_Contest:'创建比赛',
   Contest_Duration_Check:'比赛时长不能小于0',

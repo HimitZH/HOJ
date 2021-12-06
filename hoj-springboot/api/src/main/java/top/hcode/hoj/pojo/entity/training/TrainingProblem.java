@@ -40,6 +40,7 @@ public class TrainingProblem implements Serializable {
     private String displayId;
 
     @ApiModelProperty(value = "排序用")
+    @TableField("`rank`")
     private Integer rank;
 
     @TableField(fill = FieldFill.INSERT)

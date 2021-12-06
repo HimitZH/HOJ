@@ -1,0 +1,279 @@
+<template>
+  <el-row>
+    <el-card>
+      <section>
+        <span class="find-training">搜索训练</span>
+        <vxe-input
+          v-model="query.keyword"
+          :placeholder="$t('m.Enter_keyword')"
+          type="search"
+          size="medium"
+          style="width:230px"
+          @keyup.enter.native="filterByChange"
+          @search-click="filterByChange"
+        ></vxe-input>
+      </section>
+      <section>
+        <b class="training-category">训练分类</b>
+        <div>
+          <el-tag
+            size="medium"
+            class="category-item"
+            v-for="(category, index) in categoryList"
+            :style="getCategoryBlockColor(category)"
+            :key="index"
+            @click="filterByCategory(category.id)"
+            >{{ category.name }}</el-tag
+          >
+        </div>
+      </section>
+    </el-card>
+
+    <el-card style="margin-top:2em">
+      <vxe-table
+        border="inner"
+        stripe
+        ref="trainingList"
+        auto-resize
+        :data="trainingList"
+        :loading="loading"
+        style="font-size: 14px !important;font-weight: 450 !important;"
+      >
+        <vxe-table-column
+          field="rank"
+          title="编号"
+          min-width="60"
+          show-overflow
+        >
+        </vxe-table-column>
+        <vxe-table-column
+          field="title"
+          title="标题"
+          min-width="200"
+          align="center"
+        >
+          <template v-slot="{ row }"
+            ><el-link type="primary" @click="toTraining(row.id)">{{
+              row.title
+            }}</el-link>
+          </template>
+        </vxe-table-column>
+
+        <vxe-table-column
+          field="auth"
+          title="权限"
+          min-width="100"
+          align="center"
+        >
+          <template v-slot="{ row }">
+            <el-tag :type="TRAINING_TYPE[row.auth]['color']" effect="dark">
+              {{ row.auth }}
+            </el-tag>
+          </template>
+        </vxe-table-column>
+        <vxe-table-column
+          field="categoryName"
+          title="分类"
+          min-width="100"
+          align="center"
+        >
+          <template v-slot="{ row }">
+            <el-tag
+              size="medium"
+              class="category-item"
+              :style="
+                'background-color: #fff;color: ' +
+                  row.categoryColor +
+                  ';border-color: ' +
+                  row.categoryColor +
+                  ';'
+              "
+              :key="index"
+              >{{ row.categoryName }}</el-tag
+            >
+          </template>
+        </vxe-table-column>
+        <vxe-table-column
+          field="problemCount"
+          title="题目数"
+          min-width="80"
+          align="center"
+        >
+        </vxe-table-column>
+        <vxe-table-column
+          field="author"
+          title="作者"
+          min-width="150"
+          align="center"
+          show-overflow
+        >
+          <template v-slot="{ row }"
+            ><el-link type="info" @click="goUserHome(row.author)">{{
+              row.author
+            }}</el-link>
+          </template>
+        </vxe-table-column>
+        <vxe-table-column
+          field="gmtModified"
+          title="最近更新"
+          min-width="150"
+          align="center"
+          show-overflow
+        >
+          <template v-slot="{ row }">
+            {{ row.gmtModified | localtime }}
+          </template>
+        </vxe-table-column>
+      </vxe-table>
+    </el-card>
+    <Pagination
+      :total="total"
+      :pageSize="limit"
+      @on-change="getTrainingList"
+      :current.sync="currentPage"
+    ></Pagination>
+  </el-row>
+</template>
+
+<script>
+import api from '@/common/api';
+import utils from '@/common/utils';
+import myMessage from '@/common/message';
+import { TRAINING_TYPE } from '@/common/constants';
+const Pagination = () => import('@/components/oj/common/Pagination');
+export default {
+  name: 'TrainingList',
+  components: {
+    Pagination,
+  },
+  data() {
+    return {
+      query: {
+        keyword: '',
+        categoryId: null,
+      },
+      total: 0,
+      currentPage: 1,
+      limit: 15,
+      categoryList: [],
+      trainingList: [],
+      TRAINING_TYPE: {},
+      loading: false,
+    };
+  },
+  mounted() {
+    let route = this.$route.query;
+    this.query.keyword = route.keyword || '';
+    this.currentPage = parseInt(route.currentPage) || 1;
+    this.categoryId = route.categoryId || null;
+    this.TRAINING_TYPE = Object.assign({}, TRAINING_TYPE);
+    this.getTrainingCategoryList();
+    this.getTrainingList(1);
+    myMessage.warning('本训练模块暂未投入使用，正在测试中.....');
+    this.$alert('本训练模块暂未投入使用，正在测试中.....', '注意', {
+      confirmButtonText: '确定',
+    });
+  },
+  methods: {
+    filterByCategory(categoryId) {
+      this.query.categoryId = categoryId;
+      this.filterByChange();
+    },
+
+    filterByChange() {
+      let query = Object.assign({}, this.query);
+      query.currentPage = this.currentPage;
+      this.$router.push({
+        name: 'TrainingList',
+        query: utils.filterEmptyValue(query),
+      });
+    },
+    getTrainingList(page) {
+      this.loading = true;
+      let query = Object.assign({}, this.query);
+      api.getTrainingList(page, this.limit, query).then(
+        (res) => {
+          this.trainingList = res.data.data.records;
+          this.total = res.data.data.total;
+          this.loading = false;
+        },
+        (err) => {
+          this.loading = false;
+        }
+      );
+    },
+    getTrainingCategoryList() {
+      api.getTrainingCategoryList().then((res) => {
+        this.categoryList = res.data.data;
+      });
+    },
+
+    toTraining(trainingID) {
+      this.$router.push({
+        name: 'TrainingDetails',
+        params: { trainingID: trainingID },
+      });
+    },
+    goUserHome(username) {
+      this.$router.push({
+        path: '/user-home',
+        query: { username },
+      });
+    },
+
+    getCategoryBlockColor(category) {
+      if (category.id == this.query.categoryId) {
+        return (
+          'color: #fff;background-color: ' +
+          category.color +
+          ';background-color: ' +
+          category.color +
+          ';'
+        );
+      } else {
+        return (
+          'background-color: #fff;color: ' +
+          category.color +
+          ';border-color: ' +
+          category.color +
+          ';'
+        );
+      }
+    },
+  },
+};
+</script>
+
+<style scoped>
+section {
+  display: flex;
+  min-height: 3em;
+  margin-bottom: 1em;
+  align-items: center;
+}
+.find-training {
+  margin-right: 1em;
+  white-space: nowrap;
+  font-size: 1.7em;
+  margin-top: 0;
+  font-family: inherit;
+  font-weight: bold;
+  line-height: 1.2;
+  color: inherit;
+}
+.training-category {
+  margin-right: 2.3em;
+  font-weight: bolder;
+  white-space: nowrap;
+  font-size: 16px;
+  margin-top: 8px;
+}
+.category-item {
+  margin-right: 1em;
+  margin-top: 0.5em;
+  font-size: 14px;
+}
+.category-item:hover {
+  cursor: pointer;
+}
+</style>

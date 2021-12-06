@@ -50,6 +50,7 @@ public class Training implements Serializable {
     private Boolean status;
 
     @ApiModelProperty(value = "编号，升序排序")
+    @TableField("`rank`")
     private Integer rank;
 
     @TableField(fill = FieldFill.INSERT)

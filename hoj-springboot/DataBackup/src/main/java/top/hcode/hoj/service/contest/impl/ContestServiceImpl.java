@@ -97,8 +97,9 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
             return false;
         } else if (contest.getSealRank() && contest.getSealRankTime() != null) { // 该比赛开启封榜模式
             Date now = new Date();
-            // 如果现在时间处于封榜开始到比赛结束之间，不可刷新榜单
-            if (now.after(contest.getSealRankTime()) && now.before(contest.getEndTime())) {
+            // 如果现在时间处于封榜开始到比赛结束之间或者没有开启自动解除封榜，不可刷新榜单
+            if ((now.after(contest.getSealRankTime()) && now.before(contest.getEndTime()))
+                    || !contest.getAutoRealRank()) {
                 return true;
             }
         }
@@ -147,7 +148,7 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
         if (!StringUtils.isEmpty(extra)) {
             String[] accountList = extra.trim().split(" ");
             for (String account : accountList) {
-                if (username.equals(account)){
+                if (username.equals(account)) {
                     return true;
                 }
             }

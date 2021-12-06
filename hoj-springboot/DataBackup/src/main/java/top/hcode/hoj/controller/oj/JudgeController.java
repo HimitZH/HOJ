@@ -301,11 +301,12 @@ public class JudgeController {
                 // 不是本人的话不能查看代码、时间，空间，长度
                 if (!userRolesVo.getUid().equals(judge.getUid())) {
                     judge.setCode(null);
-                    // 如果还在比赛时间，不是本人不能查看时间，空间，长度
+                    // 如果还在比赛时间，不是本人不能查看时间，空间，长度，错误提示信息
                     if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()) {
                         judge.setTime(null);
                         judge.setMemory(null);
                         judge.setLength(null);
+                        judge.setErrorMessage("The contest is in progress. You are not allowed to view other people's error information.");
                     }
                 }
             }
@@ -438,6 +439,7 @@ public class JudgeController {
      */
     @RequestMapping(value = "/check-submissions-status", method = RequestMethod.POST)
     public CommonResult checkCommonJudgeResult(@RequestBody SubmitIdListDto submitIdListDto) {
+
         List<Long> submitIds = submitIdListDto.getSubmitIds();
 
         if (submitIds.size() == 0) {
@@ -492,6 +494,11 @@ public class JudgeController {
         List<Judge> judgeList = judgeService.list(queryWrapper);
         HashMap<Long, Object> result = new HashMap<>();
         for (Judge judge : judgeList) {
+            if (!judge.getUid().equals(userRolesVo.getUid())){
+                judge.setTime(null);
+                judge.setMemory(null);
+                judge.setLength(null);
+            }
             result.put(judge.getSubmitId(), judge);
         }
         return CommonResult.successResponse(result, "获取最新判题数据成功！");

@@ -634,6 +634,7 @@ import {
   CONTEST_STATUS,
   JUDGE_STATUS_RESERVE,
   buildProblemCodeKey,
+  buildIndividualLanguageAndThemeKey,
   RULE_TYPE,
   PROBLEM_LEVEL,
 } from '@/common/constants';
@@ -718,6 +719,15 @@ export default {
         vm.theme = problemCode.theme;
       });
     } else {
+      let individualLanguageAndTheme = storage.get(
+        buildIndividualLanguageAndThemeKey()
+      );
+      if (individualLanguageAndTheme) {
+        next((vm) => {
+          vm.language = individualLanguageAndTheme.language;
+          vm.theme = individualLanguageAndTheme.theme;
+        });
+      }
       next();
     }
   },
@@ -966,7 +976,14 @@ export default {
             return;
           }
           // try to load problem template
-          this.language = this.problemData.languages[0];
+          if (this.problemData.languages.length != 0) {
+            if (
+              !this.language ||
+              this.problemData.languages.indexOf(this.language) == -1
+            ) {
+              this.language = this.problemData.languages[0];
+            }
+          }
           let codeTemplate = this.problemData.codeTemplate;
           if (codeTemplate && codeTemplate[this.language]) {
             this.code = codeTemplate[this.language];
@@ -1320,6 +1337,12 @@ export default {
       language: this.language,
       theme: this.theme,
     });
+
+    storage.set(buildIndividualLanguageAndThemeKey(), {
+      language: this.language,
+      theme: this.theme,
+    });
+
     next();
   },
   watch: {

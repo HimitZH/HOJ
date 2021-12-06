@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @Author: Himit_ZH
@@ -30,9 +31,6 @@ public class TrainingVo implements Serializable {
     @ApiModelProperty(value = "训练题单权限类型：Public、Private")
     private String auth;
 
-    @ApiModelProperty(value = "训练题单题目类型：ACM、OI")
-    private String type;
-
     @ApiModelProperty(value = "训练题单的分类名称")
     private String categoryName;
 
@@ -44,4 +42,7 @@ public class TrainingVo implements Serializable {
 
     @ApiModelProperty(value = "该训练的总题数")
     private Integer problemCount;
+
+    @ApiModelProperty(value = "训练更新时间")
+    private Date gmtModified;
 }

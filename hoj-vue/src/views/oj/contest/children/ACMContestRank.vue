@@ -132,33 +132,33 @@
           v-if="isContestAdmin"
         >
         </vxe-table-column>
-        <vxe-table-column
-          field="rating"
-          :title="$t('m.AC') + ' / ' + $t('m.Total')"
-          min-width="80"
-        >
+        <vxe-table-column field="rating" :title="$t('m.AC')" min-width="60">
           <template v-slot="{ row }">
-            <span
-              >{{ row.ac }} /
+            <span>
               <a
-                @click="getUserTotalSubmit(row.username)"
-                style="color:rgb(87, 163, 243);"
-                >{{ row.total }}</a
-              >
+                @click="getUserACSubmit(row.username)"
+                style="color:rgb(87, 163, 243);font-weight: 600;font-size: 14px;"
+                >{{ row.ac }}
+              </a>
             </span>
           </template>
         </vxe-table-column>
         <vxe-table-column
           field="totalTime"
           :title="$t('m.TotalTime')"
-          min-width="100"
+          min-width="60"
         >
           <template v-slot="{ row }">
-            <span>{{ parseTotalTime(row.totalTime) }}</span>
+            <el-tooltip effect="dark" placement="top">
+              <div slot="content">
+                {{ parseTimeToSpecific(row.totalTime) }}
+              </div>
+              <span>{{ parseInt(row.totalTime / 60) }}</span>
+            </el-tooltip>
           </template>
         </vxe-table-column>
         <vxe-table-column
-          min-width="120"
+          min-width="74"
           v-for="problem in contestProblems"
           :key="problem.displayId"
         >
@@ -181,45 +181,63 @@
                 ></path>
               </svg>
             </span>
-            <span
-              ><a
-                @click="getContestProblemById(problem.displayId)"
-                class="emphasis"
-                style="color:#495060;"
-                >{{ problem.displayId }}</a
-              ></span
-            >
+            <span>
+              <el-tooltip effect="dark" placement="top">
+                <div slot="content">
+                  {{ problem.displayId + '. ' + problem.displayTitle }}
+                  <br />
+                  {{ 'Accepted: ' + problem.ac }}
+                  <br />
+                  {{ 'Rejected: ' + (problem.total - problem.ac) }}
+                </div>
+                <a
+                  @click="getContestProblemById(problem.displayId)"
+                  class="emphasis"
+                  style="color:#495060;"
+                  >{{ problem.displayId }}
+                </a>
+              </el-tooltip>
+            </span>
           </template>
           <template v-slot="{ row }">
             <span v-if="row.submissionInfo[problem.displayId]">
-              <span v-if="row.submissionInfo[problem.displayId].isAC"
-                >{{ row.submissionInfo[problem.displayId].ACTime }}<br
-              /></span>
+              <el-tooltip effect="dark" placement="top">
+                <div slot="content">
+                  {{ row.submissionInfo[problem.displayId].specificTime }}
+                </div>
+                <span
+                  v-if="row.submissionInfo[problem.displayId].isAC"
+                  class="submission-time"
+                  >{{ row.submissionInfo[problem.displayId].ACTime }}<br />
+                </span>
+              </el-tooltip>
+
               <span
+                class="submission-error"
                 v-if="
                   row.submissionInfo[problem.displayId].tryNum == null &&
                     row.submissionInfo[problem.displayId].errorNum != 0
                 "
               >
-                (-{{
-                  row.submissionInfo[problem.displayId].errorNum > 0
-                    ? row.submissionInfo[problem.displayId].errorNum
-                    : 0
-                }})
+                {{
+                  row.submissionInfo[problem.displayId].errorNum > 1
+                    ? row.submissionInfo[problem.displayId].errorNum + ' tries'
+                    : row.submissionInfo[problem.displayId].errorNum + ' try'
+                }}
               </span>
               <span v-if="row.submissionInfo[problem.displayId].tryNum != null"
                 ><template
                   v-if="row.submissionInfo[problem.displayId].errorNum > 0"
                 >
-                  (-{{
+                  {{
                     row.submissionInfo[problem.displayId].errorNum
-                  }})+</template
-                >({{ row.submissionInfo[problem.displayId].tryNum
+                  }}+</template
+                >{{ row.submissionInfo[problem.displayId].tryNum
                 }}{{
                   row.submissionInfo[problem.displayId].tryNum > 1
                     ? ' tries'
                     : ' try'
-                }})
+                }}
               </span>
             </span>
           </template>
@@ -229,6 +247,7 @@
     <Pagination
       :total="total"
       :page-size.sync="limit"
+      :page-sizes="[10, 30, 100, 500, 1000, 10000]"
       :current.sync="page"
       @on-change="getContestRankData"
       @on-page-size-change="getContestRankData(1)"
@@ -335,13 +354,17 @@ export default {
     this.contestID = this.$route.params.contestID;
     this.getContestRankData(1);
     this.addChartCategory(this.contestProblems);
+    if (!this.refreshDisabled) {
+      this.autoRefresh = true;
+      this.handleAutoRefresh(true);
+    }
   },
   methods: {
     ...mapActions(['getContestProblems']),
-    getUserTotalSubmit(username) {
+    getUserACSubmit(username) {
       this.$router.push({
         name: 'ContestSubmissionList',
-        query: { username: username },
+        query: { username: username, status: 0 },
       });
     },
     getUserHomeByUsername(uid, username) {
@@ -389,9 +412,15 @@ export default {
         let cellClass = {};
         Object.keys(info).forEach((problemID) => {
           dataRank[i][problemID] = info[problemID];
-          dataRank[i][problemID].ACTime = time.secondFormat(
-            dataRank[i][problemID].ACTime
-          );
+          if (dataRank[i][problemID].ACTime != null) {
+            dataRank[i][problemID].errorNum += 1;
+            dataRank[i][problemID].specificTime = this.parseTimeToSpecific(
+              dataRank[i][problemID].ACTime
+            );
+            dataRank[i][problemID].ACTime = parseInt(
+              dataRank[i][problemID].ACTime / 60
+            );
+          }
           let status = info[problemID];
           if (status.isFirstAC) {
             cellClass[problemID] = 'first-ac';
@@ -451,7 +480,7 @@ export default {
       this.options.legend.data = users;
       this.options.series = seriesData;
     },
-    parseTotalTime(totalTime) {
+    parseTimeToSpecific(totalTime) {
       return time.secondFormat(totalTime);
     },
     downloadRankCSV() {
@@ -535,5 +564,12 @@ a.emphasis:hover {
 /deep/.vxe-table .vxe-cell {
   padding-left: 5px !important;
   padding-right: 5px !important;
+}
+.submission-time {
+  font-size: 15.6px;
+  font-family: Roboto, sans-serif;
+}
+.submission-error {
+  font-weight: 400;
 }
 </style>

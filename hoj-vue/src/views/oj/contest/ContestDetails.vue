@@ -71,7 +71,11 @@
         style="text-align:center"
       >
         <div slot="header">
-          <span class="panel-title">{{ $t('m.Password_Required') }}</span>
+          <span class="panel-title" style="color: #e6a23c;"
+            ><i class="el-icon-warning">
+              {{ $t('m.Password_Required') }}</i
+            ></span
+          >
         </div>
         <p class="password-form-tips">
           {{ $t('m.To_Enter_Need_Password') }}
@@ -82,6 +86,7 @@
             type="password"
             :placeholder="$t('m.Enter_the_contest_password')"
             @keydown.enter.native="checkPassword"
+            style="width:70%"
           />
           <el-button
             type="primary"

@@ -545,6 +545,9 @@ export default {
             let viewData = this.$refs.xTable.getTableData().tableData;
             for (let key in submitIds) {
               let submitId = parseInt(key);
+              if (!result[submitId]) {
+                continue;
+              }
               // 更新数据列表
               this.submissions[submitIds[key]] = result[submitId];
               // 更新view中的结果，f分数，耗时，空间消耗，判题机ip
@@ -564,7 +567,7 @@ export default {
                 delete this.needCheckSubmitIds[key];
               }
             }
-            // 当前提交列表的提交都判题结束或者检查结果180s（2s*90）还没判题结束，为了避免无用请求加重服务器负担，直接停止检查的请求。
+            // 当前提交列表的提交都判题结束或者检查结果600s（2s*300）还没判题结束，为了避免无用请求加重服务器负担，直接停止检查的请求。
             if (
               Object.keys(this.needCheckSubmitIds).length == 0 ||
               this.checkStatusNum == 300

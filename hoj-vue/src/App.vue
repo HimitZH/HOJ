@@ -286,30 +286,35 @@ a:hover {
   background-color: rgb(255, 153, 203);
 }
 
-.oi-100,
-.first-ac {
+.oi-100 {
   background-color: #19be6b;
   color: #fff;
   font-weight: 700;
 }
+
+.oi-0 {
+  color: #a94442;
+  background-color: #f2dede;
+}
+
 .oi-between {
   background-color: #2d8cf0;
   color: #fff;
 }
+
+.first-ac {
+  background-color: #1daa1d;
+}
 .ac {
-  background-color: #a9f5af;
-  color: #3c763d;
+  background-color: #60e760;
+}
+.wa {
+  background-color: #e87272;
 }
 .try {
   background-color: #ff9800;
-  color: #fff;
 }
 
-.oi-0,
-.wa {
-  color: #a94442;
-  background-color: #f2dede;
-}
 .status-green {
   background-color: #19be6b !important;
   color: #fff !important;
@@ -334,7 +339,7 @@ a:hover {
   background: rgb(230, 255, 223) !important;
 }
 .vxe-table {
-  color: #495060 !important;
+  color: #000 !important;
   font-size: 12px !important;
   font-weight: 500 !important;
 }

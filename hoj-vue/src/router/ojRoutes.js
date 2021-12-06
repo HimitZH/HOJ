@@ -26,6 +26,8 @@ import Developer from "@/views/oj/about/Developer.vue"
 import Message from "@/views/oj/message/message.vue"
 import UserMsg from "@/views/oj/message/UserMsg.vue"
 import SysMsg from "@/views/oj/message/SysMsg.vue"
+import TrainingList from "@/views/oj/training/TrainingList.vue"
+import TrainingDetails from "@/views/oj/training/TrainingDetails.vue"
 import NotFound from "@/views/404.vue"
 
 const ojRoutes = [
@@ -54,58 +56,23 @@ const ojRoutes = [
     meta: { title: 'Problem Details' }
   },
   {
+    path: '/training',
+    name: 'TrainingList',
+    component: TrainingList,
+    meta: { title: 'Training' }
+  },
+  {
+    name: 'TrainingDetails',
+    path: '/training/:trainingID/',
+    component:TrainingDetails,
+    meta: {title: 'Training Details'},
+    children: []
+  },
+  {
     path: '/contest',
     name: 'ContestList',
     component: ContestList,
     meta: { title: 'Contest' }
-  },
-  {
-    path: '/status',
-    name: 'SubmissionList',
-    component: SubmissionList,
-    meta: { title: 'Status' }
-  },
-  {
-    path: '/submission-detail/:submitID',
-    name: 'SubmissionDeatil',
-    component: SubmissionDetails,
-    meta: {title: 'Submission Deatil' }
-  },
-  {
-    path: '/acm-rank',
-    name: 'ACM Rank',
-    component: ACMRank,
-    meta: { title: 'ACM Rank' }
-  },
-  {
-    path: '/oi-rank',
-    name: 'OI Rank',
-    component: OIRank,
-    meta: { title: 'OI Rank' }
-  },
-  {
-    path: '/reset-password',
-    name: 'SetNewPassword',
-    component: SetNewPassword,
-    meta: { title: 'Reset Password' }
-  },
-  {
-    name: 'UserHome',
-    path: '/user-home',
-    component: UserHome,
-    meta: { title: 'User Home' }
-  },
-  {
-    name: 'Setting',
-    path: '/setting',
-    component: Setting,
-    meta: { requireAuth: true, title: 'Setting' }
-  },
-  {
-    name: 'Logout',
-    path: '/logout',
-    component: Logout,
-    meta: { requireAuth: true, title: 'Logout' }
   },
   {
     name: 'ContestDetails',
@@ -180,6 +147,54 @@ const ojRoutes = [
         meta: { title: 'Contest Admin Print'}
       }
     ]
+  },
+  {
+    path: '/status',
+    name: 'SubmissionList',
+    component: SubmissionList,
+    meta: { title: 'Status' }
+  },
+  {
+    path: '/submission-detail/:submitID',
+    name: 'SubmissionDeatil',
+    component: SubmissionDetails,
+    meta: {title: 'Submission Deatil' }
+  },
+  {
+    path: '/acm-rank',
+    name: 'ACM Rank',
+    component: ACMRank,
+    meta: { title: 'ACM Rank' }
+  },
+  {
+    path: '/oi-rank',
+    name: 'OI Rank',
+    component: OIRank,
+    meta: { title: 'OI Rank' }
+  },
+  {
+    path: '/reset-password',
+    name: 'SetNewPassword',
+    component: SetNewPassword,
+    meta: { title: 'Reset Password' }
+  },
+  {
+    name: 'UserHome',
+    path: '/user-home',
+    component: UserHome,
+    meta: { title: 'User Home' }
+  },
+  {
+    name: 'Setting',
+    path: '/setting',
+    component: Setting,
+    meta: { requireAuth: true, title: 'Setting' }
+  },
+  {
+    name: 'Logout',
+    path: '/logout',
+    component: Logout,
+    meta: { requireAuth: true, title: 'Logout' }
   },
   {
     path: '/discussion',
