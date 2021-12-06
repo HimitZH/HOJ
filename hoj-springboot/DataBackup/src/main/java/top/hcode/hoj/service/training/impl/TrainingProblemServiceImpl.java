@@ -15,10 +15,8 @@ import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
 import top.hcode.hoj.service.training.TrainingProblemService;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author: Himit_ZH
@@ -54,14 +52,14 @@ public class TrainingProblemServiceImpl extends ServiceImpl<TrainingProblemMappe
         trainingProblemQueryWrapper.eq("tid", tid).orderByAsc("display_id");
         List<Long> pidList = new LinkedList<>();
         List<TrainingProblem> trainingProblemList = trainingProblemMapper.selectList(trainingProblemQueryWrapper);
-        HashMap<Long, Object> trainingProblemMap = new HashMap<>();
+        HashMap<Long, TrainingProblem> trainingProblemMap = new HashMap<>();
         trainingProblemList.forEach(trainingProblem -> {
             trainingProblemMap.put(trainingProblem.getPid(), trainingProblem);
             pidList.add(trainingProblem.getPid());
         });
 
         HashMap<String, Object> trainingProblem = new HashMap<>();
-        if (pidList.size() == 0) { // 该训练原本就无题目数据
+        if (pidList.size() == 0 && queryExisted) { // 该训练原本就无题目数据
             trainingProblem.put("problemList", pidList);
             trainingProblem.put("contestProblemMap", trainingProblemMap);
             return trainingProblem;
@@ -85,8 +83,16 @@ public class TrainingProblemServiceImpl extends ServiceImpl<TrainingProblemMappe
                     .like("author", keyword));
         }
 
-        IPage<Problem> problemList = problemService.page(iPage, problemQueryWrapper);
-        trainingProblem.put("problemList", problemList);
+        IPage<Problem> problemListPager = problemService.page(iPage, problemQueryWrapper);
+
+        if (queryExisted) {
+            List<Problem> sortProblemList = problemListPager.getRecords()
+                    .stream()
+                    .sorted(Comparator.comparingInt(problem -> trainingProblemMap.get(problem.getId()).getRank()))
+                    .collect(Collectors.toList());
+            problemListPager.setRecords(sortProblemList);
+        }
+        trainingProblem.put("problemList", problemListPager);
         trainingProblem.put("trainingProblemMap", trainingProblemMap);
         return trainingProblem;
     }

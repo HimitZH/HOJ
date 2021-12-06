@@ -21,6 +21,7 @@ import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestAnnouncement;
 import top.hcode.hoj.pojo.entity.contest.ContestProblem;
+import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.vo.AnnouncementVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
@@ -28,6 +29,7 @@ import top.hcode.hoj.service.common.impl.AnnouncementServiceImpl;
 import top.hcode.hoj.service.contest.impl.ContestAnnouncementServiceImpl;
 import top.hcode.hoj.service.contest.impl.ContestProblemServiceImpl;
 import top.hcode.hoj.service.contest.impl.ContestServiceImpl;
+import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
 import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
@@ -63,6 +65,9 @@ public class AdminContestController {
 
     @Autowired
     private AnnouncementServiceImpl announcementService;
+
+    @Autowired
+    private JudgeServiceImpl judgeService;
 
     @GetMapping("/get-contest-list")
     @RequiresAuthentication
@@ -285,31 +290,31 @@ public class AdminContestController {
     @DeleteMapping("/problem")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "problem_admin"}, logical = Logical.OR)
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult deleteProblem(@RequestParam("pid") Long pid,
                                       @RequestParam(value = "cid", required = false) Long cid) {
 
-        boolean result = false;
         //  比赛id不为null，表示就是从比赛列表移除而已
         if (cid != null) {
             QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
             contestProblemQueryWrapper.eq("cid", cid).eq("pid", pid);
-            result = contestProblemService.remove(contestProblemQueryWrapper);
+            contestProblemService.remove(contestProblemQueryWrapper);
+            // 把该题目在比赛的提交全部删掉
+            UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
+            judgeUpdateWrapper.eq("cid", cid).eq("pid", pid);
+            judgeService.remove(judgeUpdateWrapper);
         } else {
              /*
                 problem的id为其他表的外键的表中的对应数据都会被一起删除！
               */
-            result = problemService.removeById(pid);
+            problemService.removeById(pid);
         }
 
-
-        if (result) { // 删除成功
-            if (cid == null) {
-                FileUtil.del(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid);
-            }
-            return CommonResult.successResponse(null, "删除成功！");
-        } else {
-            return CommonResult.errorResponse("删除失败！", CommonResult.STATUS_FAIL);
+        if (cid == null) {
+            FileUtil.del(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid);
         }
+        return CommonResult.successResponse(null, "删除成功！");
+
     }
 
     @PostMapping("/problem")

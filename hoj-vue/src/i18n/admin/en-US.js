@@ -10,18 +10,22 @@ export const m = {
   // /views/admin/Home.vue
   Dashboard: 'Dashboard',
   General: 'General',
-  User_Admin: 'User Admin',
+  User_Admin: 'Admin User',
   Announcement_Admin: 'Announcement',
   System_Config: 'System Config',
   Problem_Admin: 'Problem',
   Problem_List: 'Problem List',
   Create_Problem: 'Create Problem',
   Export_Import_Problem: 'Export | Import Problem',
+  Training_Admin: 'Training',
+  Training_List: 'Training List',
+  Create_Training: 'Create Training',
+  Admin_Category:'Admin Category',
   Contest_Admin: 'Contest',
   Contest_List: 'Contest List',
   Create_Contest: 'Create Contest',
   Discussion:'Discussion',
-  Discussion_Admin:'Discussion Admin',
+  Discussion_Admin:'Admin Discussion',
   Home_Page:'Home Page',
   Logout:'Logout',
 
@@ -162,7 +166,7 @@ export const m = {
   Add:'Add',
   Remove:'Remove',
   Delete_Problem_Tips:'Are you sure you want to delete this problem? Note: the relevant submission data for this issue will also be deleted.',
-  Remove_Problem_Tips:'Are you sure you want to remove the problem from the competition?',
+  Remove_Contest_Problem_Tips:'Are you sure you want to remove the problem from the contest?',
   Add_Successfully:'Add Successfully',
   Download_Testcase_Success:'The testcase of this problem has been downloaded successfully!',
   Enter_The_Problem_Display_ID_in_the_Contest:'Enter The Problem Display ID in the Contest',
@@ -234,10 +238,46 @@ export const m = {
   Update_Tag:'Update Tag',
   To_Add:'Add',
   To_Update:'Update',
+  Create_Training:'Create Training',
   Tag_Name:'Tag Name',
   Tag_Color:'Tag Color',
   Tag_Attribution:'Tag Attribution',
   Delete_Tag_Tips:'Are you sure you want to delete this tag?',
+
+
+  // /views/admin/training/TrainingList.vue
+  Order_Number:'Order Number',
+  View_Training_Problem_List:'View Training Problem List',
+  Delete_Training_Tips:'This operation will delete the training and its submission, rank record and other data. Do you want to continue?',
+
+  // /views/admin/training/Training.vue
+  Training_rank:'Training Sort Number (Ascending Sort)',
+  Training_Title: 'Training Title',
+  Training_Description: 'Training Description',
+  Training_Auth: 'Training Auth',
+  Training_Category:'Training Category',
+  Public_Training: 'Public Training',
+  Private_Training: 'Private Training',
+  Training_Password:'Training Password',
+  Edit_Training:'Edit Training',
+  Create_Training:'Create Training',
+  Redirect_To_Category:'The category list of current training is empty. Please go to create category first!',
+  Redirect:'Redirect',
+
+  // /views/admin/training/TrainingProblemList.vue
+  Training_Problem_List:'Training Problem List',
+  Add_Training_Problem:'Add Training Problem',
+  Remove_Training_Problem_Tips:'Are you sure you want to remove the problem from the training?',
+  Training_Problem_Rank:'Title Display Order(Ascending)',
+
+   // /views/admin/training/Category.vue
+   Add_Category:'Add Category',
+   Update_Category:'Update Category',
+   To_Add:'Add',
+   To_Update:'Update',
+   Category_Name:'Category Name',
+   Category_Color:'Category Color',
+   Delete_Category_Tips:'Are you sure you want to delete this category?',
 
   // /views/admin/problem/ImportAndExport.vue
   Export_Problem:'Export Problem',
@@ -254,8 +294,8 @@ export const m = {
   View_Contest_Announcement_List:'View Contest Announcement List',
   Download_Contest_AC_Submission:'Download Contest AC Submissions',
   Exclude_admin_submissions:'Exclude admin submissions',
-  Delete_Contest_Tips:'This operation will delete the contest and its submission, discussion, announcement, record and other data. Do you want to continue?',
-
+  Delete_Contest_Tips:'This operation will delete the contest and its submission, discussion, announcement, record and other data. Do you want to continue?',  
+  
   // /views/admin/contest/Contest.vue
   Contest_Title: 'Contest Title',
   Contest_Description: 'Contest Description',
@@ -271,6 +311,9 @@ export const m = {
   Contest_Seal_Half_Hour:'Half an hour',
   Contest_Seal_An_Hour:'An hour',
   Contest_Seal_All_Hour:'All hours',
+  Auto_Real_Rank:'Auto_Real_Rank',
+  Real_Rank_After_Contest:'Real Rank After Contest',
+  Seal_Rank_After_Contest:'Seal Rank After Contest',
   Edit_Contest:'Edit Contest',
   Create_Contest:'Create Contest',
   Contest_Duration_Check:'The duration of the contest cannot be less than or equal to zero!',

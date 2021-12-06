@@ -22,6 +22,10 @@
           ><i class="el-icon-s-grid"></i
           >{{ $t('m.NavBar_Problem') }}</el-menu-item
         >
+        <el-menu-item index="/training"
+          ><i class="el-icon-s-claim"></i
+          >{{ $t('m.NavBar_Training') }}</el-menu-item
+        >
         <el-menu-item index="/contest"
           ><i class="el-icon-trophy"></i
           >{{ $t('m.NavBar_Contest') }}</el-menu-item
@@ -361,6 +365,20 @@
             </mu-list-item-action>
             <mu-list-item-title>{{
               $t('m.NavBar_Problem')
+            }}</mu-list-item-title>
+          </mu-list-item>
+
+          <mu-list-item
+            button
+            to="/training"
+            @click="opendrawer = !opendrawer"
+            active-class="mobile-menu-active"
+          >
+            <mu-list-item-action>
+              <mu-icon value=":el-icon-s-claim" size="24"></mu-icon>
+            </mu-list-item-action>
+            <mu-list-item-title>{{
+              $t('m.NavBar_Training')
             }}</mu-list-item-title>
           </mu-list-item>
 

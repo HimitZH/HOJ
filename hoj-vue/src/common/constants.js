@@ -177,6 +177,17 @@ export const CONTEST_STATUS_REVERSE = {
   }
 }
 
+export const TRAINING_TYPE = {
+  'Public':{
+    color:'success',
+    name:'Public'
+  },
+  'Private':{
+    color:'danger',
+    name:'Private'
+  }
+}
+
 export const RULE_TYPE = {
   ACM: 0,
   OI: 1
@@ -224,7 +235,12 @@ export const STORAGE_KEY = {
   AUTHED: 'authed',
   PROBLEM_CODE: 'hojProblemCode',
   languages: 'languages',
-  CONTEST_ANNOUNCE:'hojContestAnnounce'
+  CONTEST_ANNOUNCE:'hojContestAnnounce',
+  individualLanguageAndTheme:'hojIndividualLanguageAndTheme'
+}
+
+export function buildIndividualLanguageAndThemeKey () {
+  return `${STORAGE_KEY.individualLanguageAndTheme}`
 }
 
 export function buildProblemCodeKey (problemID, contestID = null) {

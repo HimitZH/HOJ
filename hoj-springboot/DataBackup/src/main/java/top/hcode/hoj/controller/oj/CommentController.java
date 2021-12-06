@@ -10,6 +10,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ReplyDto;
@@ -55,7 +56,6 @@ public class CommentController {
 
     @Autowired
     private UserAcproblemServiceImpl userAcproblemService;
-
 
 
     @GetMapping("/comments")
@@ -110,12 +110,17 @@ public class CommentController {
     @RequiresAuthentication
     @Transactional
     public CommonResult addComment(@RequestBody Comment comment, HttpServletRequest request) {
+
+        if (StringUtils.isEmpty(comment.getContent().trim())) {
+            return CommonResult.errorResponse("评论内容不能为空！");
+        }
+
         // 获取当前登录的用户
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
         // 比赛外的评论 除管理员外 只有AC 10道以上才可评论
-        if (comment.getCid() == null ) {
+        if (comment.getCid() == null) {
             if (!SecurityUtils.getSubject().hasRole("root")
                     && !SecurityUtils.getSubject().hasRole("admin")
                     && !SecurityUtils.getSubject().hasRole("problem_admin")) {
@@ -287,6 +292,11 @@ public class CommentController {
     @RequiresPermissions("reply_add")
     @RequiresAuthentication
     public CommonResult addReply(@RequestBody ReplyDto replyDto, HttpServletRequest request) {
+
+        if (StringUtils.isEmpty(replyDto.getReply().getContent().trim())) {
+            return CommonResult.errorResponse("回复内容不能为空！");
+        }
+
         // 获取当前登录的用户
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
@@ -323,9 +333,9 @@ public class CommentController {
                         reply.getToUid(),
                         reply.getFromUid());
             }
-            return CommonResult.successResponse(reply, "评论成功");
+            return CommonResult.successResponse(reply, "回复成功");
         } else {
-            return CommonResult.errorResponse("评论失败，请重新尝试！");
+            return CommonResult.errorResponse("回复失败，请重新尝试！");
         }
     }
 

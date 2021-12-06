@@ -116,6 +116,21 @@
           </el-col>
 
           <el-col :span="24">
+            <el-form-item
+              :label="$t('m.Auto_Real_Rank')"
+              required
+              v-if="contest.sealRank"
+            >
+              <el-switch
+                v-model="contest.autoRealRank"
+                :active-text="$t('m.Real_Rank_After_Contest')"
+                :inactive-text="$t('m.Seal_Rank_After_Contest')"
+              >
+              </el-switch>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="24">
             <el-form-item :label="$t('m.Print_Func')" required>
               <el-switch
                 v-model="contest.openPrint"
@@ -277,6 +292,7 @@ export default {
         pwd: '',
         sealRank: true,
         sealRankTime: '', //封榜时间
+        autoRealRank: true,
         auth: 0,
         openPrint: false,
         rankShowName: 'username',
@@ -297,6 +313,9 @@ export default {
       this.title = this.$i18n.t('m.Edit_Contest');
       this.disableRuleType = true;
       this.getContestByCid();
+    } else {
+      this.title = this.$i18n.t('m.Create_Contest');
+      this.disableRuleType = false;
     }
   },
   watch: {
@@ -343,7 +362,7 @@ export default {
               this.seal_rank_time = 2;
               break;
           }
-          if (!this.contest.accountLimitRule) {
+          if (this.contest.accountLimitRule) {
             this.formRule = this.changeStrToAccountRule(
               this.contest.accountLimitRule
             );

@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.vo.TrainingVo;
 
+import java.util.List;
+
 /**
  * @Author: Himit_ZH
  * @Date: 2021/11/19 22:03
@@ -18,8 +20,7 @@ import top.hcode.hoj.pojo.vo.TrainingVo;
 @Repository
 public interface TrainingMapper extends BaseMapper<Training> {
 
-    IPage<TrainingVo> getTrainingList(Page<TrainingVo> page,
-                                      @Param("categoryId") Long categoryId,
-                                      @Param("auth") String auth,
-                                      @Param("keyword") String keyword);
+    List<TrainingVo> getTrainingList(@Param("categoryId") Long categoryId,
+                                     @Param("auth") String auth,
+                                     @Param("keyword") String keyword);
 }

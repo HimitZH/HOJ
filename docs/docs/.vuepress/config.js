@@ -22,24 +22,32 @@ module.exports = {
                 title: '开始介绍',
                 collapsable: true,
                 children: [
-                    'introducition/',
-                    'introducition/about',
+                    'introducition/'
                 ]
             },
 			{
-                title: '部署文档',
+                title: '快速部署',
                 collapsable: true,
                 children: [
                     'deploy/',
 					'deploy/docker',
-					'deploy/mysql',
-					'deploy/mysql-checker',
-					'deploy/redis',
-					'deploy/nacos',
-                    'deploy/backend',
-                    'deploy/judgeserver',
-					'deploy/frontend',
-                    'deploy/rsync'
+					'deploy/open-https',
+					'deploy/multi-judgeserver',
+					'deploy/update'
+                ]
+            },
+			{
+                title: '单体部署',
+                collapsable: true,
+                children: [
+                    'monomer/mysql',
+					'monomer/mysql-checker',
+					'monomer/redis',
+					'monomer/nacos',
+                    'monomer/backend',
+                    'monomer/judgeserver',
+					'monomer/frontend',
+                    'monomer/rsync'
                 ]
             },
 			{
@@ -63,8 +71,8 @@ module.exports = {
 					'use/admin-user',
 					'use/notice-announcement',
 					'use/discussion-admin',
-					'use/multi-judgeserver',
 					'use/update-fe',
+					'use/close-free-cdn',
                     'use/spj'
                 ]
             },

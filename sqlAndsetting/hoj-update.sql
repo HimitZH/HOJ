@@ -378,19 +378,21 @@ IF NOT EXISTS (
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 	CREATE TABLE `training_problem` (
-	  `id` bigint unsigned NOT NULL,
+	  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
 	  `tid` bigint unsigned NOT NULL COMMENT '训练id',
 	  `pid` bigint unsigned NOT NULL COMMENT '题目id',
-	  `rank` int DEFAULT '0' COMMENT '排序用',
+	  `rank` int DEFAULT '0',
+	  `display_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
 	  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 	  PRIMARY KEY (`id`),
 	  KEY `tid` (`tid`),
 	  KEY `pid` (`pid`),
+	  KEY `display_id` (`display_id`),
 	  CONSTRAINT `training_problem_ibfk_1` FOREIGN KEY (`tid`) REFERENCES `training` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-	  CONSTRAINT `training_problem_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+	  CONSTRAINT `training_problem_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+	  CONSTRAINT `training_problem_ibfk_3` FOREIGN KEY (`display_id`) REFERENCES `problem` (`problem_id`) ON DELETE CASCADE ON UPDATE CASCADE
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
 
 	CREATE TABLE `training_record` (
 	  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
@@ -454,3 +456,71 @@ CALL Add_training_table;
 DROP PROCEDURE Add_training_table;
 
 
+/*
+* 2021.12.05 contest增加auto_real_rank比赛结束是否自动解除封榜,自动转换成真实榜单
+			 
+*/
+DROP PROCEDURE
+IF EXISTS contest_Add_auto_real_rank;
+DELIMITER $$
+ 
+CREATE PROCEDURE contest_Add_auto_real_rank; ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'conetst'
+	AND column_name = 'auto_real_rank'
+) THEN
+	ALTER TABLE `hoj`.`contest`  ADD COLUMN `auto_real_rank` BOOLEAN DEFAULT 1  NULL  COMMENT '比赛结束是否自动解除封榜,自动转换成真实榜单';
+	DROP TABLE `hoj`.`training_problem`;
+	DROP TABLE `hoj`.`training_record`;
+	CREATE TABLE `training_problem` (
+	  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+	  `tid` bigint unsigned NOT NULL COMMENT '训练id',
+	  `pid` bigint unsigned NOT NULL COMMENT '题目id',
+	  `rank` int DEFAULT '0',
+	  `display_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+	  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`id`),
+	  KEY `tid` (`tid`),
+	  KEY `pid` (`pid`),
+	  KEY `display_id` (`display_id`),
+	  CONSTRAINT `training_problem_ibfk_1` FOREIGN KEY (`tid`) REFERENCES `training` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+	  CONSTRAINT `training_problem_ibfk_2` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+	  CONSTRAINT `training_problem_ibfk_3` FOREIGN KEY (`display_id`) REFERENCES `problem` (`problem_id`) ON DELETE CASCADE ON UPDATE CASCADE
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+	CREATE TABLE `training_record` (
+	  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+	  `tid` bigint unsigned NOT NULL,
+	  `tpid` bigint unsigned NOT NULL,
+	  `pid` bigint unsigned NOT NULL,
+	  `uid` varchar(255) NOT NULL,
+	  `submit_id` bigint unsigned NOT NULL,
+	  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+	  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`id`),
+	  KEY `tid` (`tid`),
+	  KEY `tpid` (`tpid`),
+	  KEY `pid` (`pid`),
+	  KEY `uid` (`uid`),
+	  KEY `submit_id` (`submit_id`),
+	  CONSTRAINT `training_record_ibfk_1` FOREIGN KEY (`tid`) REFERENCES `training` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+	  CONSTRAINT `training_record_ibfk_2` FOREIGN KEY (`tpid`) REFERENCES `training_problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+	  CONSTRAINT `training_record_ibfk_3` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+	  CONSTRAINT `training_record_ibfk_4` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
+	  CONSTRAINT `training_record_ibfk_5` FOREIGN KEY (`submit_id`) REFERENCES `judge` (`submit_id`) ON DELETE CASCADE ON UPDATE CASCADE
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL contest_Add_auto_real_rank; ;
+
+DROP PROCEDURE contest_Add_auto_real_rank;;

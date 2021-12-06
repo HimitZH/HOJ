@@ -9,7 +9,7 @@
       @current-change="onChange"
       @size-change="onPageSizeChange"
       :layout="layout"
-      :page-sizes="[10, 15, 30, 50, 100]"
+      :page-sizes="pageSizes"
       :current-page="current"
       :hide-on-single-page="total == 0"
     ></el-pagination>
@@ -27,6 +27,11 @@ export default {
     pageSize: {
       required: false,
       type: Number,
+    },
+    pageSizes: {
+      required: false,
+      type: Array,
+      default: [10, 15, 30, 50, 100],
     },
     showSizer: {
       required: false,

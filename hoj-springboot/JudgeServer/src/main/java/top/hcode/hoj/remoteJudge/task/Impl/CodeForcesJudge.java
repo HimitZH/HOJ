@@ -12,7 +12,9 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
+import org.springframework.web.client.HttpClientErrorException;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.util.Constants;
 
@@ -83,7 +85,21 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
             problemNum = ReUtil.get("[0-9]+([A-Z]{1}[0-9]{0,1})", problemId, 1);
         }
         long nowTime = DateUtil.currentSeconds();
-        submitCode(contestId, problemNum, getLanguage(language), userCode);
+
+        try {
+            submitCode(contestId, problemNum, getLanguage(language), userCode);
+        } catch (HttpException e) {
+            // 如果提交出现403可能是cookie失效了，再执行登录，重新提交
+            Map<String, Object> loginUtils = getLoginUtils(username, password);
+            int status = (int) loginUtils.get("status");
+            if (status != HttpStatus.SC_MOVED_TEMPORARILY) {
+                log.error("进行题目提交时发生错误：登录失败，可能原因账号或密码错误，登录失败！" + CodeForcesJudge.class.getName() + "，题号:" + problemId);
+                return null;
+            }
+            submitCode(contestId, problemNum, getLanguage(language), userCode);
+        }
+
+
         try {
             TimeUnit.MILLISECONDS.sleep(3000);
         } catch (InterruptedException e) {
@@ -229,7 +245,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         return IMAGE_HOST + SUBMIT_URL;
     }
 
-    public void submitCode(String contestId, String problemID, String languageID, String code) {
+    public void submitCode(String contestId, String problemID, String languageID, String code) throws HttpException {
         String csrfToken = getCsrfToken(getSubmitUrl(contestId));
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("csrf_token", csrfToken);
@@ -252,14 +268,14 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         if (response.getStatus() != HttpStatus.SC_MOVED_TEMPORARILY) {
             if (response.body().contains("error for__programTypeId")) {
                 String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `Language Rejected`", contestId, problemID);
-                throw new RuntimeException(log);
+                throw new IllegalArgumentException(log);
             }
             if (response.body().contains("error for__source")) {
                 String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `Source Code Error`", contestId, problemID);
-                throw new RuntimeException(log);
+                throw new IllegalArgumentException(log);
             }
-            String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `%s`", contestId, problemID,response.body());
-            throw new RuntimeException(log);
+            String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `403 Forbidden`", contestId, problemID);
+            throw new HttpException(log);
         }
     }
 

@@ -309,6 +309,84 @@ const ojApi = {
     })
   },
 
+  // ------------------------------------训练模块的请求---------------------------------------------
+
+  // 获取训练分类列表
+  getTrainingCategoryList(){
+    return ajax('/api/get-training-category', 'get')
+  },
+
+
+  // 获取训练列表
+  getTrainingList(currentPage,limit,query){
+    let params = {
+      currentPage,
+      limit
+    }
+    if(query!==undefined){
+      Object.keys(query).forEach((element) => {
+        if (query[element]) {
+          params[element] = query[element]
+        }
+      })
+    }
+    return ajax('/api/get-training-list','get',{
+      params: params
+    })
+  },
+
+  // 获取训练详情
+  getTraining(tid){
+    return ajax('/api/get-training-detail','get',{
+      params: {tid}
+    })
+  },
+   // 注册私有训练
+  registerTraining(tid, training){
+    return ajax('/api/register-contest','post',{
+      data:{
+        tid,
+        password
+      }
+    })
+  },
+  // 获取注册训练权限
+  getTrainingAccess(tid){
+    return ajax('/api/get-training-access','get',{
+      params: {tid}
+    })
+  },
+  // 获取训练题目列表
+  getTrainingProblemList(tid){
+    return ajax('/api/get-training-problem-list','get',{
+      params: {tid}
+    })
+  },
+  // 获取训练题目详情
+  getTrainingProblem(displayId,cid){
+    return ajax('/api/get-training-problem-details','get',{
+      params: {displayId,cid}
+    })
+  },
+  // 获取训练提交列表
+  getTrainingSubmissionList (limit, params) {
+    params.limit = limit
+    return ajax('/api/submissions', 'get', {
+      params
+    })
+  },
+  // 获取训练记录榜单
+  getTrainingRank(params){
+    return ajax('/api/get-training-rank', 'get', {
+      params
+    })
+  },
+  
+
+
+  // ------------------------------------------------------------------------------------------------
+
+
   // 比赛列表页的请求
   getContestList(currentPage,limit,query){
     let params = {
@@ -921,6 +999,129 @@ const adminApi = {
     })
   },
 
+  admin_addTag (data) {
+    return ajax('/api/admin/tag', 'post', {
+      data
+    })
+  },
+
+  admin_updateTag (data) {
+    return ajax('/api/admin/tag', 'put', {
+      data
+    })
+  },
+
+  admin_deleteTag (tid) {
+    return ajax('/api/admin/tag', 'delete', {
+      params: {
+        tid
+      }
+    })
+  },
+
+  admin_getTrainingList (currentPage, limit, keyword) {
+    let params = {currentPage, limit}
+    if (keyword) {
+      params.keyword = keyword
+    }
+    return ajax('/api/admin/training/list', 'get', {
+      params: params
+    })
+  },
+  admin_changeTrainingStatus(tid,status,author){
+    return ajax('/api/admin/training/change-training-status', 'put', {
+      params: {
+        tid,
+        status,
+        author
+      }
+    })
+  },
+
+  admin_getTrainingProblemList(params) {
+    params = utils.filterEmptyValue(params)
+    return ajax('/api/admin/training/get-problem-list', 'get', {
+      params
+    })
+  },
+
+  admin_deleteTrainingProblem (pid,tid) {
+    return ajax('/api/admin/training/problem', 'delete', {
+      params: {
+        pid,
+        tid
+      }
+    })
+  },
+
+  admin_addTrainingProblemFromPublic (data) {
+    return ajax('/api/admin/training/add-problem-from-public', 'post', {
+      data
+    })
+  },
+
+  admin_addTrainingRemoteOJProblem(name,problemId,tid){
+    return ajax("/api/admin/training/import-remote-oj-problem","get",{
+      params: {
+        name,
+        problemId,
+        tid,
+      }
+    })
+  },
+
+  admin_updateTrainingProblem(data){
+    return ajax('/api/admin/training/problem', 'put', {
+      data
+    })
+  },
+
+  admin_createTraining (data) {
+    return ajax('/api/admin/training', 'post', {
+      data
+    })
+  },
+  admin_getTraining (tid) {
+    return ajax('/api/admin/training', 'get', {
+      params: {
+        tid
+      }
+    })
+  },
+  admin_editTraining (data) {
+    return ajax('/api/admin/training', 'put', {
+      data
+    })
+  },
+  admin_deleteTraining(tid){
+    return ajax('/api/admin/training', 'delete', {
+      params: {
+        tid
+      }
+    })
+  },
+
+  admin_addCategory(data) {
+    return ajax('/api/admin/training/category', 'post', {
+      data
+    })
+  },
+
+  admin_updateCategory (data) {
+    return ajax('/api/admin/training/category', 'put', {
+      data
+    })
+  },
+
+  admin_deleteCategory (cid) {
+    return ajax('/api/admin/training/category', 'delete', {
+      params: {
+        cid
+      }
+    })
+  },
+
+
   admin_getContestProblemInfo(pid,cid) {
     return ajax('/api/admin/contest/contest-problem', 'get', {
       params: {
@@ -972,29 +1173,9 @@ const adminApi = {
       data
     })
   },
-  admin_addProblemFromPublic (data) {
+  admin_addContestProblemFromPublic (data) {
     return ajax('/api/admin/contest/add-problem-from-public', 'post', {
       data
-    })
-  },
-
-  admin_addTag (data) {
-    return ajax('/api/admin/tag', 'post', {
-      data
-    })
-  },
-
-  admin_updateTag (data) {
-    return ajax('/api/admin/tag', 'put', {
-      data
-    })
-  },
-
-  admin_deleteTag (tid) {
-    return ajax('/api/admin/tag', 'delete', {
-      params: {
-        tid
-      }
     })
   },
 

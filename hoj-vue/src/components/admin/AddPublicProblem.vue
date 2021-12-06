@@ -26,7 +26,7 @@
             <el-button
               icon="el-icon-plus"
               size="mini"
-              @click.native="handleAddProblem(row.id)"
+              @click.native="handleAddProblem(row.id, row.problemId)"
               type="primary"
             >
             </el-button>
@@ -51,7 +51,7 @@ import api from '@/common/api';
 import myMessage from '@/common/message';
 export default {
   name: 'add-problem-from-public',
-  props: ['contestID'],
+  props: ['contestID', 'trainingID'],
   data() {
     return {
       page: 1,
@@ -64,13 +64,17 @@ export default {
     };
   },
   mounted() {
-    api
-      .admin_getContest(this.contestID)
-      .then((res) => {
-        this.contest = res.data.data;
-        this.getPublicProblem();
-      })
-      .catch(() => {});
+    if (this.contestID) {
+      api
+        .admin_getContest(this.contestID)
+        .then((res) => {
+          this.contest = res.data.data;
+          this.getPublicProblem(1);
+        })
+        .catch(() => {});
+    } else if (this.trainingID) {
+      this.getPublicProblem(1);
+    }
   },
   methods: {
     getPublicProblem(page) {
@@ -81,9 +85,17 @@ export default {
         limit: this.limit,
         problemType: this.contest.type,
         cid: this.contest.id,
+        tid: this.trainingID,
       };
-      api
-        .admin_getContestProblemList(params)
+
+      let func = null;
+      if (this.contestID) {
+        func = 'admin_getContestProblemList';
+      } else if (this.trainingID) {
+        func = 'admin_getTrainingProblemList';
+      }
+
+      api[func](params)
         .then((res) => {
           this.loading = false;
           this.total = res.data.data.problemList.total;
@@ -93,28 +105,44 @@ export default {
           this.loading = false;
         });
     },
-    handleAddProblem(problemID) {
-      this.$prompt(
-        this.$i18n.t('m.Enter_The_Problem_Display_ID_in_the_Contest'),
-        'Tips'
-      ).then(
-        ({ value }) => {
-          let data = {
-            pid: problemID,
-            cid: this.contestID,
-            displayId: value,
-          };
-          api.admin_addProblemFromPublic(data).then(
-            (res) => {
-              this.$emit('on-change');
-              myMessage.success(this.$i18n.t('m.Add_Successfully'));
-              this.getPublicProblem(this.page);
-            },
-            () => {}
-          );
-        },
-        () => {}
-      );
+    handleAddProblem(id, problemId) {
+      if (this.contestID) {
+        this.$prompt(
+          this.$i18n.t('m.Enter_The_Problem_Display_ID_in_the_Contest'),
+          'Tips'
+        ).then(
+          ({ value }) => {
+            let data = {
+              pid: id,
+              cid: this.contestID,
+              displayId: value,
+            };
+            api.admin_addContestProblemFromPublic(data).then(
+              (res) => {
+                this.$emit('on-change');
+                myMessage.success(this.$i18n.t('m.Add_Successfully'));
+                this.getPublicProblem(this.page);
+              },
+              () => {}
+            );
+          },
+          () => {}
+        );
+      } else {
+        let data = {
+          pid: id,
+          tid: this.trainingID,
+          displayId: problemId,
+        };
+        api.admin_addTrainingProblemFromPublic(data).then(
+          (res) => {
+            this.$emit('on-change');
+            myMessage.success(this.$i18n.t('m.Add_Successfully'));
+            this.getPublicProblem(this.page);
+          },
+          () => {}
+        );
+      }
     },
     filterByKeyword() {
       this.getPublicProblem(this.page);

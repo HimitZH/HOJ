@@ -13,6 +13,10 @@ const Tag= ()=>import('@/views/admin/problem/Tag')
 const ProblemImportAndExport= ()=>import('@/views/admin/problem/ImportAndExport')
 const Contest= ()=>import('@/views/admin/contest/Contest')
 const ContestList= ()=>import('@/views/admin/contest/ContestList')
+const Training= ()=>import('@/views/admin/training/Training')
+const TrainingList= ()=>import('@/views/admin/training/TrainingList')
+const TrainingProblemList= ()=>import('@/views/admin/training/TrainingProblemList')
+const TrainingCategory= ()=>import('@/views/admin/training/Category')
 const DiscussionList= ()=>import('@/views/admin/discussion/Discussion')
 const adminRoutes= [
     {
@@ -90,7 +94,37 @@ const adminRoutes= [
           path: 'problem/batch-operation',
           name: 'admin-problem_batch_operation',
           component: ProblemImportAndExport,
-          meta: { title:'Export Import_Problem'},
+          meta: { title:'Export Import Problem'},
+        },
+        {
+          path: 'training/create',
+          name: 'admin-training-contest',
+          component: Training,
+          meta: { title:'Create Training'},
+        },
+        {
+          path: 'training',
+          name: 'admin-training-list',
+          component: TrainingList,
+          meta: { title:'Training List'}
+        },
+        {
+          path: 'training/:trainingId/edit',
+          name: 'admin-edit-training',
+          component: Training,
+          meta: { title:'Edit Training'}
+        },
+        {
+          path: 'training/:trainingId/problems',
+          name: 'admin-training-problem-list',
+          component: TrainingProblemList,
+          meta: { title:'Training Problem List'}
+        },
+        {
+          path: 'training/category',
+          name: 'admin-training-category',
+          component: TrainingCategory,
+          meta: { title:'Admin Category'}
         },
         {
           path: 'contest/create',
@@ -120,7 +154,7 @@ const adminRoutes= [
           path: 'contest/:contestId/problems',
           name: 'admin-contest-problem-list',
           component: ProblemList,
-          meta: { title:'Contest Problem_List'}
+          meta: { title:'Contest Problem List'}
         },
         {
           path: 'contest/:contestId/problem/create',
