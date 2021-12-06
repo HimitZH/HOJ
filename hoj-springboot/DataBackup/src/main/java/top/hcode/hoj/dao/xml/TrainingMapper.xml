@@ -16,11 +16,15 @@
     </resultMap>
 
     <select id="getTrainingList" resultMap="map_TrainingList">
-        SELECT * FROM (
+        SELECT t.*,COALESCE(tp.problem_count,0) as problem_count FROM (
             select t.*,tc.name as category_name,tc.color as category_color
-            from training t,mapping_training_category mtc,training_category tc
+            from training t
+            left join mapping_training_category mtc
+            on t.id = mtc.tid
+            left join training_category tc
+            on mtc.cid = tc.id
             <where>
-                t.status = true and t.id = mtc.tid and mtc.cid = tc.id
+                t.status = true
                     <if test="categoryId != null">
                         and tc.id = #{categoryId}
                     </if>
