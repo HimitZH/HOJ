@@ -281,6 +281,10 @@ public class JudgeController {
                 return CommonResult.successResponse(result, "获取提交数据成功！");
             }
         }
+        // 清空vj信息
+        judge.setVjudgeUsername(null);
+        judge.setVjudgeSubmitId(null);
+        judge.setVjudgePassword(null);
 
         // 超级管理员与题目管理员有权限查看代码
         // 如果不是本人或者并未分享代码，则不可查看
@@ -452,6 +456,11 @@ public class JudgeController {
         List<Judge> judgeList = judgeService.list(queryWrapper);
         HashMap<Long, Object> result = new HashMap<>();
         for (Judge judge : judgeList) {
+            judge.setCode(null);
+            judge.setErrorMessage(null);
+            judge.setVjudgeUsername(null);
+            judge.setVjudgeSubmitId(null);
+            judge.setVjudgePassword(null);
             result.put(judge.getSubmitId(), judge);
         }
         return CommonResult.successResponse(result, "获取最新判题数据成功！");
@@ -494,6 +503,11 @@ public class JudgeController {
         List<Judge> judgeList = judgeService.list(queryWrapper);
         HashMap<Long, Object> result = new HashMap<>();
         for (Judge judge : judgeList) {
+            judge.setCode(null);
+            judge.setErrorMessage(null);
+            judge.setVjudgeUsername(null);
+            judge.setVjudgeSubmitId(null);
+            judge.setVjudgePassword(null);
             if (!judge.getUid().equals(userRolesVo.getUid())){
                 judge.setTime(null);
                 judge.setMemory(null);
