@@ -98,10 +98,22 @@ public class TrainingServiceImpl extends ServiceImpl<TrainingMapper, Training> i
                 trainingCategory = trainingCategoryService.getOne(queryWrapper, false);
             }
         }
-        UpdateWrapper<MappingTrainingCategory> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("tid", training.getId()).set("cid", trainingCategory.getId());
-        int update = mappingTrainingCategoryMapper.update(null, updateWrapper);
-        return update > 0;
+
+        MappingTrainingCategory mappingTrainingCategory = mappingTrainingCategoryMapper.selectOne(new QueryWrapper<MappingTrainingCategory>()
+                .eq("tid", training.getId()));
+
+        if (mappingTrainingCategory == null) {
+            mappingTrainingCategoryMapper.insert(new MappingTrainingCategory()
+                    .setTid(training.getId()).setCid(trainingCategory.getId()));
+        } else {
+            if (!mappingTrainingCategory.getCid().equals(trainingCategory.getId())) {
+                UpdateWrapper<MappingTrainingCategory> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("tid", training.getId()).set("cid", trainingCategory.getId());
+                int update = mappingTrainingCategoryMapper.update(null, updateWrapper);
+                return update > 0;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -128,8 +140,10 @@ public class TrainingServiceImpl extends ServiceImpl<TrainingMapper, Training> i
         QueryWrapper<MappingTrainingCategory> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("tid", tid);
         MappingTrainingCategory mappingTrainingCategory = mappingTrainingCategoryMapper.selectOne(queryWrapper);
-
-        TrainingCategory trainingCategory = trainingCategoryService.getById(mappingTrainingCategory.getCid());
+        TrainingCategory trainingCategory = null;
+        if (mappingTrainingCategory != null) {
+            trainingCategory = trainingCategoryService.getById(mappingTrainingCategory.getCid());
+        }
         trainingDto.setTrainingCategory(trainingCategory);
         return CommonResult.successResponse(trainingDto, "查询成功！");
     }
