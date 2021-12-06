@@ -25,10 +25,7 @@
             <template v-if="isContestAdmin">
               <p>
                 <span>{{ $t('m.Force_Update') }}</span>
-                <el-switch
-                  :disabled="refreshDisabled"
-                  v-model="forceUpdate"
-                ></el-switch>
+                <el-switch v-model="forceUpdate"></el-switch>
               </p>
             </template>
             <template>
