@@ -68,7 +68,7 @@
         >
         </vxe-table-column>
         <vxe-table-column
-          min-width="120"
+          min-width="140"
           :title="$t('m.Training_Problem_Rank')"
         >
           <template v-slot="{ row }">
