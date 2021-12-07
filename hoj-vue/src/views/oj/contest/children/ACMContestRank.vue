@@ -231,7 +231,9 @@
                   }}+</template
                 >{{ row.submissionInfo[problem.displayId].tryNum
                 }}{{
-                  row.submissionInfo[problem.displayId].tryNum > 1
+                  row.submissionInfo[problem.displayId].errorNum +
+                    row.submissionInfo[problem.displayId].tryNum >
+                  1
                     ? ' tries'
                     : ' try'
                 }}
