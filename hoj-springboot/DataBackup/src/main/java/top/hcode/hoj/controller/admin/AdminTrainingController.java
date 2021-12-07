@@ -61,7 +61,8 @@ public class AdminTrainingController {
         if (limit == null || limit < 1) limit = 10;
         IPage<Training> iPage = new Page<>(currentPage, limit);
         QueryWrapper<Training> queryWrapper = new QueryWrapper<>();
-
+        // 过滤密码
+        queryWrapper.select(Training.class, info -> !info.getColumn().equals("private_pwd"));
         if (!StringUtils.isEmpty(keyword)) {
             keyword = keyword.trim();
             queryWrapper
