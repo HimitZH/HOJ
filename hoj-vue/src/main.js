@@ -14,7 +14,7 @@ import Md_Katex from '@iktakahiro/markdown-it-katex'
 
 // 注释表示使用cdn引入
 // import 'xe-utils' 
-// import VXETable from 'vxe-table'
+import VXETable from 'vxe-table'
 // import 'vxe-table/lib/style.css'
 
 import Katex from '@/common/katex'
@@ -69,7 +69,11 @@ Object.keys(filters).forEach(key => {   // 注册全局过滤器
 })
 Vue.use(VueParticles) // 粒子特效背景
 Vue.use(Katex)  // 数学公式渲染
-// Vue.use(VXETable) // 表格组件
+VXETable.setup({
+  // 对组件内置的提示语进行国际化翻译
+  i18n: (key, value) => i18n.t(key, value)
+})
+Vue.use(VXETable) // 表格组件
 Vue.use(VueClipboard) // 剪贴板
 Vue.use(highlight) // 代码高亮
 Vue.use(Element,{
