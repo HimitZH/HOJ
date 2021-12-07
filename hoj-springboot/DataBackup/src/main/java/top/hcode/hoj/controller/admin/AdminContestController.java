@@ -80,7 +80,8 @@ public class AdminContestController {
         if (limit == null || limit < 1) limit = 10;
         IPage<Contest> iPage = new Page<>(currentPage, limit);
         QueryWrapper<Contest> queryWrapper = new QueryWrapper<>();
-
+        // 过滤密码
+        queryWrapper.select(Contest.class, info -> !info.getColumn().equals("pwd"));
         if (!StringUtils.isEmpty(keyword)) {
             keyword = keyword.trim();
             queryWrapper

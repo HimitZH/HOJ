@@ -87,7 +87,7 @@ public class Contest implements Serializable {
     @ApiModelProperty(value = "是否打开账号限制")
     private Boolean openAccountLimit;
 
-    @ApiModelProperty(value = "账号限制规则 <prefix>**</prefix><suffix>**</suffix><start>**</start><end>**</end>")
+    @ApiModelProperty(value = "账号限制规则 <prefix>**</prefix><suffix>**</suffix><start>**</start><end>**</end><extra>**</extra>")
     private String accountLimitRule;
 
     @ApiModelProperty(value = "排行榜显示（username、nickname、realname）")
