@@ -1,35 +1,21 @@
-package top.hcode.hoj.pojo.entity.contest;
+package top.hcode.hoj.pojo.vo;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
- * <p>
- *
- * </p>
- *
- * @author Himit_ZH
- * @since 2020-10-23
+ * @Author: Himit_ZH
+ * @Date: 2021/12/7 19:45
+ * @Description:
  */
+@ApiModel(value="管理比赛的回传实体", description="")
 @Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
-@ApiModel(value = "Contest对象", description = "")
-public class Contest implements Serializable {
+public class AdminContestVo {
 
-    private static final long serialVersionUID = 1L;
-
-    @TableId(value = "id", type = IdType.AUTO)
     @ApiModelProperty(value = "比赛id")
     private Long id;
 
@@ -93,17 +79,14 @@ public class Contest implements Serializable {
     @ApiModelProperty(value = "排行榜显示（username、nickname、realname）")
     private String rankShowName;
 
-    @ApiModelProperty(value = "打星用户列表 {\"star_account\":['a','b']}")
-    private String starAccount;
+    @ApiModelProperty(value = "打星用户列表")
+    private List<String> starAccount;
 
     @ApiModelProperty(value = "是否开放比赛榜单")
     private Boolean openRank;
 
-    @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 
-    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date gmtModified;
-
 
 }

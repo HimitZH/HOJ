@@ -15,6 +15,9 @@ import java.util.HashMap;
 @Accessors(chain = true)
 public class ACMContestRankVo {
 
+    @ApiModelProperty(value = "排名,排名为-1则为打星队伍")
+    private Integer rank;
+
     @ApiModelProperty(value = "用户id")
     private String uid;
 

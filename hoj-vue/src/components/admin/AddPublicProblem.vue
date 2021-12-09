@@ -40,7 +40,7 @@
       layout="prev, pager, next"
       @current-change="getPublicProblem"
       :page-size="limit"
-      :current-page="page"
+      :current-page.sync="page"
       :total="total"
     >
     </el-pagination>

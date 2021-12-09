@@ -8,7 +8,7 @@
               <span class="panel-title">{{ contest.title }}</span>
             </div>
           </div>
-          <el-row>
+          <el-row style="margin-top: 10px;">
             <el-col :span="12" class="text-align:left">
               <el-tooltip
                 v-if="contest.auth != null && contest.auth != undefined"
@@ -91,7 +91,7 @@
           <el-button
             type="primary"
             @click="checkPassword"
-            style="float:right;margin:5px"
+            style="float:right;"
             >{{ $t('m.Enter') }}</el-button
           >
         </el-form>
@@ -444,6 +444,11 @@ export default {
 };
 </script>
 <style scoped>
+.panel-title {
+  font-variant: small-caps;
+  font-size: 1.5rem !important;
+  font-weight: 500;
+}
 @media screen and (min-width: 768px) {
   .contest-time .left {
     text-align: left;

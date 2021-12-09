@@ -306,6 +306,7 @@ export const m = {
   Public_Tips:'Public - Any one can see and submit.',
   Private_Tips:'Private - Only users knowing contest password can see and submit.',
   Protected_Tips:'Protected - Any one can see, but only users knowing contest password can submit.',
+  Contest_Outside_ScoreBoard:'OutSide Contest ScoreBoard',
 
   // /views/oj/contest/ContestDetail.vue
   StartAt: 'StartAt',
@@ -334,9 +335,11 @@ export const m = {
   RealName: 'RealName',
   Force_Update: 'Force Update',
   Download_as_CSV: 'Download as CSV',
-  TotalTime: 'TotalTime',
+  TotalTime: 'Time',
   Top_10_Teams: 'Top 10 Teams',
   save_as_image: 'save as image',
+  Contest_Rank_Seq:'Rank',
+  Star_User:'Star User',
 
   // /views/oj/contest/children/ACMInfo.vue
   AC_Time: 'AC Time',

@@ -15,6 +15,10 @@ import java.util.HashMap;
 @Data
 @Accessors(chain = true)
 public class OIContestRankVo {
+
+    @ApiModelProperty(value = "排名,排名为-1则为打星队伍")
+    private Integer rank;
+
     @ApiModelProperty(value = "用户id")
     private String uid;
 

@@ -411,6 +411,18 @@ const ojApi = {
       params: {cid}
     })
   },
+  // 获取赛外榜单比赛的信息
+  getScoreBoardContestInfo(cid){
+    return ajax('/api/get-contest-outsize-info','get',{
+      params: {cid}
+    })
+  },
+  // 提供比赛外榜排名数据
+  getContestOutsideScoreboard(params){
+    return ajax('/api/get-contest-outside-scoreboard','get',{
+      params: params
+    })
+  },
   // 注册私有比赛权限
   registerContest(cid,password){
     return ajax('/api/register-contest','post',{

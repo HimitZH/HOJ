@@ -34,37 +34,45 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     }
 
     @Override
-    public List<File> queryCarouselFileList(){
+    public List<File> queryCarouselFileList() {
         return fileMapper.queryCarouselFileList();
     }
 
     @Override
     public List<List<String>> getContestRankExcelHead(List<String> contestProblemDisplayIDList, Boolean isACM) {
         List<List<String>> headList = new LinkedList<>();
+
         List<String> head0 = new LinkedList<>();
-        head0.add("User ID");
+        head0.add("Rank");
+
         List<String> head1 = new LinkedList<>();
         head1.add("Username");
         List<String> head2 = new LinkedList<>();
-        head2.add("Real Name");
+        head2.add("ShowName");
+        List<String> head3 = new LinkedList<>();
+        head3.add("Real Name");
+        List<String> head4 = new LinkedList<>();
+        head4.add("School");
 
         headList.add(head0);
         headList.add(head1);
         headList.add(head2);
+        headList.add(head3);
+        headList.add(head4);
 
-        List<String> head3 = new LinkedList<>();
+        List<String> head5 = new LinkedList<>();
         if (isACM) {
-            head3.add("AC");
-            List<String> head4 = new LinkedList<>();
-            head4.add("Total Submission");
-            List<String> head5 = new LinkedList<>();
-            head5.add("Total Penalty Time");
-            headList.add(head3);
-            headList.add(head4);
+            head5.add("AC");
+            List<String> head6 = new LinkedList<>();
+            head6.add("Total Submission");
+            List<String> head7 = new LinkedList<>();
+            head7.add("Total Penalty Time");
             headList.add(head5);
+            headList.add(head6);
+            headList.add(head7);
         } else {
-            head3.add("Total Score");
-            headList.add(head3);
+            head5.add("Total Score");
+            headList.add(head5);
         }
 
         // 添加题目头
@@ -77,13 +85,25 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     }
 
     @Override
-    public List<List<Object>> changeACMContestRankToExcelRowList(List<ACMContestRankVo> acmContestRankVoList, List<String> contestProblemDisplayIDList) {
+    public List<List<Object>> changeACMContestRankToExcelRowList(List<ACMContestRankVo> acmContestRankVoList,
+                                                                 List<String> contestProblemDisplayIDList,
+                                                                 String rankShowName) {
         List<List<Object>> allRowDataList = new LinkedList<>();
         for (ACMContestRankVo acmContestRankVo : acmContestRankVoList) {
             List<Object> rowData = new LinkedList<>();
-            rowData.add(acmContestRankVo.getUid());
+            rowData.add(acmContestRankVo.getRank() == -1 ? "*" : acmContestRankVo.getRank().toString());
             rowData.add(acmContestRankVo.getUsername());
+            if ("username".equals(rankShowName)) {
+                rowData.add(acmContestRankVo.getUsername());
+            } else if ("realname".equals(rankShowName)) {
+                rowData.add(acmContestRankVo.getRealname());
+            } else if ("nickname".equals(rankShowName)) {
+                rowData.add(acmContestRankVo.getNickname());
+            } else {
+                rowData.add("");
+            }
             rowData.add(acmContestRankVo.getRealname());
+            rowData.add(acmContestRankVo.getSchool());
             rowData.add(acmContestRankVo.getAc());
             rowData.add(acmContestRankVo.getTotal());
             rowData.add(acmContestRankVo.getTotalTime());
@@ -92,11 +112,23 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
                 HashMap<String, Object> problemInfo = submissionInfo.getOrDefault(displayID, null);
                 if (problemInfo != null) { // 如果是有提交记录的
                     boolean isAC = (boolean) problemInfo.getOrDefault("isAC", false);
-                    String info;
+                    String info = "";
+                    int errorNum = (int) problemInfo.getOrDefault("errorNum", 0);
+                    int tryNum = (int) problemInfo.getOrDefault("tryNum", 0);
                     if (isAC) {
-                        info = "AC(-" + problemInfo.getOrDefault("errorNum", 0) + ")";
+                        if (errorNum == 0) {
+                            info = "+(1)";
+                        } else {
+                            info = "-(" + (errorNum + 1) + ")";
+                        }
                     } else {
-                        info = "WA(-" + problemInfo.getOrDefault("errorNum", 0) + ")";
+                        if (tryNum != 0 && errorNum != 0) {
+                            info = "-(" + errorNum + "+" + tryNum + ")";
+                        } else if (errorNum != 0) {
+                            info = "-(" + errorNum + ")";
+                        } else if (tryNum != 0) {
+                            info = "?(" + tryNum + ")";
+                        }
                     }
                     rowData.add(info);
                 } else {
@@ -109,13 +141,24 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     }
 
     @Override
-    public List<List<Object>> changOIContestRankToExcelRowList(List<OIContestRankVo> oiContestRankVoList, List<String> contestProblemDisplayIDList) {
+    public List<List<Object>> changOIContestRankToExcelRowList(List<OIContestRankVo> oiContestRankVoList,
+                                                               List<String> contestProblemDisplayIDList,
+                                                               String rankShowName) {
         List<List<Object>> allRowDataList = new LinkedList<>();
         for (OIContestRankVo oiContestRankVo : oiContestRankVoList) {
             List<Object> rowData = new LinkedList<>();
-            rowData.add(oiContestRankVo.getUid());
-            rowData.add(oiContestRankVo.getUsername());
+            rowData.add(oiContestRankVo.getRank() == -1 ? "*" : oiContestRankVo.getRank().toString());
+            if ("username".equals(rankShowName)) {
+                rowData.add(oiContestRankVo.getUsername());
+            } else if ("realname".equals(rankShowName)) {
+                rowData.add(oiContestRankVo.getRealname());
+            } else if ("nickname".equals(rankShowName)) {
+                rowData.add(oiContestRankVo.getNickname());
+            } else {
+                rowData.add("");
+            }
             rowData.add(oiContestRankVo.getRealname());
+            rowData.add(oiContestRankVo.getSchool());
             rowData.add(oiContestRankVo.getTotalScore());
             HashMap<String, Integer> submissionInfo = oiContestRankVo.getSubmissionInfo();
             for (String displayID : contestProblemDisplayIDList) {
@@ -130,4 +173,6 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
         }
         return allRowDataList;
     }
+
+
 }

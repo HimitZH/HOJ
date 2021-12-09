@@ -274,7 +274,7 @@ a:hover {
   font-weight: normal;
   color: dimgrey;
 }
-.female-flag {
+.contest-rank-flag {
   margin-right: 20px !important;
   background-color: rgb(255, 193, 10);
   border-radius: 4px;
@@ -284,6 +284,9 @@ a:hover {
 
 .bg-female {
   background-color: rgb(255, 153, 203);
+}
+.bg-star {
+  background-color: #ffffcc;
 }
 
 .oi-100 {

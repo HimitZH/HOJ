@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.JudgeMapper;
@@ -446,8 +447,8 @@ public class JudgeController {
 
         List<Long> submitIds = submitIdListDto.getSubmitIds();
 
-        if (submitIds.size() == 0) {
-            return CommonResult.successResponse(new HashMap<>(), "已无数据可查询！");
+        if (CollectionUtils.isEmpty(submitIds)) {
+            return CommonResult.successResponse(new HashMap<>(), "查询的提交id列表为空！");
         }
 
         QueryWrapper<Judge> queryWrapper = new QueryWrapper<>();
@@ -480,17 +481,23 @@ public class JudgeController {
             return CommonResult.errorResponse("查询比赛ID不能为空");
         }
 
+        if (CollectionUtils.isEmpty(submitIdListDto.getSubmitIds())) {
+            return CommonResult.successResponse(new HashMap<>(), "查询的提交id列表为空！");
+        }
+
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-        boolean root = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
 
         Contest contest = contestService.getById(submitIdListDto.getCid());
 
         boolean isSealRank = false;
+
+        boolean isContestAdmin = isRoot || userRolesVo.getUid().equals(contest.getUid());
         // 如果是封榜时间且不是比赛管理员和超级管理员
         if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode() &&
                 contest.getSealRank() && contest.getSealRankTime().before(new Date()) &&
-                !root && !userRolesVo.getUid().equals(contest.getUid())) {
+                !isContestAdmin) {
             isSealRank = true;
         }
 
@@ -508,7 +515,7 @@ public class JudgeController {
             judge.setVjudgeUsername(null);
             judge.setVjudgeSubmitId(null);
             judge.setVjudgePassword(null);
-            if (!judge.getUid().equals(userRolesVo.getUid())){
+            if (!judge.getUid().equals(userRolesVo.getUid()) && !isContestAdmin) {
                 judge.setTime(null);
                 judge.setMemory(null);
                 judge.setLength(null);

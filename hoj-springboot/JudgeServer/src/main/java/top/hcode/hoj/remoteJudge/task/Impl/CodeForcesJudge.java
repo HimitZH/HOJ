@@ -90,6 +90,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
             submitCode(contestId, problemNum, getLanguage(language), userCode);
         } catch (HttpException e) {
             // 如果提交出现403可能是cookie失效了，再执行登录，重新提交
+            this.cookies = null;
             Map<String, Object> loginUtils = getLoginUtils(username, password);
             int status = (int) loginUtils.get("status");
             if (status != HttpStatus.SC_MOVED_TEMPORARILY) {
@@ -144,7 +145,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
                 }
             }
             try {
-                TimeUnit.MILLISECONDS.sleep(2500);
+                TimeUnit.MILLISECONDS.sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

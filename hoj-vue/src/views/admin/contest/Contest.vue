@@ -115,7 +115,7 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="24">
+          <el-col :md="8" :xs="24">
             <el-form-item
               :label="$t('m.Auto_Real_Rank')"
               required
@@ -130,7 +130,18 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="24">
+          <el-col :md="8" :xs="24">
+            <el-form-item :label="$t('m.Contest_Outside_ScoreBoard')" required>
+              <el-switch
+                v-model="contest.openRank"
+                :active-text="$t('m.Open')"
+                :inactive-text="$t('m.Close')"
+              >
+              </el-switch>
+            </el-form-item>
+          </el-col>
+
+          <el-col :md="8" :xs="24">
             <el-form-item :label="$t('m.Print_Func')" required>
               <el-switch
                 v-model="contest.openPrint"
@@ -154,6 +165,45 @@
                   $t('m.Show_Realname')
                 }}</el-radio>
               </el-radio-group>
+            </el-form-item>
+          </el-col>
+
+          <el-col>
+            <el-form-item :label="$t('m.Star_User_UserName')" required>
+              <el-tag
+                v-for="username in contest.starAccount"
+                closable
+                :close-transition="false"
+                :key="username"
+                type="warning"
+                size="medium"
+                @close="removeStarUser(username)"
+                style="margin-right: 7px;margin-top:4px"
+                >{{ username }}</el-tag
+              >
+              <el-input
+                v-if="inputVisible"
+                size="medium"
+                class="input-new-star-user"
+                v-model="starUserInput"
+                :trigger-on-focus="true"
+                @keyup.enter.native="addStarUser"
+                @blur="addStarUser"
+              >
+              </el-input>
+              <el-tooltip
+                effect="dark"
+                :content="$t('m.Add')"
+                placement="top"
+                v-else
+              >
+                <el-button
+                  class="button-new-tag"
+                  size="small"
+                  @click="inputVisible = true"
+                  icon="el-icon-plus"
+                ></el-button>
+              </el-tooltip>
             </el-form-item>
           </el-col>
 
@@ -298,6 +348,7 @@ export default {
         rankShowName: 'username',
         openAccountLimit: false,
         accountLimitRule: '',
+        starAccount: [],
       },
       formRule: {
         prefix: '',
@@ -306,6 +357,8 @@ export default {
         number_to: 10,
         extra_account: '',
       },
+      starUserInput: '',
+      inputVisible: false,
     };
   },
   mounted() {
@@ -500,6 +553,29 @@ export default {
         extra_account: tmp[5],
       };
     },
+
+    addStarUser() {
+      if (this.starUserInput) {
+        for (var i = 0; i < this.contest.starAccount.length; i++) {
+          if (this.contest.starAccount[i] == this.starUserInput) {
+            myMessage.warning(this.$i18n.t('m.Add_Star_User_Error'));
+            this.starUserInput = '';
+            return;
+          }
+        }
+        this.contest.starAccount.push(this.starUserInput);
+        this.inputVisible = false;
+        this.starUserInput = '';
+      }
+    },
+
+    // 根据UserName 从打星用户列表中移除
+    removeStarUser(username) {
+      this.contest.starAccount.splice(
+        this.contest.starAccount.map((item) => item.name).indexOf(username),
+        1
+      );
+    },
   },
 };
 </script>
@@ -511,5 +587,8 @@ export default {
   color: red;
   font-size: 16px;
   margin-bottom: 10px;
+}
+.input-new-star-user {
+  width: 200px;
 }
 </style>
