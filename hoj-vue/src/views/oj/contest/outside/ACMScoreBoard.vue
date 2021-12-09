@@ -88,7 +88,7 @@
         round
         border
         auto-resize
-        size="small"
+        size="medium"
         align="center"
         :data="dataRank"
         :cell-class-name="cellClassName"
