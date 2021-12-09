@@ -195,13 +195,23 @@
                 ></path>
               </svg>
             </span>
-            <span
-              ><a
-                @click="getContestProblemById(problem.displayId)"
-                class="emphasis"
-                >{{ problem.displayId }}</a
-              ></span
-            >
+            <span>
+              <el-tooltip effect="dark" placement="top">
+                <div slot="content">
+                  {{ problem.displayId + '. ' + problem.displayTitle }}
+                  <br />
+                  {{ 'Accepted: ' + problem.ac }}
+                  <br />
+                  {{ 'Rejected: ' + (problem.total - problem.ac) }}
+                </div>
+                <a
+                  @click="getContestProblemById(problem.displayId)"
+                  class="emphasis"
+                  style="color:#495060;"
+                  >{{ problem.displayId }}
+                </a>
+              </el-tooltip>
+            </span>
           </template>
           <template v-slot="{ row }">
             <div v-if="row.submissionInfo[problem.displayId]">
