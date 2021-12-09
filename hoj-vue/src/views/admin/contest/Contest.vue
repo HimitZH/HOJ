@@ -555,6 +555,7 @@ export default {
     },
 
     addStarUser() {
+      this.starUserInput = this.starUserInput.replace(/(^\s*)|(\s*$)/g, '');
       if (this.starUserInput) {
         for (var i = 0; i < this.contest.starAccount.length; i++) {
           if (this.contest.starAccount[i] == this.starUserInput) {
