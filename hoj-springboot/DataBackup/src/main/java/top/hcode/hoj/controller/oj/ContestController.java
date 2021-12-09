@@ -676,7 +676,7 @@ public class ContestController {
         contestOutsideInfo.setContest(contestInfo);
 
         QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
-        contestProblemQueryWrapper.eq("cid", cid);
+        contestProblemQueryWrapper.eq("cid", cid).orderByAsc("display_id");
         List<ContestProblem> contestProblemList = contestProblemService.list(contestProblemQueryWrapper);
         contestOutsideInfo.setProblemList(contestProblemList);
 
