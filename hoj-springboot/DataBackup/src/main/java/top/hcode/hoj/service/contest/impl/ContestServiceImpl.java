@@ -93,7 +93,7 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
     @Override
     public Boolean isSealRank(String uid, Contest contest, Boolean forceRefresh, Boolean isRoot) {
         // 如果是管理员同时选择强制刷新榜单，则封榜无效
-        if (forceRefresh && (isRoot || uid.equals(contest.getUid()))) {
+        if (forceRefresh && (isRoot || contest.getUid().equals(uid))) {
             return false;
         } else if (contest.getSealRank() && contest.getSealRankTime() != null) { // 该比赛开启封榜模式
             Date now = new Date();

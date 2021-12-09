@@ -386,6 +386,9 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             String testcaseDir = problemDto.getUploadTestcaseDir();
             // 如果是io题目统计总分
             List<ProblemCase> problemCases = problemDto.getSamples();
+            if (problemCases.size() == 0) {
+                throw new RuntimeException("The test cases of problem must not be empty!");
+            }
             for (ProblemCase problemCase : problemCases) {
                 if (problemCase.getScore() != null) {
                     sumScore += problemCase.getScore();

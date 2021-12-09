@@ -7,13 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.entity.judge.JudgeServer;
-import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeFactory;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
-import top.hcode.hoj.service.impl.JudgeServerServiceImpl;
 import top.hcode.hoj.service.impl.JudgeServiceImpl;
-import top.hcode.hoj.service.impl.RemoteJudgeAccountServiceImpl;
+import top.hcode.hoj.service.impl.RemoteJudgeServiceImpl;
 import top.hcode.hoj.util.Constants;
 
 import java.util.Map;
@@ -23,16 +20,13 @@ import java.util.Map;
 public class RemoteJudgeToSubmit {
 
     @Autowired
-    private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
-
-    @Autowired
     private RemoteJudgeGetResult remoteJudgeGetResult;
 
     @Autowired
     private JudgeServiceImpl judgeService;
 
     @Autowired
-    private JudgeServerServiceImpl judgeServerService;
+    private RemoteJudgeServiceImpl remoteJudgeService;
 
 
     @Value("${hoj-judge-server.name}")
@@ -63,18 +57,18 @@ public class RemoteJudgeToSubmit {
         try {
             submitResult = remoteJudgeStrategy.submit(username, password, remotePid, language, userCode);
         } catch (Exception e) {
-            log.error("{%s}", e);
+            log.error("{}", e);
             errLog = e.getMessage();
         }
 
         // 提交失败 前端手动按按钮再次提交 修改状态 STATUS_SUBMITTED_FAILED
         if (submitResult == null || (Long) submitResult.getOrDefault("runId", -1L) == -1L) {
             // 将使用的账号放回对应列表
-            changeAccountStatus(remoteJudge, username);
+            remoteJudgeService.changeAccountStatus(remoteJudge, username);
             if (remoteJudge.equals(Constants.RemoteJudge.GYM_JUDGE.getName())
                     || remoteJudge.equals(Constants.RemoteJudge.CF_JUDGE.getName())) {
                 // 对CF特殊，归还账号及判题机权限
-                changeServerSubmitCFStatus(serverIp, serverPort);
+                remoteJudgeService.changeServerSubmitCFStatus(serverIp, serverPort);
             }
 
             // 更新此次提交状态为提交失败！
@@ -112,38 +106,5 @@ public class RemoteJudgeToSubmit {
         remoteJudgeGetResult.sendTask(remoteJudge, username, password, submitId, uid, cid, pid,
                 vjudgeSubmitId, (String) submitResult.get("cookies"),serverIp,serverPort);
 
-    }
-
-
-    public void changeAccountStatus(String remoteJudge, String username) {
-
-        UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
-        remoteJudgeAccountUpdateWrapper.set("status", true)
-                .eq("status", false)
-                .eq("username", username);
-        if (remoteJudge.equals("GYM")) {
-            remoteJudgeAccountUpdateWrapper.eq("oj", "CF");
-        } else {
-            remoteJudgeAccountUpdateWrapper.eq("oj", remoteJudge);
-        }
-
-        boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
-
-        if (!isOk) {
-            log.error("远程判题：修正账号为可用状态失败----------->{}", "oj:" + remoteJudge + ",username:" + username);
-        }
-    }
-
-    public void changeServerSubmitCFStatus(String ip, Integer port) {
-        UpdateWrapper<JudgeServer> JudgeServerUpdateWrapper = new UpdateWrapper<>();
-        JudgeServerUpdateWrapper.set("cf_submittable", true)
-                .eq("ip", ip)
-                .eq("is_remote", true)
-                .eq("port", port);
-        boolean isOk = judgeServerService.update(JudgeServerUpdateWrapper);
-
-        if (!isOk) {
-            log.error("远程判题：修正判题机对CF可提交状态为可用的状态失败----------->{}", "ip:" + ip + ",port:" + port);
-        }
     }
 }

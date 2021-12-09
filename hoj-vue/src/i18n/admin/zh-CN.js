@@ -319,11 +319,14 @@ export const m = {
   Print_Func:'打印功能',
   Not_Support_Print:'不支持打印',
   Support_Offline_Print:'支持线下打印',
+  Open:'开启',
+  Add_Star_User_Error:'请不要重复添加已有打星用户！',
+  Star_User_UserName:'打星用户（请使用登录用户名）',
   Rank_Show_Name:'榜单显示用户名称',
   Show_Username:'用户名',
   Show_Nickname:'昵称',
   Show_Realname:'真实姓名',
-  Account_Limit:'账号限制',
+  Account_Limit:'账号限制（登录用户名）',
   The_allowed_account_will_be:'允许参加比赛的用户名是：',
 
    // /views/admin/discussion/Discussion.vue

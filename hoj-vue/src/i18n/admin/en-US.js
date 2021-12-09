@@ -319,13 +319,16 @@ export const m = {
   Contest_Duration_Check:'The duration of the contest cannot be less than or equal to zero!',
   Contets_Time_Check:'The start time should be earlier than the end time!',
   Print_Func:'Print Function',
+  Open:'Open',
   Not_Support_Print:'Not Support Print',
   Support_Offline_Print:'Support Offline Print',
+  Add_Star_User_Error:'Please do not add existing star user repeatedly!',
+  Star_User_UserName:'Star User (Please use login username)',
   Rank_Show_Name:'The Name Showed in The Rank',
   Show_Username:'Username',
   Show_Nickname:'Nickname',
   Show_Realname:'Real name',
-  Account_Limit:'Account Limit',
+  Account_Limit:'Account Limit (Login Username)',
   The_allowed_account_will_be:'The allowed username will be ',
 
   // /views/admin/discussion/Discussion.vue

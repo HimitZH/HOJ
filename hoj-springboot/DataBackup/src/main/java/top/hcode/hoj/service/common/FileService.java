@@ -16,7 +16,11 @@ public interface FileService extends IService<File> {
 
     List<List<String>> getContestRankExcelHead(List<String> contestProblemDisplayIDList, Boolean isACM);
 
-    List<List<Object>> changeACMContestRankToExcelRowList(List<ACMContestRankVo> acmContestRankVoList, List<String> contestProblemDisplayIDList);
+    List<List<Object>> changeACMContestRankToExcelRowList(List<ACMContestRankVo> acmContestRankVoList,
+                                                          List<String> contestProblemDisplayIDList,
+                                                          String rankShowName);
 
-    List<List<Object>> changOIContestRankToExcelRowList(List<OIContestRankVo> oiContestRankVoList, List<String> contestProblemDisplayIDList);
+    List<List<Object>> changOIContestRankToExcelRowList(List<OIContestRankVo> oiContestRankVoList,
+                                                        List<String> contestProblemDisplayIDList,
+                                                        String rankShowName);
 }

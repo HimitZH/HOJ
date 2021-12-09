@@ -4,7 +4,6 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -20,14 +19,13 @@ import top.hcode.hoj.utils.RedisUtils;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class RemoteJudgeReceiver {
-
-    @Autowired
-    @Lazy
-    private RemoteJudgeDispatcher remoteJudgeDispatcher;
 
     @Autowired
     private JudgeServiceImpl judgeService;
@@ -74,96 +72,167 @@ public class RemoteJudgeReceiver {
         }
     }
 
-    public void handleJudgeMsg(Judge judge, String token, String remoteJudgeProblem, Boolean isContest, Integer tryAgainNum,
+    public void handleJudgeMsg(Judge judge, String token, String remoteJudgeProblem, Boolean isContest,
+                               Integer tryAgainNum,
                                Boolean isHasSubmitIdRemoteReJudge, String remoteOJName) {
-
-        boolean isNeedAccountRejudge = remoteOJName.equals(Constants.RemoteOJ.POJ.getName())
-                && isHasSubmitIdRemoteReJudge;
-
-        String remoteOJAccountType = remoteOJName; // GYM与CF共用账号
-        if (remoteOJName.equals(Constants.RemoteOJ.GYM.getName())) {
-            remoteOJAccountType = Constants.RemoteOJ.CODEFORCES.getName();
-        }
 
         ToJudge toJudge = new ToJudge();
         toJudge.setJudge(judge)
                 .setTryAgainNum(tryAgainNum)
                 .setToken(token)
                 .setRemoteJudgeProblem(remoteJudgeProblem);
-        if (isHasSubmitIdRemoteReJudge && !isNeedAccountRejudge) {  // 除POJ外的vJudge如果有submitId，则直接获取结果
+
+        if (remoteOJName.equals(Constants.RemoteOJ.CODEFORCES.getName())
+                || remoteOJName.equals(Constants.RemoteOJ.GYM.getName())) { // GYM与CF共用账号
+            cfJudge(isHasSubmitIdRemoteReJudge, toJudge, judge);
+        } else if (remoteOJName.equals(Constants.RemoteOJ.POJ.getName())) {
+            pojJudge(isHasSubmitIdRemoteReJudge, toJudge, judge);
+        } else {
+            commonJudge(remoteOJName, isHasSubmitIdRemoteReJudge, toJudge, judge);
+        }
+        // 如果队列中还有任务，则继续处理
+        processWaitingTask();
+    }
+
+
+    private void commonJudge(String OJName, Boolean isHasSubmitIdRemoteReJudge, ToJudge toJudge, Judge judge) {
+
+        if (isHasSubmitIdRemoteReJudge) {
             toJudge.setIsHasSubmitIdRemoteReJudge(true);
             toJudge.setUsername(judge.getVjudgeUsername());
             toJudge.setPassword(judge.getVjudgePassword());
             // 调用判题服务
             dispatcher.dispatcher("judge", "/remote-judge", toJudge);
-            // 如果队列中还有任务，则继续处理
-            processWaitingTask();
+            return;
+        }
 
-        } else {
-            RemoteJudgeAccount account = null;
-            int index = 0;
-            int size = 0;
-            if (remoteOJAccountType.equals(Constants.RemoteOJ.CODEFORCES.getName())) {
-                HashMap<String, Object> result = chooseUtils.chooseFixedAccount(remoteOJAccountType);
-                if (result != null) {
-                    account = (RemoteJudgeAccount) result.get("account");
-                    index = (int) result.get("index");
-                    size = (int) result.get("size");
+        // 尝试600s
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        AtomicInteger tryNum = new AtomicInteger(0);
+        Runnable getResultTask = new Runnable() {
+            @Override
+            public void run() {
+                tryNum.getAndIncrement();
+                RemoteJudgeAccount account = chooseUtils.chooseRemoteAccount(OJName, judge.getVjudgeUsername(), false);
+                if (account != null) {
+                    toJudge.setUsername(account.getUsername())
+                            .setPassword(account.getPassword());
+                    toJudge.setIsHasSubmitIdRemoteReJudge(false);
+                    // 调用判题服务
+                    dispatcher.dispatcher("judge", "/remote-judge", toJudge);
+                    scheduler.shutdown();
+                    return;
                 }
-            } else {
-                account = chooseUtils.chooseRemoteAccount(remoteOJAccountType, judge.getVjudgeUsername(), isNeedAccountRejudge);
-            }
 
-            if (account == null) {
-                if (tryAgainNum >= 200) {
+                if (tryNum.get() > 200) {
                     // 获取调用多次失败可能为系统忙碌，判为提交失败
                     judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
                     judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
                             "Cause: Waiting for account scheduling timeout");
                     judgeService.updateById(judge);
-                } else {
+                    scheduler.shutdown();
+                }
+            }
+        };
+        scheduler.scheduleAtFixedRate(getResultTask, 0, 3, TimeUnit.SECONDS);
+    }
 
-                    if (isNeedAccountRejudge) {
-                        if (StringUtils.isEmpty(judge.getVjudgeUsername())) {
-                            // poj以往的账号丢失了，那么只能重新从头到尾提交
-                            remoteJudgeDispatcher.sendTask(judge, token, remoteJudgeProblem, isContest,
-                                    tryAgainNum + 1, false);
-                            return;
-                        }
 
-                        QueryWrapper<RemoteJudgeAccount> queryWrapper = new QueryWrapper<>();
-                        queryWrapper.eq("oj", remoteOJAccountType).eq("username", judge.getVjudgeUsername());
-                        int count = remoteJudgeAccountService.count(queryWrapper);
-                        if (count == 0) {
-                            // poj以往的账号丢失了，那么只能重新从头到尾提交
-                            remoteJudgeDispatcher.sendTask(judge, token, remoteJudgeProblem, isContest,
-                                    tryAgainNum + 1, false);
-                            return;
-                        }
-                    }
+    private void pojJudge(Boolean isHasSubmitIdRemoteReJudge, ToJudge toJudge, Judge judge) {
 
-                    try {
-                        TimeUnit.SECONDS.sleep(2);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    remoteJudgeDispatcher.sendTask(judge, token, remoteJudgeProblem, isContest,
-                            tryAgainNum + 1, isHasSubmitIdRemoteReJudge);
+
+        if (StringUtils.isEmpty(judge.getVjudgeUsername())) {
+            isHasSubmitIdRemoteReJudge = false;
+        }
+
+        if (isHasSubmitIdRemoteReJudge) {
+            QueryWrapper<RemoteJudgeAccount> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("oj", Constants.RemoteOJ.POJ.getName())
+                    .eq("username", judge.getVjudgeUsername());
+            int count = remoteJudgeAccountService.count(queryWrapper);
+            if (count == 0) {
+                // poj以往的账号丢失了，那么只能重新从头到尾提交
+                isHasSubmitIdRemoteReJudge = false;
+            }
+        }
+
+        // 尝试600s
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        AtomicInteger tryNum = new AtomicInteger(0);
+        boolean finalIsHasSubmitIdRemoteReJudge = isHasSubmitIdRemoteReJudge;
+        Runnable getResultTask = new Runnable() {
+            @Override
+            public void run() {
+                tryNum.getAndIncrement();
+                RemoteJudgeAccount account = chooseUtils.chooseRemoteAccount(Constants.RemoteOJ.POJ.getName()
+                        , judge.getVjudgeUsername(), finalIsHasSubmitIdRemoteReJudge);
+                if (account != null) {
+                    toJudge.setUsername(account.getUsername())
+                            .setPassword(account.getPassword());
+                    toJudge.setIsHasSubmitIdRemoteReJudge(finalIsHasSubmitIdRemoteReJudge);
+                    // 调用判题服务
+                    dispatcher.dispatcher("judge", "/remote-judge", toJudge);
+                    scheduler.shutdown();
+                    return;
                 }
 
-            } else {
-
-                toJudge.setUsername(account.getUsername())
-                        .setPassword(account.getPassword());
-                toJudge.setIsHasSubmitIdRemoteReJudge(isNeedAccountRejudge);
-                toJudge.setIndex(index);
-                toJudge.setSize(size);
-                // 调用判题服务
-                dispatcher.dispatcher("judge", "/remote-judge", toJudge);
-                // 如果队列中还有任务，则继续处理
-                processWaitingTask();
+                if (tryNum.get() > 200) {
+                    // 获取调用多次失败可能为系统忙碌，判为提交失败
+                    judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
+                    judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
+                            "Cause: Waiting for account scheduling timeout");
+                    judgeService.updateById(judge);
+                    scheduler.shutdown();
+                }
             }
+        };
+        scheduler.scheduleAtFixedRate(getResultTask, 0, 3, TimeUnit.SECONDS);
+    }
 
+    private void cfJudge(Boolean isHasSubmitIdRemoteReJudge, ToJudge toJudge, Judge judge) {
+
+        if (isHasSubmitIdRemoteReJudge) {
+            toJudge.setIsHasSubmitIdRemoteReJudge(true);
+            toJudge.setUsername(judge.getVjudgeUsername());
+            toJudge.setPassword(judge.getVjudgePassword());
+            // 调用判题服务
+            dispatcher.dispatcher("judge", "/remote-judge", toJudge);
+            return;
         }
+
+        // 尝试600s
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        AtomicInteger tryNum = new AtomicInteger(0);
+        Runnable getResultTask = new Runnable() {
+            @Override
+            public void run() {
+                tryNum.getAndIncrement();
+                HashMap<String, Object> result = chooseUtils.chooseFixedAccount(Constants.RemoteOJ.CODEFORCES.getName());
+                if (result != null) {
+                    RemoteJudgeAccount account = (RemoteJudgeAccount) result.get("account");
+                    int index = (int) result.get("index");
+                    int size = (int) result.get("size");
+                    toJudge.setUsername(account.getUsername())
+                            .setPassword(account.getPassword());
+                    toJudge.setIsHasSubmitIdRemoteReJudge(false);
+                    toJudge.setIndex(index);
+                    toJudge.setSize(size);
+                    // 调用判题服务
+                    dispatcher.dispatcher("judge", "/remote-judge", toJudge);
+                    scheduler.shutdown();
+                    return;
+                }
+
+                if (tryNum.get() > 200) {
+                    // 获取调用多次失败可能为系统忙碌，判为提交失败
+                    judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
+                    judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
+                            "Cause: Waiting for account scheduling timeout");
+                    judgeService.updateById(judge);
+                    scheduler.shutdown();
+                }
+            }
+        };
+        scheduler.scheduleAtFixedRate(getResultTask, 0, 3, TimeUnit.SECONDS);
     }
 }

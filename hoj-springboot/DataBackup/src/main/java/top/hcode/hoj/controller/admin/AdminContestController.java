@@ -1,7 +1,10 @@
 package top.hcode.hoj.controller.admin;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -23,6 +26,7 @@ import top.hcode.hoj.pojo.entity.contest.ContestAnnouncement;
 import top.hcode.hoj.pojo.entity.contest.ContestProblem;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.pojo.vo.AdminContestVo;
 import top.hcode.hoj.pojo.vo.AnnouncementVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.common.impl.AnnouncementServiceImpl;
@@ -37,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -119,8 +124,15 @@ public class AdminContestController {
         if (!isRoot && !userRolesVo.getUid().equals(contest.getUid())) {
             return CommonResult.errorResponse("对不起，你无权限操作！", CommonResult.STATUS_FORBIDDEN);
         }
-        return CommonResult.successResponse(contest, "查询成功！");
-
+        AdminContestVo adminContestVo = BeanUtil.copyProperties(contest, AdminContestVo.class, "starAccount");
+        if (StringUtils.isEmpty(contest.getStarAccount())){
+            adminContestVo.setStarAccount(new ArrayList<>());
+        }else {
+            JSONObject jsonObject = JSONUtil.parseObj(contest.getStarAccount());
+            List<String> starAccount = jsonObject.get("star_account", List.class);
+            adminContestVo.setStarAccount(starAccount);
+        }
+        return CommonResult.successResponse(adminContestVo, "查询成功！");
     }
 
     @DeleteMapping("")
@@ -141,7 +153,11 @@ public class AdminContestController {
     @PostMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult addContest(@RequestBody Contest contest) {
+    public CommonResult addContest(@RequestBody AdminContestVo adminContestVo) {
+        Contest contest = BeanUtil.copyProperties(adminContestVo, Contest.class, "starAccount");
+        JSONObject accountJson = new JSONObject();
+        accountJson.set("star_account", adminContestVo.getStarAccount());
+        contest.setStarAccount(accountJson.toString());
         boolean result = contestService.save(contest);
         if (result) { // 添加成功
             return CommonResult.successResponse(null, "添加成功！");
@@ -153,7 +169,7 @@ public class AdminContestController {
     @PutMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult updateContest(@RequestBody Contest contest, HttpServletRequest request) {
+    public CommonResult updateContest(@RequestBody AdminContestVo adminContestVo, HttpServletRequest request) {
 
         // 获取当前登录的用户
         HttpSession session = request.getSession();
@@ -161,10 +177,13 @@ public class AdminContestController {
         // 是否为超级管理员
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         // 只有超级管理员和比赛拥有者才能操作
-        if (!isRoot && !userRolesVo.getUid().equals(contest.getUid())) {
+        if (!isRoot && !userRolesVo.getUid().equals(adminContestVo.getUid())) {
             return CommonResult.errorResponse("对不起，你无权限操作！", CommonResult.STATUS_FORBIDDEN);
         }
-
+        Contest contest = BeanUtil.copyProperties(adminContestVo, Contest.class, "starAccount");
+        JSONObject accountJson = new JSONObject();
+        accountJson.set("star_account", adminContestVo.getStarAccount());
+        contest.setStarAccount(accountJson.toString());
         boolean result = contestService.saveOrUpdate(contest);
         if (result) {
             return CommonResult.successResponse(null, "修改成功！");

@@ -6,18 +6,19 @@ const state = {
   now: moment(),
   intoAccess: false, // 比赛进入权限
   submitAccess:false, // 保护比赛的提交权限
-  forceUpdate: false,
+  forceUpdate: false, // 强制实时榜单
+  removeStar: false, // 榜单去除打星队伍
   contest: {
     auth: CONTEST_TYPE.PUBLIC,
     openPrint: false,
-    rankShowName:'username'
+    rankShowName:'username',
   },
   contestProblems: [],
   itemVisible: {
     table: true,
     chart: true,
   },
-  disPlayIdMapColor:{} // 展示id对应的气球颜色
+  disPlayIdMapColor:{}, // 展示id对应的气球颜色
 }
 
 const getters = {
@@ -154,6 +155,9 @@ const mutations = {
   changeRankForceUpdate (state, payload) {
     state.forceUpdate = payload.value
   },
+  changeRankRemoveStar(state, payload){
+    state.removeStar = payload.value
+  },
   changeContestProblems(state, payload) {
     state.contestProblems = payload.contestProblems;
     let tmp={};
@@ -182,6 +186,7 @@ const mutations = {
       realName: false
     }
     state.forceUpdate = false
+    state.removeStar = false
   },
   now(state, payload) {
     state.now = payload.now
@@ -209,6 +214,21 @@ const actions = {
       })
     })
   },
+  getScoreBoardContestInfo ({commit, rootState, dispatch}) {
+    return new Promise((resolve, reject) => {
+      api.getScoreBoardContestInfo(rootState.route.params.contestID).then((res) => {
+        resolve(res)
+        let contest = res.data.data.contest;
+        let problemList = res.data.data.problemList;
+        commit('changeContest', {contest: contest})
+        commit('changeContestProblems', {contestProblems: problemList})
+        commit('now', {now: moment(contest.now)})
+      }, err => {
+        reject(err)
+      })
+    })
+  },
+
   getContestProblems ({commit, rootState}) {
     return new Promise((resolve, reject) => {
       api.getContestProblemList(rootState.route.params.contestID).then(res => {

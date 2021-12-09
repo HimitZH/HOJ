@@ -81,6 +81,7 @@ public class ContestFileController {
     @RequiresAuthentication
     public void downloadContestRank(@RequestParam("cid") Long cid,
                                     @RequestParam("forceRefresh") Boolean forceRefresh,
+                                    @RequestParam(value = "removeStar", defaultValue = "false") Boolean removeStar,
                                     HttpServletRequest request,
                                     HttpServletResponse response) throws IOException {
         // 获取当前登录的用户
@@ -118,21 +119,17 @@ public class ContestFileController {
 
         if (contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) { // ACM比赛
 
-            List<ContestRecordVo> contestRecordList = contestRecordService.getACMContestRecord(contest.getAuthor(), contest.getId());
-            Assert.notEmpty(contestRecordList, "比赛暂无排行榜记录！");
-            List<ACMContestRankVo> acmContestRankVoList = contestRecordService.calcACMRank(isOpenSealRank, contest, contestRecordList);
+            List<ACMContestRankVo> acmContestRankVoList = contestRecordService.getACMContestScoreboard(isOpenSealRank, removeStar, contest);
             EasyExcel.write(response.getOutputStream())
                     .head(fileService.getContestRankExcelHead(contestProblemDisplayIDList, true))
                     .sheet("rank")
-                    .doWrite(fileService.changeACMContestRankToExcelRowList(acmContestRankVoList, contestProblemDisplayIDList));
+                    .doWrite(fileService.changeACMContestRankToExcelRowList(acmContestRankVoList, contestProblemDisplayIDList,contest.getRankShowName()));
         } else {
-            List<ContestRecordVo> oiContestRecord = contestRecordService.getOIContestRecord(cid, contest.getAuthor(), isOpenSealRank, contest.getSealRankTime(), contest.getStartTime(), contest.getEndTime());
-            Assert.notEmpty(oiContestRecord, "比赛暂无排行榜记录！");
-            List<OIContestRankVo> oiContestRankVoList = contestRecordService.calcOIRank(oiContestRecord);
+            List<OIContestRankVo> oiContestRankVoList = contestRecordService.getOIContestScoreboard(isOpenSealRank, removeStar, contest);
             EasyExcel.write(response.getOutputStream())
                     .head(fileService.getContestRankExcelHead(contestProblemDisplayIDList, false))
                     .sheet("rank")
-                    .doWrite(fileService.changOIContestRankToExcelRowList(oiContestRankVoList, contestProblemDisplayIDList));
+                    .doWrite(fileService.changOIContestRankToExcelRowList(oiContestRankVoList, contestProblemDisplayIDList,contest.getRankShowName()));
         }
     }
 

@@ -114,7 +114,10 @@ public class Dispatcher {
                                 .eq("oj", finalOj)
                                 .eq("username", data.getUsername())
                                 .set("status", true);
-                        remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
+                        boolean isOK = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
+                        if (!isOK) { // 重试8次
+                            tryAgainUpdateAccount(remoteJudgeAccountUpdateWrapper, finalOj, data.getUsername());
+                        }
                     }
                     checkResult(null, submitId);
                     scheduler.shutdown();
@@ -166,11 +169,11 @@ public class Dispatcher {
         judgeServerUpdateWrapper.setSql("task_number = task_number-1").eq("id", id);
         boolean isOk = judgeServerService.update(judgeServerUpdateWrapper);
         if (!isOk) { // 重试八次
-            tryAgainUpdate(judgeServerUpdateWrapper);
+            tryAgainUpdateJudge(judgeServerUpdateWrapper);
         }
     }
 
-    public void tryAgainUpdate(UpdateWrapper<JudgeServer> updateWrapper) {
+    public void tryAgainUpdateJudge(UpdateWrapper<JudgeServer> updateWrapper) {
         boolean retryable;
         int attemptNumber = 0;
         do {
@@ -181,6 +184,30 @@ public class Dispatcher {
                 attemptNumber++;
                 retryable = attemptNumber < 8;
                 if (attemptNumber == 8) {
+                    break;
+                }
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        } while (retryable);
+    }
+
+
+    public void tryAgainUpdateAccount(UpdateWrapper<RemoteJudgeAccount> updateWrapper, String remoteJudge, String username) {
+        boolean retryable;
+        int attemptNumber = 0;
+        do {
+            boolean success = remoteJudgeAccountService.update(updateWrapper);
+            if (success) {
+                return;
+            } else {
+                attemptNumber++;
+                retryable = attemptNumber < 8;
+                if (attemptNumber == 8) {
+                    log.error("远程判题：修正账号为可用状态失败----------->{}", "oj:" + remoteJudge + ",username:" + username);
                     break;
                 }
                 try {

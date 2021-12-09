@@ -309,6 +309,7 @@ export const m = {
   Public_Tips:'公开赛 - 每个用户都可查看与提交',
   Private_Tips:'私有赛 - 用户需要密码才可查看与提交',
   Protected_Tips:'保护赛 - 每个用户都可查看，但是提交需要密码',
+  Contest_Outside_ScoreBoard:'赛外榜单',
 
    // /views/oj/contest/ContestDetail.vue
    StartAt: '开始时间',
@@ -340,6 +341,8 @@ export const m = {
    TotalTime: '总时间',
    Top_10_Teams: 'Top 10 Teams',
    save_as_image: '保存成图片',
+   Contest_Rank_Seq:'排名',
+   Star_User:'打星用户',
 
    // /views/oj/contest/children/ACMInfo.vue
    AC_Time: 'AC 时间',

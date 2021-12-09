@@ -95,7 +95,6 @@ public class ContestController {
                                        @RequestParam(value = "keyword", required = false) String keyword) {
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
-
         if (limit == null || limit < 1) limit = 10;
 
         Page<ContestVo> contestList = contestService.getContestList(limit, currentPage, type, status, keyword);
@@ -124,7 +123,6 @@ public class ContestController {
         }
         // 设置当前服务器系统时间
         contestInfo.setNow(new Date());
-
 
         return CommonResult.successResponse(contestInfo, "获取成功");
     }
@@ -483,6 +481,7 @@ public class ContestController {
                                        @RequestParam(value = "limit", required = false) Integer limit,
                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                        @RequestParam(value = "forceRefresh") Boolean forceRefresh,
+                                       @RequestParam(value = "removeStar", defaultValue = "0") Boolean removeStar,
                                        HttpServletRequest request) {
 
         // 获取当前登录的用户
@@ -512,12 +511,11 @@ public class ContestController {
         if (contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) { // ACM比赛
 
             // 进行排行榜计算以及排名分页
-            resultList = contestRecordService.getContestACMRank(isOpenSealRank, contest, currentPage, limit);
+            resultList = contestRecordService.getContestACMRank(isOpenSealRank, removeStar, contest, currentPage, limit);
 
         } else { //OI比赛：以最后一次提交得分作为该题得分
 
-            resultList = contestRecordService.getContestOIRank(cid, contest.getAuthor(), isOpenSealRank, contest.getSealRankTime(), contest.getStartTime(),
-                    contest.getEndTime(), currentPage, limit);
+            resultList = contestRecordService.getContestOIRank(isOpenSealRank, removeStar, contest, currentPage, limit);
         }
 
         if (resultList == null || resultList.getSize() == 0) {
@@ -646,6 +644,107 @@ public class ContestController {
             return CommonResult.errorResponse("提交失败！");
         }
 
+    }
+
+
+    /**
+     * @MethodName getContestOutsideInfo
+     * @param cid 比赛id
+     * @Description 提供比赛外榜所需的比赛信息和题目信息
+     * @Return
+     * @Since 2021/12/8
+     */
+    @GetMapping("/get-contest-outsize-info")
+    public CommonResult getContestOutsideInfo(@RequestParam(value = "cid", required = true) Long cid) {
+        ContestVo contestInfo = contestService.getContestInfoById(cid);
+
+        if (contestInfo == null) {
+            return CommonResult.errorResponse("访问错误：该比赛不存在！");
+        }
+
+        if (!contestInfo.getOpenRank()) {
+            return CommonResult.errorResponse("本场比赛未开启外榜，禁止访问外榜！", CommonResult.STATUS_ACCESS_DENIED);
+        }
+
+        // 获取本场比赛的状态
+        if (contestInfo.getStatus().equals(Constants.Contest.STATUS_SCHEDULED.getCode())) {
+            return CommonResult.errorResponse("本场比赛正在筹备中，禁止访问外榜！", CommonResult.STATUS_ACCESS_DENIED);
+        }
+
+        contestInfo.setNow(new Date());
+        ContestOutsideInfo contestOutsideInfo = new ContestOutsideInfo();
+        contestOutsideInfo.setContest(contestInfo);
+
+        QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
+        contestProblemQueryWrapper.eq("cid", cid);
+        List<ContestProblem> contestProblemList = contestProblemService.list(contestProblemQueryWrapper);
+        contestOutsideInfo.setProblemList(contestProblemList);
+
+        return CommonResult.successResponse(contestOutsideInfo, "success");
+    }
+
+    /**
+     * @param request
+     * @param cid          比赛id
+     * @param removeStar   是否移除打星队伍
+     * @param forceRefresh 是否强制实时榜单
+     * @MethodName getContestScoreBoard
+     * @Description 提供比赛外榜排名数据
+     * @Return
+     * @Since 2021/12/07
+     */
+    @GetMapping("/get-contest-outside-scoreboard")
+    public CommonResult getContestOutsideScoreboard(@RequestParam(value = "cid", required = true) Long cid,
+                                                    @RequestParam(value = "removeStar", defaultValue = "0") Boolean removeStar,
+                                                    @RequestParam(value = "forceRefresh") Boolean forceRefresh,
+                                                    HttpServletRequest request) {
+
+        // 获取本场比赛的状态
+        Contest contest = contestService.getById(cid);
+
+        if (contest == null) {
+            return CommonResult.errorResponse("访问错误：该比赛不存在！");
+        }
+
+        if (!contest.getOpenRank()) {
+            return CommonResult.errorResponse("本场比赛未开启外榜，禁止访问外榜！", CommonResult.STATUS_ACCESS_DENIED);
+        }
+
+        if (contest.getStatus().equals(Constants.Contest.STATUS_SCHEDULED.getCode())) {
+            return CommonResult.errorResponse("本场比赛正在筹备中，禁止访问外榜！", CommonResult.STATUS_ACCESS_DENIED);
+        }
+
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        // 超级管理员或者该比赛的创建者，则为比赛管理者
+        boolean isRoot = false;
+        String currentUid = null;
+
+        if (userRolesVo != null) {
+            currentUid = userRolesVo.getUid();
+            isRoot = SecurityUtils.getSubject().hasRole("root");
+            // 不是比赛创建者或者超管无权限开启强制实时榜单
+            if (!isRoot && !contest.getUid().equals(currentUid)) {
+                forceRefresh = false;
+            }
+        }
+
+        // 校验该比赛是否开启了封榜模式，超级管理员和比赛创建者可以直接看到实际榜单
+        boolean isOpenSealRank = contestService.isSealRank(currentUid, contest, forceRefresh, isRoot);
+
+        if (contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) { // ACM比赛
+
+            // 获取排行榜
+            List<ACMContestRankVo> acmContestScoreboard = contestRecordService.getACMContestScoreboard(isOpenSealRank, removeStar, contest);
+            return CommonResult.successResponse(acmContestScoreboard, "success");
+
+        } else { //OI比赛：以最后一次提交得分作为该题得分
+            // 获取排行榜
+            List<OIContestRankVo> oiContestScoreboard = contestRecordService.getOIContestScoreboard(isOpenSealRank, removeStar, contest);
+            return CommonResult.successResponse(oiContestScoreboard, "success");
+        }
     }
 
 

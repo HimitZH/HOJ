@@ -135,7 +135,6 @@ public class AccountController {
      * @Return
      * @Since 2020/11/5
      */
-
     @RequestMapping(value = "/check-username-or-email", method = RequestMethod.POST)
     public CommonResult checkUsernameOrEmail(@RequestBody Map<String, Object> data) throws MessagingException {
         String email = (String) data.get("email");

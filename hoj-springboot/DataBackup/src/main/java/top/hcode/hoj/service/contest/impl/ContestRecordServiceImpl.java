@@ -2,6 +2,8 @@ package top.hcode.hoj.service.contest.impl;
 
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,6 +11,7 @@ import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.ContestProblemMapper;
 import top.hcode.hoj.dao.JudgeMapper;
@@ -211,15 +214,26 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         return userInfoMapper.getSuperAdminList();
     }
 
+    @Override
+    public List<ACMContestRankVo> getACMContestScoreboard(Boolean isOpenSealRank, Boolean removeStar, Contest contest) {
+        List<ContestRecordVo> acmContestRecord = getACMContestRecord(contest.getAuthor(), contest.getId());
+        return calcACMRank(isOpenSealRank, removeStar, contest, acmContestRecord);
+    }
 
     @Override
-    public IPage<ACMContestRankVo> getContestACMRank(Boolean isOpenSealRank, Contest contest,
+    public List<OIContestRankVo> getOIContestScoreboard(Boolean isOpenSealRank, Boolean removeStar, Contest contest) {
+        return getOIContestOrderRank(isOpenSealRank, removeStar, contest);
+    }
+
+
+    @Override
+    public IPage<ACMContestRankVo> getContestACMRank(Boolean isOpenSealRank, Boolean removeStar, Contest contest,
                                                      int currentPage, int limit) {
 
         List<ContestRecordVo> acmContestRecord = getACMContestRecord(contest.getAuthor(), contest.getId());
 
         // 进行排序计算
-        List<ACMContestRankVo> orderResultList = calcACMRank(isOpenSealRank, contest, acmContestRecord);
+        List<ACMContestRankVo> orderResultList = calcACMRank(isOpenSealRank, removeStar, contest, acmContestRecord);
         // 计算好排行榜，然后进行分页
         Page<ACMContestRankVo> page = new Page<>(currentPage, limit);
         int count = orderResultList.size();
@@ -239,33 +253,9 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
 
     @Override
-    public IPage<OIContestRankVo> getContestOIRank(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime,
-                                                   Date startTime, Date endTime, int currentPage, int limit) {
-
-        // 获取每个用户每道题最近一次提交
-        if (!isOpenSealRank) {
-            // 超级管理员和比赛管理员选择强制刷新 或者 比赛结束
-            return getOIContestRank(cid, contestAuthor, false, sealTime, startTime, endTime, currentPage, limit);
-        } else {
-            String key = Constants.Contest.OI_CONTEST_RANK_CACHE.getName() + "_" + cid;
-            Page<OIContestRankVo> page = (Page<OIContestRankVo>) redisUtils.get(key);
-            if (page == null) {
-                page = getOIContestRank(cid, contestAuthor, true, sealTime, startTime, endTime, currentPage, limit);
-                redisUtils.set(key, page, 2 * 3600);
-            }
-            return page;
-        }
-
-    }
-
-
-    public Page<OIContestRankVo> getOIContestRank(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime,
-                                                  Date startTime, Date endTime, int currentPage, int limit) {
-
-        List<ContestRecordVo> oiContestRecord = contestRecordMapper.getOIContestRecord(cid, contestAuthor, isOpenSealRank, sealTime, startTime, endTime);
-        // 计算排名
-        List<OIContestRankVo> orderResultList = calcOIRank(oiContestRecord);
-
+    public IPage<OIContestRankVo> getContestOIRank(Boolean isOpenSealRank, Boolean removeStar, Contest contest,
+                                                   int currentPage, int limit) {
+        List<OIContestRankVo> orderResultList = getOIContestOrderRank(isOpenSealRank, removeStar, contest);
         // 计算好排行榜，然后进行分页
         Page<OIContestRankVo> page = new Page<>(currentPage, limit);
         int count = orderResultList.size();
@@ -282,6 +272,29 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         return page;
     }
 
+    public List<OIContestRankVo> getOIContestOrderRank(Boolean isOpenSealRank, Boolean removeStar, Contest contest) {
+        List<OIContestRankVo> orderResultList;
+        if (!isOpenSealRank) {
+            // 封榜解除 获取最新数据
+            // 获取每个用户每道题最近一次提交
+            List<ContestRecordVo> oiContestRecord = getOIContestRecord(contest.getId(),
+                    contest.getAuthor(), false, contest.getSealRankTime(), contest.getStartTime(), contest.getEndTime());
+            // 计算排名
+            orderResultList = calcOIRank(oiContestRecord, contest, removeStar);
+        } else {
+            String key = Constants.Contest.OI_CONTEST_RANK_CACHE.getName() + "_" + contest.getId();
+            orderResultList = (List<OIContestRankVo>) redisUtils.get(key);
+            if (orderResultList == null) {
+                List<ContestRecordVo> oiContestRecord = getOIContestRecord(contest.getId(),
+                        contest.getAuthor(), true, contest.getSealRankTime(), contest.getStartTime(), contest.getEndTime());
+                // 计算排名
+                orderResultList = calcOIRank(oiContestRecord, contest, removeStar);
+                redisUtils.set(key, orderResultList, 2 * 3600);
+            }
+        }
+        return orderResultList;
+    }
+
     @Override
     public List<ContestRecordVo> getOIContestRecord(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime, Date startTime, Date endTime) {
         return contestRecordMapper.getOIContestRecord(cid, contestAuthor, isOpenSealRank, sealTime, startTime, endTime);
@@ -293,7 +306,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
     }
 
 
-    public List<ACMContestRankVo> calcACMRank(boolean isOpenSealRank, Contest contest, List<ContestRecordVo> contestRecordList) {
+    public List<ACMContestRankVo> calcACMRank(boolean isOpenSealRank, boolean removeStar, Contest contest, List<ContestRecordVo> contestRecordList) {
 
         List<UserInfo> superAdminList = getSuperAdminList();
 
@@ -403,10 +416,41 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                 .thenComparing(ACMContestRankVo::getTotalTime) //再以总耗时升序
         ).collect(Collectors.toList());
 
+        // 需要打星的用户名列表
+        List<String> starAccountList = starAccountToList(contest.getStarAccount());
+
+        // 如果选择了移除打星队伍，同时该用户属于打星队伍，则将其移除
+        if (removeStar) {
+            orderResultList.removeIf(acmContestRankVo -> starAccountList.contains(acmContestRankVo.getUsername()));
+        }
+
+        int rankNum = 1;
+        int len = orderResultList.size();
+        for (int i = 0; i < len; i++) {
+            ACMContestRankVo currentACMRankVo = orderResultList.get(i);
+            if (starAccountList.contains(currentACMRankVo.getUsername())) {
+                // 打星队伍排名为-1
+                currentACMRankVo.setRank(-1);
+            } else {
+                if (i != 0) {
+                    ACMContestRankVo lastACMRankVo = orderResultList.get(i - 1);
+                    // 当前用户的总罚时和AC数跟前一个用户一样的话，排名则一样
+                    if (lastACMRankVo.getAc().equals(currentACMRankVo.getAc())
+                            && lastACMRankVo.getTotalTime().equals(currentACMRankVo.getTotalTime())) {
+                        currentACMRankVo.setRank(lastACMRankVo.getRank());
+                    } else {
+                        currentACMRankVo.setRank(rankNum);
+                    }
+                } else {
+                    currentACMRankVo.setRank(rankNum);
+                }
+                rankNum++;
+            }
+        }
         return orderResultList;
     }
 
-    public List<OIContestRankVo> calcOIRank(List<ContestRecordVo> oiContestRecord) {
+    public List<OIContestRankVo> calcOIRank(List<ContestRecordVo> oiContestRecord, Contest contest, Boolean removeStar) {
 
         List<UserInfo> superAdminList = getSuperAdminList();
 
@@ -501,11 +545,51 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                 .sorted(Comparator.comparing(OIContestRankVo::getTotalScore, Comparator.reverseOrder())
                         .thenComparing(OIContestRankVo::getTotalTime, Comparator.naturalOrder()))
                 .collect(Collectors.toList());
+
+        // 需要打星的用户名列表
+        List<String> starAccountList = starAccountToList(contest.getStarAccount());
+
+        // 如果选择了移除打星队伍，同时该用户属于打星队伍，则将其移除
+        if (removeStar) {
+            orderResultList.removeIf(acmContestRankVo -> starAccountList.contains(acmContestRankVo.getUsername()));
+        }
+
+        int rankNum = 1;
+        int len = orderResultList.size();
+        for (int i = 0; i < len; i++) {
+            OIContestRankVo currentOIRankVo = orderResultList.get(i);
+            if (starAccountList.contains(currentOIRankVo.getUsername())) {
+                // 打星队伍排名为-1
+                currentOIRankVo.setRank(-1);
+            } else {
+                if (i != 0) {
+                    OIContestRankVo lastOIRankVo = orderResultList.get(i - 1);
+                    // 当前用户的程序总运行时间和总得分跟前一个用户一样的话，排名则一样
+                    if (lastOIRankVo.getTotalScore().equals(currentOIRankVo.getTotalScore())
+                            && lastOIRankVo.getTotalTime().equals(currentOIRankVo.getTotalTime())) {
+                        currentOIRankVo.setRank(lastOIRankVo.getRank());
+                    } else {
+                        currentOIRankVo.setRank(rankNum);
+                    }
+                } else {
+                    currentOIRankVo.setRank(rankNum);
+                }
+                rankNum++;
+            }
+        }
         return orderResultList;
     }
 
 
     private boolean isInSealTimeSubmission(Contest contest, Date submissionDate) {
         return DateUtil.isIn(submissionDate, contest.getSealRankTime(), contest.getEndTime());
+    }
+
+    private List<String> starAccountToList(String starAccountStr) {
+        if (StringUtils.isEmpty(starAccountStr)) {
+            return new ArrayList<>();
+        }
+        JSONObject jsonObject = JSONUtil.parseObj(starAccountStr);
+        return jsonObject.get("star_account", List.class);
     }
 }

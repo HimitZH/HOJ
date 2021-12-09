@@ -12,7 +12,8 @@ export default {
         currentPage:page,
         limit: this.limit,
         cid: this.$route.params.contestID,
-        forceRefresh: this.forceUpdate ? true: false
+        forceRefresh: this.forceUpdate ? true: false,
+        removeStar: !this.showStarUser
       }
       api.getContestRank(params).then(res => {
         if (this.showChart && !refresh) {
@@ -28,8 +29,7 @@ export default {
     handleAutoRefresh (status) {
       if (status == true) {
         this.refreshFunc = setInterval(() => {
-          this.page = 1
-          this.getContestRankData(1, true)
+          this.getContestRankData(this.page, true)
         }, 10000)
       } else {
         clearInterval(this.refreshFunc)
@@ -50,6 +50,14 @@ export default {
         this.$store.commit('changeContestItemVisible', {chart: value})
       }
     },
+    showStarUser:{
+      get () {
+        return !this.$store.state.contest.removeStar
+      },
+      set (value) {
+        this.$store.commit('changeRankRemoveStar', {value: !value})
+      }
+    },
     showTable: {
       get () {
         return this.$store.state.contest.itemVisible.table
@@ -67,7 +75,7 @@ export default {
       }
     },
     refreshDisabled () {
-      return this.contest.status === CONTEST_STATUS.ENDED
+      return this.contest.status == CONTEST_STATUS.ENDED
     }
   },
   beforeDestroy () {

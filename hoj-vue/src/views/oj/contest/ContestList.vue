@@ -176,6 +176,23 @@
                         </el-tag>
                       </el-tooltip>
                     </li>
+                    <li v-if="contest.openRank">
+                      <el-tooltip
+                        :content="$t('m.Contest_Outside_ScoreBoard')"
+                        placement="top"
+                        effect="dark"
+                      >
+                        <el-button
+                          circle
+                          size="small"
+                          type="primary"
+                          icon="el-icon-data-analysis"
+                          @click="
+                            toContestOutsideScoreBoard(contest.id, contest.type)
+                          "
+                        ></el-button>
+                      </el-tooltip>
+                    </li>
                   </ul>
                 </el-col>
                 <el-col
@@ -309,6 +326,19 @@ export default {
         this.$router.push({
           name: 'ContestDetails',
           params: { contestID: contest.id },
+        });
+      }
+    },
+    toContestOutsideScoreBoard(cid, type) {
+      if (type == 0) {
+        this.$router.push({
+          name: 'ACMScoreBoard',
+          params: { contestID: cid },
+        });
+      } else if (type == 1) {
+        this.$router.push({
+          name: 'OIScoreBoard',
+          params: { contestID: cid },
         });
       }
     },

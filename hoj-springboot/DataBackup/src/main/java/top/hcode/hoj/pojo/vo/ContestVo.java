@@ -65,4 +65,7 @@ public class ContestVo implements Serializable {
 
     @ApiModelProperty(value = "排行榜显示（username、nickname、realname）")
     private String rankShowName;
+
+    @ApiModelProperty(value = "是否开放比赛榜单")
+    private Boolean openRank;
 }

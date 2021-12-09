@@ -7,6 +7,8 @@ import Logout from "@/views/oj/user/Logout.vue"
 import SubmissionList from "@/views/oj/status/SubmissionList.vue"
 import SubmissionDetails from "@/views/oj/status/SubmissionDetails.vue"
 import ContestList from "@/views/oj/contest/ContestList.vue"
+import ACMScoreBoard from "@/views/oj/contest/outside/ACMScoreBoard.vue"
+import OIScoreBoard from "@/views/oj/contest/outside/OIScoreBoard.vue"
 import Problem from "@/views/oj/problem/Problem.vue"
 import ACMRank from "@/views/oj/rank/ACMRank.vue"
 import OIRank from "@/views/oj/rank/OIRank.vue"
@@ -73,6 +75,18 @@ const ojRoutes = [
     name: 'ContestList',
     component: ContestList,
     meta: { title: 'Contest' }
+  },
+  {
+    path: '/contest/acm-scoreboard/:contestID',
+    name: 'ACMScoreBoard',
+    component: ACMScoreBoard,
+    meta: { title: 'ACM Contest ScoreBoard' }
+  },
+  {
+    path: '/contest/oi-scoreboard/:contestID',
+    name: 'OIScoreBoard',
+    component: OIScoreBoard,
+    meta: { title: 'OI Contest ScoreBoard' }
   },
   {
     name: 'ContestDetails',
