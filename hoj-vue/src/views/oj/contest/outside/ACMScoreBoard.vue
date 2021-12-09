@@ -382,15 +382,6 @@ export default {
   },
 };
 </script>
-<style>
-.contest-rank-switch {
-  margin-bottom: 30px;
-  margin-top: -8px;
-}
-.contest-rank-switch span {
-  margin-left: 5px;
-}
-</style>
 <style scoped>
 .contest-title {
   text-align: center;
@@ -441,7 +432,10 @@ export default {
   border: 1px solid #e9eaec;
   font-size: 18px;
 }
-
+/deep/.vxe-table .vxe-body--column:not(.col--ellipsis) {
+  line-height: 20px !important;
+  padding: 0 !important;
+}
 /deep/.el-card__body {
   padding: 15px !important;
   padding-top: 20px !important;
@@ -451,10 +445,6 @@ export default {
 .vxe-cell span {
   margin: 0;
   padding: 0;
-}
-/deep/.vxe-table .vxe-body--column {
-  line-height: 20px !important;
-  padding: 0 !important;
 }
 /deep/.vxe-body--column {
   min-width: 0;
@@ -474,5 +464,15 @@ export default {
 }
 .submission-error {
   font-weight: 400;
+}
+</style>
+
+<style>
+.contest-rank-switch {
+  margin-bottom: 30px;
+  margin-top: -8px;
+}
+.contest-rank-switch span {
+  margin-left: 5px;
 }
 </style>

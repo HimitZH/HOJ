@@ -123,6 +123,11 @@ https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js
      })
      Vue.use(VueParticles) // 粒子特效背景
      Vue.use(Katex)  // 数学公式渲染
+     
+     VXETable.setup({
+       // 对组件内置的提示语进行国际化翻译
+       i18n: (key, value) => i18n.t(key, value)
+     })
      Vue.use(VXETable) // 表格组件
      Vue.use(VueClipboard) // 剪贴板
      Vue.use(highlight) // 代码高亮
@@ -143,14 +148,14 @@ https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js
      new Vue({
        router,
        store,
-       i18n,
+     i18n,
        render: h => h(App)
-     }).$mount('#app')
+   }).$mount('#app')
      
      ```
-
+  
   4. 然后使用在`hoj-vue`目录下，使用`npm run build`，npm请自行百度下载安装，之后会生成一个dist文件夹，结构如下：
-
+  
      ```
      dist
      ├── index.html
@@ -163,12 +168,12 @@ https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js
          ├── img
          │   ├── ....
          ├── js
-         │   ├── ....
+       │   ├── ....
      
      ....
      ....
      ```
-
+  
      将 `dist` 文件夹复制到服务器上某个目录下，比如 `/hoj/www/html/dist`，然后修改 `docker-compose.yml`，在 `hoj-frontend` 模块中的 `volumes` 中增加一行 `- /hoj/www/html/dist:/usr/share/nginx/html` （冒号前面的请修改为实际的路径），然后 `docker-compose up -d` 即可。
 
 

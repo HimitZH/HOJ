@@ -157,7 +157,7 @@
         <vxe-table-column
           field="totalScore"
           :title="$t('m.Total_Score')"
-          min-width="100"
+          min-width="90"
         >
           <template v-slot="{ row }">
             <span
@@ -172,7 +172,7 @@
           </template>
         </vxe-table-column>
         <vxe-table-column
-          min-width="120"
+          min-width="80"
           v-for="problem in contestProblems"
           :key="problem.displayId"
         >
@@ -453,7 +453,15 @@ export default {
 }
 /deep/.vxe-table .vxe-body--column {
   line-height: 20px !important;
-  padding: 8px !important;
+  padding: 0px !important;
+}
+/deep/.vxe-body--column {
+  min-width: 0;
+  height: 48px;
+  box-sizing: border-box;
+  text-align: left;
+  text-overflow: ellipsis;
+  vertical-align: middle;
 }
 a.emphasis {
   color: #495060 !important;
