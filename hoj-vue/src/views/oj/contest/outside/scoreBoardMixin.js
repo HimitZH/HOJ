@@ -1,8 +1,9 @@
 import api from '@/common/api'
 import time from '@/common/time';
-import { CONTEST_STATUS,CONTEST_STATUS_REVERSE,CONTEST_TYPE_REVERSE,RULE_TYPE} from '@/common/constants'
+import { CONTEST_STATUS,CONTEST_STATUS_REVERSE,CONTEST_TYPE_REVERSE,RULE_TYPE, buildContestRankConcernedKey} from '@/common/constants'
 import { mapState, mapGetters, mapActions } from 'vuex';
 import moment from 'moment';
+import storage from '@/common/storage';
 export default {
   methods: {
     init(){
@@ -11,7 +12,8 @@ export default {
     this.CONTEST_STATUS = Object.assign({}, CONTEST_STATUS);
     this.CONTEST_STATUS_REVERSE = Object.assign({}, CONTEST_STATUS_REVERSE);
     this.RULE_TYPE = Object.assign({}, RULE_TYPE);
-
+    let key = buildContestRankConcernedKey(this.contestID);
+    this.concernedList = storage.get(key) || [];
     this.$store.dispatch('getScoreBoardContestInfo').then((res) => {
         if (!this.contestEnded) {
           this.autoRefresh = true;
@@ -30,12 +32,13 @@ export default {
       });
     },
     getContestOutsideScoreboard () {
-      let params = {
+      let data = {
         cid: this.$route.params.contestID,
         forceRefresh: this.forceUpdate ? true: false,
-        removeStar: !this.showStarUser
+        removeStar: !this.showStarUser,
+        concernedList:this.concernedList
       }
-      api.getContestOutsideScoreboard(params).then(res => {
+      api.getContestOutsideScoreboard(data).then(res => {
         this.applyToTable(res.data.data)
       },(err)=>{
         if(this.refreshFunc){
@@ -64,6 +67,20 @@ export default {
         return time.secondFormat(this.contest.duration);
       }
     },
+    getProblemCount(num){
+      return num == undefined? 0 : num
+    },
+    updateConcernedList(uid,isConcerned){
+      if(isConcerned){
+        this.concernedList.push(uid);
+      }else{
+        var index = this.concernedList.indexOf(uid);
+        if (index > -1) {
+        this.concernedList.splice(index, 1);
+        }
+      }
+      this.getContestOutsideScoreboard();
+    }
   },
   computed: {
     ...mapState({
@@ -75,6 +92,7 @@ export default {
       'countdown',
       'BeginToNowDuration',
       'isContestAdmin',
+      'userInfo'
     ]),
     forceUpdate: {
       get () {
@@ -90,6 +108,14 @@ export default {
       },
       set (value) {
         this.$store.commit('changeRankRemoveStar', {value: !value})
+      }
+    },
+    concernedList:{
+      get () {
+        return this.$store.state.contest.concernedList
+      },
+      set (value) {
+        this.$store.commit('changeConcernedList', {value: value})
       }
     },
     progressValue: {
@@ -114,6 +140,8 @@ export default {
   beforeDestroy () {
     clearInterval(this.refreshFunc)
     clearInterval(this.timer);
+    let key = buildContestRankConcernedKey(this.contestID);
+    storage.set(key, this.concernedList);
     this.$store.commit('clearContest');
   }
 }

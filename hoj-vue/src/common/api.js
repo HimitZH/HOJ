@@ -418,9 +418,9 @@ const ojApi = {
     })
   },
   // 提供比赛外榜排名数据
-  getContestOutsideScoreboard(params){
-    return ajax('/api/get-contest-outside-scoreboard','get',{
-      params: params
+  getContestOutsideScoreboard(data){
+    return ajax('/api/get-contest-outside-scoreboard','post',{
+      data
     })
   },
   // 注册私有比赛权限
@@ -458,9 +458,9 @@ const ojApi = {
     })
   },
 
-  getContestRank(params){
-    return ajax('/api/get-contest-rank', 'get', {
-      params
+  getContestRank(data){
+    return ajax('/api/get-contest-rank', 'post', {
+      data
     })
   },
 

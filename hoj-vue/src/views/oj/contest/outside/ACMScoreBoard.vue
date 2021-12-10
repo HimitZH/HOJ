@@ -121,7 +121,17 @@
               :src="row.avatar"
               :title="row[contest.rankShowName]"
             ></avatar>
-
+            <span
+              class="contest-rank-concerned"
+              @click="updateConcernedList(row.uid, !row.isConcerned)"
+            >
+              <i
+                class="fa fa-star"
+                v-if="row.isConcerned"
+                style="color: red;"
+              ></i>
+              <i class="el-icon-star-off" v-else></i>
+            </span>
             <span style="float:right;text-align:right">
               <a @click="getUserHomeByUsername(row.uid, row.username)">
                 <span class="contest-username"
@@ -157,7 +167,17 @@
               :src="row.avatar"
               :title="row[contest.rankShowName]"
             ></avatar>
-
+            <span
+              class="contest-rank-concerned"
+              @click="updateConcernedList(row.uid, !row.isConcerned)"
+            >
+              <i
+                class="fa fa-star"
+                v-if="row.isConcerned"
+                style="color: red;"
+              ></i>
+              <i class="el-icon-star-off" v-else></i>
+            </span>
             <span style="float:right;text-align:right">
               <a @click="getUserHomeByUsername(row.uid, row.username)">
                 <span class="contest-username"
@@ -226,10 +246,24 @@
               <el-tooltip effect="dark" placement="top">
                 <div slot="content">
                   {{ problem.displayId + '. ' + problem.displayTitle }}
+                  <br />
+                  {{
+                    'Accepted: ' +
+                      getProblemCount(problemACCountMap[problem.displayId])
+                  }}
+                  <br />
+                  {{
+                    'Rejected: ' +
+                      getProblemCount(problemErrorCountMap[problem.displayId])
+                  }}
                 </div>
-                <span class="emphasis" style="color:#495060;"
-                  >{{ problem.displayId }}
-                </span>
+                <div>
+                  <span class="emphasis" style="color:#495060;"
+                    >{{ problem.displayId }}({{
+                      getProblemCount(problemACCountMap[problem.displayId])
+                    }})
+                  </span>
+                </div>
               </el-tooltip>
             </span>
           </template>
@@ -303,6 +337,8 @@ export default {
       CONTEST_STATUS_REVERSE: {},
       CONTEST_TYPE_REVERSE: {},
       RULE_TYPE: {},
+      problemACCountMap: {},
+      problemErrorCountMap: {},
     };
   },
   created() {
@@ -322,7 +358,6 @@ export default {
       if (column.property === 'username' && row.userCellClassName) {
         return row.userCellClassName;
       }
-
       if (
         column.property !== 'rank' &&
         column.property !== 'rating' &&
@@ -332,15 +367,34 @@ export default {
         return row.cellClassName[
           [this.contestProblems[columnIndex - 4].displayId]
         ];
+      } else {
+        if (row.isConcerned && column.property !== 'username') {
+          return 'bg-concerned';
+        }
       }
     },
     applyToTable(data) {
       let dataRank = JSON.parse(JSON.stringify(data));
+      let acCountMap = {};
+      let errorCountMap = {};
       dataRank.forEach((rank, i) => {
         let info = rank.submissionInfo;
         let cellClass = {};
+        if (this.concernedList.indexOf(rank.uid) != -1) {
+          dataRank[i].isConcerned = true;
+        }
         Object.keys(info).forEach((problemID) => {
           dataRank[i][problemID] = info[problemID];
+
+          if (!acCountMap[problemID]) {
+            acCountMap[problemID] = 0;
+          }
+          if (!errorCountMap[problemID]) {
+            errorCountMap[problemID] = 0;
+          }
+
+          errorCountMap[problemID] += info[problemID].errorNum;
+
           if (dataRank[i][problemID].ACTime != null) {
             dataRank[i][problemID].errorNum += 1;
             dataRank[i][problemID].specificTime = this.parseTimeToSpecific(
@@ -353,8 +407,10 @@ export default {
           let status = info[problemID];
           if (status.isFirstAC) {
             cellClass[problemID] = 'first-ac';
+            acCountMap[problemID] += 1;
           } else if (status.isAC) {
             cellClass[problemID] = 'ac';
+            acCountMap[problemID] += 1;
           } else if (status.tryNum != null && status.tryNum > 0) {
             cellClass[problemID] = 'try';
           } else if (status.errorNum != 0) {
@@ -370,6 +426,8 @@ export default {
         }
       });
       this.dataRank = dataRank;
+      this.problemACCountMap = acCountMap;
+      this.problemErrorCountMap = errorCountMap;
     },
     parseTimeToSpecific(totalTime) {
       return time.secondFormat(totalTime);
@@ -432,6 +490,9 @@ export default {
   border: 1px solid #e9eaec;
   font-size: 18px;
 }
+/deep/.vxe-table .vxe-header--column:not(.col--ellipsis) {
+  padding: 4px 0 !important;
+}
 /deep/.vxe-table .vxe-body--column:not(.col--ellipsis) {
   line-height: 20px !important;
   padding: 0 !important;
@@ -474,5 +535,14 @@ export default {
 }
 .contest-rank-switch span {
   margin-left: 5px;
+}
+.contest-rank-concerned {
+  font-size: 1rem;
+  margin-left: 0.5rem !important;
+  vertical-align: top;
+}
+.contest-rank-concerned i {
+  margin-top: 11px;
+  cursor: pointer;
 }
 </style>

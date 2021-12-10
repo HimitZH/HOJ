@@ -140,6 +140,7 @@ public class Constants {
 
         SUBMIT_NON_CONTEST_LOCK("submit_non_contest_lock:"),
         DISCUSSION_ADD_NUM_LOCK("discussion_add_num_lock:"),
+        CONTEST_ADD_PRINT_LOCK("contest_add_print_lock:"),
 
         REMOTE_JUDGE_CF_ACCOUNT_NUM("remote_judge_cf_account:");
 

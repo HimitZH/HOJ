@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ContestPrintDto;
+import top.hcode.hoj.pojo.dto.ContestRankDto;
 import top.hcode.hoj.pojo.dto.UserReadContestAnnouncementDto;
 import top.hcode.hoj.pojo.entity.common.Announcement;
 import top.hcode.hoj.pojo.entity.problem.*;
@@ -22,6 +23,7 @@ import top.hcode.hoj.service.contest.impl.*;
 import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
 import top.hcode.hoj.service.problem.impl.*;
 import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.utils.RedisUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -79,6 +81,9 @@ public class ContestController {
 
     @Autowired
     private ContestPrintServiceImpl contestPrintService;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
     /**
      * @MethodName getContestList
@@ -475,21 +480,36 @@ public class ContestController {
      * @Return
      * @Since 2020/10/28
      */
-    @GetMapping("/get-contest-rank")
+    @PostMapping("/get-contest-rank")
     @RequiresAuthentication
-    public CommonResult getContestRank(@RequestParam(value = "cid", required = true) Long cid,
-                                       @RequestParam(value = "limit", required = false) Integer limit,
-                                       @RequestParam(value = "currentPage", required = false) Integer currentPage,
-                                       @RequestParam(value = "forceRefresh") Boolean forceRefresh,
-                                       @RequestParam(value = "removeStar", defaultValue = "0") Boolean removeStar,
-                                       HttpServletRequest request) {
+    public CommonResult getContestRank(@RequestBody ContestRankDto contestRankDto, HttpServletRequest request) {
+
+        Long cid = contestRankDto.getCid();
+        List<String> concernedList = contestRankDto.getConcernedList();
+        Integer currentPage = contestRankDto.getCurrentPage();
+        Integer limit = contestRankDto.getLimit();
+        Boolean removeStar = contestRankDto.getRemoveStar();
+        Boolean forceRefresh = contestRankDto.getForceRefresh();
+
+        if (cid == null) {
+            return CommonResult.errorResponse("Error: cid cannot be null!");
+        }
+        if (removeStar == null) {
+            removeStar = false;
+        }
+        if (forceRefresh == null) {
+            forceRefresh = false;
+        }
+        // 页数，每页题数若为空，设置默认值
+        if (currentPage == null || currentPage < 1) currentPage = 1;
+        if (limit == null || limit < 1) limit = 30;
 
         // 获取当前登录的用户
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
         // 获取本场比赛的状态
-        Contest contest = contestService.getById(cid);
+        Contest contest = contestService.getById(contestRankDto.getCid());
 
         // 超级管理员或者该比赛的创建者，则为比赛管理者
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
@@ -511,11 +531,13 @@ public class ContestController {
         if (contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) { // ACM比赛
 
             // 进行排行榜计算以及排名分页
-            resultList = contestRecordService.getContestACMRank(isOpenSealRank, removeStar, contest, currentPage, limit);
+            resultList = contestRecordService.getContestACMRank(isOpenSealRank,
+                    removeStar, userRolesVo.getUid(), concernedList, contest, currentPage, limit);
 
         } else { //OI比赛：以最后一次提交得分作为该题得分
 
-            resultList = contestRecordService.getContestOIRank(isOpenSealRank, removeStar, contest, currentPage, limit);
+            resultList = contestRecordService.getContestOIRank(isOpenSealRank,
+                    removeStar, userRolesVo.getUid(), concernedList, contest, currentPage, limit);
         }
 
         if (resultList == null || resultList.getSize() == 0) {
@@ -617,8 +639,10 @@ public class ContestController {
     @RequiresAuthentication
     public CommonResult submitPrintText(@RequestBody ContestPrintDto contestPrintDto,
                                         HttpServletRequest request) {
+
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
         // 获取本场比赛的状态
         Contest contest = contestService.getById(contestPrintDto.getCid());
 
@@ -633,6 +657,15 @@ public class ContestController {
         if (commonResult != null) {
             return commonResult;
         }
+
+        String lockKey = Constants.Account.CONTEST_ADD_PRINT_LOCK.getCode() + userRolesVo.getUid();
+        if (redisUtils.hasKey(lockKey)) {
+            long expire = redisUtils.getExpire(lockKey);
+            return CommonResult.errorResponse("提交打印功能限制，请在" + expire + "秒后再进行提交！", CommonResult.STATUS_FORBIDDEN);
+        } else {
+            redisUtils.set(lockKey, 1, 30);
+        }
+
         boolean result = contestPrintService.saveOrUpdate(new ContestPrint().setCid(contestPrintDto.getCid())
                 .setContent(contestPrintDto.getContent())
                 .setUsername(userRolesVo.getUsername())
@@ -648,8 +681,8 @@ public class ContestController {
 
 
     /**
-     * @MethodName getContestOutsideInfo
      * @param cid 比赛id
+     * @MethodName getContestOutsideInfo
      * @Description 提供比赛外榜所需的比赛信息和题目信息
      * @Return
      * @Since 2021/12/8
@@ -685,19 +718,29 @@ public class ContestController {
 
     /**
      * @param request
-     * @param cid          比赛id
-     * @param removeStar   是否移除打星队伍
-     * @param forceRefresh 是否强制实时榜单
+     * @
      * @MethodName getContestScoreBoard
      * @Description 提供比赛外榜排名数据
      * @Return
      * @Since 2021/12/07
      */
-    @GetMapping("/get-contest-outside-scoreboard")
-    public CommonResult getContestOutsideScoreboard(@RequestParam(value = "cid", required = true) Long cid,
-                                                    @RequestParam(value = "removeStar", defaultValue = "0") Boolean removeStar,
-                                                    @RequestParam(value = "forceRefresh") Boolean forceRefresh,
-                                                    HttpServletRequest request) {
+    @PostMapping("/get-contest-outside-scoreboard")
+    public CommonResult getContestOutsideScoreboard(@RequestBody ContestRankDto contestRankDto, HttpServletRequest request) {
+
+        Long cid = contestRankDto.getCid();
+        List<String> concernedList = contestRankDto.getConcernedList();
+        Boolean removeStar = contestRankDto.getRemoveStar();
+        Boolean forceRefresh = contestRankDto.getForceRefresh();
+
+        if (cid == null) {
+            return CommonResult.errorResponse("Error: cid cannot be null!");
+        }
+        if (removeStar == null) {
+            removeStar = false;
+        }
+        if (forceRefresh == null) {
+            forceRefresh = false;
+        }
 
         // 获取本场比赛的状态
         Contest contest = contestService.getById(cid);
@@ -737,12 +780,14 @@ public class ContestController {
         if (contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) { // ACM比赛
 
             // 获取排行榜
-            List<ACMContestRankVo> acmContestScoreboard = contestRecordService.getACMContestScoreboard(isOpenSealRank, removeStar, contest);
+            List<ACMContestRankVo> acmContestScoreboard = contestRecordService.getACMContestScoreboard(
+                    isOpenSealRank, removeStar, contest, null, concernedList);
             return CommonResult.successResponse(acmContestScoreboard, "success");
 
         } else { //OI比赛：以最后一次提交得分作为该题得分
             // 获取排行榜
-            List<OIContestRankVo> oiContestScoreboard = contestRecordService.getOIContestScoreboard(isOpenSealRank, removeStar, contest);
+            List<OIContestRankVo> oiContestScoreboard = contestRecordService.getOIContestScoreboard(
+                    isOpenSealRank, removeStar, contest, null, concernedList);
             return CommonResult.successResponse(oiContestScoreboard, "success");
         }
     }

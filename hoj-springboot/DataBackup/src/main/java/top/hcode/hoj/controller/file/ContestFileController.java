@@ -119,13 +119,15 @@ public class ContestFileController {
 
         if (contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) { // ACM比赛
 
-            List<ACMContestRankVo> acmContestRankVoList = contestRecordService.getACMContestScoreboard(isOpenSealRank, removeStar, contest);
+            List<ACMContestRankVo> acmContestRankVoList = contestRecordService.getACMContestScoreboard(
+                    isOpenSealRank, removeStar, contest,null,null);
             EasyExcel.write(response.getOutputStream())
                     .head(fileService.getContestRankExcelHead(contestProblemDisplayIDList, true))
                     .sheet("rank")
                     .doWrite(fileService.changeACMContestRankToExcelRowList(acmContestRankVoList, contestProblemDisplayIDList,contest.getRankShowName()));
         } else {
-            List<OIContestRankVo> oiContestRankVoList = contestRecordService.getOIContestScoreboard(isOpenSealRank, removeStar, contest);
+            List<OIContestRankVo> oiContestRankVoList = contestRecordService.getOIContestScoreboard(
+                    isOpenSealRank, removeStar, contest,null,null);
             EasyExcel.write(response.getOutputStream())
                     .head(fileService.getContestRankExcelHead(contestProblemDisplayIDList, false))
                     .sheet("rank")

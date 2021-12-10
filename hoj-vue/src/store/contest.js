@@ -8,6 +8,7 @@ const state = {
   submitAccess:false, // 保护比赛的提交权限
   forceUpdate: false, // 强制实时榜单
   removeStar: false, // 榜单去除打星队伍
+  concernedList:[], // 关注队伍
   contest: {
     auth: CONTEST_TYPE.PUBLIC,
     openPrint: false,
@@ -157,6 +158,9 @@ const mutations = {
   },
   changeRankRemoveStar(state, payload){
     state.removeStar = payload.value
+  },
+  changeConcernedList(state, payload){
+    state.concernedList = payload.value
   },
   changeContestProblems(state, payload) {
     state.contestProblems = payload.contestProblems;

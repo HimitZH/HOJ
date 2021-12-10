@@ -11,6 +11,7 @@ import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.ContestProblemMapper;
@@ -215,25 +216,38 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
     }
 
     @Override
-    public List<ACMContestRankVo> getACMContestScoreboard(Boolean isOpenSealRank, Boolean removeStar, Contest contest) {
+    public List<ACMContestRankVo> getACMContestScoreboard(Boolean isOpenSealRank,
+                                                          Boolean removeStar,
+                                                          Contest contest,
+                                                          String currentUserId,
+                                                          List<String> concernedList) {
         List<ContestRecordVo> acmContestRecord = getACMContestRecord(contest.getAuthor(), contest.getId());
-        return calcACMRank(isOpenSealRank, removeStar, contest, acmContestRecord);
+        return calcACMRank(isOpenSealRank, removeStar, contest, acmContestRecord, currentUserId, concernedList);
     }
 
     @Override
-    public List<OIContestRankVo> getOIContestScoreboard(Boolean isOpenSealRank, Boolean removeStar, Contest contest) {
-        return getOIContestOrderRank(isOpenSealRank, removeStar, contest);
+    public List<OIContestRankVo> getOIContestScoreboard(Boolean isOpenSealRank,
+                                                        Boolean removeStar,
+                                                        Contest contest,
+                                                        String currentUserId,
+                                                        List<String> concernedList) {
+        return getOIContestOrderRank(isOpenSealRank, removeStar, contest, currentUserId, concernedList);
     }
 
 
     @Override
-    public IPage<ACMContestRankVo> getContestACMRank(Boolean isOpenSealRank, Boolean removeStar, Contest contest,
-                                                     int currentPage, int limit) {
+    public IPage<ACMContestRankVo> getContestACMRank(Boolean isOpenSealRank,
+                                                     Boolean removeStar,
+                                                     String currentUserId,
+                                                     List<String> concernedList,
+                                                     Contest contest,
+                                                     int currentPage,
+                                                     int limit) {
 
         List<ContestRecordVo> acmContestRecord = getACMContestRecord(contest.getAuthor(), contest.getId());
 
         // 进行排序计算
-        List<ACMContestRankVo> orderResultList = calcACMRank(isOpenSealRank, removeStar, contest, acmContestRecord);
+        List<ACMContestRankVo> orderResultList = calcACMRank(isOpenSealRank, removeStar, contest, acmContestRecord, currentUserId, concernedList);
         // 计算好排行榜，然后进行分页
         Page<ACMContestRankVo> page = new Page<>(currentPage, limit);
         int count = orderResultList.size();
@@ -253,9 +267,13 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
 
     @Override
-    public IPage<OIContestRankVo> getContestOIRank(Boolean isOpenSealRank, Boolean removeStar, Contest contest,
+    public IPage<OIContestRankVo> getContestOIRank(Boolean isOpenSealRank,
+                                                   Boolean removeStar,
+                                                   String currentUserId,
+                                                   List<String> concernedList,
+                                                   Contest contest,
                                                    int currentPage, int limit) {
-        List<OIContestRankVo> orderResultList = getOIContestOrderRank(isOpenSealRank, removeStar, contest);
+        List<OIContestRankVo> orderResultList = getOIContestOrderRank(isOpenSealRank, removeStar, contest, currentUserId, concernedList);
         // 计算好排行榜，然后进行分页
         Page<OIContestRankVo> page = new Page<>(currentPage, limit);
         int count = orderResultList.size();
@@ -272,25 +290,29 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         return page;
     }
 
-    public List<OIContestRankVo> getOIContestOrderRank(Boolean isOpenSealRank, Boolean removeStar, Contest contest) {
+    public List<OIContestRankVo> getOIContestOrderRank(Boolean isOpenSealRank,
+                                                       Boolean removeStar,
+                                                       Contest contest,
+                                                       String currentUserId,
+                                                       List<String> concernedList) {
         List<OIContestRankVo> orderResultList;
         if (!isOpenSealRank) {
             // 封榜解除 获取最新数据
             // 获取每个用户每道题最近一次提交
-            List<ContestRecordVo> oiContestRecord = getOIContestRecord(contest.getId(),
+            List<ContestRecordVo> oiContestRecordList = getOIContestRecord(contest.getId(),
                     contest.getAuthor(), false, contest.getSealRankTime(), contest.getStartTime(), contest.getEndTime());
             // 计算排名
-            orderResultList = calcOIRank(oiContestRecord, contest, removeStar);
+            orderResultList = calcOIRank(oiContestRecordList, contest, removeStar, currentUserId, concernedList);
         } else {
             String key = Constants.Contest.OI_CONTEST_RANK_CACHE.getName() + "_" + contest.getId();
-            orderResultList = (List<OIContestRankVo>) redisUtils.get(key);
-            if (orderResultList == null) {
-                List<ContestRecordVo> oiContestRecord = getOIContestRecord(contest.getId(),
+            List<ContestRecordVo> oiContestRecordList = (List<ContestRecordVo>) redisUtils.get(key);
+            if (oiContestRecordList == null) {
+                oiContestRecordList = getOIContestRecord(contest.getId(),
                         contest.getAuthor(), true, contest.getSealRankTime(), contest.getStartTime(), contest.getEndTime());
-                // 计算排名
-                orderResultList = calcOIRank(oiContestRecord, contest, removeStar);
-                redisUtils.set(key, orderResultList, 2 * 3600);
+                redisUtils.set(key, oiContestRecordList, 2 * 3600);
             }
+            // 计算排名
+            orderResultList = calcOIRank(oiContestRecordList, contest, removeStar, currentUserId, concernedList);
         }
         return orderResultList;
     }
@@ -306,8 +328,21 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
     }
 
 
-    public List<ACMContestRankVo> calcACMRank(boolean isOpenSealRank, boolean removeStar, Contest contest, List<ContestRecordVo> contestRecordList) {
-
+    /**
+     * @param isOpenSealRank    是否是查询封榜后的数据
+     * @param removeStar        是否需要移除打星队伍
+     * @param contest           比赛实体信息
+     * @param contestRecordList 比赛记录数据
+     * @param currentUserId     当前查看榜单的用户uuid,不为空则将该数据复制一份放置列表最前
+     * @param concernedList     关注的用户（uuid）列表
+     * @MethodName calcACMRank
+     * @Description TODO
+     * @Return
+     * @Since 2021/12/10
+     */
+    public List<ACMContestRankVo> calcACMRank(boolean isOpenSealRank, boolean removeStar, Contest contest,
+                                              List<ContestRecordVo> contestRecordList, String currentUserId,
+                                              List<String> concernedList) {
         List<UserInfo> superAdminList = getSuperAdminList();
 
         List<String> superAdminUidList = superAdminList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
@@ -423,6 +458,14 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         if (removeStar) {
             orderResultList.removeIf(acmContestRankVo -> starAccountList.contains(acmContestRankVo.getUsername()));
         }
+        // 记录当前用户排名数据和关注列表的用户排名数据
+        List<ACMContestRankVo> topACMRankVoList = new ArrayList<>();
+        boolean needAddConcernedUser = false;
+        if (!CollectionUtils.isEmpty(concernedList)) {
+            needAddConcernedUser = true;
+            // 移除关注列表与当前用户重复
+            concernedList.remove(currentUserId);
+        }
 
         int rankNum = 1;
         int len = orderResultList.size();
@@ -446,11 +489,37 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                 }
                 rankNum++;
             }
+
+            if (!StringUtils.isEmpty(currentUserId) &&
+                    currentACMRankVo.getUid().equals(currentUserId)) {
+                topACMRankVoList.add(currentACMRankVo);
+            }
+
+            // 需要添加关注用户
+            if (needAddConcernedUser) {
+                if (concernedList.contains(currentACMRankVo.getUid())) {
+                    topACMRankVoList.add(currentACMRankVo);
+                }
+            }
         }
-        return orderResultList;
+        topACMRankVoList.addAll(orderResultList);
+        return topACMRankVoList;
     }
 
-    public List<OIContestRankVo> calcOIRank(List<ContestRecordVo> oiContestRecord, Contest contest, Boolean removeStar) {
+
+    /**
+     * @param removeStar        是否需要移除打星队伍
+     * @param contest           比赛实体信息
+     * @param oiContestRecord   比赛记录数据
+     * @param currentUserId     当前查看榜单的用户uuid,不为空则将该数据复制一份放置列表最前
+     * @param concernedList     关注的用户（uuid）列表
+     * @MethodName calcOIRank
+     * @Description TODO
+     * @Return
+     * @Since 2021/12/10
+     */
+    public List<OIContestRankVo> calcOIRank(List<ContestRecordVo> oiContestRecord, Contest contest,
+                                            Boolean removeStar, String currentUserId, List<String> concernedList) {
 
         List<UserInfo> superAdminList = getSuperAdminList();
 
@@ -554,6 +623,15 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
             orderResultList.removeIf(acmContestRankVo -> starAccountList.contains(acmContestRankVo.getUsername()));
         }
 
+        // 记录当前用户排名数据和关注列表的用户排名数据
+        List<OIContestRankVo> topOIRankVoList = new ArrayList<>();
+        boolean needAddConcernedUser = false;
+        if (!CollectionUtils.isEmpty(concernedList)) {
+            needAddConcernedUser = true;
+            // 移除关注列表与当前用户重复
+            concernedList.remove(currentUserId);
+        }
+
         int rankNum = 1;
         int len = orderResultList.size();
         for (int i = 0; i < len; i++) {
@@ -575,9 +653,23 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                     currentOIRankVo.setRank(rankNum);
                 }
                 rankNum++;
+
+            }
+
+            if (!StringUtils.isEmpty(currentUserId) &&
+                    currentOIRankVo.getUid().equals(currentUserId)) {
+                topOIRankVoList.add(currentOIRankVo);
+            }
+
+            // 需要添加关注用户
+            if (needAddConcernedUser) {
+                if (concernedList.contains(currentOIRankVo.getUid())) {
+                    topOIRankVoList.add(currentOIRankVo);
+                }
             }
         }
-        return orderResultList;
+        topOIRankVoList.addAll(orderResultList);
+        return topOIRankVoList;
     }
 
 

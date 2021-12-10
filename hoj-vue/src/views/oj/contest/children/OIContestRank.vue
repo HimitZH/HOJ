@@ -90,7 +90,17 @@
               :src="row.avatar"
               :title="row[contest.rankShowName]"
             ></avatar>
-
+            <span
+              class="contest-rank-concerned"
+              @click="updateConcernedList(row.uid, !row.isConcerned)"
+            >
+              <i
+                class="fa fa-star"
+                v-if="row.isConcerned"
+                style="color: red;"
+              ></i>
+              <i class="el-icon-star-off" v-else></i>
+            </span>
             <span style="float:right;text-align:right">
               <a @click="getUserHomeByUsername(row.uid, row.username)">
                 <span class="contest-username"
@@ -127,7 +137,17 @@
               :src="row.avatar"
               :title="row[contest.rankShowName]"
             ></avatar>
-
+            <span
+              class="contest-rank-concerned"
+              @click="updateConcernedList(row.uid, !row.isConcerned)"
+            >
+              <i
+                class="fa fa-star"
+                v-if="row.isConcerned"
+                style="color: red;"
+              ></i>
+              <i class="el-icon-star-off" v-else></i>
+            </span>
             <span style="float:right;text-align:right">
               <a @click="getUserHomeByUsername(row.uid, row.username)">
                 <span class="contest-username"
@@ -208,7 +228,7 @@
                   @click="getContestProblemById(problem.displayId)"
                   class="emphasis"
                   style="color:#495060;"
-                  >{{ problem.displayId }}
+                  >{{ problem.displayId }}({{ problem.ac }})
                 </a>
               </el-tooltip>
             </span>
@@ -318,6 +338,9 @@ export default {
       },
     };
   },
+  created() {
+    this.initConcernedList();
+  },
   mounted() {
     this.contestID = this.$route.params.contestID;
     this.getContestRankData(1);
@@ -338,6 +361,17 @@ export default {
     ...mapActions(['getContestProblems']),
 
     cellClassName({ row, rowIndex, column, columnIndex }) {
+      if (row.username == this.userInfo.username) {
+        if (
+          column.property == 'rank' ||
+          column.property == 'totalScore' ||
+          column.property == 'username' ||
+          column.property == 'realname'
+        ) {
+          return 'own-submit-row';
+        }
+      }
+
       if (column.property === 'username' && row.userCellClassName) {
         return row.userCellClassName;
       }
@@ -356,6 +390,10 @@ export default {
           return row.cellClassName[
             [this.contestProblems[columnIndex - 3].displayId]
           ];
+        }
+      } else {
+        if (row.isConcerned && column.property !== 'username') {
+          return 'bg-concerned';
         }
       }
     },
@@ -382,9 +420,16 @@ export default {
     },
     applyToChart(rankData) {
       let [user, scores] = [[], []];
+      let rank = 1;
       rankData.forEach((ele) => {
-        user.push(ele[this.contest.rankShowName]);
-        scores.push(ele.totalScore);
+        if (ele.rank == rank) {
+          user.push(ele[this.contest.rankShowName]);
+          scores.push(ele.totalScore);
+          rank++;
+        }
+        if (rank > 10) {
+          return;
+        }
       });
       this.options.xAxis[0].data = user;
       this.options.series[0].data = scores;
@@ -394,6 +439,9 @@ export default {
       dataRank.forEach((rank, i) => {
         let info = rank.submissionInfo;
         let cellClass = {};
+        if (this.concernedList.indexOf(rank.uid) != -1) {
+          dataRank[i].isConcerned = true;
+        }
         Object.keys(info).forEach((problemID) => {
           dataRank[i][problemID] = info[problemID];
           let score = info[problemID];
@@ -460,6 +508,9 @@ export default {
 .vxe-cell span {
   margin: 0;
   padding: 0;
+}
+/deep/.vxe-table .vxe-header--column:not(.col--ellipsis) {
+  padding: 4px 0 !important;
 }
 /deep/.vxe-table .vxe-body--column {
   line-height: 20px !important;
