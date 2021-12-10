@@ -20,7 +20,7 @@ export default {
           this.handleAutoRefresh(true);
         }
         this.changeDomTitle({ title: res.data.data.title });
-        let data = res.data.data;
+        let data = res.data.data.contest;
         let endTime = moment(data.endTime);
         // 如果当前时间还是在比赛结束前的时间，需要计算倒计时，同时开启获取比赛公告的定时器
         if (endTime.isAfter(moment(data.now))) {
