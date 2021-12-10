@@ -122,7 +122,17 @@
               :src="row.avatar"
               :title="row[contest.rankShowName]"
             ></avatar>
-
+            <span
+              class="contest-rank-concerned"
+              @click="updateConcernedList(row.uid, !row.isConcerned)"
+            >
+              <i
+                class="fa fa-star"
+                v-if="row.isConcerned"
+                style="color: red;"
+              ></i>
+              <i class="el-icon-star-off" v-else></i>
+            </span>
             <span style="float:right;text-align:right">
               <a @click="getUserHomeByUsername(row.uid, row.username)">
                 <span class="contest-username"
@@ -158,7 +168,17 @@
               :src="row.avatar"
               :title="row[contest.rankShowName]"
             ></avatar>
-
+            <span
+              class="contest-rank-concerned"
+              @click="updateConcernedList(row.uid, !row.isConcerned)"
+            >
+              <i
+                class="fa fa-star"
+                v-if="row.isConcerned"
+                style="color: red;"
+              ></i>
+              <i class="el-icon-star-off" v-else></i>
+            </span>
             <span style="float:right;text-align:right">
               <a @click="getUserHomeByUsername(row.uid, row.username)">
                 <span class="contest-username"
@@ -218,10 +238,24 @@
               <el-tooltip effect="dark" placement="top">
                 <div slot="content">
                   {{ problem.displayId + '. ' + problem.displayTitle }}
+                  <br />
+                  {{
+                    'Accepted: ' +
+                      getProblemCount(problemACCountMap[problem.displayId])
+                  }}
+                  <br />
+                  {{
+                    'Rejected: ' +
+                      getProblemCount(problemErrorCountMap[problem.displayId])
+                  }}
                 </div>
-                <span class="emphasis" style="color:#495060;"
-                  >{{ problem.displayId }}
-                </span>
+                <div>
+                  <span class="emphasis" style="color:#495060;"
+                    >{{ problem.displayId }}({{
+                      getProblemCount(problemACCountMap[problem.displayId])
+                    }})
+                  </span>
+                </div>
               </el-tooltip>
             </span>
           </template>
@@ -260,6 +294,8 @@ export default {
       CONTEST_STATUS_REVERSE: {},
       CONTEST_TYPE_REVERSE: {},
       RULE_TYPE: {},
+      problemACCountMap: {},
+      problemErrorCountMap: {},
     };
   },
   created() {
@@ -287,6 +323,10 @@ export default {
         return row.cellClassName[
           [this.contestProblems[columnIndex - 3].displayId]
         ];
+      } else {
+        if (row.isConcerned && column.property !== 'username') {
+          return 'bg-concerned';
+        }
       }
     },
     getUserHomeByUsername(uid, username) {
@@ -297,18 +337,33 @@ export default {
     },
     applyToTable(data) {
       let dataRank = JSON.parse(JSON.stringify(data));
+      let acCountMap = {};
+      let errorCountMap = {};
       dataRank.forEach((rank, i) => {
         let info = rank.submissionInfo;
         let cellClass = {};
+        if (this.concernedList.indexOf(rank.uid) != -1) {
+          dataRank[i].isConcerned = true;
+        }
         Object.keys(info).forEach((problemID) => {
           dataRank[i][problemID] = info[problemID];
+          if (!acCountMap[problemID]) {
+            acCountMap[problemID] = 0;
+          }
+          if (!errorCountMap[problemID]) {
+            errorCountMap[problemID] = 0;
+          }
+
           let score = info[problemID];
           if (score == 0) {
             cellClass[problemID] = 'oi-0';
+            errorCountMap[problemID] += 1;
           } else if (score > 0 && score < 100) {
             cellClass[problemID] = 'oi-between';
+            errorCountMap[problemID] += 1;
           } else if (score == 100) {
             cellClass[problemID] = 'oi-100';
+            acCountMap[problemID] += 1;
           }
         });
         dataRank[i].cellClassName = cellClass;
@@ -320,6 +375,8 @@ export default {
         }
       });
       this.dataRank = dataRank;
+      this.problemACCountMap = acCountMap;
+      this.problemErrorCountMap = errorCountMap;
     },
   },
 };
@@ -384,6 +441,10 @@ export default {
 .vxe-cell span {
   margin: 0;
   padding: 0;
+}
+
+/deep/.vxe-table .vxe-header--column:not(.col--ellipsis) {
+  padding: 4px 0 !important;
 }
 
 /deep/.vxe-table .vxe-body--column:not(.col--ellipsis) {

@@ -28,20 +28,45 @@ public interface ContestRecordService extends IService<ContestRecord> {
 
     CommonResult submitContestProblem(ToJudgeDto judgeDto, UserRolesVo userRolesVo, Judge judge);
 
-    IPage<ContestRecord> getACInfo(Integer currentPage, Integer limit, Integer status, Long cid, String contestCreatorId);
+    IPage<ContestRecord> getACInfo(Integer currentPage,
+                                   Integer limit,
+                                   Integer status,
+                                   Long cid,
+                                   String contestCreatorId);
 
-    IPage<ACMContestRankVo> getContestACMRank(Boolean isOpenSealRank, Boolean removeStar, Contest contest, int currentPage, int limit);
+    IPage<ACMContestRankVo> getContestACMRank(Boolean isOpenSealRank,
+                                              Boolean removeStar,
+                                              String currentUserId,
+                                              List<String> concernedList,
+                                              Contest contest,
+                                              int currentPage,
+                                              int limit);
 
-    IPage<OIContestRankVo> getContestOIRank(Boolean isOpenSealRank, Boolean removeStar, Contest contest, int currentPage, int limit);
+    IPage<OIContestRankVo> getContestOIRank(Boolean isOpenSealRank,
+                                            Boolean removeStar,
+                                            String currentUserId,
+                                            List<String> concernedList,
+                                            Contest contest,
+                                            int currentPage,
+                                            int limit);
 
-    List<ContestRecordVo> getOIContestRecord(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime, Date startTime, Date endTime);
+    List<ContestRecordVo> getOIContestRecord(Long cid,
+                                             String contestAuthor,
+                                             Boolean isOpenSealRank,
+                                             Date sealTime,
+                                             Date startTime,
+                                             Date endTime);
 
     List<ContestRecordVo> getACMContestRecord(String username, Long cid);
 
     List<UserInfo> getSuperAdminList();
 
-    List<ACMContestRankVo> getACMContestScoreboard(Boolean isOpenSealRank, Boolean removeStar, Contest contest);
+    List<ACMContestRankVo> getACMContestScoreboard(Boolean isOpenSealRank, Boolean removeStar,
+                                                   Contest contest, String currentUserId,
+                                                   List<String> concernedList);
 
-    List<OIContestRankVo> getOIContestScoreboard(Boolean isOpenSealRank, Boolean removeStar, Contest contest);
+    List<OIContestRankVo> getOIContestScoreboard(Boolean isOpenSealRank, Boolean removeStar,
+                                                 Contest contest, String currentUserId,
+                                                 List<String> concernedList);
 
 }

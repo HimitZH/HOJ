@@ -511,6 +511,7 @@ public class JudgeController {
         HashMap<Long, Object> result = new HashMap<>();
         for (Judge judge : judgeList) {
             judge.setCode(null);
+            judge.setDisplayPid(null);
             judge.setErrorMessage(null);
             judge.setVjudgeUsername(null);
             judge.setVjudgeSubmitId(null);

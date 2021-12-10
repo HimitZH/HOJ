@@ -99,6 +99,7 @@
 <script>
 import NavBar from '@/components/oj/common/NavBar';
 import { mapActions, mapState, mapGetters } from 'vuex';
+import { LOGO, MOTTO } from './logo';
 export default {
   name: 'app-content',
   components: {
@@ -156,6 +157,8 @@ export default {
     }
   },
   mounted() {
+    console.log(LOGO);
+    console.log(MOTTO);
     this.getWebsiteConfig();
   },
 };
@@ -287,6 +290,9 @@ a:hover {
 }
 .bg-star {
   background-color: #ffffcc;
+}
+.bg-concerned {
+  background-color: lightyellow;
 }
 
 .oi-100 {

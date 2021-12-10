@@ -236,7 +236,8 @@ export const STORAGE_KEY = {
   PROBLEM_CODE: 'hojProblemCode',
   languages: 'languages',
   CONTEST_ANNOUNCE:'hojContestAnnounce',
-  individualLanguageAndTheme:'hojIndividualLanguageAndTheme'
+  individualLanguageAndTheme:'hojIndividualLanguageAndTheme',
+  CONTEST_RANK_CONCERNED:'hojContestRankConcerned'
 }
 
 export function buildIndividualLanguageAndThemeKey () {
@@ -252,5 +253,9 @@ export function buildProblemCodeKey (problemID, contestID = null) {
 
 export function buildContestAnnounceKey (uid, contestID) {
   return `${STORAGE_KEY.CONTEST_ANNOUNCE}_${uid}_${contestID}`
+}
+
+export function buildContestRankConcernedKey(contestID) {
+  return `${STORAGE_KEY.CONTEST_RANK_CONCERNED}_${contestID}`
 }
 
