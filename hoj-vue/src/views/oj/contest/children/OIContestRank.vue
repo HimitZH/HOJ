@@ -90,17 +90,24 @@
               :src="row.avatar"
               :title="row[contest.rankShowName]"
             ></avatar>
-            <span
-              class="contest-rank-concerned"
-              @click="updateConcernedList(row.uid, !row.isConcerned)"
-            >
-              <i
-                class="fa fa-star"
-                v-if="row.isConcerned"
-                style="color: red;"
-              ></i>
-              <i class="el-icon-star-off" v-else></i>
-            </span>
+            <el-tooltip placement="top">
+              <div slot="content">
+                {{
+                  row.isConcerned ? $t('m.Unfollow') : $t('m.Top_And_Follow')
+                }}
+              </div>
+              <span
+                class="contest-rank-concerned"
+                @click="updateConcernedList(row.uid, !row.isConcerned)"
+              >
+                <i
+                  class="fa fa-star"
+                  v-if="row.isConcerned"
+                  style="color: red;"
+                ></i>
+                <i class="el-icon-star-off" v-else></i>
+              </span>
+            </el-tooltip>
             <span style="float:right;text-align:right">
               <a @click="getUserHomeByUsername(row.uid, row.username)">
                 <span class="contest-username"
@@ -137,17 +144,24 @@
               :src="row.avatar"
               :title="row[contest.rankShowName]"
             ></avatar>
-            <span
-              class="contest-rank-concerned"
-              @click="updateConcernedList(row.uid, !row.isConcerned)"
-            >
-              <i
-                class="fa fa-star"
-                v-if="row.isConcerned"
-                style="color: red;"
-              ></i>
-              <i class="el-icon-star-off" v-else></i>
-            </span>
+            <el-tooltip placement="top">
+              <div slot="content">
+                {{
+                  row.isConcerned ? $t('m.Unfollow') : $t('m.Top_And_Follow')
+                }}
+              </div>
+              <span
+                class="contest-rank-concerned"
+                @click="updateConcernedList(row.uid, !row.isConcerned)"
+              >
+                <i
+                  class="fa fa-star"
+                  v-if="row.isConcerned"
+                  style="color: red;"
+                ></i>
+                <i class="el-icon-star-off" v-else></i>
+              </span>
+            </el-tooltip>
             <span style="float:right;text-align:right">
               <a @click="getUserHomeByUsername(row.uid, row.username)">
                 <span class="contest-username"

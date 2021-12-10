@@ -340,6 +340,8 @@ export const m = {
   save_as_image: 'save as image',
   Contest_Rank_Seq:'Rank',
   Star_User:'Star User',
+  Unfollow:'Unfollow',
+  Top_And_Follow:'Top And Follow',
 
   // /views/oj/contest/children/ACMInfo.vue
   AC_Time: 'AC Time',

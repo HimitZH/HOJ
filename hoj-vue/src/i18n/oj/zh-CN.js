@@ -343,6 +343,8 @@ export const m = {
    save_as_image: '保存成图片',
    Contest_Rank_Seq:'排名',
    Star_User:'打星用户',
+   Unfollow:'取消关注',
+   Top_And_Follow:'置顶关注',
 
    // /views/oj/contest/children/ACMInfo.vue
    AC_Time: 'AC 时间',
