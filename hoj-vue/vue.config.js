@@ -95,9 +95,9 @@ module.exports={
             },
             warnings: false,
             compress: {
-              drop_console: true,
+              drop_console: false,
               drop_debugger: false,
-              pure_funcs: ['console.log']//移除console
+              // pure_funcs: ['console.log']//移除console
             }
           }
         })
