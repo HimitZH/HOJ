@@ -25,25 +25,25 @@ const cdn = {
   },
   // cdn的css链接
   css: [
-      'https://cdn.jsdelivr.net/npm/element-ui@2.14.0/lib/theme-chalk/index.css',
+      'https://cdn.jsdelivr.net/npm/element-ui@2.14.0/lib/theme-chalk/index.min.css',
       "https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css",
-      "https://cdn.jsdelivr.net/npm/vxe-table@2.9.26/lib/style.css",
+      "https://cdn.jsdelivr.net/npm/vxe-table@2.9.26/lib/style.min.css",
   ],
   // cdn的js链接
   js: [
       "https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js",
-      "https://cdn.jsdelivr.net/npm/vue-router@3.2.0",
-      "https://cdn.jsdelivr.net/npm/axios@0.21.0",
-      "https://cdn.jsdelivr.net/npm/vuex@3.5.1",
-      "https://cdn.jsdelivr.net/npm/element-ui@2.15.3/lib/index.js",
+      "https://cdn.jsdelivr.net/npm/vue-router@3.2.0/dist/vue-router.min.js",
+      "https://cdn.jsdelivr.net/npm/axios@0.21.0/dist/axios.min.js",
+      "https://cdn.jsdelivr.net/npm/vuex@3.5.1/dist/vuex.min.js",
+      "https://cdn.jsdelivr.net/npm/element-ui@2.15.3/lib/index.min.js",
       "https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@10.3.2/build/highlight.min.js",
-      "https://cdn.jsdelivr.net/npm/xe-utils",
-      "https://cdn.jsdelivr.net/npm/vxe-table@2.9.26",
+      "https://cdn.jsdelivr.net/npm/xe-utils@3.4.3/dist/xe-utils.umd.min.js",
+      "https://cdn.jsdelivr.net/npm/vxe-table@2.9.26/lib/index.umd.min.js",
       "https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js",
       "https://cdn.jsdelivr.net/npm/moment@2.29.1/locale/zh-cn.min.js",
       "https://cdn.jsdelivr.net/npm/moment@2.29.1/locale/en-gb.min.js",
       "https://cdn.jsdelivr.net/npm/echarts@4.9.0/dist/echarts.min.js",
-      "https://cdn.jsdelivr.net/npm/vue-echarts@5.0.0-beta.0/dist/vue-echarts.js",
+      "https://cdn.jsdelivr.net/npm/vue-echarts@5.0.0-beta.0/dist/vue-echarts.min.js",
       // "https://unpkg.com/mavon-editor@2.9.1/dist/mavon-editor.js"
   ]
 }
