@@ -79,6 +79,8 @@ export default {
         this.concernedList.splice(index, 1);
         }
       }
+      let key = buildContestRankConcernedKey(this.contestID);
+      storage.set(key, this.concernedList);
       this.getContestOutsideScoreboard();
     }
   },
@@ -140,8 +142,6 @@ export default {
   beforeDestroy () {
     clearInterval(this.refreshFunc)
     clearInterval(this.timer);
-    let key = buildContestRankConcernedKey(this.contestID);
-    storage.set(key, this.concernedList);
     this.$store.commit('clearContest');
   }
 }

@@ -50,6 +50,8 @@ export default {
         this.concernedList.splice(index, 1);
         }
       }
+      let key = buildContestRankConcernedKey(this.contestID);
+      storage.set(key, this.concernedList);
       this.getContestRankData(this.page, true);
     }
   },
@@ -104,8 +106,6 @@ export default {
     }
   },
   beforeDestroy () {
-    let key = buildContestRankConcernedKey(this.contestID);
-    storage.set(key, this.concernedList);
     clearInterval(this.refreshFunc)
   }
 }
