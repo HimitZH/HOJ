@@ -110,8 +110,11 @@
             </el-tooltip>
             <span style="float:right;text-align:right">
               <a @click="getUserHomeByUsername(row.uid, row.username)">
-                <span class="contest-username"
-                  ><span class="contest-rank-flag" v-if="row.rank == -1"
+                <span class="contest-username">
+                  <span class="contest-rank-flag" v-if="row.uid == userInfo.uid"
+                    >Me</span
+                  >
+                  <span class="contest-rank-flag" v-if="row.rank == -1"
                     >Star</span
                   >
                   <span class="contest-rank-flag" v-if="row.gender == 'female'"
