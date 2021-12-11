@@ -48,6 +48,9 @@ public class StartupRunner implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
 
+        log.info("IP  of the current judge server:" + ip);
+        log.info("Port of the current judge server:" + port);
+
         if (maxTaskNum == -1) {
             maxTaskNum = cpuNum + 1;
         }
@@ -82,6 +85,8 @@ public class StartupRunner implements CommandLineRunner {
 
         if (!isOk1 || !isOk2) {
             log.error("初始化判题机信息到数据库失败，请重新启动试试！");
+        } else {
+            log.info("HOJ-JudgeServer had successfully started! Info:" + judgeServerService.getJudgeServerInfo());
         }
 
     }

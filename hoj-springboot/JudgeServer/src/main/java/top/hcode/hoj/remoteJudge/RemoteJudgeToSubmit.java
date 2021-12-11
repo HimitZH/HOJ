@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.pojo.entity.judge.Judge;
@@ -17,6 +18,7 @@ import java.util.Map;
 
 @Component
 @Slf4j(topic = "hoj")
+@RefreshScope
 public class RemoteJudgeToSubmit {
 
     @Autowired
@@ -38,11 +40,14 @@ public class RemoteJudgeToSubmit {
                          String uid, Long cid, Long pid,
                          String language, String userCode,
                          String serverIp, Integer serverPort) {
+        log.info("Ready Send Task to RemoteJudge[{}] => submit_id: [{}], uid: [{}]," +
+                        " pid: [{}], vjudge_username: [{}], vjudge_password: [{}]",
+                remoteJudge, submitId, uid, pid, username, password);
 
         RemoteJudgeStrategy remoteJudgeStrategy = RemoteJudgeFactory.selectJudge(remoteJudge);
         // 获取不到对应的题库或者题库写错了
         if (remoteJudgeStrategy == null) {
-            log.error("暂不支持该{}题库---------------->请求失败", remoteJudge);
+            log.error("Remote Judge 暂不支持该题库---------------->[{}]", remoteJudge);
             // 更新此次提交状态为系统失败！
             UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
             judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus())
@@ -57,17 +62,19 @@ public class RemoteJudgeToSubmit {
         try {
             submitResult = remoteJudgeStrategy.submit(username, password, remotePid, language, userCode);
         } catch (Exception e) {
-            log.error("{}", e);
+            log.error("Submit Failed! Error:", e);
             errLog = e.getMessage();
         }
 
         // 提交失败 前端手动按按钮再次提交 修改状态 STATUS_SUBMITTED_FAILED
         if (submitResult == null || (Long) submitResult.getOrDefault("runId", -1L) == -1L) {
             // 将使用的账号放回对应列表
+            log.error("[{}] Submit Failed! Begin to return the account to other task!", remoteJudge);
             remoteJudgeService.changeAccountStatus(remoteJudge, username);
             if (remoteJudge.equals(Constants.RemoteJudge.GYM_JUDGE.getName())
                     || remoteJudge.equals(Constants.RemoteJudge.CF_JUDGE.getName())) {
                 // 对CF特殊，归还账号及判题机权限
+                log.error("[{}] Submit Failed! Begin to return the Server Status to other task!", remoteJudge);
                 remoteJudgeService.changeServerSubmitCFStatus(serverIp, serverPort);
             }
 
@@ -85,8 +92,6 @@ public class RemoteJudgeToSubmit {
                     pid,
                     null,
                     null);
-            log.error("网络错误---------------->获取不到提交ID");
-
             return;
         }
 
@@ -102,9 +107,12 @@ public class RemoteJudgeToSubmit {
                 .setJudger(name)
         );
 
+        log.info("[{}] Submit Successfully! The submit_id of remote judge is [{}]. Waiting the result of the task!",
+                vjudgeSubmitId, remoteJudge);
+
         // 调用获取远程判题结果
         remoteJudgeGetResult.sendTask(remoteJudge, username, password, submitId, uid, cid, pid,
-                vjudgeSubmitId, (String) submitResult.get("cookies"),serverIp,serverPort);
+                vjudgeSubmitId, (String) submitResult.get("cookies"), serverIp, serverPort);
 
     }
 }

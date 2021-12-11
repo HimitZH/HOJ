@@ -34,7 +34,6 @@ public class RemoteJudgeGetResult {
     @Autowired
     private RemoteJudgeServiceImpl remoteJudgeService;
 
-    @Transactional
     @Async
     public void sendTask(String remoteJudge, String username, String password,
                          Long submitId, String uid,
@@ -49,7 +48,6 @@ public class RemoteJudgeGetResult {
         AtomicInteger count = new AtomicInteger(0);
         Runnable getResultTask = new Runnable() {
             @Override
-            @Transactional
             public void run() {
 
                 if (count.get() > 60) { // 超过60次失败则判为提交失败
@@ -59,13 +57,12 @@ public class RemoteJudgeGetResult {
                             .eq("submit_id", submitId);
                     judgeService.update(judgeUpdateWrapper);
 
-                    remoteJudgeService.changeAccountStatus(remoteJudge, username);
-                    remoteJudgeService.changeServerSubmitCFStatus(ip, port);
-                    scheduler.shutdown();
+                    log.error("[{}] Get Result Failed!", remoteJudge);
+                    changeRemoteJudgeLock(remoteJudge, username, ip, port, resultSubmitId);
 
+                    scheduler.shutdown();
                     return;
                 }
-
                 count.getAndIncrement();
                 try {
                     Map<String, Object> result = remoteJudgeStrategy.result(resultSubmitId, username, password, cookies);
@@ -73,10 +70,9 @@ public class RemoteJudgeGetResult {
                     if (status.intValue() != Constants.Judge.STATUS_PENDING.getStatus() &&
                             status.intValue() != Constants.Judge.STATUS_JUDGING.getStatus() &&
                             status.intValue() != Constants.Judge.STATUS_COMPILING.getStatus()) {
+                        log.info("[{}] Get Result Successfully! Status:[{}]", remoteJudge, status);
 
-                        // 将账号变为可用
-                        remoteJudgeService.changeAccountStatus(remoteJudge, username);
-                        remoteJudgeService.changeServerSubmitCFStatus(ip, port);
+                        changeRemoteJudgeLock(remoteJudge, username, ip, port, resultSubmitId);
 
                         Integer time = (Integer) result.getOrDefault("time", null);
                         Integer memory = (Integer) result.getOrDefault("memory", null);
@@ -124,17 +120,30 @@ public class RemoteJudgeGetResult {
                         judgeService.updateById(judge);
                     }
 
-                } catch (Exception ignored) {
-
+                } catch (Exception e) {
+                    log.error("The Error of getting the `remote judge` result:", e);
                 }
 
             }
         };
         final ScheduledFuture<?> beeperHandle = scheduler.scheduleAtFixedRate(
-                getResultTask, 2, 2, TimeUnit.SECONDS);
+                getResultTask, 0, 3, TimeUnit.SECONDS);
 
     }
 
+
+    private void changeRemoteJudgeLock(String remoteJudge, String username, String ip, Integer port, Long resultSubmitId) {
+        log.info("After Get Result,remote_judge:[{}],submit_id: [{}]! Begin to return the account to other task!",
+                remoteJudge, resultSubmitId);
+        // 将账号变为可用
+        remoteJudgeService.changeAccountStatus(remoteJudge, username);
+        if (remoteJudge.equals(Constants.RemoteJudge.GYM_JUDGE.getName())
+                || remoteJudge.equals(Constants.RemoteJudge.CF_JUDGE.getName())) {
+            log.info("After Get Result,remote_judge:[{}],submit_id: [{}] !Begin to return the Server Status to other task!",
+                    remoteJudge, resultSubmitId);
+            remoteJudgeService.changeServerSubmitCFStatus(ip, port);
+        }
+    }
 
 
 }

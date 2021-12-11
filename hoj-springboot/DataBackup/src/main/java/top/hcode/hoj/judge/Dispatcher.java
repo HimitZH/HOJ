@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.judge.*;
@@ -85,7 +86,7 @@ public class Dispatcher {
                 if (!isCFFirstSubmit) {
                     judgeServer = chooseUtils.chooseServer(isRemote);
                 } else {
-                    judgeServer = chooseUtils.chooseFixedServer(isRemote, "cf_submittable", data.getIndex(), data.getSize());
+                    judgeServer = chooseUtils.chooseFixedServer(true, "cf_submittable", data.getIndex(), data.getSize());
                 }
 
                 if (judgeServer != null) { // 获取到判题机资源
@@ -95,7 +96,10 @@ public class Dispatcher {
                     try {
                         result = restTemplate.postForObject("http://" + judgeServer.getUrl() + path, data, CommonResult.class);
                     } catch (Exception e) {
-                        log.error("调用判题服务器[" + judgeServer.getUrl() + "]发送异常-------------->{}", e);
+                        log.error("调用判题服务器[" + judgeServer.getUrl() + "]发送异常-------------->", e);
+                        if (isRemote) {
+                            changeRemoteJudgeStatus(finalOj, data.getUsername(), judgeServer);
+                        }
                     } finally {
                         checkResult(result, submitId);
                         if (!isCFFirstSubmit) {
@@ -109,15 +113,7 @@ public class Dispatcher {
 
                 if (count.get() == 300) { // 300次失败则判为提交失败
                     if (isRemote) { // 远程判题需要将账号归为可用
-                        UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
-                        remoteJudgeAccountUpdateWrapper
-                                .eq("oj", finalOj)
-                                .eq("username", data.getUsername())
-                                .set("status", true);
-                        boolean isOK = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
-                        if (!isOK) { // 重试8次
-                            tryAgainUpdateAccount(remoteJudgeAccountUpdateWrapper, finalOj, data.getUsername());
-                        }
+                        changeRemoteJudgeStatus(finalOj, data.getUsername(), null);
                     }
                     checkResult(null, submitId);
                     scheduler.shutdown();
@@ -135,7 +131,7 @@ public class Dispatcher {
             try {
                 result = restTemplate.postForObject("http://" + judgeServer.getUrl() + path, data, CommonResult.class);
             } catch (Exception e) {
-                log.error("调用判题服务器[" + judgeServer.getUrl() + "]发送异常-------------->{}", e.getMessage());
+                log.error("调用判题服务器[" + judgeServer.getUrl() + "]发送异常-------------->", e.getMessage());
             } finally {
                 // 无论成功与否，都要将对应的当前判题机当前判题数减1
                 reduceCurrentTaskNum(judgeServer.getId());
@@ -196,7 +192,37 @@ public class Dispatcher {
     }
 
 
-    public void tryAgainUpdateAccount(UpdateWrapper<RemoteJudgeAccount> updateWrapper, String remoteJudge, String username) {
+    public void changeRemoteJudgeStatus(String oj, String username, JudgeServer judgeServer) {
+        changeAccountStatus(oj, username);
+        if (oj.equals(Constants.RemoteOJ.CODEFORCES.getName())
+                || oj.equals(Constants.RemoteOJ.GYM.getName())) {
+            if (judgeServer != null) {
+                changeServerSubmitCFStatus(judgeServer.getIp(), judgeServer.getPort());
+            }
+        }
+    }
+
+
+    public void changeAccountStatus(String remoteJudge, String username) {
+
+        UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
+        remoteJudgeAccountUpdateWrapper.set("status", true)
+                .eq("status", false)
+                .eq("username", username);
+        if (remoteJudge.equals("GYM")) {
+            remoteJudge = "CF";
+        }
+        remoteJudgeAccountUpdateWrapper.eq("oj", remoteJudge);
+
+        boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
+
+        if (!isOk) { // 重试8次
+            tryAgainUpdateAccount(remoteJudgeAccountUpdateWrapper, remoteJudge, username);
+        }
+    }
+
+
+    private void tryAgainUpdateAccount(UpdateWrapper<RemoteJudgeAccount> updateWrapper, String remoteJudge, String username) {
         boolean retryable;
         int attemptNumber = 0;
         do {
@@ -208,6 +234,47 @@ public class Dispatcher {
                 retryable = attemptNumber < 8;
                 if (attemptNumber == 8) {
                     log.error("远程判题：修正账号为可用状态失败----------->{}", "oj:" + remoteJudge + ",username:" + username);
+                    break;
+                }
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        } while (retryable);
+    }
+
+
+    public void changeServerSubmitCFStatus(String ip, Integer port) {
+
+        if (StringUtils.isEmpty(ip) || port == null) {
+            return;
+        }
+        UpdateWrapper<JudgeServer> judgeServerUpdateWrapper = new UpdateWrapper<>();
+        judgeServerUpdateWrapper.set("cf_submittable", true)
+                .eq("ip", ip)
+                .eq("is_remote", true)
+                .eq("port", port);
+        boolean isOk = judgeServerService.update(judgeServerUpdateWrapper);
+
+        if (!isOk) { // 重试8次
+            tryAgainUpdateServer(judgeServerUpdateWrapper, ip, port);
+        }
+    }
+
+    private void tryAgainUpdateServer(UpdateWrapper<JudgeServer> updateWrapper, String ip, Integer port) {
+        boolean retryable;
+        int attemptNumber = 0;
+        do {
+            boolean success = judgeServerService.update(updateWrapper);
+            if (success) {
+                return;
+            } else {
+                attemptNumber++;
+                retryable = attemptNumber < 8;
+                if (attemptNumber == 8) {
+                    log.error("Remote Judge：Change CF Judge Server Status to `true` Failed! =======>{}", "ip:" + ip + ",port:" + port);
                     break;
                 }
                 try {
