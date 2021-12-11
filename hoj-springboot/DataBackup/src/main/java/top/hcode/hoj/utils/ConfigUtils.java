@@ -53,18 +53,18 @@ public class ConfigUtils {
                 "    port: " + configVo.getRedisPort() + "\n" +
                 "    password: " + configVo.getRedisPassword() + "\n" +
                 "  web-config:\n" +
-                "    base-url: \"" + UnicodeUtil.toUnicode(configVo.getBaseUrl()) + "\"\n" +
-                "    name: \"" + UnicodeUtil.toUnicode(configVo.getName()) + "\"\n" +
-                "    short-name: \"" + UnicodeUtil.toUnicode(configVo.getShortName()) + "\"\n" +
-                "    description: \"" + UnicodeUtil.toUnicode(configVo.getDescription(),true) + "\"\n" +
+                "    base-url: \"" + UnicodeUtil.toUnicode(configVo.getBaseUrl(), false) + "\"\n" +
+                "    name: \"" + UnicodeUtil.toUnicode(configVo.getName(), false) + "\"\n" +
+                "    short-name: \"" + UnicodeUtil.toUnicode(configVo.getShortName(), false) + "\"\n" +
+                "    description: \"" + UnicodeUtil.toUnicode(configVo.getDescription(), false) + "\"\n" +
                 "    register: " + configVo.getRegister() + "\n" +
                 "    footer:\n" +
                 "      record:\n" +
-                "        name: \"" + UnicodeUtil.toUnicode(configVo.getRecordName()) + "\"\n" +
-                "        url: \"" + UnicodeUtil.toUnicode(configVo.getRecordUrl()) + "\"\n" +
+                "        name: \"" + UnicodeUtil.toUnicode(configVo.getRecordName(), false) + "\"\n" +
+                "        url: \"" + UnicodeUtil.toUnicode(configVo.getRecordUrl(), false) + "\"\n" +
                 "      project:\n" +
-                "        name: \"" + UnicodeUtil.toUnicode(configVo.getProjectName()) + "\"\n" +
-                "        url: \"" + UnicodeUtil.toUnicode(configVo.getProjectUrl()) + "\"\n" +
+                "        name: \"" + UnicodeUtil.toUnicode(configVo.getProjectName(), false) + "\"\n" +
+                "        url: \"" + UnicodeUtil.toUnicode(configVo.getProjectUrl(), false) + "\"\n" +
                 "  hdu:\n" +
                 "    account:\n" +
                 "      username: " + listToStr(configVo.getHduUsernameList()) + "\n" +
