@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j(topic = "hoj")
 public class CodeForcesJudge implements RemoteJudgeStrategy {
-    public static final String IMAGE_HOST = "https://codeforces.ml/";
+    public static final String IMAGE_HOST = "https://codeforces.com/";
     public static final String HOST = "https://codeforces.com/";
     public static final String LOGIN_URL = "enter";
     public static final String SUBMIT_URL = "problemset/submit";
@@ -61,6 +61,8 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         }
 
         HttpRequest httpRequest = HttpUtil.createGet(IMAGE_HOST);
+        httpRequest.setConnectionTimeout(60000);
+        httpRequest.setReadTimeout(60000);
         httpRequest.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36 Edg/91.0.864.48");
         HttpResponse httpResponse = httpRequest.execute();
         String homePage = httpResponse.body();
@@ -94,7 +96,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
             Map<String, Object> loginUtils = getLoginUtils(username, password);
             int status = (int) loginUtils.get("status");
             if (status != HttpStatus.SC_MOVED_TEMPORARILY) {
-                log.error("进行题目提交时发生错误：登录失败，可能原因账号或密码错误，登录失败！" + CodeForcesJudge.class.getName() + "，题号:" + problemId);
+                log.error("CF进行题目提交时发生错误：登录失败，可能原因账号或密码错误，登录失败！" + CodeForcesJudge.class.getName() + "，题号:" + problemId);
                 return null;
             }
             submitCode(contestId, problemNum, getLanguage(language), userCode);
@@ -158,7 +160,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
     public static synchronized HttpResponse getSubmissionResult(String username, Integer count) {
         String url = HOST + String.format(SUBMISSION_RESULT_URL, username, count);
         return HttpUtil.createGet(url)
-                .timeout(30000)
+                .timeout(60000)
                 .execute();
     }
 
@@ -226,6 +228,8 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
     public Map<String, Object> getLoginUtils(String username, String password) {
         String csrf_token = getCsrfToken(IMAGE_HOST + LOGIN_URL);
         HttpRequest httpRequest = new HttpRequest(IMAGE_HOST + LOGIN_URL);
+        httpRequest.setConnectionTimeout(60000);
+        httpRequest.setReadTimeout(60000);
         httpRequest.setMethod(Method.POST);
         httpRequest.cookie(this.cookies);
         HashMap<String, Object> hashMap = new HashMap<>();
@@ -262,6 +266,8 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         paramMap.put("sourceCodeConfirmed", true);
         paramMap.put("doNotShowWarningAgain", "on");
         HttpRequest request = HttpUtil.createPost(getSubmitUrl(contestId) + "?csrf_token=" + csrfToken);
+        request.setConnectionTimeout(60000);
+        request.setReadTimeout(60000);
         request.form(paramMap);
         request.cookie(this.cookies);
         request.header("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36");

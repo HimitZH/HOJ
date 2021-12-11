@@ -121,7 +121,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public CommonResult handleMissingServletRequestParameterException(
             MissingServletRequestParameterException e) {
-        return CommonResult.errorResponse("缺少必要的请求参数：" + e.getMessage(), CommonResult.STATUS_FAIL);
+        return CommonResult.errorResponse("The required request parameters are missing：" + e.getMessage(), CommonResult.STATUS_FAIL);
     }
 
     /**
@@ -131,7 +131,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public CommonResult handleHttpMessageNotReadableException(
             HttpMessageNotReadableException e) {
-        return CommonResult.errorResponse("解析参数格式失败", CommonResult.STATUS_FAIL);
+        return CommonResult.errorResponse("Failed to parse parameter format!", CommonResult.STATUS_FAIL);
     }
 
 
@@ -167,7 +167,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ValidationException.class)
     public CommonResult handleValidationException(ValidationException e) {
-        return CommonResult.errorResponse("实体校验失败,请求参数不对", CommonResult.STATUS_FAIL);
+        return CommonResult.errorResponse("Entity verification failed. The request parameters are incorrect!", CommonResult.STATUS_FAIL);
     }
 
     /**
@@ -177,7 +177,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public CommonResult handleHttpRequestMethodNotSupportedException(
             HttpRequestMethodNotSupportedException e) {
-        return CommonResult.errorResponse("不支持当前请求方法", 405);
+        return CommonResult.errorResponse("The request method is not supported!", 405);
     }
 
     /**
@@ -186,7 +186,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public CommonResult handleHttpMediaTypeNotSupportedException(Exception e) {
-        return CommonResult.errorResponse("不支持当前媒体类型", 415);
+        return CommonResult.errorResponse("The media type is not supported!", 415);
     }
 
 
@@ -197,7 +197,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = MessagingException.class)
     public CommonResult handler(MessagingException e){
         log.error("邮箱系统异常-------------->{}", getMessage(e));
-        return CommonResult.errorResponse("服务器异常，请稍后尝试！", CommonResult.STATUS_ERROR);
+        return CommonResult.errorResponse("Server Error! Please try Again later!", CommonResult.STATUS_ERROR);
     }
 
     /**
@@ -207,7 +207,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ServiceException.class)
     public CommonResult handleServiceException(ServiceException e) {
         log.error("业务逻辑异常-------------->{}", getMessage(e));
-        return CommonResult.errorResponse("服务器异常，请稍后尝试！", CommonResult.STATUS_ERROR);
+        return CommonResult.errorResponse("Server Error! Please try Again later!", CommonResult.STATUS_ERROR);
     }
 
     /**
@@ -217,7 +217,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public CommonResult handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         log.error("操作数据库出现异常-------------->{}", getMessage(e));
-        return CommonResult.errorResponse("服务器异常，请稍后尝试！", CommonResult.STATUS_ERROR);
+        return CommonResult.errorResponse("Server Error! Please try Again later!", CommonResult.STATUS_ERROR);
     }
 
 
@@ -228,7 +228,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SQLException.class)
     public CommonResult handleSQLException(SQLException e) {
         log.error("操作数据库出现异常-------------->{}", getMessage(e));
-        return CommonResult.errorResponse("操作失败！错误提示：" + e.getMessage(), CommonResult.STATUS_ERROR);
+        return CommonResult.errorResponse("Operation failed! Error message: " + e.getMessage(), CommonResult.STATUS_ERROR);
     }
 
     /**
@@ -238,7 +238,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PersistenceException.class)
     public CommonResult handleBatchUpdateException(PersistenceException e) {
         log.error("操作数据库出现异常-------------->{}", getMessage(e));
-        return CommonResult.errorResponse("操作失败！请检查数据是否准确！可能原因：数据重复冲突，外键冲突！", CommonResult.STATUS_ERROR);
+        return CommonResult.errorResponse("请检查数据是否准确！可能原因：数据库中已有相同的数据导致重复冲突!", CommonResult.STATUS_ERROR);
     }
 
     /**
@@ -248,7 +248,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public CommonResult handleException(Exception e) {
         log.error("系统通用异常-------------->{}", getMessage(e));
-        return CommonResult.errorResponse("服务器异常，请稍后尝试！", CommonResult.STATUS_ERROR);
+        return CommonResult.errorResponse("Server Error! Please try Again later!", CommonResult.STATUS_ERROR);
     }
 
 

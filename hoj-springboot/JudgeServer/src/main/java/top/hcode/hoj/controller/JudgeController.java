@@ -48,18 +48,8 @@ public class JudgeController {
     @Resource
     private RemoteJudgeGetResult remoteJudgeGetResult;
 
-
     @Value("${hoj.judge.token}")
     private String judgeToken;
-
-    @Value("${hoj-judge-server.max-task-num}")
-    private Integer maxTaskNum;
-
-    @Value("${hoj-judge-server.remote-judge.open}")
-    private Boolean isOpenRemoteJudge;
-
-    @Value("${hoj-judge-server.remote-judge.max-task-num}")
-    private Integer RemoteJudgeMaxTaskNum;
 
     @Value("${hoj-judge-server.name}")
     private String name;
@@ -67,43 +57,12 @@ public class JudgeController {
     @Value("${hoj-judge-server.remote-judge.open}")
     private Boolean openRemoteJudge;
 
+    @Resource
+    private JudgeServerServiceImpl judgeServerService;
 
     @RequestMapping("/version")
     public CommonResult getVersion() {
-
-        HashMap<String, Object> res = new HashMap<>();
-
-        res.put("version", "1.8.0");
-        res.put("currentTime", new Date());
-        res.put("judgeServerName", name);
-        res.put("cpu", Runtime.getRuntime().availableProcessors());
-
-        if (maxTaskNum == -1) {
-            res.put("maxTaskNum", Runtime.getRuntime().availableProcessors() + 1);
-        } else {
-            res.put("maxTaskNum", maxTaskNum);
-        }
-        if (isOpenRemoteJudge) {
-            res.put("isOpenRemoteJudge", true);
-            if (RemoteJudgeMaxTaskNum == -1) {
-                res.put("remoteJudgeMaxTaskNum", Runtime.getRuntime().availableProcessors() * 2 + 1);
-            } else {
-                res.put("remoteJudgeMaxTaskNum", RemoteJudgeMaxTaskNum);
-            }
-        }
-
-        String versionResp;
-
-        try {
-            versionResp = SandboxRun.getRestTemplate().getForObject(SandboxRun.getSandboxBaseUrl() + "/version", String.class);
-        } catch (Exception e) {
-            res.put("SandBoxMsg", MapUtil.builder().put("error", e.getMessage()).map());
-            return CommonResult.successResponse(res, "判题服务器正常，安全沙盒异常，请检查！");
-        }
-
-        res.put("SandBoxMsg", JSONUtil.parseObj(versionResp));
-
-        return CommonResult.successResponse(res, "运行正常");
+        return CommonResult.successResponse(judgeServerService.getJudgeServerInfo(), "运行正常");
     }
 
     @PostMapping(value = "/judge")
