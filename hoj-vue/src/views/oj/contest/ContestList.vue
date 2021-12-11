@@ -186,6 +186,7 @@
                           circle
                           size="small"
                           type="primary"
+                          :disabled="contest.status == CONTEST_STATUS.SCHEDULED"
                           icon="el-icon-data-analysis"
                           @click="
                             toContestOutsideScoreBoard(contest.id, contest.type)
@@ -236,6 +237,7 @@ import time from '@/common/time';
 import {
   CONTEST_STATUS_REVERSE,
   CONTEST_TYPE_REVERSE,
+  CONTEST_STATUS,
 } from '@/common/constants';
 import myMessage from '@/common/message';
 const Pagination = () => import('@/components/oj/common/Pagination');
@@ -259,7 +261,8 @@ export default {
       rows: '',
       contests: [],
       CONTEST_STATUS_REVERSE: {},
-      CONTEST_TYPE_REVERSE: CONTEST_TYPE_REVERSE,
+      CONTEST_STATUS: {},
+      CONTEST_TYPE_REVERSE: {},
       acmSrc: require('@/assets/acm.jpg'),
       oiSrc: require('@/assets/oi.jpg'),
       loading: true,
@@ -268,6 +271,7 @@ export default {
   mounted() {
     this.CONTEST_STATUS_REVERSE = Object.assign({}, CONTEST_STATUS_REVERSE);
     this.CONTEST_TYPE_REVERSE = Object.assign({}, CONTEST_TYPE_REVERSE);
+    this.CONTEST_STATUS = Object.assign({}, CONTEST_STATUS);
     this.init();
   },
   methods: {
