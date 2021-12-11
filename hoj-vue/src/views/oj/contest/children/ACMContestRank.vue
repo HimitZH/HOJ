@@ -531,42 +531,43 @@ export default {
     },
     applyToChart(rankData) {
       let [users, seriesData] = [[], []];
-      let rankIndex = 1;
-      rankData.forEach((rank) => {
-        if (rankIndex == rank.rank) {
-          users.push(rank[this.contest.rankShowName]);
-          let info = rank.submissionInfo;
-          // 提取出已AC题目的时间
-          let timeData = [];
-          Object.keys(info).forEach((problemID) => {
-            if (info[problemID].isAC) {
-              timeData.push(info[problemID].ACTime);
-            }
-          });
-          timeData.sort((a, b) => {
-            return a - b;
-          });
-
-          let data = [];
-          data.push([this.contest.startTime, 0]);
-
-          for (let [index, value] of timeData.entries()) {
-            let realTime = moment(this.contest.startTime)
-              .add(value, 'seconds')
-              .format();
-            data.push([realTime, index + 1]);
+      let len = rankData.length;
+      let topIndex = this.concernedList.length || 0;
+      if (rankData.length > 0) {
+        if (rankData[0].uid == this.userInfo.uid) {
+          topIndex++;
+        }
+      }
+      for (let i = topIndex; i < len && i < topIndex + 10; i++) {
+        let rank = rankData[i];
+        users.push(rank[this.contest.rankShowName]);
+        let info = rank.submissionInfo;
+        // 提取出已AC题目的时间
+        let timeData = [];
+        Object.keys(info).forEach((problemID) => {
+          if (info[problemID].isAC) {
+            timeData.push(info[problemID].ACTime);
           }
-          seriesData.push({
-            name: rank[this.contest.rankShowName],
-            type: 'line',
-            data,
-          });
-          rankIndex++;
+        });
+        timeData.sort((a, b) => {
+          return a - b;
+        });
+
+        let data = [];
+        data.push([this.contest.startTime, 0]);
+
+        for (let [index, value] of timeData.entries()) {
+          let realTime = moment(this.contest.startTime)
+            .add(value, 'seconds')
+            .format();
+          data.push([realTime, index + 1]);
         }
-        if (rankIndex > 10) {
-          return;
-        }
-      });
+        seriesData.push({
+          name: rank[this.contest.rankShowName],
+          type: 'line',
+          data,
+        });
+      }
       this.options.legend.data = users;
       this.options.series = seriesData;
     },

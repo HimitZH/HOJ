@@ -434,17 +434,18 @@ export default {
     },
     applyToChart(rankData) {
       let [user, scores] = [[], []];
-      let rank = 1;
-      rankData.forEach((ele) => {
-        if (ele.rank == rank) {
-          user.push(ele[this.contest.rankShowName]);
-          scores.push(ele.totalScore);
-          rank++;
+      let len = rankData.length;
+      let topIndex = this.concernedList.length || 0;
+      if (rankData.length > 0) {
+        if (rankData[0].uid == this.userInfo.uid) {
+          topIndex++;
         }
-        if (rank > 10) {
-          return;
-        }
-      });
+      }
+      for (let i = topIndex; i < len && i < topIndex + 10; i++) {
+        let ele = rankData[i];
+        user.push(ele[this.contest.rankShowName]);
+        scores.push(ele.totalScore);
+      }
       this.options.xAxis[0].data = user;
       this.options.series[0].data = scores;
     },
