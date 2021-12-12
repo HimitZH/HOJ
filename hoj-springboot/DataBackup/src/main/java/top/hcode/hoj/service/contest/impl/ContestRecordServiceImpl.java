@@ -2,6 +2,8 @@ package top.hcode.hoj.service.contest.impl;
 
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.HashUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -387,7 +389,13 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                 ACMContestRankVo = result.get(uidMapIndex.get(contestRecord.getUid())); // 根据记录的index进行获取
             }
 
-            HashMap<String, Object> problemSubmissionInfo = ACMContestRankVo.getSubmissionInfo().getOrDefault(contestRecord.getDisplayId(), new HashMap<>());
+            HashMap<String, Object> problemSubmissionInfo = ACMContestRankVo.getSubmissionInfo()
+                    .get(contestRecord.getDisplayId());
+
+            if (problemSubmissionInfo == null) {
+                problemSubmissionInfo = new HashMap<>();
+                problemSubmissionInfo.put("errorNum", 0);
+            }
 
             ACMContestRankVo.setTotal(ACMContestRankVo.getTotal() + 1);
 
@@ -508,11 +516,11 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
 
     /**
-     * @param removeStar        是否需要移除打星队伍
-     * @param contest           比赛实体信息
-     * @param oiContestRecord   比赛记录数据
-     * @param currentUserId     当前查看榜单的用户uuid,不为空则将该数据复制一份放置列表最前
-     * @param concernedList     关注的用户（uuid）列表
+     * @param removeStar      是否需要移除打星队伍
+     * @param contest         比赛实体信息
+     * @param oiContestRecord 比赛记录数据
+     * @param currentUserId   当前查看榜单的用户uuid,不为空则将该数据复制一份放置列表最前
+     * @param concernedList   关注的用户（uuid）列表
      * @MethodName calcOIRank
      * @Description TODO
      * @Return
