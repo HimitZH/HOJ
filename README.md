@@ -10,7 +10,7 @@
 
 ## 一、前言
 
-基于前后端分离，分布式架构的在线测评平台（hoj），前端使用vue，后端主要使用springboot，redis，mysql，nacos等技术，**支持HDU、POJ、Codeforces（包括GYM）的vjudge判题，同时适配手机端、电脑端浏览，拥有讨论区与站内消息系统。**
+基于前后端分离，分布式架构的在线测评平台（hoj），前端使用vue，后端主要使用springboot，redis，mysql，nacos等技术，**支持HDU、POJ、Codeforces（包括GYM）的vjudge判题，同时适配手机端、电脑端浏览，拥有讨论区与站内消息系统，还有完善的比赛功能（打星队伍、关注队伍、外榜）。**
 
 |              在线Demo              |                         在线文档                          |                     Github&Gitee仓库地址                     |   QQ群    |
 | :--------------------------------: | :-------------------------------------------------------: | :----------------------------------------------------------: | :-------: |
@@ -152,7 +152,17 @@ docker ps # 查看当前运行的容器状态
 
 > 比赛排行榜
 
-![比赛排行榜](https://img-blog.csdnimg.cn/e833d4f53e1c4f2d887bd754aaee35ca.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+- ACM比赛
+
+![比赛排行榜](https://img-blog.csdnimg.cn/c50140e3b73d482d82ca6f13f47aa080.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+
+
+
+- OI比赛
+
+  ![oi排行榜](https://img-blog.csdnimg.cn/67f6262854bb44efa70c374f1f156166.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+
+  
 
 
 

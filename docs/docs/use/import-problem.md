@@ -2,7 +2,7 @@
 
 ## 一、HOJ题目
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210530214011773.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/f059e38d31c44906b35ad4ff0d488013.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 #### 1. 导出题目
 
@@ -107,11 +107,11 @@
 
 ## 三、导入其它OJ题目
 
-导入HDU、Codeforces题目，只需提供该题目的题号便可一键导入
+导入HDU、Codeforces、POJ、GYM的题目，只需提供该题目的题号便可一键导入
 
 **管理员进入后台，点击题目列表**
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210523223454472.png#pic_center)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/5304425397f249808b7ea0ea2a0153cc.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 然后添加上方的添加按钮
 
@@ -128,4 +128,4 @@
 **注意：**
 
 - HDU和POJ的题号一般是 1000以上的数字
-- Codeforces的题号是1000A、1000B、这种数字加大写英文字母的格式
+- Codeforces和GYM的题号是1000A、1000B、这种数字加大写英文字母的格式
