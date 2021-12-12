@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j(topic = "hoj")
 public class CodeForcesJudge implements RemoteJudgeStrategy {
-    public static final String IMAGE_HOST = "https://codeforces.com/";
+    public static final String IMAGE_HOST = "https://codeforces.ml/";
     public static final String HOST = "https://codeforces.com/";
     public static final String LOGIN_URL = "enter";
     public static final String SUBMIT_URL = "problemset/submit";
