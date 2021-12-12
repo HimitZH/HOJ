@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="scoreboard-body">
     <el-card shadow>
       <div class="contest-title">
         <div slot="header">
@@ -396,6 +396,12 @@ export default {
 };
 </script>
 <style scoped>
+@media screen and (min-width: 1050px) {
+  .scoreboard-body {
+    margin-left: -3%;
+    margin-right: -3%;
+  }
+}
 .contest-title {
   text-align: center;
 }
