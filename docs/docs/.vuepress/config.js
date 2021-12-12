@@ -33,7 +33,8 @@ module.exports = {
 					'deploy/docker',
 					'deploy/open-https',
 					'deploy/multi-judgeserver',
-					'deploy/update'
+					'deploy/update',
+					'deploy/how-to-backup'
                 ]
             },
 			{

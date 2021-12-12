@@ -150,7 +150,7 @@ https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js
        store,
      i18n,
        render: h => h(App)
-   }).$mount('#app')
+   	 }).$mount('#app')
      
      ```
   

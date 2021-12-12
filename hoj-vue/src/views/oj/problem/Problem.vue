@@ -665,7 +665,7 @@ export default {
       problemID: '',
       submitting: false,
       code: '',
-      language: 'C',
+      language: '',
       isRemote: false,
 
       theme: 'solarized',
@@ -975,7 +975,6 @@ export default {
           if (this.code !== '') {
             return;
           }
-          // try to load problem template
           if (this.problemData.languages.length != 0) {
             if (
               !this.language ||
@@ -984,6 +983,7 @@ export default {
               this.language = this.problemData.languages[0];
             }
           }
+          // try to load problem template
           let codeTemplate = this.problemData.codeTemplate;
           if (codeTemplate && codeTemplate[this.language]) {
             this.code = codeTemplate[this.language];
