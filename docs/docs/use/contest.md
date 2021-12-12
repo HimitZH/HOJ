@@ -1,10 +1,22 @@
 # 比赛介绍
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/623ce2411bb54e31a8f9848143105d97.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+> 总概功能介绍
 
+- 支持ACM、OI、IOI赛制
 
+- 支持公开赛、保护赛、私有赛
 
-**后台可以选择开启比赛赛制、是否封榜、是否开启打印功能、榜单显示用户何种信息、比赛权限等。**
+- 支持线下打印功能
+
+- 支持比赛账号限制功能
+
+- 支持封榜、支持打星队伍、支持关注队伍
+
+- 支持比赛外部榜单显示
+
+- 支持榜单显示用户显示自定义
+
+![比赛管理](https://img-blog.csdnimg.cn/da52c1fe08e34be6be79fbe5c2b758d2.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 ## 两种赛制
 

@@ -31,7 +31,7 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
   - 功能：
 
-    - 支持ACM、OI题目及比赛、
+    - 支持ACM、OI题目及比赛，比赛拥有外榜、打星队伍、关注队伍等功能
 
     - 拥有讨论区、题目讨论、比赛讨论、同时拥有站内消息系统
     - 支持testlib的SPJ
@@ -44,7 +44,7 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 主要是OI：首都师范大学附属中学...
 
-主要是ACM：西南科技大学、长春理工大学...
+主要是ACM：西南科技大学、长春理工大学、兰州大学...
 
 ##  五、部分截图
 
@@ -100,7 +100,15 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 > 比赛排行榜
 
-![比赛排行榜](https://img-blog.csdnimg.cn/e833d4f53e1c4f2d887bd754aaee35ca.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+- ACM比赛
+
+![比赛排行榜](https://img-blog.csdnimg.cn/c50140e3b73d482d82ca6f13f47aa080.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+
+
+
+- OI比赛
+
+  ![oi排行榜](https://img-blog.csdnimg.cn/67f6262854bb44efa70c374f1f156166.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
 
 
 

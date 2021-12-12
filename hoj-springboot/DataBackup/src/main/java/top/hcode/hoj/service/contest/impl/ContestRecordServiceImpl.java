@@ -389,8 +389,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                 ACMContestRankVo = result.get(uidMapIndex.get(contestRecord.getUid())); // 根据记录的index进行获取
             }
 
-            HashMap<String, Object> problemSubmissionInfo = ACMContestRankVo.getSubmissionInfo()
-                    .get(contestRecord.getDisplayId());
+            HashMap<String, Object> problemSubmissionInfo = ACMContestRankVo.getSubmissionInfo().get(contestRecord.getDisplayId());
 
             if (problemSubmissionInfo == null) {
                 problemSubmissionInfo = new HashMap<>();
