@@ -113,7 +113,7 @@ public class ContestFileController {
 
         // 获取题目displayID列表
         QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
-        contestProblemQueryWrapper.eq("cid", contest.getId()).select("display_id");
+        contestProblemQueryWrapper.eq("cid", contest.getId()).select("display_id").orderByAsc("display_id");
         List<String> contestProblemDisplayIDList = contestProblemService.list(contestProblemQueryWrapper)
                 .stream().map(ContestProblem::getDisplayId).collect(Collectors.toList());
 
