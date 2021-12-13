@@ -283,16 +283,14 @@ public class ScheduleServiceImpl implements ScheduleService {
         QueryWrapper<Session> sessionQueryWrapper = new QueryWrapper<>();
 
         DateTime dateTime = DateUtil.offsetMonth(new Date(), -6);
-        String sixMonthsBeforeDate = dateTime.toString("yyyy-MM-dd HH:mm:ss");
         sessionQueryWrapper.select("distinct uid");
-        sessionQueryWrapper.apply("UNIX_TIMESTAMP(gmt_create) >= UNIX_TIMESTAMP('" + sixMonthsBeforeDate + "')");
+        sessionQueryWrapper.ge("gmt_create", dateTime.toJdkDate());
         List<Session> sessionList = sessionService.list(sessionQueryWrapper);
-
         if (sessionList.size() > 0) {
             List<String> uidList = sessionList.stream().map(Session::getUid).collect(Collectors.toList());
             UpdateWrapper<Session> sessionUpdateWrapper = new UpdateWrapper<>();
             sessionQueryWrapper.in("uid", uidList)
-                    .apply("UNIX_TIMESTAMP(gmt_create) < UNIX_TIMESTAMP('" + sixMonthsBeforeDate + "')");
+                    .lt("gmt_create", dateTime.toJdkDate());
             boolean isSuccess = sessionService.remove(sessionUpdateWrapper);
             if (!isSuccess) {
                 log.error("=============数据库session表定时删除用户6个月前的记录失败===============");
