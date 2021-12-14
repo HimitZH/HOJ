@@ -272,9 +272,10 @@ public class JudgeController {
         boolean root = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
 
         HashMap<String, Object> result = new HashMap<>();
+        Contest contest = null;
         if (judge.getCid() != 0 && !root) {
-            Contest contest = contestService.getById(judge.getCid());
-            if (!userRolesVo.getUid().equals(contest.getUid()) && contest.getSealRank()
+            contest = contestService.getById(judge.getCid());
+            if (userRolesVo != null && !userRolesVo.getUid().equals(contest.getUid()) && contest.getSealRank()
                     && contest.getType().intValue() == Constants.Contest.TYPE_OI.getCode()
                     && contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()
                     && contest.getSealRankTime().before(new Date())) {
@@ -292,9 +293,10 @@ public class JudgeController {
         // 当此次提交代码不共享
         // 比赛提交只有比赛创建者和root账号可看代码
         if (judge.getCid() != 0) {
-
-            Contest contest = contestService.getById(judge.getCid());
-            if (!root && !userRolesVo.getUid().equals(contest.getUid())) {
+            if (contest == null) {
+                contest = contestService.getById(judge.getCid());
+            }
+            if (userRolesVo != null && !root && !userRolesVo.getUid().equals(contest.getUid())) {
                 // 如果是比赛,那么还需要判断是否为封榜,比赛管理员和超级管理员可以有权限查看(ACM题目除外)
                 if (contest.getSealRank()
                         && contest.getType().intValue() == Constants.Contest.TYPE_OI.getCode()

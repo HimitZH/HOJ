@@ -183,7 +183,7 @@
           <vxe-table-column
             :title="$t('m.Password')"
             field="password"
-            min-width="150"
+            min-width="130"
             show-overflow
           >
             <template v-slot="{ row }">
@@ -208,6 +208,36 @@
           >
             <template v-slot="{ row }">
               {{ row[3] }}
+            </template>
+          </vxe-table-column>
+          <vxe-table-column
+            :title="$t('m.Gender')"
+            field="gender"
+            min-width="60"
+            show-overflow
+          >
+            <template v-slot="{ row }">
+              {{ row[4] }}
+            </template>
+          </vxe-table-column>
+          <vxe-table-column
+            :title="$t('m.Nickname')"
+            field="nickname"
+            min-width="100"
+            show-overflow
+          >
+            <template v-slot="{ row }">
+              {{ row[5] }}
+            </template>
+          </vxe-table-column>
+          <vxe-table-column
+            :title="$t('m.School')"
+            field="school"
+            min-width="100"
+            show-overflow
+          >
+            <template v-slot="{ row }">
+              {{ row[6] }}
             </template>
           </vxe-table-column>
         </vxe-table>
