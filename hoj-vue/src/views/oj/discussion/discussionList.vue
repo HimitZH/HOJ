@@ -437,7 +437,7 @@ export default {
         keyword: '',
         cid: '',
         currentPage: 1,
-        limit: 8,
+        limit: 10,
         pid: '',
         onlyMine: false,
       },

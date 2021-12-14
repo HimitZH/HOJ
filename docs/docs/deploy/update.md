@@ -82,13 +82,23 @@ docker-compose up -d
 
 >  附加：如何自定义前端请看这里 => [自定义前端文档](/use/update-fe.html)
 
-（1）首先到`./hoj/hoj-vue`文件夹中，拉取[hoj-vue](https://gitee.com/himitzh0730/hoj/tree/master/hoj-vue)仓库最新的代码，可能会覆盖本地的修改，请注意合并分支。
+（1）首先到`./hoj/hoj-vue`文件夹中，拉取[hoj-vue](https://gitee.com/himitzh0730/hoj/tree/master/hoj-vue)仓库最新的代码，请注意解决出现的冲突。
 
 ```shell
 git pull
 ```
 
 或者重新直接download成zip包，然后重新自定义修改前端
+
+当然，如果想查看对比主仓库更新的内容，可以用以下命令一步步合并
+
+```bash
+git remote -v                 # 查看主仓库的远程仓库
+git fetch origin master:temp  # 将最新的主仓库代码拉到本地一个temp的分支
+git diff temp                 # 比较现在本地代码与最新temp分支的区别
+git merge temp                # 合并temp分支到本地的master分支
+git branch -d temp            # 删除temp这个临时分支
+```
 
 （2）接着，重新用npm打包，在`./hoj/hoj-vue/dist`文件夹会生成静态的前端文件，放到原来指定的位置即可
 

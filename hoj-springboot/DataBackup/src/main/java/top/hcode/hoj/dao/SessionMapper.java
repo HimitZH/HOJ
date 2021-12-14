@@ -8,4 +8,5 @@ import top.hcode.hoj.pojo.entity.user.Session;
 @Mapper
 @Repository
 public interface SessionMapper extends BaseMapper<Session> {
+
 }
