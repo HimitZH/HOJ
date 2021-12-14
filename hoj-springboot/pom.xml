@@ -8,8 +8,8 @@
     <artifactId>hoj-springboot</artifactId>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>DataBackup</module>
         <module>api</module>
+        <module>DataBackup</module>
         <module>JudgeServer</module>
     </modules>
     <packaging>pom</packaging>

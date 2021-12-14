@@ -9,6 +9,7 @@ import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
@@ -32,6 +33,7 @@ import top.hcode.hoj.utils.RedisUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -258,13 +260,18 @@ public class ScheduleServiceImpl implements ScheduleService {
             } catch (Exception e) {
                 log.error("爬虫爬取Codeforces Rating分数异常----------------------->{}", e.getMessage());
             }
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         log.info("获取Codeforces Rating成功！");
     }
 
     @Retryable(value = Exception.class,
             maxAttempts = 5,
-            backoff = @Backoff(delay = 500, multiplier = 1.4))
+            backoff = @Backoff(delay = 1000, multiplier = 1.4))
     public JSONObject getCFUserInfo(String url) throws Exception {
         return JsoupUtils.getJsonFromConnection(JsoupUtils.getConnectionFromUrl(url, null, null));
     }
@@ -278,19 +285,21 @@ public class ScheduleServiceImpl implements ScheduleService {
      * @Since 2021/9/6
      */
     @Scheduled(cron = "0 0 3 * * *")
+//    @Scheduled(cron = "0/5 * * * * *")
     @Override
     public void deleteUserSession() {
         QueryWrapper<Session> sessionQueryWrapper = new QueryWrapper<>();
 
         DateTime dateTime = DateUtil.offsetMonth(new Date(), -6);
+        String strTime = DateFormatUtils.format(dateTime, "yyyy-MM-dd HH:mm:ss");
         sessionQueryWrapper.select("distinct uid");
-        sessionQueryWrapper.ge("gmt_create", dateTime.toJdkDate());
+        sessionQueryWrapper.apply("UNIX_TIMESTAMP(gmt_create) >= UNIX_TIMESTAMP('" + strTime + "')");
         List<Session> sessionList = sessionService.list(sessionQueryWrapper);
         if (sessionList.size() > 0) {
             List<String> uidList = sessionList.stream().map(Session::getUid).collect(Collectors.toList());
             UpdateWrapper<Session> sessionUpdateWrapper = new UpdateWrapper<>();
             sessionQueryWrapper.in("uid", uidList)
-                    .lt("gmt_create", dateTime.toJdkDate());
+                    .apply("UNIX_TIMESTAMP('" + strTime + "') > UNIX_TIMESTAMP(gmt_create)");
             boolean isSuccess = sessionService.remove(sessionUpdateWrapper);
             if (!isSuccess) {
                 log.error("=============数据库session表定时删除用户6个月前的记录失败===============");
