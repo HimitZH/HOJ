@@ -289,7 +289,6 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public void deleteUserSession() {
         QueryWrapper<Session> sessionQueryWrapper = new QueryWrapper<>();
-
         DateTime dateTime = DateUtil.offsetMonth(new Date(), -6);
         String strTime = DateFormatUtils.format(dateTime, "yyyy-MM-dd HH:mm:ss");
         sessionQueryWrapper.select("distinct uid");
@@ -297,12 +296,16 @@ public class ScheduleServiceImpl implements ScheduleService {
         List<Session> sessionList = sessionService.list(sessionQueryWrapper);
         if (sessionList.size() > 0) {
             List<String> uidList = sessionList.stream().map(Session::getUid).collect(Collectors.toList());
-            UpdateWrapper<Session> sessionUpdateWrapper = new UpdateWrapper<>();
-            sessionQueryWrapper.in("uid", uidList)
+            QueryWrapper<Session> queryWrapper = new QueryWrapper<>();
+            queryWrapper.in("uid", uidList)
                     .apply("UNIX_TIMESTAMP('" + strTime + "') > UNIX_TIMESTAMP(gmt_create)");
-            boolean isSuccess = sessionService.remove(sessionUpdateWrapper);
-            if (!isSuccess) {
-                log.error("=============数据库session表定时删除用户6个月前的记录失败===============");
+            List<Session> needDeletedSessionList = sessionService.list(queryWrapper);
+            if (needDeletedSessionList.size() > 0) {
+                List<Long> needDeletedIdList = needDeletedSessionList.stream().map(Session::getId).collect(Collectors.toList());
+                boolean isOk = sessionService.removeByIds(needDeletedIdList);
+                if (!isOk) {
+                    log.error("=============数据库session表定时删除用户6个月前的记录失败===============");
+                }
             }
         }
     }
