@@ -459,11 +459,11 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         ).collect(Collectors.toList());
 
         // 需要打星的用户名列表
-        List<String> starAccountList = starAccountToList(contest.getStarAccount());
+        HashMap<String, Boolean> starAccountMap = starAccountToMap(contest.getStarAccount());
 
         // 如果选择了移除打星队伍，同时该用户属于打星队伍，则将其移除
         if (removeStar) {
-            orderResultList.removeIf(acmContestRankVo -> starAccountList.contains(acmContestRankVo.getUsername()));
+            orderResultList.removeIf(acmContestRankVo -> starAccountMap.containsKey(acmContestRankVo.getUsername()));
         }
         // 记录当前用户排名数据和关注列表的用户排名数据
         List<ACMContestRankVo> topACMRankVoList = new ArrayList<>();
@@ -476,24 +476,25 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
         int rankNum = 1;
         int len = orderResultList.size();
+        ACMContestRankVo lastACMRankVo = null;
         for (int i = 0; i < len; i++) {
             ACMContestRankVo currentACMRankVo = orderResultList.get(i);
-            if (starAccountList.contains(currentACMRankVo.getUsername())) {
+            if (starAccountMap.containsKey(currentACMRankVo.getUsername())) {
                 // 打星队伍排名为-1
                 currentACMRankVo.setRank(-1);
             } else {
-                if (i != 0) {
-                    ACMContestRankVo lastACMRankVo = orderResultList.get(i - 1);
-                    // 当前用户的总罚时和AC数跟前一个用户一样的话，排名则一样
+                if (rankNum == 1) {
+                    currentACMRankVo.setRank(rankNum);
+                } else {
+                    // 当前用户的总罚时和AC数跟前一个用户一样的话，同时前一个不应该为打星，排名则一样
                     if (lastACMRankVo.getAc().equals(currentACMRankVo.getAc())
                             && lastACMRankVo.getTotalTime().equals(currentACMRankVo.getTotalTime())) {
                         currentACMRankVo.setRank(lastACMRankVo.getRank());
                     } else {
                         currentACMRankVo.setRank(rankNum);
                     }
-                } else {
-                    currentACMRankVo.setRank(rankNum);
                 }
+                lastACMRankVo = currentACMRankVo;
                 rankNum++;
             }
 
@@ -623,11 +624,11 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                 .collect(Collectors.toList());
 
         // 需要打星的用户名列表
-        List<String> starAccountList = starAccountToList(contest.getStarAccount());
+        HashMap<String, Boolean> starAccountMap = starAccountToMap(contest.getStarAccount());
 
         // 如果选择了移除打星队伍，同时该用户属于打星队伍，则将其移除
         if (removeStar) {
-            orderResultList.removeIf(acmContestRankVo -> starAccountList.contains(acmContestRankVo.getUsername()));
+            orderResultList.removeIf(acmContestRankVo -> starAccountMap.containsKey(acmContestRankVo.getUsername()));
         }
 
         // 记录当前用户排名数据和关注列表的用户排名数据
@@ -640,27 +641,27 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         }
 
         int rankNum = 1;
+        OIContestRankVo lastOIRankVo = null;
         int len = orderResultList.size();
         for (int i = 0; i < len; i++) {
             OIContestRankVo currentOIRankVo = orderResultList.get(i);
-            if (starAccountList.contains(currentOIRankVo.getUsername())) {
+            if (starAccountMap.containsKey(currentOIRankVo.getUsername())) {
                 // 打星队伍排名为-1
                 currentOIRankVo.setRank(-1);
             } else {
-                if (i != 0) {
-                    OIContestRankVo lastOIRankVo = orderResultList.get(i - 1);
-                    // 当前用户的程序总运行时间和总得分跟前一个用户一样的话，排名则一样
+                if (rankNum == 1) {
+                    currentOIRankVo.setRank(rankNum);
+                } else {
+                    // 当前用户的程序总运行时间和总得分跟前一个用户一样的话，同时前一个不应该为打星用户，排名则一样
                     if (lastOIRankVo.getTotalScore().equals(currentOIRankVo.getTotalScore())
                             && lastOIRankVo.getTotalTime().equals(currentOIRankVo.getTotalTime())) {
                         currentOIRankVo.setRank(lastOIRankVo.getRank());
                     } else {
                         currentOIRankVo.setRank(rankNum);
                     }
-                } else {
-                    currentOIRankVo.setRank(rankNum);
                 }
+                lastOIRankVo = currentOIRankVo;
                 rankNum++;
-
             }
 
             if (!StringUtils.isEmpty(currentUserId) &&
@@ -684,11 +685,18 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         return DateUtil.isIn(submissionDate, contest.getSealRankTime(), contest.getEndTime());
     }
 
-    private List<String> starAccountToList(String starAccountStr) {
+    private HashMap<String, Boolean> starAccountToMap(String starAccountStr) {
         if (StringUtils.isEmpty(starAccountStr)) {
-            return new ArrayList<>();
+            return new HashMap<>();
         }
         JSONObject jsonObject = JSONUtil.parseObj(starAccountStr);
-        return jsonObject.get("star_account", List.class);
+        List<String> list = jsonObject.get("star_account", List.class);
+        HashMap<String, Boolean> res = new HashMap<>();
+        for (String str : list) {
+            if (!StringUtils.isEmpty(str)) {
+                res.put(str, true);
+            }
+        }
+        return res;
     }
 }
