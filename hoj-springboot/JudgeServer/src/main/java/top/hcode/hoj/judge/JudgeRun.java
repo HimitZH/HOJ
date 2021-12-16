@@ -376,8 +376,8 @@ public class JudgeRun {
             res.set("code", SPJ_WA);
             res.set("errMsg", err.split("wrong answer ")[1]);
         } else if (err.startsWith("wrong output format ")) {
-            res.set("code", SPJ_PE);
-            res.set("errMsg", err.split("wrong output format")[1]);
+            res.set("code", SPJ_WA);
+            res.set("errMsg", "May be output presentation error. " + err.split("wrong output format")[1]);
         } else if (err.startsWith("FAIL ")) {
             res.set("code", SPJ_ERROR);
             res.set("errMsg", err.split("FAIL ")[1]);
