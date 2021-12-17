@@ -65,43 +65,43 @@
     </el-row>
     <div class="sub-menu">
       <!-- 判断是否需要密码验证 -->
-      <el-card
-        v-if="passwordFormVisible"
-        class="password-form-card"
-        style="text-align:center"
-      >
-        <div slot="header">
-          <span class="panel-title" style="color: #e6a23c;"
-            ><i class="el-icon-warning">
-              {{ $t('m.Password_Required') }}</i
-            ></span
-          >
-        </div>
-        <p class="password-form-tips">
-          {{ $t('m.To_Enter_Need_Password') }}
-        </p>
-        <el-form>
-          <el-input
-            v-model="contestPassword"
-            type="password"
-            :placeholder="$t('m.Enter_the_contest_password')"
-            @keydown.enter.native="checkPassword"
-            style="width:70%"
-          />
-          <el-button
-            type="primary"
-            @click="checkPassword"
-            style="float:right;"
-            >{{ $t('m.Enter') }}</el-button
-          >
-        </el-form>
-      </el-card>
 
-      <el-tabs v-else @tab-click="tabClick" v-model="route_name">
+      <el-tabs @tab-click="tabClick" v-model="route_name">
         <el-tab-pane name="ContestDetails" lazy>
           <span slot="label"
             ><i class="el-icon-s-home"></i>&nbsp;{{ $t('m.Overview') }}</span
           >
+          <el-card
+            v-if="passwordFormVisible"
+            class="password-form-card"
+            style="text-align:center;margin-bottom:15px"
+          >
+            <div slot="header">
+              <span class="panel-title" style="color: #e6a23c;"
+                ><i class="el-icon-warning">
+                  {{ $t('m.Password_Required') }}</i
+                ></span
+              >
+            </div>
+            <p class="password-form-tips">
+              {{ $t('m.To_Enter_Need_Password') }}
+            </p>
+            <el-form>
+              <el-input
+                v-model="contestPassword"
+                type="password"
+                :placeholder="$t('m.Enter_the_contest_password')"
+                @keydown.enter.native="checkPassword"
+                style="width:70%"
+              />
+              <el-button
+                type="primary"
+                @click="checkPassword"
+                style="float:right;"
+                >{{ $t('m.Enter') }}</el-button
+              >
+            </el-form>
+          </el-card>
           <el-card class="box-card">
             <div
               v-html="descriptionHtml"
