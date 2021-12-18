@@ -98,7 +98,16 @@ public class TrainingController {
         TrainingCategory trainingCategory = trainingCategoryService.getTrainingCategoryByTrainingId(training.getId());
         trainingVo.setCategoryName(trainingCategory.getName());
         trainingVo.setCategoryColor(trainingCategory.getColor());
-        trainingVo.setProblemCount(trainingProblemService.getTrainingProblemCount(training.getId()));
+        List<Long> trainingProblemIdList = trainingProblemService.getTrainingProblemIdList(training.getId());
+        trainingVo.setProblemCount(trainingProblemIdList.size());
+
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        if (userRolesVo != null) {
+            Integer userTrainingACProblemCount = trainingProblemService.getUserTrainingACProblemCount(userRolesVo.getUid(), trainingProblemIdList);
+            trainingVo.setAcCount(userTrainingACProblemCount);
+        }
 
         return CommonResult.successResponse(trainingVo, "success");
     }
@@ -175,11 +184,11 @@ public class TrainingController {
 
 
     /**
-     * @MethodName getTrainingRank
      * @param tid
      * @param limit
      * @param currentPage
      * @param request
+     * @MethodName getTrainingRank
      * @Description 获取训练的排行榜分页
      * @Return
      * @Since 2021/11/22

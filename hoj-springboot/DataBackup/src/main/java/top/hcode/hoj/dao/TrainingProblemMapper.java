@@ -13,7 +13,8 @@ import java.util.List;
 @Repository
 public interface TrainingProblemMapper extends BaseMapper<TrainingProblem> {
 
-    public Integer getTrainingProblemCount(@Param("tid") Long tid);
+    public List<Long> getTrainingProblemCount(@Param("tid") Long tid);
 
     public List<ProblemVo> getTrainingProblemList(@Param("tid") Long tid);
+
 }

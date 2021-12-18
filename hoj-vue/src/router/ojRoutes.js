@@ -30,6 +30,7 @@ import UserMsg from "@/views/oj/message/UserMsg.vue"
 import SysMsg from "@/views/oj/message/SysMsg.vue"
 import TrainingList from "@/views/oj/training/TrainingList.vue"
 import TrainingDetails from "@/views/oj/training/TrainingDetails.vue"
+import TrainingProblemList from "@/views/oj/training/TrainingProblemList.vue"
 import NotFound from "@/views/404.vue"
 
 const ojRoutes = [
@@ -68,7 +69,20 @@ const ojRoutes = [
     path: '/training/:trainingID/',
     component:TrainingDetails,
     meta: {title: 'Training Details'},
-    children: []
+    children: [
+      {
+        name: 'TrainingProblemList',
+        path: 'problems',
+        component: TrainingProblemList,
+        meta: { title: 'Training Problem' }
+      },
+      {
+        name: 'TrainingProblemDetails',
+        path: 'problem/:problemID/',
+        component: Problem,
+        meta: { title: 'Training Problem Details' }
+      },
+    ]
   },
   {
     path: '/contest',

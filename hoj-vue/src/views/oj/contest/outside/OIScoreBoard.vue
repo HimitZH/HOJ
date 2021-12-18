@@ -406,7 +406,6 @@ export default {
   text-align: center;
 }
 .panel-title {
-  font-variant: small-caps;
   font-size: 1.5rem !important;
   font-weight: 500;
 }

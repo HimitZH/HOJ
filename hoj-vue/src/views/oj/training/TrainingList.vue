@@ -2,7 +2,7 @@
   <el-row>
     <el-card>
       <section>
-        <span class="find-training">搜索训练</span>
+        <span class="find-training">{{ $t('m.Search_Training') }}</span>
         <vxe-input
           v-model="query.keyword"
           :placeholder="$t('m.Enter_keyword')"
@@ -14,7 +14,7 @@
         ></vxe-input>
       </section>
       <section>
-        <b class="training-category">训练分类</b>
+        <b class="training-category">{{ $t('m.Training_Category') }}</b>
         <div>
           <el-tag
             size="medium"
@@ -41,14 +41,14 @@
       >
         <vxe-table-column
           field="rank"
-          title="编号"
+          :title="$t('m.Number')"
           min-width="60"
           show-overflow
         >
         </vxe-table-column>
         <vxe-table-column
           field="title"
-          title="标题"
+          :title="$t('m.Title')"
           min-width="200"
           align="center"
         >
@@ -61,7 +61,7 @@
 
         <vxe-table-column
           field="auth"
-          title="权限"
+          :title="$t('m.Auth')"
           min-width="100"
           align="center"
         >
@@ -73,7 +73,7 @@
         </vxe-table-column>
         <vxe-table-column
           field="categoryName"
-          title="分类"
+          :title="$t('m.Category')"
           min-width="100"
           align="center"
         >
@@ -95,14 +95,14 @@
         </vxe-table-column>
         <vxe-table-column
           field="problemCount"
-          title="题目数"
+          :title="$t('m.Problem_Number')"
           min-width="80"
           align="center"
         >
         </vxe-table-column>
         <vxe-table-column
           field="author"
-          title="作者"
+          :title="$t('m.Author')"
           min-width="150"
           align="center"
           show-overflow
@@ -115,7 +115,7 @@
         </vxe-table-column>
         <vxe-table-column
           field="gmtModified"
-          title="最近更新"
+          :title="$t('m.Recent_Update')"
           min-width="150"
           align="center"
           show-overflow
@@ -138,7 +138,6 @@
 <script>
 import api from '@/common/api';
 import utils from '@/common/utils';
-import myMessage from '@/common/message';
 import { TRAINING_TYPE } from '@/common/constants';
 const Pagination = () => import('@/components/oj/common/Pagination');
 export default {
@@ -161,20 +160,21 @@ export default {
       loading: false,
     };
   },
-  mounted() {
-    let route = this.$route.query;
-    this.query.keyword = route.keyword || '';
-    this.currentPage = parseInt(route.currentPage) || 1;
-    this.categoryId = route.categoryId || null;
+  created() {
     this.TRAINING_TYPE = Object.assign({}, TRAINING_TYPE);
     this.getTrainingCategoryList();
-    this.getTrainingList(1);
-    myMessage.warning('本训练模块暂未投入使用，正在测试中.....');
-    this.$alert('本训练模块暂未投入使用，正在测试中.....', '注意', {
-      confirmButtonText: '确定',
-    });
+  },
+  mounted() {
+    this.init();
   },
   methods: {
+    init() {
+      let route = this.$route.query;
+      this.query.keyword = route.keyword || '';
+      this.currentPage = parseInt(route.currentPage) || 1;
+      this.categoryId = route.categoryId || null;
+      this.getTrainingList(1);
+    },
     filterByCategory(categoryId) {
       this.query.categoryId = categoryId;
       this.filterByChange();
@@ -184,7 +184,7 @@ export default {
       let query = Object.assign({}, this.query);
       query.currentPage = this.currentPage;
       this.$router.push({
-        name: 'TrainingList',
+        path: '/training',
         query: utils.filterEmptyValue(query),
       });
     },
@@ -238,6 +238,13 @@ export default {
           category.color +
           ';'
         );
+      }
+    },
+  },
+  watch: {
+    $route(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.init();
       }
     },
   },

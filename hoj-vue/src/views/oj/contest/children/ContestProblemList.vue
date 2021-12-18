@@ -126,19 +126,21 @@
           </span>
         </template>
       </vxe-table-column>
-      <vxe-table-column
-        field="ACRating"
-        :title="$t('m.AC_Rate')"
-        min-width="80"
-      >
+      <vxe-table-column field="ACRate" :title="$t('m.AC_Rate')" min-width="120">
         <template v-slot="{ row }">
-          <span v-if="!ContestRealTimePermission">
-            <i
-              class="fa fa-question"
-              style="font-weight: 600;font-size: 16px;color:#909399"
-            ></i>
+          <span>
+            <el-tooltip
+              effect="dark"
+              :content="row.ac + '/' + row.total"
+              placement="top"
+            >
+              <el-progress
+                :text-inside="true"
+                :stroke-width="15"
+                :percentage="getPassingRate(row.ac, row.total)"
+              ></el-progress>
+            </el-tooltip>
           </span>
-          <span v-else>{{ getACRate(row.ac, row.total) }}</span>
         </template>
       </vxe-table-column>
     </vxe-table>
@@ -147,7 +149,6 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex';
-import utils from '@/common/utils';
 import { JUDGE_STATUS, RULE_TYPE } from '@/common/constants';
 import api from '@/common/api';
 export default {
@@ -205,8 +206,11 @@ export default {
         },
       });
     },
-    getACRate(ACCount, TotalCount) {
-      return utils.getACRate(ACCount, TotalCount);
+    getPassingRate(ac, total) {
+      if (!total) {
+        return 0;
+      }
+      return ((ac / total) * 100).toFixed(2);
     },
     getIconColor(status) {
       return (

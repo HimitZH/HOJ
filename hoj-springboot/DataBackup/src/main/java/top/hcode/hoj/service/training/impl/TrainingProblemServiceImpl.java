@@ -5,12 +5,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.TrainingProblemMapper;
+import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
 import top.hcode.hoj.pojo.vo.ProblemVo;
+import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
 import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
 import top.hcode.hoj.service.training.TrainingProblemService;
 
@@ -32,14 +35,31 @@ public class TrainingProblemServiceImpl extends ServiceImpl<TrainingProblemMappe
     @Resource
     private ProblemServiceImpl problemService;
 
+    @Resource
+    private JudgeServiceImpl judgeService;
+
     @Override
-    public int getTrainingProblemCount(Long tid) {
+    public List<Long> getTrainingProblemIdList(Long tid) {
         return trainingProblemMapper.getTrainingProblemCount(tid);
     }
 
     @Override
     public List<ProblemVo> getTrainingProblemList(Long tid) {
         return trainingProblemMapper.getTrainingProblemList(tid);
+    }
+
+    @Override
+    public Integer getUserTrainingACProblemCount(String uid, List<Long> pidList) {
+        if (CollectionUtils.isEmpty(pidList)){
+            return 0;
+        }
+        QueryWrapper<Judge> judgeQueryWrapper = new QueryWrapper<>();
+        judgeQueryWrapper.select("DISTINCT pid")
+                .in("pid", pidList)
+                .eq("cid", 0)
+                .eq("uid", uid)
+                .eq("status", 0);
+        return judgeService.count(judgeQueryWrapper);
     }
 
     @Override

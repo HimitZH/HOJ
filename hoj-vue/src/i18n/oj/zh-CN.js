@@ -179,6 +179,7 @@ export const m = {
   Put_away_the_full_screen_and_write_the_code:'收起全屏，编写代码',
   Contest_Problem:'比赛题目',
   Show_Tags:'显示标签',
+  Hide_Tags:'隐藏标签',
   No_tag:'暂无标签',
   Statistic: '题目统计',
   Solutions:'全部提交',
@@ -467,5 +468,20 @@ export const m = {
   Action_Reply:'回复了我的评论',
   From_Discussion_Post:'来自讨论帖',
   From_the_Contest:'来自比赛',
-  Delete_Msg_Tips:'你是否确定要删除或清空消息？'
+  Delete_Msg_Tips:'你是否确定要删除或清空消息？',
+
+  // /views/oj/training/TrainingList.vue
+  Search_Training:'搜索训练',
+  Training_Category:'训练分类',
+  Number:'编号',
+  Problem_Number:'题目数',
+  Recent_Update:'最近更新',
+
+  // /views/oj/training/TrainingDetails.vue
+  Training_Introduction:'训练简介',
+  Training_Number:'训练编号',
+  Training_Auth:'训练权限',
+  Training_Total_Problems:'总题数',
+  Record_List:'记录榜单'
+    
 }
