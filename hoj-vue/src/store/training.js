@@ -26,11 +26,12 @@ const getters = {
      // 私有训练需要通过验证密码方可查看比赛
       return !state.intoAccess
     }
-  
   },
-
+  isPrivateTraining: (state, getters) => {
+    return state.training.auth === TRAINING_TYPE.Private.name
+  },
   // 是否需要显示密码验证框
-  passwordFormVisible: (state, getters) => {
+  trainingPasswordFormVisible: (state, getters) => {
     // 如果是公开训练，或已注册过，管理员都不用再显示
     return state.training.auth !== TRAINING_TYPE.Public.name &&!state.intoAccess && !getters.isTrainingAdmin 
   }

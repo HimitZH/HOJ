@@ -13,9 +13,11 @@ import java.util.List;
  * @Description:
  */
 public interface TrainingProblemService extends IService<TrainingProblem> {
-    public int getTrainingProblemCount(Long tid);
+    public List<Long> getTrainingProblemIdList(Long tid);
 
     public List<ProblemVo> getTrainingProblemList(Long tid);
+
+    public Integer getUserTrainingACProblemCount(String uid, List<Long> pidList);
 
     public HashMap<String, Object> getAdminTrainingProblemList(int limit, int currentPage,
                                                                String keyword, Long tid, boolean queryExisted);

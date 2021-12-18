@@ -663,6 +663,7 @@ export default {
       captchaSrc: '',
       contestID: 0,
       problemID: '',
+      trainingID: 0,
       submitting: false,
       code: '',
       language: '',
@@ -745,7 +746,7 @@ export default {
   methods: {
     ...mapActions(['changeDomTitle']),
     handleClickTab({ name }) {
-      if (name == 'mySubmission') {
+      if (name == 'mySubmission' && this.isAuthenticated) {
         this.getMySubmission();
       }
     },
@@ -755,7 +756,6 @@ export default {
         currentPage: this.mySubmission_currentPage,
         problemID: this.problemID,
         contestID: this.contestID,
-        tid: this.trainingID,
         limit: this.mySubmission_limit,
       };
       if (this.contestID) {
@@ -909,9 +909,9 @@ export default {
         this.trainingID = this.$route.params.trainingID;
       }
       let func =
-        this.$route.name === 'ProblemDetails'
-          ? 'getProblem'
-          : 'getContestProblem';
+        this.$route.name === 'ContestProblemDetails'
+          ? 'getContestProblem'
+          : 'getProblem';
       this.loading = true;
       api[func](this.problemID, this.contestID).then(
         (res) => {
@@ -1179,6 +1179,7 @@ export default {
         language: this.language,
         code: this.code,
         cid: this.contestID,
+        tid: this.trainingID,
         isRemote: this.isRemote,
       };
       if (this.captchaRequired) {

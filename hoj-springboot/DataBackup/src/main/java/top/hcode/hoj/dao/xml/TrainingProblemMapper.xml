@@ -3,15 +3,15 @@
 <mapper namespace="top.hcode.hoj.dao.TrainingProblemMapper">
 
 
-    <select id="getTrainingProblemCount" resultType="java.lang.Integer">
-        select count(*) from training_problem tp,problem p
+    <select id="getTrainingProblemCount" resultType="java.lang.Long">
+        select p.id from training_problem tp,problem p
         where tp.tid = #{tid} and tp.pid = p.id and p.auth = 1
     </select>
 
 
     <resultMap id="map_TrainingProblemList" type="top.hcode.hoj.pojo.vo.ProblemVo">
         <id column="pid" property="pid"></id>
-        <result column="display_id" property="problemId"></result>
+        <result column="problem_id" property="problemId"></result>
         <result column="title" property="title"></result>
         <result column="difficulty" property="difficulty"></result>
         <result column="type" property="type"></result>
@@ -22,7 +22,7 @@
     </resultMap>
 
     <select id="getTrainingProblemList" resultMap="map_TrainingProblemList">
-        SELECT DISTINCT p.id AS pid, p.problem_id, p.title, p.difficulty, p.type
+        SELECT p.id AS pid, p.problem_id, p.title, p.difficulty, p.type
         , COALESCE(j.ac, 0) AS ac
         , COALESCE(j.total, 0) AS total
         FROM problem p,

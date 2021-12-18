@@ -177,7 +177,7 @@
           <vxe-table-column
             field="tag"
             :title="$t('m.Tags')"
-            min-width="250"
+            min-width="230"
             visible="false"
           >
             <template v-slot="{ row }">
@@ -198,9 +198,28 @@
             :title="$t('m.Total')"
             min-width="80"
           ></vxe-table-column>
-          <vxe-table-column :title="$t('m.AC_Rate')" min-width="80">
+          <vxe-table-column
+            field="ac"
+            :title="$t('m.AC_Rate')"
+            min-width="120"
+            align="center"
+          >
             <template v-slot="{ row }">
-              <span>{{ getPercentage(row.ac, row.total) }}%</span>
+              <span>
+                <el-tooltip
+                  effect="dark"
+                  :content="row.ac + '/' + row.total"
+                  placement="top"
+                  style="margin-top:0"
+                >
+                  <el-progress
+                    :text-inside="true"
+                    :stroke-width="15"
+                    :color="customColors"
+                    :percentage="getPassingRate(row.ac, row.total)"
+                  ></el-progress>
+                </el-tooltip>
+              </span>
             </template>
           </vxe-table-column>
         </vxe-table>
@@ -315,6 +334,13 @@ export default {
         tagId: '',
         currentPage: 1,
       },
+      customColors: [
+        { color: '#909399', percentage: 20 },
+        { color: '#f56c6c', percentage: 40 },
+        { color: '#e6a23c', percentage: 60 },
+        { color: '#1989fa', percentage: 80 },
+        { color: '#67c23a', percentage: 100 },
+      ],
     };
   },
   created() {
@@ -377,10 +403,11 @@ export default {
       this.limit = pageSize;
       this.getProblemList();
     },
-    getPercentage(partNumber, total) {
-      return partNumber == 0
-        ? 0
-        : Math.round((partNumber / total) * 10000) / 100.0;
+    getPassingRate(ac, total) {
+      if (!total) {
+        return 0;
+      }
+      return ((ac / total) * 100).toFixed(2);
     },
     // 处理触碰或鼠标悬浮某题目，在右上方显示对应的提交数据
     cellHover(event) {

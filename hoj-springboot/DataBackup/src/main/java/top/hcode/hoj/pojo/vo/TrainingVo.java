@@ -43,6 +43,11 @@ public class TrainingVo implements Serializable {
     @ApiModelProperty(value = "该训练的总题数")
     private Integer problemCount;
 
+    @ApiModelProperty(value = "当前用户已完成训练的题数")
+    private Integer acCount;
+
     @ApiModelProperty(value = "训练更新时间")
     private Date gmtModified;
+
+
 }

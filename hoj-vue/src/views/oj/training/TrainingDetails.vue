@@ -4,19 +4,39 @@
       <div slot="header">
         <span class="panel-title">{{ training.title }}</span>
       </div>
-      <el-tag :type="TRAINING_TYPE[training.auth]['color']" effect="dark">
-        {{ training.auth }}
-      </el-tag>
+      <template v-if="isAuthenticated">
+        <div>
+          <el-tooltip
+            effect="dark"
+            :content="training.acCount + '/' + training.problemCount"
+            placement="top"
+          >
+            <el-progress
+              :text-inside="true"
+              :stroke-width="15"
+              :percentage="getAcProblemPercent()"
+              :color="customColors"
+            ></el-progress>
+          </el-tooltip>
+        </div>
+        <div class="count">
+          {{ training.acCount + ' / ' + training.problemCount }}
+        </div>
+      </template>
     </el-card>
 
     <el-tabs @tab-click="tabClick" v-model="route_name" class="card-top">
       <el-tab-pane name="TrainingDetails" lazy>
-        <span slot="label"><i class="el-icon-s-home"></i>&nbsp;训练简介</span>
+        <span slot="label"
+          ><i class="el-icon-s-home"></i>&nbsp;{{
+            $t('m.Training_Introduction')
+          }}</span
+        >
         <el-row :gutter="30">
-          <el-col :sm="24" :md="8">
+          <el-col :sm="24" :md="7">
             <el-card
-              v-if="passwordFormVisible"
-              class="password-form-card card-top"
+              v-if="trainingPasswordFormVisible"
+              class="password-form-card"
               style="text-align:center"
             >
               <div slot="header">
@@ -45,11 +65,11 @@
                 >
               </el-form>
             </el-card>
-            <el-card class="card-top">
+            <el-card>
               <div class="info-rows">
                 <div>
                   <span>
-                    <span>训练编号</span>
+                    <span>{{ $t('m.Training_Number') }}</span>
                   </span>
                   <span>
                     <span>{{ training.rank }}</span>
@@ -57,7 +77,20 @@
                 </div>
                 <div>
                   <span>
-                    <span>训练类型</span>
+                    <span>{{ $t('m.Training_Auth') }}</span>
+                  </span>
+                  <span>
+                    <el-tag
+                      :type="TRAINING_TYPE[training.auth]['color']"
+                      effect="dark"
+                    >
+                      {{ training.auth }}
+                    </el-tag>
+                  </span>
+                </div>
+                <div>
+                  <span>
+                    <span>{{ $t('m.Training_Category') }}</span>
                   </span>
                   <span>
                     <span
@@ -75,9 +108,10 @@
                     >
                   </span>
                 </div>
+
                 <div>
                   <span>
-                    <span>总题数</span>
+                    <span>{{ $t('m.Training_Total_Problems') }}</span>
                   </span>
                   <span>
                     <span>{{ training.problemCount }}</span>
@@ -85,31 +119,35 @@
                 </div>
                 <div>
                   <span>
-                    <span>作者</span>
+                    <span>{{ $t('m.Author') }}</span>
                   </span>
                   <span>
                     <span
-                      ><el-link type="info">{{
-                        training.author
-                      }}</el-link></span
+                      ><el-link
+                        type="info"
+                        @click="goUserHome(training.author)"
+                        >{{ training.author }}</el-link
+                      ></span
                     >
                   </span>
                 </div>
                 <div>
                   <span>
-                    <span>最近更新</span>
+                    <span>{{ $t('m.Recent_Update') }}</span>
                   </span>
                   <span>
-                    <span>1011-11-11 11:11:11</span>
+                    <span>{{ training.gmtModified | localtime }}</span>
                   </span>
                 </div>
               </div>
             </el-card>
           </el-col>
-          <el-col :sm="24" :md="16">
-            <el-card class="card-top">
+          <el-col :sm="24" :md="17">
+            <el-card>
               <div slot="header">
-                <span class="panel-title">训练简介</span>
+                <span class="panel-title">{{
+                  $t('m.Training_Introduction')
+                }}</span>
               </div>
               <div
                 v-html="descriptionHtml"
@@ -122,35 +160,32 @@
       </el-tab-pane>
 
       <el-tab-pane
-        name="ContestProblemList"
+        name="TrainingProblemList"
         lazy
         :disabled="contestMenuDisabled"
       >
         <span slot="label"
-          ><i class="fa fa-list" aria-hidden="true"></i>&nbsp;题目列表</span
+          ><i class="fa fa-list" aria-hidden="true"></i>&nbsp;{{
+            $t('m.Problem_List')
+          }}</span
         >
         <transition name="el-zoom-in-bottom">
-          <router-view v-if="route_name === 'ContestProblemList'"></router-view>
-        </transition>
-      </el-tab-pane>
-
-      <el-tab-pane
-        name="ContestSubmissionList"
-        lazy
-        :disabled="contestMenuDisabled"
-      >
-        <span slot="label"><i class="el-icon-menu"></i>&nbsp;提交列表</span>
-        <transition name="el-zoom-in-bottom">
           <router-view
-            v-if="route_name === 'ContestSubmissionList'"
+            v-if="route_name === 'TrainingProblemList'"
           ></router-view>
         </transition>
       </el-tab-pane>
 
-      <el-tab-pane name="ContestRank" lazy :disabled="contestMenuDisabled">
+      <el-tab-pane
+        name="TrainingRank"
+        lazy
+        :disabled="contestMenuDisabled"
+        v-if="isPrivateTraining"
+      >
         <span slot="label"
-          ><i class="fa fa-bar-chart" aria-hidden="true"></i
-          >&nbsp;记录榜单</span
+          ><i class="fa fa-bar-chart" aria-hidden="true"></i>&nbsp;{{
+            $t('m.Record_List')
+          }}</span
         >
         <transition name="el-zoom-in-bottom">
           <router-view v-if="route_name === 'TrainingRank'"></router-view>
@@ -162,29 +197,66 @@
 
 <script>
 import { TRAINING_TYPE } from '@/common/constants';
+import { mapState, mapGetters } from 'vuex';
 export default {
   data() {
     return {
-      training: {
-        title: '【进阶】一个个进阶者才需要参加的训练',
-        description: '测试。。。。。。。。。。。。。。。。。',
-        categoryName: '大佬训练',
-        categoryColor: '#409eff',
-        rank: 1000,
-        problemCount: 10,
-        auth: 'Private',
-        author: 'Himit_ZH',
-      },
       route_name: 'TrainingDetails',
       TRAINING_TYPE: {},
-      passwordFormVisible: true,
       trainingPassword: '',
+      customColors: [
+        { color: '#909399', percentage: 20 },
+        { color: '#f56c6c', percentage: 40 },
+        { color: '#e6a23c', percentage: 60 },
+        { color: '#1989fa', percentage: 80 },
+        { color: '#67c23a', percentage: 100 },
+      ],
     };
   },
-  mounted() {
+  created() {
+    this.route_name = this.$route.name;
+    if (this.route_name == 'ProblemDetails') {
+      this.route_name = 'TrainingProblemList';
+    }
     this.TRAINING_TYPE = Object.assign({}, TRAINING_TYPE);
+    this.$store.dispatch('getTraining');
+  },
+  methods: {
+    tabClick(tab) {
+      let name = tab.name;
+      if (name !== this.$route.name) {
+        this.$router.push({ name: name });
+      }
+    },
+    goUserHome(username) {
+      this.$router.push({
+        name: 'UserHome',
+        query: { username: username },
+      });
+    },
+    getAcProblemPercent() {
+      if (!this.training.problemCount) {
+        return 100;
+      }
+      if (this.training.acCount == null) {
+        this.training.acCount = 0;
+      }
+      return (
+        (this.training.acCount / this.training.problemCount) *
+        100
+      ).toFixed(2);
+    },
   },
   computed: {
+    ...mapState({
+      training: (state) => state.training.training,
+    }),
+    ...mapGetters([
+      'trainingPasswordFormVisible',
+      'trainingMenuDisabled',
+      'isPrivateTraining',
+      'isAuthenticated',
+    ]),
     descriptionHtml() {
       if (this.training.description) {
         return this.$markDown.render(this.training.description);
@@ -200,6 +272,11 @@ export default {
 }
 .training-header {
   text-align: center;
+}
+.count {
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 700;
 }
 
 .info-rows > * {
@@ -227,8 +304,5 @@ export default {
 }
 /deep/.el-tabs--top .el-tabs__item.is-top:nth-child(2) {
   padding-left: 20px;
-}
-/deep/.el-tabs__header {
-  margin-bottom: 0 !important;
 }
 </style>

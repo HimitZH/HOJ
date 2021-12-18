@@ -33,15 +33,18 @@
           </el-tooltip>
         </template>
       </vxe-table-column>
-      <vxe-table-column field="displayId" width="80" title="#">
-        <template v-slot="{ row }">
-          <span>{{ row.displayId }}</span>
-        </template>
+      <vxe-table-column
+        field="problemId"
+        :title="$t('m.Problem_ID')"
+        width="150"
+        show-overflow
+      >
       </vxe-table-column>
       <vxe-table-column
-        field="displayTitle"
+        field="title"
         :title="$t('m.Title')"
-        min-width="200"
+        min-width="150"
+        show-overflow
       ></vxe-table-column>
 
       <vxe-table-column
@@ -58,27 +61,54 @@
         </template>
       </vxe-table-column>
 
-      <vxe-table-column field="ac" :title="$t('m.AC')" min-width="80">
+      <vxe-table-column field="tag" min-width="100">
+        <template v-slot:header
+          ><el-link
+            type="primary"
+            v-if="!showTags"
+            :underline="false"
+            @click="showTags = !showTags"
+            >{{ $t('m.Show_Tags') }}</el-link
+          >
+          <el-link
+            type="danger"
+            v-else
+            @click="showTags = !showTags"
+            :underline="false"
+            >{{ $t('m.Hide_Tags') }}</el-link
+          >
+        </template>
         <template v-slot="{ row }">
-          <span>
-            {{ row.ac }}
-          </span>
+          <div v-if="showTags">
+            <span
+              class="el-tag el-tag--small"
+              :style="
+                'margin-right:7px;color:#FFF;background-color:' +
+                  (tag.color ? tag.color : '#409eff')
+              "
+              v-for="tag in row.tags"
+              :key="tag.id"
+              >{{ tag.name }}</span
+            >
+          </div>
         </template>
       </vxe-table-column>
-      <vxe-table-column field="total" :title="$t('m.Total')" min-width="80">
+
+      <vxe-table-column field="ac" :title="$t('m.AC_Rate')" min-width="120">
         <template v-slot="{ row }">
           <span>
-            {{ row.total }}
+            <el-tooltip
+              effect="dark"
+              :content="row.ac + '/' + row.total"
+              placement="top"
+            >
+              <el-progress
+                :text-inside="true"
+                :stroke-width="15"
+                :percentage="getPassingRate(row.ac, row.total)"
+              ></el-progress>
+            </el-tooltip>
           </span>
-        </template>
-      </vxe-table-column>
-      <vxe-table-column
-        field="ACRating"
-        :title="$t('m.AC_Rate')"
-        min-width="80"
-      >
-        <template v-slot="{ row }">
-          <span>{{ getACRate(row.ac, row.total) }}</span>
         </template>
       </vxe-table-column>
     </vxe-table>
@@ -98,6 +128,7 @@ export default {
       PROBLEM_LEVEL: {},
       isGetStatusOk: false,
       testcolor: 'rgba(0, 206, 209, 1)',
+      showTags: false,
     };
   },
   mounted() {
@@ -131,8 +162,8 @@ export default {
       this.$router.push({
         name: 'TrainingProblemDetails',
         params: {
-          contestID: this.$route.params.trainingID,
-          problemID: event.row.displayId,
+          trainingID: this.$route.params.trainingID,
+          problemID: event.row.problemId,
         },
       });
     },
@@ -152,6 +183,12 @@ export default {
           ' !important;'
         );
       }
+    },
+    getPassingRate(ac, total) {
+      if (!total) {
+        return 0;
+      }
+      return ((ac / total) * 100).toFixed(2);
     },
   },
   computed: {

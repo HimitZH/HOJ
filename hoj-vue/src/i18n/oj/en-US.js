@@ -177,7 +177,8 @@ export const m = {
   Only_View_Problem:'Only View Problem',
   Put_away_the_full_screen_and_write_the_code:'Put away the full screen and write the code',
   Contest_Problem:'Contest Problem',
-  Show_Tags:'Show tags',
+  Show_Tags:'Show Tags',
+  Hide_Tags:'Hide Tags',
   No_tag:'No tag',
   Statistic: 'Statistic',
   Solutions:'Solutions',
@@ -464,5 +465,19 @@ export const m = {
   Action_Reply:'Responded to My Comment',
   From_Discussion_Post:'From Discussion Post',
   From_the_Contest:'From the Contest',
-  Delete_Msg_Tips:'Are you sure you want to delete the message?'
+  Delete_Msg_Tips:'Are you sure you want to delete the message?',
+
+  // /views/oj/training/TrainingList.vue
+  Search_Training:'Search Training',
+  Training_Category:'Training Category',
+  Number:'Number',
+  Problem_Number:'Problem Number',
+  Recent_Update:'Recent Update',
+
+  // /views/oj/training/TrainingDetails.vue
+  Training_Introduction:'Training Introduction',
+  Training_Number:'Number',
+  Training_Auth:'Training Auth',
+  Training_Total_Problems:'Total Problems',
+  Record_List:'Record List'
 }

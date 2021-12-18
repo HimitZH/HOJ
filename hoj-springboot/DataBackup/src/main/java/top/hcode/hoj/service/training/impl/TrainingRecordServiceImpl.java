@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.tomcat.util.bcel.Const;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.common.result.CommonResult;
@@ -68,6 +69,7 @@ public class TrainingRecordServiceImpl extends ServiceImpl<TrainingRecordMapper,
             return CommonResult.errorResponse("该训练不存在或不允许显示！");
         }
 
+
         CommonResult result = trainingRegisterService.checkTrainingAuth(training, userRolesVo);
         if (result != null) {
             return result;
@@ -88,6 +90,12 @@ public class TrainingRecordServiceImpl extends ServiceImpl<TrainingRecordMapper,
 
         // 将新提交数据插入数据库
         judgeService.saveOrUpdate(judge);
+
+        // 非私有训练不记录
+        if (!training.getAuth().equals(Constants.Training.AUTH_PRIVATE.getValue())){
+            return null;
+        }
+
         TrainingRecord trainingRecord = new TrainingRecord();
         trainingRecord.setPid(problem.getId())
                 .setTid(judge.getTid())
