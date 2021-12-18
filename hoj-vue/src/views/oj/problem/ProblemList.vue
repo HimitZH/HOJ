@@ -403,6 +403,11 @@ export default {
       this.limit = pageSize;
       this.getProblemList();
     },
+    getPercentage(partNumber, total) {
+      return partNumber == 0
+        ? 0
+        : Math.round((partNumber / total) * 10000) / 100.0;
+    },
     getPassingRate(ac, total) {
       if (!total) {
         return 0;
