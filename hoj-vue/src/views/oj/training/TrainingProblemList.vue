@@ -104,7 +104,7 @@
             >
               <el-progress
                 :text-inside="true"
-                :stroke-width="15"
+                :stroke-width="20"
                 :percentage="getPassingRate(row.ac, row.total)"
               ></el-progress>
             </el-tooltip>

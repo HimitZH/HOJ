@@ -214,7 +214,7 @@
                 >
                   <el-progress
                     :text-inside="true"
-                    :stroke-width="15"
+                    :stroke-width="20"
                     :color="customColors"
                     :percentage="getPassingRate(row.ac, row.total)"
                   ></el-progress>

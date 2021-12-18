@@ -13,7 +13,7 @@
           >
             <el-progress
               :text-inside="true"
-              :stroke-width="15"
+              :stroke-width="20"
               :percentage="getAcProblemPercent()"
               :color="customColors"
             ></el-progress>
