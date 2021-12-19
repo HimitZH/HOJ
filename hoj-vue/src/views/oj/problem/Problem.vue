@@ -663,7 +663,7 @@ export default {
       captchaSrc: '',
       contestID: 0,
       problemID: '',
-      trainingID: 0,
+      trainingID: null,
       submitting: false,
       code: '',
       language: '',

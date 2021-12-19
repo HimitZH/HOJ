@@ -82,6 +82,7 @@ public class TrainingController {
      * @Since 2021/11/20
      */
     @GetMapping("/get-training-detail")
+    @RequiresAuthentication
     public CommonResult getTraining(@RequestParam(value = "tid") Long tid, HttpServletRequest request) {
 
         Training training = trainingService.getById(tid);
@@ -121,6 +122,7 @@ public class TrainingController {
      * @Since 2021/11/20
      */
     @GetMapping("/get-training-problem-list")
+    @RequiresAuthentication
     public CommonResult getTrainingProblemList(@RequestParam(value = "tid") Long tid, HttpServletRequest request) {
 
         Training training = trainingService.getById(tid);
