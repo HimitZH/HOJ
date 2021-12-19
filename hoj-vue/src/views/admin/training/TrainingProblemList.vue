@@ -62,13 +62,13 @@
 
         <vxe-table-column
           field="author"
-          min-width="130"
+          min-width="100"
           :title="$t('m.Author')"
           show-overflow
         >
         </vxe-table-column>
         <vxe-table-column
-          min-width="140"
+          min-width="200"
           :title="$t('m.Training_Problem_Rank')"
         >
           <template v-slot="{ row }">
@@ -80,13 +80,13 @@
             ></el-input-number>
           </template>
         </vxe-table-column>
-        <vxe-table-column min-width="100" :title="$t('m.Auth')">
+        <vxe-table-column min-width="120" :title="$t('m.Auth')">
           <template v-slot="{ row }">
             <el-select
               v-model="row.auth"
               @change="changeProblemAuth(row)"
+              :disabled="!isSuperAdmin && !isProblemAdmin"
               size="small"
-              :disabled="true"
             >
               <el-option
                 :label="$t('m.Public_Problem')"
@@ -96,7 +96,6 @@
               <el-option
                 :label="$t('m.Private_Problem')"
                 :value="2"
-                :disabled="true"
               ></el-option>
               <el-option
                 :label="$t('m.Contest_Problem')"
@@ -318,7 +317,7 @@ export default {
       });
     },
     changeProblemAuth(row) {
-      api.admin_changeProblemPublic(row).then((res) => {
+      api.admin_changeProblemAuth(row).then((res) => {
         myMessage.success(this.$i18n.t('m.Update_Successfully'));
       });
     },

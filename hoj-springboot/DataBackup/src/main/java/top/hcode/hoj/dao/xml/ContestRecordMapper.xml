@@ -22,7 +22,7 @@
                 AND c.cid = #{cid}
             </if>
         </where>
-        ORDER BY c.checked ASC,c.submit_time DESC
+        ORDER BY c.checked ASC,c.submit_time ASC
     </select>
 
     <select id="getOIContestRecord" resultType="top.hcode.hoj.pojo.vo.ContestRecordVo">

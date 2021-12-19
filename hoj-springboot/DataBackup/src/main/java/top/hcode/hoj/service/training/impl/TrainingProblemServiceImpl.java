@@ -87,11 +87,10 @@ public class TrainingProblemServiceImpl extends ServiceImpl<TrainingProblemMappe
 
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
 
-        // 权限需要是公开的（隐藏的，比赛中不可加入！）
-        problemQueryWrapper.eq("auth", 1);
-
         // 逻辑判断，如果是查询已有的就应该是in，如果是查询不要重复的，使用not in
         if (queryExisted) {
+            // 权限需要是公开的（隐藏的，比赛中不可加入！）
+            problemQueryWrapper.eq("auth", 1);
             problemQueryWrapper.in(pidList.size() > 0, "id", pidList);
         } else {
             problemQueryWrapper.notIn(pidList.size() > 0, "id", pidList);

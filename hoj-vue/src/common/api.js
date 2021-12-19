@@ -974,7 +974,11 @@ const adminApi = {
       }
     })
   },
-
+  admin_changeProblemAuth (data) {
+    return ajax('/api/admin/problem/change-problem-auth', 'put', {
+      data
+    })
+  },
   admin_getProblem (pid) {
     return ajax('/api/admin/problem', 'get', {
       params: {
@@ -1178,11 +1182,6 @@ const adminApi = {
         pid,
         cid
       }
-    })
-  },
-  admin_changeProblemPublic (data) {
-    return ajax('/api/admin/contest/change-problem-auth', 'put', {
-      data
     })
   },
   admin_addContestProblemFromPublic (data) {
