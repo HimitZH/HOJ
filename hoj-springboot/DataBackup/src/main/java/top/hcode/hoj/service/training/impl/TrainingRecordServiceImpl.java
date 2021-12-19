@@ -98,7 +98,7 @@ public class TrainingRecordServiceImpl extends ServiceImpl<TrainingRecordMapper,
 
         TrainingRecord trainingRecord = new TrainingRecord();
         trainingRecord.setPid(problem.getId())
-                .setTid(judge.getTid())
+                .setTid(judgeDto.getTid())
                 .setTpid(trainingProblem.getId())
                 .setSubmitId(judge.getSubmitId())
                 .setUid(userRolesVo.getUid());

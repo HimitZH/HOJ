@@ -50,7 +50,7 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
 
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
         problemQueryWrapper.eq("problem_id", judgeDto.getPid());
-        Problem problem = problemService.getOne(problemQueryWrapper,false);
+        Problem problem = problemService.getOne(problemQueryWrapper, false);
 
         if (problem.getAuth() == 2) {
             return CommonResult.errorResponse("错误！当前题目不可提交！", CommonResult.STATUS_FORBIDDEN);
@@ -70,12 +70,11 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
                                              Integer status,
                                              String username,
                                              String uid,
-                                             Long tid,
                                              Boolean completeProblemID) {
         //新建分页
         Page<JudgeVo> page = new Page<>(currentPage, limit);
 
-        return judgeMapper.getCommonJudgeList(page, searchPid, status, username, uid, tid, completeProblemID);
+        return judgeMapper.getCommonJudgeList(page, searchPid, status, username, uid, completeProblemID);
     }
 
     @Override

@@ -113,7 +113,7 @@ public class JudgeController {
 
         boolean isContestSubmission = judgeDto.getCid() != 0;
 
-        boolean isTrainingSubmission = judgeDto.getTid() != null;
+        boolean isTrainingSubmission = judgeDto.getTid() != null && judgeDto.getTid() != 0;
 
         if (!isContestSubmission) { // 非比赛提交限制8秒提交一次
             String lockKey = Constants.Account.SUBMIT_NON_CONTEST_LOCK.getCode() + userRolesVo.getUid();
@@ -134,7 +134,6 @@ public class JudgeController {
         judge.setShare(false) // 默认设置代码为单独自己可见
                 .setCode(judgeDto.getCode())
                 .setCid(judgeDto.getCid())
-                .setTid(judgeDto.getTid())
                 .setLanguage(judgeDto.getLanguage())
                 .setLength(judgeDto.getCode().length())
                 .setUid(userRolesVo.getUid())
@@ -392,7 +391,6 @@ public class JudgeController {
                                      @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                      @RequestParam(value = "onlyMine", required = false) Boolean onlyMine,
                                      @RequestParam(value = "problemID", required = false) String searchPid,
-                                     @RequestParam(value = "tid", required = false) Long tid,
                                      @RequestParam(value = "status", required = false) Integer searchStatus,
                                      @RequestParam(value = "username", required = false) String searchUsername,
                                      @RequestParam(value = "completeProblemID", defaultValue = "false") Boolean completeProblemID,
@@ -426,7 +424,6 @@ public class JudgeController {
                 searchStatus,
                 searchUsername,
                 uid,
-                tid,
                 completeProblemID);
 
         if (commonJudgeList.getTotal() == 0) { // 未查询到一条数据

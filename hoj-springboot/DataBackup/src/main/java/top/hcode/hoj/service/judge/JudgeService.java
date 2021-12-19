@@ -32,7 +32,6 @@ public interface JudgeService extends IService<Judge> {
                                       Integer status,
                                       String username,
                                       String uid,
-                                      Long tid,
                                       Boolean completeProblemID);
 
     IPage<JudgeVo> getContestJudgeList(Integer limit,

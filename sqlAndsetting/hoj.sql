@@ -149,6 +149,8 @@ CREATE TABLE `contest` (
   `open_account_limit` tinyint(1) DEFAULT '0' COMMENT '是否开启账号限制',
   `account_limit_rule` mediumtext COMMENT '账号限制规则',
   `rank_show_name` varchar(20) DEFAULT 'username' COMMENT '排行榜显示（username、nickname、realname）',
+  `open_rank` tinyint(1) DEFAULT '0' COMMENT '是否开放比赛榜单',
+  `star_account` mediumtext COMMENT '打星用户列表',
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`uid`),
@@ -414,7 +416,6 @@ CREATE TABLE `judge` (
   `language` varchar(30) DEFAULT NULL COMMENT '代码语言',
   `cid` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '比赛id，非比赛题目默认为0',
   `cpid` bigint(20) unsigned DEFAULT '0' COMMENT '比赛中题目排序id，非比赛题目默认为0',
-  `tid` bigint unsigned DEFAULT NULL,
   `judger` varchar(20) DEFAULT NULL COMMENT '判题机ip',
   `ip` varchar(20) DEFAULT NULL COMMENT '提交者所在ip',
   `version` int(11) NOT NULL DEFAULT '0' COMMENT '乐观锁',
@@ -428,11 +429,9 @@ CREATE TABLE `judge` (
   KEY `pid` (`pid`),
   KEY `uid` (`uid`),
   KEY `username` (`username`),
-  KEY `tid` (`tid`),
   CONSTRAINT `judge_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `judge_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `judge_ibfk_3` FOREIGN KEY (`username`) REFERENCES `user_info` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `judge_ibfk_4` FOREIGN KEY (`tid`) REFERENCES `training` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `judge_ibfk_3` FOREIGN KEY (`username`) REFERENCES `user_info` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `judge_case` */

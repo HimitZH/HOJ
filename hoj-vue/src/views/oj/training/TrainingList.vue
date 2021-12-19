@@ -19,6 +19,13 @@
           <el-tag
             size="medium"
             class="category-item"
+            :style="getCategoryBlockColor(null)"
+            @click="filterByCategory(null)"
+            >{{ $t('m.All') }}</el-tag
+          >
+          <el-tag
+            size="medium"
+            class="category-item"
             v-for="(category, index) in categoryList"
             :style="getCategoryBlockColor(category)"
             :key="index"
@@ -139,6 +146,8 @@
 import api from '@/common/api';
 import utils from '@/common/utils';
 import { TRAINING_TYPE } from '@/common/constants';
+import myMessage from '@/common/message';
+import { mapGetters } from 'vuex';
 const Pagination = () => import('@/components/oj/common/Pagination');
 export default {
   name: 'TrainingList',
@@ -209,10 +218,15 @@ export default {
     },
 
     toTraining(trainingID) {
-      this.$router.push({
-        name: 'TrainingDetails',
-        params: { trainingID: trainingID },
-      });
+      if (!this.isAuthenticated) {
+        myMessage.warning(this.$i18n.t('m.Please_login_first'));
+        this.$store.dispatch('changeModalStatus', { visible: true });
+      } else {
+        this.$router.push({
+          name: 'TrainingDetails',
+          params: { trainingID: trainingID },
+        });
+      }
     },
     goUserHome(username) {
       this.$router.push({
@@ -222,6 +236,14 @@ export default {
     },
 
     getCategoryBlockColor(category) {
+      if (category == null) {
+        if (!this.query.categoryId) {
+          return 'color: #fff;background-color: #409EFF;background-color: #409EFF';
+        } else {
+          return 'background-color: #fff;color: #409EFF;border-color: #409EFF';
+        }
+      }
+
       if (category.id == this.query.categoryId) {
         return (
           'color: #fff;background-color: ' +
@@ -240,6 +262,9 @@ export default {
         );
       }
     },
+  },
+  computed: {
+    ...mapGetters(['isAuthenticated']),
   },
   watch: {
     $route(newVal, oldVal) {
