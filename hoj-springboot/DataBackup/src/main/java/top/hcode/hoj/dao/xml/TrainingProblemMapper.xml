@@ -23,20 +23,17 @@
 
     <select id="getTrainingProblemList" resultMap="map_TrainingProblemList">
         SELECT p.id AS pid, p.problem_id, p.title, p.difficulty, p.type
-        , COALESCE(j.ac, 0) AS ac
-        , COALESCE(j.total, 0) AS total
+        ,(SELECT COUNT(*)
+            FROM judge j
+            WHERE j.cid = 0 AND j.pid = p.id AND j.status = 0
+        ) as ac,
+        (SELECT COUNT(*)
+            FROM judge j
+            WHERE j.cid = 0 AND j.pid = p.id
+        ) as total
         FROM problem p,
-        (
-        SELECT j.pid AS pid
-        , COUNT(IF(j.status = 0, STATUS, NULL)) AS ac
-        , COUNT(*) AS total
-        FROM judge j
-        WHERE j.cid = 0
-        GROUP BY j.pid
-        ) j,
         training_problem tp
         where p.id = tp.pid
-        and j.pid = p.id
         and p.auth = 1
         and tp.tid = #{tid}
         order by tp.`rank` asc

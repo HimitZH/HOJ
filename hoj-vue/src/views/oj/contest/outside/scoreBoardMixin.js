@@ -51,7 +51,7 @@ export default {
       if (status == true) {
         this.refreshFunc = setInterval(() => {
           this.getContestOutsideScoreboard()
-        }, 10000)
+        }, 30000)
       } else {
         clearInterval(this.refreshFunc)
       }

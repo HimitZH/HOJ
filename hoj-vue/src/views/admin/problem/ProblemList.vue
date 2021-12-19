@@ -183,7 +183,7 @@
           show-overflow
         >
         </vxe-table-column>
-        <vxe-table-column min-width="100" :title="$t('m.Auth')">
+        <vxe-table-column min-width="120" :title="$t('m.Auth')">
           <template v-slot="{ row }">
             <el-select
               v-model="row.auth"
@@ -473,7 +473,7 @@ export default {
     },
 
     changeProblemAuth(row) {
-      api.admin_changeProblemPublic(row).then((res) => {
+      api.admin_changeProblemAuth(row).then((res) => {
         myMessage.success(this.$i18n.t('m.Update_Successfully'));
       });
     },

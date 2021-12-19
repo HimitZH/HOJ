@@ -62,7 +62,7 @@
     <el-card shadow style="margin-top:15px;">
       <div class="contest-rank-switch">
         <span style="float:right;">
-          <span>{{ $t('m.Auto_Refresh') }}(10s)</span>
+          <span>{{ $t('m.Auto_Refresh') }}(30s)</span>
           <el-switch
             :disabled="contestEnded"
             @change="handleAutoRefresh"
@@ -464,6 +464,11 @@ export default {
 
 /deep/.vxe-table .vxe-header--column:not(.col--ellipsis) {
   padding: 4px 0 !important;
+}
+
+/deep/.vxe-table .vxe-body--column {
+  padding: 4px 0 !important;
+  line-height: 20px !important;
 }
 
 /deep/.vxe-table .vxe-body--column:not(.col--ellipsis) {

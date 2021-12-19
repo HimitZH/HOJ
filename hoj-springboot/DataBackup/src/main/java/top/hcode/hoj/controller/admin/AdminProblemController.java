@@ -2,8 +2,10 @@ package top.hcode.hoj.controller.admin;
 
 import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -245,5 +247,34 @@ public class AdminProblemController {
         return CommonResult.successResponse(null, "导入新题目成功！");
     }
 
+    @PutMapping("/change-problem-auth")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "problem_admin", "admin"}, logical = Logical.OR)
+    public CommonResult changeProblemAuth(@RequestBody Problem problem, HttpServletRequest request) {
+
+        // 普通管理员只能将题目变成隐藏题目和比赛题目
+        boolean root = SecurityUtils.getSubject().hasRole("root");
+
+        boolean problemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
+
+        if (!problemAdmin && !root && problem.getAuth() == 1) {
+            return CommonResult.errorResponse("修改失败！你无权限公开题目！", CommonResult.STATUS_FORBIDDEN);
+        }
+
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        UpdateWrapper<Problem> problemUpdateWrapper = new UpdateWrapper<>();
+        problemUpdateWrapper.eq("id", problem.getId())
+                .set("auth", problem.getAuth())
+                .set("modified_user", userRolesVo.getUsername());
+
+        boolean result = problemService.update(problemUpdateWrapper);
+        if (result) { // 更新成功
+            return CommonResult.successResponse(null, "修改成功！");
+        } else {
+            return CommonResult.errorResponse("修改失败", CommonResult.STATUS_FAIL);
+        }
+    }
 
 }
