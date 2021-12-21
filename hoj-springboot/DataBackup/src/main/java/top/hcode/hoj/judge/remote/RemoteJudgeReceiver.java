@@ -112,7 +112,7 @@ public class RemoteJudgeReceiver {
 
         // 尝试600s
         AtomicInteger tryNum = new AtomicInteger(0);
-        String key = UUID.fastUUID().toString();
+        String key = UUID.randomUUID().toString() + toJudge.getJudge().getSubmitId();
         Runnable getResultTask = new Runnable() {
             @Override
             public void run() {
@@ -171,7 +171,7 @@ public class RemoteJudgeReceiver {
 
         // 尝试600s
         AtomicInteger tryNum = new AtomicInteger(0);
-        String key = UUID.fastUUID().toString();
+        String key = UUID.randomUUID().toString() + toJudge.getJudge().getSubmitId();
         boolean finalIsHasSubmitIdRemoteReJudge = isHasSubmitIdRemoteReJudge;
         Runnable getResultTask = new Runnable() {
             @Override
@@ -223,7 +223,7 @@ public class RemoteJudgeReceiver {
         }
 
         // 尝试600s
-        String key = UUID.fastUUID().toString();
+        String key = UUID.randomUUID().toString() + toJudge.getJudge().getSubmitId();
         AtomicInteger tryNum = new AtomicInteger(0);
         Runnable getResultTask = new Runnable() {
             @Override

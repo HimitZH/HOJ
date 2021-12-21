@@ -81,7 +81,7 @@ public class Dispatcher {
 
         // 尝试600s
         AtomicInteger count = new AtomicInteger(0);
-        String key = UUID.fastUUID().toString();
+        String key = UUID.randomUUID().toString() + data.getJudge().getSubmitId();
         final String finalOj = oj;
         Runnable getResultTask = new Runnable() {
             @Override
