@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.tomcat.util.bcel.Const;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.TrainingRecordMapper;
 import top.hcode.hoj.pojo.dto.ToJudgeDto;
@@ -92,7 +94,7 @@ public class TrainingRecordServiceImpl extends ServiceImpl<TrainingRecordMapper,
         judgeService.saveOrUpdate(judge);
 
         // 非私有训练不记录
-        if (!training.getAuth().equals(Constants.Training.AUTH_PRIVATE.getValue())){
+        if (!training.getAuth().equals(Constants.Training.AUTH_PRIVATE.getValue())) {
             return null;
         }
 
@@ -148,10 +150,12 @@ public class TrainingRecordServiceImpl extends ServiceImpl<TrainingRecordMapper,
 
             // 如果该题目已经AC过了，只比较运行时间取最小
             if ((Boolean) problemSubmissionInfo.getOrDefault("isAC", false)) {
-                int runTime = (int) problemSubmissionInfo.getOrDefault("runTime", 0);
-                if (runTime > trainingRecordVo.getUseTime()) {
-                    trainingRankVo.setTotalRunTime(trainingRankVo.getTotalRunTime() - runTime + trainingRecordVo.getUseTime());
-                    problemSubmissionInfo.put("runTime", trainingRecordVo.getUseTime());
+                if (trainingRecordVo.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+                    int runTime = (int) problemSubmissionInfo.getOrDefault("runTime", 0);
+                    if (runTime > trainingRecordVo.getUseTime()) {
+                        trainingRankVo.setTotalRunTime(trainingRankVo.getTotalRunTime() - runTime + trainingRecordVo.getUseTime());
+                        problemSubmissionInfo.put("runTime", trainingRecordVo.getUseTime());
+                    }
                 }
                 continue;
             }
@@ -189,6 +193,40 @@ public class TrainingRecordServiceImpl extends ServiceImpl<TrainingRecordMapper,
         page.setTotal(count);
         page.setRecords(pageList);
         return page;
+    }
+
+    @Override
+    @Async
+    public void syncUserSubmissionToRecordByTid(Long tid, String uid) {
+        QueryWrapper<TrainingProblem> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("tid", tid);
+        List<TrainingProblem> trainingProblemList = trainingProblemService.list(queryWrapper);
+        List<Long> pidList = new ArrayList<>();
+        HashMap<Long, Long> pidMapTPid = new HashMap<>();
+        for (TrainingProblem trainingProblem : trainingProblemList) {
+            pidList.add(trainingProblem.getPid());
+            pidMapTPid.put(trainingProblem.getPid(), trainingProblem.getId());
+        }
+        if (!CollectionUtils.isEmpty(pidList)) {
+            QueryWrapper<Judge> judgeQueryWrapper = new QueryWrapper<>();
+            judgeQueryWrapper.in("pid", pidList)
+                    .eq("cid", 0)
+                    .eq("status", Constants.Judge.STATUS_ACCEPTED.getStatus()) // 只同步ac的提交
+                    .eq("uid", uid);
+            List<Judge> judgeList = judgeService.list(judgeQueryWrapper);
+            if (!CollectionUtils.isEmpty(judgeList)) {
+                List<TrainingRecord> trainingRecordList = new ArrayList<>();
+                for (Judge judge : judgeList) {
+                    trainingRecordList.add(new TrainingRecord()
+                            .setPid(judge.getPid())
+                            .setSubmitId(judge.getSubmitId())
+                            .setTid(tid)
+                            .setUid(uid)
+                            .setTpid(pidMapTPid.get(judge.getPid())));
+                }
+                saveBatch(trainingRecordList);
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")

@@ -1,5 +1,6 @@
 package top.hcode.hoj.remoteJudge;
 
+import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,7 @@ import top.hcode.hoj.service.impl.RemoteJudgeServiceImpl;
 import top.hcode.hoj.util.Constants;
 
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -34,6 +32,10 @@ public class RemoteJudgeGetResult {
     @Autowired
     private RemoteJudgeServiceImpl remoteJudgeService;
 
+    private final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+
+    private final static Map<String, Future> futureTaskMap = new ConcurrentHashMap<>(Runtime.getRuntime().availableProcessors() * 2);
+
     @Async
     public void sendTask(String remoteJudge, String username, String password,
                          Long submitId, String uid,
@@ -42,9 +44,7 @@ public class RemoteJudgeGetResult {
                          String ip, Integer port) {
 
         RemoteJudgeStrategy remoteJudgeStrategy = RemoteJudgeFactory.selectJudge(remoteJudge);
-
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
+        String key = UUID.fastUUID().toString();
         AtomicInteger count = new AtomicInteger(0);
         Runnable getResultTask = new Runnable() {
             @Override
@@ -60,7 +60,11 @@ public class RemoteJudgeGetResult {
                     log.error("[{}] Get Result Failed!", remoteJudge);
                     changeRemoteJudgeLock(remoteJudge, username, ip, port, resultSubmitId);
 
-                    scheduler.shutdown();
+                    Future future = futureTaskMap.get(key);
+                    if (future != null) {
+                        future.cancel(true);
+                        futureTaskMap.remove(key);
+                    }
                     return;
                 }
                 count.getAndIncrement();
@@ -110,7 +114,11 @@ public class RemoteJudgeGetResult {
                             judgeService.updateOtherTable(submitId, status, cid, uid, pid, null, null);
                         }
 
-                        scheduler.shutdown();
+                        Future future = futureTaskMap.get(key);
+                        if (future != null) {
+                            future.cancel(true);
+                            futureTaskMap.remove(key);
+                        }
                     } else {
 
                         Judge judge = new Judge();
@@ -126,9 +134,9 @@ public class RemoteJudgeGetResult {
 
             }
         };
-        final ScheduledFuture<?> beeperHandle = scheduler.scheduleAtFixedRate(
+        ScheduledFuture<?> beeperHandle = scheduler.scheduleWithFixedDelay(
                 getResultTask, 0, 3, TimeUnit.SECONDS);
-
+        futureTaskMap.put(key, beeperHandle);
     }
 
 

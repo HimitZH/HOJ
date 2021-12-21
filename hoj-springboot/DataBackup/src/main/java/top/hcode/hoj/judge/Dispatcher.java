@@ -1,6 +1,7 @@
 package top.hcode.hoj.judge;
 
 
+import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,9 @@ import top.hcode.hoj.service.judge.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -40,6 +41,10 @@ public class Dispatcher {
 
     @Autowired
     private ChooseUtils chooseUtils;
+
+    private final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(20);
+
+    private final static Map<String, Future> futureTaskMap = new ConcurrentHashMap<>(20);
 
     @Autowired
     private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
@@ -75,8 +80,8 @@ public class Dispatcher {
                 && Constants.RemoteOJ.CODEFORCES.getName().equals(oj);
 
         // 尝试600s
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         AtomicInteger count = new AtomicInteger(0);
+        String key = UUID.fastUUID().toString();
         final String finalOj = oj;
         Runnable getResultTask = new Runnable() {
             @Override
@@ -106,7 +111,11 @@ public class Dispatcher {
                             // 无论成功与否，都要将对应的当前判题机当前判题数减1
                             reduceCurrentTaskNum(judgeServer.getId());
                         }
-                        scheduler.shutdown();
+                        Future future = futureTaskMap.get(key);
+                        if (future != null) {
+                            future.cancel(true);
+                            futureTaskMap.remove(key);
+                        }
                     }
                     return;
                 }
@@ -116,11 +125,16 @@ public class Dispatcher {
                         changeRemoteJudgeStatus(finalOj, data.getUsername(), null);
                     }
                     checkResult(null, submitId);
-                    scheduler.shutdown();
+                    Future future = futureTaskMap.get(key);
+                    if (future != null) {
+                        future.cancel(true);
+                        futureTaskMap.remove(key);
+                    }
                 }
             }
         };
-        scheduler.scheduleAtFixedRate(getResultTask, 0, 2, TimeUnit.SECONDS);
+        ScheduledFuture<?> scheduledFuture = scheduler.scheduleWithFixedDelay(getResultTask, 0, 2, TimeUnit.SECONDS);
+        futureTaskMap.put(key, scheduledFuture);
     }
 
 
