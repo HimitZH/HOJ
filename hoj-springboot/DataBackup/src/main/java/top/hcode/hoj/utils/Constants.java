@@ -135,6 +135,8 @@ public class Constants {
         CODE_CHANGE_EMAIL_FAIL("change-email-fail:"),
         CODE_CHANGE_EMAIL_LOCK("change-email-lock:"),
 
+        TRY_LOGIN_NUM("try-login-num:"),
+
         ACM_RANK_CACHE("acm_rank_cache"),
         OI_RANK_CACHE("oi_rank_cache"),
 

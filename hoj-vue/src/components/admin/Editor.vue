@@ -61,7 +61,7 @@ export default {
         headers: { 'Content-Type': 'multipart/form-data' },
       }).then((res) => {
         this.$refs.md.$img2Url(pos, res.data.data.link);
-        this.img_file[res.data.data.link] = res.data.data.filePath;
+        this.img_file[res.data.data.link] = res.data.data.fileId;
       });
     },
     $imgDel(pos) {
@@ -70,7 +70,7 @@ export default {
         url: '/api/file/delete-md-img',
         method: 'get',
         params: {
-          filePath: this.img_file[pos[0]],
+          fileId: this.img_file[pos[0]],
         },
       });
     },
