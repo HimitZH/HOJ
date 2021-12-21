@@ -44,7 +44,7 @@ public class RemoteJudgeGetResult {
                          String ip, Integer port) {
 
         RemoteJudgeStrategy remoteJudgeStrategy = RemoteJudgeFactory.selectJudge(remoteJudge);
-        String key = UUID.fastUUID().toString();
+        String key = UUID.randomUUID().toString() + submitId;
         AtomicInteger count = new AtomicInteger(0);
         Runnable getResultTask = new Runnable() {
             @Override
