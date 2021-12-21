@@ -9,6 +9,7 @@ import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.JudgeUtils;
+import top.hcode.hoj.util.ThreadPoolUtils;
 
 import java.io.File;
 import java.text.MessageFormat;
@@ -23,8 +24,6 @@ import java.util.concurrent.*;
 @Slf4j(topic = "hoj")
 public class JudgeRun {
 
-    private static final int cpuNum = Runtime.getRuntime().availableProcessors();
-
 
     private static final int SPJ_AC = 100;
 
@@ -33,7 +32,6 @@ public class JudgeRun {
     private static final int SPJ_WA = 102;
 
     private static final int SPJ_ERROR = 103;
-
 
     private Long submitId;
 
@@ -70,15 +68,6 @@ public class JudgeRun {
             throw new SystemError("The evaluation data of the problem does not exist", null, null);
         }
 
-        // 使用线程池开启多线程测试每一测试输入数据
-        ExecutorService threadPool = new ThreadPoolExecutor(
-                cpuNum, // 核心线程数
-                cpuNum * 2, // 最大线程数。最多几个线程并发。
-                2,//当非核心线程无任务时，几秒后结束该线程
-                TimeUnit.SECONDS,// 结束线程时间单位
-                new LinkedBlockingDeque<>(200), //阻塞队列，限制等候线程数
-                Executors.defaultThreadFactory(),
-                new ThreadPoolExecutor.DiscardOldestPolicy());//队列满了，尝试去和最早的竞争，也不会抛出异常！
 
         List<FutureTask<JSONObject>> futureTasks = new ArrayList<>();
         JSONArray testcaseList = (JSONArray) testCasesInfo.get("testCases");
@@ -158,26 +147,25 @@ public class JudgeRun {
 
         // 提交到线程池进行执行
         for (FutureTask<JSONObject> futureTask : futureTasks) {
-            threadPool.submit(futureTask);
-        }
-        // 所有任务执行完成且等待队列中也无任务关闭线程池
-        if (!threadPool.isShutdown()) {
-            threadPool.shutdown();
-        }
-        // 阻塞主线程, 直至线程池关闭
-        try {
-            threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-        } catch (InterruptedException e) {
-            log.error("判题线程池异常--------------->{}", e.getMessage());
+            ThreadPoolUtils.getInstance().getThreadPool().submit(futureTask);
         }
         List<JSONObject> result = new LinkedList<>();
-
-        // 获取线程返回结果
-        for (int i = 0; i < futureTasks.size(); i++) {
-            JSONObject tmp = futureTasks.get(i).get();
-            result.add(tmp);
+        while (futureTasks.size() > 0) {
+            Iterator<FutureTask<JSONObject>> iterable = futureTasks.iterator();
+            //遍历一遍
+            while (iterable.hasNext()) {
+                FutureTask<JSONObject> future = iterable.next();
+                if (future.isDone() && !future.isCancelled()) {
+                    // 获取线程返回结果
+                    JSONObject tmp = future.get();
+                    result.add(tmp);
+                    // 任务完成移除任务
+                    iterable.remove();
+                } else {
+                    Thread.sleep(10); // 避免CPU高速运转，这里休息10毫秒
+                }
+            }
         }
-
         return result;
     }
 

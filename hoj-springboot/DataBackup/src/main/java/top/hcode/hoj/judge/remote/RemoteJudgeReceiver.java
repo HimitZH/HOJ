@@ -1,5 +1,6 @@
 package top.hcode.hoj.judge.remote;
 
+import cn.hutool.core.lang.UUID;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -19,9 +20,8 @@ import top.hcode.hoj.utils.RedisUtils;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
@@ -41,6 +41,10 @@ public class RemoteJudgeReceiver {
 
     @Autowired
     private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
+
+    private final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
+
+    private final static Map<String, Future> futureTaskMap = new ConcurrentHashMap<>(10);
 
     @Async("judgeTaskAsyncPool")
     public void processWaitingTask() {
@@ -107,8 +111,8 @@ public class RemoteJudgeReceiver {
         }
 
         // 尝试600s
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         AtomicInteger tryNum = new AtomicInteger(0);
+        String key = UUID.fastUUID().toString();
         Runnable getResultTask = new Runnable() {
             @Override
             public void run() {
@@ -120,7 +124,11 @@ public class RemoteJudgeReceiver {
                     toJudge.setIsHasSubmitIdRemoteReJudge(false);
                     // 调用判题服务
                     dispatcher.dispatcher("judge", "/remote-judge", toJudge);
-                    scheduler.shutdown();
+                    Future future = futureTaskMap.get(key);
+                    if (future != null) {
+                        future.cancel(true);
+                        futureTaskMap.remove(key);
+                    }
                     return;
                 }
 
@@ -130,11 +138,16 @@ public class RemoteJudgeReceiver {
                     judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
                             "Cause: Waiting for account scheduling timeout");
                     judgeService.updateById(judge);
-                    scheduler.shutdown();
+                    Future future = futureTaskMap.get(key);
+                    if (future != null) {
+                        future.cancel(true);
+                        futureTaskMap.remove(key);
+                    }
                 }
             }
         };
-        scheduler.scheduleAtFixedRate(getResultTask, 0, 3, TimeUnit.SECONDS);
+        ScheduledFuture<?> scheduledFuture = scheduler.scheduleWithFixedDelay(getResultTask, 0, 3, TimeUnit.SECONDS);
+        futureTaskMap.put(key, scheduledFuture);
     }
 
 
@@ -157,8 +170,8 @@ public class RemoteJudgeReceiver {
         }
 
         // 尝试600s
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         AtomicInteger tryNum = new AtomicInteger(0);
+        String key = UUID.fastUUID().toString();
         boolean finalIsHasSubmitIdRemoteReJudge = isHasSubmitIdRemoteReJudge;
         Runnable getResultTask = new Runnable() {
             @Override
@@ -172,7 +185,11 @@ public class RemoteJudgeReceiver {
                     toJudge.setIsHasSubmitIdRemoteReJudge(finalIsHasSubmitIdRemoteReJudge);
                     // 调用判题服务
                     dispatcher.dispatcher("judge", "/remote-judge", toJudge);
-                    scheduler.shutdown();
+                    Future future = futureTaskMap.get(key);
+                    if (future != null) {
+                        future.cancel(true);
+                        futureTaskMap.remove(key);
+                    }
                     return;
                 }
 
@@ -182,11 +199,16 @@ public class RemoteJudgeReceiver {
                     judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
                             "Cause: Waiting for account scheduling timeout");
                     judgeService.updateById(judge);
-                    scheduler.shutdown();
+                    Future future = futureTaskMap.get(key);
+                    if (future != null) {
+                        future.cancel(true);
+                        futureTaskMap.remove(key);
+                    }
                 }
             }
         };
-        scheduler.scheduleAtFixedRate(getResultTask, 0, 3, TimeUnit.SECONDS);
+        ScheduledFuture<?> scheduledFuture = scheduler.scheduleWithFixedDelay(getResultTask, 0, 3, TimeUnit.SECONDS);
+        futureTaskMap.put(key, scheduledFuture);
     }
 
     private void cfJudge(Boolean isHasSubmitIdRemoteReJudge, ToJudge toJudge, Judge judge) {
@@ -201,7 +223,7 @@ public class RemoteJudgeReceiver {
         }
 
         // 尝试600s
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        String key = UUID.fastUUID().toString();
         AtomicInteger tryNum = new AtomicInteger(0);
         Runnable getResultTask = new Runnable() {
             @Override
@@ -219,7 +241,11 @@ public class RemoteJudgeReceiver {
                     toJudge.setSize(size);
                     // 调用判题服务
                     dispatcher.dispatcher("judge", "/remote-judge", toJudge);
-                    scheduler.shutdown();
+                    Future future = futureTaskMap.get(key);
+                    if (future != null) {
+                        future.cancel(true);
+                        futureTaskMap.remove(key);
+                    }
                     return;
                 }
 
@@ -229,10 +255,15 @@ public class RemoteJudgeReceiver {
                     judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
                             "Cause: Waiting for account scheduling timeout");
                     judgeService.updateById(judge);
-                    scheduler.shutdown();
+                    Future future = futureTaskMap.get(key);
+                    if (future != null) {
+                        future.cancel(true);
+                        futureTaskMap.remove(key);
+                    }
                 }
             }
         };
-        scheduler.scheduleAtFixedRate(getResultTask, 0, 3, TimeUnit.SECONDS);
+        ScheduledFuture<?> scheduledFuture = scheduler.scheduleWithFixedDelay(getResultTask, 0, 3, TimeUnit.SECONDS);
+        futureTaskMap.put(key, scheduledFuture);
     }
 }
