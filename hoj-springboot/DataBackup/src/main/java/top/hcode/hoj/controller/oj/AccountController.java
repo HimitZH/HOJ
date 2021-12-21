@@ -314,6 +314,7 @@ public class AccountController {
         if (loginDto.getUsername().length() > 20) {
             return CommonResult.errorResponse("用户名长度不能超过20位!");
         }
+
         UserRolesVo userRoles = userRoleDao.getUserRoles(null, loginDto.getUsername());
         Assert.notNull(userRoles, "用户名不存在，请注意大小写！");
         if (!userRoles.getPassword().equals(SecureUtil.md5(loginDto.getPassword()))) {

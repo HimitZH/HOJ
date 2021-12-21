@@ -59,7 +59,7 @@ public class Dispatcher {
                 CompileSpj compileSpj = (CompileSpj) data;
                 return toCompile(path, compileSpj);
             default:
-                throw new NullPointerException("判题机不支持此调用类型");
+                throw new IllegalArgumentException("判题机不支持此调用类型");
         }
         return null;
     }
