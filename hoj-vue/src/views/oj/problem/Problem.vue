@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="bodyClass">
     <div id="problem-main">
       <!--problem main-->
       <el-row class="problem-box">
@@ -706,6 +706,7 @@ export default {
       mySubmission_currentPage: 1,
       mySubmissions: [],
       loading: false,
+      bodyClass: '',
     };
   },
   // 获取缓存中的该题的做题代码，代码语言，代码风格
@@ -738,6 +739,9 @@ export default {
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
     this.PROBLEM_LEVEL = Object.assign({}, PROBLEM_LEVEL);
     this.RULE_TYPE = Object.assign({}, RULE_TYPE);
+    if (this.$route.name === 'ProblemDetails') {
+      this.bodyClass = 'problem-body';
+    }
   },
   mounted() {
     this.init();
@@ -1365,6 +1369,13 @@ export default {
 </style>
 
 <style scoped>
+@media screen and (min-width: 1050px) {
+  .problem-body {
+    margin-left: -2%;
+    margin-right: -2%;
+  }
+}
+
 #problem-main {
   flex: auto;
 }
@@ -1559,7 +1570,6 @@ p.content {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  margin-right: 5%;
 }
 .example pre {
   flex: 1 1 auto;
@@ -1567,11 +1577,14 @@ p.content {
   border-style: solid;
   background: transparent;
   padding: 5px 10px;
-  white-space: pre-wrap;
-  margin-top: 15px;
-  margin-bottom: 15px;
-  background: #f8f8f9;
+  white-space: pre;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  background: #f1f1f1;
   border: 1px dashed #e9eaec;
+  overflow: auto;
+  font-size: 0.9em;
+  margin-right: 7%;
 }
 #submit-code {
   height: auto;
