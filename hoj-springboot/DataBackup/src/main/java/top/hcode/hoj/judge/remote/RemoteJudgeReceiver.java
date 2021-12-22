@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import top.hcode.hoj.judge.AbstractReceiver;
 import top.hcode.hoj.judge.ChooseUtils;
 import top.hcode.hoj.judge.Dispatcher;
 import top.hcode.hoj.pojo.entity.judge.Judge;
@@ -25,7 +26,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
-public class RemoteJudgeReceiver {
+public class RemoteJudgeReceiver extends AbstractReceiver {
 
     @Autowired
     private JudgeServiceImpl judgeService;
@@ -48,37 +49,43 @@ public class RemoteJudgeReceiver {
 
     @Async("judgeTaskAsyncPool")
     public void processWaitingTask() {
-        // 如果队列中还有任务，则继续处理
-        if (redisUtils.lGetListSize(Constants.Judge.STATUS_REMOTE_JUDGE_WAITING_HANDLE.getName()) > 0) {
-            String taskJsonStr = (String) redisUtils.lrPop(Constants.Judge.STATUS_REMOTE_JUDGE_WAITING_HANDLE.getName());
-            // 再次检查
-            if (taskJsonStr != null) {
+        // 优先处理比赛的提交
+        // 其次处理普通提交的提交
+        handleWaitingTask(Constants.Queue.CONTEST_REMOTE_JUDGE_WAITING_HANDLE.getName(),
+                Constants.Queue.GENERAL_REMOTE_JUDGE_WAITING_HANDLE.getName());
+    }
 
-                JSONObject task = JSONUtil.parseObj(taskJsonStr);
-
-                Judge judge = task.get("judge", Judge.class);
-                String token = task.getStr("token");
-                String remoteJudgeProblem = task.getStr("remoteJudgeProblem");
-                Boolean isContest = task.getBool("isContest");
-                Integer tryAgainNum = task.getInt("tryAgainNum");
-                Boolean isHasSubmitIdRemoteReJudge = task.getBool("isHasSubmitIdRemoteReJudge");
-
-                String remoteOJName = remoteJudgeProblem.split("-")[0].toUpperCase();
-
-                handleJudgeMsg(judge,
-                        token,
-                        remoteJudgeProblem,
-                        isContest,
-                        tryAgainNum,
-                        isHasSubmitIdRemoteReJudge,
-                        remoteOJName);
-            }
+    @Override
+    public String getTaskByRedis(String queue) {
+        if (redisUtils.lGetListSize(queue) > 0) {
+            return (String) redisUtils.lrPop(queue);
+        } else {
+            return null;
         }
     }
 
-    public void handleJudgeMsg(Judge judge, String token, String remoteJudgeProblem, Boolean isContest,
-                               Integer tryAgainNum,
-                               Boolean isHasSubmitIdRemoteReJudge, String remoteOJName) {
+    @Override
+    public void handleJudgeMsg(String taskJsonStr) {
+        JSONObject task = JSONUtil.parseObj(taskJsonStr);
+
+        Judge judge = task.get("judge", Judge.class);
+        String token = task.getStr("token");
+        String remoteJudgeProblem = task.getStr("remoteJudgeProblem");
+        Integer tryAgainNum = task.getInt("tryAgainNum");
+        Boolean isHasSubmitIdRemoteReJudge = task.getBool("isHasSubmitIdRemoteReJudge");
+        String remoteOJName = remoteJudgeProblem.split("-")[0].toUpperCase();
+
+        dispatchRemoteJudge(judge,
+                token,
+                remoteJudgeProblem,
+                tryAgainNum,
+                isHasSubmitIdRemoteReJudge,
+                remoteOJName);
+    }
+
+    private void dispatchRemoteJudge(Judge judge, String token, String remoteJudgeProblem,
+                                     Integer tryAgainNum,
+                                     Boolean isHasSubmitIdRemoteReJudge, String remoteOJName) {
 
         ToJudge toJudge = new ToJudge();
         toJudge.setJudge(judge)

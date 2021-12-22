@@ -35,7 +35,12 @@ public class RemoteJudgeDispatcher {
         task.set("tryAgainNum", tryAgainNum);
         task.set("isHasSubmitIdRemoteReJudge", isHasSubmitIdRemoteReJudge);
         try {
-            boolean isOk = redisUtils.llPush(Constants.Judge.STATUS_REMOTE_JUDGE_WAITING_HANDLE.getName(), JSONUtil.toJsonStr(task));
+            boolean isOk;
+            if (isContest){
+                isOk = redisUtils.llPush(Constants.Queue.CONTEST_REMOTE_JUDGE_WAITING_HANDLE.getName(), JSONUtil.toJsonStr(task));
+            }else{
+                isOk = redisUtils.llPush(Constants.Queue.GENERAL_REMOTE_JUDGE_WAITING_HANDLE.getName(), JSONUtil.toJsonStr(task));
+            }
             if (!isOk) {
                 judgeService.updateById(new Judge()
                         .setSubmitId(judge.getSubmitId())

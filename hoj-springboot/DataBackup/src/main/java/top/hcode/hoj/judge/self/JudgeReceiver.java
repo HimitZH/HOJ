@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import top.hcode.hoj.judge.AbstractReceiver;
 import top.hcode.hoj.judge.Dispatcher;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.ToJudge;
@@ -15,13 +16,11 @@ import top.hcode.hoj.utils.RedisUtils;
 /**
  * @Author: Himit_ZH
  * @Date: 2021/2/5 16:43
- * @Description: 1. 判题信息的接受者，调用判题服务，对提交代码进行判断，
- * 2. 若无空闲判题服务器，会自动进入熔断机制，重新将该判题信息发布到频道内，
- * 3. 再次接受到信息，再次查询是否有空闲判题服务器，若有则进行判题，否则回到2
+ * @Description:
  */
 @Component
 @Slf4j(topic = "hoj")
-public class JudgeReceiver {
+public class JudgeReceiver extends AbstractReceiver {
 
     @Autowired
     private Dispatcher dispatcher;
@@ -31,16 +30,23 @@ public class JudgeReceiver {
 
     @Async("judgeTaskAsyncPool")
     public void processWaitingTask() {
-        // 如果队列中还有任务，则继续处理
-        if (redisUtils.lGetListSize(Constants.Judge.STATUS_JUDGE_WAITING.getName()) > 0) {
-            String taskJsonStr = (String) redisUtils.lrPop(Constants.Judge.STATUS_JUDGE_WAITING.getName());
-            // 再次检查
-            if (taskJsonStr != null) {
-                handleJudgeMsg(taskJsonStr);
-            }
+        // 优先处理比赛的提交
+        // 其次处理普通提交的提交
+        handleWaitingTask(Constants.Queue.CONTEST_JUDGE_WAITING.getName(),
+                Constants.Queue.GENERAL_JUDGE_WAITING.getName());
+    }
+
+
+    @Override
+    public String getTaskByRedis(String queue) {
+        if (redisUtils.lGetListSize(queue) > 0) {
+            return (String) redisUtils.lrPop(queue);
+        } else {
+            return null;
         }
     }
 
+    @Override
     public void handleJudgeMsg(String taskJsonStr) {
 
         JSONObject task = JSONUtil.parseObj(taskJsonStr);
