@@ -457,8 +457,8 @@ export default {
 <style scoped>
 @media screen and (min-width: 1050px) {
   .scoreboard-body {
-    margin-left: -3%;
-    margin-right: -3%;
+    margin-left: -2%;
+    margin-right: -2%;
   }
 }
 .contest-title {

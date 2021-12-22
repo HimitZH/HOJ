@@ -372,7 +372,7 @@ a:hover {
 @media screen and (min-width: 1050px) {
   #oj-content {
     margin-top: 80px;
-    padding: 0 4%;
+    padding: 0 3%;
   }
 }
 .markdown-body img {
