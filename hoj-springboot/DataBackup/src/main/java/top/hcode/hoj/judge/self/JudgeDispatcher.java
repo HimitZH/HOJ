@@ -14,7 +14,7 @@ import top.hcode.hoj.utils.RedisUtils;
 /**
  * @Author: Himit_ZH
  * @Date: 2021/2/5 16:44
- * @Description: 判题信息的发布者，通过主题发布到特定频道内
+ * @Description:
  */
 @Component
 @Slf4j(topic = "hoj")
@@ -36,7 +36,12 @@ public class JudgeDispatcher {
         task.set("isContest", isContest);
         task.set("tryAgainNum", tryAgainNum);
         try {
-            boolean isOk = redisUtils.llPush(Constants.Judge.STATUS_JUDGE_WAITING.getName(), JSONUtil.toJsonStr(task));
+            boolean isOk;
+            if (isContest){
+                isOk = redisUtils.llPush(Constants.Queue.CONTEST_JUDGE_WAITING.getName(), JSONUtil.toJsonStr(task));
+            }else{
+                isOk = redisUtils.llPush(Constants.Queue.GENERAL_JUDGE_WAITING.getName(), JSONUtil.toJsonStr(task));
+            }
             if (!isOk) {
                 judgeService.updateById(new Judge()
                         .setSubmitId(judge.getSubmitId())

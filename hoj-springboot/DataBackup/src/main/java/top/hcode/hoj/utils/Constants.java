@@ -29,8 +29,6 @@ public class Constants {
         STATUS_SUBMITTING(9, "Submitting", null),
         STATUS_SUBMITTED_FAILED(10, "Submitted Failed", null),
         STATUS_NULL(15, "No Status", null),
-        STATUS_JUDGE_WAITING(-100, "Waiting Queue", null),
-        STATUS_REMOTE_JUDGE_WAITING_HANDLE(-200, "Remote Waiting Handle Queue", null),
         JUDGE_SERVER_SUBMIT_PREFIX(-1002, "Judge SubmitId-ServerId:", null);
 
         private Judge(Integer status, String name, String columnName) {
@@ -53,6 +51,26 @@ public class Constants {
 
         public String getColumnName() {
             return columnName;
+        }
+    }
+
+    /**
+     * 等待判题的redis队列
+     * @Since 2021/12/22
+     */
+
+    public enum Queue{
+        CONTEST_JUDGE_WAITING("Contest_Waiting_Handle_Queue"),
+        GENERAL_JUDGE_WAITING("General_Waiting_Handle_Queue"),
+        CONTEST_REMOTE_JUDGE_WAITING_HANDLE("Contest_Remote_Waiting_Handle_Queue"),
+        GENERAL_REMOTE_JUDGE_WAITING_HANDLE("General_Remote_Waiting_Handle_Queue");
+
+        private Queue(String name) {
+            this.name = name;
+        }
+        private final String name;
+        public String getName() {
+            return name;
         }
     }
 
