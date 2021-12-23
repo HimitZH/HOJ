@@ -3,10 +3,12 @@ package top.hcode.hoj.service.training.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.shiro.SecurityUtils;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.TrainingRegisterMapper;
 import top.hcode.hoj.pojo.entity.training.Training;
+import top.hcode.hoj.pojo.entity.training.TrainingRecord;
 import top.hcode.hoj.pojo.entity.training.TrainingRegister;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.training.TrainingRegisterService;
@@ -15,6 +17,8 @@ import top.hcode.hoj.utils.Constants;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author: Himit_ZH
@@ -29,6 +33,9 @@ public class TrainingRegisterServiceImpl extends ServiceImpl<TrainingRegisterMap
 
     @Resource
     private TrainingServiceImpl trainingService;
+
+    @Resource
+    private TrainingRecordServiceImpl trainingRecordService;
 
     @Override
     public CommonResult checkTrainingAuth(Training training, HttpServletRequest request) {
@@ -82,8 +89,29 @@ public class TrainingRegisterServiceImpl extends ServiceImpl<TrainingRegisterMap
         if (insert <= 0) {
             return CommonResult.errorResponse("校验训练密码失败，请稍后再试", CommonResult.STATUS_FAIL);
         } else {
+            trainingRecordService.syncUserSubmissionToRecordByTid(tid, userRolesVo.getUid());
             return CommonResult.successResponse(null, "进入训练成功！");
         }
+    }
+
+
+    @Override
+    public List<String> getAlreadyRegisterUidList(Long tid){
+        QueryWrapper<TrainingRegister> trainingRegisterQueryWrapper = new QueryWrapper<>();
+        trainingRegisterQueryWrapper.eq("tid", tid);
+        return trainingRegisterMapper.selectList(trainingRegisterQueryWrapper).stream().map(TrainingRegister::getUid).collect(Collectors.toList());
+    }
+
+    @Override
+    @Async
+    public void syncAlreadyRegisterUserRecord(Long tid, Long pid, Long tpId) {
+
+        Training training = trainingService.getById(tid);
+        if (!Constants.Training.AUTH_PRIVATE.getValue().equals(training.getAuth())){
+            return;
+        }
+        List<String> uidList = getAlreadyRegisterUidList(tid);
+        trainingRecordService.syncNewProblemUserSubmissionToRecord(pid, tpId, tid, uidList);
     }
 
     private CommonResult checkTrainingRegister(Long tid, String uid) {

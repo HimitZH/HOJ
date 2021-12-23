@@ -28,7 +28,7 @@ const adminRoutes= [
     {
       path: '/admin/',
       component: Home,
-      meta: {requireAuth:true, requireAdmin: true},
+      meta: { requireAuth:true, requireAdmin: true },
       children: [
         {
           path: '',

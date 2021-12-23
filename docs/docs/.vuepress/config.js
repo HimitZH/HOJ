@@ -1,22 +1,48 @@
-module.exports = {
-    title: 'HOJ 文档',
-    description: 'HOJ 的开发与使用文档',
+const path = require('path');
+const { config } = require("vuepress-theme-hope");
+
+module.exports = context => config({
+    title: 'HOJ',
     head: [
-        ['link', { rel: 'icon', href: '/img/favicon.ico' }],
+        ['link', { rel: 'icon', href: `/logo.png` }],
+        ['meta', { name: 'theme-color', content: '#ffeded' }],
     ],
-    base: '/docs/',
-    markdown: {
-        lineNumbers: true // 代码块显示行号
-    },
+    plugins: [
+        '@vuepress/back-to-top',
+        '@vuepress/active-header-links',
+        'vuepress-plugin-nprogress',
+        'vuepress-plugin-smooth-scroll',
+        'vuepress-plugin-zooming'
+    ],
+    base:'/docs/',
     themeConfig: {
-        sidebarDepth: 5,
+        logo: '/favicon.ico',
         nav: [
             { text: 'Demo', link: 'https://hdoi.cn/' },
             { text: 'Gitee', link: 'https://gitee.com/himitzh0730/hoj' },
-			{ text: 'Github', link: 'https://github.com/HimitZH/HOJ' },
-            { text: '作者首页', link: 'https://blog.csdn.net/weixin_43853097' },
         ],
-
+        pwa: {
+            cacheHTML: false,
+        },
+        sidebarDepth: 2,
+        lastUpdated: '上次更新',
+        hostname: 'https://hcode.top',
+        repo: 'HimitZH/HOJ',
+        pageInfo: false,
+        copyright: false,
+        mdEnhance: {
+            align: true,
+            sup: true,
+            sub: true,
+            footnote: true,
+            tex: true,
+        },
+        docsRepo: 'HimitZH/HOJ/docs',
+        docsBranch: 'docs',
+        editLinks: true,
+        editLinkText: '文档有锅？点我修复',
+        displayAllHeaders: true,
+        smoothScroll: true,
         sidebar: [
             {
                 title: '开始介绍',
@@ -55,7 +81,6 @@ module.exports = {
                 title: '开发文档',
                 collapsable: true,
                 children: [
-                    'develop/',
                     'develop/db',
 					'develop/sandbox'
                 ]
@@ -64,7 +89,6 @@ module.exports = {
                 title: '使用文档',
                 collapsable: true,
                 children: [
-                    'use/',
 					'use/testcase',
 					'use/contest',
 					'use/import-problem',
@@ -78,7 +102,6 @@ module.exports = {
                 ]
             },
         ],
-        
     },
-    
-}
+    evergreen: !!context.isProd,
+})

@@ -2,10 +2,10 @@
 
 ## 一、常规部署
 
-#### 1. 安装nginx
-
-> 注意：apt下载太慢的话，建议换阿里云源，请自行百度or谷歌
-
+### (1). 安装nginx
+:::warning
+注意：apt下载太慢的话，建议换阿里云源，请自行百度or谷歌
+:::
 1. 使用apt安装
 
    ```shell
@@ -29,7 +29,7 @@
 
    在浏览器输入你的ip地址，如果出现Wellcome to nginx 那么就是配置成功
 
-#### 2. 部署
+### (2). 部署
 
 1. [下载本项目](https://gitee.com/himitzh0730/hoj/tree/master/hoj-vue)，git clone或者download zip
 
@@ -101,9 +101,9 @@
 
 ## 二、docker部署
 
-### 前言
-
-> html文件夹下为hoj的vue前端打包的静态资源
+:::tip
+html文件夹下为hoj的vue前端打包的静态资源
+:::
 
 直接下载本项目，进入到当前文件夹执行打包命令
 
@@ -119,7 +119,7 @@ docker build -t hoj-frontend .
 
 
 
-docker run 启动 
+**docker run 启动**
 
 - Http方式
 
@@ -154,7 +154,7 @@ docker run 启动
   # registry.cn-shenzhen.aliyuncs.com/hcode/hoj_frontend
   ```
 
-docker-compose 启动
+**docker-compose 启动**
 
 ```yaml
 version: "3"
