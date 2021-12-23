@@ -1,8 +1,9 @@
 # 快速部署
-
-> 前提：已经在上一步准备好docker与docker-compose
-
-**注意：如果正式部署运用HOJ，请修改默认配置的密码，例如Redis、MySQL、Nacos的密码！！！**
+**前提：已经在上一步准备好docker与docker-compose**
+:::danger
+注意：如果正式部署运用HOJ，请修改默认配置的密码，例如Redis、MySQL、Nacos的密码！！！  
+**使用默认密码可能会导致数据泄露，网站及其不安全！**
+:::
 
 ## 一、单机部署
 
@@ -36,20 +37,20 @@
    # redis的配置
    REDIS_HOST=172.20.0.2
    REDIS_PORT=6379
-   REDIS_PASSWORD=hoj123456
+   REDIS_PASSWORD=hoj123456 # 正式部署请修改
    
    # mysql的配置
    MYSQL_HOST=172.20.0.3
    # 如果判题服务是分布式，请提供当前mysql所在服务器的公网ip
    MYSQL_PUBLIC_HOST=172.20.0.3
    MYSQL_PORT=3306
-   MYSQL_ROOT_PASSWORD=hoj123456
+   MYSQL_ROOT_PASSWORD=hoj123456 # 正式部署请修改
    
    # nacos的配置
    NACOS_HOST=172.20.0.4
    NACOS_PORT=8848
    NACOS_USERNAME=root
-   NACOS_PASSWORD=hoj123456
+   NACOS_PASSWORD=hoj123456 # 正式部署请修改
    
    # backend后端服务的配置
    BACKEND_HOST=172.20.0.5
@@ -87,8 +88,10 @@
    ```
    
 
-   
-> 提示：如果服务器的内存在4G或4G以上，请去掉JVM限制才能大大提高并发量，操作如下：
+
+:::tip   
+提示：如果服务器的内存在4G或4G以上，请去掉JVM限制才能大大提高并发量，操作如下：
+:::
 
 ```shell
 vim docker-compose.yml
@@ -124,16 +127,17 @@ docker ps -a
 
    当看到所有的容器的状态status都为`UP`或`healthy`就代表 OJ 已经启动成功。
 
-   > 以下默认参数说明
-
+   以下默认参数说明
+   :::warning
    - 默认超级管理员账号与密码：root / hoj123456
    - 默认redis密码：hoj123456（**正式部署请修改**）
    - 默认mysql账号与密码：root / hoj123456（**正式部署请修改**）
    - 默认nacos管理员账号与密码：root / hoj123456（**正式部署请修改**）
    - 默认不开启https，开启需修改文件同时提供证书文件
    - 判题并发数默认：cpu核心数+1
-- 默认开启vj判题，需要手动修改添加账号与密码，如果不添加不能vj判题！
+   - 默认开启vj判题，需要手动修改添加账号与密码，如果不添加不能vj判题！
    - vj判题并发数默认：cpu核心数*2+1
+   :::
    
    
 
@@ -154,9 +158,10 @@ Password: 开启SMTP服务后生成的随机授权码
 
 ## 二、分布式部署
 
-> 注意：主服务器（运行nacos，backend, frontend,redis）的服务器防火墙请开 **8848，3306，873**端口号
->
-> 从服务器（判题机）的防火墙请开**8088**端口号
+:::tip
+主服务器（运行nacos，backend, frontend,redis）的服务器防火墙请开 **8848，3306，873**端口号  
+从服务器（运行judgeserver）的服务器防火墙请开**8088**端口号
+:::
 
 1. 选择好需要安装的位置，运行下面命令
 
@@ -205,20 +210,20 @@ Password: 开启SMTP服务后生成的随机授权码
    # redis的配置
    REDIS_HOST=172.20.0.2
    REDIS_PORT=6379
-   REDIS_PASSWORD=hoj123456
+   REDIS_PASSWORD=hoj123456 # 正式部署请修改
    
    # mysql的配置
    MYSQL_HOST=172.20.0.3
    # 请提供当前mysql所在服务器的公网ip
    MYSQL_PUBLIC_HOST=172.20.0.3
    MYSQL_PORT=3306
-   MYSQL_ROOT_PASSWORD=hoj123456
+   MYSQL_ROOT_PASSWORD=hoj123456 # 正式部署请修改
    
    # nacos的配置
    NACOS_HOST=172.20.0.4
    NACOS_PORT=8848
    NACOS_USERNAME=root
-   NACOS_PASSWORD=hoj123456
+   NACOS_PASSWORD=hoj123456 # 正式部署请修改
    
    # backend后端服务的配置
    BACKEND_HOST=172.20.0.5
@@ -248,7 +253,7 @@ Password: 开启SMTP服务后生成的随机授权码
    
    # 评测数据同步的配置
    # 请修改数据同步密码
-   RSYNC_PASSWORD=hoj123456
+   RSYNC_PASSWORD=hoj123456 # 正式部署请修改
    
    # docker network的配置
    SUBNET=172.20.0.0/16
@@ -304,7 +309,7 @@ Password: 开启SMTP服务后生成的随机授权码
    # 写入主服务器ip
    RSYNC_MASTER_ADDR=127.0.0.1
    # 与主服务器的rsync密码一致
-   RSYNC_PASSWORD=hoj123456
+   RSYNC_PASSWORD=hoj123456 
    ```
 
    配置修改保存后，当前路径下启动该服务

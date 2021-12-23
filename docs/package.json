@@ -1,13 +1,22 @@
 {
-  "name": "docs",
+  "name": "hoj docs",
   "version": "1.0.0",
-  "description": "HOJ文档",
+  "description": "An open source online judge system base on SpringBoot, Springcloud Alibaba and Vue.js !",
   "main": "index.js",
-  "scripts": {
-    "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
+  "license": "MIT",
+  "devDependencies": {
+    "@vuepress/plugin-active-header-links": "^1.5.2",
+    "@vuepress/plugin-back-to-top": "^1.5.2",
+    "@vuepress/plugin-register-components": "^1.5.2",
+    "vuepress": "^1.5.2",
+    "vuepress-plugin-nprogress": "^1.1.8",
+    "vuepress-plugin-smooth-scroll": "^0.0.10",
+    "vuepress-plugin-zooming": "^1.1.8",
+    "vuepress-theme-hope": "^1.14.3"
   },
-  "keywords": ["HOJ"],
-  "author": "Himit_ZH",
-  "license": "ISC"
+  "scripts": {
+    "dev": "vuepress dev docs",
+    "build": "vuepress build docs"
+  },
+  "dependencies": {}
 }

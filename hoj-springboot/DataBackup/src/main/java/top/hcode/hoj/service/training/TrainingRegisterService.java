@@ -7,6 +7,7 @@ import top.hcode.hoj.pojo.entity.training.TrainingRegister;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 public interface TrainingRegisterService extends IService<TrainingRegister> {
 
@@ -14,5 +15,9 @@ public interface TrainingRegisterService extends IService<TrainingRegister> {
 
     public CommonResult checkTrainingAuth(Training training, UserRolesVo userRolesVo);
 
-    public CommonResult toRegisterTraining(Long tid,String password,HttpServletRequest request);
+    public CommonResult toRegisterTraining(Long tid, String password, HttpServletRequest request);
+
+    public List<String> getAlreadyRegisterUidList(Long tid);
+
+    public void syncAlreadyRegisterUserRecord(Long tid, Long pid, Long tpId);
 }

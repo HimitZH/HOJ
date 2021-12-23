@@ -1,6 +1,6 @@
 # 测试用例
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210523215852734.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/ad4851c069674b30af08f187363906c4.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 **进入后台添加题目，上传题目测试用例数据可以选择手动输入、Zip文件上传两种方式**
 
@@ -32,6 +32,10 @@
 
 然后压缩测试用例到一个zip中
 
+:::danger
 **注意：即使没有输入或者没有输出，也请提供对应的空输入(输出)文件，不要在这些文件外面套多一层文件夹，请直接压缩！！！**
+:::
 
-同时建议：尽量合并测试用例到一个文件中，减少测试用例组数，这会一定程度上提高判题性能。
+:::info
+建议：尽量合并测试用例到一个文件中，减少测试用例组数，这会一定程度上提高判题性能。
+:::

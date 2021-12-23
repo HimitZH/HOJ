@@ -2,20 +2,26 @@
 
 由于有的机房的网络不支持一些域名的访问，有防火墙挡住，所以可能前端页面的js和css的CDN访问不了，导致页面打不开。
 
+:::info
 hoj挂载了一些前端库的免费CDN，全部都是该域名`cdn.jsdelivr.net`下的免费CDN
+:::
 
-可以在对应的电脑浏览器上打开以下链接，如果能正常访问则没有问题
+可以在对应的电脑浏览器上打开以下链接，如果能正常访问则没有问题。
 
 ```html
 https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js
 ```
 
-如果有问题，有两种办法解决：
+:::warning
+hoj-frontend(前端vue项目)如果不挂载任何CDN，最终打包生成的文件夹大小约8MB
+:::
 
-> 前提：hoj前端文件不挂载CDN，最终打包生成的文件夹大小约8MB
+## 一、全部打包且部署
 
-- 如果本身hoj部署在**学校内网机器**上或者**云服务器是无带宽上限、按流量计费的实例**，那么可以不用考虑带宽问题，可以直接取消CDN挂载，直接全部自己打包成对应的静态文件，然后挂载到docker的`hoj-frontend`镜像里面，操作如下：
-
+:::info
+如果本身hoj部署在**学校内网机器**上或者**云服务器是无带宽上限、按流量计费的实例**，那么可以不用考虑带宽问题，可以直接取消CDN挂载，直接全部自己打包成对应的静态文件，然后挂载到docker的`hoj-frontend`镜像里面
+:::
+**操作如下:**
   1. 下载前端源代码：[https://gitee.com/himitzh0730/hoj/tree/master/hoj-vue](https://gitee.com/himitzh0730/hoj/tree/master/hoj-vue)
 
   2. 进入`hoj-vue`文件夹，编辑`vue.config.js`文件，按下面的修改
@@ -177,9 +183,10 @@ https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js
      将 `dist` 文件夹复制到服务器上某个目录下，比如 `/hoj/www/html/dist`，然后修改 `docker-compose.yml`，在 `hoj-frontend` 模块中的 `volumes` 中增加一行 `- /hoj/www/html/dist:/usr/share/nginx/html` （冒号前面的请修改为实际的路径），然后 `docker-compose up -d` 即可。
 
 
-
-- 如果云服务器是只有固定小流量出口带宽的，例如1M,2M的，害怕访问速度太慢，但是有钱买CDN服务器，可以先按照上面的方式，生成对应的本地静态文件夹，然后把`dist/assets`文件夹放在CDN服务器上，然后修改`dist/index.html`
-
+## 二、全部打包但有个人CDN服务器
+:::info
+如果云服务器是只有固定小流量出口带宽的，例如1M,2M的，害怕访问速度太慢，但是有钱买CDN服务器，可以先按照上面的方式，生成对应的本地静态文件夹，然后把`dist/assets`文件夹放在CDN服务器上，然后修改`dist/index.html`
+:::
   **(建议：有弄过CDN的可以这样搞)**
 
   添加css等文件的导入

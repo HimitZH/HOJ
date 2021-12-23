@@ -2,6 +2,7 @@ package top.hcode.hoj.controller.admin;
 
 import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.shiro.SecurityUtils;
@@ -18,10 +19,13 @@ import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
+import top.hcode.hoj.pojo.entity.training.TrainingRecord;
 import top.hcode.hoj.pojo.vo.TrainingVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
 import top.hcode.hoj.service.training.impl.TrainingProblemServiceImpl;
+import top.hcode.hoj.service.training.impl.TrainingRecordServiceImpl;
+import top.hcode.hoj.service.training.impl.TrainingRegisterServiceImpl;
 import top.hcode.hoj.service.training.impl.TrainingServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
@@ -49,6 +53,12 @@ public class AdminTrainingController {
 
     @Resource
     private ProblemServiceImpl problemService;
+
+    @Resource
+    private TrainingRecordServiceImpl trainingRecordService;
+
+    @Resource
+    private TrainingRegisterServiceImpl trainingRegisterService;
 
     @GetMapping("/list")
     @RequiresAuthentication
@@ -133,6 +143,7 @@ public class AdminTrainingController {
 
         boolean result = trainingService.updateTraining(trainingDto);
         if (result) {
+            trainingRecordService.checkSyncRecord(trainingDto.getTraining());
             return CommonResult.successResponse(null, "修改成功！");
         } else {
             return CommonResult.errorResponse("修改失败", CommonResult.STATUS_FAIL);
@@ -207,6 +218,7 @@ public class AdminTrainingController {
             QueryWrapper<TrainingProblem> trainingProblemQueryWrapper = new QueryWrapper<>();
             trainingProblemQueryWrapper.eq("tid", tid).eq("pid", pid);
             result = trainingProblemService.remove(trainingProblemQueryWrapper);
+
         } else {
              /*
                 problem的id为其他表的外键的表中的对应数据都会被一起删除！
@@ -250,10 +262,11 @@ public class AdminTrainingController {
             return CommonResult.errorResponse("添加失败，该题目已添加或者题目的训练展示ID已存在！", CommonResult.STATUS_FAIL);
         }
 
-
-        boolean result = trainingProblemService.saveOrUpdate(new TrainingProblem()
+        TrainingProblem newTProblem = new TrainingProblem();
+        boolean result = trainingProblemService.saveOrUpdate(newTProblem
                 .setTid(tid).setPid(pid).setDisplayId(displayId));
         if (result) { // 添加成功
+            trainingRegisterService.syncAlreadyRegisterUserRecord(tid, pid, newTProblem.getId());
             return CommonResult.successResponse(null, "添加成功！");
         } else {
             return CommonResult.errorResponse("添加失败", CommonResult.STATUS_FAIL);
@@ -303,10 +316,11 @@ public class AdminTrainingController {
             return CommonResult.errorResponse("添加失败，该题目已添加或者题目的训练展示ID已存在！", CommonResult.STATUS_FAIL);
         }
 
-
-        boolean result = trainingProblemService.saveOrUpdate(new TrainingProblem()
+        TrainingProblem newTProblem = new TrainingProblem();
+        boolean result = trainingProblemService.saveOrUpdate(newTProblem
                 .setTid(tid).setPid(problem.getId()).setDisplayId(problem.getProblemId()));
         if (result) { // 添加成功
+            trainingRegisterService.syncAlreadyRegisterUserRecord(tid, problem.getId(), newTProblem.getId());
             return CommonResult.successResponse(null, "添加成功！");
         } else {
             return CommonResult.errorResponse("添加失败", CommonResult.STATUS_FAIL);
