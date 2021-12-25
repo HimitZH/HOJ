@@ -3,6 +3,7 @@ package top.hcode.hoj.service.training.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.shiro.SecurityUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.common.result.CommonResult;
@@ -35,6 +36,7 @@ public class TrainingRegisterServiceImpl extends ServiceImpl<TrainingRegisterMap
     private TrainingServiceImpl trainingService;
 
     @Resource
+    @Lazy
     private TrainingRecordServiceImpl trainingRecordService;
 
     @Override

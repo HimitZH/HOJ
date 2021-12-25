@@ -5,12 +5,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.tomcat.util.bcel.Const;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.TrainingRecordMapper;
+import top.hcode.hoj.dao.UserInfoMapper;
 import top.hcode.hoj.pojo.dto.ToJudgeDto;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestProblem;
@@ -19,6 +21,7 @@ import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
 import top.hcode.hoj.pojo.entity.training.TrainingRecord;
+import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.vo.TrainingRankVo;
 import top.hcode.hoj.pojo.vo.TrainingRecordVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
@@ -44,8 +47,8 @@ public class TrainingRecordServiceImpl extends ServiceImpl<TrainingRecordMapper,
     @Resource
     private TrainingProblemServiceImpl trainingProblemService;
 
-    @Resource
-    private RedisUtils redisUtils;
+    @Autowired
+    private UserInfoMapper userInfoMapper;
 
     @Resource
     private TrainingRecordMapper trainingRecordMapper;
@@ -109,16 +112,27 @@ public class TrainingRecordServiceImpl extends ServiceImpl<TrainingRecordMapper,
     }
 
     @Override
-    public IPage<TrainingRankVo> getTrainingRank(Long tid, int currentPage, int limit) {
+    public IPage<TrainingRankVo> getTrainingRank(Long tid, String username, int currentPage, int limit) {
 
         Map<Long, String> tpIdMapDisplayId = getTPIdMapDisplayId(tid);
         List<TrainingRecordVo> trainingRecordVoList = trainingRecordMapper.getTrainingRecord(tid);
+
+        List<UserInfo> superAdminList = userInfoMapper.getSuperAdminList();
+
+        List<String> superAdminUidList = superAdminList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
+
 
         List<TrainingRankVo> result = new ArrayList<>();
 
         HashMap<String, Integer> uidMapIndex = new HashMap<>();
         int pos = 0;
         for (TrainingRecordVo trainingRecordVo : trainingRecordVoList) {
+            // 超级管理员和训练创建者的提交不入排行榜
+            if (username.equals(trainingRecordVo.getUsername())
+                    || superAdminUidList.contains(trainingRecordVo.getUid())) {
+                continue;
+            }
+
             TrainingRankVo trainingRankVo;
             Integer index = uidMapIndex.get(trainingRecordVo.getUid());
             if (index == null) {
@@ -131,8 +145,7 @@ public class TrainingRecordServiceImpl extends ServiceImpl<TrainingRecordMapper,
                         .setUsername(trainingRecordVo.getUsername())
                         .setNickname(trainingRecordVo.getNickname())
                         .setAc(0)
-                        .setTotalRunTime(0)
-                        .setTotal(0);
+                        .setTotalRunTime(0);
                 HashMap<String, HashMap<String, Object>> submissionInfo = new HashMap<>();
                 trainingRankVo.setSubmissionInfo(submissionInfo);
 
@@ -146,7 +159,6 @@ public class TrainingRecordServiceImpl extends ServiceImpl<TrainingRecordMapper,
             HashMap<String, Object> problemSubmissionInfo = trainingRankVo
                     .getSubmissionInfo()
                     .getOrDefault(displayId, new HashMap<>());
-            trainingRankVo.setTotal(trainingRankVo.getTotal() + 1);
 
             // 如果该题目已经AC过了，只比较运行时间取最小
             if ((Boolean) problemSubmissionInfo.getOrDefault("isAC", false)) {
@@ -294,18 +306,11 @@ public class TrainingRecordServiceImpl extends ServiceImpl<TrainingRecordMapper,
         saveBatchNewRecordByJudgeList(judgeList, tid, null, pidMapTPid);
     }
 
-    @SuppressWarnings("unchecked")
     private Map<Long, String> getTPIdMapDisplayId(Long tid) {
-        String key = Constants.Training.MAP_REDIS_KEY_PRE.getValue() + tid;
-        Map<Long, String> res = (Map<Long, String>) redisUtils.get(key);
-        if (res == null) {
-            QueryWrapper<TrainingProblem> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("tid", tid);
-            List<TrainingProblem> trainingProblemList = trainingProblemService.list(queryWrapper);
-            res = trainingProblemList.stream().collect(Collectors.toMap(TrainingProblem::getId, TrainingProblem::getDisplayId));
-            redisUtils.set(key, res, 12 * 3600);
-        }
-        return res;
+        QueryWrapper<TrainingProblem> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("tid", tid);
+        List<TrainingProblem> trainingProblemList = trainingProblemService.list(queryWrapper);
+        return trainingProblemList.stream().collect(Collectors.toMap(TrainingProblem::getId, TrainingProblem::getDisplayId));
     }
 
 }

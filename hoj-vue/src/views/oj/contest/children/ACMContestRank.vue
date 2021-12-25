@@ -488,8 +488,7 @@ export default {
         }
       }
     },
-    applyToTable(data) {
-      let dataRank = JSON.parse(JSON.stringify(data));
+    applyToTable(dataRank) {
       dataRank.forEach((rank, i) => {
         let info = rank.submissionInfo;
         let cellClass = {};

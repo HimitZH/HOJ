@@ -14,6 +14,15 @@
               @keyup.enter.native="filterByKeyword"
             ></vxe-input>
           </span>
+          <span>
+            <el-button
+              type="primary"
+              size="small"
+              @click="goCreateTraining"
+              icon="el-icon-plus"
+              >{{ $t('m.Create') }}
+            </el-button>
+          </span>
         </div>
       </div>
       <vxe-table
@@ -208,6 +217,9 @@ export default {
     },
     filterByKeyword() {
       this.currentChange(1);
+    },
+    goCreateTraining() {
+      this.$router.push({ name: 'admin-create-training' });
     },
   },
 };

@@ -196,9 +196,10 @@ services:
       - NACOS_URL=172.20.0.4:8848 # nacos的url
       - NACOS_USERNAME=nacos # nacos的管理员账号
       - NACOS_PASSWORD=nacos # naocs的管理员账号密码
-      - MAX_TASK_NUM=-1 # -1表示最大并行任务数为cpu核心数+1
+      - MAX_TASK_NUM=-1 # -1表示最大可接收判题任务数为cpu核心数+1
       - REMOTE_JUDGE_OPEN=true # 当前判题服务器是否开启远程虚拟判题功能
-      - REMOTE_JUDGE_MAX_TASK_NUM=-1 # -1表示最大并行任务数为cpu核心数*2+1
+      - REMOTE_JUDGE_MAX_TASK_NUM=-1 # -1表示最大可接收远程判题任务数为cpu核心数*2+1
+      - PARALLEL_TASK=default # 默认沙盒并行判题程序数为cpu核心数
     ports:
       - "0.0.0.0:8088:8088"
       # - "0.0.0.0:5050:5050" # 一般不开放安全沙盒端口
@@ -245,11 +246,26 @@ bash ./run.sh
 启动judgesever的springboot jar包 和SandBox判题安全沙盒
 
 ```shell
+ulimit -s unlimited
+
 chmod +777 SandBox
 
-nohup ./SandBox -release=true &
+if test -z "$PARALLEL_TASK";then
+	nohup ./SandBox --silent=true --file-timeout=10m &
+	echo -e "\033[42;34m ./SandBox --silent=true --file-timeout=10m \033[0m"
+elif [ -z "$(echo $PARALLEL_TASK | sed 's#[0-9]##g')" ]; then
+	nohup ./SandBox --silent=true --file-timeout=10m --parallelism=$PARALLEL_TASK &
+	echo -e "\033[42;34m ./SandBox --silent=true --file-timeout=10m --parallelism=$PARALLEL_TASK \033[0m"
+else
+	nohup ./SandBox --silent=true --file-timeout=10m &
+	echo -e "\033[42;34m ./SandBox --silent=true --file-timeout=10m \033[0m"
+fi
 
-java -XX:+UseG1GC -Djava.security.egd=file:/dev/./urandom -jar ./app.jar 
+if test -z "$JAVA_OPTS";then
+	java -XX:+UseG1GC -Djava.security.egd=file:/dev/./urandom -jar ./app.jar 
+else
+	java -XX:+UseG1GC $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar ./app.jar 
+fi
 ```
 
 ### 4. Dockerfile

@@ -455,8 +455,7 @@ export default {
       this.options.xAxis[0].data = user;
       this.options.series[0].data = scores;
     },
-    applyToTable(data) {
-      let dataRank = JSON.parse(JSON.stringify(data));
+    applyToTable(dataRank) {
       dataRank.forEach((rank, i) => {
         let info = rank.submissionInfo;
         let cellClass = {};

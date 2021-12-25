@@ -37,20 +37,20 @@
    # redis的配置
    REDIS_HOST=172.20.0.2
    REDIS_PORT=6379
-   REDIS_PASSWORD=hoj123456 # 正式部署请修改
+   REDIS_PASSWORD=hoj123456
    
    # mysql的配置
    MYSQL_HOST=172.20.0.3
    # 如果判题服务是分布式，请提供当前mysql所在服务器的公网ip
    MYSQL_PUBLIC_HOST=172.20.0.3
    MYSQL_PORT=3306
-   MYSQL_ROOT_PASSWORD=hoj123456 # 正式部署请修改
+   MYSQL_ROOT_PASSWORD=hoj123456
    
    # nacos的配置
    NACOS_HOST=172.20.0.4
    NACOS_PORT=8848
    NACOS_USERNAME=root
-   NACOS_PASSWORD=hoj123456 # 正式部署请修改
+   NACOS_PASSWORD=hoj123456
    
    # backend后端服务的配置
    BACKEND_HOST=172.20.0.5
@@ -82,9 +82,17 @@
    JUDGE_SERVER_IP=172.20.0.7
    JUDGE_SERVER_PORT=8088
    JUDGE_SERVER_NAME=judger-alone
+   # -1表示可接收最大判题任务数为cpu核心数+1
+	MAX_TASK_NUM=-1
+   # 当前判题服务器是否开启远程虚拟判题功能
+   REMOTE_JUDGE_OPEN=true
+   # -1表示可接收最大远程判题任务数为cpu核心数*2+1
+   REMOTE_JUDGE_MAX_TASK_NUM=-1
+   # 默认沙盒并行判题程序数为cpu核心数
+   PARALLEL_TASK=default
    
-	# docker network的配置
-    SUBNET=172.20.0.0/16
+   # docker network的配置
+   SUBNET=172.20.0.0/16
    ```
    
 
@@ -137,8 +145,8 @@ docker ps -a
    - 判题并发数默认：cpu核心数+1
    - 默认开启vj判题，需要手动修改添加账号与密码，如果不添加不能vj判题！
    - vj判题并发数默认：cpu核心数*2+1
-   :::
-   
+      :::
+
    
 
 **登录root账号到后台查看服务状态以及到`http://ip/admin/conf`修改服务配置!**
@@ -210,20 +218,20 @@ Password: 开启SMTP服务后生成的随机授权码
    # redis的配置
    REDIS_HOST=172.20.0.2
    REDIS_PORT=6379
-   REDIS_PASSWORD=hoj123456 # 正式部署请修改
+   REDIS_PASSWORD=hoj123456
    
    # mysql的配置
    MYSQL_HOST=172.20.0.3
    # 请提供当前mysql所在服务器的公网ip
    MYSQL_PUBLIC_HOST=172.20.0.3
    MYSQL_PORT=3306
-   MYSQL_ROOT_PASSWORD=hoj123456 # 正式部署请修改
+   MYSQL_ROOT_PASSWORD=hoj123456
    
    # nacos的配置
    NACOS_HOST=172.20.0.4
    NACOS_PORT=8848
    NACOS_USERNAME=root
-   NACOS_PASSWORD=hoj123456 # 正式部署请修改
+   NACOS_PASSWORD=hoj123456
    
    # backend后端服务的配置
    BACKEND_HOST=172.20.0.5
@@ -253,30 +261,30 @@ Password: 开启SMTP服务后生成的随机授权码
    
    # 评测数据同步的配置
    # 请修改数据同步密码
-   RSYNC_PASSWORD=hoj123456 # 正式部署请修改
+   RSYNC_PASSWORD=hoj123456
    
    # docker network的配置
    SUBNET=172.20.0.0/16
    ```
-
+   
    配置修改保存后，当前路径下启动该服务
-
+   
    ```shell
    docker-compose up -d
    ```
-
+   
    根据网速情况，大约十分钟即可安装完毕，全程无需人工干预。
-
+   
    等待命令执行完毕后，查看容器状态
-
+   
    ```shell
    docker ps -a
    ```
-
-   当看到所有的容器的状态status都为`UP`或`healthy`就代表 OJ 已经启动成功。
-
    
-
+   当看到所有的容器的状态status都为`UP`或`healthy`就代表 OJ 已经启动成功。
+   
+   
+   
 4. 接着，在另一台服务器上，依旧git clone该文件夹下来，然后进入`judgeserver`文件夹，修改`.env`的配置
 
    ```properties
@@ -298,12 +306,14 @@ Password: 开启SMTP服务后生成的随机授权码
    JUDGE_SERVER_IP=172.20.0.7
    JUDGE_SERVER_PORT=8088
    JUDGE_SERVER_NAME=judger-1
-   # -1表示最大并行任务数为cpu核心数+1
+   # -1表示可接收最大判题任务数为cpu核心数+1
    MAX_TASK_NUM=-1
    # 当前判题服务器是否开启远程虚拟判题功能
    REMOTE_JUDGE_OPEN=true
-   # -1表示最大并行任务数为cpu核心数*2+1
+   # -1表示可接收最大远程判题任务数为cpu核心数*2+1
    REMOTE_JUDGE_MAX_TASK_NUM=-1
+   # 默认沙盒并行判题程序数为cpu核心数
+   PARALLEL_TASK=default
    
    # rsync评测数据同步的配置
    # 写入主服务器ip
@@ -317,7 +327,7 @@ Password: 开启SMTP服务后生成的随机授权码
    ```shell
    docker-compose up -d
    ```
-:::tip
-提示：需要开启多台判题机，就如当前第4步的操作一样，在每台服务器上执行以上的操作即可。
-:::
+   :::tip
+   提示：需要开启多台判题机，就如当前第4步的操作一样，在每台服务器上执行以上的操作即可。
+   :::
 5. 两个服务都启动完成，在浏览器输入主服务ip或域名进行访问，登录root账号到后台查看服务状态。

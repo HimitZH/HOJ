@@ -71,7 +71,8 @@ public class AdminProblemController {
         IPage<Problem> problemList;
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
-        queryWrapper.orderByDesc("gmt_create");
+        queryWrapper.orderByDesc("gmt_create")
+                .orderByDesc("id");
 
         // 根据oj筛选过滤
         if (oj != null && !"All".equals(oj)) {

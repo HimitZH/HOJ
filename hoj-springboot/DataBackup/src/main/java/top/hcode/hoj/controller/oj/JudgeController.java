@@ -268,20 +268,9 @@ public class JudgeController {
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
 
-        boolean root = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
 
-        HashMap<String, Object> result = new HashMap<>();
-        Contest contest = null;
-        if (judge.getCid() != 0 && !root) {
-            contest = contestService.getById(judge.getCid());
-            if (userRolesVo != null && !userRolesVo.getUid().equals(contest.getUid()) && contest.getSealRank()
-                    && contest.getType().intValue() == Constants.Contest.TYPE_OI.getCode()
-                    && contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()
-                    && contest.getSealRankTime().before(new Date())) {
-                result.put("submission", new Judge().setStatus(Constants.Judge.STATUS_SUBMITTED_UNKNOWN_RESULT.getStatus()));
-                return CommonResult.successResponse(result, "获取提交数据成功！");
-            }
-        }
+
         // 清空vj信息
         judge.setVjudgeUsername(null);
         judge.setVjudgeSubmitId(null);
@@ -291,16 +280,16 @@ public class JudgeController {
         // 如果不是本人或者并未分享代码，则不可查看
         // 当此次提交代码不共享
         // 比赛提交只有比赛创建者和root账号可看代码
+        HashMap<String, Object> result = new HashMap<>();
         if (judge.getCid() != 0) {
-            if (contest == null) {
-                contest = contestService.getById(judge.getCid());
+            if (userRolesVo == null) {
+                return CommonResult.errorResponse("请先登录！", CommonResult.STATUS_ACCESS_DENIED);
             }
-            if (userRolesVo != null && !root && !userRolesVo.getUid().equals(contest.getUid())) {
+            Contest contest = contestService.getById(judge.getCid());
+            if (!isRoot && !userRolesVo.getUid().equals(contest.getUid())) {
                 // 如果是比赛,那么还需要判断是否为封榜,比赛管理员和超级管理员可以有权限查看(ACM题目除外)
-                if (contest.getSealRank()
-                        && contest.getType().intValue() == Constants.Contest.TYPE_OI.getCode()
-                        && contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()
-                        && contest.getSealRankTime().before(new Date())) {
+                if (contest.getType().intValue() == Constants.Contest.TYPE_OI.getCode()
+                        && contestService.isSealRank(userRolesVo.getUid(), contest, false, false)) {
                     result.put("submission", new Judge().setStatus(Constants.Judge.STATUS_SUBMITTED_UNKNOWN_RESULT.getStatus()));
                     return CommonResult.successResponse(result, "获取提交数据成功！");
                 }
@@ -318,7 +307,7 @@ public class JudgeController {
             }
         } else {
             boolean admin = SecurityUtils.getSubject().hasRole("problem_admin");// 是否为题目管理员
-            if (!judge.getShare() && !root && !admin) {
+            if (!judge.getShare() && !isRoot && !admin) {
                 if (userRolesVo != null) { // 当前是登陆状态
                     // 需要判断是否为当前登陆用户自己的提交代码
                     if (!judge.getUid().equals(userRolesVo.getUid())) {

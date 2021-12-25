@@ -108,7 +108,7 @@
             max-height="500px"
             :loading="loading.recent7ACRankLoading"
           >
-            <vxe-table-column type="seq" min-width="30">
+            <vxe-table-column type="seq" min-width="50">
               <template v-slot="{ rowIndex }">
                 <span :class="getRankTagClass(rowIndex)"
                   >{{ rowIndex + 1 }}
@@ -119,7 +119,7 @@
             <vxe-table-column
               field="username"
               :title="$t('m.Username')"
-              min-width="130"
+              min-width="100"
               align="left"
             >
               <template v-slot="{ row }">
@@ -141,7 +141,7 @@
             <vxe-table-column
               field="ac"
               :title="$t('m.AC')"
-              min-width="30"
+              min-width="50"
               align="left"
             >
             </vxe-table-column>

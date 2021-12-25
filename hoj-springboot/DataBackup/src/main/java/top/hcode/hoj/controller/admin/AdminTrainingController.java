@@ -140,7 +140,6 @@ public class AdminTrainingController {
         if (!isRoot && !userRolesVo.getUsername().equals(trainingDto.getTraining().getAuthor())) {
             return CommonResult.errorResponse("对不起，你无权限操作！", CommonResult.STATUS_FORBIDDEN);
         }
-
         boolean result = trainingService.updateTraining(trainingDto);
         if (result) {
             trainingRecordService.checkSyncRecord(trainingDto.getTraining());

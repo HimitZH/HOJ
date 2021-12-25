@@ -262,8 +262,7 @@ public class ContestController {
         List<ContestProblemVo> contestProblemList;
         boolean isAdmin = isRoot || contest.getAuthor().equals(userRolesVo.getUsername());
         // 如果比赛开启封榜
-        if (contest.getSealRank() && contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode() &&
-                contest.getSealRankTime().before(new Date())) {
+        if (contestService.isSealRank(userRolesVo.getUid(), contest, false, isRoot)) {
             contestProblemList = contestProblemService.getContestProblemList(cid, contest.getStartTime(), contest.getEndTime(),
                     contest.getSealRankTime(), isAdmin, contest.getAuthor());
         } else {
@@ -355,14 +354,9 @@ public class ContestController {
             tmpMap.put(language.getId(), language.getName());
         });
 
-        Date now = new Date();
         Date sealRankTime = null;
         //封榜时间除超级管理员和比赛管理员外 其它人不可看到最新数据
-        if (contest.getSealRank() &&
-                !isRoot &&
-                !userRolesVo.getUid().equals(contest.getUid()) &&
-                contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode() &&
-                contest.getSealRankTime().before(now)) {
+        if (contestService.isSealRank(userRolesVo.getUid(), contest, false, isRoot)) {
             sealRankTime = contest.getSealRankTime();
         }
 
@@ -440,15 +434,11 @@ public class ContestController {
         }
         Date sealRankTime = null;
 
-        // 不是比赛管理员和超级管理，又有开启封榜，需要判断是否处于封榜期间
-        if (contest.getSealRank() && !isRoot && !userRolesVo.getUid().equals(contest.getUid())) {
-            // 当前是比赛期间 同时处于封榜时间
-            if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()
-                    && contest.getSealRankTime().before(new Date())) {
-                sealRankTime = contest.getSealRankTime();
-            }
+        // 需要判断是否需要封榜
+        if (contestService.isSealRank(userRolesVo.getUid(), contest, false, isRoot)) {
+            sealRankTime = contest.getSealRankTime();
         }
-        // OI比赛封榜期间不更新，ACM比赛封榜期间可看到自己的提交，但是其它人的不更新
+        // OI比赛封榜期间不更新，ACM比赛封榜期间可看到自己的提交，但是其它人的不可见
         IPage<JudgeVo> commonJudgeList = judgeService.getContestJudgeList(limit, currentPage, displayId, searchCid,
                 searchStatus, searchUsername, uid, beforeContestSubmit, rule, contest.getStartTime(),
                 sealRankTime, userRolesVo.getUid(), completeProblemID);

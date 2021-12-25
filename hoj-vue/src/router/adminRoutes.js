@@ -98,7 +98,7 @@ const adminRoutes= [
         },
         {
           path: 'training/create',
-          name: 'admin-training-contest',
+          name: 'admin-create-training',
           component: Training,
           meta: { title:'Create Training'},
         },

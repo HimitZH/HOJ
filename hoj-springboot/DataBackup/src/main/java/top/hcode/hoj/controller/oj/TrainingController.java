@@ -7,6 +7,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingCategory;
 import top.hcode.hoj.pojo.entity.training.TrainingRegister;
@@ -179,8 +180,16 @@ public class TrainingController {
         QueryWrapper<TrainingRegister> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("tid", tid).eq("uid", userRolesVo.getUid());
         TrainingRegister trainingRegister = trainingRegisterService.getOne(queryWrapper, false);
+        boolean access = false;
+        if (trainingRegister != null) {
+            access = true;
+            Training training = trainingService.getById(tid);
+            if (training == null || !training.getStatus()) {
+                return CommonResult.errorResponse("对不起，该训练不存在!");
+            }
+        }
         HashMap<String, Object> result = new HashMap<>();
-        result.put("access", trainingRegister != null);
+        result.put("access", access);
         return CommonResult.successResponse(result);
     }
 
@@ -215,7 +224,7 @@ public class TrainingController {
         // 页数，每页数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 30;
-        IPage<TrainingRankVo> trainingRankPager = trainingRecordService.getTrainingRank(tid, currentPage, limit);
+        IPage<TrainingRankVo> trainingRankPager = trainingRecordService.getTrainingRank(tid, training.getAuthor(), currentPage, limit);
         return CommonResult.successResponse(trainingRankPager, "success");
     }
 
