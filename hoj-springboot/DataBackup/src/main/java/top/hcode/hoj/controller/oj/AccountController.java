@@ -315,10 +315,23 @@ public class AccountController {
             return CommonResult.errorResponse("用户名长度不能超过20位!");
         }
 
+        String userIpAddr = IpUtils.getUserIpAddr(request);
+        String key = Constants.Account.TRY_LOGIN_NUM.getCode() + loginDto.getUsername() + "_" + userIpAddr;
+        Integer tryLoginCount = (Integer) redisUtils.get(key);
+
+        if (tryLoginCount != null && tryLoginCount >= 20) {
+            return CommonResult.errorResponse("对不起！登录失败次数过多！您的账号有风险，半个小时内暂时无法登录！", CommonResult.STATUS_FORBIDDEN);
+        }
+
         UserRolesVo userRoles = userRoleDao.getUserRoles(null, loginDto.getUsername());
-        Assert.notNull(userRoles, "用户名不存在，请注意大小写！");
+        Assert.notNull(userRoles, "用户名或密码错误！请注意大小写！");
         if (!userRoles.getPassword().equals(SecureUtil.md5(loginDto.getPassword()))) {
-            return CommonResult.errorResponse("密码不正确");
+            if (tryLoginCount == null) {
+                redisUtils.set(key, 1, 60 * 30); // 三十分钟不尝试，该限制会自动清空消失
+            } else {
+                redisUtils.set(key, tryLoginCount + 1, 60 * 30);
+            }
+            return CommonResult.errorResponse("用户名或密码错误！请注意大小写！");
         }
 
         if (userRoles.getStatus() != 0) {
@@ -334,6 +347,12 @@ public class AccountController {
                 .setUid(userRoles.getUid())
                 .setIp(IpUtils.getUserIpAddr(request))
                 .setUserAgent(request.getHeader("User-Agent")));
+
+        // 登录成功，清除锁定限制
+        if (tryLoginCount != null) {
+            redisUtils.del(key);
+        }
+
         // 异步检查是否异地登录
         sessionService.checkRemoteLogin(userRoles.getUid());
 

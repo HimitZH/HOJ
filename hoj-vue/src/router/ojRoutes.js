@@ -31,6 +31,7 @@ import SysMsg from "@/views/oj/message/SysMsg.vue"
 import TrainingList from "@/views/oj/training/TrainingList.vue"
 import TrainingDetails from "@/views/oj/training/TrainingDetails.vue"
 import TrainingProblemList from "@/views/oj/training/TrainingProblemList.vue"
+import TrainingRank from "@/views/oj/training/TrainingRank.vue"
 import NotFound from "@/views/404.vue"
 
 const ojRoutes = [
@@ -82,6 +83,12 @@ const ojRoutes = [
         component: Problem,
         meta: { title: 'Training Problem Details' }
       },
+      {
+        name: 'TrainingRank',
+        path: 'rank',
+        component: TrainingRank,
+        meta: { title: 'Training Rank' }
+      }
     ]
   },
   {

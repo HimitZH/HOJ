@@ -117,27 +117,28 @@
           @cell-mouseenter="cellHover"
           :data="problemList"
         >
-          <vxe-table-column
-            title=""
-            width="30"
-            v-if="isAuthenticated && isGetStatusOk"
-          >
+          <vxe-table-column title="" width="30" v-if="isAuthenticated">
             <template v-slot="{ row }">
-              <el-tooltip
-                :content="JUDGE_STATUS[row.myStatus].name"
-                placement="top"
-              >
-                <i
-                  class="el-icon-check"
-                  :style="getIconColor(row.myStatus)"
-                  v-if="row.myStatus == 0"
-                ></i>
-                <i
-                  class="el-icon-minus"
-                  :style="getIconColor(row.myStatus)"
-                  v-else-if="row.myStatus != -10"
-                ></i>
-              </el-tooltip>
+              <template v-if="isGetStatusOk">
+                <el-tooltip
+                  :content="JUDGE_STATUS[row.myStatus]['name']"
+                  placement="top"
+                >
+                  <template v-if="row.myStatus == 0">
+                    <i
+                      class="el-icon-check"
+                      :style="getIconColor(row.myStatus)"
+                    ></i>
+                  </template>
+
+                  <template v-else-if="row.myStatus != -10">
+                    <i
+                      class="el-icon-minus"
+                      :style="getIconColor(row.myStatus)"
+                    ></i>
+                  </template>
+                </el-tooltip>
+              </template>
             </template>
           </vxe-table-column>
           <vxe-table-column

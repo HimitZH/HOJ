@@ -200,7 +200,7 @@ export default {
         return;
       }
 
-      if (this.training.auth != 'Public' && !this.training.pwd) {
+      if (this.training.auth != 'Public' && !this.training.privatePwd) {
         myMessage.error(
           this.$i18n.t('m.Training_Password') +
             ' ' +

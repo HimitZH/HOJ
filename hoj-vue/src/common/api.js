@@ -368,13 +368,6 @@ const ojApi = {
       params: {displayId,cid}
     })
   },
-  // 获取训练提交列表
-  getTrainingSubmissionList (limit, params) {
-    params.limit = limit
-    return ajax('/api/submissions', 'get', {
-      params
-    })
-  },
   // 获取训练记录榜单
   getTrainingRank(params){
     return ajax('/api/get-training-rank', 'get', {

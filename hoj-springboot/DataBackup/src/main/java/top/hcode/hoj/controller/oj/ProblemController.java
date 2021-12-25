@@ -136,10 +136,18 @@ public class ProblemController {
         HashMap<Long, Object> result = new HashMap<>();
         // 先查询判断该用户对于这些题是否已经通过，若已通过，则无论后续再提交结果如何，该题都标记为通过
         QueryWrapper<Judge> queryWrapper = new QueryWrapper<>();
-        queryWrapper.select("distinct pid,status,submit_time,score").in("pid", pidListDto.getPidList())
-                // 如果是比赛的提交记录需要判断cid
-                .eq(pidListDto.getIsContestProblemList(), "cid", pidListDto.getCid())
-                .eq("uid", userRolesVo.getUid()).orderByDesc("submit_time");
+        queryWrapper.select("distinct pid,status,submit_time,score")
+                .in("pid", pidListDto.getPidList())
+                .eq("uid", userRolesVo.getUid())
+                .orderByDesc("submit_time");
+
+        if (pidListDto.getIsContestProblemList()) {
+            // 如果是比赛的提交记录需要判断cid
+            queryWrapper.eq("cid", pidListDto.getCid());
+        } else {
+            queryWrapper.eq("cid", 0);
+        }
+
         List<Judge> judges = judgeService.list(queryWrapper);
 
         boolean isACMContest = true;
@@ -162,11 +170,8 @@ public class ProblemController {
                     if (!result.containsKey(judge.getPid())) { // IO比赛的，如果还未写入，则使用最新一次提交的结果
                         // 判断该提交是否为封榜之后的提交,OI赛制封榜后的提交看不到提交结果，
                         // 只有比赛结束可以看到,比赛管理员与超级管理员的提交除外
-                        if (contest.getSealRank() &&
-                                !contest.getUid().equals(userRolesVo.getUid()) &&
-                                !SecurityUtils.getSubject().hasRole("root") &&
-                                contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode() &&
-                                judge.getSubmitTime().after(contest.getSealRankTime())) {
+                        if (contestService.isSealRank(userRolesVo.getUid(), contest, false,
+                                SecurityUtils.getSubject().hasRole("root"))) {
                             temp.put("status", Constants.Judge.STATUS_SUBMITTED_UNKNOWN_RESULT.getStatus());
                             temp.put("score", null);
                         } else {

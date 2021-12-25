@@ -265,9 +265,7 @@ public class Constants {
     public enum Training {
 
         AUTH_PRIVATE("Private"),
-        AUTH_PUBLIC("Public"),
-
-        MAP_REDIS_KEY_PRE("training_TPId_map_DisplayId:");
+        AUTH_PUBLIC("Public");
 
         private final String value;
 

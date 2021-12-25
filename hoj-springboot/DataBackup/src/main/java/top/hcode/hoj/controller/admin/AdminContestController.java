@@ -24,6 +24,7 @@ import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestAnnouncement;
 import top.hcode.hoj.pojo.entity.contest.ContestProblem;
+import top.hcode.hoj.pojo.entity.contest.ContestRegister;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.vo.AdminContestVo;
@@ -32,6 +33,7 @@ import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.common.impl.AnnouncementServiceImpl;
 import top.hcode.hoj.service.contest.impl.ContestAnnouncementServiceImpl;
 import top.hcode.hoj.service.contest.impl.ContestProblemServiceImpl;
+import top.hcode.hoj.service.contest.impl.ContestRegisterServiceImpl;
 import top.hcode.hoj.service.contest.impl.ContestServiceImpl;
 import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
 import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
@@ -41,10 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -58,6 +57,9 @@ public class AdminContestController {
 
     @Autowired
     private ContestServiceImpl contestService;
+
+    @Autowired
+    private ContestRegisterServiceImpl contestRegisterService;
 
     @Autowired
     private ProblemServiceImpl problemService;
@@ -125,9 +127,9 @@ public class AdminContestController {
             return CommonResult.errorResponse("对不起，你无权限操作！", CommonResult.STATUS_FORBIDDEN);
         }
         AdminContestVo adminContestVo = BeanUtil.copyProperties(contest, AdminContestVo.class, "starAccount");
-        if (StringUtils.isEmpty(contest.getStarAccount())){
+        if (StringUtils.isEmpty(contest.getStarAccount())) {
             adminContestVo.setStarAccount(new ArrayList<>());
-        }else {
+        } else {
             JSONObject jsonObject = JSONUtil.parseObj(contest.getStarAccount());
             List<String> starAccount = jsonObject.get("star_account", List.class);
             adminContestVo.setStarAccount(starAccount);
@@ -169,6 +171,7 @@ public class AdminContestController {
     @PutMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult updateContest(@RequestBody AdminContestVo adminContestVo, HttpServletRequest request) {
 
         // 获取当前登录的用户
@@ -184,8 +187,16 @@ public class AdminContestController {
         JSONObject accountJson = new JSONObject();
         accountJson.set("star_account", adminContestVo.getStarAccount());
         contest.setStarAccount(accountJson.toString());
+        Contest oldContest = contestService.getById(contest.getId());
         boolean result = contestService.saveOrUpdate(contest);
         if (result) {
+            if (!contest.getAuth().equals(Constants.Contest.AUTH_PUBLIC.getCode())) {
+                if (!Objects.equals(oldContest.getPwd(), contest.getPwd())) { // 改了比赛密码则需要删掉已有的注册比赛用户
+                    UpdateWrapper<ContestRegister> updateWrapper = new UpdateWrapper<>();
+                    updateWrapper.eq("cid", contest.getId());
+                    contestRegisterService.remove(updateWrapper);
+                }
+            }
             return CommonResult.successResponse(null, "修改成功！");
         } else {
             return CommonResult.errorResponse("修改失败", CommonResult.STATUS_FAIL);

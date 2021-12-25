@@ -76,35 +76,37 @@
       JUDGE_SERVER_IP=172.20.0.7
       JUDGE_SERVER_PORT=8088
       JUDGE_SERVER_NAME=judger-1
-      # -1表示最大并行任务数为cpu核心数*2
+      # -1表示可接收最大判题任务数为cpu核心数+1
       MAX_TASK_NUM=-1
       # 当前判题服务器是否开启远程虚拟判题功能
       REMOTE_JUDGE_OPEN=true
-      # -1表示最大并行任务数为(cpu核心数*2)*2
+      # -1表示可接收最大远程判题任务数为cpu核心数*2+1
       REMOTE_JUDGE_MAX_TASK_NUM=-1
+      # 默认沙盒并行判题程序数为cpu核心数
+      PARALLEL_TASK=default
       
       # rsync评测数据同步的配置
       # 写入主服务器ip
       RSYNC_MASTER_ADDR=127.0.0.1
       # 与主服务器的rsync密码一致
-      RSYNC_PASSWORD=hoj123456
+   RSYNC_PASSWORD=hoj123456
       ```
 
    3. 启动即可
-
+   
       ```shell
       docker-compose up -d
       ```
-      
+   
    4. 验证：
-
+   
       ```
       访问 http://ip:8088/version
-      如果返回信息正常即启动成功！
+   如果返回信息正常即启动成功！
       ```
 
       
-
+   
    
 
 
@@ -135,12 +137,14 @@
    JUDGE_SERVER_IP=172.20.0.7
    JUDGE_SERVER_PORT=8088
    JUDGE_SERVER_NAME=judger-1
-   # -1表示最大并行任务数为cpu核心数*2
+   # -1表示可接收最大判题任务数为cpu核心数+1
    MAX_TASK_NUM=-1
    # 当前判题服务器是否开启远程虚拟判题功能
    REMOTE_JUDGE_OPEN=true
-   # -1表示最大并行任务数为(cpu核心数*2)*2
+   # -1表示可接收最大远程判题任务数为cpu核心数*2+1
    REMOTE_JUDGE_MAX_TASK_NUM=-1
+   # 默认沙盒并行判题程序数为cpu核心数
+   PARALLEL_TASK=default
    
    # rsync评测数据同步的配置
    # 写入主服务器ip

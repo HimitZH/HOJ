@@ -11,19 +11,23 @@ import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.dao.MappingTrainingCategoryMapper;
 import top.hcode.hoj.dao.TrainingMapper;
+import top.hcode.hoj.dao.TrainingRegisterMapper;
 import top.hcode.hoj.pojo.dto.TrainingDto;
 import top.hcode.hoj.pojo.entity.training.MappingTrainingCategory;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingCategory;
+import top.hcode.hoj.pojo.entity.training.TrainingRegister;
 import top.hcode.hoj.pojo.vo.TrainingVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.training.TrainingService;
+import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author: Himit_ZH
@@ -41,6 +45,9 @@ public class TrainingServiceImpl extends ServiceImpl<TrainingMapper, Training> i
 
     @Resource
     private MappingTrainingCategoryMapper mappingTrainingCategoryMapper;
+
+    @Resource
+    private TrainingRegisterMapper trainingRegisterMapper;
 
     @Override
     public IPage<TrainingVo> getTrainingList(int limit, int currentPage, Long categoryId, String auth, String keyword) {
@@ -87,7 +94,19 @@ public class TrainingServiceImpl extends ServiceImpl<TrainingMapper, Training> i
     public boolean updateTraining(TrainingDto trainingDto) {
 
         Training training = trainingDto.getTraining();
+        Training oldTraining = trainingMapper.selectById(training.getId());
         trainingMapper.updateById(training);
+
+        // 私有训练 修改密码 需要清空之前注册训练的记录
+        if (training.getAuth().equals(Constants.Training.AUTH_PRIVATE.getValue())) {
+            if (!Objects.equals(training.getPrivatePwd(), oldTraining.getPrivatePwd())) {
+                UpdateWrapper<TrainingRegister> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("tid", training.getId());
+                trainingRegisterMapper.delete(updateWrapper);
+            }
+        }
+
+
         TrainingCategory trainingCategory = trainingDto.getTrainingCategory();
         if (trainingCategory.getId() == null) {
             try {

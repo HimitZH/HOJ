@@ -79,7 +79,7 @@
                   <span>
                     <span>{{ $t('m.Training_Auth') }}</span>
                   </span>
-                  <span>
+                  <span v-if="training.auth">
                     <el-tag
                       :type="TRAINING_TYPE[training.auth]['color']"
                       effect="dark"
@@ -262,6 +262,9 @@ export default {
         return this.$markDown.render(this.training.description);
       }
     },
+  },
+  beforeDestroy() {
+    this.$store.commit('clearTraining');
   },
 };
 </script>

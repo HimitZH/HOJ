@@ -21,7 +21,7 @@ public interface TrainingRecordService extends IService<TrainingRecord> {
 
     public CommonResult submitTrainingProblem(ToJudgeDto judgeDto, UserRolesVo userRolesVo, Judge judge);
 
-    public IPage<TrainingRankVo> getTrainingRank(Long tid, int currentPage, int limit);
+    public IPage<TrainingRankVo> getTrainingRank(Long tid,String username, int currentPage, int limit);
 
     public void syncUserSubmissionToRecordByTid(Long tid, String uid);
 

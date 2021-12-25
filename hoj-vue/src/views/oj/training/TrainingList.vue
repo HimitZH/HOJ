@@ -14,6 +14,28 @@
         ></vxe-input>
       </section>
       <section>
+        <b class="training-category">{{ $t('m.Training_Auth') }}</b>
+        <div>
+          <el-tag
+            size="medium"
+            class="category-item"
+            :effect="query.auth ? 'plain' : 'dark'"
+            @click="filterByAuthType(null)"
+            >{{ $t('m.All') }}</el-tag
+          >
+          <el-tag
+            size="medium"
+            class="category-item"
+            v-for="(key, index) in TRAINING_TYPE"
+            :type="key.color"
+            :effect="query.auth == key.name ? 'dark' : 'plain'"
+            :key="index"
+            @click="filterByAuthType(key.name)"
+            >{{ key.name }}</el-tag
+          >
+        </div>
+      </section>
+      <section>
         <b class="training-category">{{ $t('m.Training_Category') }}</b>
         <div>
           <el-tag
@@ -159,6 +181,7 @@ export default {
       query: {
         keyword: '',
         categoryId: null,
+        auth: null,
       },
       total: 0,
       currentPage: 1,
@@ -182,10 +205,16 @@ export default {
       this.query.keyword = route.keyword || '';
       this.currentPage = parseInt(route.currentPage) || 1;
       this.categoryId = route.categoryId || null;
+      this.query.auth = route.auth || null;
       this.getTrainingList(1);
     },
     filterByCategory(categoryId) {
       this.query.categoryId = categoryId;
+      this.filterByChange();
+    },
+
+    filterByAuthType(auth) {
+      this.query.auth = auth;
       this.filterByChange();
     },
 

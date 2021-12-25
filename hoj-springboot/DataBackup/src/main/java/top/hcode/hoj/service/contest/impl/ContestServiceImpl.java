@@ -97,11 +97,12 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
             return false;
         } else if (contest.getSealRank() && contest.getSealRankTime() != null) { // 该比赛开启封榜模式
             Date now = new Date();
-            // 如果现在时间处于封榜开始到比赛结束之间或者没有开启自动解除封榜，不可刷新榜单
-            if ((now.after(contest.getSealRankTime()) && now.before(contest.getEndTime()))
-                    || !contest.getAutoRealRank()) {
+            // 如果现在时间处于封榜开始到比赛结束之间
+            if (now.after(contest.getSealRankTime()) && now.before(contest.getEndTime())) {
                 return true;
             }
+            // 或者没有开启赛后自动解除封榜，不可刷新榜单
+            return !contest.getAutoRealRank() && now.after(contest.getEndTime());
         }
         return false;
     }

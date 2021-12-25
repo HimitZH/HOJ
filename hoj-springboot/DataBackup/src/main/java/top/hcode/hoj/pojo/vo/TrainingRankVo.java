@@ -36,9 +36,6 @@ public class TrainingRankVo {
     @ApiModelProperty(value = "头像")
     private String avatar;
 
-    @ApiModelProperty(value = "总提交数")
-    private Integer total;
-
     @ApiModelProperty(value = "ac题目数")
     private Integer ac;
 

@@ -387,8 +387,7 @@ export default {
         }
       }
     },
-    applyToTable(data) {
-      let dataRank = JSON.parse(JSON.stringify(data));
+    applyToTable(dataRank) {
       let acCountMap = {};
       let errorCountMap = {};
       dataRank.forEach((rank, i) => {
