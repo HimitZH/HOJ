@@ -16,6 +16,7 @@ import top.hcode.hoj.pojo.vo.TrainingRankVo;
 import top.hcode.hoj.pojo.vo.TrainingVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.service.training.impl.*;
+import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -91,11 +92,6 @@ public class TrainingController {
             return CommonResult.errorResponse("该训练不存在或不允许显示！");
         }
 
-        CommonResult result = trainingRegisterService.checkTrainingAuth(training, request);
-        if (result != null) {
-            return result;
-        }
-
         TrainingVo trainingVo = BeanUtil.copyProperties(training, TrainingVo.class);
         TrainingCategory trainingCategory = trainingCategoryService.getTrainingCategoryByTrainingId(training.getId());
         trainingVo.setCategoryName(trainingCategory.getName());
@@ -106,9 +102,12 @@ public class TrainingController {
         // 获取当前登录的用户
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-        if (userRolesVo != null) {
+        if (userRolesVo != null
+                && trainingRegisterService.checkTrainingAuth(training, request) == null) {
             Integer userTrainingACProblemCount = trainingProblemService.getUserTrainingACProblemCount(userRolesVo.getUid(), trainingProblemIdList);
             trainingVo.setAcCount(userTrainingACProblemCount);
+        } else {
+            trainingVo.setAcCount(0);
         }
 
         return CommonResult.successResponse(trainingVo, "success");

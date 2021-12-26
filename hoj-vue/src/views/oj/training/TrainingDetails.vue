@@ -1,5 +1,5 @@
 <template>
-  <el-row>
+  <div>
     <el-card shadow class="training-header">
       <div slot="header">
         <span class="panel-title">{{ training.title }}</span>
@@ -24,186 +24,190 @@
         </div>
       </template>
     </el-card>
+    <div class="card-top">
+      <el-tabs @tab-click="tabClick" v-model="route_name">
+        <el-tab-pane name="TrainingDetails" lazy>
+          <span slot="label"
+            ><i class="el-icon-s-home"></i>&nbsp;{{
+              $t('m.Training_Introduction')
+            }}</span
+          >
+          <el-row :gutter="30">
+            <el-col :sm="24" :md="7">
+              <el-card
+                v-if="trainingPasswordFormVisible"
+                class="password-form-card"
+              >
+                <div slot="header">
+                  <span class="panel-title" style="color: #e6a23c;"
+                    ><i class="el-icon-warning">
+                      {{ $t('m.Password_Required') }}</i
+                    ></span
+                  >
+                </div>
+                <h3>
+                  {{ $t('m.To_Enter_Training_Need_Password') }}
+                </h3>
+                <el-form>
+                  <el-input
+                    v-model="trainingPassword"
+                    type="password"
+                    :placeholder="$t('m.Enter_the_training_password')"
+                    @keydown.enter.native="checkPassword"
+                    style="width:70%"
+                  />
+                  <el-button
+                    type="primary"
+                    @click="checkPassword"
+                    :loading="btnLoading"
+                    style="margin:5px"
+                    >{{ $t('m.OK') }}</el-button
+                  >
+                </el-form>
+              </el-card>
+              <el-card>
+                <div class="info-rows">
+                  <div>
+                    <span>
+                      <span>{{ $t('m.Training_Number') }}</span>
+                    </span>
+                    <span>
+                      <span>{{ training.rank }}</span>
+                    </span>
+                  </div>
+                  <div>
+                    <span>
+                      <span>{{ $t('m.Training_Auth') }}</span>
+                    </span>
+                    <span v-if="training.auth">
+                      <el-tag
+                        :type="TRAINING_TYPE[training.auth]['color']"
+                        effect="dark"
+                      >
+                        {{ training.auth }}
+                      </el-tag>
+                    </span>
+                  </div>
+                  <div>
+                    <span>
+                      <span>{{ $t('m.Training_Category') }}</span>
+                    </span>
+                    <span>
+                      <span
+                        ><el-tag
+                          size="medium"
+                          class="category-item"
+                          :style="
+                            'color: #fff;background-color: ' +
+                              training.categoryName +
+                              ';background-color: ' +
+                              training.categoryColor
+                          "
+                          >{{ training.categoryName }}</el-tag
+                        ></span
+                      >
+                    </span>
+                  </div>
 
-    <el-tabs @tab-click="tabClick" v-model="route_name" class="card-top">
-      <el-tab-pane name="TrainingDetails" lazy>
-        <span slot="label"
-          ><i class="el-icon-s-home"></i>&nbsp;{{
-            $t('m.Training_Introduction')
-          }}</span
+                  <div>
+                    <span>
+                      <span>{{ $t('m.Training_Total_Problems') }}</span>
+                    </span>
+                    <span>
+                      <span>{{ training.problemCount }}</span>
+                    </span>
+                  </div>
+                  <div>
+                    <span>
+                      <span>{{ $t('m.Author') }}</span>
+                    </span>
+                    <span>
+                      <span
+                        ><el-link
+                          type="info"
+                          @click="goUserHome(training.author)"
+                          >{{ training.author }}</el-link
+                        ></span
+                      >
+                    </span>
+                  </div>
+                  <div>
+                    <span>
+                      <span>{{ $t('m.Recent_Update') }}</span>
+                    </span>
+                    <span>
+                      <span>{{ training.gmtModified | localtime }}</span>
+                    </span>
+                  </div>
+                </div>
+              </el-card>
+            </el-col>
+            <el-col :sm="24" :md="17">
+              <el-card>
+                <div slot="header">
+                  <span class="panel-title">{{
+                    $t('m.Training_Introduction')
+                  }}</span>
+                </div>
+                <div
+                  v-html="descriptionHtml"
+                  v-highlight
+                  class="markdown-body"
+                ></div>
+              </el-card>
+            </el-col>
+          </el-row>
+        </el-tab-pane>
+
+        <el-tab-pane
+          name="TrainingProblemList"
+          lazy
+          :disabled="trainingMenuDisabled"
         >
-        <el-row :gutter="30">
-          <el-col :sm="24" :md="7">
-            <el-card
-              v-if="trainingPasswordFormVisible"
-              class="password-form-card"
-              style="text-align:center"
-            >
-              <div slot="header">
-                <span class="panel-title" style="color: #e6a23c;"
-                  ><i class="el-icon-warning">
-                    {{ $t('m.Password_Required') }}</i
-                  ></span
-                >
-              </div>
-              <h3>
-                {{ $t('m.To_Enter_Need_Password') }}
-              </h3>
-              <el-form>
-                <el-input
-                  v-model="trainingPassword"
-                  type="password"
-                  :placeholder="$t('m.Enter_the_contest_password')"
-                  @keydown.enter.native="checkPassword"
-                  style="width:70%"
-                />
-                <el-button
-                  type="primary"
-                  @click="checkPassword"
-                  style="margin:5px"
-                  >{{ $t('m.OK') }}</el-button
-                >
-              </el-form>
-            </el-card>
-            <el-card>
-              <div class="info-rows">
-                <div>
-                  <span>
-                    <span>{{ $t('m.Training_Number') }}</span>
-                  </span>
-                  <span>
-                    <span>{{ training.rank }}</span>
-                  </span>
-                </div>
-                <div>
-                  <span>
-                    <span>{{ $t('m.Training_Auth') }}</span>
-                  </span>
-                  <span v-if="training.auth">
-                    <el-tag
-                      :type="TRAINING_TYPE[training.auth]['color']"
-                      effect="dark"
-                    >
-                      {{ training.auth }}
-                    </el-tag>
-                  </span>
-                </div>
-                <div>
-                  <span>
-                    <span>{{ $t('m.Training_Category') }}</span>
-                  </span>
-                  <span>
-                    <span
-                      ><el-tag
-                        size="medium"
-                        class="category-item"
-                        :style="
-                          'color: #fff;background-color: ' +
-                            training.categoryName +
-                            ';background-color: ' +
-                            training.categoryColor
-                        "
-                        >{{ training.categoryName }}</el-tag
-                      ></span
-                    >
-                  </span>
-                </div>
+          <span slot="label"
+            ><i class="fa fa-list" aria-hidden="true"></i>&nbsp;{{
+              $t('m.Problem_List')
+            }}</span
+          >
+          <transition name="el-zoom-in-bottom">
+            <router-view
+              v-if="route_name === 'TrainingProblemList'"
+            ></router-view>
+          </transition>
+        </el-tab-pane>
 
-                <div>
-                  <span>
-                    <span>{{ $t('m.Training_Total_Problems') }}</span>
-                  </span>
-                  <span>
-                    <span>{{ training.problemCount }}</span>
-                  </span>
-                </div>
-                <div>
-                  <span>
-                    <span>{{ $t('m.Author') }}</span>
-                  </span>
-                  <span>
-                    <span
-                      ><el-link
-                        type="info"
-                        @click="goUserHome(training.author)"
-                        >{{ training.author }}</el-link
-                      ></span
-                    >
-                  </span>
-                </div>
-                <div>
-                  <span>
-                    <span>{{ $t('m.Recent_Update') }}</span>
-                  </span>
-                  <span>
-                    <span>{{ training.gmtModified | localtime }}</span>
-                  </span>
-                </div>
-              </div>
-            </el-card>
-          </el-col>
-          <el-col :sm="24" :md="17">
-            <el-card>
-              <div slot="header">
-                <span class="panel-title">{{
-                  $t('m.Training_Introduction')
-                }}</span>
-              </div>
-              <div
-                v-html="descriptionHtml"
-                v-highlight
-                class="markdown-body"
-              ></div>
-            </el-card>
-          </el-col>
-        </el-row>
-      </el-tab-pane>
-
-      <el-tab-pane
-        name="TrainingProblemList"
-        lazy
-        :disabled="contestMenuDisabled"
-      >
-        <span slot="label"
-          ><i class="fa fa-list" aria-hidden="true"></i>&nbsp;{{
-            $t('m.Problem_List')
-          }}</span
+        <el-tab-pane
+          name="TrainingRank"
+          lazy
+          :disabled="trainingMenuDisabled"
+          v-if="isPrivateTraining"
         >
-        <transition name="el-zoom-in-bottom">
-          <router-view
-            v-if="route_name === 'TrainingProblemList'"
-          ></router-view>
-        </transition>
-      </el-tab-pane>
-
-      <el-tab-pane
-        name="TrainingRank"
-        lazy
-        :disabled="contestMenuDisabled"
-        v-if="isPrivateTraining"
-      >
-        <span slot="label"
-          ><i class="fa fa-bar-chart" aria-hidden="true"></i>&nbsp;{{
-            $t('m.Record_List')
-          }}</span
-        >
-        <transition name="el-zoom-in-bottom">
-          <router-view v-if="route_name === 'TrainingRank'"></router-view>
-        </transition>
-      </el-tab-pane>
-    </el-tabs>
-  </el-row>
+          <span slot="label"
+            ><i class="fa fa-bar-chart" aria-hidden="true"></i>&nbsp;{{
+              $t('m.Record_List')
+            }}</span
+          >
+          <transition name="el-zoom-in-bottom">
+            <router-view v-if="route_name === 'TrainingRank'"></router-view>
+          </transition>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+  </div>
 </template>
 
 <script>
 import { TRAINING_TYPE } from '@/common/constants';
-import { mapState, mapGetters } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
+import myMessage from '@/common/message';
+import api from '@/common/api';
 export default {
   data() {
     return {
       route_name: 'TrainingDetails',
       TRAINING_TYPE: {},
       trainingPassword: '',
+      btnLoading: false,
       customColors: [
         { color: '#909399', percentage: 20 },
         { color: '#f56c6c', percentage: 40 },
@@ -215,18 +219,38 @@ export default {
   },
   created() {
     this.route_name = this.$route.name;
-    if (this.route_name == 'ProblemDetails') {
+    if (this.route_name == 'TrainingProblemDetails') {
       this.route_name = 'TrainingProblemList';
     }
     this.TRAINING_TYPE = Object.assign({}, TRAINING_TYPE);
-    this.$store.dispatch('getTraining');
+    this.$store.dispatch('getTraining').then((res) => {
+      this.changeDomTitle({ title: res.data.data.title });
+    });
   },
   methods: {
+    ...mapActions(['changeDomTitle']),
     tabClick(tab) {
       let name = tab.name;
       if (name !== this.$route.name) {
         this.$router.push({ name: name });
       }
+    },
+    checkPassword() {
+      if (this.trainingPassword === '') {
+        myMessage.warning(this.$i18n.t('m.Enter_the_training_password'));
+        return;
+      }
+      this.btnLoading = true;
+      api.registerTraining(this.training.id + '', this.trainingPassword).then(
+        (res) => {
+          myMessage.success(this.$i18n.t('m.Register_training_successfully'));
+          this.$store.commit('trainingIntoAccess', { intoAccess: true });
+          this.btnLoading = false;
+        },
+        (res) => {
+          this.btnLoading = false;
+        }
+      );
     },
     goUserHome(username) {
       this.$router.push({
@@ -263,6 +287,15 @@ export default {
       }
     },
   },
+  watch: {
+    $route(newVal) {
+      this.route_name = newVal.name;
+      if (newVal.name == 'TrainingProblemDetails') {
+        this.route_name = 'TrainingProblemList';
+      }
+      this.changeDomTitle({ title: this.training.title });
+    },
+  },
   beforeDestroy() {
     this.$store.commit('clearTraining');
   },
@@ -280,6 +313,10 @@ export default {
   margin-top: 10px;
   font-size: 18px;
   font-weight: 700;
+}
+.password-form-card {
+  text-align: center;
+  margin-bottom: 15px;
 }
 
 .info-rows > * {

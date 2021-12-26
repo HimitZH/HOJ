@@ -1,9 +1,9 @@
 <template>
-  <el-card shadow>
-    <div slot="header" class="rank-title">
-      <span class="panel-title">{{ $t('m.Record_List') }}</span>
-    </div>
-    <div>
+  <div style="margin-top:5px">
+    <el-card shadow>
+      <div slot="header" class="rank-title">
+        <span class="panel-title">{{ $t('m.Record_List') }}</span>
+      </div>
       <vxe-table
         round
         border
@@ -89,6 +89,7 @@
           field="realname"
           min-width="96"
           :title="$t('m.RealName')"
+          show-overflow
           v-if="isTrainingAdmin"
         >
         </vxe-table-column>
@@ -111,8 +112,8 @@
         </vxe-table-column>
         <vxe-table-column
           min-width="70"
-          v-for="problem in trainingProblemList"
-          :key="problem.problemId"
+          v-for="(problem, index) in trainingProblemList"
+          :key="index"
         >
           <template v-slot:header>
             <span
@@ -125,7 +126,7 @@
             >
           </template>
           <template v-slot="{ row }">
-            <span v-if="row.submissionInfo[problem.problemId]">
+            <template v-if="row.submissionInfo[problem.problemId]">
               <span
                 class="judge-status"
                 :style="
@@ -147,20 +148,20 @@
                     : 0
                 }}ms)
               </span>
-            </span>
+            </template>
           </template>
         </vxe-table-column>
       </vxe-table>
-    </div>
-    <Pagination
-      :total="total"
-      :page-size.sync="limit"
-      :current.sync="page"
-      @on-change="getTrainingRankData"
-      @on-page-size-change="getTrainingRankData(1)"
-      :layout="'prev, pager, next, sizes'"
-    ></Pagination>
-  </el-card>
+      <Pagination
+        :total="total"
+        :page-size.sync="limit"
+        :current.sync="page"
+        @on-change="getTrainingRankData"
+        @on-page-size-change="getTrainingRankData(1)"
+        :layout="'prev, pager, next, sizes'"
+      ></Pagination>
+    </el-card>
+  </div>
 </template>
 <script>
 import Avatar from 'vue-avatar';
@@ -187,13 +188,11 @@ export default {
       JUDGE_STATUS: {},
     };
   },
-  created() {
+  mounted() {
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
     if (!this.trainingProblemList.length) {
       this.getTrainingProblemList();
     }
-  },
-  mounted() {
     this.trainingID = this.$route.params.trainingID;
     this.getTrainingRankData();
   },
@@ -269,12 +268,10 @@ export default {
 </script>
 <style scoped>
 .rank-title {
-  margin-bottom: 18px;
   text-align: center;
 }
 /deep/.el-card__body {
   padding: 20px !important;
-  padding-top: 0px !important;
 }
 
 .vxe-cell p,

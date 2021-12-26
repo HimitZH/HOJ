@@ -313,7 +313,7 @@ export const m = {
   StartAt: 'StartAt',
   EndAt: 'EndAt',
   Password_Required: 'Password Required',
-  To_Enter_Need_Password:'To enter the Private contest,please input the password!',
+  To_Enter_Need_Password:'To enter the Private contest, please input the password!',
   Enter_the_contest_password:'Enter the contest password',
   Enter:'Enter',
   Overview: 'Overview',
@@ -479,5 +479,8 @@ export const m = {
   Training_Number:'Number',
   Training_Auth:'Training Auth',
   Training_Total_Problems:'Total Problems',
-  Record_List:'Record List'
+  Record_List:'Record List',
+  To_Enter_Training_Need_Password:'To enter the Private training, please input the password!',
+  Enter_the_training_password:'Enter the training password',
+  Register_training_successfully:'Register training successfully',
 }

@@ -482,6 +482,8 @@ export const m = {
   Training_Number:'训练编号',
   Training_Auth:'训练权限',
   Training_Total_Problems:'总题数',
-  Record_List:'记录榜单'
-    
+  Record_List:'记录榜单',
+  To_Enter_Training_Need_Password:'请输入该私有训练的密码，方可进入',
+  Enter_the_training_password:'请输入私有训练的密码',  
+  Register_training_successfully:'验证训练密码成功！',
 }

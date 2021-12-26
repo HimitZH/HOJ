@@ -342,8 +342,8 @@ const ojApi = {
     })
   },
    // 注册私有训练
-  registerTraining(tid, training){
-    return ajax('/api/register-contest','post',{
+  registerTraining(tid, password){
+    return ajax('/api/register-training','post',{
       data:{
         tid,
         password
