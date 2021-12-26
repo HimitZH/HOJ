@@ -62,6 +62,9 @@ mybatis-plus:
   type-aliases-package: top.hcode.hoj.pojo.entity
   configuration:
     cache-enabled: false
+# 关闭打印 mybatis-plus 的 LOGO
+  global-config:
+    banner: false
 shiro-redis:
   enabled: true
   redis-manager:

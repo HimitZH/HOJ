@@ -192,6 +192,7 @@
           min-width="96"
           :title="$t('m.RealName')"
           v-if="isContestAdmin"
+          show-overflow
         >
         </vxe-table-column>
         <vxe-table-column

@@ -187,6 +187,7 @@
           field="realname"
           min-width="96"
           :title="$t('m.RealName')"
+           show-overflow
           v-if="isContestAdmin"
         >
         </vxe-table-column>

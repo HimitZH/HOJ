@@ -31,6 +31,9 @@ spring:
 mybatis-plus:
   mapper-locations: classpath*:top/hcode/hoj/dao/xml/**Mapper.xml
   type-aliases-package: top.hcode.hoj.pojo.entity
+  # 关闭打印 mybatis-plus 的 LOGO
+  global-config:
+    banner: false
 
 
 logging:
