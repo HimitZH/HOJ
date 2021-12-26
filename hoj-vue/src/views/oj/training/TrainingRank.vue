@@ -95,7 +95,7 @@
         </vxe-table-column>
         <vxe-table-column
           field="rating"
-          :title="$t('m.Total_Score')"
+          :title="$t('m.Total_AC')"
           min-width="90"
         >
           <template v-slot="{ row }">
@@ -127,19 +127,27 @@
           </template>
           <template v-slot="{ row }">
             <template v-if="row.submissionInfo[problem.problemId]">
-              <span
-                class="judge-status"
-                :style="
-                  'color:' +
+              <el-tooltip effect="dark" placement="top">
+                <div slot="content">
+                  {{
                     JUDGE_STATUS[row.submissionInfo[problem.problemId].status]
-                      .color
-                "
-              >
-                {{
-                  JUDGE_STATUS[row.submissionInfo[problem.problemId].status]
-                    .short
-                }}
-              </span>
+                      .name
+                  }}
+                </div>
+                <span
+                  class="judge-status"
+                  :style="
+                    'color:' +
+                      JUDGE_STATUS[row.submissionInfo[problem.problemId].status]
+                        .rgb
+                  "
+                >
+                  {{
+                    JUDGE_STATUS[row.submissionInfo[problem.problemId].status]
+                      .short
+                  }}
+                </span>
+              </el-tooltip>
               <br />
               <span class="judge-time">
                 ({{

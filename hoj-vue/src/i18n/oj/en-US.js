@@ -483,4 +483,7 @@ export const m = {
   To_Enter_Training_Need_Password:'To enter the Private training, please input the password!',
   Enter_the_training_password:'Enter the training password',
   Register_training_successfully:'Register training successfully',
+
+  // /views/oj/training/TrainingRank.vue
+  Total_AC:'Total  AC',
 }

@@ -486,4 +486,7 @@ export const m = {
   To_Enter_Training_Need_Password:'请输入该私有训练的密码，方可进入',
   Enter_the_training_password:'请输入私有训练的密码',  
   Register_training_successfully:'验证训练密码成功！',
+
+  // /views/oj/training/TrainingRank.vue
+  Total_AC:'AC总数',
 }
