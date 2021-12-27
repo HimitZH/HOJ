@@ -75,9 +75,9 @@
          <if test="uid!=null">
              AND u.uuid = #{uid}
          </if>
-            <if test="username!=null">
-                AND u.username = #{username}
-            </if>
+         <if test="username!=null">
+             AND u.username = #{username}
+         </if>
         </where>
     </select>
 

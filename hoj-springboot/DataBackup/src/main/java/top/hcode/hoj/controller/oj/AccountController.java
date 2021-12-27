@@ -405,13 +405,13 @@ public class AccountController {
                                         HttpServletRequest request) {
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-        // 如果没有uid，默认查询当前登录用户的
-        if (uid == null && userRolesVo != null) {
-            uid = userRolesVo.getUid();
-        }
-
+        // 如果没有uid和username，默认查询当前登录用户的
         if (StringUtils.isEmpty(uid) && StringUtils.isEmpty(username)) {
-            return CommonResult.errorResponse("请求参数错误：uid和username不能都为空！");
+            if (userRolesVo != null){
+                uid = userRolesVo.getUid();
+            }else {
+                return CommonResult.errorResponse("查询参数错误：uid和username不能都为空！");
+            }
         }
 
         UserHomeVo userHomeInfo = userRecordDao.getUserHomeInfo(uid, username);
