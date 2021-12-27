@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.dao.UserRecordMapper">
     <select id="getACMRankList" resultType="top.hcode.hoj.pojo.vo.ACMRankVo" useCache="true">
-        SELECT u.uuid as uid,u.nickname,u.username,u.signature,u.avatar,
+        SELECT u.uuid as uid,u.nickname,u.username,left(u.signature,100) as signature,u.avatar,
     (SELECT COUNT( DISTINCT pid ) FROM user_acproblem WHERE uid = u.uuid) AS ac,
     (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid AND cid=0) AS total
     FROM user_info u  WHERE u.status = 0
@@ -10,7 +10,7 @@
     </select>
 
     <select id="getRecent7ACRank" resultType="top.hcode.hoj.pojo.vo.ACMRankVo">
-        SELECT u.uuid as uid,u.nickname,u.username,u.signature,u.avatar,
+        SELECT u.uuid as uid,u.nickname,u.username,u.avatar,
         (SELECT COUNT( DISTINCT pid ) FROM user_acproblem WHERE uid =u.uuid
         and DATE(gmt_create) >= DATE_SUB(CURDATE(),INTERVAL 7 DAY)) AS ac,
         (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid AND cid=0
@@ -24,7 +24,7 @@
 
 
     <select id="getOIRankList" resultType="top.hcode.hoj.pojo.vo.OIRankVo" useCache="true">
-        SELECT ui.uuid AS uid, ui.nickname, ui.username, ui.signature, ui.avatar
+        SELECT ui.uuid AS uid, ui.nickname, ui.username, left(ui.signature,100) as signature, ui.avatar
             , (
                 SELECT COUNT(DISTINCT pid)
                 FROM user_acproblem
