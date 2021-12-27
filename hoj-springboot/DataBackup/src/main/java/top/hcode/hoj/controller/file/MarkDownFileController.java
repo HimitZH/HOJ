@@ -41,6 +41,7 @@ public class MarkDownFileController {
     @RequestMapping(value = "/upload-md-img", method = RequestMethod.POST)
     @RequiresAuthentication
     @ResponseBody
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult uploadMDImg(@RequestParam("image") MultipartFile image, HttpServletRequest request) {
         if (image == null) {
             return CommonResult.errorResponse("上传的图片不能为空！");
@@ -90,6 +91,7 @@ public class MarkDownFileController {
     @RequestMapping(value = "/delete-md-img", method = RequestMethod.GET)
     @RequiresAuthentication
     @ResponseBody
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult deleteMDImg(@RequestParam("fileId") Long fileId, HttpServletRequest request) {
 
         // 获取当前登录用户
