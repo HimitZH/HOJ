@@ -289,7 +289,7 @@ public class JudgeController {
             if (!isRoot && !userRolesVo.getUid().equals(contest.getUid())) {
                 // 如果是比赛,那么还需要判断是否为封榜,比赛管理员和超级管理员可以有权限查看(ACM题目除外)
                 if (contest.getType().intValue() == Constants.Contest.TYPE_OI.getCode()
-                        && contestService.isSealRank(userRolesVo.getUid(), contest, false, false)) {
+                        && contestService.isSealRank(userRolesVo.getUid(), contest, true, false)) {
                     result.put("submission", new Judge().setStatus(Constants.Judge.STATUS_SUBMITTED_UNKNOWN_RESULT.getStatus()));
                     return CommonResult.successResponse(result, "获取提交数据成功！");
                 }
@@ -479,15 +479,10 @@ public class JudgeController {
 
         Contest contest = contestService.getById(submitIdListDto.getCid());
 
-        boolean isSealRank = false;
 
         boolean isContestAdmin = isRoot || userRolesVo.getUid().equals(contest.getUid());
         // 如果是封榜时间且不是比赛管理员和超级管理员
-        if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode() &&
-                contest.getSealRank() && contest.getSealRankTime().before(new Date()) &&
-                !isContestAdmin) {
-            isSealRank = true;
-        }
+        boolean isSealRank = contestService.isSealRank(userRolesVo.getUid(), contest, true, isRoot);
 
         QueryWrapper<Judge> queryWrapper = new QueryWrapper<>();
         // lambada表达式过滤掉code

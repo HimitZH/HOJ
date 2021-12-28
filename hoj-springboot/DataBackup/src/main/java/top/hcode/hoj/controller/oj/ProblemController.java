@@ -166,11 +166,10 @@ public class ProblemController {
             HashMap<String, Object> temp = new HashMap<>();
             if (pidListDto.getIsContestProblemList()) {
                 if (!isACMContest) {
-
                     if (!result.containsKey(judge.getPid())) { // IO比赛的，如果还未写入，则使用最新一次提交的结果
                         // 判断该提交是否为封榜之后的提交,OI赛制封榜后的提交看不到提交结果，
                         // 只有比赛结束可以看到,比赛管理员与超级管理员的提交除外
-                        if (contestService.isSealRank(userRolesVo.getUid(), contest, false,
+                        if (contestService.isSealRank(userRolesVo.getUid(), contest, true,
                                 SecurityUtils.getSubject().hasRole("root"))) {
                             temp.put("status", Constants.Judge.STATUS_SUBMITTED_UNKNOWN_RESULT.getStatus());
                             temp.put("score", null);

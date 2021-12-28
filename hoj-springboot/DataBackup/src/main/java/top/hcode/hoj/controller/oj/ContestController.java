@@ -262,7 +262,7 @@ public class ContestController {
         List<ContestProblemVo> contestProblemList;
         boolean isAdmin = isRoot || contest.getAuthor().equals(userRolesVo.getUsername());
         // 如果比赛开启封榜
-        if (contestService.isSealRank(userRolesVo.getUid(), contest, false, isRoot)) {
+        if (contestService.isSealRank(userRolesVo.getUid(), contest, true, isRoot)) {
             contestProblemList = contestProblemService.getContestProblemList(cid, contest.getStartTime(), contest.getEndTime(),
                     contest.getSealRankTime(), isAdmin, contest.getAuthor());
         } else {
@@ -356,7 +356,7 @@ public class ContestController {
 
         Date sealRankTime = null;
         //封榜时间除超级管理员和比赛管理员外 其它人不可看到最新数据
-        if (contestService.isSealRank(userRolesVo.getUid(), contest, false, isRoot)) {
+        if (contestService.isSealRank(userRolesVo.getUid(), contest, true, isRoot)) {
             sealRankTime = contest.getSealRankTime();
         }
 
@@ -435,7 +435,7 @@ public class ContestController {
         Date sealRankTime = null;
 
         // 需要判断是否需要封榜
-        if (contestService.isSealRank(userRolesVo.getUid(), contest, false, isRoot)) {
+        if (contestService.isSealRank(userRolesVo.getUid(), contest, true, isRoot)) {
             sealRankTime = contest.getSealRankTime();
         }
         // OI比赛封榜期间不更新，ACM比赛封榜期间可看到自己的提交，但是其它人的不可见
