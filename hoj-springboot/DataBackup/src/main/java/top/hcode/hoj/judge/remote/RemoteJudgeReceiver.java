@@ -123,6 +123,21 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
         Runnable getResultTask = new Runnable() {
             @Override
             public void run() {
+                if (tryNum.get() > 200) {
+                    // 获取调用多次失败可能为系统忙碌，判为提交失败
+                    judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
+                    judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
+                            "Cause: Waiting for account scheduling timeout");
+                    judgeService.updateById(judge);
+                    Future future = futureTaskMap.get(key);
+                    if (future != null) {
+                        boolean isCanceled = future.cancel(true);
+                        if (isCanceled) {
+                            futureTaskMap.remove(key);
+                        }
+                    }
+                    return;
+                }
                 tryNum.getAndIncrement();
                 RemoteJudgeAccount account = chooseUtils.chooseRemoteAccount(OJName, judge.getVjudgeUsername(), false);
                 if (account != null) {
@@ -131,20 +146,6 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
                     toJudge.setIsHasSubmitIdRemoteReJudge(false);
                     // 调用判题服务
                     dispatcher.dispatcher("judge", "/remote-judge", toJudge);
-                    Future future = futureTaskMap.get(key);
-                    if (future != null) {
-                        future.cancel(true);
-                        futureTaskMap.remove(key);
-                    }
-                    return;
-                }
-
-                if (tryNum.get() > 200) {
-                    // 获取调用多次失败可能为系统忙碌，判为提交失败
-                    judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
-                    judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
-                            "Cause: Waiting for account scheduling timeout");
-                    judgeService.updateById(judge);
                     Future future = futureTaskMap.get(key);
                     if (future != null) {
                         future.cancel(true);
@@ -183,6 +184,21 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
         Runnable getResultTask = new Runnable() {
             @Override
             public void run() {
+                if (tryNum.get() > 200) {
+                    // 获取调用多次失败可能为系统忙碌，判为提交失败
+                    judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
+                    judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
+                            "Cause: Waiting for account scheduling timeout");
+                    judgeService.updateById(judge);
+                    Future future = futureTaskMap.get(key);
+                    if (future != null) {
+                        boolean isCanceled = future.cancel(true);
+                        if (isCanceled) {
+                            futureTaskMap.remove(key);
+                        }
+                    }
+                    return;
+                }
                 tryNum.getAndIncrement();
                 RemoteJudgeAccount account = chooseUtils.chooseRemoteAccount(Constants.RemoteOJ.POJ.getName()
                         , judge.getVjudgeUsername(), finalIsHasSubmitIdRemoteReJudge);
@@ -192,20 +208,6 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
                     toJudge.setIsHasSubmitIdRemoteReJudge(finalIsHasSubmitIdRemoteReJudge);
                     // 调用判题服务
                     dispatcher.dispatcher("judge", "/remote-judge", toJudge);
-                    Future future = futureTaskMap.get(key);
-                    if (future != null) {
-                        future.cancel(true);
-                        futureTaskMap.remove(key);
-                    }
-                    return;
-                }
-
-                if (tryNum.get() > 200) {
-                    // 获取调用多次失败可能为系统忙碌，判为提交失败
-                    judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
-                    judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
-                            "Cause: Waiting for account scheduling timeout");
-                    judgeService.updateById(judge);
                     Future future = futureTaskMap.get(key);
                     if (future != null) {
                         future.cancel(true);
@@ -235,6 +237,21 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
         Runnable getResultTask = new Runnable() {
             @Override
             public void run() {
+                if (tryNum.get() > 200) {
+                    // 获取调用多次失败可能为系统忙碌，判为提交失败
+                    judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
+                    judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
+                            "Cause: Waiting for account scheduling timeout");
+                    judgeService.updateById(judge);
+                    Future future = futureTaskMap.get(key);
+                    if (future != null) {
+                        boolean isCanceled = future.cancel(true);
+                        if (isCanceled) {
+                            futureTaskMap.remove(key);
+                        }
+                    }
+                    return;
+                }
                 tryNum.getAndIncrement();
                 HashMap<String, Object> result = chooseUtils.chooseFixedAccount(Constants.RemoteOJ.CODEFORCES.getName());
                 if (result != null) {
@@ -248,20 +265,6 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
                     toJudge.setSize(size);
                     // 调用判题服务
                     dispatcher.dispatcher("judge", "/remote-judge", toJudge);
-                    Future future = futureTaskMap.get(key);
-                    if (future != null) {
-                        future.cancel(true);
-                        futureTaskMap.remove(key);
-                    }
-                    return;
-                }
-
-                if (tryNum.get() > 200) {
-                    // 获取调用多次失败可能为系统忙碌，判为提交失败
-                    judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
-                    judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
-                            "Cause: Waiting for account scheduling timeout");
-                    judgeService.updateById(judge);
                     Future future = futureTaskMap.get(key);
                     if (future != null) {
                         future.cancel(true);
