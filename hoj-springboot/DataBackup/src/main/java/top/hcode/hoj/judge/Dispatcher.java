@@ -86,6 +86,20 @@ public class Dispatcher {
         Runnable getResultTask = new Runnable() {
             @Override
             public void run() {
+                if (count.get() > 300) { // 300次失败则判为提交失败
+                    if (isRemote) { // 远程判题需要将账号归为可用
+                        changeRemoteJudgeStatus(finalOj, data.getUsername(), null);
+                    }
+                    checkResult(null, submitId);
+                    Future future = futureTaskMap.get(key);
+                    if (future != null) {
+                        boolean isCanceled = future.cancel(true);
+                        if (isCanceled) {
+                            futureTaskMap.remove(key);
+                        }
+                    }
+                    return;
+                }
                 count.getAndIncrement();
                 JudgeServer judgeServer = null;
                 if (!isCFFirstSubmit) {
@@ -113,22 +127,11 @@ public class Dispatcher {
                         }
                         Future future = futureTaskMap.get(key);
                         if (future != null) {
-                            future.cancel(true);
-                            futureTaskMap.remove(key);
+                            boolean isCanceled = future.cancel(true);
+                            if (isCanceled) {
+                                futureTaskMap.remove(key);
+                            }
                         }
-                    }
-                    return;
-                }
-
-                if (count.get() == 300) { // 300次失败则判为提交失败
-                    if (isRemote) { // 远程判题需要将账号归为可用
-                        changeRemoteJudgeStatus(finalOj, data.getUsername(), null);
-                    }
-                    checkResult(null, submitId);
-                    Future future = futureTaskMap.get(key);
-                    if (future != null) {
-                        future.cancel(true);
-                        futureTaskMap.remove(key);
                     }
                 }
             }

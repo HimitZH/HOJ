@@ -62,11 +62,14 @@ public class RemoteJudgeGetResult {
 
                     Future future = futureTaskMap.get(key);
                     if (future != null) {
-                        future.cancel(true);
-                        futureTaskMap.remove(key);
+                        boolean isCanceled = future.cancel(true);
+                        if (isCanceled) {
+                            futureTaskMap.remove(key);
+                        }
                     }
                     return;
                 }
+
                 count.getAndIncrement();
                 try {
                     Map<String, Object> result = remoteJudgeStrategy.result(resultSubmitId, username, password, cookies);

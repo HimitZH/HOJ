@@ -122,7 +122,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
     private Long getMaxRunId(String username, String contestNum, String problemNum, String problemId, long nowTime) {
         int retryNum = 0;
         // 防止cf的nginx限制访问频率，重试5次
-        while (retryNum != 5) {
+        while (retryNum != 10) {
             HttpResponse httpResponse = getSubmissionResult(username, 10);
             if (httpResponse.getStatus() == 200) {
                 try {
@@ -131,7 +131,7 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
                     for (Map<String, Object> result : results) {
                         Long runId = Long.valueOf(result.get("id").toString());
                         long creationTimeSeconds = Long.parseLong(result.get("creationTimeSeconds").toString());
-                        if (creationTimeSeconds < nowTime && retryNum < 4) {
+                        if (creationTimeSeconds < nowTime && retryNum < 8) {
                             continue;
                         }
                         Map<String, Object> problem = (Map<String, Object>) result.get("problem");
