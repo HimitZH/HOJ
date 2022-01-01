@@ -88,9 +88,10 @@ module.exports = context => config({
                 title: '使用文档',
                 collapsable: true,
                 children: [
-					'use/testcase',
-					'use/contest',
 					'use/import-problem',
+					'use/testcase',
+					'use/training',
+					'use/contest',
 					'use/import-user',
 					'use/admin-user',
 					'use/notice-announcement',
