@@ -151,7 +151,7 @@ HOJ用的是java来调用此沙盒，请看[JudgeServer-judge](https://gitee.com
 }]
 ```
 
-#### 特殊判题
+#### 交互判题
 
 3.1 请求的url为 
 
