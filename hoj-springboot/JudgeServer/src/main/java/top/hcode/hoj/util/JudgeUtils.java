@@ -1,8 +1,11 @@
 package top.hcode.hoj.util;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import cn.hutool.json.JSONUtil;
+import org.springframework.util.StringUtils;
+import top.hcode.hoj.pojo.entity.problem.Problem;
+
+import java.io.File;
+import java.util.*;
 
 /**
  * @Author: Himit_ZH
@@ -11,7 +14,21 @@ import java.util.StringTokenizer;
  */
 public class JudgeUtils {
 
-    public static List<String> translateCommandline(String toProcess){
+    @SuppressWarnings("All")
+    public static HashMap<String, String> getProblemExtraFileMap(Problem problem, String type) {
+        if ("user".equals(type)) {
+            if (!StringUtils.isEmpty(problem.getUserExtraFile())) {
+                return (HashMap<String, String>) JSONUtil.toBean(problem.getUserExtraFile(), Map.class);
+            }
+        } else if ("judge".equals(type)) {
+            if (!StringUtils.isEmpty(problem.getJudgeExtraFile())) {
+                return (HashMap<String, String>) JSONUtil.toBean(problem.getJudgeExtraFile(), Map.class);
+            }
+        }
+        return null;
+    }
+
+    public static List<String> translateCommandline(String toProcess) {
         if (toProcess != null && !toProcess.isEmpty()) {
             int state = 0;
             StringTokenizer tok = new StringTokenizer(toProcess, "\"' ", true);
@@ -19,10 +36,10 @@ public class JudgeUtils {
             StringBuilder current = new StringBuilder();
             boolean lastTokenHasBeenQuoted = false;
 
-            while(true) {
-                while(tok.hasMoreTokens()) {
+            while (true) {
+                while (tok.hasMoreTokens()) {
                     String nextTok = tok.nextToken();
-                    switch(state) {
+                    switch (state) {
                         case 1:
                             if ("'".equals(nextTok)) {
                                 lastTokenHasBeenQuoted = true;
@@ -71,4 +88,5 @@ public class JudgeUtils {
             return new ArrayList<>();
         }
     }
+
 }

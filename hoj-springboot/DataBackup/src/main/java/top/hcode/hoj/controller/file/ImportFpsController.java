@@ -253,14 +253,17 @@ public class ImportFpsController {
                 problemSamples.add(new ProblemCase()
                         .setInput(infileName).setOutput(outfileName));
             }
-
+            String mode = Constants.JudgeMode.DEFAULT.getMode();
+            if (problem.getSpjLanguage() != null) {
+                mode = Constants.JudgeMode.SPJ.getMode();
+            }
             ProblemDto problemDto = new ProblemDto();
             problemDto.setSamples(problemSamples)
                     .setIsUploadTestCase(true)
                     .setUploadTestcaseDir(problemTestCaseDir)
                     .setLanguages(languageList)
                     .setTags(null)
-                    .setIsSpj(problem.getSpjLanguage() != null)
+                    .setJudgeMode(mode)
                     .setProblem(problem)
                     .setCodeTemplates(codeTemplates);
 

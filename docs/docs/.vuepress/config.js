@@ -89,6 +89,7 @@ module.exports = context => config({
                 collapsable: true,
                 children: [
 					'use/import-problem',
+					'use/judge-mode',
 					'use/testcase',
 					'use/training',
 					'use/contest',
@@ -97,8 +98,7 @@ module.exports = context => config({
 					'use/notice-announcement',
 					'use/discussion-admin',
 					'use/update-fe',
-					'use/close-free-cdn',
-                    'use/spj'
+					'use/close-free-cdn'
                 ]
             },
         ],

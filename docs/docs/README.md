@@ -20,7 +20,7 @@ features:
   details: 判题使用 cgroup 隔离用户程序，网站权限控制完善
 - title: 多样化
   details: 独有自身判题服务，同时支持其它知名OJ题目的提交判题
-footer: MIT Licensed | Copyright © 2022.01.01 @Author Himit_ZH  QQ Group:598587305
+footer: MIT Licensed | Copyright © 2022.01.04 @Author Himit_ZH  QQ Group:598587305
 ---
 
 [![Java](https://img.shields.io/badge/Java-1.8-informational)](http://openjdk.java.net/)
@@ -32,7 +32,7 @@ footer: MIT Licensed | Copyright © 2022.01.01 @Author Himit_ZH  QQ Group:598587
 [![Vue](https://img.shields.io/badge/Vue-2.6.11-success)](https://cn.vuejs.org/)
 [![QQ Group 598587305](https://img.shields.io/badge/QQ%20Group-598587305-blue)](https://qm.qq.com/cgi-bin/qm/qr?k=WWGBZ5gfDiBZOcpNvM8xnZTfUq7BT4Rs&jump_from=webapi)
 
-Hcode Online Judge (HOJ) : 基于前后端分离，分布式架构的在线测评平台（hoj），前端使用vue，后端主要使用springboot，redis，mysql，nacos等技术，**支持HDU、POJ、Codeforces（包括GYM）的vjudge判题，同时适配手机端、电脑端浏览，拥有讨论区与站内消息系统，支持私有训练、公开训练（题单），还有完善的比赛功能（打星队伍、关注队伍、外榜）。**
+Hcode Online Judge (HOJ) : 基于前后端分离，分布式架构的在线测评平台（hoj），前端使用vue，后端主要使用springboot，redis，mysql，nacos等技术，**支持HDU、POJ、Codeforces（包括GYM）的vjudge判题，同时适配手机端、电脑端浏览，拥有讨论区与站内消息系统，支持私有训练、公开训练（题单），还有完善的判题模式（普通测评、特殊测评、交互测评）和完善的比赛功能（打星队伍、关注队伍、外榜）。**
 
 [Github 仓库](https://github.com/HimitZH/HOJ)
 [Gitee 仓库](https://gitee.com/himitzh0730/hoj)
@@ -48,3 +48,10 @@ Hcode Online Judge (HOJ) : 基于前后端分离，分布式架构的在线测�
 QQ: [372347736](https://wpa.qq.com/msgrd?v=3&uin=372347736&site=qq&menu=yes)  
 HOJ交流群: [598587305](https://qm.qq.com/cgi-bin/qm/qr?k=WWGBZ5gfDiBZOcpNvM8xnZTfUq7BT4Rs&jump_from=webapi)
 
+## 支持我们
+
+**如果您觉得hoj好用，想要支持一下开发者，项目的开发与维护需要资金，欢迎进行捐助。**  
+
+**可以微信扫下方二维码支持一波，不必在乎多少，尽自己能力支持即可。**
+
+![wxpy](/docs/wxpay.png)

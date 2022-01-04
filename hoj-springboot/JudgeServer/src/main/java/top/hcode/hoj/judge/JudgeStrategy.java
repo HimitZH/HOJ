@@ -3,6 +3,7 @@ package top.hcode.hoj.judge;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,9 @@ import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.service.impl.JudgeCaseServiceImpl;
 import top.hcode.hoj.service.impl.JudgeServiceImpl;
 import top.hcode.hoj.util.Constants;
+import top.hcode.hoj.util.JudgeUtils;
 
+import javax.annotation.Resource;
 import java.io.File;
 import java.util.*;
 
@@ -24,15 +27,17 @@ import java.util.*;
 @Component
 public class JudgeStrategy {
 
-    @Autowired
+    @Resource
     private JudgeServiceImpl judgeService;
 
-    @Autowired
+    @Resource
     private ProblemTestCaseUtils problemTestCaseUtils;
 
-    @Autowired
+    @Resource
     private JudgeCaseServiceImpl judgeCaseService;
 
+    @Resource
+    private JudgeRun judgeRun;
 
     public HashMap<String, Object> judge(Problem problem, Judge judge) {
 
@@ -41,19 +46,21 @@ public class JudgeStrategy {
         String userFileId = null;
         try {
             // 对用户源代码进行编译 获取tmpfs中的fileId
-            userFileId = Compiler.compile(Constants.CompileConfig.getCompilerByLanguage(judge.getLanguage()), judge.getCode(), judge.getLanguage());
+            userFileId = Compiler.compile(Constants.CompileConfig.getCompilerByLanguage(judge.getLanguage()),
+                    judge.getCode(), judge.getLanguage(), JudgeUtils.getProblemExtraFileMap(problem, "user"));
             // 测试数据文件所在文件夹
             String testCasesDir = Constants.JudgeDir.TEST_CASE_DIR.getContent() + File.separator + "problem_" + problem.getId();
             // 从文件中加载测试数据json
-            JSONObject testCasesInfo = problemTestCaseUtils.loadTestCaseInfo(problem.getId(), testCasesDir, problem.getCaseVersion(), !StringUtils.isEmpty(problem.getSpjCode()));
+            JSONObject testCasesInfo = problemTestCaseUtils.loadTestCaseInfo(problem.getId(), testCasesDir, problem.getCaseVersion(),
+                    problem.getJudgeMode());
             JSONArray testcaseList = (JSONArray) testCasesInfo.get("testCases");
             String version = testCasesInfo.getStr("version");
-            // 检查是否为spj，同时是否有spj编译完成的文件，若不存在，就先编译生成该spj文件，同时也要检查版本
-            Boolean hasSpjOrNotSpj = checkOrCompileSpj(problem, version);
-            // 如果该题为spj，但是没有spj程序
-            if (!hasSpjOrNotSpj) {
+
+            // 检查是否为spj或者interactive，同时是否有对应编译完成的文件，若不存在，就先编译生成该文件，同时也要检查版本
+            Boolean isOk = checkOrCompileExtraProgram(problem, version);
+            if (!isOk) {
                 result.put("code", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
-                result.put("errMsg", "The special judge code does not exist.");
+                result.put("errMsg", "The special judge or interactive program code does not exist.");
                 result.put("time", 0);
                 result.put("memory", 0);
                 return result;
@@ -62,28 +69,15 @@ public class JudgeStrategy {
             // 更新状态为评测数据中
             judge.setStatus(Constants.Judge.STATUS_JUDGING.getStatus());
             judgeService.saveOrUpdate(judge);
-            // spj程序的名字
-            String spjExeName = null;
-            if (!StringUtils.isEmpty(problem.getSpjCode())) {
-                spjExeName = Constants.RunConfig.getRunnerByLanguage("SPJ-" + problem.getSpjLanguage()).getExeName();
-            }
-            JudgeRun judgeRun = new JudgeRun(
-                    judge.getSubmitId(),
-                    problem.getId(),
+            // 开始测试每个测试点
+            List<JSONObject> allCaseResultList = judgeRun.judgeAllCase(judge.getSubmitId(),
+                    problem,
+                    judge.getLanguage(),
                     testCasesDir,
                     testCasesInfo,
-                    Constants.RunConfig.getRunnerByLanguage(judge.getLanguage()),
-                    Constants.RunConfig.getRunnerByLanguage("SPJ-" + problem.getSpjLanguage())
-            );
-            // 开始测试每个测试点
-            List<JSONObject> allCaseResultList = judgeRun.judgeAllCase(
                     userFileId,
-                    problem.getTimeLimit() * 1L,
-                    problem.getMemoryLimit() * 1024L,
-                    problem.getStackLimit(),
-                    false,
-                    problem.getIsRemoveEndBlank(),
-                    spjExeName);
+                    false);
+
             // 对全部测试点结果进行评判,获取最终评判结果
             HashMap<String, Object> judgeInfo = getJudgeInfo(allCaseResultList, problem, judge);
             return judgeInfo;
@@ -121,18 +115,43 @@ public class JudgeStrategy {
         return result;
     }
 
+    private Boolean checkOrCompileExtraProgram(Problem problem, String version) throws CompileError, SystemError {
 
-    public Boolean checkOrCompileSpj(Problem problem, String version) throws CompileError, SystemError {
-        // 如果是需要特判的题目，则需要检测特批程序是否已经编译，否则进行编译
-        if (!StringUtils.isEmpty(problem.getSpjCode())) {
-            Constants.CompileConfig spjCompiler = Constants.CompileConfig.getCompilerByLanguage("SPJ-" + problem.getSpjLanguage());
-            // 如果不存在该已经编译好的特批程序，则需要再次进行编译 版本变动也需要重新编译
-            if (!FileUtil.exist(Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + File.separator +
-                    problem.getId() + File.separator + spjCompiler.getExeName())
-                    || !problem.getCaseVersion().equals(version)) {
-                return Compiler.compileSpj(problem.getSpjCode(), problem.getId(), problem.getSpjLanguage());
-            }
+        Constants.JudgeMode judgeMode = Constants.JudgeMode.getJudgeMode(problem.getJudgeMode());
+        Constants.CompileConfig compiler;
+        String filePath;
+
+        switch (judgeMode) {
+            case DEFAULT:
+                return true;
+            case SPJ:
+                compiler = Constants.CompileConfig.getCompilerByLanguage("SPJ-" + problem.getSpjLanguage());
+                filePath = Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + File.separator +
+                        problem.getId() + File.separator + compiler.getExeName();
+
+                // 如果不存在该已经编译好的程序，则需要再次进行编译 版本变动也需要重新编译
+                if (!FileUtil.exist(filePath) || !problem.getCaseVersion().equals(version)) {
+                    return Compiler.compileSpj(problem.getSpjCode(), problem.getId(), problem.getSpjLanguage(),
+                            JudgeUtils.getProblemExtraFileMap(problem, "judge"));
+                }
+
+                break;
+            case INTERACTIVE:
+                compiler = Constants.CompileConfig.getCompilerByLanguage("INTERACTIVE-" + problem.getSpjLanguage());
+                filePath = Constants.JudgeDir.INTERACTIVE_WORKPLACE_DIR.getContent() + File.separator +
+                        problem.getId() + File.separator + compiler.getExeName();
+
+                // 如果不存在该已经编译好的程序，则需要再次进行编译 版本变动也需要重新编译
+                if (!FileUtil.exist(filePath) || !problem.getCaseVersion().equals(version)) {
+                    return Compiler.compileInteractive(problem.getSpjCode(), problem.getId(), problem.getSpjLanguage(),
+                            JudgeUtils.getProblemExtraFileMap(problem, "judge"));
+                }
+
+                break;
+            default:
+                throw new RuntimeException("The problem mode is error:" + judgeMode);
         }
+
         return true;
     }
 

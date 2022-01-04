@@ -42,6 +42,9 @@ public class Problem implements Serializable {
     @ApiModelProperty(value = "0为ACM,1为OI")
     private Integer type;
 
+    @ApiModelProperty(value = "default,spj,interactive")
+    private String judgeMode;
+
     @ApiModelProperty(value = "单位ms")
     private Integer timeLimit;
 
@@ -78,19 +81,27 @@ public class Problem implements Serializable {
     @ApiModelProperty(value = "默认为1公开，2为私有，3为比赛中")
     private Integer auth;
 
-    @ApiModelProperty(value = "当该题目为io题目时的分数")
+    @ApiModelProperty(value = "当该题目为oi题目时的分数")
     private Integer ioScore;
 
     @ApiModelProperty(value = "该题目对应的相关提交代码，用户是否可用分享")
     private Boolean codeShare;
 
-    @ApiModelProperty(value = "特判程序的代码 空代表无特判")
+    @ApiModelProperty(value = "特判程序或交互程序的代码")
     @TableField(value="spj_code",updateStrategy = FieldStrategy.IGNORED)
     private String spjCode;
 
-    @ApiModelProperty(value = "特判程序的语言")
+    @ApiModelProperty(value = "特判程序或交互程序的语言")
     @TableField(value="spj_language",updateStrategy = FieldStrategy.IGNORED)
     private String spjLanguage;
+
+    @ApiModelProperty(value = "特判程序或交互程序的额外文件 json key:name value:content")
+    @TableField(value="user_extra_file",updateStrategy = FieldStrategy.IGNORED)
+    private String userExtraFile;
+
+    @ApiModelProperty(value = "特判程序或交互程序的额外文件 json key:name value:content")
+    @TableField(value="judge_extra_file",updateStrategy = FieldStrategy.IGNORED)
+    private String judgeExtraFile;
 
     @ApiModelProperty(value = "是否默认去除用户代码的每行末尾空白符")
     private Boolean isRemoveEndBlank;

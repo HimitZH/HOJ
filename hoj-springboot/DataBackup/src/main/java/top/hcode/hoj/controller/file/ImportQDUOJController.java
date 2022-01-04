@@ -190,7 +190,13 @@ public class ImportQDUOJController {
                 problem.setAuthor(userRolesVo.getUsername());
             }
             ProblemDto problemDto = new ProblemDto();
-            problemDto.setIsSpj(qdojProblemDto.getIsSpj())
+
+            String mode = Constants.JudgeMode.DEFAULT.getMode();
+            if (qdojProblemDto.getIsSpj()){
+                mode = Constants.JudgeMode.SPJ.getMode();
+            }
+
+            problemDto.setJudgeMode(mode)
                     .setProblem(problem)
                     .setCodeTemplates(qdojProblemDto.getCodeTemplates())
                     .setTags(tags)

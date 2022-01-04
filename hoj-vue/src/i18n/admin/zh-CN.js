@@ -193,13 +193,17 @@ export const m = {
   Example_Input:'样例输入',
   Example_Output:'样例输出',
   Add_Example: '添加样例',
-  Special_Judge: '特殊判题',
-  Special_Judge_Code:'特殊判题代码',
-  Special_Judge_Tips1:'为什么要使用特殊判题？',
-  Special_Judge_Tips2:'题目要求的输出结果可能不唯一，允许不同结果存在。',
-  Special_Judge_Tips3:'题目最终要求输出一个浮点数，而且会告诉只要答案和标准答案相差不超过某个较小的数就可以。例如题目要求保留几位小数，输出结果后几位小数不相同也是正确的。',
-  Use_Special_Judge: '使用特殊判题',
-  SPJ_language: 'SPJ语言',
+  Judge_Mode:'判题模式',
+  General_Judge:'普通判题',
+  Special_Judge:'特殊判题',
+  Interactive_Judge:'交互判题',
+  Special_Judge_Code:'特殊判题程序代码',
+  Interactive_Judge_Code:'交互判题程序代码',
+  General_Judge_Mode_Tips:'1. 普通判题：选手程序读取题目标准输入文件，执行代码逻辑得到选手输出，对比题目标准输出文件内容得到判题结果',
+  Special_Judge_Mode_Tips:'2. 特殊判题：题目要求的输出结果可能不唯一，允许不同结果存在，所以需要一个特殊程序读取标准输出、选手输出和标准输入，进行对比得出最终判题结果',
+  Interactive_Judge_Mode_Tips:'3. 交互判题：交互程序的标准输出通过交互通道写到选手程序标准输入，选手程序的标准输出通过交互通道写到交互程序的标准输入，两者需要刷新输出缓冲区',
+  Interactive_Language:'交互判题程序语言',
+  SPJ_Language: '特殊判题程序语言',
   Compile: '编译',
   Code_Template: '代码模板',
   Type: '类型',
@@ -227,9 +231,13 @@ export const m = {
   is_required:'不能为空！',
   Score_must_be_greater_than_or_equal_to_0:'分数必须大于0！',
   Score_must_be_an_integer:'分数必须是整数！',
-  Spj_Code:'Spj代码',
-  Spj_Code_not_Compile_Success:'Spj代码没有编译成功，请重新编译！',
-
+  Spj_Or_Interactive_Code:'Spj或交互程序的代码',
+  Spj_Or_Interactive_Code_not_Compile_Success:'Spj或交互程序的代码没有编译成功，请重新编译！',
+  Judge_Extra_File:'评测额外文件',
+  Judge_Extra_File_Tips1:'1. 选手程序：给选手程序提供额外的库文件',
+  Judge_Extra_File_Tips2:'2. 特殊或交互程序：给特殊或交互程序提供额外的库文件',
+  User_Program:'选手程序',
+  SPJ_Or_Interactive_Program:'特殊或交互程序',
 
   // /views/admin/problem/tag
   Admin_Tag:'标签管理',
@@ -340,4 +348,9 @@ export const m = {
   Content:'内容',
   Report_Content:'举报内容',
   The_number_of_discussions_selected_cannot_be_empty:'勾选的讨论不能为空',
+
+  // components/admin/AddExtraFile.vue
+  Delete_Extra_File_Tips:'你是否确定要删除该额外文件?',
+  File_Name:'文件名字',
+  File_Content:'文件内容'
 }

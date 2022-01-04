@@ -27,7 +27,11 @@ public class ImportProblemVo implements Serializable {
 
     private List<HashMap<String,String>> codeTemplates;
 
-    private Boolean isSpj;
+    private HashMap<String,String> userExtraFile;
+
+    private HashMap<String,String> judgeExtraFile;
+
+    private String judgeMode;
 
     public Map<String, Object> getProblem() {
         return problem;
@@ -69,11 +73,27 @@ public class ImportProblemVo implements Serializable {
         this.codeTemplates = codeTemplates;
     }
 
-    public Boolean getIsSpj() {
-        return isSpj;
+    public String getJudgeMode() {
+        return judgeMode;
     }
 
-    public void setIsSpj(Boolean spj) {
-        isSpj = spj;
+    public void setJudgeMode(String judgeMode) {
+        this.judgeMode = judgeMode;
+    }
+
+    public HashMap<String, String> getUserExtraFile() {
+        return userExtraFile;
+    }
+
+    public void setUserExtraFile(HashMap<String, String> userExtraFile) {
+        this.userExtraFile = userExtraFile;
+    }
+
+    public HashMap<String, String> getJudgeExtraFile() {
+        return judgeExtraFile;
+    }
+
+    public void setJudgeExtraFile(HashMap<String, String> judgeExtraFile) {
+        this.judgeExtraFile = judgeExtraFile;
     }
 }

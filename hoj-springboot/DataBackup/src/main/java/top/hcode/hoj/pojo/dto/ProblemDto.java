@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import top.hcode.hoj.pojo.entity.problem.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -24,9 +25,9 @@ public class ProblemDto {
 
     private String uploadTestcaseDir;
 
-    private Boolean isSpj;
+    private String judgeMode;
 
-    private Boolean changeSpj;
+    private Boolean changeModeCode;
 
     private List<Language> languages;
 

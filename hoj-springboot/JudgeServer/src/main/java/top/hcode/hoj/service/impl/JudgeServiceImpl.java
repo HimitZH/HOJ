@@ -78,9 +78,16 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
         return judge;
     }
 
-    public Boolean compileSpj(String code, Long pid, String spjLanguage) throws CompileError, SystemError {
-        return Compiler.compileSpj(code, pid, spjLanguage);
+    @Override
+    public Boolean compileSpj(String code, Long pid, String spjLanguage, HashMap<String, String> extraFiles) throws SystemError {
+        return Compiler.compileSpj(code, pid, spjLanguage, extraFiles);
     }
+
+    @Override
+    public Boolean compileInteractive(String code, Long pid, String interactiveLanguage, HashMap<String, String> extraFiles) throws SystemError {
+        return Compiler.compileInteractive(code, pid, interactiveLanguage, extraFiles);
+    }
+
 
     @Override
     public void updateOtherTable(Long submitId, Integer status, Long cid, String uid, Long pid, Integer score, Integer useTime) {

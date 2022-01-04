@@ -32,7 +32,7 @@ export default {
     return {
       currentValue: '',
       options: {
-        mode: 'text/x-csrc',
+        mode: 'text/x-c++src',
         lineNumbers: true,
         lineWrapping: false,
         theme: 'solarized',
@@ -56,11 +56,11 @@ export default {
   props: {
     value: {
       type: String,
-      default: 'C',
+      default: '',
     },
     mode: {
       type: String,
-      default: 'text/x-csrc',
+      default: 'text/x-c++src',
     },
   },
   mounted() {
@@ -102,6 +102,6 @@ export default {
 
 .CodeMirror-scroll {
   min-height: 300px;
-  max-height: 1000px;
+  max-height: 600px;
 }
 </style>

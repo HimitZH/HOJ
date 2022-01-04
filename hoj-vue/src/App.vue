@@ -689,7 +689,7 @@ footer h1 {
   box-shadow: inset 0 0 12px rgb(219 219 219);
 }
 .markdown-body p {
-  font-size: 14px;
+  font-size: 15px;
   word-wrap: break-word;
   word-break: break-word;
   line-height: 1.8;

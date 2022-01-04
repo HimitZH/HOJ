@@ -16,7 +16,6 @@ import top.hcode.hoj.service.judge.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -56,8 +55,8 @@ public class Dispatcher {
                 toJudge(path, judgeData, judgeData.getJudge().getSubmitId(), judgeData.getRemoteJudgeProblem() != null);
                 break;
             case "compile":
-                CompileSpj compileSpj = (CompileSpj) data;
-                return toCompile(path, compileSpj);
+                CompileDTO compileDTO = (CompileDTO) data;
+                return toCompile(path, compileDTO);
             default:
                 throw new IllegalArgumentException("判题机不支持此调用类型");
         }
@@ -141,7 +140,7 @@ public class Dispatcher {
     }
 
 
-    public CommonResult toCompile(String path, CompileSpj data) {
+    public CommonResult toCompile(String path, CompileDTO data) {
         CommonResult result = CommonResult.errorResponse("没有可用的判题服务器，请重新尝试！");
         JudgeServer judgeServer = chooseUtils.chooseServer(false);
         if (judgeServer != null) {

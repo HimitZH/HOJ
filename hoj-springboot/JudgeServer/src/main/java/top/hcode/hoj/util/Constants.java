@@ -75,7 +75,7 @@ public class Constants {
 
         CF_REMOTE_JUDGE_ACCOUNT("Codeforces Remote Judge Account");
 
-        private String name;
+        private final String name;
 
         RemoteJudge(String remoteJudgeName) {
             this.name = remoteJudgeName;
@@ -108,6 +108,30 @@ public class Constants {
     }
 
 
+    public enum JudgeMode {
+        DEFAULT("default"),
+        SPJ("spj"),
+        INTERACTIVE("interactive");
+
+        private final String mode;
+
+        JudgeMode(String mode) {
+            this.mode = mode;
+        }
+
+        public String getMode() {
+            return mode;
+        }
+
+        public static JudgeMode getJudgeMode(String mode){
+            for (JudgeMode judgeMode : JudgeMode.values()) {
+                if (judgeMode.getMode().equals(mode)) {
+                    return judgeMode;
+                }
+            }
+            return null;
+        }
+    }
 
     public enum JudgeDir {
 
@@ -117,10 +141,12 @@ public class Constants {
 
         SPJ_WORKPLACE_DIR("/judge/spj"),
 
+        INTERACTIVE_WORKPLACE_DIR("/judge/interactive"),
+
         TMPFS_DIR("/w");
 
 
-        private String content;
+        private final String content;
 
         JudgeDir(String content) {
             this.content = content;
@@ -134,7 +160,7 @@ public class Constants {
     public static List<String> defaultEnv = Arrays.asList(
             "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
             "LANG=en_US.UTF-8",
-            "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8","HOME=/w");
+            "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8", "HOME=/w");
 
     public static List<String> python3Env = Arrays.asList("LANG=en_US.UTF-8",
             "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8", "PYTHONIOENCODING=utf-8");
@@ -143,7 +169,6 @@ public class Constants {
             "GOCACHE=off", "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
             "LANG=en_US.UTF-8", "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8");
 
-    public static List<String> javaEnv = Arrays.asList("HOME=/w");
     /*
             {0} --> tmpfs_dir
             {1} --> srcName
@@ -158,7 +183,7 @@ public class Constants {
 
         CPPWithO2("C++ With O2", "main.cpp", "main", 10000L, 20000L, 512 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {1} -lm -o {2}", defaultEnv),
 
-        JAVA("Java", "Main.java", "Main.jar", 10000L, 20000L, 512 * 1024 * 1024L, "/bin/bash -c \"javac -encoding utf8 {1} && jar -cvf {2} *.class\"", javaEnv),
+        JAVA("Java", "Main.java", "Main.jar", 10000L, 20000L, 512 * 1024 * 1024L, "/bin/bash -c \"javac -encoding utf8 {1} && jar -cvf {2} *.class\"", defaultEnv),
 
         PYTHON2("Python2", "main.py", "main.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python -m py_compile ./{1}", defaultEnv),
 
@@ -166,20 +191,24 @@ public class Constants {
 
         GOLANG("Golang", "main.go", "main", 3000L, 5000L, 512 * 1024 * 1024L, "/usr/bin/go build -o {2} {1}", defaultEnv),
 
-        CS("C#","Main.cs","main",5000L,10000L,512 * 1024 * 1024L,"/usr/bin/mcs -optimize+ -out:{0}/{2} {0}/{1}",defaultEnv),
+        CS("C#", "Main.cs", "main", 5000L, 10000L, 512 * 1024 * 1024L, "/usr/bin/mcs -optimize+ -out:{0}/{2} {0}/{1}", defaultEnv),
 
         SPJ_C("SPJ-C", "spj.c", "spj", 3000L, 5000L, 512 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c99 {1} -lm -o {2}", defaultEnv),
 
-        SPJ_CPP("SPJ-C++", "spj.cpp", "spj", 10000L, 20000L, 512 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {1} -lm -o {2}", defaultEnv);
+        SPJ_CPP("SPJ-C++", "spj.cpp", "spj", 10000L, 20000L, 512 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {1} -lm -o {2}", defaultEnv),
 
-        private String language;
-        private String srcName;
-        private String exeName;
-        private Long maxCpuTime;
-        private Long maxRealTime;
-        private Long maxMemory;
-        private String command;
-        private List<String> envs;
+        INTERACTIVE_C("INTERACTIVE-C", "interactive.c", "interactive", 3000L, 5000L, 512 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c99 {1} -lm -o {2}", defaultEnv),
+
+        INTERACTIVE_CPP("INTERACTIVE-C++", "interactive.cpp", "interactive", 10000L, 20000L, 512 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {1} -lm -o {2}", defaultEnv);
+
+        private final String language;
+        private final String srcName;
+        private final String exeName;
+        private final Long maxCpuTime;
+        private final Long maxRealTime;
+        private final Long maxMemory;
+        private final String command;
+        private final List<String> envs;
 
         CompileConfig(String language, String srcName, String exeName, Long maxCpuTime, Long maxRealTime, Long maxMemory,
                       String command, List<String> envs) {
@@ -264,12 +293,16 @@ public class Constants {
 
         SPJ_C("SPJ-C", "{0}/{1} {2} {3} {4}", "spj", defaultEnv),
 
-        SPJ_CPP("SPJ-C++", "{0}/{1} {2} {3} {4}", "spj", defaultEnv);
+        SPJ_CPP("SPJ-C++", "{0}/{1} {2} {3} {4}", "spj", defaultEnv),
 
-        private String language;
-        private String command;
-        private String exeName;
-        private List<String> envs;
+        INTERACTIVE_C("INTERACTIVE-C", "{0}/{1} {2} {3} {4}", "interactive", defaultEnv),
+
+        INTERACTIVE_CPP("INTERACTIVE-C++", "{0}/{1} {2} {3} {4}", "interactive", defaultEnv);
+
+        private final String language;
+        private final String command;
+        private final String exeName;
+        private final List<String> envs;
 
         RunConfig(String language, String command, String exeName, List<String> envs) {
             this.language = language;

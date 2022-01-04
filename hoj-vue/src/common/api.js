@@ -1007,6 +1007,11 @@ const adminApi = {
       data
     })
   },
+  compileInteractive(data){
+    return ajax('/api/admin/problem/compile-interactive', 'post', {
+      data
+    })
+  },
 
   admin_addTag (data) {
     return ajax('/api/admin/tag', 'post', {
