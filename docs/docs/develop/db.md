@@ -121,35 +121,38 @@ user_acproblem表
 
 problem表
 
-| 列名                | 实体属性类型 | 键          | 备注                                        |
-| ------------------- | ------------ | ----------- | ------------------------------------------- |
-| id                  | long         | primary key | auto_increment 1000开始                     |
-| problem_id          | String       |             | 题目展示id                                  |
-| title               | String       |             | 题目标题                                    |
-| author              | String       |             | 默认可为无                                  |
-| type                | int          |             | 题目类型 0为ACM,1为OI                       |
-| time_limit          | int          |             | 时间限制(ms)，默认为c/c++限制,其它语言为2倍 |
-| memory_limit        | int          |             | 空间限制(mb)，默认为c/c++限制,其它语言为2倍 |
-| stack_limit         | int          |             | 栈限制(mb)，默认为128                       |
-| description         | String       |             | 内容描述                                    |
-| input               | String       |             | 输入描述                                    |
-| output              | String       |             | 输出描述                                    |
-| examples            | Srting       |             | 题面输入输出样例，不纳入评测数据            |
-| source              | int          |             | 题目来源（比赛id），默认为hoj,可能为爬虫vj  |
-| difficulty          | int          |             | 题目难度，0简单，1中等，2困难               |
-| hint                | String       |             | 备注 提醒                                   |
-| auth                | int          |             | 默认为1公开，2为私有，3为比赛中。           |
-| io_score            | int          |             | 当该题目为io题目时的分数 默认为100          |
-| code_share          | boolean      |             | 该题目对应的相关提交代码，用户是否可用分享  |
-| spj_code            | String       |             | 特判程序代码 空代表非特判                   |
-| spj_language        | String       |             | 特判程序的语言                              |
-| is_remove_end_blank | boolean      |             | 是否默认去除用户代码的文末空格              |
-| open_case_result    | boolean      |             | 是否默认开启该题目的测试样例结果查看        |
-| caseVersion         | String       |             | 题目测试数据的版本号                        |
-| is_upload_case      | boolean      |             | 是否是上传zip评测数据的                     |
-| modified_user       | String       |             | 最新修改题目的用户                          |
-| gmt_create          | datetime     |             | 创建时间                                    |
-| gmt_modified        | datetime     |             | 修改时间                                    |
+| 列名                | 实体属性类型 | 键          | 备注                                                      |
+| ------------------- | ------------ | ----------- | --------------------------------------------------------- |
+| id                  | long         | primary key | auto_increment 1000开始                                   |
+| judge_mode          | String       |             | 默认为default、其他值有spj、interactive                   |
+| problem_id          | String       |             | 题目展示id                                                |
+| title               | String       |             | 题目标题                                                  |
+| author              | String       |             | 默认可为无                                                |
+| type                | int          |             | 题目类型 0为ACM,1为OI                                     |
+| time_limit          | int          |             | 时间限制(ms)，默认为c/c++限制,其它语言为2倍               |
+| memory_limit        | int          |             | 空间限制(mb)，默认为c/c++限制,其它语言为2倍               |
+| stack_limit         | int          |             | 栈限制(mb)，默认为128                                     |
+| description         | String       |             | 内容描述                                                  |
+| input               | String       |             | 输入描述                                                  |
+| output              | String       |             | 输出描述                                                  |
+| examples            | Srting       |             | 题面输入输出样例，不纳入评测数据                          |
+| source              | int          |             | 题目来源（比赛id），默认为hoj,可能为爬虫vj                |
+| difficulty          | int          |             | 题目难度，0简单，1中等，2困难                             |
+| hint                | String       |             | 备注 提醒                                                 |
+| auth                | int          |             | 默认为1公开，2为私有，3为比赛中。                         |
+| io_score            | int          |             | 当该题目为io题目时的分数 默认为100                        |
+| code_share          | boolean      |             | 该题目对应的相关提交代码，用户是否可用分享                |
+| spj_code            | String       |             | 特判或交互程序代码                                        |
+| spj_language        | String       |             | 特判或交互程序的语言                                      |
+| user_extra_file     | String       |             | 选手程序的额外文件 json key：文件名 value：文件内容       |
+| judge_extra_file    | String       |             | 特判或交互程序的额外文件 json key：文件名 value：文件内容 |
+| is_remove_end_blank | boolean      |             | 是否默认去除用户代码的文末空格                            |
+| open_case_result    | boolean      |             | 是否默认开启该题目的测试样例结果查看                      |
+| caseVersion         | String       |             | 题目测试数据的版本号                                      |
+| is_upload_case      | boolean      |             | 是否是上传zip评测数据的                                   |
+| modified_user       | String       |             | 最新修改题目的用户                                        |
+| gmt_create          | datetime     |             | 创建时间                                                  |
+| gmt_modified        | datetime     |             | 修改时间                                                  |
 
  
 
@@ -396,6 +399,9 @@ contest表
 | open_account_limit | boolean      |      | 是否开启账号限制                                      |
 | account_limit_rule | String       |      | 账号限制规则                                          |
 | rank_show_name     | String       |      | 排行榜显示（username、nickname、realname）            |
+| star_account       | Stirng       |      | 打星用户列表                                          |
+| open_rank          | boolean      |      | 是否开放赛外榜单                                      |
+| auto_real_rank     | boolean      |      | 比赛结束是否自动解除封榜,自动转换成真实榜单           |
 | gmt_create         | datetime     |      | 创建时间                                              |
 | gmt_modified       | datetime     |      | 修改时间                                              |
 
