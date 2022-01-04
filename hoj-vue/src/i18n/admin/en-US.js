@@ -194,13 +194,18 @@ export const m = {
   Example_Input:'Example Input',
   Example_Output:'Example Output',
   Add_Example: 'Add Example',
-  Special_Judge: 'Special Judge',
-  Special_Judge_Code: 'Special Judge Code',
-  Special_Judge_Tips1:'Why use special judge?',
-  Special_Judge_Tips2:'The output required by the problem may not be unique, and different results are allowed.',
-  Special_Judge_Tips3:'The output within a certain precision range is acceptable.',
+  Judge_Mode:'Judge Mode',
+  General_Judge:'General Judge',
+  Special_Judge:'Special Judge',
+  Interactive_Judge:'Interactive Judge',
+  Special_Judge_Code: 'Special Judge Program Code',
+  Interactive_Judge_Code:'Interactive Judge Program Code',
+  General_Judge_Mode_Tips:'1. General Judge: the contestant program reads the problem standard input file, executes the code logic to obtain the contestant\'s output, and compares the contents of the problem standard output file to obtain the problem judgment result',
+  Special_Judge_Mode_Tips:'2. Special Judge: the output results required by the problem may not be unique, and different results are allowed. Therefore, a special program is needed to read standard output, player output and standard input, and compare them to obtain the final judgment result',
+  Interactive_Judge_Mode_Tips:'3. Interactive Judge: the standard output of the interactive program is written to the standard input of the player program through the interactive channel, and the standard output of the player program is written to the standard input of the interactive program through the interactive channel. Both need to flush the output buffer',
   Use_Special_Judge: 'Use Special Judge',
-  SPJ_language: 'SPJ language',
+  SPJ_Language: 'SPJ Program Language',
+  Interactive_Language:'Interactive Program Langugae',
   Compile: 'Compile',
   Code_Template: 'Code Template',
   Type: 'Type',
@@ -228,8 +233,13 @@ export const m = {
   is_required:'is required!',
   Score_must_be_greater_than_or_equal_to_0:'Score must be greater than or equal to 0!',
   Score_must_be_an_integer:'Score must be an integer!',
-  Spj_Code:'Spj Code',
-  Spj_Code_not_Compile_Success:'Spj Code was not compiled successfully, please compile again!',
+  Spj_Or_Interactive_Code:'Spj Or Interactive Code',
+  Spj_Or_Interactive_Code_not_Compile_Success:'Spj Or Interactive Code was not compiled successfully, please compile again!',
+  Judge_Extra_File:'Judge Extra File',
+  Judge_Extra_File_Tips1:'1. User Program: Provide additional library files for user program',
+  Judge_Extra_File_Tips2:'2. Special Or Interactive Program: Provide additional library files for special or interactive programs',
+  User_Program:'User Program',
+  SPJ_Or_Interactive_Program:'Special Or Interactive Program',
 
 
   // /views/admin/problem/tag
@@ -342,4 +352,9 @@ export const m = {
   Content:'Content',
   Report_Content:'Report Content',
   The_number_of_discussions_selected_cannot_be_empty:'The number of discussions selected cannot be empty',
+
+  // components/admin/AddExtraFile.vue
+  Delete_Extra_File_Tips:'Are you sure you want to delete this extra file?',
+  File_Name:'File Name',
+  File_Content:'File Content'
 }

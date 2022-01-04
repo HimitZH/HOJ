@@ -47,7 +47,7 @@ export default {
 </script>
 
 <style scoped>
-.tit .accordion {
+.accordion {
   border: 1px solid #eaeefb;
 }
 .accordion header {

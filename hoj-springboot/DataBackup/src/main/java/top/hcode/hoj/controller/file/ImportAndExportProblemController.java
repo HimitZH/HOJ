@@ -208,8 +208,19 @@ public class ImportAndExportProblemController {
                 problemCaseList.add(BeanUtil.mapToBean(tmp, ProblemCase.class, true));
             }
 
+            // 格式化用户额外文件和判题额外文件
+            if (importProblemVo.getUserExtraFile() != null) {
+                JSONObject userExtraFileJson = JSONUtil.parseObj(importProblemVo.getUserExtraFile());
+                problem.setUserExtraFile(userExtraFileJson.toString());
+            }
+            if (importProblemVo.getJudgeExtraFile() != null) {
+                JSONObject judgeExtraFileJson = JSONUtil.parseObj(importProblemVo.getJudgeExtraFile());
+                problem.setJudgeExtraFile(judgeExtraFileJson.toString());
+            }
+
+
             ProblemDto problemDto = new ProblemDto();
-            problemDto.setIsSpj(importProblemVo.getIsSpj())
+            problemDto.setJudgeMode(importProblemVo.getJudgeMode())
                     .setProblem(problem)
                     .setCodeTemplates(codeTemplates)
                     .setTags(tags)
@@ -225,7 +236,6 @@ public class ImportAndExportProblemController {
         }
         return CommonResult.successResponse(null, "导入题目成功");
     }
-
 
 
     /**

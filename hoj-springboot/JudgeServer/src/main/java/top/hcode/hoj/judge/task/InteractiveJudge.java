@@ -1,0 +1,165 @@
+package top.hcode.hoj.judge.task;
+
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+import top.hcode.hoj.common.exception.SystemError;
+import top.hcode.hoj.judge.AbstractJudge;
+import top.hcode.hoj.judge.SandboxRun;
+import top.hcode.hoj.judge.entity.JudgeDTO;
+import top.hcode.hoj.judge.entity.JudgeGlobalDTO;
+import top.hcode.hoj.judge.entity.SandBoxRes;
+import top.hcode.hoj.util.Constants;
+
+import java.io.File;
+
+/**
+ * @Author: Himit_ZH
+ * @Date: 2022/1/2 23:24
+ * @Description: 交互评测
+ */
+@Component
+public class InteractiveJudge extends AbstractJudge {
+
+    @Override
+    public JSONArray judgeCase(JudgeDTO judgeDTO, JudgeGlobalDTO judgeGlobalDTO) throws SystemError {
+
+        Constants.RunConfig runConfig = judgeGlobalDTO.getRunConfig();
+        Constants.RunConfig interactiveRunConfig = judgeGlobalDTO.getInteractiveRunConfig();
+
+        // 交互程序的路径
+        String interactiveExeSrc = Constants.JudgeDir.INTERACTIVE_WORKPLACE_DIR.getContent()
+                + File.separator + judgeGlobalDTO.getProblemId() + File.separator + interactiveRunConfig.getExeName();
+
+        String testCaseInputFileName = judgeGlobalDTO.getProblemId() + "_input";
+        String testCaseOutputFileName = judgeGlobalDTO.getProblemId() + "_output";
+
+        // 其实交互题不存在用户输出文件的，为了统一格式造了个名字
+        String userOutputFileName = judgeGlobalDTO.getProblemId() + "_user_output";
+
+        JSONArray jsonArray = SandboxRun.interactTestCase(
+                parseRunCommand(runConfig.getCommand(), runConfig, null, null, null),
+                runConfig.getEnvs(),
+                runConfig.getExeName(),
+                judgeGlobalDTO.getUserFileId(),
+                judgeGlobalDTO.getTestTime(),
+                judgeGlobalDTO.getMaxStack(),
+                judgeDTO.getTestCaseInputPath(),
+                testCaseInputFileName,
+                judgeDTO.getTestCaseOutputPath(),
+                testCaseOutputFileName,
+                parseRunCommand(interactiveRunConfig.getCommand(), interactiveRunConfig, testCaseInputFileName, userOutputFileName, testCaseOutputFileName),
+                interactiveRunConfig.getEnvs(),
+                interactiveExeSrc,
+                interactiveRunConfig.getExeName());
+        return jsonArray;
+    }
+
+    @Override
+    public JSONObject checkResult(SandBoxRes sandBoxRes, JudgeDTO judgeDTO, JudgeGlobalDTO judgeGlobalDTO) throws SystemError {
+        return null;
+    }
+
+    @Override
+    public JSONObject checkMultipleResult(SandBoxRes userSandBoxRes, SandBoxRes interactiveSandBoxRes, JudgeDTO judgeDTO, JudgeGlobalDTO judgeGlobalDTO) {
+
+        JSONObject result = new JSONObject();
+
+        // 记录错误信息
+        StringBuilder errMsg = new StringBuilder();
+
+        int userExitCode = userSandBoxRes.getExitCode();
+
+        if (userSandBoxRes.getStatus().equals(Constants.Judge.STATUS_ACCEPTED.getStatus())) {
+            // 如果运行超过题目限制时间，直接TLE
+            if (userSandBoxRes.getTime() >= judgeGlobalDTO.getMaxTime()) {
+                result.set("status", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus());
+            } else if (userSandBoxRes.getMemory() >= judgeGlobalDTO.getMaxMemory()) { // 如果运行超过题目限制空间，直接MLE
+                result.set("status", Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED.getStatus());
+            } else {
+                // 根据交互程序的退出状态码及输出进行判断
+                JSONObject interactiveCheckRes = checkInteractiveRes(interactiveSandBoxRes);
+                int code = interactiveCheckRes.getInt("code");
+                if (code == SPJ_WA) {
+                    result.set("status", Constants.Judge.STATUS_WRONG_ANSWER.getStatus());
+                } else if (code == SPJ_AC) {
+                    result.set("status", Constants.Judge.STATUS_ACCEPTED.getStatus());
+                } else if (code == SPJ_PE) {
+                    result.set("status", Constants.Judge.STATUS_PRESENTATION_ERROR.getStatus());
+                } else {
+                    result.set("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
+                }
+
+                String spjErrMsg = interactiveCheckRes.getStr("errMsg");
+                if (!StringUtils.isEmpty(spjErrMsg)) {
+                    errMsg.append(spjErrMsg).append(" ");
+                }
+            }
+        } else if (userSandBoxRes.getStatus().equals(Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus())) {
+            result.set("status", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus());
+        } else if ((userExitCode != 0 && userExitCode != 13) || (userExitCode == 13 && interactiveSandBoxRes.getExitCode() == 0)) {
+            // Broken Pipe
+            result.set("status", Constants.Judge.STATUS_RUNTIME_ERROR.getStatus());
+            if (userExitCode < 32) {
+                errMsg.append(String.format("Your program return exitCode: %s (%s)\n", userExitCode, SandboxRun.signals.get(userExitCode)));
+            } else {
+                errMsg.append(String.format("Your program return exitCode: %s\n", userExitCode));
+            }
+        } else {
+            result.set("status", interactiveSandBoxRes.getStatus());
+            errMsg.append(interactiveSandBoxRes.getStderr()).append(" ");
+            if (interactiveSandBoxRes.getExitCode() !=0 && !StringUtils.isEmpty(interactiveSandBoxRes.getStderr())) {
+                errMsg.append(String.format("Interactive program exited with code: %s",interactiveSandBoxRes.getExitCode()));
+            }
+        }
+        // kb
+        result.set("memory", userSandBoxRes.getMemory());
+        // ms
+        result.set("time", userSandBoxRes.getTime());
+
+        // 记录该测试点的错误信息
+        if (!StringUtils.isEmpty(errMsg.toString())) {
+            result.set("errMsg", errMsg.toString());
+        }
+
+        return result;
+    }
+
+
+    private JSONObject checkInteractiveRes(SandBoxRes interactiveSandBoxRes) {
+
+        JSONObject result = new JSONObject();
+
+        int exitCode = interactiveSandBoxRes.getExitCode();
+
+        // 获取跑题用户输出或错误输出
+        if (!StringUtils.isEmpty(interactiveSandBoxRes.getStderr())) {
+            result.set("errMsg", interactiveSandBoxRes.getStderr());
+        }
+
+        // 如果程序无异常
+        if (interactiveSandBoxRes.getStatus().equals(Constants.Judge.STATUS_ACCEPTED.getStatus())) {
+            if (exitCode == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+                result.set("code", SPJ_AC);
+            } else {
+                result.set("code", exitCode);
+            }
+        } else if (interactiveSandBoxRes.getStatus().equals(Constants.Judge.STATUS_RUNTIME_ERROR.getStatus())) {
+            if (exitCode == SPJ_WA || exitCode == SPJ_ERROR || exitCode == SPJ_AC || exitCode == SPJ_PE) {
+                result.set("code", exitCode);
+            } else {
+                if (!StringUtils.isEmpty(interactiveSandBoxRes.getStderr())) {
+                    // 适配testlib.h 根据错误信息前缀判断
+                    return parseTestLibErr(interactiveSandBoxRes.getStderr());
+                } else {
+                    result.set("code", SPJ_ERROR);
+                }
+            }
+        } else {
+            result.set("code", SPJ_ERROR);
+        }
+        return result;
+    }
+
+}

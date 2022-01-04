@@ -138,6 +138,11 @@
               <Editor :value.sync="problem.output"></Editor>
             </el-form-item>
           </el-col>
+          <el-col :span="24">
+            <el-form-item style="margin-top: 20px" :label="$t('m.Hint')">
+              <Editor :value.sync="problem.hint"></Editor>
+            </el-form-item>
+          </el-col>
         </el-row>
 
         <el-row :gutter="20">
@@ -159,6 +164,20 @@
               </el-select>
             </el-form-item>
           </el-col>
+
+          <el-col :md="4" :xs="24">
+            <el-form-item :label="$t('m.Type')">
+              <el-radio-group
+                v-model="problem.type"
+                :disabled="disableRuleType || problem.isRemote"
+                @change="problemTypeChange"
+              >
+                <el-radio :label="0">ACM</el-radio>
+                <el-radio :label="1">OI</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+
           <el-col :md="4" :xs="24">
             <el-form-item :label="$t('m.Code_Shareable')">
               <el-switch
@@ -169,7 +188,8 @@
               </el-switch>
             </el-form-item>
           </el-col>
-          <el-col :md="16" :xs="24">
+
+          <el-col :md="12" :xs="24">
             <el-form-item :label="$t('m.Tags')" required>
               <el-tag
                 v-for="tag in problemTags"
@@ -300,30 +320,87 @@
             >{{ $t('m.Add_Example') }}
           </el-button>
         </div>
+
         <template v-if="!problem.isRemote">
           <div class="panel-title home-title">
-            {{ $t('m.Special_Judge') }}
+            {{ $t('m.Judge_Extra_File') }}
             <el-popover placement="right" trigger="hover">
-              <p>{{ $t('m.Special_Judge_Tips1') }}</p>
-              <p>1. {{ $t('m.Special_Judge_Tips2') }}</p>
-              <p>2. {{ $t('m.Special_Judge_Tips3') }}</p>
+              <p>{{ $t('m.Judge_Extra_File_Tips1') }}</p>
+              <p>{{ $t('m.Judge_Extra_File_Tips2') }}</p>
+              <i slot="reference" class="el-icon-question"></i>
+            </el-popover>
+          </div>
+
+          <el-row :gutter="20">
+            <el-col :md="12" :xs="24">
+              <el-form-item>
+                <el-checkbox v-model="addUserExtraFile">{{
+                  $t('m.User_Program')
+                }}</el-checkbox>
+              </el-form-item>
+              <el-form-item v-if="addUserExtraFile">
+                <AddExtraFile
+                  :files.sync="userExtraFile"
+                  type="user"
+                  @upsertFile="upsertFile"
+                  @deleteFile="deleteFile"
+                ></AddExtraFile>
+              </el-form-item>
+            </el-col>
+            <el-col :md="12" :xs="24">
+              <el-form-item>
+                <el-checkbox v-model="addJudgeExtraFile">{{
+                  $t('m.SPJ_Or_Interactive_Program')
+                }}</el-checkbox>
+              </el-form-item>
+              <el-form-item v-if="addJudgeExtraFile">
+                <AddExtraFile
+                  :files.sync="judgeExtraFile"
+                  type="judge"
+                  @upsertFile="upsertFile"
+                  @deleteFile="deleteFile"
+                ></AddExtraFile>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </template>
+
+        <template v-if="!problem.isRemote">
+          <div class="panel-title home-title">
+            {{ $t('m.Judge_Mode') }}
+            <el-popover placement="right" trigger="hover">
+              <p>{{ $t('m.General_Judge_Mode_Tips') }}</p>
+              <p>{{ $t('m.Special_Judge_Mode_Tips') }}</p>
+              <p>{{ $t('m.Interactive_Judge_Mode_Tips') }}</p>
               <i slot="reference" class="el-icon-question"></i>
             </el-popover>
           </div>
           <el-form-item label="" :error="error.spj">
             <el-col :span="24">
-              <el-checkbox
-                v-model="problem.spj"
-                @click.native.prevent="switchSpj()"
-                >{{ $t('m.Use_Special_Judge') }}</el-checkbox
-              >
+              <el-radio-group v-model="problem.judgeMode" @change="switchMode">
+                <el-radio label="default">{{ $t('m.General_Judge') }}</el-radio>
+                <el-radio label="spj">{{ $t('m.Special_Judge') }}</el-radio>
+                <el-radio label="interactive">{{
+                  $t('m.Interactive_Judge')
+                }}</el-radio>
+              </el-radio-group>
             </el-col>
           </el-form-item>
-          <el-form-item v-if="problem.spj">
-            <Accordion :title="$t('m.Special_Judge_Code')">
+          <el-form-item v-if="problem.judgeMode != 'default'">
+            <Accordion
+              :title="
+                problem.judgeMode == 'spj'
+                  ? $t('m.Special_Judge_Code')
+                  : $t('m.Interactive_Judge_Code')
+              "
+            >
               <template slot="header">
                 <span style="margin-right:5px;"
-                  >{{ $t('m.SPJ_language') }}：</span
+                  >{{
+                    problem.judgeMode == 'spj'
+                      ? $t('m.SPJ_Language')
+                      : $t('m.Interactive_Language')
+                  }}：</span
                 >
                 <el-radio-group v-model="problem.spjLanguage">
                   <el-tooltip
@@ -355,11 +432,8 @@
           </el-form-item>
         </template>
 
-        <el-form-item style="margin-top: 20px" :label="$t('m.Hint')">
-          <Editor :value.sync="problem.hint"></Editor>
-        </el-form-item>
-
-        <el-form-item :label="$t('m.Code_Template')">
+        <div class="panel-title home-title">{{ $t('m.Code_Template') }}</div>
+        <el-form-item>
           <el-row>
             <el-col
               :span="24"
@@ -375,21 +449,6 @@
             </el-col>
           </el-row>
         </el-form-item>
-
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item :label="$t('m.Type')">
-              <el-radio-group
-                v-model="problem.type"
-                :disabled="disableRuleType || problem.isRemote"
-                @change="problemTypeChange"
-              >
-                <el-radio :label="0">ACM</el-radio>
-                <el-radio :label="1">OI</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
 
         <el-row :gutter="20" v-if="!problem.isRemote">
           <div class="panel-title home-title">
@@ -582,11 +641,13 @@ import myMessage from '@/common/message';
 import { PROBLEM_LEVEL_RESERVE } from '@/common/constants';
 const Editor = () => import('@/components/admin/Editor.vue');
 const Accordion = () => import('@/components/admin/Accordion.vue');
+const AddExtraFile = () => import('@/components/admin/AddExtraFile.vue');
 const CodeMirror = () => import('@/components/admin/CodeMirror.vue');
 export default {
   name: 'Problem',
   components: {
     Accordion,
+    AddExtraFile,
     CodeMirror,
     Editor,
   },
@@ -635,7 +696,6 @@ export default {
         auth: 1,
         codeShare: true,
         examples: [], // 题面上的样例输入输出
-        spj: false,
         spjLanguage: '',
         spjCode: '',
         spjCompileOk: false,
@@ -647,6 +707,9 @@ export default {
         hint: '',
         source: '',
         cid: null,
+        judgeMode: 'default',
+        userExtraFile: '',
+        judgeExtraFile: '',
       },
       problemTags: [], //指定问题的标签列表
       problemLanguages: [], //指定问题的编程语言列表
@@ -677,6 +740,10 @@ export default {
         spjCode: '',
         spjLanguage: '',
       },
+      addUserExtraFile: false,
+      addJudgeExtraFile: false,
+      userExtraFile: null,
+      judgeExtraFile: null,
     };
   },
   mounted() {
@@ -723,7 +790,6 @@ export default {
         auth: 1,
         codeShare: true,
         examples: [],
-        spj: false,
         spjLanguage: '',
         spjCode: '',
         spjCompileOk: false,
@@ -735,6 +801,9 @@ export default {
         hint: '',
         source: '',
         cid: null,
+        judgeMode: 'default',
+        userExtraFile: null,
+        judgeExtraFile: null,
       };
 
       this.contestID = contestID;
@@ -829,13 +898,11 @@ export default {
         }[this.routeName];
         api[funcName](this.pid).then((problemRes) => {
           let data = problemRes.data.data;
-          (data.spjCompileOk = false),
-            (data.uploadTestcaseDir = ''),
-            (data.testCaseScore = []);
-          data.spj = true;
+          data.spjCompileOk = false;
+          data.uploadTestcaseDir = '';
+          data.testCaseScore = [];
           if (!data.spjCode) {
             data.spjCode = '';
-            data.spj = false;
           }
           data.spjLanguage = data.spjLanguage || 'C';
           this.spjRecord.spjLanguage = data.spjLanguage;
@@ -844,7 +911,14 @@ export default {
           this.problem['examples'] = utils.stringToExamples(data.examples);
           this.problem['examples'][0]['isOpen'] = true;
           this.testCaseUploaded = true;
-
+          if (this.problem.userExtraFile) {
+            this.addUserExtraFile = true;
+            this.userExtraFile = JSON.parse(this.problem.userExtraFile);
+          }
+          if (this.problem.judgeExtraFile) {
+            this.addJudgeExtraFile = true;
+            this.judgeExtraFile = JSON.parse(this.problem.judgeExtraFile);
+          }
           api
             .admin_getProblemCases(this.pid, this.problem.isUploadCase)
             .then((res) => {
@@ -891,7 +965,7 @@ export default {
       });
     },
 
-    switchSpj() {
+    switchMode(mode) {
       if (this.testCaseUploaded) {
         this.$confirm(this.$i18n.t('m.Change_Judge_Method'), 'Tips', {
           confirmButtonText: this.$i18n.t('m.OK'),
@@ -899,12 +973,12 @@ export default {
           type: 'warning',
         })
           .then(() => {
-            this.problem.spj = !this.problem.spj;
+            this.problem.judgeMode = mode;
             this.resetTestCase();
           })
           .catch(() => {});
       } else {
-        this.problem.spj = !this.problem.spj;
+        this.problem.judgeMode = mode;
       }
     },
     querySearch(queryString, cb) {
@@ -963,6 +1037,34 @@ export default {
         this.problemTags.map((item) => item.name).indexOf(tag),
         1
       );
+    },
+
+    deleteFile(type, name) {
+      if (type == 'user') {
+        this.$delete(this.userExtraFile, name);
+      } else {
+        this.$delete(this.judgeExtraFile, name);
+      }
+    },
+
+    upsertFile(type, name, oldname, content) {
+      if (type == 'user') {
+        if (oldname && oldname != name) {
+          this.$delete(this.userExtraFile, oldname);
+        }
+        if (!this.userExtraFile) {
+          this.userExtraFile = {};
+        }
+        this.userExtraFile[name] = content;
+      } else {
+        if (oldname && oldname != name) {
+          this.$delete(this.judgeExtraFile, name);
+        }
+        if (!this.judgeExtraFile) {
+          this.judgeExtraFile = {};
+        }
+        this.judgeExtraFile[name] = content;
+      }
     },
 
     problemTypeChange(type) {
@@ -1036,7 +1138,7 @@ export default {
             fileList[i].score = averSorce;
           }
         }
-        if (!fileList[i].output && this.problem.spj) {
+        if (!fileList[i].output) {
           fileList[i].output = '-';
         }
         fileList[i].pid = this.problem.id;
@@ -1052,11 +1154,16 @@ export default {
     compileSPJ() {
       let data = {
         pid: this.problem.id,
-        spjSrc: this.problem.spjCode,
-        spjLanguage: this.problem.spjLanguage,
+        code: this.problem.spjCode,
+        language: this.problem.spjLanguage,
+        extraFiles: this.judgeExtraFile,
       };
       this.loadingCompile = true;
-      api.compileSPJ(data).then(
+      let apiMethodName = 'compileSPJ';
+      if (this.problem.judgeMode == 'interactive') {
+        apiMethodName = 'compileInteractive';
+      }
+      api[apiMethodName](data).then(
         (res) => {
           this.loadingCompile = false;
           this.problem.spjCompileOk = true;
@@ -1218,14 +1325,21 @@ export default {
         myMessage.error(this.error.tags);
         return;
       }
+      let isChangeModeCode =
+        this.spjRecord.spjLanguage != this.problem.spjLanguage ||
+        this.spjRecord.spjCode != this.problem.spjCode;
 
-      if (this.problem.spj) {
+      if (this.problem.judgeMode != 'default') {
         if (!this.problem.spjCode) {
           this.error.spj =
-            this.$i18n.t('m.Spj_Code') + ' ' + this.$i18n.t('m.is_required');
+            this.$i18n.t('m.Spj_Or_Interactive_Code') +
+            ' ' +
+            this.$i18n.t('m.is_required');
           myMessage.error(this.error.spj);
-        } else if (!this.problem.spjCompileOk) {
-          this.error.spj = this.$i18n.t('m.Spj_Code_not_Compile_Success');
+        } else if (!this.problem.spjCompileOk && isChangeModeCode) {
+          this.error.spj = this.$i18n.t(
+            'm.Spj_Or_Interactive_Code_not_Compile_Success'
+          );
         }
         if (this.error.spj) {
           myMessage.error(this.error.spj);
@@ -1294,21 +1408,31 @@ export default {
       }
 
       let problemDto = {}; // 上传给后台的数据
-      if (this.problem.spj) {
-        if (
-          this.spjRecord.spjLanguage != this.problem.spjLanguage ||
-          this.spjRecord.spjCode != this.problem.spjCode
-        ) {
-          problemDto['changeSpj'] = true;
+      if (this.problem.judgeMode != 'default') {
+        if (isChangeModeCode) {
+          problemDto['changeModeCode'] = true;
         }
       } else {
-        // 原本是spj，但现在关闭了
+        // 原本是spj或交互，但现在关闭了
         if (!this.spjRecord.spjCode) {
-          problemDto['changeSpj'] = true;
+          problemDto['changeModeCode'] = true;
           this.problem.spjCode = null;
           this.problem.spjLanguage = null;
         }
       }
+
+      if (this.userExtraFile && Object.keys(this.userExtraFile).length != 0) {
+        this.problem.userExtraFile = JSON.stringify(this.userExtraFile);
+      } else {
+        this.problem.userExtraFile = null;
+      }
+
+      if (this.judgeExtraFile && Object.keys(this.judgeExtraFile).length != 0) {
+        this.problem.judgeExtraFile = JSON.stringify(this.judgeExtraFile);
+      } else {
+        this.problem.judgeExtraFile = null;
+      }
+
       problemDto['problem'] = Object.assign({}, this.problem); // 深克隆
       problemDto.problem.examples = utils.examplesToString(
         this.problem.examples
@@ -1319,7 +1443,7 @@ export default {
       problemDto['languages'] = problemLanguageList;
       problemDto['isUploadTestCase'] = this.problem.isUploadCase;
       problemDto['uploadTestcaseDir'] = this.problem.uploadTestcaseDir;
-      problemDto['isSpj'] = this.problem.spj;
+      problemDto['judgeMode'] = this.problem.judgeMode;
 
       // 如果选择上传文件，则使用上传后的结果
       if (this.problem.isUploadCase) {

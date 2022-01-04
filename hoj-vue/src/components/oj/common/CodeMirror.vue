@@ -168,7 +168,6 @@ export default {
         showCursorWhenSelecting: true,
         highlightSelectionMatches: { showToken: /\w/, annotateScrollbar: true },
         // extraKeys: { Ctrl: 'autocomplete' }, //自定义快捷键
-        autoFocus: true,
         matchBrackets: true, //括号匹配
         indentUnit: 4, //一个块（编辑语言中的含义）应缩进多少个空格
         styleActiveLine: true,

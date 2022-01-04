@@ -1,6 +1,8 @@
 package top.hcode.hoj.controller.admin;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -19,7 +21,7 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.crawler.problem.ProblemStrategy;
 import top.hcode.hoj.judge.Dispatcher;
 import top.hcode.hoj.pojo.dto.ProblemDto;
-import top.hcode.hoj.pojo.entity.judge.CompileSpj;
+import top.hcode.hoj.pojo.entity.judge.CompileDTO;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.ProblemCase;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
@@ -107,7 +109,7 @@ public class AdminProblemController {
     @GetMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult getProblem(@Valid @RequestParam("pid") Long pid) {
+    public CommonResult getProblem(@RequestParam("pid") Long pid) {
 
         Problem problem = problemService.getById(pid);
 
@@ -204,15 +206,29 @@ public class AdminProblemController {
     @PostMapping("/compile-spj")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult compileSpj(@RequestBody CompileSpj compileSpj) {
+    public CommonResult compileSpj(@RequestBody CompileDTO compileDTO) {
 
-        if (StringUtils.isEmpty(compileSpj.getSpjSrc()) ||
-                StringUtils.isEmpty(compileSpj.getSpjLanguage())) {
+        if (StringUtils.isEmpty(compileDTO.getCode()) ||
+                StringUtils.isEmpty(compileDTO.getLanguage())) {
             return CommonResult.errorResponse("参数不能为空！");
         }
 
-        compileSpj.setToken(judgeToken);
-        return dispatcher.dispatcher("compile", "/compile-spj", compileSpj);
+        compileDTO.setToken(judgeToken);
+        return dispatcher.dispatcher("compile", "/compile-spj", compileDTO);
+    }
+
+    @PostMapping("/compile-interactive")
+    @RequiresAuthentication
+    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
+    public CommonResult compileInteractive(@RequestBody CompileDTO compileDTO) {
+
+        if (StringUtils.isEmpty(compileDTO.getCode()) ||
+                StringUtils.isEmpty(compileDTO.getLanguage())) {
+            return CommonResult.errorResponse("参数不能为空！");
+        }
+
+        compileDTO.setToken(judgeToken);
+        return dispatcher.dispatcher("compile", "/compile-interactive", compileDTO);
     }
 
     @GetMapping("/import-remote-oj-problem")

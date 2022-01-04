@@ -38,14 +38,14 @@ public class ProblemTestCaseUtils {
     public JSONObject initTestCase(List<HashMap<String, Object>> testCases,
                                    Long problemId,
                                    String version,
-                                   Boolean isSpj) throws SystemError, UnsupportedEncodingException {
+                                  String mode) throws SystemError, UnsupportedEncodingException {
 
         if (testCases == null || testCases.size() == 0) {
             throw new SystemError("题号为：" + problemId + "的评测数据为空！", null, "The test cases does not exist.");
         }
 
         JSONObject result = new JSONObject();
-        result.set("isSpj", isSpj);
+        result.set("mode", mode);
         result.set("version", version);
         result.set("testCasesSize", testCases.size());
 
@@ -74,8 +74,8 @@ public class ProblemTestCaseUtils {
             FileWriter outFile = new FileWriter(testCasesDir + "/" + outputName, CharsetUtil.UTF_8);
             outFile.write(outputData);
 
-            // spj是根据特判程序输出判断结果，所以无需初始化测试数据
-            if (!isSpj) {
+            // spj或interactive是根据特判程序输出判断结果，所以无需初始化测试数据
+            if (Constants.JudgeMode.DEFAULT.getMode().equals(mode)) {
                 // 原数据MD5
                 jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(outputData.getBytes()));
                 // 原数据大小
@@ -98,13 +98,13 @@ public class ProblemTestCaseUtils {
     }
 
     // 本地有文件，进行数据初始化 生成json文件
-    public JSONObject initLocalTestCase(Boolean isSpj,
+    public JSONObject initLocalTestCase(String mode,
                                         String version,
                                         String testCasesDir,
                                         List<ProblemCase> problemCaseList) {
 
         JSONObject result = new JSONObject();
-        result.set("isSpj", isSpj);
+        result.set("mode", mode);
         result.set("version", version);
         result.set("testCasesSize", problemCaseList.size());
         result.set("testCases", new JSONArray());
@@ -120,8 +120,8 @@ public class ProblemTestCaseUtils {
             FileReader readFile = new FileReader(testCasesDir + File.separator + problemCase.getOutput(), CharsetUtil.UTF_8);
             String output = readFile.readString().replaceAll("\r\n", "\n");
 
-            // spj是根据特判程序输出判断结果，所以无需初始化测试数据
-            if (!isSpj) {
+            // spj或interactive是根据特判程序输出判断结果，所以无需初始化测试数据
+            if (Constants.JudgeMode.DEFAULT.getMode().equals(mode)) {
                 // 原数据MD5
                 jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(output.getBytes()));
                 // 原数据大小
@@ -144,23 +144,23 @@ public class ProblemTestCaseUtils {
 
 
     // 获取指定题目的info数据
-    public JSONObject loadTestCaseInfo(Long problemId, String testCasesDir, String version, Boolean isSpj) throws SystemError, UnsupportedEncodingException {
+    public JSONObject loadTestCaseInfo(Long problemId, String testCasesDir, String version, String mode) throws SystemError, UnsupportedEncodingException {
         if (FileUtil.exist(testCasesDir + File.separator + "info")) {
             FileReader fileReader = new FileReader(testCasesDir + File.separator + "info", CharsetUtil.UTF_8);
             String infoStr = fileReader.readString();
             JSONObject testcaseInfo = JSONUtil.parseObj(infoStr);
             // 测试样例被改动需要重新生成
             if (!testcaseInfo.getStr("version", null).equals(version)) {
-                return tryInitTestCaseInfo(testCasesDir, problemId, version, isSpj);
+                return tryInitTestCaseInfo(testCasesDir, problemId, version, mode);
             }
             return testcaseInfo;
         } else {
-            return tryInitTestCaseInfo(testCasesDir, problemId, version, isSpj);
+            return tryInitTestCaseInfo(testCasesDir, problemId, version, mode);
         }
     }
 
     // 若没有测试数据，则尝试从数据库获取并且初始化到本地，如果数据库中该题目测试数据为空，rsync同步也出了问题，则直接判系统错误
-    public JSONObject tryInitTestCaseInfo(String testCasesDir, Long problemId, String version, Boolean isSpj) throws SystemError, UnsupportedEncodingException {
+    public JSONObject tryInitTestCaseInfo(String testCasesDir, Long problemId, String version, String mode) throws SystemError, UnsupportedEncodingException {
 
         QueryWrapper<ProblemCase> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("pid", problemId);
@@ -180,7 +180,7 @@ public class ProblemTestCaseUtils {
             if (FileUtil.isEmpty(new File(testCasesDir))) { //如果本地对应文件夹也为空，说明文件丢失了
                 throw new SystemError("problemID:[" + problemId + "] test case has not found.", null, null);
             } else {
-                return initLocalTestCase(isSpj, version, testCasesDir, problemCases);
+                return initLocalTestCase(mode, version, testCasesDir, problemCases);
             }
         } else {
 
@@ -194,7 +194,7 @@ public class ProblemTestCaseUtils {
                 testCases.add(tmp);
             }
 
-            return initTestCase(testCases, problemId, version, isSpj);
+            return initTestCase(testCases, problemId, version, mode);
         }
     }
 

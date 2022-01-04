@@ -1,7 +1,6 @@
 package top.hcode.hoj.judge;
 
 import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONNull;
 import cn.hutool.json.JSONObject;
 
 import cn.hutool.json.JSONUtil;
@@ -11,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import top.hcode.hoj.common.exception.SystemError;
@@ -19,6 +19,7 @@ import top.hcode.hoj.util.Constants;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: Himit_ZH
@@ -74,7 +75,7 @@ public class SandboxRun {
 
     private static final int MEMORY_LIMIT_MB = 512;
 
-    private static final int STACK_LIMIT_MB = 128;
+    private static final int STACK_LIMIT_MB = 256;
 
     private SandboxRun() {
 
@@ -200,9 +201,38 @@ public class SandboxRun {
         COMPILE_FILES.put(stderr);
     }
 
-    public static JSONArray compile(Long maxCpuTime, Long maxRealTime, Long maxMemory, Long maxStack, String srcName, String exeName,
-                                    List<String> args, List<String> envs, String code, Boolean needCopyOutCached,
-                                    Boolean needCopyOutExe, String copyOutDir) throws SystemError {
+    /**
+     * @param maxCpuTime        最大编译的cpu时间 ms
+     * @param maxRealTime       最大编译的真实时间 ms
+     * @param maxMemory         最大编译的空间 b
+     * @param maxStack          最大编译的栈空间 b
+     * @param srcName           编译的源文件名字
+     * @param exeName           编译生成的exe文件名字
+     * @param args              编译的cmd参数
+     * @param envs              编译的环境变量
+     * @param code              编译的源代码
+     * @param extraFiles        编译所需的额外文件 key:文件名，value:文件内容
+     * @param needCopyOutCached 是否需要生成编译后的用户程序exe文件
+     * @param needCopyOutExe    是否需要生成用户程序的缓存文件，即生成用户程序id
+     * @param copyOutDir        生成编译后的用户程序exe文件的指定路径
+     * @MethodName compile
+     * @Description 编译运行
+     * @Return
+     * @Since 2022/1/3
+     */
+    public static JSONArray compile(Long maxCpuTime,
+                                    Long maxRealTime,
+                                    Long maxMemory,
+                                    Long maxStack,
+                                    String srcName,
+                                    String exeName,
+                                    List<String> args,
+                                    List<String> envs,
+                                    String code,
+                                    HashMap<String, String> extraFiles,
+                                    Boolean needCopyOutCached,
+                                    Boolean needCopyOutExe,
+                                    String copyOutDir) throws SystemError {
         JSONObject cmd = new JSONObject();
         cmd.set("args", args);
         cmd.set("env", envs);
@@ -215,10 +245,21 @@ public class SandboxRun {
         cmd.set("procLimit", maxProcessNumber);
         cmd.set("stackLimit", maxStack);
 
-        JSONObject file = new JSONObject();
-        file.set("content", code);
+        JSONObject fileContent = new JSONObject();
+        fileContent.set("content", code);
+
         JSONObject copyIn = new JSONObject();
-        copyIn.set(srcName, file);
+        copyIn.set(srcName, fileContent);
+
+        if (extraFiles != null) {
+            for (Map.Entry<String, String> entry : extraFiles.entrySet()) {
+                if (!StringUtils.isEmpty(entry.getKey()) && !StringUtils.isEmpty(entry.getValue())) {
+                    JSONObject content = new JSONObject();
+                    content.set("content", entry.getValue());
+                    copyIn.set(entry.getKey(), content);
+                }
+            }
+        }
 
         cmd.set("copyIn", copyIn);
         cmd.set("copyOut", new JSONArray().put("stdout").put("stderr"));
@@ -241,8 +282,29 @@ public class SandboxRun {
     }
 
 
-    public static JSONArray testCase(List<String> args, List<String> envs, String testCasePath, Long maxTime, Long maxOutputSize,
-                                     Integer maxStack, String exeName, String fileId) throws SystemError {
+    /**
+     * @param args          普通评测运行cmd的命令参数
+     * @param envs          普通评测运行的环境变量
+     * @param testCasePath  题目数据的输入文件路径
+     * @param maxTime       评测的最大限制时间 ms
+     * @param maxOutputSize 评测的最大输出大小 kb
+     * @param maxStack      评测的最大限制栈空间 mb
+     * @param exeName       评测的用户程序名称
+     * @param fileId        评测的用户程序文件id
+     * @MethodName testCase
+     * @Description 普通评测
+     * @Return JSONArray
+     * @Since 2022/1/3
+     */
+    public static JSONArray testCase(List<String> args,
+                                     List<String> envs,
+                                     String testCasePath,
+                                     Long maxTime,
+                                     Long maxOutputSize,
+                                     Integer maxStack,
+                                     String exeName,
+                                     String fileId) throws SystemError {
+
         JSONObject cmd = new JSONObject();
         cmd.set("args", args);
         cmd.set("env", envs);
@@ -292,6 +354,22 @@ public class SandboxRun {
     }
 
 
+    /**
+     * @param args                   特殊判题的运行cmd命令参数
+     * @param envs                   特殊判题的运行环境变量
+     * @param userOutputFilePath     用户程序输出文件的路径
+     * @param userOutputFileName     用户程序输出文件的名字
+     * @param testCaseInputFilePath  题目数据的输入文件的路径
+     * @param testCaseInputFileName  题目数据的输入文件的名字
+     * @param testCaseOutputFilePath 题目数据的输出文件的路径
+     * @param testCaseOutputFileName 题目数据的输出文件的路径
+     * @param spjExeSrc              特殊判题的exe文件的路径
+     * @param spjExeName             特殊判题的exe文件的名字
+     * @MethodName spjCheckResult
+     * @Description 特殊判题的评测
+     * @Return JSONArray
+     * @Since 2022/1/3
+     */
     public static JSONArray spjCheckResult(List<String> args,
                                            List<String> envs,
                                            String userOutputFilePath,
@@ -302,6 +380,7 @@ public class SandboxRun {
                                            String testCaseOutputFileName,
                                            String spjExeSrc,
                                            String spjExeName) throws SystemError {
+
         JSONObject cmd = new JSONObject();
         cmd.set("args", args);
         cmd.set("env", envs);
@@ -367,23 +446,41 @@ public class SandboxRun {
         return result;
     }
 
-    /*
-           交互跑题 暂时不启用
+
+    /**
+     * @param args                   cmd的命令参数 评测运行的命令
+     * @param envs                   测评的环境变量
+     * @param userExeName            用户程序的名字
+     * @param userFileId             用户程序在编译后返回的id，主要是对应内存中已编译后的文件
+     * @param userMaxTime            用户程序的最大测评时间 ms
+     * @param userMaxStack           用户程序的最大测评栈空间 mb
+     * @param testCaseInputPath      题目数据的输入文件路径
+     * @param testCaseInputFileName  题目数据的输入文件名字
+     * @param testCaseOutputFilePath 题目数据的输出文件路径
+     * @param testCaseOutputFileName 题目数据的输出文件名字
+     * @param interactArgs           交互程序运行的cmd命令参数
+     * @param interactEnvs           交互程序运行的环境变量
+     * @param interactExeSrc         交互程序的exe文件路径
+     * @param interactExeName        交互程序的exe文件名字
+     * @MethodName interactTestCase
+     * @Description 交互评测
+     * @Return JSONArray
+     * @Since 2022/1/3
      */
     public static JSONArray interactTestCase(List<String> args,
                                              List<String> envs,
                                              String userExeName,
                                              String userFileId,
+                                             Long userMaxTime,
+                                             Integer userMaxStack,
                                              String testCaseInputPath,
                                              String testCaseInputFileName,
-                                             Long maxTime,
-                                             Integer maxStack,
-                                             List<String> spjArgs,
-                                             List<String> spjEnvs,
-                                             String spjExeSrc,
                                              String testCaseOutputFilePath,
                                              String testCaseOutputFileName,
-                                             String spjExeName) throws SystemError {
+                                             List<String> interactArgs,
+                                             List<String> interactEnvs,
+                                             String interactExeSrc,
+                                             String interactExeName) throws SystemError {
 
         /**
          *  注意：用户源代码需要先编译，若是通过编译需要先将文件存入内存，再利用管道判题，同时特殊判题程序必须已编译且存在（否则判题失败，系统错误）！
@@ -408,12 +505,12 @@ public class SandboxRun {
         pipeInputCmd.set("files", JSONUtil.parseArray(inTmp, false));
 
         // ms-->ns
-        pipeInputCmd.set("cpuLimit", maxTime * 1000 * 1000L);
-        pipeInputCmd.set("realCpuLimit", maxTime * 1000 * 1000L * 3);
+        pipeInputCmd.set("cpuLimit", userMaxTime * 1000 * 1000L);
+        pipeInputCmd.set("realCpuLimit", userMaxTime * 1000 * 1000L * 3);
         // byte
         pipeInputCmd.set("memoryLimit", MEMORY_LIMIT_MB * 1024 * 1024L);
         pipeInputCmd.set("clockLimit", maxProcessNumber);
-        pipeInputCmd.set("stackLimit", maxStack * 1024 * 1024L);
+        pipeInputCmd.set("stackLimit", userMaxStack * 1024 * 1024L);
 
         JSONObject exeFile = new JSONObject();
         exeFile.set("fileId", userFileId);
@@ -426,8 +523,8 @@ public class SandboxRun {
 
         // 管道输出，用户程序输出数据经过特殊判题程序后，得到的最终输出结果。
         JSONObject pipeOutputCmd = new JSONObject();
-        pipeOutputCmd.set("args", spjArgs);
-        pipeOutputCmd.set("env", spjEnvs);
+        pipeOutputCmd.set("args", interactArgs);
+        pipeOutputCmd.set("env", interactEnvs);
 
         JSONArray outFiles = new JSONArray();
 
@@ -453,7 +550,7 @@ public class SandboxRun {
         pipeOutputCmd.set("stackLimit", STACK_LIMIT_MB * 1024 * 1024L);
 
         JSONObject spjExeFile = new JSONObject();
-        spjExeFile.set("src", spjExeSrc);
+        spjExeFile.set("src", interactExeSrc);
 
         JSONObject stdInputFileSrc = new JSONObject();
         stdInputFileSrc.set("src", testCaseInputPath);
@@ -462,7 +559,7 @@ public class SandboxRun {
         stdOutFileSrc.set("src", testCaseOutputFilePath);
 
         JSONObject spjCopyIn = new JSONObject();
-        spjCopyIn.set(spjExeName, spjExeFile);
+        spjCopyIn.set(interactExeName, spjExeFile);
         spjCopyIn.set(testCaseInputFileName, stdInputFileSrc);
         spjCopyIn.set(testCaseOutputFileName, stdOutFileSrc);
 
@@ -502,8 +599,10 @@ public class SandboxRun {
 
         // 调用判题安全沙箱
         JSONArray result = instance.run("/run", param);
-        JSONObject tmp = (JSONObject) result.get(0);
-        ((JSONObject) result.get(0)).set("status", RESULT_MAP_STATUS.get(tmp.getStr("status")));
+        JSONObject userRes = (JSONObject) result.get(0);
+        JSONObject interactiveRes = (JSONObject) result.get(1);
+        userRes.set("status", RESULT_MAP_STATUS.get(userRes.getStr("status")));
+        interactiveRes.set("status", RESULT_MAP_STATUS.get(interactiveRes.getStr("status")));
         return result;
     }
 
@@ -598,7 +697,7 @@ public class SandboxRun {
               }
             }]
 
-    3. SPJ
+    3. Interactive
 
         {
     "pipeMapping": [

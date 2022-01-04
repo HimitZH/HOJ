@@ -1,18 +1,14 @@
 package top.hcode.hoj.controller;
 
 
-import cn.hutool.core.map.MapUtil;
-import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.CommonResult;
-import top.hcode.hoj.common.exception.CompileError;
 import top.hcode.hoj.common.exception.SystemError;
-import top.hcode.hoj.judge.SandboxRun;
-import top.hcode.hoj.pojo.entity.judge.CompileSpj;
+import top.hcode.hoj.pojo.entity.judge.CompileDTO;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.ToJudge;
 import top.hcode.hoj.pojo.entity.problem.Problem;
@@ -22,8 +18,6 @@ import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.util.Constants;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
 
 
 /**
@@ -109,17 +103,30 @@ public class JudgeController {
 
 
     @PostMapping(value = "/compile-spj")
-    public CommonResult compileSpj(@RequestBody CompileSpj compileSpj) {
+    public CommonResult compileSpj(@RequestBody CompileDTO compileDTO) {
 
-        if (!compileSpj.getToken().equals(judgeToken)) {
+        if (!compileDTO.getToken().equals(judgeToken)) {
             return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", CommonResult.STATUS_ACCESS_DENIED);
         }
 
         try {
-            judgeService.compileSpj(compileSpj.getSpjSrc(), compileSpj.getPid(), compileSpj.getSpjLanguage());
+            judgeService.compileSpj(compileDTO.getCode(), compileDTO.getPid(), compileDTO.getLanguage(), compileDTO.getExtraFiles());
             return CommonResult.successResponse(null, "编译成功！");
-        } catch (CompileError compileError) {
-            return CommonResult.errorResponse(compileError.getStderr(), CommonResult.STATUS_FAIL);
+        } catch (SystemError systemError) {
+            return CommonResult.errorResponse(systemError.getStderr(), CommonResult.STATUS_ERROR);
+        }
+    }
+
+    @PostMapping(value = "/compile-interactive")
+    public CommonResult compileInteractive(@RequestBody CompileDTO compileDTO) {
+
+        if (!compileDTO.getToken().equals(judgeToken)) {
+            return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", CommonResult.STATUS_ACCESS_DENIED);
+        }
+
+        try {
+            judgeService.compileInteractive(compileDTO.getCode(), compileDTO.getPid(), compileDTO.getLanguage(), compileDTO.getExtraFiles());
+            return CommonResult.successResponse(null, "编译成功！");
         } catch (SystemError systemError) {
             return CommonResult.errorResponse(systemError.getStderr(), CommonResult.STATUS_ERROR);
         }

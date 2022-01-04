@@ -82,7 +82,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     public boolean adminUpdateProblem(ProblemDto problemDto) {
 
         Problem problem = problemDto.getProblem();
-        if (!problemDto.getIsSpj()) {
+        if (Constants.JudgeMode.DEFAULT.getMode().equals(problemDto.getJudgeMode())) {
             problem.setSpjLanguage(null).setSpjCode(null);
         }
 
@@ -306,19 +306,19 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                 // 如果是选择上传测试文件的，则需要遍历对应文件夹，读取数据，写入数据库,先前的题目数据一并清空。
                 if (problemDto.getIsUploadTestCase()) {
                     // 获取代理bean对象执行异步方法===》根据测试文件初始info
-                    applicationContext.getBean(ProblemServiceImpl.class).initUploadTestCase(problemDto.getIsSpj(), caseVersion, pid, testcaseDir, problemDto.getSamples());
+                    applicationContext.getBean(ProblemServiceImpl.class).initUploadTestCase(problemDto.getJudgeMode(), caseVersion, pid, testcaseDir, problemDto.getSamples());
                 } else {
-                    applicationContext.getBean(ProblemServiceImpl.class).initHandTestCase(problemDto.getIsSpj(), problem.getCaseVersion(), pid, problemDto.getSamples());
+                    applicationContext.getBean(ProblemServiceImpl.class).initHandTestCase(problemDto.getJudgeMode(), problem.getCaseVersion(), pid, problemDto.getSamples());
                 }
             }
-            // 变化成spj或者取消 同时更新测试数据
-            else if (problemDto.getChangeSpj() != null && problemDto.getChangeSpj()) {
+            // 变化成spj或interactive或者取消 同时更新测试数据
+            else if (problemDto.getChangeModeCode() != null && problemDto.getChangeModeCode()) {
                 problem.setCaseVersion(caseVersion);
                 if (problemDto.getIsUploadTestCase()) {
                     // 获取代理bean对象执行异步方法===》根据测试文件初始info
-                    applicationContext.getBean(ProblemServiceImpl.class).initUploadTestCase(problemDto.getIsSpj(), caseVersion, pid, null, problemDto.getSamples());
+                    applicationContext.getBean(ProblemServiceImpl.class).initUploadTestCase(problemDto.getJudgeMode(), caseVersion, pid, null, problemDto.getSamples());
                 } else {
-                    applicationContext.getBean(ProblemServiceImpl.class).initHandTestCase(problemDto.getIsSpj(), problem.getCaseVersion(), pid, problemDto.getSamples());
+                    applicationContext.getBean(ProblemServiceImpl.class).initHandTestCase(problemDto.getJudgeMode(), problem.getCaseVersion(), pid, problemDto.getSamples());
                 }
             }
         }
@@ -341,8 +341,9 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
         Problem problem = problemDto.getProblem();
 
-        if (!problemDto.getIsSpj()) {
-            problem.setSpjLanguage(null).setSpjCode(null);
+        if (Constants.JudgeMode.DEFAULT.getMode().equals(problemDto.getJudgeMode())) {
+            problem.setSpjLanguage(null)
+                    .setSpjCode(null);
         }
 
         /**
@@ -401,7 +402,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             }
             addCasesToProblemResult = problemCaseService.saveOrUpdateBatch(problemCases);
             // 获取代理bean对象执行异步方法===》根据测试文件初始info
-            applicationContext.getBean(ProblemServiceImpl.class).initUploadTestCase(problemDto.getIsSpj(),
+            applicationContext.getBean(ProblemServiceImpl.class).initUploadTestCase(problemDto.getJudgeMode(),
                     problem.getCaseVersion(), pid, testcaseDir, problemDto.getSamples());
         } else {
             // oi题目需要求取平均值，给每个测试点初始oi的score值，默认总分100分
@@ -414,7 +415,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                 problemDto.getSamples().forEach(problemCase -> problemCase.setPid(pid)); // 设置好新题目的pid
                 addCasesToProblemResult = problemCaseService.saveOrUpdateBatch(problemDto.getSamples());
             }
-            initHandTestCase(problemDto.getIsSpj(), problem.getCaseVersion(), pid, problemDto.getSamples());
+            initHandTestCase(problemDto.getJudgeMode(), problem.getCaseVersion(), pid, problemDto.getSamples());
         }
 
         // 为新的题目添加对应的tag，可能tag是原表已有，也可能是新的，所以需要判断。
@@ -449,7 +450,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
     // 初始化上传文件的测试数据，写成json文件
     @Async
-    public void initUploadTestCase(Boolean isSpj,
+    public void initUploadTestCase(String mode,
                                    String version,
                                    Long problemId,
                                    String tmpTestcaseDir,
@@ -464,7 +465,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         }
 
         JSONObject result = new JSONObject();
-        result.set("isSpj", isSpj);
+        result.set("mode", mode);
         result.set("version", version);
         result.set("testCasesSize", problemCaseList.size());
 
@@ -488,8 +489,8 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             FileReader outputFile = new FileReader(testCasesDir + File.separator + problemCase.getOutput(), CharsetUtil.UTF_8);
             String output = outputFile.readString().replaceAll("\r\n", "\n");
 
-            // spj是根据特判程序输出判断结果，所以无需初始化测试数据
-            if (!isSpj) {
+            // spj和interactive是根据特判程序输出判断结果，所以无需初始化测试数据
+            if (Constants.JudgeMode.DEFAULT.getMode().equals(mode)) {
                 // 原数据MD5
                 jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(output.getBytes()));
                 // 原数据大小
@@ -515,13 +516,13 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
     // 初始化手动输入上传的测试数据，写成json文件
     @Async
-    public void initHandTestCase(Boolean isSpj,
+    public void initHandTestCase(String mode,
                                  String version,
                                  Long problemId,
                                  List<ProblemCase> problemCaseList) {
 
         JSONObject result = new JSONObject();
-        result.set("isSpj", isSpj);
+        result.set("mode", mode);
         result.set("version", version);
         result.set("testCasesSize", problemCaseList.size());
 
@@ -548,8 +549,8 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             FileWriter outFile = new FileWriter(testCasesDir + "/" + outputName, CharsetUtil.UTF_8);
             outFile.write(outputData);
 
-            // spj是根据特判程序输出判断结果，所以无需初始化测试数据
-            if (!isSpj) {
+            // spj和interactive是根据特判程序输出判断结果，所以无需初始化测试数据
+            if (Constants.JudgeMode.DEFAULT.getMode().equals(mode)) {
                 // 原数据MD5
                 jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(outputData.getBytes()));
                 // 原数据大小
@@ -674,6 +675,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     }
 
     @Override
+    @SuppressWarnings("All")
     public ImportProblemVo buildExportProblem(Long pid, List<HashMap<String, Object>> problemCaseList,
                                               HashMap<Long, String> languageMap, HashMap<Long, String> tagMap) {
         // 导出相当于导入
@@ -700,9 +702,18 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             codeTemplateList.add(tmp);
         }
         importProblemVo.setCodeTemplates(codeTemplateList);
-        importProblemVo.setIsSpj(problem.getSpjCode() != null);
-
+        importProblemVo.setJudgeMode(problem.getJudgeMode());
         importProblemVo.setSamples(problemCaseList);
+
+        if (!StringUtils.isEmpty(problem.getUserExtraFile())) {
+            HashMap<String,String> userExtraFileMap = (HashMap<String, String>) JSONUtil.toBean(problem.getUserExtraFile(), Map.class);
+            importProblemVo.setUserExtraFile(userExtraFileMap);
+        }
+
+        if (!StringUtils.isEmpty(problem.getJudgeExtraFile())) {
+            HashMap<String,String> judgeExtraFileMap = (HashMap<String, String>) JSONUtil.toBean(problem.getJudgeExtraFile(), Map.class);
+            importProblemVo.setUserExtraFile(judgeExtraFileMap);
+        }
 
         QueryWrapper<ProblemTag> problemTagQueryWrapper = new QueryWrapper<>();
         problemTagQueryWrapper.eq("pid", pid);
