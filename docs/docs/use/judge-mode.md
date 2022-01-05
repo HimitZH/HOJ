@@ -74,10 +74,11 @@ int main(int argc, char *args[]){
 #include<iostream>
 #include<cstdio>
 
-#define AC 100
-#define PE 101
-#define WA 102
-#define ERROR 103
+#define PC 99  // 部分正确
+#define AC 100 // 全部正确
+#define PE 101 // 格式错误
+#define WA 102 // 答案错误
+#define ERROR 103 // 系统错误
 
 using namespace std;
 

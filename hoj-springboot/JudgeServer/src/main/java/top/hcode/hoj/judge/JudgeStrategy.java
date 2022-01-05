@@ -174,13 +174,13 @@ public class JudgeStrategy {
                 result.put("score", totalScore);
                 result.put("oiRankScore", oiRankScore);
             } else {
-                int score = 0;
+                int sumScore = 0;
                 for (JudgeCase testcaseResult : allTestCaseResultList) {
-                    score += testcaseResult.getScore();
+                    sumScore += testcaseResult.getScore();
                 }
                 //测试点总得分*0.1+2*题目难度*（测试点总得分/题目总分）
-                int oiRankScore = (int) Math.round(score * 0.1 + 2 * problemDiffculty * (score * 1.0 / totalScore));
-                result.put("score", score);
+                int oiRankScore = (int) Math.round(sumScore * 0.1 + 2 * problemDiffculty * (sumScore * 1.0 / totalScore));
+                result.put("score", sumScore);
                 result.put("oiRankScore", oiRankScore);
             }
         }
@@ -201,6 +201,7 @@ public class JudgeStrategy {
             Integer time = jsonObject.getLong("time").intValue();
             Integer memory = jsonObject.getLong("memory").intValue();
             Integer status = jsonObject.getInt("status");
+
             Long caseId = jsonObject.getLong("caseId", null);
             String inputFileName = jsonObject.getStr("inputFileName");
             String outputFileName = jsonObject.getStr("outputFileName");
@@ -219,17 +220,29 @@ public class JudgeStrategy {
                 judgeCase.setUserOutput(msg);
             }
 
-            // 过滤出结果不是AC的测试点结果 同时如果是IO题目 则得分为0
-            if (jsonObject.getInt("status").intValue() != Constants.Judge.STATUS_ACCEPTED.getStatus()) {
-                errorTestCaseList.add(jsonObject);
-                if (!isACM) {
+            if (isACM) {
+                if (status != Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+                    errorTestCaseList.add(jsonObject);
+                }
+            } else {
+                int oiScore = jsonObject.getInt("score").intValue();
+                if (status == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+                    judgeCase.setScore(oiScore);
+                } else if (status == Constants.Judge.STATUS_PARTIAL_ACCEPTED.getStatus()) {
+                    errorTestCaseList.add(jsonObject);
+                    Double percentage = jsonObject.getDouble("percentage");
+                    if (percentage != null) {
+                        int score = (int) Math.floor(percentage * oiScore);
+                        judgeCase.setScore(score);
+                    } else {
+                        judgeCase.setScore(0);
+                    }
+                } else {
+                    errorTestCaseList.add(jsonObject);
                     judgeCase.setScore(0);
                 }
-            } else { // 如果是AC同时为IO题目测试点，则获得该点的得分
-                if (!isACM) {
-                    judgeCase.setScore(jsonObject.getInt("score").intValue());
-                }
             }
+
             allCaseResList.add(judgeCase);
         });
 

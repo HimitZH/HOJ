@@ -177,7 +177,7 @@ public class SpecialJudge extends AbstractJudge {
                 result.set("code", exitCode);
             }
         } else if (spjJudgeResult.getInt("status").intValue() == Constants.Judge.STATUS_RUNTIME_ERROR.getStatus()) {
-            if (exitCode == SPJ_WA || exitCode == SPJ_ERROR || exitCode == SPJ_AC || exitCode == SPJ_PE) {
+            if (exitCode == SPJ_WA || exitCode == SPJ_ERROR || exitCode == SPJ_AC || exitCode == SPJ_PE || exitCode == SPJ_PC) {
                 result.set("code", exitCode);
             } else {
                 if (!StringUtils.isEmpty(spjErrOut)) {
