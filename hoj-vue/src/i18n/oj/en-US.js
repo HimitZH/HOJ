@@ -171,6 +171,7 @@ export const m = {
   // /views/oj/problem/Problem.vue
   Problem_Description:'Problem Description',
   My_Submission:'My Submission',
+  Problem_Annex:'Problem Annex',
   Login_to_view_your_submission_history:'Login to view your submission history',
   Shrink_Sidebar:'Shrink Sidebar',
   View_Problem_Content:'View Problem Content',

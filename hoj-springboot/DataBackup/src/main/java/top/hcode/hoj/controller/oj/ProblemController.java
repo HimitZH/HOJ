@@ -237,7 +237,6 @@ public class ProblemController {
     public CommonResult getProblemInfo(@RequestParam(value = "problemId", required = true) String problemId) {
 
         QueryWrapper<Problem> wrapper = new QueryWrapper<Problem>().eq("problem_id", problemId);
-
         //查询题目详情，题目标签，题目语言，题目做题情况
         Problem problem = problemService.getOne(wrapper, false);
         if (problem == null) {
@@ -284,6 +283,11 @@ public class ProblemController {
                 LangNameAndCode.put(tmpMap.get(codeTemplate.getLid()), codeTemplate.getCode());
             }
         }
+        // 屏蔽一些题目参数
+        problem.setJudgeExtraFile(null)
+                .setSpjCode(null)
+                .setSpjLanguage(null);
+
         // 将数据统一写入到一个Vo返回数据实体类中
         ProblemInfoVo problemInfoVo = new ProblemInfoVo(problem, tags, languagesStr, problemCount, LangNameAndCode);
         return CommonResult.successResponse(problemInfoVo, "获取成功");

@@ -92,6 +92,19 @@ function downloadFile (url) {
   })
 }
 
+function downloadFileByText (fileName,fileContent) {
+  return new Promise((resolve, reject) => {
+      let link = document.createElement('a')
+      link.href = window.URL.createObjectURL(new window.Blob([fileContent], {type:'text/plain;charset=utf-8'}))
+      link.download = fileName
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      myMessage.success("Download Successfully!")
+      resolve()
+  })
+}
+
 function getLanguages (all=true) {
   return new Promise((resolve, reject) => {
     let languages = storage.get(STORAGE_KEY.languages)
@@ -138,6 +151,7 @@ export default {
   filterEmptyValue: filterEmptyValue,
   breakLongWords: breakLongWords,
   downloadFile: downloadFile,
+  downloadFileByText:downloadFileByText,
   getLanguages:getLanguages,
   stringToExamples:stringToExamples,
   examplesToString:examplesToString
