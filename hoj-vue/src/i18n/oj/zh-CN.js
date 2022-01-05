@@ -172,6 +172,7 @@ export const m = {
   // /views/oj/problem/Problem.vue
   Problem_Description:'题目描述',
   My_Submission:'我的提交',
+  Problem_Annex:'题目附件',
   Login_to_view_your_submission_history:'登录以查看您的提交记录',
   Shrink_Sidebar:'收缩侧边栏',
   View_Problem_Content:'查看题目内容',

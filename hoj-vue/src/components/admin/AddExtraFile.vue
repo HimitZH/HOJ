@@ -9,7 +9,7 @@
       @close="deleteFile(key)"
       @click="openFileDialog(key, value)"
     >
-      {{ key }}
+      <i class="fa fa-file-code-o"> {{ key }}</i>
     </el-tag>
 
     <el-button

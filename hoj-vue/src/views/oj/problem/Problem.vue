@@ -11,9 +11,10 @@
           >
             <el-tab-pane name="problemDetail" v-loading="loading">
               <span slot="label"
-                ><i class="fa fa-list-alt"></i>
-                {{ $t('m.Problem_Description') }}</span
-              >
+                ><i class="fa fa-list-alt">
+                  {{ $t('m.Problem_Description') }}</i
+                >
+              </span>
               <div :padding="10" shadow class="problem-detail">
                 <div slot="header" class="panel-title">
                   <span>{{ problemData.problem.title }}</span
@@ -395,6 +396,42 @@
                 </div>
               </template>
             </el-tab-pane>
+
+            <el-tab-pane name="extraFile" v-if="userExtraFile">
+              <span slot="label"
+                ><i class="fa fa-file-code-o"> {{ $t('m.Problem_Annex') }}</i>
+              </span>
+              <div class="problem-detail">
+                <el-divider></el-divider>
+                <div>
+                  <el-tag
+                    :key="index"
+                    v-for="(value, key, index) in userExtraFile"
+                    class="extra-file"
+                    :disable-transitions="false"
+                    @click="showExtraFileContent(key, value)"
+                  >
+                    <i class="fa fa-file-code-o"> {{ key }}</i>
+                  </el-tag>
+                </div>
+                <el-divider></el-divider>
+
+                <div class="markdown-body" v-if="fileContent">
+                  <h3>
+                    {{ fileName }}
+                    <el-button
+                      type="primary"
+                      icon="el-icon-download"
+                      size="small"
+                      circle
+                      @click="downloadExtraFile"
+                      class="file-download"
+                    ></el-button>
+                  </h3>
+                  <pre v-highlight="fileContent"><code class="c++"></code></pre>
+                </div>
+              </div>
+            </el-tab-pane>
           </el-tabs>
         </el-col>
         <div
@@ -707,6 +744,9 @@ export default {
       mySubmissions: [],
       loading: false,
       bodyClass: '',
+      userExtraFile: null,
+      fileContent: '',
+      fileName: '',
     };
   },
   // 获取缓存中的该题的做题代码，代码语言，代码风格
@@ -945,6 +985,9 @@ export default {
             result.problem.hint = this.$markDown.render(
               result.problem.hint.toString()
             );
+          }
+          if (result.problem.userExtraFile) {
+            this.userExtraFile = JSON.parse(result.problem.userExtraFile);
           }
 
           this.problemData = result;
@@ -1273,6 +1316,17 @@ export default {
       );
     },
 
+    showExtraFileContent(name, content) {
+      this.fileName = name;
+      this.fileContent = content;
+      this.$nextTick((_) => {
+        addCodeBtn();
+      });
+    },
+    downloadExtraFile() {
+      utils.downloadFileByText(this.fileName, this.fileContent);
+    },
+
     calcOIRankScore(score, difficulty) {
       return 0.1 * score + 2 * difficulty;
     },
@@ -1402,6 +1456,16 @@ a {
   line-height: 1.8;
   margin-bottom: 10px;
   font-size: 14px;
+}
+
+.extra-file {
+  margin: 10px;
+  cursor: pointer;
+}
+.file-download {
+  vertical-align: bottom;
+  float: right;
+  margin-right: 5px;
 }
 
 .submit-detail {
