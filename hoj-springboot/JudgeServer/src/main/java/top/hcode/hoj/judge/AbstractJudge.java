@@ -1,8 +1,10 @@
 package top.hcode.hoj.judge;
 
+import cn.hutool.core.util.ReUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.judge.entity.JudgeDTO;
 import top.hcode.hoj.judge.entity.JudgeGlobalDTO;
@@ -20,6 +22,8 @@ import java.util.List;
  * @Description:
  */
 public abstract class AbstractJudge {
+
+    protected static final int SPJ_PC = 99;
 
     protected static final int SPJ_AC = 100;
 
@@ -117,6 +121,29 @@ public abstract class AbstractJudge {
         } else if (err.startsWith("wrong output format ")) {
             res.set("code", SPJ_WA);
             res.set("errMsg", "May be output presentation error. " + err.split("wrong output format")[1]);
+        } else if (err.startsWith("partially correct ")) {
+            res.set("errMsg", err.split("partially correct ")[1]);
+            String numStr = ReUtil.get("partially correct \\(([\\s\\S]*?)\\) ", err, 1);
+            double percentage = 0.0;
+            if (!StringUtils.isEmpty(numStr)) {
+                percentage = Integer.parseInt(numStr) * 1.0 / 100;
+            }
+            res.set("percentage", percentage);
+            res.set("code", SPJ_PC);
+        } else if (err.startsWith("points ")) {
+            res.set("code", SPJ_PC);
+            String numStr = err.split("points ")[1].split(" ")[0];
+            double percentage = 0.0;
+            if (!StringUtils.isEmpty(numStr)) {
+                percentage = Double.parseDouble(numStr) / 100;
+            }
+            if (percentage == 1) {
+                res.set("code", SPJ_AC);
+            } else {
+                res.set("percentage", percentage);
+            }
+            String tmp = err.split("points ")[1];
+            res.set("errMsg", tmp.substring(0, Math.min(1024, tmp.length())));
         } else if (err.startsWith("FAIL ")) {
             res.set("code", SPJ_ERROR);
             res.set("errMsg", err.split("FAIL ")[1]);

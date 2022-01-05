@@ -86,6 +86,9 @@ public class InteractiveJudge extends AbstractJudge {
                     result.set("status", Constants.Judge.STATUS_ACCEPTED.getStatus());
                 } else if (code == SPJ_PE) {
                     result.set("status", Constants.Judge.STATUS_PRESENTATION_ERROR.getStatus());
+                } else if (code == SPJ_PC){
+                    result.set("status", Constants.Judge.STATUS_PARTIAL_ACCEPTED.getStatus());
+                    result.set("percentage", interactiveCheckRes.getDouble("percentage"));
                 } else {
                     result.set("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
                 }
@@ -145,7 +148,7 @@ public class InteractiveJudge extends AbstractJudge {
                 result.set("code", exitCode);
             }
         } else if (interactiveSandBoxRes.getStatus().equals(Constants.Judge.STATUS_RUNTIME_ERROR.getStatus())) {
-            if (exitCode == SPJ_WA || exitCode == SPJ_ERROR || exitCode == SPJ_AC || exitCode == SPJ_PE) {
+            if (exitCode == SPJ_WA || exitCode == SPJ_ERROR || exitCode == SPJ_AC || exitCode == SPJ_PE || exitCode == SPJ_PC) {
                 result.set("code", exitCode);
             } else {
                 if (!StringUtils.isEmpty(interactiveSandBoxRes.getStderr())) {
