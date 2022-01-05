@@ -77,6 +77,8 @@ public class SandboxRun {
 
     private static final int STACK_LIMIT_MB = 256;
 
+    private static final int STDIO_SIZE_MB = 32;
+
     private SandboxRun() {
 
     }
@@ -191,11 +193,11 @@ public class SandboxRun {
 
         JSONObject stdout = new JSONObject();
         stdout.set("name", "stdout");
-        stdout.set("max", 1024 * 1024 * 16);
+        stdout.set("max", 1024 * 1024 * STDIO_SIZE_MB);
 
         JSONObject stderr = new JSONObject();
         stderr.set("name", "stderr");
-        stderr.set("max", 1024 * 1024 * 16);
+        stderr.set("max", 1024 * 1024 * STDIO_SIZE_MB);
         COMPILE_FILES.put(content);
         COMPILE_FILES.put(stdout);
         COMPILE_FILES.put(stderr);
@@ -458,6 +460,7 @@ public class SandboxRun {
      * @param testCaseInputFileName  题目数据的输入文件名字
      * @param testCaseOutputFilePath 题目数据的输出文件路径
      * @param testCaseOutputFileName 题目数据的输出文件名字
+     * @param userOutputFileName     用户程序的输出文件名字
      * @param interactArgs           交互程序运行的cmd命令参数
      * @param interactEnvs           交互程序运行的环境变量
      * @param interactExeSrc         交互程序的exe文件路径
@@ -477,6 +480,7 @@ public class SandboxRun {
                                              String testCaseInputFileName,
                                              String testCaseOutputFilePath,
                                              String testCaseOutputFileName,
+                                             String userOutputFileName,
                                              List<String> interactArgs,
                                              List<String> interactEnvs,
                                              String interactExeSrc,
@@ -492,15 +496,15 @@ public class SandboxRun {
         pipeInputCmd.set("env", envs);
 
         JSONArray files = new JSONArray();
-        JSONObject content = new JSONObject();
-        content.set("src", testCaseInputPath);
 
         JSONObject stderr = new JSONObject();
         stderr.set("name", "stderr");
-        stderr.set("max", 1024 * 1024 * 16);
-        files.put(content);
+        stderr.set("max", 1024 * 1024 * STDIO_SIZE_MB);
+
+        files.put(new JSONObject());
         files.put(new JSONObject());
         files.put(stderr);
+
         String inTmp = files.toString().replace("{}", "null");
         pipeInputCmd.set("files", JSONUtil.parseArray(inTmp, false));
 
@@ -518,7 +522,7 @@ public class SandboxRun {
         copyIn.set(userExeName, exeFile);
 
         pipeInputCmd.set("copyIn", copyIn);
-        pipeInputCmd.set("copyOut", new JSONArray().put("stderr"));
+        pipeInputCmd.set("copyOut", new JSONArray());
 
 
         // 管道输出，用户程序输出数据经过特殊判题程序后，得到的最终输出结果。
@@ -528,15 +532,12 @@ public class SandboxRun {
 
         JSONArray outFiles = new JSONArray();
 
-        JSONObject outStdout = new JSONObject();
-        outStdout.set("name", "stdout");
-        outStdout.set("max", 1024 * 1024 * 16);
 
         JSONObject outStderr = new JSONObject();
         outStderr.set("name", "stderr");
-        outStderr.set("max", 1024 * 1024 * 16);
+        outStderr.set("max", 1024 * 1024 * STDIO_SIZE_MB);
         outFiles.put(new JSONObject());
-        outFiles.put(outStdout);
+        outFiles.put(new JSONObject());
         outFiles.put(outStderr);
         String outTmp = outFiles.toString().replace("{}", "null");
         pipeOutputCmd.set("files", JSONUtil.parseArray(outTmp, false));
@@ -558,14 +559,14 @@ public class SandboxRun {
         JSONObject stdOutFileSrc = new JSONObject();
         stdOutFileSrc.set("src", testCaseOutputFilePath);
 
-        JSONObject spjCopyIn = new JSONObject();
-        spjCopyIn.set(interactExeName, spjExeFile);
-        spjCopyIn.set(testCaseInputFileName, stdInputFileSrc);
-        spjCopyIn.set(testCaseOutputFileName, stdOutFileSrc);
+        JSONObject interactiveCopyIn = new JSONObject();
+        interactiveCopyIn.set(interactExeName, spjExeFile);
+        interactiveCopyIn.set(testCaseInputFileName, stdInputFileSrc);
+        interactiveCopyIn.set(testCaseOutputFileName, stdOutFileSrc);
 
 
-        pipeOutputCmd.set("copyIn", spjCopyIn);
-        pipeOutputCmd.set("copyOut", new JSONArray().put("stdout").put("stderr"));
+        pipeOutputCmd.set("copyIn", interactiveCopyIn);
+        pipeOutputCmd.set("copyOut", new JSONArray().put(userOutputFileName));
 
         JSONArray cmdList = new JSONArray();
         cmdList.put(pipeInputCmd);
@@ -577,24 +578,45 @@ public class SandboxRun {
 
         // 添加管道映射
         JSONArray pipeMapping = new JSONArray();
+        // 用户程序
+        JSONObject user = new JSONObject();
 
-        JSONObject in = new JSONObject();
-        in.set("index", 0);
-        in.set("fd", 1);
-        in.set("proxy", true);
-        in.set("max", 32 * 1024 * 1024);
+        JSONObject userIn = new JSONObject();
+        userIn.set("index", 0);
+        userIn.set("fd", 1);
 
-        JSONObject out = new JSONObject();
-        out.set("index", 1);
-        out.set("fd", 0);
-        out.set("proxy", true);
-        out.set("max", 32 * 1024 * 1024);
+        JSONObject userOut = new JSONObject();
+        userOut.set("index", 1);
+        userOut.set("fd", 0);
 
-        JSONObject pipe = new JSONObject();
-        pipe.set("in", in);
-        pipe.set("out", out);
+        user.set("in", userIn);
+        user.set("out", userOut);
+        user.set("max", STDIO_SIZE_MB * 1024 * 1024);
+        user.set("proxy", true);
+        user.set("name", "stdout");
 
-        pipeMapping.put(pipe);
+        // 评测程序
+        JSONObject judge = new JSONObject();
+
+        JSONObject judgeIn = new JSONObject();
+        judgeIn.set("index", 1);
+        judgeIn.set("fd", 1);
+
+        JSONObject judgeOut = new JSONObject();
+        judgeOut.set("index", 0);
+        judgeOut.set("fd", 0);
+
+        judge.set("in", judgeIn);
+        judge.set("out", judgeOut);
+        judge.set("max", STDIO_SIZE_MB * 1024 * 1024);
+        judge.set("proxy", true);
+        judge.set("name", "stdout");
+
+
+        // 添加到管道映射列表
+        pipeMapping.add(user);
+        pipeMapping.add(judge);
+
         param.set("pipeMapping", pipeMapping);
 
         // 调用判题安全沙箱
