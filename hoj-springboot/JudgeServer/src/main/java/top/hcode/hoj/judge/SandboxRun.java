@@ -489,8 +489,7 @@ public class SandboxRun {
         /**
          *  注意：用户源代码需要先编译，若是通过编译需要先将文件存入内存，再利用管道判题，同时特殊判题程序必须已编译且存在（否则判题失败，系统错误）！
          */
-
-        // 管道输入，利用已经编译好存在内存的可执行用户代码，同时通过当前题目输入后运行得到输出结果，作为管道数据输入！
+        
         JSONObject pipeInputCmd = new JSONObject();
         pipeInputCmd.set("args", args);
         pipeInputCmd.set("env", envs);
