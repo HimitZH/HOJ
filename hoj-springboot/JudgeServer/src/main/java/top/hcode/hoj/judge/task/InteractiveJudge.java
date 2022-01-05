@@ -35,10 +35,9 @@ public class InteractiveJudge extends AbstractJudge {
         String testCaseInputFileName = judgeGlobalDTO.getProblemId() + "_input";
         String testCaseOutputFileName = judgeGlobalDTO.getProblemId() + "_output";
 
-        // 其实交互题不存在用户输出文件的，为了统一格式造了个名字
         String userOutputFileName = judgeGlobalDTO.getProblemId() + "_user_output";
 
-        JSONArray jsonArray = SandboxRun.interactTestCase(
+        return SandboxRun.interactTestCase(
                 parseRunCommand(runConfig.getCommand(), runConfig, null, null, null),
                 runConfig.getEnvs(),
                 runConfig.getExeName(),
@@ -49,11 +48,11 @@ public class InteractiveJudge extends AbstractJudge {
                 testCaseInputFileName,
                 judgeDTO.getTestCaseOutputPath(),
                 testCaseOutputFileName,
+                userOutputFileName,
                 parseRunCommand(interactiveRunConfig.getCommand(), interactiveRunConfig, testCaseInputFileName, userOutputFileName, testCaseOutputFileName),
                 interactiveRunConfig.getEnvs(),
                 interactiveExeSrc,
                 interactiveRunConfig.getExeName());
-        return jsonArray;
     }
 
     @Override
