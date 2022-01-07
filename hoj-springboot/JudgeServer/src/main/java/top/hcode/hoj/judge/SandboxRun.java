@@ -302,6 +302,7 @@ public class SandboxRun {
                                      List<String> envs,
                                      String testCasePath,
                                      Long maxTime,
+                                     Long maxMemory,
                                      Long maxOutputSize,
                                      Integer maxStack,
                                      String exeName,
@@ -332,7 +333,11 @@ public class SandboxRun {
         cmd.set("cpuLimit", maxTime * 1000 * 1000L);
         cmd.set("clockLimit", maxTime * 1000 * 1000L * 3);
         // byte
-        cmd.set("memoryLimit", MEMORY_LIMIT_MB * 1024 * 1024L);
+        if (maxMemory >= MEMORY_LIMIT_MB) {
+            cmd.set("memoryLimit", (maxMemory + 100) * 1024 * 1024L);
+        } else {
+            cmd.set("memoryLimit", MEMORY_LIMIT_MB * 1024 * 1024L);
+        }
         cmd.set("procLimit", maxProcessNumber);
         cmd.set("stackLimit", maxStack * 1024 * 1024L);
 
@@ -413,6 +418,7 @@ public class SandboxRun {
         cmd.set("procLimit", maxProcessNumber);
         cmd.set("stackLimit", STACK_LIMIT_MB * 1024 * 1024L);
 
+
         JSONObject spjExeFile = new JSONObject();
         spjExeFile.set("src", spjExeSrc);
 
@@ -475,6 +481,7 @@ public class SandboxRun {
                                              String userExeName,
                                              String userFileId,
                                              Long userMaxTime,
+                                             Long userMaxMemory,
                                              Integer userMaxStack,
                                              String testCaseInputPath,
                                              String testCaseInputFileName,
@@ -509,10 +516,12 @@ public class SandboxRun {
 
         // ms-->ns
         pipeInputCmd.set("cpuLimit", userMaxTime * 1000 * 1000L);
-        pipeInputCmd.set("realCpuLimit", userMaxTime * 1000 * 1000L * 3);
+        pipeInputCmd.set("clockLimit", userMaxTime * 1000 * 1000L * 3);
+
         // byte
-        pipeInputCmd.set("memoryLimit", MEMORY_LIMIT_MB * 1024 * 1024L);
-        pipeInputCmd.set("clockLimit", maxProcessNumber);
+
+        pipeInputCmd.set("memoryLimit", (userMaxMemory + 100) * 1024 * 1024L);
+        pipeInputCmd.set("procLimit", maxProcessNumber);
         pipeInputCmd.set("stackLimit", userMaxStack * 1024 * 1024L);
 
         JSONObject exeFile = new JSONObject();
@@ -542,10 +551,10 @@ public class SandboxRun {
         pipeOutputCmd.set("files", JSONUtil.parseArray(outTmp, false));
 
         // ms-->ns
-        pipeOutputCmd.set("cpuLimit", TIME_LIMIT_MS * 1000 * 1000L);
-        pipeOutputCmd.set("clockLimit", TIME_LIMIT_MS * 1000 * 1000L * 3);
+        pipeOutputCmd.set("cpuLimit", userMaxTime * 1000 * 1000L * 2);
+        pipeOutputCmd.set("clockLimit", userMaxTime * 1000 * 1000L * 3 * 2);
         // byte
-        pipeOutputCmd.set("memoryLimit", MEMORY_LIMIT_MB * 1024 * 1024L);
+        pipeOutputCmd.set("memoryLimit", (userMaxMemory + 100) * 1024 * 1024L * 2);
         pipeOutputCmd.set("procLimit", maxProcessNumber);
         pipeOutputCmd.set("stackLimit", STACK_LIMIT_MB * 1024 * 1024L);
 
