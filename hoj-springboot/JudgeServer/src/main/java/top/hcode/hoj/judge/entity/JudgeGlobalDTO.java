@@ -55,7 +55,7 @@ public class JudgeGlobalDTO implements Serializable {
     private Long maxTime;
 
     /**
-     * 当前题目评测的最大空间限制 kb
+     * 当前题目评测的最大空间限制 mb
      */
     private Long maxMemory;
 

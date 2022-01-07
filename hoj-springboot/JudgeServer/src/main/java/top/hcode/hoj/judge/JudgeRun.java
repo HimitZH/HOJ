@@ -74,7 +74,7 @@ public class JudgeRun {
                 .userFileId(userFileId)
                 .runDir(runDir)
                 .testTime(testTime)
-                .maxMemory(problem.getMemoryLimit() * 1024L)
+                .maxMemory((long) problem.getMemoryLimit())
                 .maxTime((long) problem.getTimeLimit())
                 .maxStack(problem.getStackLimit())
                 .testCaseInfo(testCasesInfo)

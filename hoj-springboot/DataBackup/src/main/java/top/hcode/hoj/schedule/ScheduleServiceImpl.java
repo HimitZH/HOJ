@@ -15,6 +15,9 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.user.Session;
 import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.entity.user.UserRecord;
@@ -22,6 +25,8 @@ import top.hcode.hoj.pojo.entity.msg.AdminSysNotice;
 import top.hcode.hoj.pojo.entity.common.File;
 import top.hcode.hoj.pojo.entity.msg.UserSysNotice;
 import top.hcode.hoj.service.common.impl.FileServiceImpl;
+import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
+import top.hcode.hoj.service.judge.impl.RejudgeServiceImpl;
 import top.hcode.hoj.service.user.UserInfoService;
 import top.hcode.hoj.service.user.UserRecordService;
 import top.hcode.hoj.service.msg.impl.AdminSysNoticeServiceImpl;
@@ -85,6 +90,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Resource
     private UserSysNoticeServiceImpl userSysNoticeService;
 
+    @Resource
+    private JudgeServiceImpl judgeService;
+
+    @Resource
+    private RejudgeServiceImpl rejudgeService;
 
     /**
      * @MethodName deleteAvatar
@@ -369,6 +379,25 @@ public class ScheduleServiceImpl implements ScheduleService {
             log.error("=============推送系统通知更新状态失败===============");
         }
 
+    }
+
+    @Override
+    @Scheduled(cron = "0 0/30 * * * ?")
+    public void checkHalfAnHourPendingSubmission() {
+        DateTime dateTime = DateUtil.offsetMinute(new Date(), -30);
+        String strTime = DateFormatUtils.format(dateTime, "yyyy-MM-dd HH:mm:ss");
+
+        QueryWrapper<Judge> judgeQueryWrapper = new QueryWrapper<>();
+        judgeQueryWrapper.select("distinct submit_id");
+        judgeQueryWrapper.eq("status", Constants.Judge.STATUS_PENDING.getStatus());
+        judgeQueryWrapper.apply("UNIX_TIMESTAMP('" + strTime + "') > UNIX_TIMESTAMP(gmt_modified)");
+        List<Judge> judgeList = judgeService.list(judgeQueryWrapper);
+        if (!CollectionUtils.isEmpty(judgeList)) {
+            log.info("Half An Hour Check Pending Submission to Rejudge:" + Arrays.toString(judgeList.toArray()));
+            for (Judge judge : judgeList) {
+                rejudgeService.rejudge(judge.getSubmitId());
+            }
+        }
     }
 
 }

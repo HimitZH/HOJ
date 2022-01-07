@@ -24,9 +24,9 @@ public class JudgeAsyncTaskConfig {
         //最大线程数
         executor.setMaxPoolSize(10);
         //队列容量
-        executor.setQueueCapacity(300);
+        executor.setQueueCapacity(500);
         //活跃时间
-        executor.setKeepAliveSeconds(10);
+        executor.setKeepAliveSeconds(3);
         //线程名字前缀
         executor.setThreadNamePrefix("JudgeExecutor-");
 

@@ -43,6 +43,7 @@ public class InteractiveJudge extends AbstractJudge {
                 runConfig.getExeName(),
                 judgeGlobalDTO.getUserFileId(),
                 judgeGlobalDTO.getTestTime(),
+                judgeGlobalDTO.getMaxMemory(),
                 judgeGlobalDTO.getMaxStack(),
                 judgeDTO.getTestCaseInputPath(),
                 testCaseInputFileName,
@@ -69,37 +70,12 @@ public class InteractiveJudge extends AbstractJudge {
         StringBuilder errMsg = new StringBuilder();
 
         int userExitCode = userSandBoxRes.getExitCode();
-
-        if (userSandBoxRes.getStatus().equals(Constants.Judge.STATUS_ACCEPTED.getStatus())) {
-            // 如果运行超过题目限制时间，直接TLE
-            if (userSandBoxRes.getTime() >= judgeGlobalDTO.getMaxTime()) {
-                result.set("status", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus());
-            } else if (userSandBoxRes.getMemory() >= judgeGlobalDTO.getMaxMemory()) { // 如果运行超过题目限制空间，直接MLE
-                result.set("status", Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED.getStatus());
-            } else {
-                // 根据交互程序的退出状态码及输出进行判断
-                JSONObject interactiveCheckRes = checkInteractiveRes(interactiveSandBoxRes);
-                int code = interactiveCheckRes.getInt("code");
-                if (code == SPJ_WA) {
-                    result.set("status", Constants.Judge.STATUS_WRONG_ANSWER.getStatus());
-                } else if (code == SPJ_AC) {
-                    result.set("status", Constants.Judge.STATUS_ACCEPTED.getStatus());
-                } else if (code == SPJ_PE) {
-                    result.set("status", Constants.Judge.STATUS_PRESENTATION_ERROR.getStatus());
-                } else if (code == SPJ_PC){
-                    result.set("status", Constants.Judge.STATUS_PARTIAL_ACCEPTED.getStatus());
-                    result.set("percentage", interactiveCheckRes.getDouble("percentage"));
-                } else {
-                    result.set("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
-                }
-
-                String spjErrMsg = interactiveCheckRes.getStr("errMsg");
-                if (!StringUtils.isEmpty(spjErrMsg)) {
-                    errMsg.append(spjErrMsg).append(" ");
-                }
-            }
-        } else if (userSandBoxRes.getStatus().equals(Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus())) {
+        result.set("status", userSandBoxRes.getStatus());
+        // 如果运行超过题目限制时间，直接TLE
+        if (userSandBoxRes.getTime() > judgeGlobalDTO.getMaxTime()) {
             result.set("status", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus());
+        } else if (userSandBoxRes.getMemory() > judgeGlobalDTO.getMaxMemory() * 1024) { // 如果运行超过题目限制空间，直接MLE
+            result.set("status", Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED.getStatus());
         } else if ((userExitCode != 0 && userExitCode != 13) || (userExitCode == 13 && interactiveSandBoxRes.getExitCode() == 0)) {
             // Broken Pipe
             result.set("status", Constants.Judge.STATUS_RUNTIME_ERROR.getStatus());
@@ -109,10 +85,28 @@ public class InteractiveJudge extends AbstractJudge {
                 errMsg.append(String.format("Your program return exitCode: %s\n", userExitCode));
             }
         } else {
-            result.set("status", interactiveSandBoxRes.getStatus());
-            errMsg.append(interactiveSandBoxRes.getStderr()).append(" ");
-            if (interactiveSandBoxRes.getExitCode() !=0 && !StringUtils.isEmpty(interactiveSandBoxRes.getStderr())) {
-                errMsg.append(String.format("Interactive program exited with code: %s",interactiveSandBoxRes.getExitCode()));
+            // 根据交互程序的退出状态码及输出进行判断
+            JSONObject interactiveCheckRes = checkInteractiveRes(interactiveSandBoxRes);
+            int code = interactiveCheckRes.getInt("code");
+            if (code == SPJ_WA) {
+                result.set("status", Constants.Judge.STATUS_WRONG_ANSWER.getStatus());
+            } else if (code == SPJ_AC) {
+                result.set("status", Constants.Judge.STATUS_ACCEPTED.getStatus());
+            } else if (code == SPJ_PE) {
+                result.set("status", Constants.Judge.STATUS_PRESENTATION_ERROR.getStatus());
+            } else if (code == SPJ_PC) {
+                result.set("status", Constants.Judge.STATUS_PARTIAL_ACCEPTED.getStatus());
+                result.set("percentage", interactiveCheckRes.getDouble("percentage"));
+            } else {
+                result.set("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
+            }
+
+            String spjErrMsg = interactiveCheckRes.getStr("errMsg");
+            if (!StringUtils.isEmpty(spjErrMsg)) {
+                errMsg.append(spjErrMsg).append(" ");
+            }
+            if (interactiveSandBoxRes.getExitCode() != 0 && !StringUtils.isEmpty(interactiveSandBoxRes.getStderr())) {
+                errMsg.append(String.format("Interactive program exited with code: %s", interactiveSandBoxRes.getExitCode()));
             }
         }
         // kb

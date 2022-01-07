@@ -32,6 +32,7 @@ public class SpecialJudge extends AbstractJudge {
                 runConfig.getEnvs(),
                 judgeDTO.getTestCaseInputPath(),
                 judgeGlobalDTO.getTestTime(),
+                judgeGlobalDTO.getMaxMemory(),
                 judgeDTO.getMaxOutputSize(),
                 judgeGlobalDTO.getMaxStack(),
                 runConfig.getExeName(),
@@ -53,9 +54,9 @@ public class SpecialJudge extends AbstractJudge {
         if (sandBoxRes.getStatus().equals(Constants.Judge.STATUS_ACCEPTED.getStatus())) {
 
             // 对结果的时间损耗和空间损耗与题目限制做比较，判断是否mle和tle
-            if (sandBoxRes.getTime() >= judgeGlobalDTO.getMaxTime()) {
+            if (sandBoxRes.getTime() > judgeGlobalDTO.getMaxTime()) {
                 result.set("status", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED.getStatus());
-            } else if (sandBoxRes.getMemory() >= judgeGlobalDTO.getMaxMemory()) {
+            } else if (sandBoxRes.getMemory() > judgeGlobalDTO.getMaxMemory() * 1024) {
                 result.set("status", Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED.getStatus());
             } else {
 
