@@ -39,7 +39,8 @@ public class JudgeReceiver extends AbstractReceiver {
 
     @Override
     public String getTaskByRedis(String queue) {
-        if (redisUtils.lGetListSize(queue) > 0) {
+        long size = redisUtils.lGetListSize(queue);
+        if (size > 0) {
             return (String) redisUtils.lrPop(queue);
         } else {
             return null;
@@ -51,13 +52,11 @@ public class JudgeReceiver extends AbstractReceiver {
         JSONObject task = JSONUtil.parseObj(taskJsonStr);
         Judge judge = task.get("judge", Judge.class);
         String token = task.getStr("token");
-        Integer tryAgainNum = task.getInt("tryAgainNum");
         // 调用判题服务
         dispatcher.dispatcher("judge", "/judge", new ToJudge()
                 .setJudge(judge)
                 .setToken(token)
-                .setRemoteJudgeProblem(null)
-                .setTryAgainNum(tryAgainNum));
+                .setRemoteJudgeProblem(null));
         // 接着处理任务
         processWaitingTask();
     }

@@ -15,5 +15,5 @@ public interface ScheduleService {
 
     void syncNoticeToRecentHalfYearUser();
 
-    void checkHalfAnHourPendingSubmission();
+    void check20MPendingSubmission();
 }

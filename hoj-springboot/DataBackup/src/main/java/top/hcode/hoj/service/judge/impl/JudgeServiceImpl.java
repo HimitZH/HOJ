@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ToJudgeDto;
@@ -34,6 +35,7 @@ import java.util.List;
  * @since 2020-10-23
  */
 @Service
+@Slf4j(topic = "hoj")
 public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements JudgeService {
 
     @Autowired
@@ -59,7 +61,7 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
         judge.setCpid(0L).setPid(problem.getId()).setDisplayPid(problem.getProblemId());
 
         // 将新提交数据插入数据库
-        judgeMapper.insert(judge);
+        saveOrUpdate(judge);
         return null;
     }
 

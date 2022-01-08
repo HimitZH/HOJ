@@ -25,20 +25,18 @@ public class RemoteJudgeDispatcher {
     @Autowired
     private RemoteJudgeReceiver remoteJudgeReceiver;
 
-    public void sendTask(Judge judge, String token, String remoteJudgeProblem, Boolean isContest,
-                         Integer tryAgainNum, Boolean isHasSubmitIdRemoteReJudge) {
+    public void sendTask(Judge judge, String token, String remoteJudgeProblem, Boolean isContest, Boolean isHasSubmitIdRemoteReJudge) {
         JSONObject task = new JSONObject();
         task.set("judge", judge);
         task.set("remoteJudgeProblem", remoteJudgeProblem);
         task.set("token", token);
         task.set("isContest", isContest);
-        task.set("tryAgainNum", tryAgainNum);
         task.set("isHasSubmitIdRemoteReJudge", isHasSubmitIdRemoteReJudge);
         try {
             boolean isOk;
-            if (isContest){
+            if (isContest) {
                 isOk = redisUtils.llPush(Constants.Queue.CONTEST_REMOTE_JUDGE_WAITING_HANDLE.getName(), JSONUtil.toJsonStr(task));
-            }else{
+            } else {
                 isOk = redisUtils.llPush(Constants.Queue.GENERAL_REMOTE_JUDGE_WAITING_HANDLE.getName(), JSONUtil.toJsonStr(task));
             }
             if (!isOk) {

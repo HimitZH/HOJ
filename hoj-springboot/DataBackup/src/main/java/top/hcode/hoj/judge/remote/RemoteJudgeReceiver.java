@@ -71,25 +71,21 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
         Judge judge = task.get("judge", Judge.class);
         String token = task.getStr("token");
         String remoteJudgeProblem = task.getStr("remoteJudgeProblem");
-        Integer tryAgainNum = task.getInt("tryAgainNum");
         Boolean isHasSubmitIdRemoteReJudge = task.getBool("isHasSubmitIdRemoteReJudge");
         String remoteOJName = remoteJudgeProblem.split("-")[0].toUpperCase();
 
         dispatchRemoteJudge(judge,
                 token,
                 remoteJudgeProblem,
-                tryAgainNum,
                 isHasSubmitIdRemoteReJudge,
                 remoteOJName);
     }
 
     private void dispatchRemoteJudge(Judge judge, String token, String remoteJudgeProblem,
-                                     Integer tryAgainNum,
                                      Boolean isHasSubmitIdRemoteReJudge, String remoteOJName) {
 
         ToJudge toJudge = new ToJudge();
         toJudge.setJudge(judge)
-                .setTryAgainNum(tryAgainNum)
                 .setToken(token)
                 .setRemoteJudgeProblem(remoteJudgeProblem);
 
