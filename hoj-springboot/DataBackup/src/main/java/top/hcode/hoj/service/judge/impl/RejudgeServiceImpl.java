@@ -106,9 +106,9 @@ public class RejudgeServiceImpl implements RejudgeService {
             Problem problem = problemService.getById(judge.getPid());
             if (problem.getIsRemote()) { // 如果是远程oj判题
                 remoteJudgeDispatcher.sendTask(judge, judgeToken, problem.getProblemId(),
-                        isContestSubmission, 1, hasSubmitIdRemoteRejudge);
+                        isContestSubmission, hasSubmitIdRemoteRejudge);
             } else {
-                judgeDispatcher.sendTask(judge, judgeToken, isContestSubmission, 1);
+                judgeDispatcher.sendTask(judge, judgeToken, isContestSubmission);
             }
             return CommonResult.successResponse(judge, "重判成功！该提交已进入判题队列！");
         } else {
@@ -157,13 +157,13 @@ public class RejudgeServiceImpl implements RejudgeService {
                 for (Judge judge : rejudgeList) {
                     // 进入重判队列，等待调用判题服务
                     remoteJudgeDispatcher.sendTask(judge, judgeToken, problem.getProblemId(),
-                            judge.getCid() != 0, 1,
+                            judge.getCid() != 0,
                             isHasSubmitIdRemoteRejudge(judge.getVjudgeSubmitId(), idMapStatus.get(judge.getSubmitId())));
                 }
             } else {
                 for (Judge judge : rejudgeList) {
                     // 进入重判队列，等待调用判题服务
-                    judgeDispatcher.sendTask(judge, judgeToken, judge.getCid() != 0, 1);
+                    judgeDispatcher.sendTask(judge, judgeToken, judge.getCid() != 0);
                 }
             }
 

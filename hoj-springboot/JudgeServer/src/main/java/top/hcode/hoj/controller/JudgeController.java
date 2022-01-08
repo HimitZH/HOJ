@@ -75,7 +75,7 @@ public class JudgeController {
         judge.setStatus(Constants.Judge.STATUS_COMPILING.getStatus()); // 标志该判题过程进入编译阶段
         // 写入当前判题服务的名字
         judge.setJudger(name);
-        boolean updateResult = judgeService.saveOrUpdate(judge);
+        boolean updateResult = judgeService.updateById(judge);
         if (!updateResult) { // 出错并不影响主要业务逻辑，可以稍微记录一下即可。
             log.error("修改Judge表失效--------->{}", "修改提交评判为编译中出错");
         }

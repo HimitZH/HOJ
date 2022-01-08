@@ -68,7 +68,7 @@ public class JudgeStrategy {
 
             // 更新状态为评测数据中
             judge.setStatus(Constants.Judge.STATUS_JUDGING.getStatus());
-            judgeService.saveOrUpdate(judge);
+            judgeService.updateById(judge);
             // 开始测试每个测试点
             List<JSONObject> allCaseResultList = judgeRun.judgeAllCase(judge.getSubmitId(),
                     problem,

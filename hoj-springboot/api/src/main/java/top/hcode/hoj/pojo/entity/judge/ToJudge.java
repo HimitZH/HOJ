@@ -45,9 +45,6 @@ public class ToJudge implements Serializable {
     @ApiModelProperty("调用判题机的port")
     private Integer judgeServerPort;
 
-    @ApiModelProperty("重新尝试的次数,40次重新调用判题机依旧失败，直接判为提交失败！")
-    private Integer tryAgainNum;
-
     /**
      * VJ判題辅助选择判题机序号使用
      */

@@ -22,14 +22,17 @@ import top.hcode.hoj.crawler.problem.ProblemStrategy;
 import top.hcode.hoj.judge.Dispatcher;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.judge.CompileDTO;
+import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.ProblemCase;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
 import top.hcode.hoj.service.problem.impl.ProblemCaseServiceImpl;
 import top.hcode.hoj.service.problem.impl.ProblemServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -57,6 +60,9 @@ public class AdminProblemController {
 
     @Value("${hoj.judge.token}")
     private String judgeToken;
+
+    @Resource
+    private JudgeServiceImpl judgeService;
 
 
     @GetMapping("/get-problem-list")
@@ -163,14 +169,16 @@ public class AdminProblemController {
     @Transactional(rollbackFor = Exception.class)
     public CommonResult updateProblem(@RequestBody ProblemDto problemDto, HttpServletRequest request) {
 
+        String problemId = problemDto.getProblem().getProblemId().toUpperCase();
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("problem_id", problemDto.getProblem().getProblemId().toUpperCase());
+        queryWrapper.eq("problem_id", problemId);
         Problem problem = problemService.getOne(queryWrapper);
 
         // 如果problem_id不是原来的且已存在该problem_id，则修改失败！
         if (problem != null && problem.getId().longValue() != problemDto.getProblem().getId()) {
             return CommonResult.errorResponse("当前的Problem ID 已被使用，请重新更换新的！", CommonResult.STATUS_FAIL);
         }
+
         // 获取当前登录的用户
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
@@ -179,6 +187,12 @@ public class AdminProblemController {
 
         boolean result = problemService.adminUpdateProblem(problemDto);
         if (result) { // 更新成功
+            if (problem == null) { // 说明改了problemId，同步一下judge表
+                UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
+                judgeUpdateWrapper.eq("pid", problemDto.getProblem().getId())
+                        .set("display_pid", problemId);
+                judgeService.update(judgeUpdateWrapper);
+            }
             return CommonResult.successResponse(null, "修改成功！");
         } else {
             return CommonResult.errorResponse("修改失败", CommonResult.STATUS_FAIL);

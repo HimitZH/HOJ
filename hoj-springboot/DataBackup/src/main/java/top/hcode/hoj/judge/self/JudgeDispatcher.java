@@ -29,17 +29,16 @@ public class JudgeDispatcher {
     @Autowired
     private JudgeReceiver judgeReceiver;
 
-    public void sendTask(Judge judge, String token, Boolean isContest, Integer tryAgainNum) {
+    public void sendTask(Judge judge, String token, Boolean isContest) {
         JSONObject task = new JSONObject();
         task.set("judge", judge);
         task.set("token", token);
         task.set("isContest", isContest);
-        task.set("tryAgainNum", tryAgainNum);
         try {
             boolean isOk;
-            if (isContest){
+            if (isContest) {
                 isOk = redisUtils.llPush(Constants.Queue.CONTEST_JUDGE_WAITING.getName(), JSONUtil.toJsonStr(task));
-            }else{
+            } else {
                 isOk = redisUtils.llPush(Constants.Queue.GENERAL_JUDGE_WAITING.getName(), JSONUtil.toJsonStr(task));
             }
             if (!isOk) {

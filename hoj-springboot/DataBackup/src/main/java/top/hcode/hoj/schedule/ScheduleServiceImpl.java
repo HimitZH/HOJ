@@ -383,8 +383,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     @Scheduled(cron = "0 0/20 * * * ?")
-    public void checkHalfAnHourPendingSubmission() {
-        DateTime dateTime = DateUtil.offsetMinute(new Date(), -30);
+    public void check20MPendingSubmission() {
+        DateTime dateTime = DateUtil.offsetMinute(new Date(), -15);
         String strTime = DateFormatUtils.format(dateTime, "yyyy-MM-dd HH:mm:ss");
 
         QueryWrapper<Judge> judgeQueryWrapper = new QueryWrapper<>();

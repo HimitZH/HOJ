@@ -166,10 +166,9 @@ public class JudgeController {
 
         // 将提交加入任务队列
         if (judgeDto.getIsRemote()) { // 如果是远程oj判题
-            remoteJudgeDispatcher.sendTask(judge, judgeToken, judge.getDisplayPid(), isContestSubmission,
-                    1, false);
+            remoteJudgeDispatcher.sendTask(judge, judgeToken, judge.getDisplayPid(), isContestSubmission, false);
         } else {
-            judgeDispatcher.sendTask(judge, judgeToken, isContestSubmission, 1);
+            judgeDispatcher.sendTask(judge, judgeToken, isContestSubmission);
         }
 
         return CommonResult.successResponse(judge, "代码提交成功！");
@@ -248,9 +247,9 @@ public class JudgeController {
         if (problem.getIsRemote()) { // 如果是远程oj判题
 
             remoteJudgeDispatcher.sendTask(judge, judgeToken, problem.getProblemId(),
-                    judge.getCid() != 0, 1, isHasSubmitIdRemoteRejudge);
+                    judge.getCid() != 0, isHasSubmitIdRemoteRejudge);
         } else {
-            judgeDispatcher.sendTask(judge, judgeToken, judge.getCid() != 0, 1);
+            judgeDispatcher.sendTask(judge, judgeToken, judge.getCid() != 0);
         }
         return CommonResult.successResponse(judge, "重新提交成功！");
     }
