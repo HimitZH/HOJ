@@ -48,10 +48,9 @@ public class JudgeDispatcher {
                         .setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
                         .setErrorMessage("Please try to submit again!")
                 );
-            } else {
-                // 调用判题任务处理
-                judgeReceiver.processWaitingTask();
             }
+            // 调用判题任务处理
+            judgeReceiver.processWaitingTask();
         } catch (Exception e) {
             log.error("调用redis将判题纳入判题等待队列异常,此次判题任务判为系统错误--------------->{}", e.getMessage());
             judgeService.failToUseRedisPublishJudge(judge.getSubmitId(), judge.getPid(), isContest);

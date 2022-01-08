@@ -382,7 +382,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    @Scheduled(cron = "0 0/30 * * * ?")
+    @Scheduled(cron = "0 0/20 * * * ?")
     public void checkHalfAnHourPendingSubmission() {
         DateTime dateTime = DateUtil.offsetMinute(new Date(), -30);
         String strTime = DateFormatUtils.format(dateTime, "yyyy-MM-dd HH:mm:ss");
