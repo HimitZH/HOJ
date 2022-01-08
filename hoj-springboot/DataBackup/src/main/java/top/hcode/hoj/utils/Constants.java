@@ -159,6 +159,7 @@ public class Constants {
         OI_RANK_CACHE("oi_rank_cache"),
 
         SUBMIT_NON_CONTEST_LOCK("submit_non_contest_lock:"),
+        SUBMIT_CONTEST_LOCK("submit_contest_lock:"),
         DISCUSSION_ADD_NUM_LOCK("discussion_add_num_lock:"),
         CONTEST_ADD_PRINT_LOCK("contest_add_print_lock:"),
 

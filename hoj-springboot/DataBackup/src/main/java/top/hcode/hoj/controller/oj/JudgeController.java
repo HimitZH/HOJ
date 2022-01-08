@@ -117,11 +117,18 @@ public class JudgeController {
 
         if (!isContestSubmission) { // 非比赛提交限制8秒提交一次
             String lockKey = Constants.Account.SUBMIT_NON_CONTEST_LOCK.getCode() + userRolesVo.getUid();
-            boolean isRestricted = redisUtils.hasKey(lockKey);
-            if (isRestricted) {
+            long count = redisUtils.incr(lockKey, 1);
+            if (count > 1) {
                 return CommonResult.errorResponse("对不起，您的提交频率过快，请稍后再尝试！", CommonResult.STATUS_FORBIDDEN);
             }
-            redisUtils.set(lockKey, 1, 8);
+            redisUtils.expire(lockKey, 8);
+        } else { // 比赛提交限制3秒一次
+            String lockKey = Constants.Account.SUBMIT_CONTEST_LOCK.getCode() + userRolesVo.getUid();
+            long count = redisUtils.incr(lockKey, 1);
+            if (count > 1) {
+                return CommonResult.errorResponse("对不起，您的提交频率过快，请稍后再尝试！", CommonResult.STATUS_FORBIDDEN);
+            }
+            redisUtils.expire(lockKey, 3);
         }
 
         if (judgeDto.getCode().length() < 50 && !judgeDto.getLanguage().contains("Py")) {

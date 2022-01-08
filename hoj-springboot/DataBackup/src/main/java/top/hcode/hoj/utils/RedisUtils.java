@@ -582,7 +582,7 @@ public final class RedisUtils {
 
     public Object lrPop(String key) {
         try {
-            return redisTemplate.opsForList().rightPop(key, 5, TimeUnit.SECONDS);
+            return redisTemplate.opsForList().rightPop(key, 10, TimeUnit.SECONDS);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
