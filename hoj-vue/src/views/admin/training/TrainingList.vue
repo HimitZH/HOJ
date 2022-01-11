@@ -69,7 +69,7 @@
         </vxe-table-column>
         <vxe-table-column min-width="150" :title="$t('m.Option')">
           <template v-slot="{ row }">
-            <template v-if="isSuperAdmin || userInfo.uid == row.uid">
+            <template v-if="isSuperAdmin || userInfo.username == row.author">
               <div style="margin-bottom:10px">
                 <el-tooltip
                   effect="dark"
