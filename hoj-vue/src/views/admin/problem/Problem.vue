@@ -974,7 +974,6 @@ export default {
         })
           .then(() => {
             this.problem.judgeMode = mode;
-            this.resetTestCase();
           })
           .catch(() => {});
       } else {
@@ -997,11 +996,6 @@ export default {
     },
     changeContent(newVal) {
       this.announcement.content = newVal;
-    },
-    resetTestCase() {
-      this.testCaseUploaded = false;
-      this.problem.testCaseScore = [];
-      this.problem.uploadTestcaseDir = '';
     },
     selectTag(item) {
       for (var i = 0; i < this.problemTags.length; i++) {
