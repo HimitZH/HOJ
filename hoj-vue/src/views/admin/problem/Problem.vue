@@ -369,9 +369,9 @@
           <div class="panel-title home-title">
             {{ $t('m.Judge_Mode') }}
             <el-popover placement="right" trigger="hover">
-              <p>{{ $t('m.General_Judge_Mode_Tips') }}</p>
-              <p>{{ $t('m.Special_Judge_Mode_Tips') }}</p>
-              <p>{{ $t('m.Interactive_Judge_Mode_Tips') }}</p>
+              <p>1. {{ $t('m.General_Judge_Mode_Tips') }}</p>
+              <p>2. {{ $t('m.Special_Judge_Mode_Tips') }}</p>
+              <p>3. {{ $t('m.Interactive_Judge_Mode_Tips') }}</p>
               <i slot="reference" class="el-icon-question"></i>
             </el-popover>
           </div>
@@ -967,18 +967,31 @@ export default {
 
     switchMode(mode) {
       let modeName = 'General_Judge';
+      let modeTips = 'General_Judge_Mode_Tips';
       if (mode == 'spj') {
         modeName = 'Special_Judge';
+        modeTips = 'Special_Judge_Mode_Tips';
       } else if (mode == 'interactive') {
         modeName = 'Interactive_Judge';
+        modeTips = 'Interactive_Judge_Mode_Tips';
       }
-      this.$alert(
-        this.$i18n.t('m.Change_Judge_Mode'),
-        this.$i18n.t('m.' + modeName),
-        {
-          confirmButtonText: this.$i18n.t('m.OK'),
-        }
-      );
+      const h = this.$createElement;
+      this.$msgbox({
+        title: this.$i18n.t('m.' + modeName),
+        message: h('div', null, [
+          h(
+            'p',
+            { style: 'text-align: center;font-weight:bolder;color:red' },
+            this.$i18n.t('m.Change_Judge_Mode')
+          ),
+          h('br', null, null),
+          h(
+            'p',
+            { style: 'font-weight:bolder' },
+            this.$i18n.t('m.' + modeTips)
+          ),
+        ]),
+      });
     },
     querySearch(queryString, cb) {
       var ojName = 'ME';
