@@ -966,19 +966,19 @@ export default {
     },
 
     switchMode(mode) {
-      if (this.testCaseUploaded) {
-        this.$confirm(this.$i18n.t('m.Change_Judge_Method'), 'Tips', {
-          confirmButtonText: this.$i18n.t('m.OK'),
-          cancelButtonText: this.$i18n.t('m.Cancel'),
-          type: 'warning',
-        })
-          .then(() => {
-            this.problem.judgeMode = mode;
-          })
-          .catch(() => {});
-      } else {
-        this.problem.judgeMode = mode;
+      let modeName = 'General_Judge';
+      if (mode == 'spj') {
+        modeName = 'Special_Judge';
+      } else if (mode == 'interactive') {
+        modeName = 'Interactive_Judge';
       }
+      this.$alert(
+        this.$i18n.t('m.Change_Judge_Mode'),
+        this.$i18n.t('m.' + modeName),
+        {
+          confirmButtonText: this.$i18n.t('m.OK'),
+        }
+      );
     },
     querySearch(queryString, cb) {
       var ojName = 'ME';

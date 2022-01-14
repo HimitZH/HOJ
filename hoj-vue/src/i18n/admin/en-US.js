@@ -225,7 +225,7 @@ export const m = {
   Publish_the_Judging_Result_of_Test_Data:'Publish the Judging Result of Test Data',
   Edit_Problem: 'Edit Problme',
   Create_Problme: 'Create Problem',
-  Change_Judge_Method:'If you want to change the judging method, you need to upload the testcase again.',
+  Change_Judge_Mode:'Note: switching the judgment mode may change the evaluation logic!',
   Add_Tag_Error:'The tag has been added, please do not add it repeatedly!',
 
   Upload_Testcase_Successfully:'Upload Testcase Successfully',

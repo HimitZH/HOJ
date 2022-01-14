@@ -223,7 +223,7 @@ export const m = {
   Publish_the_Judging_Result_of_Test_Data:'公开评测点数据结果',
   Edit_Problem: '编辑题目',
   Create_Problme: '创建题目',
-  Change_Judge_Method:'如果你想改变该题目的判题方法，那么你需要重新上传测试数据。',
+  Change_Judge_Mode:'注意：切换判题模式后可能会改变评测的逻辑！',
   Add_Tag_Error:'不要添加已有的标签！',
 
   Upload_Testcase_Successfully:'上传评测数据成功',
