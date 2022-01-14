@@ -107,6 +107,14 @@ public class JudgeController {
     @Transactional(rollbackFor = Exception.class)
     public CommonResult submitProblemJudge(@RequestBody ToJudgeDto judgeDto, HttpServletRequest request) {
 
+        if (judgeDto.getCode().length() < 50 && !judgeDto.getLanguage().contains("Py")) {
+            return CommonResult.errorResponse("提交的代码是无效的，代码字符长度请不要低于50！", CommonResult.STATUS_FORBIDDEN);
+        }
+
+        if (judgeDto.getCode().length() > 65535) {
+            return CommonResult.errorResponse("提交的代码是无效的，代码字符长度请不要超过65535！", CommonResult.STATUS_FORBIDDEN);
+        }
+
         // 需要获取一下该token对应用户的数据
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
@@ -129,10 +137,6 @@ public class JudgeController {
                 return CommonResult.errorResponse("对不起，您的提交频率过快，请稍后再尝试！", CommonResult.STATUS_FORBIDDEN);
             }
             redisUtils.expire(lockKey, 3);
-        }
-
-        if (judgeDto.getCode().length() < 50 && !judgeDto.getLanguage().contains("Py")) {
-            return CommonResult.errorResponse("提交的代码是无效的，代码长度请不要低于50！", CommonResult.STATUS_FORBIDDEN);
         }
 
 
