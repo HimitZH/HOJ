@@ -1212,6 +1212,11 @@ export default {
         return;
       }
 
+      if (this.code.length > 65535) {
+        myMessage.error(this.$i18n.t('m.Code_Length_can_not_exceed_65535'));
+        return;
+      }
+
       // 比赛题目需要检查是否有权限提交
       if (!this.canSubmit && this.$route.params.contestID) {
         this.submitPwdVisible = true;
