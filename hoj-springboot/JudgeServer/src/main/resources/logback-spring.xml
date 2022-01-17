@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
     <!-- 属性文件:在properties文件中找到对应的配置项 -->
-    <springProperty scope="context" name="logging.path" source="logging.path"/>
+    <springProperty scope="context" name="logging.path" source="logging.file.path"/>
     <contextName>hoj</contextName>
+
     <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--格式化输出（配色）：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
@@ -15,8 +16,10 @@
     <!--根据日志级别分离日志，分别输出到不同的文件-->
     <appender name="fileInfoLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>ERROR</level>
+            <level>info</level>
+            <!--表示不匹配该级别以上的日志-->
             <onMatch>DENY</onMatch>
+            <!--表示匹配该级别以下的日志-->
             <onMismatch>ACCEPT</onMismatch>
         </filter>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -26,19 +29,21 @@
             <charset>UTF-8</charset>
         </encoder>
         <!--滚动策略-->
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!--按时间保存日志 修改格式可以按小时、按天、月来保存-->
-            <fileNamePattern>${logging.path}/hoj.info.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${logging.path}/hoj.info.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <!--保存时长-->
-            <MaxHistory>15</MaxHistory>
+            <maxHistory>7</maxHistory>
+            <!-- 单个文件最大-->
+            <maxFileSize>200MB</maxFileSize>
             <!--总大小-->
-            <totalSizeCap>2GB</totalSizeCap>
+            <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
     </appender>
 
     <appender name="fileErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>ERROR</level>
+            <level>error</level>
         </filter>
         <encoder>
             <pattern>
@@ -46,13 +51,15 @@
             </pattern>
         </encoder>
         <!--滚动策略-->
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!--路径-->
-            <fileNamePattern>${logging.path}/hoj.error.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${logging.path}/hoj.error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <!--保存时长-->
-            <MaxHistory>15</MaxHistory>
+            <maxHistory>7</maxHistory>
+            <!-- 单个文件最大-->
+            <maxFileSize>200MB</maxFileSize>
             <!--总大小-->
-            <totalSizeCap>2GB</totalSizeCap>
+            <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
     </appender>
     <root level="info">
@@ -62,6 +69,7 @@
     </root>
 
     <root level="error">
+        <appender-ref ref="consoleLog"/>
         <appender-ref ref="fileErrorLog"/>
     </root>
 
