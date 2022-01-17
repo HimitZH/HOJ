@@ -1332,25 +1332,26 @@ export default {
         myMessage.error(this.error.tags);
         return;
       }
-      let isChangeModeCode =
-        this.spjRecord.spjLanguage != this.problem.spjLanguage ||
-        this.spjRecord.spjCode != this.problem.spjCode;
-
-      if (this.problem.judgeMode != 'default') {
-        if (!this.problem.spjCode) {
-          this.error.spj =
-            this.$i18n.t('m.Spj_Or_Interactive_Code') +
-            ' ' +
-            this.$i18n.t('m.is_required');
-          myMessage.error(this.error.spj);
-        } else if (!this.problem.spjCompileOk && isChangeModeCode) {
-          this.error.spj = this.$i18n.t(
-            'm.Spj_Or_Interactive_Code_not_Compile_Success'
-          );
-        }
-        if (this.error.spj) {
-          myMessage.error(this.error.spj);
-          return;
+      if (!this.problem.isRemote) {
+        let isChangeModeCode =
+          this.spjRecord.spjLanguage != this.problem.spjLanguage ||
+          this.spjRecord.spjCode != this.problem.spjCode;
+        if (this.problem.judgeMode != 'default') {
+          if (!this.problem.spjCode) {
+            this.error.spj =
+              this.$i18n.t('m.Spj_Or_Interactive_Code') +
+              ' ' +
+              this.$i18n.t('m.is_required');
+            myMessage.error(this.error.spj);
+          } else if (!this.problem.spjCompileOk && isChangeModeCode) {
+            this.error.spj = this.$i18n.t(
+              'm.Spj_Or_Interactive_Code_not_Compile_Success'
+            );
+          }
+          if (this.error.spj) {
+            myMessage.error(this.error.spj);
+            return;
+          }
         }
       }
 
@@ -1414,30 +1415,35 @@ export default {
         }
       }
 
-      let problemDto = {}; // 上传给后台的数据
-      if (this.problem.judgeMode != 'default') {
-        if (isChangeModeCode) {
-          problemDto['changeModeCode'] = true;
+      if (!this.problem.isRemote) {
+        let problemDto = {}; // 上传给后台的数据
+        if (this.problem.judgeMode != 'default') {
+          if (isChangeModeCode) {
+            problemDto['changeModeCode'] = true;
+          }
+        } else {
+          // 原本是spj或交互，但现在关闭了
+          if (!this.spjRecord.spjCode) {
+            problemDto['changeModeCode'] = true;
+            this.problem.spjCode = null;
+            this.problem.spjLanguage = null;
+          }
         }
-      } else {
-        // 原本是spj或交互，但现在关闭了
-        if (!this.spjRecord.spjCode) {
-          problemDto['changeModeCode'] = true;
-          this.problem.spjCode = null;
-          this.problem.spjLanguage = null;
+
+        if (this.userExtraFile && Object.keys(this.userExtraFile).length != 0) {
+          this.problem.userExtraFile = JSON.stringify(this.userExtraFile);
+        } else {
+          this.problem.userExtraFile = null;
         }
-      }
 
-      if (this.userExtraFile && Object.keys(this.userExtraFile).length != 0) {
-        this.problem.userExtraFile = JSON.stringify(this.userExtraFile);
-      } else {
-        this.problem.userExtraFile = null;
-      }
-
-      if (this.judgeExtraFile && Object.keys(this.judgeExtraFile).length != 0) {
-        this.problem.judgeExtraFile = JSON.stringify(this.judgeExtraFile);
-      } else {
-        this.problem.judgeExtraFile = null;
+        if (
+          this.judgeExtraFile &&
+          Object.keys(this.judgeExtraFile).length != 0
+        ) {
+          this.problem.judgeExtraFile = JSON.stringify(this.judgeExtraFile);
+        } else {
+          this.problem.judgeExtraFile = null;
+        }
       }
 
       problemDto['problem'] = Object.assign({}, this.problem); // 深克隆
