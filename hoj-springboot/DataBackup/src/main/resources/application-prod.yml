@@ -1,5 +1,4 @@
 spring:
-  profiles: prod
   # 配置文件上传限制
   servlet:
     multipart:
@@ -47,27 +46,11 @@ spring:
   thymeleaf:
     encoding: UTF-8
 
-
-mybatis-plus:
-  mapper-locations: classpath*:top/hcode/hoj/dao/xml/**Mapper.xml
-  type-aliases-package: top.hcode.hoj.pojo.entity
-  configuration:
-    cache-enabled: false
-  # 关闭打印 mybatis-plus 的 LOGO
-  global-config:
-    banner: false
-
 shiro-redis:
   enabled: true
   redis-manager:
     host: ${hoj.redis.host:${REDIS_HOST:172.20.0.2}}:${hoj.redis.port:${REDIS_PORT:6379}}
     password: ${hoj.redis.password:${REDIS_PASSWORD:hoj123456}}
-
-ribbon:
-  # 指的是建立连接所用的时间，适用于网络状况正常的情况下，俩端连接所用的时间 单位是秒
-  ReadTimeout: 10000
-  # 指的是建立连接后从服务器读取到可用资源的时间
-  ConnectTimeout: 30000
 
 logging:
   level:

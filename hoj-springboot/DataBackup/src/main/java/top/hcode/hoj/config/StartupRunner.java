@@ -12,7 +12,6 @@ import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
 import top.hcode.hoj.pojo.vo.ConfigVo;
 import top.hcode.hoj.service.common.impl.ConfigServiceImpl;
 import top.hcode.hoj.service.judge.impl.RemoteJudgeAccountServiceImpl;
-import top.hcode.hoj.utils.RedisUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -34,9 +33,6 @@ public class StartupRunner implements CommandLineRunner {
 
     @Autowired
     private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
-
-    @Autowired
-    private RedisUtils redisUtils;
 
     @Value("${OPEN_REMOTE_JUDGE:true}")
     private String openRemoteJudge;
