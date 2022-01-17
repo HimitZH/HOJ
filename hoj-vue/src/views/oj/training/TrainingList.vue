@@ -103,7 +103,7 @@
         <vxe-table-column
           field="categoryName"
           :title="$t('m.Category')"
-          min-width="100"
+          min-width="130"
           align="center"
         >
           <template v-slot="{ row }">

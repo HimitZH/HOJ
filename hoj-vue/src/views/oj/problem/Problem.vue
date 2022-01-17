@@ -1113,14 +1113,12 @@ export default {
       this.$router.push(route);
     },
     onChangeLang(newLang) {
-      if (this.code.trim() != '') {
-        if (this.code == this.problemData.codeTemplate[this.language]) {
-          //原语言模板未变化，只改变语言
-          if (this.problemData.codeTemplate[newLang]) {
-            this.code = this.problemData.codeTemplate[newLang];
-          } else {
-            this.code = '';
-          }
+      if (this.code == this.problemData.codeTemplate[this.language]) {
+        //原语言模板未变化，只改变语言
+        if (this.problemData.codeTemplate[newLang]) {
+          this.code = this.problemData.codeTemplate[newLang];
+        } else {
+          this.code = '';
         }
       }
       this.language = newLang;

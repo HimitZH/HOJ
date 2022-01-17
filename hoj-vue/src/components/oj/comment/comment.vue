@@ -1147,6 +1147,9 @@ export default {
   color: #409eff;
   cursor: pointer;
   margin-right: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .container .comment .reply .item .reply-content .reply-text {
   margin-left: 5px;
@@ -1154,10 +1157,14 @@ export default {
   color: #333;
   font-size: 14px;
   font-weight: normal;
+  width: 32px;
 }
 .container .comment .reply .item .reply-content .to-name {
   color: #409eff;
   margin-right: 5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .container .comment .reply .item .reply-bottom {
   display: flex;
