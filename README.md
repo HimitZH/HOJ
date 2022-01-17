@@ -26,7 +26,7 @@
 
 ## 二、部署
 
-部署文档：[基于docker-compose部署](https://www.hcode.top/docs/deploy/docker.html)
+部署文档：[基于docker-compose部署](https://www.hcode.top/docs/deploy/docker)
 
 具体请看部署文档，已安装docker和docker-compose的可以执行以下命令快速部署
 

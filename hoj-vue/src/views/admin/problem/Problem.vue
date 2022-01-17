@@ -1414,9 +1414,8 @@ export default {
           }
         }
       }
-
+      let problemDto = {}; // 上传给后台的数据
       if (!this.problem.isRemote) {
-        let problemDto = {}; // 上传给后台的数据
         if (this.problem.judgeMode != 'default') {
           if (isChangeModeCode) {
             problemDto['changeModeCode'] = true;
