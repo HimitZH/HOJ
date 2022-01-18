@@ -272,6 +272,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                 } else {
                     newProblemCaseList.add(problemCase.setPid(pid));
                 }
+
                 if (problemCase.getScore() != null) {
                     sumScore += problemCase.getScore();
                 }
@@ -394,6 +395,10 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                 if (problemCase.getScore() != null) {
                     sumScore += problemCase.getScore();
                 }
+                if (StringUtils.isEmpty(problemCase.getOutput())) {
+                    String filePreName = problemCase.getInput().split("\\.")[0];
+                    problemCase.setOutput(filePreName + ".out");
+                }
                 problemCase.setPid(pid);
             }
             // 设置oi总分数，根据每个测试点的加和
@@ -482,12 +487,15 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             FileReader inputFile = new FileReader(testCasesDir + File.separator + problemCase.getInput(), CharsetUtil.UTF_8);
             String input = inputFile.readString().replaceAll("\r\n", "\n");
 
-            FileWriter fileWriter = new FileWriter(testCasesDir + File.separator + problemCase.getInput(), CharsetUtil.UTF_8);
-            fileWriter.write(input);
+            FileWriter inputFileWriter = new FileWriter(testCasesDir + File.separator + problemCase.getInput(), CharsetUtil.UTF_8);
+            inputFileWriter.write(input);
 
             // 读取输出文件
             FileReader outputFile = new FileReader(testCasesDir + File.separator + problemCase.getOutput(), CharsetUtil.UTF_8);
             String output = outputFile.readString().replaceAll("\r\n", "\n");
+
+            FileWriter outFileWriter = new FileWriter(testCasesDir + File.separator + problemCase.getOutput(), CharsetUtil.UTF_8);
+            outFileWriter.write(output);
 
             // spj和interactive是根据特判程序输出判断结果，所以无需初始化测试数据
             if (Constants.JudgeMode.DEFAULT.getMode().equals(mode)) {
@@ -706,12 +714,12 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         importProblemVo.setSamples(problemCaseList);
 
         if (!StringUtils.isEmpty(problem.getUserExtraFile())) {
-            HashMap<String,String> userExtraFileMap = (HashMap<String, String>) JSONUtil.toBean(problem.getUserExtraFile(), Map.class);
+            HashMap<String, String> userExtraFileMap = (HashMap<String, String>) JSONUtil.toBean(problem.getUserExtraFile(), Map.class);
             importProblemVo.setUserExtraFile(userExtraFileMap);
         }
 
         if (!StringUtils.isEmpty(problem.getJudgeExtraFile())) {
-            HashMap<String,String> judgeExtraFileMap = (HashMap<String, String>) JSONUtil.toBean(problem.getJudgeExtraFile(), Map.class);
+            HashMap<String, String> judgeExtraFileMap = (HashMap<String, String>) JSONUtil.toBean(problem.getJudgeExtraFile(), Map.class);
             importProblemVo.setUserExtraFile(judgeExtraFileMap);
         }
 

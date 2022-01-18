@@ -95,14 +95,14 @@ public class TestCaseController {
         // 进行数据对应检查,同时生成返回数据
         List<HashMap<String, String>> problemCaseList = new LinkedList<>();
         for (String key : inputData.keySet()) {
-            // 若有名字不对应，直接返回失败
+            // 若有名字对应的out文件不存在的，直接生成对应的out文件
             if (outputData.getOrDefault(key, null) == null) {
-                FileUtil.del(fileDir);
-                return CommonResult.errorResponse("请检查数据压缩包里面的in和out、ans文件是否一一对应！");
+                FileWriter fileWriter = new FileWriter(fileDir + File.separator + key + ".out");
+                fileWriter.write("");
             }
             HashMap<String, String> testcaseMap = new HashMap<>();
             testcaseMap.put("input", inputData.get(key));
-            testcaseMap.put("output", outputData.get(key));
+            testcaseMap.put("output", key + ".out");
             problemCaseList.add(testcaseMap);
         }
 
