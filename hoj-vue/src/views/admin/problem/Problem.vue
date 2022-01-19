@@ -1332,10 +1332,10 @@ export default {
         myMessage.error(this.error.tags);
         return;
       }
+      let isChangeModeCode =
+        this.spjRecord.spjLanguage != this.problem.spjLanguage ||
+        this.spjRecord.spjCode != this.problem.spjCode;
       if (!this.problem.isRemote) {
-        let isChangeModeCode =
-          this.spjRecord.spjLanguage != this.problem.spjLanguage ||
-          this.spjRecord.spjCode != this.problem.spjCode;
         if (this.problem.judgeMode != 'default') {
           if (!this.problem.spjCode) {
             this.error.spj =
