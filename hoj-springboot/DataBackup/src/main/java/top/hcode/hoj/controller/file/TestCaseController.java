@@ -81,28 +81,44 @@ public class TestCaseController {
         // 遍历读取与检查是否in和out文件一一对应，否则报错
         for (File tmp : files) {
             String tmpPreName = null;
-            try {
-                tmpPreName = tmp.getName().substring(0, tmp.getName().lastIndexOf("."));
-            } catch (Exception ignored) {
-            }
-            if (tmp.getName().endsWith("in")) {
+            if (tmp.getName().endsWith(".in")) {
+                tmpPreName = tmp.getName().substring(0, tmp.getName().lastIndexOf(".in"));
                 inputData.put(tmpPreName, tmp.getName());
-            } else if (tmp.getName().endsWith("out") || tmp.getName().endsWith("ans")) {
+            } else if (tmp.getName().endsWith(".out")) {
+                tmpPreName = tmp.getName().substring(0, tmp.getName().lastIndexOf(".out"));
                 outputData.put(tmpPreName, tmp.getName());
+            } else if (tmp.getName().endsWith(".ans")) {
+                tmpPreName = tmp.getName().substring(0, tmp.getName().lastIndexOf(".ans"));
+                outputData.put(tmpPreName, tmp.getName());
+            } else if (tmp.getName().endsWith(".txt")) {
+                tmpPreName = tmp.getName().substring(0, tmp.getName().lastIndexOf(".txt"));
+                if (tmpPreName.contains("input")) {
+                    inputData.put(tmpPreName.replaceAll("input", "$*$"), tmp.getName());
+                } else if (tmpPreName.contains("output")) {
+                    outputData.put(tmpPreName.replaceAll("output", "$*$"), tmp.getName());
+                }
             }
         }
 
         // 进行数据对应检查,同时生成返回数据
         List<HashMap<String, String>> problemCaseList = new LinkedList<>();
         for (String key : inputData.keySet()) {
+            HashMap<String, String> testcaseMap = new HashMap<>();
+            String inputFileName = inputData.get(key);
+            testcaseMap.put("input", inputFileName);
+
+            String outputFileName = key + ".out";
+            if (inputFileName.endsWith(".txt")) {
+                outputFileName = inputFileName.replaceAll("input", "output");
+            }
+
             // 若有名字对应的out文件不存在的，直接生成对应的out文件
             if (outputData.getOrDefault(key, null) == null) {
-                FileWriter fileWriter = new FileWriter(fileDir + File.separator + key + ".out");
+                FileWriter fileWriter = new FileWriter(fileDir + File.separator + outputFileName);
                 fileWriter.write("");
             }
-            HashMap<String, String> testcaseMap = new HashMap<>();
-            testcaseMap.put("input", inputData.get(key));
-            testcaseMap.put("output", key + ".out");
+
+            testcaseMap.put("output", outputFileName);
             problemCaseList.add(testcaseMap);
         }
 
