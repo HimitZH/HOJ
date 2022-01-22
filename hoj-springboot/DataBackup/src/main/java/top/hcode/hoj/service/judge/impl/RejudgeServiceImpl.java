@@ -2,10 +2,10 @@ package top.hcode.hoj.service.judge.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.judge.remote.RemoteJudgeDispatcher;
 import top.hcode.hoj.judge.self.JudgeDispatcher;
@@ -59,6 +59,7 @@ public class RejudgeServiceImpl implements RejudgeService {
     private RemoteJudgeDispatcher remoteJudgeDispatcher;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult rejudge(Long submitId) {
         Judge judge = judgeService.getById(submitId);
 
@@ -117,6 +118,7 @@ public class RejudgeServiceImpl implements RejudgeService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommonResult rejudgeContestProblem(Long cid, Long pid) {
         QueryWrapper<Judge> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("cid", cid).eq("pid", pid);
