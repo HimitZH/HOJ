@@ -130,24 +130,25 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
         // 将新提交数据插入数据库
         judgeMapper.insert(judge);
 
-        // 管理员比赛前的提交不纳入记录
-        if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()) {
-            // 同时初始化写入contest_record表
-            ContestRecord contestRecord = new ContestRecord();
-            contestRecord.setDisplayId(judgeDto.getPid())
-                    .setCpid(contestProblem.getId())
-                    .setSubmitId(judge.getSubmitId())
-                    .setPid(judge.getPid())
-                    .setUsername(userRolesVo.getUsername())
-                    .setRealname(userRolesVo.getRealname())
-                    .setUid(userRolesVo.getUid())
-                    .setCid(judge.getCid())
-                    .setSubmitTime(judge.getSubmitTime())
-                    // 设置比赛开始时间到提交时间之间的秒数
-                    .setTime(DateUtil.between(contest.getStartTime(), judge.getSubmitTime(), DateUnit.SECOND));
-            contestRecordMapper.insert(contestRecord);
+        // 同时初始化写入contest_record表
+        ContestRecord contestRecord = new ContestRecord();
+        contestRecord.setDisplayId(judgeDto.getPid())
+                .setCpid(contestProblem.getId())
+                .setSubmitId(judge.getSubmitId())
+                .setPid(judge.getPid())
+                .setUsername(userRolesVo.getUsername())
+                .setRealname(userRolesVo.getRealname())
+                .setUid(userRolesVo.getUid())
+                .setCid(judge.getCid())
+                .setSubmitTime(judge.getSubmitTime());
 
+        if (contest.getStatus().intValue() == Constants.Contest.STATUS_SCHEDULED.getCode()) {
+            contestRecord.setTime(0L);
+        } else {
+            // 设置比赛开始时间到提交时间之间的秒数
+            contestRecord.setTime(DateUtil.between(contest.getStartTime(), judge.getSubmitTime(), DateUnit.SECOND));
         }
+        contestRecordMapper.insert(contestRecord);
         return null;
     }
 
