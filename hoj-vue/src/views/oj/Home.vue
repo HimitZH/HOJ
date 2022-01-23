@@ -215,9 +215,10 @@
 import time from '@/common/time';
 import api from '@/common/api';
 import { CONTEST_STATUS_REVERSE } from '@/common/constants';
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import { addCodeBtn } from '@/common/codeblock';
 import Avatar from 'vue-avatar';
+import myMessage from '@/common/message';
 const Announcements = () => import('@/components/oj/common/Announcements.vue');
 export default {
   name: 'home',
@@ -313,10 +314,15 @@ export default {
       this.index = newIndex;
     },
     goContest() {
-      this.$router.push({
-        name: 'ContestDetails',
-        params: { contestID: this.contests[this.index].id },
-      });
+      if (!this.isAuthenticated) {
+        myMessage.warning(this.$i18n.t('m.Please_login_first'));
+        this.$store.dispatch('changeModalStatus', { visible: true });
+      } else {
+        this.$router.push({
+          name: 'ContestDetails',
+          params: { contestID: this.contests[this.index].id },
+        });
+      }
     },
     goOtherOJContest(event) {
       window.open(event.row.url);
@@ -341,6 +347,7 @@ export default {
   },
   computed: {
     ...mapState(['websiteConfig']),
+    ...mapGetters(['isAuthenticated']),
   },
 };
 </script>
