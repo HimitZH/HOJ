@@ -129,31 +129,46 @@ export const JUDGE_STATUS_RESERVE={
 
 export const PROBLEM_LEVEL={
   '0':{
-    name:'Easy',
+    name:{
+      'zh-CN':'简单',
+      'en-US':'Easy',
+    },
     color:'#19be6b'
   },
   '1':{
-    name:'Mid',
+    name:{
+      'zh-CN':'中等',
+      'en-US':'Mid',
+    },
     color:'#2d8cf0'
   },
   '2':{
-    name:'Hard',
+    name:{
+      'zh-CN':'困难',
+      'en-US':'Hard',
+    },
     color:'#ed3f14'
   }
 }
 
-export const PROBLEM_LEVEL_RESERVE={
-  'Easy':0,
-  'Mid': 1,
-  'Hard':2,
-}
-
 
 export const REMOTE_OJ = [
-  {name:'HDU',key:"HDU"},
-  {name:"Codeforces",key:"CF"},
-  {name:"POJ",key:"POJ"},
-  {name:"GYM",key:"GYM"},
+  {
+    name:'HDU',
+    key:"HDU"
+  },
+  {
+    name:"Codeforces",
+    key:"CF"
+  },
+  {
+    name:"POJ",
+    key:"POJ"
+  },
+  {
+    name:"GYM",
+    key:"GYM"
+  },
 ]
 
 export const CONTEST_STATUS = {

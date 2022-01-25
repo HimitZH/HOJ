@@ -61,7 +61,7 @@
           <span
             class="el-tag el-tag--small"
             :style="getLevelColor(row.difficulty)"
-            >{{ PROBLEM_LEVEL[row.difficulty].name }}</span
+            >{{ getLevelName(row.difficulty) }}</span
           >
         </template>
       </vxe-table-column>
@@ -123,14 +123,13 @@
 <script>
 import { mapState, mapGetters } from 'vuex';
 import utils from '@/common/utils';
-import { JUDGE_STATUS, PROBLEM_LEVEL } from '@/common/constants';
+import { JUDGE_STATUS } from '@/common/constants';
 import api from '@/common/api';
 export default {
   name: 'TrainingProblemList',
   data() {
     return {
       JUDGE_STATUS: {},
-      PROBLEM_LEVEL: {},
       isGetStatusOk: false,
       testcolor: 'rgba(0, 206, 209, 1)',
       showTags: false,
@@ -138,7 +137,6 @@ export default {
   },
   mounted() {
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
-    this.PROBLEM_LEVEL = Object.assign({}, PROBLEM_LEVEL);
     this.getTrainingProblemList();
   },
   methods: {
@@ -181,13 +179,10 @@ export default {
       );
     },
     getLevelColor(difficulty) {
-      if (difficulty != undefined && difficulty != null) {
-        return (
-          'color: #fff !important;background-color:' +
-          this.PROBLEM_LEVEL[difficulty]['color'] +
-          ' !important;'
-        );
-      }
+      return utils.getLevelColor(difficulty);
+    },
+    getLevelName(difficulty) {
+      return utils.getLevelName(difficulty);
     },
     getPassingRate(ac, total) {
       if (!total) {
