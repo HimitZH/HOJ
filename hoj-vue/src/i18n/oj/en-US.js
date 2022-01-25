@@ -258,6 +258,7 @@ export const m = {
   Nickname:'Nickname',
   Signature: 'Signature',
   Rating: 'Rating',
+  Rank_Search_Placeholder:'Please enter username, nickname or real name.',
 
   // /views/oj/rank/OIRank.vue
   OI_Ranklist: 'OI Ranklist',

@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author Himit_ZH
@@ -24,9 +24,12 @@ import java.util.List;
 @Mapper
 @Repository
 public interface UserRecordMapper extends BaseMapper<UserRecord> {
-    IPage<ACMRankVo> getACMRankList(Page<ACMRankVo> page);
+    IPage<ACMRankVo> getACMRankList(Page<ACMRankVo> page, @Param("uidList") List<String> uidList);
+
     List<ACMRankVo> getRecent7ACRank();
-    IPage<OIRankVo> getOIRankList(Page<OIRankVo> page);
-    UserHomeVo getUserHomeInfo(@Param("uid") String uid,@Param("username")String username);
+
+    IPage<OIRankVo> getOIRankList(Page<OIRankVo> page,@Param("uidList") List<String> uidList);
+
+    UserHomeVo getUserHomeInfo(@Param("uid") String uid, @Param("username") String username);
 
 }

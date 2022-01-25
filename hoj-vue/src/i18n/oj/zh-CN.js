@@ -261,6 +261,7 @@ export const m = {
   Nickname:'昵称',
   Signature: '个性简介',
   Rating: '通过率',
+  Rank_Search_Placeholder:'请输入查询的用户名、昵称或真实姓名',
 
   // /views/oj/rank/OIRank.vue
   OI_Ranklist: 'OI 排行榜',

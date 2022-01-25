@@ -3,6 +3,7 @@ package top.hcode.hoj.service.user.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import top.hcode.hoj.pojo.vo.ACMRankVo;
 import top.hcode.hoj.pojo.entity.user.UserRecord;
 import top.hcode.hoj.dao.UserRecordMapper;
@@ -37,16 +38,20 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
     private static final long cacheRankSecond = 60;
 
     @Override
-    public IPage<ACMRankVo> getACMRankList(int limit, int currentPage) {
+    public IPage<ACMRankVo> getACMRankList(int limit, int currentPage, List<String> uidList) {
 
-        String key = Constants.Account.ACM_RANK_CACHE.getCode() + "_" + limit + "_" + currentPage;
-
-        IPage<ACMRankVo> data = (IPage<ACMRankVo>) redisUtils.get(key);
-
-        if (data == null) {
+        IPage<ACMRankVo> data = null;
+        if (!CollectionUtils.isEmpty(uidList)) {
             Page<ACMRankVo> page = new Page<>(currentPage, limit);
-            data = userRecordMapper.getACMRankList(page);
-            redisUtils.set(key, data, cacheRankSecond);
+            data = userRecordMapper.getACMRankList(page, uidList);
+        } else {
+            String key = Constants.Account.ACM_RANK_CACHE.getCode() + "_" + limit + "_" + currentPage;
+            data = (IPage<ACMRankVo>) redisUtils.get(key);
+            if (data == null) {
+                Page<ACMRankVo> page = new Page<>(currentPage, limit);
+                data = userRecordMapper.getACMRankList(page, null);
+                redisUtils.set(key, data, cacheRankSecond);
+            }
         }
 
         return data;
@@ -59,16 +64,20 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
     }
 
     @Override
-    public IPage<OIRankVo> getOIRankList(int limit, int currentPage) {
+    public IPage<OIRankVo> getOIRankList(int limit, int currentPage,List<String> uidList) {
 
-        String key = Constants.Account.OI_RANK_CACHE.getCode() + "_" + limit + "_" + currentPage;
-
-        IPage<OIRankVo> data = (IPage<OIRankVo>) redisUtils.get(key);
-
-        if (data == null) {
+        IPage<OIRankVo> data = null;
+        if (!CollectionUtils.isEmpty(uidList)){
             Page<OIRankVo> page = new Page<>(currentPage, limit);
-            data = userRecordMapper.getOIRankList(page);
-            redisUtils.set(key, data, cacheRankSecond);
+            data = userRecordMapper.getOIRankList(page, uidList);
+        }else {
+            String key = Constants.Account.OI_RANK_CACHE.getCode() + "_" + limit + "_" + currentPage;
+            data = (IPage<OIRankVo>) redisUtils.get(key);
+            if (data == null) {
+                Page<OIRankVo> page = new Page<>(currentPage, limit);
+                data = userRecordMapper.getOIRankList(page, null);
+                redisUtils.set(key, data, cacheRankSecond);
+            }
         }
 
         return data;

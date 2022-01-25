@@ -9,6 +9,20 @@
           <ECharts :options="options" ref="chart" :autoresize="true"></ECharts>
         </div>
       </el-card>
+      <el-card :padding="10" style="text-align: center;">
+        <el-input
+          :placeholder="$t('m.Rank_Search_Placeholder')"
+          v-model="searchUser"
+          @keyup.enter.native="getRankData(1)"
+        >
+          <el-button
+            slot="append"
+            icon="el-icon-search"
+            class="search-btn"
+            @click="getRankData(1)"
+          ></el-button>
+        </el-input>
+      </el-card>
       <vxe-table
         :data="dataRank"
         :loading="loadingTable"
@@ -122,6 +136,7 @@ export default {
       page: 1,
       limit: 30,
       total: 0,
+      searchUser: null,
       loadingTable: false,
       screenWidth: 768,
       dataRank: [],
@@ -228,7 +243,7 @@ export default {
       bar.showLoading({ maskColor: 'rgba(250, 250, 250, 0.8)' });
       this.loadingTable = true;
       api
-        .getUserRank(page, this.limit, RULE_TYPE.ACM)
+        .getUserRank(page, this.limit, RULE_TYPE.ACM, this.searchUser)
         .then((res) => {
           this.loadingTable = false;
           if (page === 1) {
@@ -308,5 +323,20 @@ export default {
 .user-avatar {
   margin-right: 5px !important;
   vertical-align: middle;
+}
+@media screen and (min-width: 768px) {
+  .el-input-group {
+    width: 50%;
+  }
+}
+@media screen and (min-width: 1050px) {
+  .el-input-group {
+    width: 30%;
+  }
+}
+.search-btn {
+  color: #fff !important;
+  background-color: #409eff !important;
+  border-color: #409eff !important;
 }
 </style>
