@@ -73,7 +73,7 @@ public class ProblemController {
     public CommonResult getProblemList(@RequestParam(value = "limit", required = false) Integer limit,
                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                        @RequestParam(value = "keyword", required = false) String keyword,
-                                       @RequestParam(value = "tagId", required = false) Long tagId,
+                                       @RequestParam(value = "tagId", required = false) List<Long> tagId,
                                        @RequestParam(value = "difficulty", required = false) Integer difficulty,
                                        @RequestParam(value = "oj", required = false) String oj) {
         // 页数，每页题数若为空，设置默认值

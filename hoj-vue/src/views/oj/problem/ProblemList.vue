@@ -107,6 +107,24 @@
               ></el-button>
             </el-col>
           </el-row>
+          <template v-if="filterTagList.length > 0 && buildFilterTagList">
+            <el-row>
+              <strong class="search-tag">搜索标签</strong>
+              <el-tag
+                :key="index"
+                v-for="(tag, index) in filterTagList"
+                closable
+                :color="tag.color ? tag.color : '#409eff'"
+                effect="dark"
+                :disable-transitions="false"
+                @close="removeTag(tag)"
+                size="medium"
+                class="tag"
+              >
+                {{ tag.name }}
+              </el-tag>
+            </el-row>
+          </template>
         </div>
         <vxe-table
           border="inner"
@@ -185,11 +203,12 @@
               <span
                 class="el-tag el-tag--small"
                 :style="
-                  'margin-right:7px;color:#FFF;background-color:' +
+                  'cursor: pointer;margin-right:7px;color:#FFF;background-color:' +
                     (tag.color ? tag.color : '#409eff')
                 "
                 v-for="tag in row.tags"
                 :key="tag.id"
+                @click="addTag(tag)"
                 >{{ tag.name }}</span
               >
             </template>
@@ -265,9 +284,8 @@
           <el-button
             v-for="tag in tagList"
             :key="tag.id"
-            @click="filterByTag(tag.id)"
+            @click="addTag(tag)"
             type="ghost"
-            :disabled="query.tagId == tag.id"
             size="mini"
             class="tag-btn"
             :style="
@@ -326,6 +344,8 @@ export default {
         tag: true,
       },
       filterConfig: { remote: true },
+      filterTagList: [],
+      buildFilterTagList: false,
       routeName: '',
       query: {
         keyword: '',
@@ -381,7 +401,11 @@ export default {
       this.query.difficulty = query.difficulty || '';
       this.query.oj = query.oj || 'Mine';
       this.query.keyword = query.keyword || '';
-      this.query.tagId = query.tagId || '';
+      try {
+        this.query.tagId = JSON.parse(query.tagId);
+      } catch (error) {
+        this.query.tagId = [];
+      }
       this.query.currentPage = parseInt(query.currentPage) || 1;
       if (this.query.currentPage < 1) {
         this.query.currentPage = 1;
@@ -457,6 +481,7 @@ export default {
       } else if (!queryParams.oj) {
         queryParams.oj = 'Mine';
       }
+      queryParams.tagId = queryParams.tagId + '';
       this.loadings.table = true;
       api.getProblemList(this.limit, queryParams).then(
         (res) => {
@@ -503,6 +528,17 @@ export default {
       api.getProblemTagList(oj).then(
         (res) => {
           this.tagList = res.data.data;
+          let tidLen = this.query.tagId.length;
+          let tagLen = this.tagList.length;
+          for (let x = 0; x < tidLen; x++) {
+            for (let y = 0; y < tagLen; y++) {
+              if (this.query.tagId[x] == this.tagList[y].id) {
+                this.filterTagList.push(this.tagList[y]);
+                break;
+              }
+            }
+          }
+          this.buildFilterTagList = true;
           this.loadings.tag = false;
         },
         (res) => {
@@ -519,9 +555,19 @@ export default {
         this.$router.push({ name: 'ProblemList' });
       }
     },
-    filterByTag(tagId) {
-      this.query.tagId = tagId;
+    removeTag(tag) {
+      this.filterTagList.splice(this.filterTagList.indexOf(tag), 1);
+      this.filterByTag();
+    },
+    addTag(tag) {
+      this.filterTagList.push(tag);
+      this.filterByTag();
+    },
+    filterByTag() {
       this.query.currentPage = 1;
+      this.query.tagId = JSON.stringify(
+        this.filterTagList.map((tagJson) => tagJson.id)
+      );
       this.pushRouter();
     },
     filterByDifficulty(difficulty) {
@@ -532,7 +578,7 @@ export default {
     filterByOJ(oj) {
       this.query.oj = oj;
       if (oj != 'All') {
-        this.query.tagId = '';
+        this.filterTagList = [];
       }
       this.query.currentPage = 1;
       this.getTagList(this.query.oj);
@@ -652,5 +698,13 @@ ul {
   /deep/ .vxe-table--body-wrapper {
     overflow-x: hidden !important;
   }
+}
+.search-tag {
+  font-size: 14px;
+  line-height: 1.4285em;
+}
+.tag {
+  margin-left: 10px;
+  margin-top: 10px;
 }
 </style>

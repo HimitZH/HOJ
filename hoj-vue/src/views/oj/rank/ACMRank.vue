@@ -310,8 +310,19 @@ export default {
     padding: 0 !important;
   }
 }
+@media screen and (min-width: 768px) {
+  .el-input-group {
+    width: 50%;
+  }
+}
+@media screen and (min-width: 1050px) {
+  .el-input-group {
+    width: 30%;
+  }
+}
 </style>
 <style>
+
 .rank-signature-body img {
   height: 50px !important;
   width: 50px !important;
@@ -323,16 +334,6 @@ export default {
 .user-avatar {
   margin-right: 5px !important;
   vertical-align: middle;
-}
-@media screen and (min-width: 768px) {
-  .el-input-group {
-    width: 50%;
-  }
-}
-@media screen and (min-width: 1050px) {
-  .el-input-group {
-    width: 30%;
-  }
 }
 .search-btn {
   color: #fff !important;

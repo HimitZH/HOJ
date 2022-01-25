@@ -69,12 +69,15 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
     @Override
     public Page<ProblemVo> getProblemList(int limit, int currentPage, Long pid, String title, Integer difficulty,
-                                          Long tid, String oj) {
+                                          List<Long> tid, String oj) {
 
         //新建分页
         Page<ProblemVo> page = new Page<>(currentPage, limit);
-
-        return page.setRecords(problemMapper.getProblemList(page, pid, title, difficulty, tid, oj));
+        Integer tagListSize = null;
+        if (tid != null) {
+            tagListSize = tid.size();
+        }
+        return page.setRecords(problemMapper.getProblemList(page, pid, title, difficulty, tid, tagListSize, oj));
     }
 
     @Override
