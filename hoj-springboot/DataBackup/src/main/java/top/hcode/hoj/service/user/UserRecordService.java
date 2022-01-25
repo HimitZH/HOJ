@@ -19,11 +19,11 @@ import java.util.List;
  */
 public interface UserRecordService extends IService<UserRecord> {
 
-    IPage<ACMRankVo> getACMRankList(int limit, int currentPage);
+    IPage<ACMRankVo> getACMRankList(int limit, int currentPage, List<String> uidList);
 
     List<ACMRankVo> getRecent7ACRank();
 
-    IPage<OIRankVo> getOIRankList(int limit, int currentPage);
+    IPage<OIRankVo> getOIRankList(int limit, int currentPage,List<String> uidList);
 
     UserHomeVo getUserHomeInfo(String uid, String username);
 
