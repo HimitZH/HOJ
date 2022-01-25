@@ -53,7 +53,21 @@
         GROUP BY j.pid
         ) j
         ON j.pid = p.id
-        LEFT JOIN problem_tag pt ON p.id = pt.pid
+        <if test="tid != null">
+            INNER JOIN
+            (
+            SELECT pid FROM
+            problem_tag
+            <where>
+                <foreach collection="tid" item="id" open="" separator=" or" close="">
+                    tid = #{id}
+                </foreach>
+            </where>
+            GROUP BY pid
+            HAVING COUNT(pid) = #{tagListSize}
+            ) pt
+            ON p.id = pt.pid
+        </if>
         <where>
             p.auth = 1
             <if test="keyword != null and keyword != ''">
@@ -66,9 +80,6 @@
             </if>
             <if test="difficulty != null">
                 and p.difficulty = #{difficulty}
-            </if>
-            <if test="tid != null">
-                and pt.tid = #{tid}
             </if>
             <if test="oj != null and oj !='Mine'">
                 and p.problem_id like concat(#{oj},'%') and p.is_remote=true

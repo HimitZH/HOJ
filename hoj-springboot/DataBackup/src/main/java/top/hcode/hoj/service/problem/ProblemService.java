@@ -23,7 +23,7 @@ import java.util.List;
 
 public interface ProblemService extends IService<Problem> {
     Page<ProblemVo> getProblemList(int limit, int currentPage, Long pid, String title,
-                                   Integer difficulty, Long tid, String oj);
+                                   Integer difficulty, List<Long> tid, String oj);
 
     boolean adminUpdateProblem(ProblemDto problemDto);
 

@@ -318,9 +318,4 @@ export default {
     width: 30%;
   }
 }
-.search-btn {
-  color: #fff !important;
-  background-color: #409eff !important;
-  border-color: #409eff !important;
-}
 </style>

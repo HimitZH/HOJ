@@ -21,7 +21,11 @@ import java.util.List;
 @Mapper
 @Repository
 public interface ProblemMapper extends BaseMapper<Problem> {
-    List<ProblemVo> getProblemList(IPage page, @Param("pid") Long pid, @Param("keyword")String keyword,
-                                   @Param("difficulty")Integer difficulty, @Param("tid")Long tid,
-                                   @Param("oj")String oj);
+    List<ProblemVo> getProblemList(IPage page,
+                                   @Param("pid") Long pid,
+                                   @Param("keyword") String keyword,
+                                   @Param("difficulty") Integer difficulty,
+                                   @Param("tid") List<Long> tid,
+                                   @Param("tagListSize") Integer tagListSize,
+                                   @Param("oj") String oj);
 }

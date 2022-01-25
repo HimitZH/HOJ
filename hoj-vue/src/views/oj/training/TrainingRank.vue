@@ -312,7 +312,7 @@ a.emphasis:hover {
 }
 /deep/.vxe-body--column {
   min-width: 0;
-  height: 48px;
+  height: 51px !important;
   box-sizing: border-box;
   text-align: left;
   text-overflow: ellipsis;
