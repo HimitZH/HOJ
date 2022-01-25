@@ -53,7 +53,7 @@
                   {{
                     query.difficulty === 'All' || query.difficulty === ''
                       ? $t('m.Level')
-                      : query.difficulty
+                      : getLevelName(query.difficulty)
                   }}
                   <i class="el-icon-caret-bottom"></i>
                 </span>
@@ -63,9 +63,9 @@
                   }}</el-dropdown-item>
                   <el-dropdown-item
                     :command="key"
-                    v-for="(value, key, index) in PROBLEM_LEVEL_RESERVE"
+                    v-for="(value, key, index) in PROBLEM_LEVEL"
                     :key="index"
-                    >{{ key }}</el-dropdown-item
+                    >{{ getLevelName(key) }}</el-dropdown-item
                   >
                 </el-dropdown-menu>
               </el-dropdown>
@@ -170,7 +170,7 @@
               <span
                 class="el-tag el-tag--small"
                 :style="getLevelColor(row.difficulty)"
-                >{{ PROBLEM_LEVEL[row.difficulty].name }}</span
+                >{{ getLevelName(row.difficulty) }}</span
               >
             </template>
           </vxe-table-column>
@@ -294,11 +294,11 @@ import { mapGetters } from 'vuex';
 import api from '@/common/api';
 import {
   PROBLEM_LEVEL,
-  PROBLEM_LEVEL_RESERVE,
   JUDGE_STATUS,
   JUDGE_STATUS_RESERVE,
   REMOTE_OJ,
 } from '@/common/constants';
+import utils from '@/common/utils';
 import myMessage from '@/common/message';
 import 'element-ui/lib/theme-chalk/display.css';
 import Pagination from '@/components/oj/common/Pagination';
@@ -310,7 +310,6 @@ export default {
   data() {
     return {
       PROBLEM_LEVEL: {},
-      PROBLEM_LEVEL_RESERVE: {},
       JUDGE_STATUS: {},
       JUDGE_STATUS_RESERVE: {},
       REMOTE_OJ: {},
@@ -350,7 +349,6 @@ export default {
 
   mounted() {
     this.PROBLEM_LEVEL = Object.assign({}, PROBLEM_LEVEL);
-    this.PROBLEM_LEVEL_RESERVE = Object.assign({}, PROBLEM_LEVEL_RESERVE);
     this.JUDGE_STATUS_RESERVE = Object.assign({}, JUDGE_STATUS_RESERVE);
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
     this.REMOTE_OJ = Object.assign({}, REMOTE_OJ);
@@ -453,10 +451,6 @@ export default {
       let queryParams = Object.assign({}, this.query);
       if (queryParams.difficulty == 'All') {
         queryParams.difficulty = '';
-      } else {
-        queryParams.difficulty = this.PROBLEM_LEVEL_RESERVE[
-          queryParams.difficulty
-        ]; // 需要对题目难度的显示进行转换 从字符串转为0，1，2
       }
       if (queryParams.oj == 'All') {
         queryParams.oj = '';
@@ -566,13 +560,10 @@ export default {
       });
     },
     getLevelColor(difficulty) {
-      if (difficulty != undefined && difficulty != null) {
-        return (
-          'color: #fff !important;background-color:' +
-          this.PROBLEM_LEVEL[difficulty]['color'] +
-          ' !important;'
-        );
-      }
+      return utils.getLevelColor(difficulty);
+    },
+    getLevelName(difficulty) {
+      return utils.getLevelName(difficulty);
     },
     getIconColor(status) {
       return (
@@ -646,10 +637,6 @@ export default {
 }
 ul {
   float: right;
-}
-li {
-  display: inline-block;
-  padding: 0 10px;
 }
 .title-a {
   color: #495060;

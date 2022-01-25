@@ -109,9 +109,9 @@
                 v-model="problem.difficulty"
               >
                 <el-option
-                  :label="key"
-                  :value="value"
-                  v-for="(value, key, index) in PROBLEM_LEVEL_RESERVE"
+                  :label="getLevelName(key)"
+                  :value="parseInt(key)"
+                  v-for="(value, key, index) in PROBLEM_LEVEL"
                   :key="index"
                 ></el-option>
               </el-select>
@@ -638,7 +638,7 @@ import utils from '@/common/utils';
 import { mapGetters } from 'vuex';
 import api from '@/common/api';
 import myMessage from '@/common/message';
-import { PROBLEM_LEVEL_RESERVE } from '@/common/constants';
+import { PROBLEM_LEVEL } from '@/common/constants';
 const Editor = () => import('@/components/admin/Editor.vue');
 const Accordion = () => import('@/components/admin/Accordion.vue');
 const AddExtraFile = () => import('@/components/admin/AddExtraFile.vue');
@@ -735,7 +735,7 @@ export default {
         languages: '',
         testCase: '',
       },
-      PROBLEM_LEVEL_RESERVE: {},
+      PROBLEM_LEVEL: {},
       spjRecord: {
         spjCode: '',
         spjLanguage: '',
@@ -747,7 +747,7 @@ export default {
     };
   },
   mounted() {
-    this.PROBLEM_LEVEL_RESERVE = Object.assign({}, PROBLEM_LEVEL_RESERVE);
+    this.PROBLEM_LEVEL = Object.assign({}, PROBLEM_LEVEL);
     this.routeName = this.$route.name;
     let contestID = this.$route.params.contestId;
     this.uploadFileUrl = '/api/file/upload-testcase-zip';
@@ -1010,6 +1010,10 @@ export default {
     changeContent(newVal) {
       this.announcement.content = newVal;
     },
+    getLevelName(difficulty) {
+      return utils.getLevelName(difficulty);
+    },
+
     selectTag(item) {
       for (var i = 0; i < this.problemTags.length; i++) {
         if (this.problemTags[i].name == item.value) {

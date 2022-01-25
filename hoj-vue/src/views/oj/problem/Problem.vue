@@ -122,9 +122,13 @@
                     </template>
                     <template v-if="problemData.problem.difficulty != null">
                       <span
-                        >{{ $t('m.Level') }}：{{
-                          PROBLEM_LEVEL[problemData.problem.difficulty]['name']
-                        }}</span
+                        >{{ $t('m.Level') }}：<span
+                          class="el-tag el-tag--small"
+                          :style="getLevelColor(problemData.problem.difficulty)"
+                          >{{
+                            getLevelName(problemData.problem.difficulty)
+                          }}</span
+                        ></span
                       >
                       <br />
                     </template>
@@ -145,9 +149,12 @@
 
                     <template v-if="problemData.problem.author">
                       <span
-                        >{{ $t('m.Created') }}：{{
-                          problemData.problem.author
-                        }}</span
+                        >{{ $t('m.Created') }}：<el-link
+                          type="info"
+                          class="author-name"
+                          @click="goUserHome(problemData.problem.author)"
+                          >{{ problemData.problem.author }}</el-link
+                        ></span
                       ><br />
                     </template>
                   </div>
@@ -1330,6 +1337,18 @@ export default {
       utils.downloadFileByText(this.fileName, this.fileContent);
     },
 
+    getLevelColor(difficulty) {
+      return utils.getLevelColor(difficulty);
+    },
+    getLevelName(difficulty) {
+      return utils.getLevelName(difficulty);
+    },
+    goUserHome(username) {
+      this.$router.push({
+        path: '/user-home',
+        query: { username },
+      });
+    },
     calcOIRankScore(score, difficulty) {
       return 0.1 * score + 2 * difficulty;
     },
@@ -1448,6 +1467,10 @@ a {
 }
 .el-link {
   font-size: 16px !important;
+}
+.author-name {
+  font-size: 14px !important;
+  color: #909399 !important;
 }
 .question-intr {
   margin-top: 30px;

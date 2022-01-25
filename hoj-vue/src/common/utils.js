@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import storage from '@/common/storage'
-import { STORAGE_KEY } from '@/common/constants'
+import { STORAGE_KEY,PROBLEM_LEVEL } from '@/common/constants'
 import myMessage from '@/common/message'
 import api from "@/common/api";
+import store from '@/store'
 
 // function submissionMemoryFormat (memory) {
 //   if (memory === undefined || memory ===null || memory === '') return '--'
@@ -141,7 +142,30 @@ function examplesToString(objList){
   return result
 }
 
-
+function getLevelColor(difficulty) {
+  if (difficulty != undefined && difficulty != null) {
+    if (PROBLEM_LEVEL[difficulty]) {
+      return (
+        'color: #fff !important;background-color:' +
+        PROBLEM_LEVEL[difficulty]['color'] +
+        ' !important;'
+      );
+    } else {
+      return 'color: #fff !important;background-color: rgb(255, 153, 0)!important;';
+    }
+  }
+}
+function getLevelName(difficulty) {
+  if (
+    difficulty != undefined &&
+    difficulty != null &&
+    PROBLEM_LEVEL[difficulty]
+  ) {
+    return PROBLEM_LEVEL[difficulty]['name'][store.getters.webLanguage];
+  } else {
+    return 'unknown [' + difficulty + ']';
+  }
+}
 
 export default {
   submissionMemoryFormat: submissionMemoryFormat,
@@ -154,5 +178,7 @@ export default {
   downloadFileByText:downloadFileByText,
   getLanguages:getLanguages,
   stringToExamples:stringToExamples,
-  examplesToString:examplesToString
+  examplesToString:examplesToString,
+  getLevelColor:getLevelColor,
+  getLevelName:getLevelName
 }
