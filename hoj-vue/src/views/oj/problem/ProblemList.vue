@@ -560,6 +560,12 @@ export default {
       this.filterByTag();
     },
     addTag(tag) {
+      let len = this.filterTagList.length;
+      for (let i = 0; i < len; i++) {
+        if (this.filterTagList[i].id == tag.id) {
+          return;
+        }
+      }
       this.filterTagList.push(tag);
       this.filterByTag();
     },
