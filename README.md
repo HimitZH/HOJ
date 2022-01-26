@@ -6,6 +6,8 @@
 [![Redis](https://img.shields.io/badge/Redis-5.0.9-red)](https://redis.io/)
 [![Nacos](https://img.shields.io/badge/Nacos-1.4.2-%23267DF7)](https://github.com/alibaba/nacos)
 [![Vue](https://img.shields.io/badge/Vue-2.6.11-success)](https://cn.vuejs.org/)
+[![Github Star](https://img.shields.io/github/stars/HimitZH/HOJ?style=social)](https://github.com/HimitZH/HOJ)
+[![Gitee Star](https://gitee.com/himitzh0730/hoj/badge/star.svg)](https://gitee.com/himitzh0730/hoj)
 [![QQ Group 598587305](https://img.shields.io/badge/QQ%20Group-598587305-blue)](https://qm.qq.com/cgi-bin/qm/qr?k=WWGBZ5gfDiBZOcpNvM8xnZTfUq7BT4Rs&jump_from=webapi)
 
 ## 一、前言
