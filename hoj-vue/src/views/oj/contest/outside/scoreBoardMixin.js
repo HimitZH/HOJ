@@ -14,6 +14,7 @@ export default {
     this.RULE_TYPE = Object.assign({}, RULE_TYPE);
     let key = buildContestRankConcernedKey(this.contestID);
     this.concernedList = storage.get(key) || [];
+    this.loading.info = true;
     this.$store.dispatch('getScoreBoardContestInfo').then((res) => {
         if (!this.contestEnded) {
           this.autoRefresh = true;
@@ -22,6 +23,7 @@ export default {
         this.changeDomTitle({ title: res.data.data.title });
         let data = res.data.data.contest;
         let endTime = moment(data.endTime);
+        this.loading.info = false;
         // 如果当前时间还是在比赛结束前的时间，需要计算倒计时，同时开启获取比赛公告的定时器
         if (endTime.isAfter(moment(data.now))) {
           // 实时更新时间
@@ -29,6 +31,8 @@ export default {
             this.$store.commit('nowAdd1s');
           }, 1000);
         }
+      },(err)=>{
+        this.loading.info = false;
       });
     },
     getContestOutsideScoreboard () {
@@ -38,9 +42,12 @@ export default {
         removeStar: !this.showStarUser,
         concernedList:this.concernedList
       }
+      this.loading.rank = true;
       api.getContestOutsideScoreboard(data).then(res => {
-        this.applyToTable(res.data.data)
+        this.applyToTable(res.data.data);
+        this.loading.rank = false;
       },(err)=>{
+        this.loading.rank = false;
         if(this.refreshFunc){
           this.autoRefresh = false;
           clearInterval(this.refreshFunc)

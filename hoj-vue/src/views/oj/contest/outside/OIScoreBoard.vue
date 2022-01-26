@@ -1,6 +1,6 @@
 <template>
   <div class="scoreboard-body">
-    <el-card shadow>
+    <el-card shadow v-loading="loading.info">
       <div class="contest-title">
         <div slot="header">
           <span class="panel-title">{{ contest.title }}</span>
@@ -59,7 +59,7 @@
         </el-col>
       </el-row>
     </el-card>
-    <el-card shadow style="margin-top:15px;">
+    <el-card shadow style="margin-top:15px;" v-loading="loading.rank">
       <div class="contest-rank-switch">
         <span style="float:right;">
           <span>{{ $t('m.Auto_Refresh') }}(30s)</span>
@@ -303,6 +303,10 @@ export default {
       contestID: '',
       dataRank: [],
       autoRefresh: false,
+      loading: {
+        info: false,
+        rank: false,
+      },
       timer: null,
       CONTEST_STATUS: {},
       CONTEST_STATUS_REVERSE: {},
