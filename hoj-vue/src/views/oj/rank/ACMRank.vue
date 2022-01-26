@@ -322,7 +322,6 @@ export default {
 }
 </style>
 <style>
-
 .rank-signature-body img {
   height: 50px !important;
   width: 50px !important;
