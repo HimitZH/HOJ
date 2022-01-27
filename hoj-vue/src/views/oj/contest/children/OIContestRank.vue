@@ -259,7 +259,7 @@
               <span>{{ row.submissionInfo[problem.displayId] }}</span>
               <br />
               <span
-                v-if="row.timeInfo && row.timeInfo[problem.displayId]"
+                v-if="row.timeInfo && row.timeInfo[problem.displayId] != null"
                 style="font-size:12px;"
                 >({{ row.timeInfo[problem.displayId] }}ms)</span
               >
