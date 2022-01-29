@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
+import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
+import top.hcode.hoj.remoteJudge.entity.RemoteJudgeRes;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.util.Constants;
 
@@ -23,14 +25,13 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j(topic = "hoj")
-public class CodeForcesJudge implements RemoteJudgeStrategy {
-    public static final String IMAGE_HOST = "https://codeforces.com/";
-    public static final String HOST = "https://codeforces.com/";
-    public static final String LOGIN_URL = "enter";
-    public static final String SUBMIT_URL = "problemset/submit";
-    public static final String SUBMISSION_RESULT_URL = "api/user.status?handle=%s&from=1&count=%s";
-    public static final String CE_INFO_URL = "data/submitSource";
-    protected List<HttpCookie> cookies = new LinkedList<>();
+public class CodeForcesJudge extends RemoteJudgeStrategy {
+    public static final String IMAGE_HOST = "https://codeforces.com";
+    public static final String HOST = "https://codeforces.com";
+    public static final String LOGIN_URL = "/enter";
+    public static final String SUBMIT_URL = "/problemset/submit";
+    public static final String SUBMISSION_RESULT_URL = "/api/user.status?handle=%s&from=1&count=%s";
+    public static final String CE_INFO_URL = "/data/submitSource";
 
     private static final Map<String, Constants.Judge> statusMap = new HashMap<String, Constants.Judge>() {{
         put("FAILED", Constants.Judge.STATUS_SUBMITTED_FAILED);
@@ -54,10 +55,12 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
 
 
     @Override
-    public Map<String, Object> submit(String username, String password, String problemId, String language, String userCode) throws Exception {
+    public void submit() {
 
-        if (problemId == null || userCode == null) {
-            return null;
+        RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
+
+        if (remoteJudgeDTO.getCompleteProblemId() == null || remoteJudgeDTO.getUserCode() == null) {
+            return;
         }
 
         HttpRequest httpRequest = HttpUtil.createGet(IMAGE_HOST);
@@ -66,40 +69,34 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         httpRequest.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36 Edg/91.0.864.48");
         HttpResponse httpResponse = httpRequest.execute();
         String homePage = httpResponse.body();
-        if (!homePage.contains("/logout\">") || !homePage.contains("<a href=\"/profile/" + username + "\"")) {
-            Map<String, Object> loginUtils = getLoginUtils(username, password);
-            int status = (int) loginUtils.get("status");
-            if (status != HttpStatus.SC_MOVED_TEMPORARILY) {
-                log.error("进行题目提交时发生错误：登录失败，可能原因账号或密码错误，登录失败！" + CodeForcesJudge.class.getName() + "，题号:" + problemId);
-                return null;
+        if (!homePage.contains("/logout\">") || !homePage.contains("<a href=\"/profile/" + remoteJudgeDTO.getUsername() + "\"")) {
+            login();
+            if (remoteJudgeDTO.getLoginStatus() != HttpStatus.SC_MOVED_TEMPORARILY) {
+                log.error("进行题目提交时发生错误：登录失败，可能原因账号或密码错误，登录失败！" + CodeForcesJudge.class.getName() + "，题号:" + remoteJudgeDTO.getProblemNum());
+                return;
             }
         } else {
-            this.cookies = httpResponse.getCookies();
+            remoteJudgeDTO.setCookies(httpResponse.getCookies());
         }
 
-        String contestId;
-        String problemNum;
-        if (NumberUtil.isInteger(problemId)) {
-            contestId = ReUtil.get("([0-9]+)[0-9]{2}", problemId, 1);
-            problemNum = ReUtil.get("[0-9]+([0-9]{2})", problemId, 1);
-        } else {
-            contestId = ReUtil.get("([0-9]+)[A-Z]{1}[0-9]{0,1}", problemId, 1);
-            problemNum = ReUtil.get("[0-9]+([A-Z]{1}[0-9]{0,1})", problemId, 1);
-        }
         long nowTime = DateUtil.currentSeconds();
 
-        try {
-            submitCode(contestId, problemNum, getLanguage(language), userCode);
-        } catch (HttpException e) {
+
+        submitCode(remoteJudgeDTO);
+
+        if (remoteJudgeDTO.getSubmitStatus() == 403) {
             // 如果提交出现403可能是cookie失效了，再执行登录，重新提交
-            this.cookies = null;
-            Map<String, Object> loginUtils = getLoginUtils(username, password);
-            int status = (int) loginUtils.get("status");
-            if (status != HttpStatus.SC_MOVED_TEMPORARILY) {
-                log.error("CF进行题目提交时发生错误：登录失败，可能原因账号或密码错误，登录失败！" + CodeForcesJudge.class.getName() + "，题号:" + problemId);
-                return null;
+            remoteJudgeDTO.setCookies(null);
+            login();
+            if (remoteJudgeDTO.getLoginStatus() != HttpStatus.SC_MOVED_TEMPORARILY) {
+                log.error("CF进行题目提交时发生错误：登录失败，可能原因账号或密码错误，登录失败！" + CodeForcesJudge.class.getName() + "，题号:" + remoteJudgeDTO.getProblemNum());
+                return;
             }
-            submitCode(contestId, problemNum, getLanguage(language), userCode);
+            submitCode(remoteJudgeDTO);
+            if (remoteJudgeDTO.getSubmitStatus() == 403) {
+                String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `403 Forbidden`", remoteJudgeDTO.getContestId(), remoteJudgeDTO.getProblemNum());
+                throw new RuntimeException(log);
+            }
         }
 
 
@@ -110,20 +107,20 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
         }
 
         // 获取提交的题目id
-        Long maxRunId = getMaxRunId(username, contestId, problemNum, problemId, nowTime);
+        Long maxRunId = getMaxRunId(nowTime);
 
-        return MapUtil.builder(new HashMap<String, Object>())
-                .put("runId", maxRunId)
-                .put("cookies", null)
-                .map();
+        remoteJudgeDTO.setSubmitId(maxRunId);
     }
 
     @SuppressWarnings("unchecked")
-    private Long getMaxRunId(String username, String contestNum, String problemNum, String problemId, long nowTime) {
+    private Long getMaxRunId(long nowTime) {
+
+        RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
+
         int retryNum = 0;
         // 防止cf的nginx限制访问频率，重试5次
         while (retryNum != 10) {
-            HttpResponse httpResponse = getSubmissionResult(username, 10);
+            HttpResponse httpResponse = getSubmissionResult(remoteJudgeDTO.getUsername(), 10);
             if (httpResponse.getStatus() == 200) {
                 try {
                     Map<String, Object> json = JSONUtil.parseObj(httpResponse.body());
@@ -135,14 +132,14 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
                             continue;
                         }
                         Map<String, Object> problem = (Map<String, Object>) result.get("problem");
-                        if (contestNum.equals(problem.get("contestId").toString()) &&
-                                problemNum.equals(problem.get("index").toString())) {
+                        if (remoteJudgeDTO.getContestId().equals(problem.get("contestId").toString()) &&
+                                remoteJudgeDTO.getProblemNum().equals(problem.get("index").toString())) {
                             return runId;
                         }
                     }
                 } catch (Exception e) {
                     log.error("进行题目获取runID发生错误：获取提交ID失败，" + CodeForcesJudge.class.getName()
-                            + "，题号:" + problemId + "，异常描述：" + e);
+                            + "，题号:" + remoteJudgeDTO.getCompleteProblemId() + "，异常描述：" + e);
                     return -1L;
                 }
             }
@@ -165,29 +162,31 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
     }
 
     @Override
-    public Map<String, Object> result(Long submitId, String username, String password, String cookies) {
+    public RemoteJudgeRes result() {
 
-        String resJson = getSubmissionResult(username, 1000).body();
+        String resJson = getSubmissionResult(getRemoteJudgeDTO().getUsername(), 1000).body();
 
         JSONObject jsonObject = JSONUtil.parseObj(resJson);
 
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("status", Constants.Judge.STATUS_JUDGING.getStatus());
+        RemoteJudgeRes remoteJudgeRes = RemoteJudgeRes.builder()
+                .status(Constants.Judge.STATUS_JUDGING.getStatus())
+                .build();
 
         JSONArray results = (JSONArray) jsonObject.get("result");
 
         for (Object tmp : results) {
             JSONObject result = (JSONObject) tmp;
             long runId = Long.parseLong(result.get("id").toString());
-            if (runId == submitId) {
+            if (runId == getRemoteJudgeDTO().getSubmitId()) {
                 String verdict = (String) result.get("verdict");
                 Constants.Judge statusType = statusMap.get(verdict);
                 if (statusType == Constants.Judge.STATUS_JUDGING) {
-                    return MapUtil.builder(new HashMap<String, Object>())
-                            .put("status", statusType.getStatus()).build();
+                    return RemoteJudgeRes.builder()
+                            .status(statusType.getStatus())
+                            .build();
                 }
-                resultMap.put("time", result.get("timeConsumedMillis"));
-                resultMap.put("memory", (int) result.get("memoryConsumedBytes") / 1024);
+                remoteJudgeRes.setTime((Integer) result.get("timeConsumedMillis"));
+                remoteJudgeRes.setMemory((int) result.get("memoryConsumedBytes") / 1024);
                 Constants.Judge resultStatus = statusMap.get(verdict);
                 if (resultStatus == Constants.Judge.STATUS_COMPILE_ERROR) {
 
@@ -199,90 +198,91 @@ public class CodeForcesJudge implements RemoteJudgeStrategy {
                             .form(MapUtil
                                     .builder(new HashMap<String, Object>())
                                     .put("csrf_token", csrfToken)
-                                    .put("submissionId", submitId.toString()).map())
+                                    .put("submissionId", getRemoteJudgeDTO().getSubmitId().toString()).map())
                             .timeout(30000)
                             .execute()
                             .body();
                     JSONObject CEInfoJson = JSONUtil.parseObj(ceJson);
                     String CEInfo = CEInfoJson.getStr("checkerStdoutAndStderr#1");
 
-                    resultMap.put("CEInfo", CEInfo);
+                    remoteJudgeRes.setErrorInfo(CEInfo);
                 }
-                resultMap.put("status", resultStatus.getStatus());
-                return resultMap;
+                remoteJudgeRes.setStatus(resultStatus.getStatus());
+                return remoteJudgeRes;
             }
         }
-        return resultMap;
+        return remoteJudgeRes;
     }
 
     public String getCsrfToken(String url) {
+        RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
         HttpRequest request = HttpUtil.createGet(url);
-        request.cookie(this.cookies);
+        request.cookie(remoteJudgeDTO.getCookies());
         HttpResponse response = request.execute();
-        this.cookies = response.getCookies();
+        remoteJudgeDTO.setCookies(response.getCookies());
         String body = response.body();
         return ReUtil.get("data-csrf='(\\w+)'", body, 1);
     }
 
     @Override
-    public Map<String, Object> getLoginUtils(String username, String password) {
+    public void login() {
+        RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
         String csrf_token = getCsrfToken(IMAGE_HOST + LOGIN_URL);
         HttpRequest httpRequest = new HttpRequest(IMAGE_HOST + LOGIN_URL);
         httpRequest.setConnectionTimeout(60000);
         httpRequest.setReadTimeout(60000);
         httpRequest.setMethod(Method.POST);
-        httpRequest.cookie(this.cookies);
+        httpRequest.cookie(remoteJudgeDTO.getCookies());
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("csrf_token", csrf_token);
         hashMap.put("action", "enter");
         hashMap.put("ftaa", "");
         hashMap.put("bfaa", "");
-        hashMap.put("handleOrEmail", username);
-        hashMap.put("password", password);
+        hashMap.put("handleOrEmail", remoteJudgeDTO.getUsername());
+        hashMap.put("password", remoteJudgeDTO.getPassword());
         hashMap.put("remember", "on");
         httpRequest.form(hashMap);
         HttpResponse response = httpRequest.execute();
-        this.cookies = response.getCookies();
-        return MapUtil.builder(new HashMap<String, Object>()).put("status", response.getStatus()).map();
+        remoteJudgeDTO.setCookies(response.getCookies());
+        remoteJudgeDTO.setLoginStatus(response.getStatus());
     }
 
     protected String getSubmitUrl(String contestNum) {
         return IMAGE_HOST + SUBMIT_URL;
     }
 
-    public void submitCode(String contestId, String problemID, String languageID, String code) throws HttpException {
-        String csrfToken = getCsrfToken(getSubmitUrl(contestId));
+    public void submitCode(RemoteJudgeDTO remoteJudgeDTO) {
+        String csrfToken = getCsrfToken(getSubmitUrl(remoteJudgeDTO.getContestId()));
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("csrf_token", csrfToken);
         paramMap.put("_tta", 140);
         paramMap.put("bfaa", "f1b3f18c715565b589b7823cda7448ce");
         paramMap.put("ftaa", "");
         paramMap.put("action", "submitSolutionFormSubmitted");
-        paramMap.put("submittedProblemIndex", problemID);
-        paramMap.put("contestId", contestId);
-        paramMap.put("programTypeId", languageID);
+        paramMap.put("submittedProblemIndex", remoteJudgeDTO.getProblemNum());
+        paramMap.put("contestId", remoteJudgeDTO.getContestId());
+        paramMap.put("programTypeId", getLanguage(remoteJudgeDTO.getLanguage()));
         paramMap.put("tabsize", 4);
-        paramMap.put("source", code + getRandomBlankString());
+        paramMap.put("source", remoteJudgeDTO.getUserCode() + getRandomBlankString());
         paramMap.put("sourceCodeConfirmed", true);
         paramMap.put("doNotShowWarningAgain", "on");
-        HttpRequest request = HttpUtil.createPost(getSubmitUrl(contestId) + "?csrf_token=" + csrfToken);
+        HttpRequest request = HttpUtil.createPost(getSubmitUrl(remoteJudgeDTO.getContestId()) + "?csrf_token=" + csrfToken);
         request.setConnectionTimeout(60000);
         request.setReadTimeout(60000);
         request.form(paramMap);
-        request.cookie(this.cookies);
+        request.cookie(remoteJudgeDTO.getCookies());
         request.header("user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36");
         HttpResponse response = request.execute();
+        remoteJudgeDTO.setSubmitStatus(response.getStatus());
         if (response.getStatus() != HttpStatus.SC_MOVED_TEMPORARILY) {
             if (response.body().contains("error for__programTypeId")) {
-                String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `Language Rejected`", contestId, problemID);
-                throw new IllegalArgumentException(log);
+                String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `Language Rejected`", remoteJudgeDTO.getContestId(), remoteJudgeDTO.getProblemNum());
+                throw new RuntimeException(log);
             }
             if (response.body().contains("error for__source")) {
-                String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `Source Code Error`", contestId, problemID);
-                throw new IllegalArgumentException(log);
+                String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `Source Code Error`", remoteJudgeDTO.getContestId(), remoteJudgeDTO.getProblemNum());
+                throw new RuntimeException(log);
             }
-            String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `403 Forbidden`", contestId, problemID);
-            throw new HttpException(log);
         }
     }
 

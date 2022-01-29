@@ -76,7 +76,15 @@ public class ConfigUtils {
                 "  poj:\n" +
                 "    account:\n" +
                 "      username: " + listToStr(configVo.getPojUsernameList()) + "\n" +
-                "      password: " + listToStr(configVo.getPojPasswordList());
+                "      password: " + listToStr(configVo.getPojPasswordList()) + "\n" +
+                "  atcoder:\n" +
+                "    account:\n" +
+                "      username: " + listToStr(configVo.getAtcoderUsernameList()) + "\n" +
+                "      password: " + listToStr(configVo.getAtcoderPasswordList()) + "\n" +
+                "  spoj:\n" +
+                "    account:\n" +
+                "      username: " + listToStr(configVo.getSpojUsernameList()) + "\n" +
+                "      password: " + listToStr(configVo.getSpojPasswordList());
     }
 
     private String listToStr(List<String> list) {

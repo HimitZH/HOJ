@@ -5,11 +5,16 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.http.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
+import top.hcode.hoj.remoteJudge.entity.RemoteJudgeRes;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.util.Constants;
 
+import java.net.HttpCookie;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +27,7 @@ import java.util.regex.Pattern;
  * @Description:
  */
 @Slf4j(topic = "hoj")
-public class POJJudge implements RemoteJudgeStrategy {
+public class POJJudge extends RemoteJudgeStrategy {
     public static final String HOST = "http://poj.org";
     public static final String LOGIN_URL = "/login";
     public static final String SUBMIT_URL = "/submit";
@@ -31,68 +36,75 @@ public class POJJudge implements RemoteJudgeStrategy {
     public static final String ERROR_URL = "/showcompileinfo?solution_id=%s";
     public static Map<String, String> headers = MapUtil
             .builder(new HashMap<String, String>())
-            .put("Host", "poj.org")
             .put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36")
             .map();
 
-    /**
-     * @param problemId 提交的题目id
-     * @param language
-     * @param userCode  用户代码
-     * @return
-     */
     @Override
-    public Map<String, Object> submit(String username, String password, String problemId, String language, String userCode) throws Exception {
-        if (problemId == null || userCode == null) {
-            return null;
+    public void submit() {
+
+        RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
+
+        if (remoteJudgeDTO.getCompleteProblemId() == null || remoteJudgeDTO.getUserCode() == null) {
+            return;
         }
-        Map<String, Object> loginUtils = getLoginUtils(username, password);
-        String cookies = (String) loginUtils.get("cookie");
+
+        login();
+
+        List<HttpCookie> cookies = remoteJudgeDTO.getCookies();
 
         HttpRequest request = HttpUtil.createPost(HOST + SUBMIT_URL)
                 .addHeaders(headers)
                 .cookie(cookies);
 
         HttpResponse response = request.form(MapUtil.builder(new HashMap<String, Object>())
-                .put("language", getLanguage(language))
+                .put("language", getLanguage(remoteJudgeDTO.getLanguage()))
                 .put("submit", "Submit")
-                .put("problem_id", problemId)
-                .put("source", Base64.encode(userCode+getRandomBlankString()))
+                .put("problem_id", remoteJudgeDTO.getCompleteProblemId())
+                .put("source", Base64.encode(remoteJudgeDTO.getUserCode() + getRandomBlankString()))
                 .put("encoded", 1).map())
                 .execute();
+        remoteJudgeDTO.setSubmitStatus(response.getStatus());
         if (response.getStatus() != 302 && response.getStatus() != 200) {
-            log.error("进行题目提交时发生错误：提交题目失败，" + POJJudge.class.getName() + "，题号:" + problemId);
-            return null;
+            log.error("进行题目提交时发生错误：提交题目失败，" + POJJudge.class.getName() + "，题号:" + remoteJudgeDTO.getCompleteProblemId());
+            return;
         }
         // 下面的请求都是GET
         request.setMethod(Method.GET);
         // 获取提交的题目id
-        Long maxRunId = getMaxRunId(request, username, problemId);
+        Long maxRunId = getMaxRunId(request, remoteJudgeDTO.getUsername(), remoteJudgeDTO.getCompleteProblemId());
 
         if (maxRunId == -1L) { // 等待2s再次查询，如果还是失败，则表明提交失败了
-            TimeUnit.SECONDS.sleep(2);
-            maxRunId = getMaxRunId(request, username, problemId);
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            maxRunId = getMaxRunId(request, remoteJudgeDTO.getUsername(), remoteJudgeDTO.getCompleteProblemId());
         }
 
-        return MapUtil.builder(new HashMap<String, Object>())
-                .put("cookies", cookies)
-                .put("runId", maxRunId)
-                .map();
+        remoteJudgeDTO.setCookies(cookies)
+                .setSubmitId(maxRunId);
     }
 
     @Override
-    public Map<String, Object> result(Long submitId, String username, String password, String cookies) {
-        if (StringUtils.isEmpty(cookies)) {
-            Map<String, Object> loginUtils = getLoginUtils(username, password);
-            cookies = (String) loginUtils.get("cookie");
+    public RemoteJudgeRes result() {
+
+        RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
+        List<HttpCookie> cookies = remoteJudgeDTO.getCookies();
+        Long submitId = remoteJudgeDTO.getSubmitId();
+
+        if (CollectionUtils.isEmpty(cookies)) {
+            login();
+            cookies = remoteJudgeDTO.getCookies();
         }
         String url = HOST + String.format(QUERY_URL, submitId);
         HttpRequest request = HttpUtil.createGet(url)
                 .cookie(cookies)
                 .addHeaders(headers);
+
         HttpResponse response = request.execute();
 
-        if (response.getStatus() != 200) {
+        if (!response.body().contains("<b>Result:</b>")) {
             log.error(submitId + " error:{}", response.body());
         }
 
@@ -100,43 +112,49 @@ public class POJJudge implements RemoteJudgeStrategy {
                 .replaceAll("<.*?>", "")
                 .trim();
 
-        Constants.Judge statusType = statusMap.get(statusStr);
-        if (statusType == null) {
-            return MapUtil.builder(new HashMap<String, Object>())
-                    .put("status", Constants.Judge.STATUS_PENDING).build();
+        Constants.Judge judgeStatus = statusMap.get(statusStr);
+
+        if (judgeStatus == null) {
+            return RemoteJudgeRes.builder()
+                    .status(Constants.Judge.STATUS_PENDING.getStatus())
+                    .build();
         }
-        // 返回的结果map
-        Map<String, Object> result = MapUtil.builder(new HashMap<String, Object>())
-                .put("status", statusType.getStatus()).build();
+
+        RemoteJudgeRes remoteJudgeRes = RemoteJudgeRes.builder()
+                .status(judgeStatus.getStatus())
+                .build();
+
         // 如果CE了，需要获得错误信息
-        if (statusType == Constants.Judge.STATUS_COMPILE_ERROR) {
+        if (judgeStatus == Constants.Judge.STATUS_COMPILE_ERROR) {
             request.setUrl(HOST + String.format(ERROR_URL, submitId));
             String CEHtml = request.execute().body();
             String compilationErrorInfo = ReUtil.get("<pre>([\\s\\S]*?)</pre>", CEHtml, 1);
-            result.put("CEInfo", HtmlUtil.unescape(compilationErrorInfo));
+            remoteJudgeRes.setErrorInfo(HtmlUtil.unescape(compilationErrorInfo));
         } else {
             // 如果不是CE,获取其他信息
             String executionMemory = ReUtil.get("<b>Memory:</b> ([-\\d]+)", response.body(), 1);
-            result.put("memory", executionMemory == null ? null : Integer.parseInt(executionMemory));
+            remoteJudgeRes.setMemory(executionMemory == null ? null : Integer.parseInt(executionMemory));
             String executionTime = ReUtil.get("<b>Time:</b> ([-\\d]+)", response.body(), 1);
-            result.put("time", executionTime == null ? null : Integer.parseInt(executionTime));
+            remoteJudgeRes.setTime(executionTime == null ? null : Integer.parseInt(executionTime));
         }
-        return result;
+        return remoteJudgeRes;
     }
 
 
     @Override
-    public Map<String, Object> getLoginUtils(String username, String password) {
+    public void login() {
+
+        RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
 
         HttpRequest request = HttpUtil.createPost(HOST + LOGIN_URL);
         HttpResponse response = request.form(MapUtil.builder(new HashMap<String, Object>())
-                .put("user_id1", username)
+                .put("user_id1", remoteJudgeDTO.getUsername())
                 .put("B1", "login")
                 .put("url", ".")
-                .put("password1", password).map()).execute();
+                .put("password1", remoteJudgeDTO.getPassword()).map()).execute();
 
-        return MapUtil.builder(new HashMap<String, Object>())
-                .put("cookie", response.getCookieStr()).map();
+        remoteJudgeDTO.setCookies(response.getCookies())
+                .setLoginStatus(response.getStatus());
     }
 
     @Override

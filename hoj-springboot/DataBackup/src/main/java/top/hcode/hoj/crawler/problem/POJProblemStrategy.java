@@ -5,6 +5,7 @@ import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.springframework.util.Assert;
 import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.JsoupUtils;
 
 /**
@@ -53,6 +54,9 @@ public class POJProblemStrategy extends ProblemStrategy {
                 .setOpenCaseResult(false)
                 .setIsRemoveEndBlank(false)
                 .setDifficulty(1); // 默认为简单
-        return new RemoteProblemInfo().setProblem(info).setTagList(null);
+        return new RemoteProblemInfo()
+                .setProblem(info)
+                .setTagList(null)
+                .setRemoteOJ(Constants.RemoteOJ.POJ);
     }
 }

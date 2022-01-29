@@ -117,7 +117,16 @@
 
 ## 三、导入其它OJ题目
 
-导入HDU、Codeforces、POJ、GYM的题目，只需提供该题目的题号便可一键导入
+导入HDU、Codeforces、POJ、GYM、AtCoder、SPOJ的题目，只需提供该题目的题号便可一键导入。
+
+:::tip
+
+- HDU和POJ的题号一般是 `1000`以上的数字
+- Codeforces和GYM的题号是`1000A`、`1000B`、这种数字加大写英文字母的格式，具体请到[https://codeforces.com](https://codeforces.com)查看
+- SPOJ的题号是大写英文字母，如`TEST`，具体请到[https://www.spoj.com](https://www.spoj.com)查看
+- AtCoder的题号是类似`abc110_a`这种格式，具体请到 [https://atcoder.jp](https://atcoder.jp) 查看
+
+:::
 
 **管理员进入后台，点击题目列表**
 
@@ -134,8 +143,3 @@
 
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210523223042100.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
-
-**注意：**
-
-- HDU和POJ的题号一般是 1000以上的数字
-- Codeforces和GYM的题号是1000A、1000B、这种数字加大写英文字母的格式

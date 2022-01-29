@@ -13,7 +13,8 @@ const defaultOptions = {
     {left: '$$', right: '$$', display: true},
     {left: '\\[', right: '\\]', display: true},
     {left: '\\(', right: '\\)', display: false}
-  ]
+  ],
+  ignoredTags:["script", "noscript", "style", "textarea", "code", "option",],
 }
 
 function render (el, binding) {

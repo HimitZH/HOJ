@@ -130,15 +130,7 @@ public class JudgeController {
                 return CommonResult.errorResponse("对不起，您的提交频率过快，请稍后再尝试！", CommonResult.STATUS_FORBIDDEN);
             }
             redisUtils.expire(lockKey, 8);
-        } else { // 比赛提交限制3秒一次
-            String lockKey = Constants.Account.SUBMIT_CONTEST_LOCK.getCode() + userRolesVo.getUid();
-            long count = redisUtils.incr(lockKey, 1);
-            if (count > 1) {
-                return CommonResult.errorResponse("对不起，您的提交频率过快，请稍后再尝试！", CommonResult.STATUS_FORBIDDEN);
-            }
-            redisUtils.expire(lockKey, 3);
         }
-
 
         // 将提交先写入数据库，准备调用判题服务器
         Judge judge = new Judge();

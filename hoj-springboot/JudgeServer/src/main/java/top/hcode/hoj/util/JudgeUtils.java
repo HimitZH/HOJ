@@ -4,7 +4,6 @@ import cn.hutool.json.JSONUtil;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 
-import java.io.File;
 import java.util.*;
 
 /**

@@ -12,12 +12,9 @@ import top.hcode.hoj.pojo.entity.judge.CompileDTO;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.ToJudge;
 import top.hcode.hoj.pojo.entity.problem.Problem;
-import top.hcode.hoj.remoteJudge.RemoteJudgeGetResult;
-import top.hcode.hoj.remoteJudge.RemoteJudgeToSubmit;
+import top.hcode.hoj.remoteJudge.RemoteJudgeContext;
 import top.hcode.hoj.service.impl.*;
 import top.hcode.hoj.util.Constants;
-
-import javax.annotation.Resource;
 
 
 /**
@@ -37,10 +34,7 @@ public class JudgeController {
     private ProblemServiceImpl problemService;
 
     @Autowired
-    private RemoteJudgeToSubmit remoteJudgeToSubmit;
-
-    @Resource
-    private RemoteJudgeGetResult remoteJudgeGetResult;
+    private RemoteJudgeContext remoteJudgeContext;
 
     @Value("${hoj.judge.token}")
     private String judgeToken;
@@ -51,7 +45,7 @@ public class JudgeController {
     @Value("${hoj-judge-server.remote-judge.open}")
     private Boolean openRemoteJudge;
 
-    @Resource
+    @Autowired
     private JudgeServerServiceImpl judgeServerService;
 
     @RequestMapping("/version")
@@ -75,10 +69,7 @@ public class JudgeController {
         judge.setStatus(Constants.Judge.STATUS_COMPILING.getStatus()); // 标志该判题过程进入编译阶段
         // 写入当前判题服务的名字
         judge.setJudger(name);
-        boolean updateResult = judgeService.updateById(judge);
-        if (!updateResult) { // 出错并不影响主要业务逻辑，可以稍微记录一下即可。
-            log.error("修改Judge表失效--------->{}", "修改提交评判为编译中出错");
-        }
+        judgeService.updateById(judge);
         // 进行判题操作
         Problem problem = problemService.getById(judge.getPid());
         Judge finalJudge = judgeService.Judge(problem, judge);
@@ -148,43 +139,8 @@ public class JudgeController {
             return CommonResult.errorResponse("请求参数不能为空！");
         }
 
-        Long submitId = toJudge.getJudge().getSubmitId();
-        String uid = toJudge.getJudge().getUid();
-        Long cid = toJudge.getJudge().getCid();
-        Long pid = toJudge.getJudge().getPid();
-        String username = toJudge.getUsername();
-        String password = toJudge.getPassword();
-        Boolean isHasSubmitIdRemoteReJudge = toJudge.getIsHasSubmitIdRemoteReJudge();
-        String[] source = toJudge.getRemoteJudgeProblem().split("-");
-        String remotePid = source[1];
-        String remoteJudge = source[0];
-        String userCode = toJudge.getJudge().getCode();
-        String language = toJudge.getJudge().getLanguage();
-        String serverIp = toJudge.getJudgeServerIp();
-        Integer serverPort = toJudge.getJudgeServerPort();
+        remoteJudgeContext.judge(toJudge);
 
-        // 拥有远程oj的submitId远程判题的重判
-        if (isHasSubmitIdRemoteReJudge != null && isHasSubmitIdRemoteReJudge) {
-            Long vjudgeSubmitId = toJudge.getJudge().getVjudgeSubmitId();
-            remoteJudgeGetResult.sendTask(remoteJudge,
-                    username,
-                    password,
-                    submitId,
-                    uid,
-                    cid,
-                    pid,
-                    vjudgeSubmitId,
-                    null,
-                    null,
-                    null);
-        } else {
-            // 调用远程判题
-            remoteJudgeToSubmit.sendTask(username, password,
-                    remoteJudge, remotePid,
-                    submitId, uid,
-                    cid, pid, language, userCode,
-                    serverIp, serverPort);
-        }
         return CommonResult.successResponse(null, "提交成功");
     }
 }

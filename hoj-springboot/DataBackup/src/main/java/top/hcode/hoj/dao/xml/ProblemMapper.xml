@@ -53,7 +53,7 @@
         GROUP BY j.pid
         ) j
         ON j.pid = p.id
-        <if test="tid != null">
+        <if test="tid != null and tid.size() > 0">
             INNER JOIN
             (
             SELECT pid FROM

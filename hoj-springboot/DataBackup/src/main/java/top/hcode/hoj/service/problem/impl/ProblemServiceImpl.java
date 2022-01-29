@@ -1,6 +1,7 @@
 package top.hcode.hoj.service.problem.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.io.file.FileWriter;
@@ -16,6 +17,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
+import top.hcode.hoj.crawler.language.LanguageContext;
+import top.hcode.hoj.crawler.language.LanguageStrategy;
+import top.hcode.hoj.crawler.language.SPOJLanguageStrategy;
 import top.hcode.hoj.crawler.problem.*;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.problem.*;
@@ -75,6 +79,7 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         Page<ProblemVo> page = new Page<>(currentPage, limit);
         Integer tagListSize = null;
         if (tid != null) {
+            tid = tid.stream().distinct().collect(Collectors.toList());
             tagListSize = tid.size();
         }
         return page.setRecords(problemMapper.getProblemList(page, pid, title, difficulty, tid, tagListSize, oj));
@@ -590,7 +595,6 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
     public ProblemStrategy.RemoteProblemInfo getOtherOJProblemInfo(String OJName, String problemId, String author) throws Exception {
 
         ProblemStrategy problemStrategy;
-
         switch (OJName) {
             case "HDU":
                 problemStrategy = new HDUProblemStrategy();
@@ -603,6 +607,12 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
                 break;
             case "GYM":
                 problemStrategy = new GYMProblemStrategy();
+                break;
+            case "SPOJ":
+                problemStrategy = new SPOJProblemStrategy();
+                break;
+            case "AC":
+                problemStrategy = new AtCoderProblemStrategy();
                 break;
             default:
                 throw new Exception("未知的OJ的名字，暂时不支持！");
@@ -628,8 +638,16 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
         }
         List<Language> OJLanguageList = languageService.list(languageQueryWrapper);
         List<ProblemLanguage> problemLanguageList = new LinkedList<>();
-        for (Language language : OJLanguageList) {
-            problemLanguageList.add(new ProblemLanguage().setPid(problem.getId()).setLid(language.getId()));
+        if (!CollectionUtil.isEmpty(remoteProblemInfo.getLangIdList())) {
+            LanguageContext languageContext = new LanguageContext(remoteProblemInfo.getRemoteOJ());
+            List<Language> languageList = languageContext.buildLanguageListByIds(OJLanguageList, remoteProblemInfo.getLangIdList());
+            for (Language language : languageList) {
+                problemLanguageList.add(new ProblemLanguage().setPid(problem.getId()).setLid(language.getId()));
+            }
+        } else {
+            for (Language language : OJLanguageList) {
+                problemLanguageList.add(new ProblemLanguage().setPid(problem.getId()).setLid(language.getId()));
+            }
         }
         boolean addProblemLanguageResult = problemLanguageService.saveOrUpdateBatch(problemLanguageList);
 

@@ -135,6 +135,9 @@ function stringToExamples(value){
 }
 
 function examplesToString(objList){
+  if(objList.length == 0){
+    return "";
+  }
   let result=""
   for(let obj of objList){
     result+= "<input>"+obj.input+"</input><output>"+obj.output+"</output>"

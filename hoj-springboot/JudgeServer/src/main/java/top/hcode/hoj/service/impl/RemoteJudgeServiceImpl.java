@@ -31,7 +31,6 @@ public class RemoteJudgeServiceImpl implements RemoteJudgeService {
 
         UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
         remoteJudgeAccountUpdateWrapper.set("status", true)
-                .eq("status", false)
                 .eq("username", username);
         if (remoteJudge.equals("GYM")) {
             remoteJudge = "CF";

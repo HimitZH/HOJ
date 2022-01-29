@@ -1226,14 +1226,16 @@ export default {
         }
       }
 
-      if (!this.problem.examples.length && !this.problem.isRemote) {
-        myMessage.error(
-          this.$i18n.t('m.Problem_Examples') +
-            ' ' +
-            this.$i18n.t('m.is_required')
-        );
-        return;
-      }
+      // // 不强制校验题目样例不能为空
+      // if (!this.problem.examples.length && !this.problem.isRemote) {
+      //   myMessage.error(
+      //     this.$i18n.t('m.Problem_Examples') +
+      //       ' ' +
+      //       this.$i18n.t('m.is_required')
+      //   );
+      //   return;
+      // }
+
       if (!this.problem.isRemote) {
         // 选择手动输入
         if (!this.problem.isUploadCase) {
