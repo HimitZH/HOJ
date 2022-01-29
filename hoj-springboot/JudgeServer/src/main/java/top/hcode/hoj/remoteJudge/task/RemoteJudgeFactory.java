@@ -1,9 +1,6 @@
 package top.hcode.hoj.remoteJudge.task;
 
-import top.hcode.hoj.remoteJudge.task.Impl.CodeForcesJudge;
-import top.hcode.hoj.remoteJudge.task.Impl.GYMJudge;
-import top.hcode.hoj.remoteJudge.task.Impl.HduJudge;
-import top.hcode.hoj.remoteJudge.task.Impl.POJJudge;
+import top.hcode.hoj.remoteJudge.task.Impl.*;
 import top.hcode.hoj.util.Constants;
 
 
@@ -20,6 +17,10 @@ public class RemoteJudgeFactory {
                 return new POJJudge();
             case GYM_JUDGE:
                 return new GYMJudge();
+            case SPOJ_JUDGE:
+                return new SPOJJudge();
+            case ATCODER_JUDGE:
+                return new AtCoderJudge();
             default:
                 return null;
         }

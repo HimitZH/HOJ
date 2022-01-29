@@ -8,10 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import top.hcode.hoj.crawler.language.LanguageContext;
+import top.hcode.hoj.crawler.language.SPOJLanguageStrategy;
 import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
+import top.hcode.hoj.pojo.entity.problem.Language;
 import top.hcode.hoj.pojo.vo.ConfigVo;
 import top.hcode.hoj.service.common.impl.ConfigServiceImpl;
 import top.hcode.hoj.service.judge.impl.RemoteJudgeAccountServiceImpl;
+import top.hcode.hoj.service.problem.impl.LanguageServiceImpl;
+import top.hcode.hoj.utils.Constants;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,6 +38,9 @@ public class StartupRunner implements CommandLineRunner {
 
     @Autowired
     private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
+
+    @Autowired
+    private LanguageServiceImpl languageService;
 
     @Value("${OPEN_REMOTE_JUDGE:true}")
     private String openRemoteJudge;
@@ -110,6 +118,18 @@ public class StartupRunner implements CommandLineRunner {
     @Value("${POJ_ACCOUNT_PASSWORD_LIST:}")
     private List<String> pojPasswordList;
 
+    @Value("${ATCODER_ACCOUNT_USERNAME_LIST:}")
+    private List<String> atcoderUsernameList;
+
+    @Value("${ATCODER_ACCOUNT_PASSWORD_LIST:}")
+    private List<String> atcoderPasswordList;
+
+    @Value("${SPOJ_ACCOUNT_USERNAME_LIST:}")
+    private List<String> spojUsernameList;
+
+    @Value("${SPOJ_ACCOUNT_PASSWORD_LIST:}")
+    private List<String> spojPasswordList;
+
     @Value("${spring.profiles.active}")
     private String profile;
 
@@ -161,73 +181,70 @@ public class StartupRunner implements CommandLineRunner {
         configVo.setPojUsernameList(pojUsernameList);
         configVo.setPojPasswordList(pojPasswordList);
 
+        configVo.setAtcoderUsernameList(atcoderUsernameList);
+        configVo.setAtcoderPasswordList(atcoderUsernameList);
+
+        configVo.setSpojUsernameList(spojUsernameList);
+        configVo.setSpojPasswordList(spojPasswordList);
+
         configService.sendNewConfigToNacos();
 
         if (openRemoteJudge.equals("true")) {
-            addRemoteJudgeAccountToRedisAndMySQL();
+            // 初始化清空表
+            remoteJudgeAccountService.remove(new QueryWrapper<>());
+            addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.HDU.getName(), hduUsernameList, hduPasswordList);
+            addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.POJ.getName(), pojUsernameList, pojPasswordList);
+            addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.CODEFORCES.getName(), cfUsernameList, cfPasswordList);
+            addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.SPOJ.getName(), spojUsernameList, spojPasswordList);
+            addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.ATCODER.getName(), atcoderUsernameList, atcoderPasswordList);
+
+            checkRemoteOJLanguage(Constants.RemoteOJ.SPOJ, Constants.RemoteOJ.ATCODER);
         }
+
     }
 
     /**
+     * @param oj
+     * @param usernameList
+     * @param passwordList
      * @MethodName addRemoteJudgeAccountToRedis
-     * @Params * @param null
-     * @Description 将传入的对应oj账号写入到mysql和redis
+     * @Description 将传入的对应oj账号写入到mysql
      * @Return
      * @Since 2021/5/18
      */
-    private void addRemoteJudgeAccountToRedisAndMySQL() {
+    private void addRemoteJudgeAccountToMySQL(String oj, List<String> usernameList, List<String> passwordList) {
 
-        // 初始化清空表
-        remoteJudgeAccountService.remove(new QueryWrapper<>());
+        List<RemoteJudgeAccount> remoteAccountList = new LinkedList<>();
+        for (int i = 0; i < usernameList.size(); i++) {
 
-        List<RemoteJudgeAccount> hduRemoteAccountList = new LinkedList<>();
-        for (int i = 0; i < hduUsernameList.size(); i++) {
-
-            hduRemoteAccountList.add(new RemoteJudgeAccount()
-                    .setUsername(hduUsernameList.get(i))
-                    .setPassword(hduPasswordList.get(i))
+            remoteAccountList.add(new RemoteJudgeAccount()
+                    .setUsername(usernameList.get(i))
+                    .setPassword(passwordList.get(i))
                     .setStatus(true)
                     .setVersion(0L)
-                    .setOj("HDU"));
+                    .setOj(oj));
 
         }
 
-        if (hduRemoteAccountList.size() > 0) {
-            boolean addHduOk = remoteJudgeAccountService.saveOrUpdateBatch(hduRemoteAccountList);
-            if (!addHduOk) {
-                log.error("HDU账号添加失败------------>{}", "请检查配置文件，然后重新启动！");
+        if (remoteAccountList.size() > 0) {
+            boolean addOk = remoteJudgeAccountService.saveOrUpdateBatch(remoteAccountList);
+            if (!addOk) {
+                log.error("远程评测初始化失败：[{}]的账号添加失败,请检查配置文件，然后重新启动！！！", oj);
             }
         }
+    }
 
-        List<RemoteJudgeAccount> cfRemoteAccountList = new LinkedList<>();
-        for (int i = 0; i < cfUsernameList.size(); i++) {
-            cfRemoteAccountList.add(new RemoteJudgeAccount()
-                    .setUsername(cfUsernameList.get(i))
-                    .setPassword(cfPasswordList.get(i))
-                    .setStatus(true)
-                    .setVersion(0L)
-                    .setOj("CF"));
-        }
-        if (cfRemoteAccountList.size() > 0) {
-            boolean addCFOk = remoteJudgeAccountService.saveOrUpdateBatch(cfRemoteAccountList);
-            if (!addCFOk) {
-                log.error("Codeforces账号添加失败------------>{}", "请检查配置文件，然后重新启动！");
-            }
-        }
-
-        List<RemoteJudgeAccount> pojRemoteAccountList = new LinkedList<>();
-        for (int i = 0; i < pojUsernameList.size(); i++) {
-            pojRemoteAccountList.add(new RemoteJudgeAccount()
-                    .setUsername(pojUsernameList.get(i))
-                    .setPassword(pojPasswordList.get(i))
-                    .setStatus(true)
-                    .setVersion(0L)
-                    .setOj("POJ"));
-        }
-        if (pojRemoteAccountList.size() > 0) {
-            boolean addPOJOk = remoteJudgeAccountService.saveOrUpdateBatch(pojRemoteAccountList);
-            if (!addPOJOk) {
-                log.error("POJ账号添加失败------------>{}", "请检查配置文件，然后重新启动！");
+    private void checkRemoteOJLanguage(Constants.RemoteOJ... remoteOJList) {
+        for (Constants.RemoteOJ remoteOJ : remoteOJList) {
+            QueryWrapper<Language> languageQueryWrapper = new QueryWrapper<>();
+            languageQueryWrapper.eq("oj", remoteOJ.getName());
+            int count = languageService.count(languageQueryWrapper);
+            if (count == 0) {
+                List<Language> languageList = new LanguageContext(remoteOJ).buildLanguageList();
+                boolean isOk = languageService.saveBatch(languageList);
+                if (!isOk) {
+                    log.error("{}初始化语言列表失败！请检查数据库对应language表是否拥有该oj的语言！", remoteOJ.getName());
+                }
             }
         }
     }

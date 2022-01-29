@@ -5,13 +5,13 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.remoteJudge.task.RemoteJudgeFactory;
+import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
+import top.hcode.hoj.remoteJudge.entity.RemoteJudgeRes;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
-
 import top.hcode.hoj.service.impl.JudgeServiceImpl;
 
 import top.hcode.hoj.service.impl.RemoteJudgeServiceImpl;
@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j(topic = "hoj")
 @Component
+@RefreshScope
 public class RemoteJudgeGetResult {
 
     @Autowired
@@ -32,19 +33,17 @@ public class RemoteJudgeGetResult {
     @Autowired
     private RemoteJudgeServiceImpl remoteJudgeService;
 
+    @Value("${hoj-judge-server.name}")
+    private String name;
+
     private final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
     private final static Map<String, Future> futureTaskMap = new ConcurrentHashMap<>(Runtime.getRuntime().availableProcessors() * 2);
 
-    @Async
-    public void sendTask(String remoteJudge, String username, String password,
-                         Long submitId, String uid,
-                         Long cid, Long pid,
-                         Long resultSubmitId, String cookies,
-                         String ip, Integer port) {
+    public void process(RemoteJudgeStrategy remoteJudgeStrategy) {
 
-        RemoteJudgeStrategy remoteJudgeStrategy = RemoteJudgeFactory.selectJudge(remoteJudge);
-        String key = UUID.randomUUID().toString() + submitId;
+        RemoteJudgeDTO remoteJudgeDTO = remoteJudgeStrategy.getRemoteJudgeDTO();
+        String key = UUID.randomUUID().toString() + remoteJudgeDTO.getSubmitId();
         AtomicInteger count = new AtomicInteger(0);
         Runnable getResultTask = new Runnable() {
             @Override
@@ -54,11 +53,15 @@ public class RemoteJudgeGetResult {
                     // 更新此次提交状态为提交失败！
                     UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
                     judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
-                            .eq("submit_id", submitId);
+                            .eq("submit_id", remoteJudgeDTO.getJudgeId());
                     judgeService.update(judgeUpdateWrapper);
 
-                    log.error("[{}] Get Result Failed!", remoteJudge);
-                    changeRemoteJudgeLock(remoteJudge, username, ip, port, resultSubmitId);
+                    log.error("[{}] Get Result Failed!", remoteJudgeDTO.getOj());
+                    changeRemoteJudgeLock(remoteJudgeDTO.getOj(),
+                            remoteJudgeDTO.getUsername(),
+                            remoteJudgeDTO.getServerIp(),
+                            remoteJudgeDTO.getServerPort(),
+                            remoteJudgeDTO.getSubmitId());
 
                     Future future = futureTaskMap.get(key);
                     if (future != null) {
@@ -72,33 +75,38 @@ public class RemoteJudgeGetResult {
 
                 count.getAndIncrement();
                 try {
-                    Map<String, Object> result = remoteJudgeStrategy.result(resultSubmitId, username, password, cookies);
-                    Integer status = (Integer) result.getOrDefault("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
+                    RemoteJudgeRes remoteJudgeRes = remoteJudgeStrategy.result();
+                    Integer status = remoteJudgeRes.getStatus();
                     if (status.intValue() != Constants.Judge.STATUS_PENDING.getStatus() &&
                             status.intValue() != Constants.Judge.STATUS_JUDGING.getStatus() &&
                             status.intValue() != Constants.Judge.STATUS_COMPILING.getStatus()) {
-                        log.info("[{}] Get Result Successfully! Status:[{}]", remoteJudge, status);
+                        log.info("[{}] Get Result Successfully! Status:[{}]", remoteJudgeDTO.getOj(), status);
 
-                        changeRemoteJudgeLock(remoteJudge, username, ip, port, resultSubmitId);
+                        changeRemoteJudgeLock(remoteJudgeDTO.getOj(),
+                                remoteJudgeDTO.getUsername(),
+                                remoteJudgeDTO.getServerIp(),
+                                remoteJudgeDTO.getServerPort(),
+                                remoteJudgeDTO.getSubmitId());
 
-                        Integer time = (Integer) result.getOrDefault("time", null);
-                        Integer memory = (Integer) result.getOrDefault("memory", null);
-                        String CEInfo = (String) result.getOrDefault("CEInfo", null);
+                        Integer time = remoteJudgeRes.getTime();
+                        Integer memory = remoteJudgeRes.getMemory();
+                        String errorInfo = remoteJudgeRes.getErrorInfo();
                         Judge judge = new Judge();
 
-                        judge.setSubmitId(submitId)
+                        judge.setSubmitId(remoteJudgeDTO.getJudgeId())
                                 .setStatus(status)
                                 .setTime(time)
-                                .setMemory(memory);
+                                .setMemory(memory)
+                                .setJudger(name);
 
                         if (status.intValue() == Constants.Judge.STATUS_COMPILE_ERROR.getStatus()) {
-                            judge.setErrorMessage(CEInfo);
+                            judge.setErrorMessage(errorInfo);
                         } else if (status.intValue() == Constants.Judge.STATUS_SYSTEM_ERROR.getStatus()) {
-                            judge.setErrorMessage("There is something wrong with the " + remoteJudge + ", please try again later");
+                            judge.setErrorMessage("There is something wrong with the " + remoteJudgeDTO.getOj() + ", please try again later");
                         }
 
                         // 如果是比赛题目，需要特别适配OI比赛的得分 除AC给100 其它结果给0分
-                        if (cid != 0) {
+                        if (remoteJudgeDTO.getCid() != 0) {
                             int score = 0;
 
                             if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
@@ -109,12 +117,24 @@ public class RemoteJudgeGetResult {
                             // 写回数据库
                             judgeService.updateById(judge);
                             // 同步其它表
-                            judgeService.updateOtherTable(submitId, status, cid, uid, pid, score, judge.getTime());
+                            judgeService.updateOtherTable(remoteJudgeDTO.getJudgeId(),
+                                    status,
+                                    remoteJudgeDTO.getCid(),
+                                    remoteJudgeDTO.getUid(),
+                                    remoteJudgeDTO.getPid(),
+                                    score,
+                                    judge.getTime());
 
                         } else {
                             judgeService.updateById(judge);
                             // 同步其它表
-                            judgeService.updateOtherTable(submitId, status, cid, uid, pid, null, null);
+                            judgeService.updateOtherTable(remoteJudgeDTO.getJudgeId(),
+                                    status,
+                                    remoteJudgeDTO.getCid(),
+                                    remoteJudgeDTO.getUid(),
+                                    remoteJudgeDTO.getPid(),
+                                    null,
+                                    null);
                         }
 
                         Future future = futureTaskMap.get(key);
@@ -125,14 +145,16 @@ public class RemoteJudgeGetResult {
                     } else {
 
                         Judge judge = new Judge();
-                        judge.setSubmitId(submitId)
-                                .setStatus(status);
+                        judge.setSubmitId(remoteJudgeDTO.getJudgeId())
+                                .setStatus(status)
+                                .setJudger(name);
                         // 写回数据库
                         judgeService.updateById(judge);
                     }
 
                 } catch (Exception e) {
                     log.error("The Error of getting the `remote judge` result:", e);
+                    throw e;
                 }
 
             }

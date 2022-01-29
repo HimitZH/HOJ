@@ -412,7 +412,7 @@ export const m = {
   Security:'安全性',
   Security_Desc:'判题沙盒使用cgroup隔离，网站权限控制完善',
   Diversity:'多样性',
-  Diversity_Desc:'支持Codefoces，HDU，POJ的远程判题',
+  Diversity_Desc:'支持Codefoces，HDU，POJ，GYM，AtCoder，SPOJ的远程判题',
   Available:'有效',
   Faulty:'不完善',
 

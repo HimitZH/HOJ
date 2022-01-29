@@ -125,4 +125,16 @@ public class ConfigVo {
     @Value("${hoj.poj.account.password:}")
     private List<String> pojPasswordList;
 
+    @Value("${hoj.atcoder.account.username:}")
+    private List<String> atcoderUsernameList;
+
+    @Value("${hoj.atcoder.account.password:}")
+    private List<String> atcoderPasswordList;
+
+    @Value("${hoj.spoj.account.username:}")
+    private List<String> spojUsernameList;
+
+    @Value("${hoj.spoj.account.password:}")
+    private List<String> spojPasswordList;
+
 }

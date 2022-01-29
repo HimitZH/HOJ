@@ -71,6 +71,10 @@ public class Constants {
 
         POJ_JUDGE("POJ"),
 
+        SPOJ_JUDGE("SPOJ"),
+
+        ATCODER_JUDGE("AC"),
+
         HDU_REMOTE_JUDGE_ACCOUNT("Hdu Remote Judge Account"),
 
         CF_REMOTE_JUDGE_ACCOUNT("Codeforces Remote Judge Account");

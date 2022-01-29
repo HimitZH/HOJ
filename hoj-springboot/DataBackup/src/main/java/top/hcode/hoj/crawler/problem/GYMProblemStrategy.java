@@ -98,6 +98,9 @@ public class GYMProblemStrategy extends CFProblemStrategy {
                 .setOpenCaseResult(false)
                 .setIsRemoveEndBlank(false)
                 .setDifficulty(1); // 默认为中等
-        return new RemoteProblemInfo().setProblem(problem).setTagList(null);
+        return new RemoteProblemInfo()
+                .setProblem(problem)
+                .setTagList(null)
+                .setRemoteOJ(Constants.RemoteOJ.GYM);
     }
 }

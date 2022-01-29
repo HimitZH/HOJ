@@ -169,6 +169,14 @@ export const REMOTE_OJ = [
     name:"GYM",
     key:"GYM"
   },
+  {
+    name:"AtCoder",
+    key:"AC"
+  },
+  {
+    name:"SPOJ",
+    key:"SPOJ"
+  }
 ]
 
 export const CONTEST_STATUS = {

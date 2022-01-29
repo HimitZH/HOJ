@@ -7,6 +7,7 @@ import cn.hutool.http.HttpUtil;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.Tag;
+import top.hcode.hoj.utils.Constants;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -53,7 +54,7 @@ public class CFProblemStrategy extends ProblemStrategy {
         }
 
         if (contestId == null || problemNum == null) {
-            throw new Exception("Codeforces的题号格式错误！");
+            throw new Exception("Codeforces: Incorrect problem id format!");
         }
 
 
@@ -164,12 +165,15 @@ public class CFProblemStrategy extends ProblemStrategy {
                 .setIsRemoveEndBlank(false)
                 .setDifficulty(1); // 默认为中等
 
-        List<String> all = ReUtil.findAll(Pattern.compile("<span class=\"tag-box\" style=\"font-size:1\\.2rem;\" title=\"[\\s\\S]*?\">([\\s\\S]*?)</span>"), html, 1);
+        List<String> allTags = ReUtil.findAll(Pattern.compile("<span class=\"tag-box\" style=\"font-size:1\\.2rem;\" title=\"[\\s\\S]*?\">([\\s\\S]*?)</span>"), html, 1);
         List<Tag> tagList = new LinkedList<>();
-        for (String tmp : all) {
+        for (String tmp : allTags) {
             tagList.add(new Tag().setName(tmp.trim()));
         }
-        return new RemoteProblemInfo().setProblem(info).setTagList(tagList);
+        return new RemoteProblemInfo()
+                .setProblem(info)
+                .setTagList(tagList)
+                .setRemoteOJ(Constants.RemoteOJ.CODEFORCES);
     }
 
 

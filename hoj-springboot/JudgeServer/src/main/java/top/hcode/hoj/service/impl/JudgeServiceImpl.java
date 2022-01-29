@@ -11,10 +11,13 @@ import top.hcode.hoj.dao.JudgeMapper;
 import top.hcode.hoj.judge.*;
 import top.hcode.hoj.judge.Compiler;
 import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.judge.ToJudge;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.user.UserAcproblem;
+import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
 import top.hcode.hoj.service.JudgeService;
 import top.hcode.hoj.util.Constants;
+import top.hcode.hoj.util.JudgeUtils;
 
 import java.util.HashMap;
 

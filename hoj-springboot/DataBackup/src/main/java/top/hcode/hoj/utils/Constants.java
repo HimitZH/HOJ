@@ -78,7 +78,9 @@ public class Constants {
         HDU("HDU"),
         CODEFORCES("CF"),
         GYM("GYM"),
-        POJ("POJ");
+        POJ("POJ"),
+        SPOJ("SPOJ"),
+        ATCODER("AC");
 
         private final String name;
 
