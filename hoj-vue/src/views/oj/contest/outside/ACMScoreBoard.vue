@@ -275,6 +275,11 @@
                   <span class="emphasis" style="color:#495060;"
                     >{{ problem.displayId }}({{
                       getProblemCount(problemACCountMap[problem.displayId])
+                    }}/{{
+                      getProblemCount(problemACCountMap[problem.displayId]) +
+                        getProblemCount(
+                          problemErrorCountMap[problem.displayId]
+                        )
                     }})
                   </span>
                 </div>

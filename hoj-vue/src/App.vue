@@ -268,6 +268,7 @@ a:hover {
 
 .home-title {
   color: #409eff;
+  font-family: 'Raleway';
 }
 
 .contest-username {

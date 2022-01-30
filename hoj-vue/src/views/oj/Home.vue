@@ -2,74 +2,7 @@
   <div>
     <el-row :gutter="20">
       <el-col :md="14" :sm="24">
-        <el-card v-if="contests.length">
-          <div slot="header" class="clearfix title content-center">
-            <el-link @click="goContest" :underline="false">{{
-              contests[index].title
-            }}</el-link>
-            <div class="contest-status">
-              <el-tag
-                effect="dark"
-                size="medium"
-                :color="CONTEST_STATUS_REVERSE[contests[index].status]['color']"
-              >
-                <i class="fa fa-circle" aria-hidden="true"></i>
-                {{
-                  $t(
-                    'm.' +
-                      CONTEST_STATUS_REVERSE[contests[index].status]['name']
-                  )
-                }}
-              </el-tag>
-            </div>
-          </div>
-          <el-carousel
-            indicator-position="outside"
-            height="460px"
-            :interval="interval"
-            v-model="index"
-            @change="changeContest"
-          >
-            <el-carousel-item v-for="(contest, index) in contests" :key="index">
-              <div class="contest-info">
-                <div class="contest-tags content-center">
-                  <el-button
-                    type="primary"
-                    round
-                    size="mini"
-                    style="margin-top: 4px;"
-                    ><i class="fa fa-calendar"></i>
-                    {{ contest.startTime | localtime }}
-                  </el-button>
-                  <el-button
-                    type="success"
-                    round
-                    size="mini"
-                    style="margin-top: 4px;"
-                    ><i class="fa fa-clock-o"></i>
-                    {{ getDuration(contest.startTime, contest.endTime) }}
-                  </el-button>
-                  <el-button
-                    type="warning"
-                    round
-                    size="mini"
-                    style="margin-top: 4px;"
-                    ><i class="fa fa-trophy"></i>
-                    {{ contest.type | parseContestType }}
-                  </el-button>
-                </div>
-                <div class="contest-description">
-                  <blockquote
-                    v-html="contest.description"
-                    v-highlight
-                    class="markdown-body"
-                  ></blockquote>
-                </div>
-              </div>
-            </el-carousel-item>
-          </el-carousel>
-        </el-card>
-        <el-card v-else>
+        <el-card>
           <div slot="header" class="content-center">
             <span class="panel-title home-title welcome-title"
               >{{ $t('m.Welcome_to')
@@ -77,7 +10,7 @@
             >
           </div>
           <el-carousel
-            :interval="4000"
+            :interval="interval"
             :height="srcHight"
             class="img-carousel"
             arrow="always"
@@ -87,10 +20,91 @@
               v-for="(item, index) in carouselImgList"
               :key="index"
             >
-              <el-image :src="item.url" fit="fill"></el-image>
+              <el-image :src="item.url" fit="fill">
+                <div slot="error" class="image-slot">
+                  <i class="el-icon-picture-outline"></i>
+                </div>
+              </el-image>
             </el-carousel-item>
           </el-carousel>
         </el-card>
+        <template v-if="contests.length">
+          <el-card class="card-top">
+            <div slot="header" class="clearfix title content-center">
+              <div class="home-title home-contest">
+                {{ $t('m.Recent_Contest') }}
+              </div>
+              <el-link @click="goContest" :underline="false">{{
+                contests[index].title
+              }}</el-link>
+              <div class="contest-status">
+                <el-tag
+                  effect="dark"
+                  size="medium"
+                  :color="
+                    CONTEST_STATUS_REVERSE[contests[index].status]['color']
+                  "
+                >
+                  <i class="fa fa-circle" aria-hidden="true"></i>
+                  {{
+                    $t(
+                      'm.' +
+                        CONTEST_STATUS_REVERSE[contests[index].status]['name']
+                    )
+                  }}
+                </el-tag>
+              </div>
+            </div>
+            <el-carousel
+              indicator-position="outside"
+              :interval="interval"
+              v-model="index"
+              @change="changeContest"
+            >
+              <el-carousel-item
+                v-for="(contest, index) in contests"
+                :key="index"
+              >
+                <div class="contest-info">
+                  <div class="contest-tags content-center">
+                    <el-button
+                      type="primary"
+                      round
+                      size="mini"
+                      style="margin-top: 4px;"
+                      ><i class="fa fa-calendar"></i>
+                      {{ contest.startTime | localtime }}
+                    </el-button>
+                    <el-button
+                      type="success"
+                      round
+                      size="mini"
+                      style="margin-top: 4px;"
+                      ><i class="fa fa-clock-o"></i>
+                      {{ getDuration(contest.startTime, contest.endTime) }}
+                    </el-button>
+                    <el-button
+                      type="warning"
+                      round
+                      size="mini"
+                      style="margin-top: 4px;"
+                      ><i class="fa fa-trophy"></i>
+                      {{ contest.type | parseContestType }}
+                    </el-button>
+                  </div>
+                  <div class="contest-description">
+                    <blockquote
+                      v-html="contest.description"
+                      v-highlight
+                      class="markdown-body"
+                    ></blockquote>
+                  </div>
+                </div>
+              </el-carousel-item>
+            </el-carousel>
+          </el-card>
+        </template>
+        <Announcements class="card-top"></Announcements>
       </el-col>
       <el-col :md="10" :sm="24" class="phone-margin">
         <el-card>
@@ -154,11 +168,39 @@
             </vxe-table-column>
           </vxe-table>
         </el-card>
-      </el-col>
-    </el-row>
-    <el-row :gutter="20">
-      <el-col :md="14" :sm="24" style="margin-top: 20px;">
-        <el-card>
+        <el-card class="card-top">
+          <div slot="header" class="clearfix title">
+            <span class="home-title panel-title">
+              {{ $t('m.Supported_Remote_Online_Judge') }}
+            </span>
+          </div>
+          <el-row :gutter="20">
+            <el-col
+              :md="8"
+              :sm="24"
+              v-for="(oj, index) in remoteJudgeList"
+              :key="index"
+            >
+              <a :href="oj.url" target="_blank">
+                <el-tooltip :content="oj.name" placement="top">
+                  <el-image
+                    :src="oj.logo"
+                    fit="fill"
+                    class="oj-logo"
+                    :class="
+                      oj.status ? 'oj-normal ' + oj.name : 'oj-error ' + oj.name
+                    "
+                  >
+                    <div slot="error" class="image-slot">
+                      <i class="el-icon-picture-outline"></i>
+                    </div>
+                  </el-image>
+                </el-tooltip>
+              </a>
+            </el-col>
+          </el-row>
+        </el-card>
+        <el-card class="card-top">
           <div slot="header" class="clearfix">
             <span class="panel-title home-title">{{
               $t('m.Other_OJ_Contest')
@@ -175,37 +217,31 @@
           >
             <vxe-table-column
               field="oj"
-              :title="$t('m.OJ')"
-              min-width="100"
-            ></vxe-table-column>
-            <vxe-table-column
-              field="title"
-              :title="$t('m.Title')"
-              min-width="200"
-            ></vxe-table-column>
-            <vxe-table-column
-              field="beginTime"
-              :title="$t('m.Begin_Time')"
+              :title="$t('m.Recent_Contest')"
               min-width="150"
+              show-overflow
+              header-align="center"
             >
               <template v-slot="{ row }">
-                <span>{{ row.beginTime | localtime }}</span>
+                <span>[{{ row.oj }}] {{ row.title }}</span>
               </template>
             </vxe-table-column>
             <vxe-table-column
-              field="endTime"
-              :title="$t('m.End_Time')"
+              field="beginTime"
+              :title="$t('m.Contest_Time')"
+              show-overflow
               min-width="150"
+              align="center"
             >
               <template v-slot="{ row }">
-                <span>{{ row.endTime | localtime }}</span>
+                <span
+                  >{{ row.beginTime | localtime }} ~
+                  {{ row.endTime | localtime }}</span
+                >
               </template>
             </vxe-table-column>
           </vxe-table>
         </el-card>
-      </el-col>
-      <el-col :md="10" :sm="24" style="margin-top: 20px;">
-        <Announcements></Announcements>
       </el-col>
     </el-row>
   </div>
@@ -228,7 +264,7 @@ export default {
   },
   data() {
     return {
-      interval: 4000,
+      interval: 5000,
       otherContests: [],
       recentUserACRecord: [],
       CONTEST_STATUS_REVERSE: {},
@@ -247,6 +283,44 @@ export default {
         },
       ],
       srcHight: '440px',
+      remoteJudgeList: [
+        {
+          url: 'http://acm.hdu.edu.cn',
+          name: 'HDU',
+          logo: require('@/assets/hdu-logo.png'),
+          status: false,
+        },
+        {
+          url: 'http://poj.org',
+          name: 'POJ',
+          logo: require('@/assets/poj-logo.png'),
+          status: true,
+        },
+        {
+          url: 'https://codeforces.com',
+          name: 'Codeforces',
+          logo: require('@/assets/codeforces-logo.png'),
+          status: true,
+        },
+        {
+          url: 'https://codeforces.com/gyms',
+          name: 'GYM',
+          logo: require('@/assets/gym-logo.png'),
+          status: true,
+        },
+        {
+          url: 'https://atcoder.jp',
+          name: 'AtCoder',
+          logo: require('@/assets/atcoder-logo.png'),
+          status: true,
+        },
+        {
+          url: 'https://www.spoj.com',
+          name: 'SPOJ',
+          logo: require('@/assets/spoj-logo.png'),
+          status: true,
+        },
+      ],
     };
   },
   mounted() {
@@ -352,6 +426,30 @@ export default {
 };
 </script>
 <style scoped>
+.card-top {
+  margin-top: 20px;
+}
+.home-contest {
+  text-align: left;
+  font-size: 21px;
+  font-weight: 500;
+  line-height: 30px;
+}
+.oj-logo {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  padding: 0.5rem 1rem;
+  background: rgb(255, 255, 255);
+  min-height: 47px;
+}
+.oj-normal {
+  border-color: #409eff;
+}
+.oj-error {
+  border-color: #e65c47;
+}
+
 .el-carousel__item h3 {
   color: #475669;
   font-size: 14px;
@@ -377,6 +475,7 @@ export default {
 .welcome-title {
   font-weight: 600;
   font-size: 25px;
+  font-family: 'Raleway';
 }
 .contest-status {
   float: right;
@@ -384,6 +483,7 @@ export default {
 .img-carousel {
   height: 490px;
 }
+
 @media screen and (max-width: 768px) {
   .contest-status {
     text-align: center;

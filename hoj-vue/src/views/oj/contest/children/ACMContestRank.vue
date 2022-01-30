@@ -187,7 +187,7 @@
           field="realname"
           min-width="96"
           :title="$t('m.RealName')"
-           show-overflow
+          show-overflow
           v-if="isContestAdmin"
         >
         </vxe-table-column>
@@ -255,7 +255,9 @@
                       @click="getContestProblemById(problem.displayId)"
                       class="emphasis"
                       style="color:#495060;"
-                      >{{ problem.displayId }}({{ problem.ac }})
+                      >{{ problem.displayId }}({{ problem.ac }}/{{
+                        problem.total
+                      }})
                     </a>
                   </span>
                 </div>

@@ -141,6 +141,7 @@ export const m = {
   Welcome_to:'Welcome to ',
   Recent_7_Days_AC_Rank:'Recent 7 Days AC Top 10 Rank',
   Other_OJ_Contest:'Other Online Judge Contest',
+  Supported_Remote_Online_Judge:'Supported Remote Online Judge',
 
 
   // 表格通用列名,按钮，搜索框等
@@ -153,6 +154,8 @@ export const m = {
   Title:'Title',
   Begin_Time:'Begin Time',
   End_Time:'End Time',
+  Contest_Time:'Contest Time',
+  Recent_Contest:'Recent Contest',
   Problem_ID:'Problem ID',
   Total:'Total',
   AC_Rate:'AC Rate',
