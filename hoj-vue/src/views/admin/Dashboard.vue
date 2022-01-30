@@ -6,7 +6,11 @@
           <div slot="header">
             <el-row :gutter="10">
               <el-col :span="10">
-                <img class="avatar" :src="userInfo.avatar" />
+                <el-image :src="userInfo.avatar" fit="fill" class="avatar">
+                  <div slot="error" class="image-slot">
+                    <i class="el-icon-picture-outline"></i>
+                  </div>
+                </el-image>
               </el-col>
               <el-col :span="14">
                 <span class="panel-title admin-info-name">{{

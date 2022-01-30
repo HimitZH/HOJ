@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import top.hcode.hoj.crawler.language.LanguageContext;
 import top.hcode.hoj.crawler.language.SPOJLanguageStrategy;
 import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
@@ -18,6 +19,7 @@ import top.hcode.hoj.service.judge.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.service.problem.impl.LanguageServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -214,6 +216,13 @@ public class StartupRunner implements CommandLineRunner {
      */
     private void addRemoteJudgeAccountToMySQL(String oj, List<String> usernameList, List<String> passwordList) {
 
+
+        if (CollectionUtils.isEmpty(usernameList) || CollectionUtils.isEmpty(passwordList)|| usernameList.size() != passwordList.size()) {
+            log.error("[{}]: There is no account or password configured for remote judge, " +
+                            "username list:{}, password list:{}", oj, Arrays.toString(usernameList.toArray()),
+                    Arrays.toString(passwordList.toArray()));
+        }
+
         List<RemoteJudgeAccount> remoteAccountList = new LinkedList<>();
         for (int i = 0; i < usernameList.size(); i++) {
 
@@ -229,7 +238,7 @@ public class StartupRunner implements CommandLineRunner {
         if (remoteAccountList.size() > 0) {
             boolean addOk = remoteJudgeAccountService.saveOrUpdateBatch(remoteAccountList);
             if (!addOk) {
-                log.error("远程评测初始化失败：[{}]的账号添加失败,请检查配置文件，然后重新启动！！！", oj);
+                log.error("Remote judge initialization failed. Failed to add account for: [{}]. Please check the configuration file and restart!", oj);
             }
         }
     }
@@ -243,7 +252,7 @@ public class StartupRunner implements CommandLineRunner {
                 List<Language> languageList = new LanguageContext(remoteOJ).buildLanguageList();
                 boolean isOk = languageService.saveBatch(languageList);
                 if (!isOk) {
-                    log.error("{}初始化语言列表失败！请检查数据库对应language表是否拥有该oj的语言！", remoteOJ.getName());
+                    log.error("[{}] failed to initialize language list! Please check whether the language table corresponding to the database has the OJ language!", remoteOJ.getName());
                 }
             }
         }

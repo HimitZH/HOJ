@@ -142,6 +142,7 @@ export const m = {
   Welcome_to:'欢迎使用 ',
   Recent_7_Days_AC_Rank:'最近7天内AC排名',
   Other_OJ_Contest:'其它OJ的近期比赛',
+  Supported_Remote_Online_Judge:'支持的远程评测平台',
 
 
   // 表格通用列名,按钮，搜索框等
@@ -154,6 +155,8 @@ export const m = {
   Title:'标题',
   Begin_Time:'开始时间',
   End_Time:'结束时间',
+  Contest_Time:'比赛时间',
+  Recent_Contest:'近期比赛',
   Problem_ID:'题目ID',
   Total:'总数',
   AC_Rate:'AC 通过率',
@@ -201,7 +204,7 @@ export const m = {
   Please_login_first:'请先登录',
   Submit: '提交',
   Submitting: '提交中',
-  Judging: '正在测评',
+  Judging: '正在评测',
   Wrong_Answer: 'Wrong Answer',
   View_Contest: '查看比赛',
   Are_you_sure_you_want_to_reset_your_code: '您确定要重置代码吗？',
@@ -233,7 +236,7 @@ export const m = {
   Author: '作者',
   Submit_Time:'提交时间',
   Option: '操作',
-  Rejudge: '重新测评',
+  Rejudge: '重新评测',
   Refresh:'刷新',
   Enter_Problem_ID:'请输入题目ID',
   Enter_Author:'请输入作者',
@@ -372,7 +375,7 @@ export const m = {
   Not_Printed:'未打印',
 
    // /views/oj/contest/children/ContestRejudgeAdmin.vue
-   Contest_Rejudge:'比赛重新测评',
+   Contest_Rejudge:'比赛重新评测',
    ID: 'ID',
    Rejudge_All:'重测',
    Contest_Rejudge_Tips:'您确定重测所有提交记录?',
@@ -385,7 +388,7 @@ export const m = {
    Compiler: '编译器',
    Example:'例题',
    Result_Explanation: '结果说明',
-   Pending_Description: '您的解答正在排队等待测评中，请等待结果...',
+   Pending_Description: '您的解答正在排队等待评测中，请等待结果...',
    Submitted_Faild_Description:'您的此次提交失败，请点击按钮重新提交...',
    Compiling_Description:'正在对您的源代码进行编译中，请等待结果...',
    Judging_Description:'正在使用测试数据运行您的程序中，请等待结果...',
