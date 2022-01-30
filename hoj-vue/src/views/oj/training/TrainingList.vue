@@ -204,7 +204,7 @@ export default {
       let route = this.$route.query;
       this.query.keyword = route.keyword || '';
       this.currentPage = parseInt(route.currentPage) || 1;
-      this.categoryId = route.categoryId || null;
+      this.query.categoryId = route.categoryId || null;
       this.query.auth = route.auth || null;
       this.getTrainingList(1);
     },
