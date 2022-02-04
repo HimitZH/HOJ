@@ -604,7 +604,37 @@ export default {
     },
     getUnreadMsgCount() {
       api.getUnreadMsgCount().then((res) => {
-        this.$store.dispatch('updateUnreadMessageCount', res.data.data);
+        let data = res.data.data;
+        this.$store.dispatch('updateUnreadMessageCount', data);
+        let sumMsg =
+          data.comment + data.reply + data.like + data.mine + data.sys;
+        if (sumMsg > 0) {
+          if (this.webLanguage == 'zh-CN') {
+            this.$notify.info({
+              title: '未读消息',
+              message:
+                '亲爱的【' +
+                this.userInfo.username +
+                '】，您有最新的' +
+                sumMsg +
+                '条未读消息，请注意查看！',
+              position: 'bottom-right',
+              duration: 30000,
+            });
+          } else {
+            this.$notify.info({
+              title: 'Unread Message',
+              message:
+                'Dear【' +
+                this.userInfo.username +
+                '】, you have the latest ' +
+                sumMsg +
+                ' unread messages. Please check them!',
+              position: 'bottom-right',
+              duration: 30000,
+            });
+          }
+        }
       });
     },
   },
@@ -617,6 +647,7 @@ export default {
       'token',
       'websiteConfig',
       'unreadMessage',
+      'webLanguage',
     ]),
     avatar() {
       return this.$store.getters.userInfo.avatar;
