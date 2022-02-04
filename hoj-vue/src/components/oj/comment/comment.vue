@@ -1,8 +1,18 @@
 <!--评论模块-->
 <template>
   <div>
-    <div v-if="cid" class="comment-top container">
-      <el-alert type="warning" effect="dark" center :closable="false">
+    <div
+      v-if="cid"
+      class="comment-top container"
+      :style="cid ? 'max-width: 100% !important;' : ''"
+    >
+      <el-alert
+        type="warning"
+        effect="dark"
+        center
+        :closable="false"
+        style="background-color: rgb(14, 176, 201)!important;"
+      >
         <template slot="title">
           <span class="title">{{
             $i18n.t('m.Announcement_of_contest_Q_and_A_area')
@@ -21,7 +31,7 @@
         </template>
       </el-alert>
     </div>
-    <div class="container">
+    <div class="container" :style="cid ? 'max-width: 100% !important;' : ''">
       <div class="own-input">
         <el-input
           v-model="ownInputComment"
