@@ -69,8 +69,10 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
         ContestVo contestVo = contestMapper.getContestInfoById(cid);
         if (contestVo != null) {
             List<ContestRegisterCountVo> contestRegisterCountVoList = contestMapper.getContestRegisterCount(cidList);
-            ContestRegisterCountVo contestRegisterCountVo = contestRegisterCountVoList.get(0);
-            contestVo.setCount(contestRegisterCountVo.getCount());
+            if(!CollectionUtils.isEmpty(contestRegisterCountVoList)) {
+                ContestRegisterCountVo contestRegisterCountVo = contestRegisterCountVoList.get(0);
+                contestVo.setCount(contestRegisterCountVo.getCount());
+            }
         }
         return contestVo;
     }
