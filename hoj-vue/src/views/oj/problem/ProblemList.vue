@@ -551,6 +551,7 @@ export default {
       this.$refs.problemList.refreshColumn();
     },
     onReset() {
+      this.filterTagList = [];
       if (JSON.stringify(this.$route.query) != '{}') {
         this.$router.push({ name: 'ProblemList' });
       }

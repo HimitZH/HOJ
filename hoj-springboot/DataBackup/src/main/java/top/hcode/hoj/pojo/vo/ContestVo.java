@@ -68,4 +68,7 @@ public class ContestVo implements Serializable {
 
     @ApiModelProperty(value = "是否开放比赛榜单")
     private Boolean openRank;
+
+    @ApiModelProperty(value = "比赛的报名人数")
+    private Integer count;
 }

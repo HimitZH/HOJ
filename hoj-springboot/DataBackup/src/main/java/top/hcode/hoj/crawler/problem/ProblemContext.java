@@ -17,10 +17,12 @@ public class ProblemContext {
     }
 
     //上下文接口
-    public ProblemStrategy.RemoteProblemInfo getProblemInfo(String problemId, String author) {
+    public ProblemStrategy.RemoteProblemInfo getProblemInfo(String problemId, String author) throws Exception {
 
         try {
             return problemStrategy.getProblemInfo(problemId, author);
+        }catch (IllegalArgumentException e){
+            throw e;
         } catch (Exception e) {
             log.error("获取题目详情失败---------------->{}", e);
         }

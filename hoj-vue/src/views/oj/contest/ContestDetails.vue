@@ -24,6 +24,13 @@
               </el-tooltip>
             </el-col>
             <el-col :span="12" style="text-align:right">
+              <el-button size="small" plain v-if="contest.count != null">
+                <i
+                  class="el-icon-user-solid"
+                  style="color:rgb(48, 145, 242);"
+                ></i
+                >x{{ contest.count }}
+              </el-button>
               <el-button size="small" plain v-if="contest != null">
                 {{ contest.type | parseContestType }}
               </el-button>

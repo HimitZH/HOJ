@@ -28,83 +28,39 @@
             </el-carousel-item>
           </el-carousel>
         </el-card>
-        <template v-if="contests.length">
-          <el-card class="card-top">
-            <div slot="header" class="clearfix title content-center">
-              <div class="home-title home-contest">
-                {{ $t('m.Recent_Contest') }}
-              </div>
-              <el-link @click="goContest" :underline="false">{{
-                contests[index].title
-              }}</el-link>
-              <div class="contest-status">
-                <el-tag
-                  effect="dark"
-                  size="medium"
-                  :color="
-                    CONTEST_STATUS_REVERSE[contests[index].status]['color']
-                  "
-                >
-                  <i class="fa fa-circle" aria-hidden="true"></i>
-                  {{
-                    $t(
-                      'm.' +
-                        CONTEST_STATUS_REVERSE[contests[index].status]['name']
-                    )
-                  }}
-                </el-tag>
-              </div>
-            </div>
-            <el-carousel
-              indicator-position="outside"
-              :interval="interval"
-              v-model="index"
-              @change="changeContest"
-            >
-              <el-carousel-item
-                v-for="(contest, index) in contests"
-                :key="index"
-              >
-                <div class="contest-info">
-                  <div class="contest-tags content-center">
-                    <el-button
-                      type="primary"
-                      round
-                      size="mini"
-                      style="margin-top: 4px;"
-                      ><i class="fa fa-calendar"></i>
-                      {{ contest.startTime | localtime }}
-                    </el-button>
-                    <el-button
-                      type="success"
-                      round
-                      size="mini"
-                      style="margin-top: 4px;"
-                      ><i class="fa fa-clock-o"></i>
-                      {{ getDuration(contest.startTime, contest.endTime) }}
-                    </el-button>
-                    <el-button
-                      type="warning"
-                      round
-                      size="mini"
-                      style="margin-top: 4px;"
-                      ><i class="fa fa-trophy"></i>
-                      {{ contest.type | parseContestType }}
-                    </el-button>
-                  </div>
-                  <div class="contest-description">
-                    <blockquote
-                      v-html="contest.description"
-                      v-highlight
-                      class="markdown-body"
-                    ></blockquote>
-                  </div>
-                </div>
-              </el-carousel-item>
-            </el-carousel>
-          </el-card>
-        </template>
         <Announcements class="card-top"></Announcements>
+        <el-card class="card-top">
+          <div slot="header" class="clearfix title">
+            <span class="home-title panel-title">
+              {{ $t('m.Supported_Remote_Online_Judge') }}
+            </span>
+          </div>
+          <el-row :gutter="20">
+            <el-col
+              :md="8"
+              :sm="24"
+              v-for="(oj, index) in remoteJudgeList"
+              :key="index"
+            >
+              <a :href="oj.url" target="_blank">
+                <el-tooltip :content="oj.name" placement="top">
+                  <el-image
+                    :src="oj.logo"
+                    fit="fill"
+                    class="oj-logo"
+                    :class="
+                      oj.status ? 'oj-normal ' + oj.name : 'oj-error ' + oj.name
+                    "
+                  >
+                    <div slot="error" class="image-slot">
+                      <i class="el-icon-picture-outline"></i>
+                    </div>
+                  </el-image>
+                </el-tooltip>
+              </a>
+            </el-col>
+          </el-row>
+        </el-card>
       </el-col>
       <el-col :md="10" :sm="24" class="phone-margin">
         <el-card>
@@ -168,38 +124,83 @@
             </vxe-table-column>
           </vxe-table>
         </el-card>
-        <el-card class="card-top">
-          <div slot="header" class="clearfix title">
-            <span class="home-title panel-title">
-              {{ $t('m.Supported_Remote_Online_Judge') }}
-            </span>
-          </div>
-          <el-row :gutter="20">
-            <el-col
-              :md="8"
-              :sm="24"
-              v-for="(oj, index) in remoteJudgeList"
-              :key="index"
+        <template v-if="contests.length">
+          <el-card class="card-top">
+            <div slot="header" class="clearfix title content-center">
+              <div class="home-title home-contest">
+                {{ $t('m.Recent_Contest') }}
+              </div>
+              <el-link @click="goContest" :underline="false">{{
+                contests[index].title
+              }}</el-link>
+              <div class="contest-status">
+                <el-tag
+                  effect="dark"
+                  size="medium"
+                  :color="
+                    CONTEST_STATUS_REVERSE[contests[index].status]['color']
+                  "
+                >
+                  <i class="fa fa-circle" aria-hidden="true"></i>
+                  {{
+                    $t(
+                      'm.' +
+                        CONTEST_STATUS_REVERSE[contests[index].status]['name']
+                    )
+                  }}
+                </el-tag>
+              </div>
+            </div>
+            <el-carousel
+              indicator-position="outside"
+              :interval="interval"
+              v-model="index"
+              height="200px"
+              @change="changeContest"
             >
-              <a :href="oj.url" target="_blank">
-                <el-tooltip :content="oj.name" placement="top">
-                  <el-image
-                    :src="oj.logo"
-                    fit="fill"
-                    class="oj-logo"
-                    :class="
-                      oj.status ? 'oj-normal ' + oj.name : 'oj-error ' + oj.name
-                    "
-                  >
-                    <div slot="error" class="image-slot">
-                      <i class="el-icon-picture-outline"></i>
-                    </div>
-                  </el-image>
-                </el-tooltip>
-              </a>
-            </el-col>
-          </el-row>
-        </el-card>
+              <el-carousel-item
+                v-for="(contest, index) in contests"
+                :key="index"
+              >
+                <div class="contest-info">
+                  <div class="contest-tags content-center">
+                    <el-button
+                      type="primary"
+                      round
+                      size="mini"
+                      style="margin-top: 4px;"
+                      ><i class="fa fa-calendar"></i>
+                      {{ contest.startTime | localtime }}
+                    </el-button>
+                    <el-button
+                      type="success"
+                      round
+                      size="mini"
+                      style="margin-top: 4px;"
+                      ><i class="fa fa-clock-o"></i>
+                      {{ getDuration(contest.startTime, contest.endTime) }}
+                    </el-button>
+                    <el-button
+                      type="warning"
+                      round
+                      size="mini"
+                      style="margin-top: 4px;"
+                      ><i class="fa fa-trophy"></i>
+                      {{ contest.type | parseContestType }}
+                    </el-button>
+                  </div>
+                  <div class="contest-description">
+                    <blockquote
+                      v-html="contest.description"
+                      v-highlight
+                      class="markdown-body"
+                    ></blockquote>
+                  </div>
+                </div>
+              </el-carousel-item>
+            </el-carousel>
+          </el-card>
+        </template>
         <el-card class="card-top">
           <div slot="header" class="clearfix">
             <span class="panel-title home-title">{{

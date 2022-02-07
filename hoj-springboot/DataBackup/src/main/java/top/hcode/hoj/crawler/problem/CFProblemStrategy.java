@@ -54,7 +54,7 @@ public class CFProblemStrategy extends ProblemStrategy {
         }
 
         if (contestId == null || problemNum == null) {
-            throw new Exception("Codeforces: Incorrect problem id format!");
+            throw new IllegalArgumentException("Codeforces: Incorrect problem id format!");
         }
 
 

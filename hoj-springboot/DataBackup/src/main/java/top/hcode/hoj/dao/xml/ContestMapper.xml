@@ -19,6 +19,17 @@
         </where>
         order by c.status ASC, c.start_time DESC
     </select>
+    <select id="getContestRegisterCount" resultType="top.hcode.hoj.pojo.vo.ContestRegisterCountVo">
+        SELECT cr.cid as cid,COUNT(*) as count FROM contest_register cr,contest c
+        <where>
+            cr.cid = c.id
+            AND c.id in
+            <foreach collection="cidList" item="cid" open="(" separator="," close=")">
+                #{cid}
+            </foreach>
+        </where>
+        GROUP BY cr.cid
+    </select>
     <select id="getContestInfoById" resultType="top.hcode.hoj.pojo.vo.ContestVo" useCache="true">
         select c.id,c.author,c.open_print,c.title,c.type,c.status,c.description,c.seal_rank,
         c.seal_rank_time,c.source,c.auth,c.start_time,c.end_time,c.duration,c.rank_show_name,c.open_rank

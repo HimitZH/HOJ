@@ -4,9 +4,11 @@ import cn.hutool.core.util.ReUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.contest.ContestRegister;
+import top.hcode.hoj.pojo.vo.ContestRegisterCountVo;
 import top.hcode.hoj.pojo.vo.ContestVo;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.dao.ContestMapper;
@@ -16,7 +18,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.utils.Constants;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -40,12 +46,33 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
         //新建分页
         Page<ContestVo> page = new Page<>(currentPage, limit);
 
-        return page.setRecords(contestMapper.getContestList(page, type, status, keyword));
+        List<ContestVo> contestList = contestMapper.getContestList(page, type, status, keyword);
+
+        List<Long> cidList = contestList.stream().map(ContestVo::getId).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(cidList)) {
+            List<ContestRegisterCountVo> contestRegisterCountVoList = contestMapper.getContestRegisterCount(cidList);
+            for (ContestRegisterCountVo contestRegisterCountVo : contestRegisterCountVoList) {
+                for (ContestVo contestVo : contestList) {
+                    if (contestRegisterCountVo.getCid().equals(contestVo.getId())) {
+                        contestVo.setCount(contestRegisterCountVo.getCount());
+                        break;
+                    }
+                }
+            }
+        }
+        return page.setRecords(contestList);
     }
 
     @Override
     public ContestVo getContestInfoById(long cid) {
-        return contestMapper.getContestInfoById(cid);
+        List<Long> cidList = Collections.singletonList(cid);
+        ContestVo contestVo = contestMapper.getContestInfoById(cid);
+        if (contestVo != null) {
+            List<ContestRegisterCountVo> contestRegisterCountVoList = contestMapper.getContestRegisterCount(cidList);
+            ContestRegisterCountVo contestRegisterCountVo = contestRegisterCountVoList.get(0);
+            contestVo.setCount(contestRegisterCountVo.getCount());
+        }
+        return contestVo;
     }
 
 
