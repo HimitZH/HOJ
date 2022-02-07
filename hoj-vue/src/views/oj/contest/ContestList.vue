@@ -176,6 +176,13 @@
                         </el-tag>
                       </el-tooltip>
                     </li>
+                    <li v-if="contest.count != null">
+                      <i
+                        class="el-icon-user-solid"
+                        style="color:rgb(48, 145, 242);"
+                      ></i
+                      >x{{ contest.count }}
+                    </li>
                     <li v-if="contest.openRank">
                       <el-tooltip
                         :content="$t('m.Contest_Outside_ScoreBoard')"
@@ -414,7 +421,7 @@ export default {
   text-align: left;
 }
 #contest-list .contest-main .title {
-  font-size: 18px;
+  font-size: 1.25rem;
   padding-left: 8px;
   margin-bottom: 0;
 }
@@ -426,6 +433,7 @@ export default {
   border-bottom: 1px solid #2d8cf0;
 }
 #contest-list .contest-main .detail {
+  font-size: 0.875rem;
   padding-left: 0;
   padding-bottom: 10px;
 }

@@ -43,11 +43,6 @@ public class SPOJProblemStrategy extends ProblemStrategy {
     @Override
     public RemoteProblemInfo getProblemInfo(String problemId, String author) throws Exception {
         problemId = problemId.toUpperCase();
-        boolean isMatch = ReUtil.isMatch("[A-Z]+", problemId);
-        if (!isMatch){
-            throw new RuntimeException("SPOJ: Incorrect problem id format! Must be composed of capital letters, such as `TEST`");
-        }
-
         String body = HttpUtil.get(getProblemUrl(problemId));
         String title = ReUtil.get("<h2 id=\"problem-name\" class=\"text-center\">[\\s\\S]*? - ([\\s\\S]*?)</h2>", body, 1);
         String timeLimit = ReUtil.get("Time limit:</td><td>([\\s\\S]*?)s", body, 1);

@@ -86,9 +86,14 @@ export default {
   components: {
     Pagination,
   },
+  props: {
+    limit: {
+      type: Number,
+      default: 5,
+    },
+  },
   data() {
     return {
-      limit: 5,
       total: 0,
       btnLoading: false,
       announcements: [],
