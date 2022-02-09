@@ -7,6 +7,8 @@ import top.hcode.hoj.pojo.entity.contest.Contest;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 
+import java.util.List;
+
 /**
  * <p>
  * 服务类
@@ -16,6 +18,9 @@ import top.hcode.hoj.pojo.vo.UserRolesVo;
  * @since 2020-10-23
  */
 public interface ContestService extends IService<Contest> {
+
+    List<ContestVo> getWithinNext14DaysContests();
+
     Page<ContestVo> getContestList(Integer limit, Integer currentPage, Integer type, Integer status, String keyword);
 
     ContestVo getContestInfoById(long cid);
