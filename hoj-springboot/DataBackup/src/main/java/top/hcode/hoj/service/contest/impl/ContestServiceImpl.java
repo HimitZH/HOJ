@@ -42,24 +42,21 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
     private ContestRegisterServiceImpl contestRegisterService;
 
     @Override
+    public List<ContestVo> getWithinNext14DaysContests() {
+        List<ContestVo> contestList = contestMapper.getWithinNext14DaysContests();
+        setRegisterCount(contestList);
+
+        return contestList;
+    }
+
+    @Override
     public Page<ContestVo> getContestList(Integer limit, Integer currentPage, Integer type, Integer status, String keyword) {
         //新建分页
         Page<ContestVo> page = new Page<>(currentPage, limit);
 
         List<ContestVo> contestList = contestMapper.getContestList(page, type, status, keyword);
+        setRegisterCount(contestList);
 
-        List<Long> cidList = contestList.stream().map(ContestVo::getId).collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(cidList)) {
-            List<ContestRegisterCountVo> contestRegisterCountVoList = contestMapper.getContestRegisterCount(cidList);
-            for (ContestRegisterCountVo contestRegisterCountVo : contestRegisterCountVoList) {
-                for (ContestVo contestVo : contestList) {
-                    if (contestRegisterCountVo.getCid().equals(contestVo.getId())) {
-                        contestVo.setCount(contestRegisterCountVo.getCount());
-                        break;
-                    }
-                }
-            }
-        }
         return page.setRecords(contestList);
     }
 
@@ -186,4 +183,21 @@ public class ContestServiceImpl extends ServiceImpl<ContestMapper, Contest> impl
 
         return false;
     }
+
+    private void setRegisterCount(List<ContestVo> contestList){
+        List<Long> cidList = contestList.stream().map(ContestVo::getId).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(cidList)) {
+            List<ContestRegisterCountVo> contestRegisterCountVoList = contestMapper.getContestRegisterCount(cidList);
+            for (ContestRegisterCountVo contestRegisterCountVo : contestRegisterCountVoList) {
+                for (ContestVo contestVo : contestList) {
+                    if (contestRegisterCountVo.getCid().equals(contestVo.getId())) {
+                        contestVo.setCount(contestRegisterCountVo.getCount());
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+
 }

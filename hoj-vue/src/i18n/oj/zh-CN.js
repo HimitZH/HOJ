@@ -478,6 +478,8 @@ export const m = {
 
   // /views/oj/training/TrainingList.vue
   Search_Training:'搜索训练',
+  Training_Public:'公开训练',
+  Training_Private:'私有训练',
   Training_Category:'训练分类',
   Number:'编号',
   Problem_Number:'题目数',

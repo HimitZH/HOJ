@@ -475,6 +475,8 @@ export const m = {
 
   // /views/oj/training/TrainingList.vue
   Search_Training:'Search Training',
+  Training_Public:'Public',
+  Training_Private:'Private',
   Training_Category:'Training Category',
   Number:'Number',
   Problem_Number:'Problem Number',

@@ -5,7 +5,7 @@ moment.locale(i18n.locale);
 
 
 // convert utc time to localtime
-function utcToLocal (utcDt, format = 'YYYY-MM-DD  HH:mm:ss') {
+function utcToLocal (utcDt, format = 'YYYY-MM-DD HH:mm:ss') {
   return moment.utc(utcDt).local().format(format)
 }
 

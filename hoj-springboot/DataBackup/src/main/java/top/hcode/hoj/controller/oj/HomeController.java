@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.dao.ContestMapper;
 import top.hcode.hoj.pojo.entity.common.File;
 import top.hcode.hoj.pojo.vo.ACMRankVo;
 import top.hcode.hoj.pojo.vo.AnnouncementVo;
@@ -17,6 +16,7 @@ import top.hcode.hoj.pojo.vo.ConfigVo;
 import top.hcode.hoj.pojo.vo.ContestVo;
 import top.hcode.hoj.service.common.impl.AnnouncementServiceImpl;
 import top.hcode.hoj.service.common.impl.FileServiceImpl;
+import top.hcode.hoj.service.contest.impl.ContestServiceImpl;
 import top.hcode.hoj.service.user.impl.UserRecordServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 public class HomeController {
 
     @Autowired
-    private ContestMapper contestDao;
+    private ContestServiceImpl contestService;
 
     @Autowired
     private ConfigVo configVo;
@@ -64,7 +64,7 @@ public class HomeController {
 
     @GetMapping("/get-recent-contest")
     public CommonResult getRecentContest() {
-        List<ContestVo> contests = contestDao.getWithinNext14DaysContests();
+        List<ContestVo> contests = contestService.getWithinNext14DaysContests();
         return CommonResult.successResponse(contests);
     }
 

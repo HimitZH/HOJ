@@ -31,7 +31,7 @@
             :effect="query.auth == key.name ? 'dark' : 'plain'"
             :key="index"
             @click="filterByAuthType(key.name)"
-            >{{ key.name }}</el-tag
+            >{{ $t('m.Training_' + key.name) }}</el-tag
           >
         </div>
       </section>
@@ -96,7 +96,7 @@
         >
           <template v-slot="{ row }">
             <el-tag :type="TRAINING_TYPE[row.auth]['color']" effect="dark">
-              {{ row.auth }}
+              {{ $t('m.Training_' + row.auth) }}
             </el-tag>
           </template>
         </vxe-table-column>
