@@ -38,6 +38,6 @@
     <select id="getWithinNext14DaysContests" resultType="top.hcode.hoj.pojo.vo.ContestVo">
         SELECT c.id,c.author,c.title,c.type,c.source,c.auth,c.status,c.start_time,c.end_time,c.duration
         FROM contest c WHERE DATE_ADD(CURDATE(), INTERVAL 14 DAY) >= DATE(start_time) AND c.status != 1 AND c.visible=true
-        order by c.start_time ASC
+        order by c.start_time DESC
     </select>
 </mapper>
