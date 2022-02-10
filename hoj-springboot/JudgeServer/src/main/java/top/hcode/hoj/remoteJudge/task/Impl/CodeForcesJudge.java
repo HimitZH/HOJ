@@ -51,6 +51,7 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
         put("SKIPPED", Constants.Judge.STATUS_SYSTEM_ERROR);
         put("TESTING", Constants.Judge.STATUS_JUDGING);
         put("REJECTED", Constants.Judge.STATUS_SYSTEM_ERROR);
+        put("RUNNING & JUDGING", Constants.Judge.STATUS_JUDGING);
     }};
 
 
@@ -179,15 +180,18 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
             long runId = Long.parseLong(result.get("id").toString());
             if (runId == getRemoteJudgeDTO().getSubmitId()) {
                 String verdict = (String) result.get("verdict");
-                Constants.Judge statusType = statusMap.get(verdict);
-                if (statusType == Constants.Judge.STATUS_JUDGING) {
+                Constants.Judge resultStatus = statusMap.get(verdict);
+                if (resultStatus == Constants.Judge.STATUS_JUDGING) {
                     return RemoteJudgeRes.builder()
-                            .status(statusType.getStatus())
+                            .status(resultStatus.getStatus())
+                            .build();
+                } else if (resultStatus == null) {
+                    return RemoteJudgeRes.builder()
+                            .status(Constants.Judge.STATUS_PENDING.getStatus())
                             .build();
                 }
                 remoteJudgeRes.setTime((Integer) result.get("timeConsumedMillis"));
                 remoteJudgeRes.setMemory((int) result.get("memoryConsumedBytes") / 1024);
-                Constants.Judge resultStatus = statusMap.get(verdict);
                 if (resultStatus == Constants.Judge.STATUS_COMPILE_ERROR) {
 
                     String html = HttpUtil.createGet(HOST)
