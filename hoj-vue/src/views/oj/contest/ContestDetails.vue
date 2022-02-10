@@ -31,7 +31,12 @@
                 ></i
                 >x{{ contest.count }}
               </el-button>
-              <el-button size="small" plain v-if="contest != null">
+              <el-button
+                size="small"
+                v-if="contest != null"
+                :type="contest.type == 0 ? 'primary' : 'warning'"
+              >
+                <i class="fa fa-trophy"></i>
                 {{ contest.type | parseContestType }}
               </el-button>
             </el-col>

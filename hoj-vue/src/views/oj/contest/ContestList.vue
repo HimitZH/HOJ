@@ -151,8 +151,9 @@
                       <el-button
                         size="mini"
                         round
+                        :type="contest.type == 0 ? 'primary' : 'warning'"
                         @click="onRuleChange(contest.type)"
-                      >
+                        ><i class="fa fa-trophy"></i>
                         {{ contest.type | parseContestType }}
                       </el-button>
                     </li>

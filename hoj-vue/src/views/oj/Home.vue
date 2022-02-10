@@ -110,8 +110,9 @@
               </div>
               <div class="contest-type-auth">
                 <el-button
-                  type="warning"
+                  :type="contest.type == 0 ? 'primary' : 'warning'"
                   round
+                  @click="goContestList(contest.type)"
                   size="mini"
                   style="margin-right: 10px;"
                   ><i class="fa fa-trophy"></i>
@@ -419,6 +420,15 @@ export default {
         });
       }
     },
+    goContestList(type) {
+      this.$router.push({
+        name: 'ContestList',
+        query: {
+          type,
+        },
+      });
+    },
+
     goOtherOJContest(event) {
       window.open(event.row.url);
     },
