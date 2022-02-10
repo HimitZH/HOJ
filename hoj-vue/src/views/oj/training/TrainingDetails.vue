@@ -84,7 +84,7 @@
                         :type="TRAINING_TYPE[training.auth]['color']"
                         effect="dark"
                       >
-                        {{ training.auth }}
+                        {{ $t('m.Training_' + training.auth) }}
                       </el-tag>
                     </span>
                   </div>
