@@ -153,6 +153,9 @@ public class POJJudge extends RemoteJudgeStrategy {
                 .put("url", ".")
                 .put("password1", remoteJudgeDTO.getPassword()).map()).execute();
 
+        if (response.getStatus() != 302) {
+            throw new RuntimeException("Failed to submit to POJ!!! The possible cause is connection failure, and the returned status code is " + response.getStatus());
+        }
         remoteJudgeDTO.setCookies(response.getCookies())
                 .setLoginStatus(response.getStatus());
     }

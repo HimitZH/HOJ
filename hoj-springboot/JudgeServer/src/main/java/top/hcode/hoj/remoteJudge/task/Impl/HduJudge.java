@@ -132,6 +132,9 @@ public class HduJudge extends RemoteJudgeStrategy {
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
         HttpRequest homeRequest = HttpUtil.createGet(HOST);
         HttpResponse homeResponse = homeRequest.execute();
+        if (homeResponse.getStatus() != 200) {
+            throw new RuntimeException("Failed to submit to HDU!!! The possible cause is connection failure, and the returned status code is " + homeResponse.getStatus());
+        }
         String homePage = homeResponse.body();
 
         if (homePage.contains("href=\"/userloginex.php?action=logout\"")) {
