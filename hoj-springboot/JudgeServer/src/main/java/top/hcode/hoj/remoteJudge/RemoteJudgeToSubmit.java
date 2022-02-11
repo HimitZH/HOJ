@@ -59,7 +59,7 @@ public class RemoteJudgeToSubmit {
             UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
             judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
                     .set("error_message", errLog)
-                    .eq("submit_id", submitId);
+                    .eq("submit_id", remoteJudgeDTO.getJudgeId());
             judgeService.update(judgeUpdateWrapper);
             // 更新其它表
             judgeService.updateOtherTable(remoteJudgeDTO.getSubmitId(),
