@@ -227,6 +227,7 @@ import AddPublicProblem from '@/components/admin/AddPublicProblem.vue';
 import myMessage from '@/common/message';
 import { REMOTE_OJ } from '@/common/constants';
 import { mapGetters } from 'vuex';
+import utils from '@/common/utils';
 export default {
   name: 'ProblemList',
   components: {
