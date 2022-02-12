@@ -622,7 +622,7 @@
                   icon="el-icon-edit-outline"
                   size="small"
                   :loading="submitting"
-                  @click="submitCode"
+                  @click.native="submitCode"
                   :disabled="problemSubmitDisabled || submitted"
                   class="fl-right"
                 >
