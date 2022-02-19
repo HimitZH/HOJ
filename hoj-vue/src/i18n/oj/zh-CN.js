@@ -164,6 +164,7 @@ export const m = {
 
   // /views/oj/problem/problemList.vue
   Problem_List:'题目列表',
+  Problem_Bank:'题库',
   All:'全部',
   My_OJ:'主题库',
   Level:'难度',

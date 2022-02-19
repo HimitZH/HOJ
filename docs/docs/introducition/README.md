@@ -50,13 +50,13 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 > 首页页面 
 
-![首页](https://img-blog.csdnimg.cn/20210609212151977.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![首页](https://img-blog.csdnimg.cn/9405e0fa07c644c1a80470d7494f998b.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 
 
 > 首页英文
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210609213403198.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/0f0caa479b80421db6d5c79fe9238076.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 
 
@@ -70,7 +70,7 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 > 题目列表页
 
-![题目列表页](https://img-blog.csdnimg.cn/de80b1573ea04195a45b65e0dc55a308.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![题目列表页](https://img-blog.csdnimg.cn/0ee61f329e094592b0a0cff55d12b404.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 
 
@@ -88,7 +88,7 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 > 比赛列表页
 
-![比赛列表页](https://img-blog.csdnimg.cn/2021060921255349.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![比赛列表页](https://img-blog.csdnimg.cn/00a0438a576d43edbab676b829a38922.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 
 
@@ -115,6 +115,8 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 - OI比赛
 
   ![oi排行榜](https://img-blog.csdnimg.cn/67f6262854bb44efa70c374f1f156166.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+
+  
 
 
 
