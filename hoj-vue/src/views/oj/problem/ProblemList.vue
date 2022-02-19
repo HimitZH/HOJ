@@ -3,81 +3,11 @@
     <el-col :sm="24" :md="18" :lg="18">
       <el-card shadow>
         <div slot="header">
-          <el-row :gutter="18">
-            <el-col :sm="5" :md="5" :lg="7">
-              <span class="panel-title hidden-xs-only">{{
-                $t('m.Problem_List')
-              }}</span>
+          <el-row :gutter="20" style="margin-bottom: 0.5em;">
+            <el-col :xs="24" :sm="6">
+              <span class="problem-list-title">{{ $t('m.Problem_List') }}</span>
             </el-col>
-            <el-col :xs="8" :sm="3" :md="3" :lg="3" style="padding-top: 6px;">
-              <el-dropdown
-                class="drop-menu"
-                @command="filterByOJ"
-                placement="bottom"
-                trigger="hover"
-              >
-                <span class="el-dropdown-link">
-                  {{
-                    query.oj === 'Mine' || query.oj === ''
-                      ? $t('m.My_OJ')
-                      : query.oj === 'All'
-                      ? $t('m.All')
-                      : query.oj
-                  }}
-                  <i class="el-icon-caret-bottom"></i>
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="All">{{
-                    $t('m.All')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item command="Mine">{{
-                    $t('m.My_OJ')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item
-                    :command="remoteOj.key"
-                    v-for="(remoteOj, index) in REMOTE_OJ"
-                    :key="index"
-                    >{{ remoteOj.name }}</el-dropdown-item
-                  >
-                </el-dropdown-menu>
-              </el-dropdown>
-            </el-col>
-            <el-col :xs="8" :sm="3" :md="3" :lg="3" style="padding-top: 6px;">
-              <el-dropdown
-                class="drop-menu"
-                @command="filterByDifficulty"
-                placement="bottom"
-                trigger="hover"
-              >
-                <span class="el-dropdown-link">
-                  {{
-                    query.difficulty === 'All' || query.difficulty === ''
-                      ? $t('m.Level')
-                      : getLevelName(query.difficulty)
-                  }}
-                  <i class="el-icon-caret-bottom"></i>
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="All">{{
-                    $t('m.All')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item
-                    :command="key"
-                    v-for="(value, key, index) in PROBLEM_LEVEL"
-                    :key="index"
-                    >{{ getLevelName(key) }}</el-dropdown-item
-                  >
-                </el-dropdown-menu>
-              </el-dropdown>
-            </el-col>
-            <el-col :xs="8" :sm="3" :md="2" :lg="3" style="padding-top: 6px;">
-              <vxe-checkbox
-                v-model="tagVisible"
-                @change="changeTagVisible(tagVisible)"
-                >{{ $t('m.Tags') }}</vxe-checkbox
-              >
-            </el-col>
-            <el-col :xs="18" :sm="7" :md="7" :lg="5" class="top-pt">
+            <el-col :xs="24" :sm="6">
               <vxe-input
                 v-model="query.keyword"
                 :placeholder="$t('m.Enter_keyword')"
@@ -85,9 +15,27 @@
                 size="medium"
                 @search-click="filterByKeyword"
                 @keyup.enter.native="filterByKeyword"
+                class="filter-mt"
               ></vxe-input>
             </el-col>
-            <el-col :sm="3" :md="3" :lg="3" class="hidden-xs-only">
+            <el-col
+              :xs="12"
+              :sm="6"
+              style="text-align: center;padding-top: 6px;"
+              class="filter-mt"
+            >
+              <vxe-checkbox
+                v-model="tagVisible"
+                @change="changeTagVisible(tagVisible)"
+                >{{ $t('m.Tags') }}</vxe-checkbox
+              >
+            </el-col>
+            <el-col
+              :xs="12"
+              :sm="6"
+              style="text-align: center;"
+              class="filter-mt"
+            >
               <el-button
                 type="primary"
                 size="small"
@@ -97,19 +45,68 @@
                 >{{ $t('m.Reset') }}</el-button
               >
             </el-col>
-            <el-col :xs="6" class="hidden-sm-and-up top-pt">
-              <el-button
-                type="primary"
-                size="small"
-                icon="el-icon-refresh"
-                circle
-                @click="onReset"
-              ></el-button>
-            </el-col>
           </el-row>
+
+          <section>
+            <b class="problem-filter">{{ $t('m.Problem_Bank') }}</b>
+            <div>
+              <el-tag
+                size="medium"
+                class="filter-item"
+                :effect="query.oj === 'All' ? 'dark' : 'plain'"
+                @click="filterByOJ('All')"
+                >{{ $t('m.All') }}</el-tag
+              >
+              <el-tag
+                size="medium"
+                class="filter-item"
+                :effect="
+                  query.oj === 'Mine' || query.oj === '' ? 'dark' : 'plain'
+                "
+                @click="filterByOJ('Mine')"
+                >{{ $t('m.My_OJ') }}</el-tag
+              >
+              <el-tag
+                size="medium"
+                class="filter-item"
+                v-for="(remoteOj, index) in REMOTE_OJ"
+                :effect="query.oj == remoteOj.key ? 'dark' : 'plain'"
+                :key="index"
+                @click="filterByOJ(remoteOj.key)"
+                >{{ remoteOj.name }}</el-tag
+              >
+            </div>
+          </section>
+
+          <section>
+            <b class="problem-filter">{{ $t('m.Level') }}</b>
+            <div>
+              <el-tag
+                size="medium"
+                class="filter-item"
+                :effect="
+                  query.difficulty === 'All' || query.difficulty === ''
+                    ? 'dark'
+                    : 'plain'
+                "
+                @click="filterByDifficulty('All')"
+                >{{ $t('m.All') }}</el-tag
+              >
+              <el-tag
+                size="medium"
+                class="filter-item"
+                v-for="(value, key, index) in PROBLEM_LEVEL"
+                :effect="query.difficulty == key ? 'dark' : 'plain'"
+                :style="getLevelBlockColor(key)"
+                :key="index"
+                @click="filterByDifficulty(key)"
+                >{{ getLevelName(key) }}</el-tag
+              >
+            </div>
+          </section>
           <template v-if="filterTagList.length > 0 && buildFilterTagList">
             <el-row>
-              <strong class="search-tag">搜索标签</strong>
+              <b class="problem-filter">{{ $t('m.Tags') }}</b>
               <el-tag
                 :key="index"
                 v-for="(tag, index) in filterTagList"
@@ -119,7 +116,7 @@
                 :disable-transitions="false"
                 @close="removeTag(tag)"
                 size="medium"
-                class="tag"
+                class="filter-item"
               >
                 {{ tag.name }}
               </el-tag>
@@ -417,6 +414,9 @@ export default {
     },
 
     pushRouter() {
+      this.query.tagId = JSON.stringify(
+        this.filterTagList.map((tagJson) => tagJson.id)
+      );
       this.$router.push({
         path: '/problem',
         query: this.query,
@@ -572,9 +572,6 @@ export default {
     },
     filterByTag() {
       this.query.currentPage = 1;
-      this.query.tagId = JSON.stringify(
-        this.filterTagList.map((tagJson) => tagJson.id)
-      );
       this.pushRouter();
     },
     filterByDifficulty(difficulty) {
@@ -624,6 +621,11 @@ export default {
         this.JUDGE_STATUS[status].rgb
       );
     },
+    getLevelBlockColor(difficulty) {
+      if (difficulty == this.query.difficulty) {
+        return this.getLevelColor(difficulty);
+      }
+    },
   },
   computed: {
     ...mapGetters(['isAuthenticated']),
@@ -655,10 +657,44 @@ export default {
 </script>
 
 <style scoped>
+.problem-list-title {
+  font-size: 2em;
+  font-weight: 500;
+  line-height: 30px;
+}
+
 .taglist-title {
   font-size: 21px;
   font-weight: 500;
 }
+
+section {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 0.8em;
+}
+.problem-filter {
+  margin-right: 1em;
+  font-weight: bolder;
+  white-space: nowrap;
+  font-size: 16px;
+  margin-top: 8px;
+}
+.filter-item {
+  margin-right: 1em;
+  margin-top: 0.5em;
+  font-size: 13px;
+}
+.filter-item:hover {
+  cursor: pointer;
+}
+
+@media only screen and (max-width: 767px) {
+  .filter-mt {
+    margin-top: 8px;
+  }
+}
+
 /deep/.el-tag--dark {
   border-color: #d9ecff;
 }
@@ -669,7 +705,9 @@ export default {
 /deep/.vxe-checkbox .vxe-checkbox--label {
   overflow: unset !important;
 }
-
+/deep/ .vxe-input {
+  width: 100%;
+}
 #pick-one {
   margin-top: 10px;
 }
@@ -681,11 +719,6 @@ export default {
   /deep/ .el-card__body {
     padding-top: 0px;
     margin-top: 5px;
-  }
-}
-@media only screen and (max-width: 767px) {
-  .top-pt {
-    padding-top: 10px;
   }
 }
 ul {
@@ -705,13 +738,5 @@ ul {
   /deep/ .vxe-table--body-wrapper {
     overflow-x: hidden !important;
   }
-}
-.search-tag {
-  font-size: 14px;
-  line-height: 1.4285em;
-}
-.tag {
-  margin-left: 10px;
-  margin-top: 10px;
 }
 </style>

@@ -323,7 +323,7 @@ section {
   color: inherit;
 }
 .training-category {
-  margin-right: 2.3em;
+  margin-right: 1.5em;
   font-weight: bolder;
   white-space: nowrap;
   font-size: 16px;

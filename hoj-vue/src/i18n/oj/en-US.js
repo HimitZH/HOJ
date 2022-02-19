@@ -163,6 +163,7 @@ export const m = {
 
   // /views/oj/problem/problemList.vue
   Problem_List:'Problem List',
+  Problem_Bank:'Problem Bank',
   All:'All',
   My_OJ:'Mine',
   Level:'Level',
