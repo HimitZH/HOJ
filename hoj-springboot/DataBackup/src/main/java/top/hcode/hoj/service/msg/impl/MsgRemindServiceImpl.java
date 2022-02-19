@@ -147,38 +147,53 @@ public class MsgRemindServiceImpl extends ServiceImpl<MsgRemindMapper, MsgRemind
         for (UserMsgVo userMsgVo : userMsgList.getRecords()) {
             if ("Discussion".equals(userMsgVo.getSourceType())) {
                 Discussion discussion = discussionMapper.selectById(userMsgVo.getSourceId());
-                userMsgVo.setSourceTitle(discussion.getTitle());
+                if (discussion != null) {
+                    userMsgVo.setSourceTitle(discussion.getTitle());
+                } else {
+                    userMsgVo.setSourceTitle("原讨论帖已被删除!【The original discussion post has been deleted!】");
+                }
             } else if ("Contest".equals(userMsgVo.getSourceType())) {
                 Contest contest = contestService.getById(userMsgVo.getSourceId());
-                userMsgVo.setSourceTitle(contest.getTitle());
+                if (contest != null) {
+                    userMsgVo.setSourceTitle(contest.getTitle());
+                } else {
+                    userMsgVo.setSourceTitle("原比赛已被删除!【The original contest has been deleted!】");
+                }
             }
 
             if ("Comment".equals(userMsgVo.getQuoteType())) {
                 Comment comment = commentMapper.selectById(userMsgVo.getQuoteId());
-                String content;
-                if (comment.getContent().length() < 100) {
-                    content = comment.getFromName() + " : "
-                            + comment.getContent();
+                if (comment != null) {
+                    String content;
+                    if (comment.getContent().length() < 100) {
+                        content = comment.getFromName() + " : "
+                                + comment.getContent();
 
+                    } else {
+                        content = comment.getFromName() + " : "
+                                + comment.getContent().substring(0, 100) + "...";
+                    }
+                    userMsgVo.setQuoteContent(content);
                 } else {
-                    content = comment.getFromName() + " : "
-                            + comment.getContent().substring(0, 100) + "...";
+                    userMsgVo.setQuoteContent("您的原评论信息已被删除！【Your original comments have been deleted!】");
                 }
-                userMsgVo.setQuoteContent(content);
 
             } else if ("Reply".equals(userMsgVo.getQuoteType())) {
                 Reply reply = replyMapper.selectById(userMsgVo.getQuoteId());
+                if (reply != null) {
+                    String content;
+                    if (reply.getContent().length() < 100) {
+                        content = reply.getFromName() + " : @" + reply.getToName() + "："
+                                + reply.getContent();
 
-                String content;
-                if (reply.getContent().length() < 100) {
-                    content = reply.getFromName() + " : @" + reply.getToName() + "："
-                            + reply.getContent();
-
+                    } else {
+                        content = reply.getFromName() + " : @" + reply.getToName() + "："
+                                + reply.getContent().substring(0, 100) + "...";
+                    }
+                    userMsgVo.setQuoteContent(content);
                 } else {
-                    content = reply.getFromName() + " : @" + reply.getToName() + "："
-                            + reply.getContent().substring(0, 100) + "...";
+                    userMsgVo.setQuoteContent("您的原回复信息已被删除！【Your original reply has been deleted!】");
                 }
-                userMsgVo.setQuoteContent(content);
             }
 
         }
@@ -191,10 +206,18 @@ public class MsgRemindServiceImpl extends ServiceImpl<MsgRemindMapper, MsgRemind
         for (UserMsgVo userMsgVo : userMsgList.getRecords()) {
             if ("Discussion".equals(userMsgVo.getSourceType())) {
                 Discussion discussion = discussionMapper.selectById(userMsgVo.getSourceId());
-                userMsgVo.setSourceTitle(discussion.getTitle());
+                if (discussion != null) {
+                    userMsgVo.setSourceTitle(discussion.getTitle());
+                } else {
+                    userMsgVo.setSourceTitle("原讨论帖已被删除!【The original discussion post has been deleted!】");
+                }
             } else if ("Contest".equals(userMsgVo.getSourceType())) {
                 Contest contest = contestService.getById(userMsgVo.getSourceId());
-                userMsgVo.setSourceTitle(contest.getTitle());
+                if (contest != null) {
+                    userMsgVo.setSourceTitle(contest.getTitle());
+                } else {
+                    userMsgVo.setSourceTitle("原比赛已被删除!【The original contest has been deleted!】");
+                }
             }
         }
         applicationContext.getBean(MsgRemindServiceImpl.class).updateUserMsgRead(userMsgList);

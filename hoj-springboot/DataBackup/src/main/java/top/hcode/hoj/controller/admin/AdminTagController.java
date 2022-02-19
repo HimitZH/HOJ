@@ -31,7 +31,8 @@ public class AdminTagController {
     public CommonResult addProblem(@RequestBody Tag tag) {
 
         QueryWrapper<Tag> tagQueryWrapper = new QueryWrapper<>();
-        tagQueryWrapper.eq("name", tag.getName());
+        tagQueryWrapper.eq("name", tag.getName())
+                .eq("oj", tag.getOj());
         Tag existTag = tagService.getOne(tagQueryWrapper, false);
 
         if (existTag != null) {
