@@ -72,6 +72,7 @@ public class JudgeServerServiceImpl extends ServiceImpl<JudgeServerMapper, Judge
             versionResp = SandboxRun.getRestTemplate().getForObject(SandboxRun.getSandboxBaseUrl() + "/version", String.class);
         } catch (Exception e) {
             res.put("SandBoxMsg", MapUtil.builder().put("error", e.getMessage()).map());
+            return res;
         }
 
         res.put("SandBoxMsg", JSONUtil.parseObj(versionResp));
