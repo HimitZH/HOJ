@@ -54,7 +54,7 @@
           :title="$t('m.Run_ID')"
           width="100"
         ></vxe-table-column>
-        <vxe-table-column :title="$t('m.Submit_Time')" min-width="150">
+        <vxe-table-column :title="$t('m.Submit_Time')" min-width="160">
           <template v-slot="{ row }">
             <span>{{ row.submitTime | localtime }}</span>
           </template>

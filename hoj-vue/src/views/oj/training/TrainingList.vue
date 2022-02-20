@@ -145,7 +145,7 @@
         <vxe-table-column
           field="gmtModified"
           :title="$t('m.Recent_Update')"
-          min-width="150"
+          min-width="160"
           align="center"
           show-overflow
         >

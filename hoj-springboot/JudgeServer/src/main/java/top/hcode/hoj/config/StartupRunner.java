@@ -11,6 +11,8 @@ import top.hcode.hoj.pojo.entity.judge.JudgeServer;
 import top.hcode.hoj.service.impl.JudgeServerServiceImpl;
 import top.hcode.hoj.util.IpUtils;
 
+import java.util.HashMap;
+
 
 /**
  * @Author: Himit_ZH
@@ -86,7 +88,8 @@ public class StartupRunner implements CommandLineRunner {
         if (!isOk1 || !isOk2) {
             log.error("初始化判题机信息到数据库失败，请重新启动试试！");
         } else {
-            log.info("HOJ-JudgeServer had successfully started! Info:" + judgeServerService.getJudgeServerInfo());
+            HashMap<String, Object> judgeServerInfo = judgeServerService.getJudgeServerInfo();
+            log.info("HOJ-JudgeServer had successfully started! The judge config and sandbox config Info:" + judgeServerInfo);
         }
 
     }
