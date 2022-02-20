@@ -41,9 +41,13 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
     public IPage<ACMRankVo> getACMRankList(int limit, int currentPage, List<String> uidList) {
 
         IPage<ACMRankVo> data = null;
-        if (!CollectionUtils.isEmpty(uidList)) {
+        if (uidList != null) {
             Page<ACMRankVo> page = new Page<>(currentPage, limit);
-            data = userRecordMapper.getACMRankList(page, uidList);
+            if (uidList.size() > 0) {
+                data = userRecordMapper.getACMRankList(page, uidList);
+            } else {
+                data = page;
+            }
         } else {
             String key = Constants.Account.ACM_RANK_CACHE.getCode() + "_" + limit + "_" + currentPage;
             data = (IPage<ACMRankVo>) redisUtils.get(key);
@@ -64,13 +68,17 @@ public class UserRecordServiceImpl extends ServiceImpl<UserRecordMapper, UserRec
     }
 
     @Override
-    public IPage<OIRankVo> getOIRankList(int limit, int currentPage,List<String> uidList) {
+    public IPage<OIRankVo> getOIRankList(int limit, int currentPage, List<String> uidList) {
 
         IPage<OIRankVo> data = null;
-        if (!CollectionUtils.isEmpty(uidList)){
+        if (uidList != null) {
             Page<OIRankVo> page = new Page<>(currentPage, limit);
-            data = userRecordMapper.getOIRankList(page, uidList);
-        }else {
+            if (uidList.size() > 0) {
+                data = userRecordMapper.getOIRankList(page, uidList);
+            } else {
+                data = page;
+            }
+        } else {
             String key = Constants.Account.OI_RANK_CACHE.getCode() + "_" + limit + "_" + currentPage;
             data = (IPage<OIRankVo>) redisUtils.get(key);
             if (data == null) {
