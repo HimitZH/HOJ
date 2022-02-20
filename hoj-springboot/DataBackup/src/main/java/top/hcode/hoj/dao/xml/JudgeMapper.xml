@@ -108,7 +108,7 @@
     </select>
 
     <select id="getProblemCount" resultType="top.hcode.hoj.pojo.vo.ProblemCountVo">
-        SELECT COUNT(IF(status=-3,status,NULL)) AS pe,
+        SELECT pid,COUNT(IF(status=-3,status,NULL)) AS pe,
                COUNT(IF(status=-2,status,NULL)) AS ce,
                COUNT(IF(status=-1,status,NULL)) AS wa,
                COUNT(IF(status=0,status,NULL)) AS ac,
@@ -119,5 +119,29 @@
                COUNT(IF(status=8,status,NULL)) AS pa,
                COUNT(*) AS total
         FROM judge where pid=#{pid} AND cid=0
+    </select>
+
+    <select id="getProblemListCount" resultType="top.hcode.hoj.pojo.vo.ProblemCountVo">
+       SELECT pid,COUNT(IF(STATUS=-3,STATUS,NULL)) AS pe,
+               COUNT(IF(STATUS=-2,STATUS,NULL)) AS ce,
+               COUNT(IF(STATUS=-1,STATUS,NULL)) AS wa,
+               COUNT(IF(STATUS=0,STATUS,NULL)) AS ac,
+               COUNT(IF(STATUS=1,STATUS,NULL)) AS tle,
+               COUNT(IF(STATUS=2,STATUS,NULL)) AS mle,
+               COUNT(IF(STATUS=3,STATUS,NULL)) AS re,
+               COUNT(IF(STATUS=4,STATUS,NULL)) AS se,
+               COUNT(IF(STATUS=8,STATUS,NULL)) AS pa,
+               COUNT(*) AS total
+        FROM judge
+        <where>
+            cid=0
+            <if test="pidList!=null and pidList.size > 0">
+            AND pid in
+                <foreach collection="pidList" item="pid" open="(" separator="," close=")">
+                    #{pid}
+                </foreach>
+            </if>
+        </where>
+        GROUP BY pid
     </select>
 </mapper>

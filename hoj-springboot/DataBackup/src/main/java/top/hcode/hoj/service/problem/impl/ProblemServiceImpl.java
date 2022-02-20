@@ -21,9 +21,11 @@ import top.hcode.hoj.crawler.language.LanguageContext;
 import top.hcode.hoj.crawler.language.LanguageStrategy;
 import top.hcode.hoj.crawler.language.SPOJLanguageStrategy;
 import top.hcode.hoj.crawler.problem.*;
+import top.hcode.hoj.dao.JudgeMapper;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.problem.*;
 import top.hcode.hoj.pojo.vo.ImportProblemVo;
+import top.hcode.hoj.pojo.vo.ProblemCountVo;
 import top.hcode.hoj.pojo.vo.ProblemVo;
 import top.hcode.hoj.dao.ProblemMapper;
 import top.hcode.hoj.service.problem.ProblemService;
@@ -49,6 +51,9 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
 
     @Autowired
     private ProblemMapper problemMapper;
+
+    @Autowired
+    private JudgeMapper judgeMapper;
 
     @Autowired
     private ProblemCaseServiceImpl problemCaseService;
@@ -82,7 +87,23 @@ public class ProblemServiceImpl extends ServiceImpl<ProblemMapper, Problem> impl
             tid = tid.stream().distinct().collect(Collectors.toList());
             tagListSize = tid.size();
         }
-        return page.setRecords(problemMapper.getProblemList(page, pid, title, difficulty, tid, tagListSize, oj));
+
+        List<ProblemVo> problemList = problemMapper.getProblemList(page, pid, title, difficulty, tid, tagListSize, oj);
+
+        if (problemList.size() > 0) {
+            List<Long> pidList = problemList.stream().map(ProblemVo::getPid).collect(Collectors.toList());
+            List<ProblemCountVo> problemListCount = judgeMapper.getProblemListCount(pidList);
+            for (ProblemVo problemVo : problemList) {
+                for (ProblemCountVo problemCountVo : problemListCount) {
+                    if (problemVo.getPid().equals(problemCountVo.getPid())) {
+                        problemVo.setProblemCountVo(problemCountVo);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return page.setRecords(problemList);
     }
 
     @Override

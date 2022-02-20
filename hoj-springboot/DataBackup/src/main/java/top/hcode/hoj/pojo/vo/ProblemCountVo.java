@@ -24,6 +24,8 @@ public class ProblemCountVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private Long pid;
+
     private Integer total;
 
     private Integer ac;
