@@ -5,6 +5,7 @@
       @imgAdd="$imgAdd"
       @imgDel="$imgDel"
       :ishljs="true"
+      :html="openHtml"
       :autofocus="false"
       :toolbars="toolbars"
       v-model="currentValue"
@@ -41,6 +42,10 @@ export default {
     value: {
       type: String,
       default: '',
+    },
+    openHtml: {
+      type: Boolean,
+      default: true,
     },
   },
   data() {

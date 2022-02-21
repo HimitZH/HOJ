@@ -104,7 +104,11 @@
         </div>
       </div>
       <div class="body-article">
-        <div class="markdown-body" v-html="$xss(contentHtml)" v-highlight></div>
+        <div
+          class="markdown-body"
+          v-dompurify-html="contentHtml"
+          v-highlight
+        ></div>
       </div>
     </div>
     <el-dialog

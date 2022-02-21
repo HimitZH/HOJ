@@ -118,7 +118,7 @@
             <div class="signature-body">
               <div
                 class="markdown-body"
-                v-html="$xss(contentHtml)"
+                v-dompurify-html="contentHtml"
                 v-highlight
                 v-if="contentHtml"
               ></div>
