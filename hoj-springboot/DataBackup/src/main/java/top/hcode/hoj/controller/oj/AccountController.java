@@ -113,6 +113,12 @@ public class AccountController {
         if (isBlackEmail) {
             return CommonResult.errorResponse("对不起！您的邮箱无法注册本网站！", CommonResult.STATUS_FORBIDDEN);
         }
+
+        String lockKey = Constants.Email.REGISTER_EMAIL_LOCK + email;
+        if (redisUtils.hasKey(lockKey)) {
+            return CommonResult.errorResponse("对不起，您的操作频率过快，请在" + redisUtils.getExpire(lockKey) + "秒后再次发送注册邮件！");
+        }
+
         QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("email", email);
         UserInfo userInfo = userInfoDao.getOne(queryWrapper);
@@ -122,6 +128,7 @@ public class AccountController {
         String numbers = RandomUtil.randomNumbers(6); // 随机生成6位数字的组合
         redisUtils.set(Constants.Email.REGISTER_KEY_PREFIX.getValue() + email, numbers, 5 * 60);//默认验证码有效5分钟
         emailService.sendCode(email, numbers);
+        redisUtils.set(lockKey, 0, 60);
         return CommonResult.successResponse(MapUtil.builder()
                 .put("email", email)
                 .put("expire", 5 * 60)
@@ -189,6 +196,11 @@ public class AccountController {
         if (!emailService.isOk()) {
             return CommonResult.errorResponse("对不起！本站邮箱系统未配置，暂不支持重置密码！", CommonResult.STATUS_ACCESS_DENIED);
         }
+
+        String lockKey = Constants.Email.RESET_EMAIL_LOCK + email;
+        if (redisUtils.hasKey(lockKey)) {
+            return CommonResult.errorResponse("对不起，您的操作频率过快，请在" + redisUtils.getExpire(lockKey) + "秒后再次发送重置邮件！");
+        }
         // 获取redis中的验证码
         String redisCode = (String) redisUtils.get(captchaKey);
         // 判断验证码
@@ -199,12 +211,13 @@ public class AccountController {
         userInfoQueryWrapper.eq("email", email.trim());
         UserInfo userInfo = userInfoDao.getOne(userInfoQueryWrapper, false);
         if (userInfo == null) {
-            return CommonResult.errorResponse("对不起，该邮箱无注册用户，请重新检查！");
+            return CommonResult.errorResponse("对不起，该邮箱无该用户，请重新检查！");
         }
         String code = IdUtil.simpleUUID().substring(0, 21); // 随机生成20位数字与字母的组合
         redisUtils.set(Constants.Email.RESET_PASSWORD_KEY_PREFIX.getValue() + userInfo.getUsername(), code, 10 * 60);//默认链接有效10分钟
         // 发送邮件
         emailService.sendResetPassword(userInfo.getUsername(), code, email.trim());
+        redisUtils.set(lockKey, 0, 90);
         return CommonResult.successResponse(null, "重置密码邮件已发送至指定邮箱，请稍稍等待一会。");
     }
 
@@ -407,9 +420,9 @@ public class AccountController {
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
         // 如果没有uid和username，默认查询当前登录用户的
         if (StringUtils.isEmpty(uid) && StringUtils.isEmpty(username)) {
-            if (userRolesVo != null){
+            if (userRolesVo != null) {
                 uid = userRolesVo.getUid();
-            }else {
+            } else {
                 return CommonResult.errorResponse("查询参数错误：uid和username不能都为空！");
             }
         }

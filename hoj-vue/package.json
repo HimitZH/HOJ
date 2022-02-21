@@ -35,6 +35,7 @@
     "vue-particles": "^1.0.9",
     "vue-router": "^3.2.0",
     "vue-template-compiler": "^2.6.12",
+    "vue-xss": "^1.0.4",
     "vuex": "^3.4.0",
     "vuex-router-sync": "^5.0.0",
     "vxe-table": "^2.9.26",
