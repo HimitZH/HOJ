@@ -55,6 +55,9 @@ Vue.use(mavonEditor)
 import {Drawer,List,Menu,Icon,AppBar,Button,Divider} from 'muse-ui';
 import 'muse-ui/dist/muse-ui.css';
 
+import VueXss from 'vue-xss'
+Vue.use(VueXss)
+
 import router from './router'
 Vue.use(Drawer)
 Vue.use(List)
