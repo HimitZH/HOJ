@@ -223,7 +223,7 @@
         <div class="info-bottom">
           <div
             class="content markdown-content markdown-body"
-            v-html="$xss(mdToHtml(item.content))"
+            v-dompurify-html="mdToHtml(item.content)"
             v-katex
             v-highlight
           ></div>
@@ -301,7 +301,7 @@
               </div>
               <div style="padding: 8px 0;margin-left: 34px;">
                 <span
-                  v-html="$xss(mdToHtml(reply.content))"
+                  v-dompurify-html="mdToHtml(reply.content)"
                   class="markdown-content markdown-body"
                   v-katex
                   v-highlight
