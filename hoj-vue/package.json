@@ -17,7 +17,7 @@
     "font-awesome": "^4.7.0",
     "highlight.js": "^10.3.2",
     "jquery": "^3.5.1",
-    "mavon-editor": "^2.10.4",
+    "mavon-editor": "2.9.1",
     "moment": "^2.29.1",
     "muse-ui": "^3.0.2",
     "nprogress": "^0.2.0",
