@@ -250,12 +250,13 @@ public class AccountController {
             return CommonResult.errorResponse("重置密码的链接验证码不正确，请重新发送重置邮件");
         }
 
-        boolean result = userInfoDao.update(new UserInfo().setPassword(SecureUtil.md5(password)),
-                new UpdateWrapper<UserInfo>().eq("username", username));
+        UpdateWrapper<UserInfo> userInfoUpdateWrapper = new UpdateWrapper<>();
+        userInfoUpdateWrapper.eq("username", username).set("password", SecureUtil.md5(password));
+        boolean result = userInfoDao.update(userInfoUpdateWrapper);
         if (!result) {
             return CommonResult.errorResponse("重置密码失败", CommonResult.STATUS_ERROR);
         }
-        redisUtils.del(username);
+        redisUtils.del(codeKey);
         return CommonResult.successResponse(null, "重置密码成功");
     }
 

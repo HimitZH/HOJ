@@ -39,7 +39,6 @@ public class SPOJProblemStrategy extends ProblemStrategy {
         return String.format("<a style='color:#1A5CC8' href='" + getProblemUrl(problemId) + "'>%s</a>", getJudgeName() + "-" + problemId);
     }
 
-
     @Override
     public RemoteProblemInfo getProblemInfo(String problemId, String author) throws Exception {
         problemId = problemId.toUpperCase();
@@ -60,7 +59,7 @@ public class SPOJProblemStrategy extends ProblemStrategy {
                 .setAuthor(author)
                 .setTitle(title)
                 .setType(0)
-                .setTimeLimit(Integer.parseInt(timeLimit) * 1000)
+                .setTimeLimit((int) (Double.parseDouble(timeLimit) * 1000))
                 .setMemoryLimit(Integer.parseInt(memoryLimit))
                 .setDescription(desc.trim())
                 .setIsRemote(true)
