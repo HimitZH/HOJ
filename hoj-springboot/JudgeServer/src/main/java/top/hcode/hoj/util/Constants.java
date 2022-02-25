@@ -164,7 +164,9 @@ public class Constants {
     public static List<String> defaultEnv = Arrays.asList(
             "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
             "LANG=en_US.UTF-8",
-            "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8", "HOME=/w");
+            "LC_ALL=en_US.UTF-8",
+            "LANGUAGE=en_US:en",
+            "HOME=/w");
 
     public static List<String> python3Env = Arrays.asList("LANG=en_US.UTF-8",
             "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8", "PYTHONIOENCODING=utf-8");
@@ -191,11 +193,15 @@ public class Constants {
 
         PYTHON2("Python2", "main.py", "main.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python -m py_compile ./{1}", defaultEnv),
 
-        PYTHON3("Python3", "main.py", "__pycache__/main.cpython-36.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python3 -m py_compile ./{1}", defaultEnv),
+        PYTHON3("Python3", "main.py", "__pycache__/main.cpython-37.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python3.7 -m py_compile ./{1}", defaultEnv),
 
         GOLANG("Golang", "main.go", "main", 3000L, 5000L, 512 * 1024 * 1024L, "/usr/bin/go build -o {2} {1}", defaultEnv),
 
         CS("C#", "Main.cs", "main", 5000L, 10000L, 512 * 1024 * 1024L, "/usr/bin/mcs -optimize+ -out:{0}/{2} {0}/{1}", defaultEnv),
+
+        PyPy2("PyPy2", "main.py", "__pycache__/main.pypy-73.pyc", 3000L, 10000L, 256 * 1024 * 1024L, "/usr/bin/pypy -m py_compile {0}/{1}", defaultEnv),
+
+        PyPy3("PyPy3", "main.py", "__pycache__/main.pypy38.pyc", 3000L, 10000L, 256 * 1024 * 1024L, "/usr/bin/pypy3 -m py_compile {0}/{1}", defaultEnv),
 
         SPJ_C("SPJ-C", "spj.c", "spj", 3000L, 5000L, 512 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c99 {1} -lm -o {2}", defaultEnv),
 
@@ -289,11 +295,21 @@ public class Constants {
 
         PYTHON2("Python2", "/usr/bin/python {1}", "main", defaultEnv),
 
-        PYTHON3("Python3", "/usr/bin/python3 {1}", "main", python3Env),
+        PYTHON3("Python3", "/usr/bin/python3.7 {1}", "main", python3Env),
 
         GOLANG("Golang", "{0}/{1}", "main", golangEnv),
 
         CS("C#", "/usr/bin/mono {0}/{1}", "main", defaultEnv),
+
+        PyPy2("PyPy2", "/usr/bin/pypy {1}", "main.pyc", defaultEnv),
+
+        PyPy3("PyPy3", "/usr/bin/pypy3 {1}", "main.pyc", python3Env),
+
+        PHP("PHP","/usr/bin/php {1}","main.php",defaultEnv),
+
+        JS_NODE("JavaScript Node","/usr/bin/node {1}","main.js",defaultEnv),
+
+        JS_V8("JavaScript V8","/usr/bin/jsv8/d8 {1}","main.js",defaultEnv),
 
         SPJ_C("SPJ-C", "{0}/{1} {2} {3} {4}", "spj", defaultEnv),
 

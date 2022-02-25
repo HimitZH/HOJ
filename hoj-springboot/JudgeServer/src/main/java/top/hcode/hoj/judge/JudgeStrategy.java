@@ -1,6 +1,7 @@
 package top.hcode.hoj.judge;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.file.FileWriter;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -44,10 +45,23 @@ public class JudgeStrategy {
         HashMap<String, Object> result = new HashMap<>();
         // 编译好的临时代码文件id
         String userFileId = null;
+        String userFileSrc = null;
         try {
             // 对用户源代码进行编译 获取tmpfs中的fileId
-            userFileId = Compiler.compile(Constants.CompileConfig.getCompilerByLanguage(judge.getLanguage()),
-                    judge.getCode(), judge.getLanguage(), JudgeUtils.getProblemExtraFileMap(problem, "user"));
+            Constants.CompileConfig compileConfig = Constants.CompileConfig.getCompilerByLanguage(judge.getLanguage());
+            // 有的语言可能不支持编译
+            if (compileConfig != null) {
+                userFileId = Compiler.compile(compileConfig,
+                        judge.getCode(),
+                        judge.getLanguage(),
+                        JudgeUtils.getProblemExtraFileMap(problem, "user"));
+            } else {
+                // 目前只有js、php不支持编译，需要提供源代码文件的绝对路径
+                userFileSrc = Constants.JudgeDir.RUN_WORKPLACE_DIR.getContent() + File.separator + problem.getId()
+                        + File.separator + getUserFileName(judge.getLanguage());
+                FileWriter fileWriter = new FileWriter(userFileSrc);
+                fileWriter.write(judge.getCode());
+            }
             // 测试数据文件所在文件夹
             String testCasesDir = Constants.JudgeDir.TEST_CASE_DIR.getContent() + File.separator + "problem_" + problem.getId();
             // 从文件中加载测试数据json
@@ -76,6 +90,7 @@ public class JudgeStrategy {
                     testCasesDir,
                     testCasesInfo,
                     userFileId,
+                    userFileSrc,
                     false);
 
             // 对全部测试点结果进行评判,获取最终评判结果
@@ -267,6 +282,18 @@ public class JudgeStrategy {
             result.put("code", Constants.Judge.STATUS_PARTIAL_ACCEPTED.getStatus());
         }
         return result;
+    }
+
+
+    private String getUserFileName(String language) {
+        switch (language) {
+            case "PHP":
+                return "main.php";
+            case "JavaScript Node":
+            case "JavaScript V8":
+                return "main.js";
+        }
+        return "main";
     }
 
     public String mergeNonEmptyStrings(String... strings) {

@@ -34,7 +34,8 @@ public class DefaultJudge extends AbstractJudge {
                 judgeDTO.getMaxOutputSize(),
                 judgeGlobalDTO.getMaxStack(),
                 runConfig.getExeName(),
-                judgeGlobalDTO.getUserFileId());
+                judgeGlobalDTO.getUserFileId(),
+                judgeGlobalDTO.getUserFileSrc());
     }
 
     @Override

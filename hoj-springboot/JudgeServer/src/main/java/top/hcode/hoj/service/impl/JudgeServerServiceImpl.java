@@ -45,12 +45,14 @@ public class JudgeServerServiceImpl extends ServiceImpl<JudgeServerMapper, Judge
 
         HashMap<String, Object> res = new HashMap<>();
 
-        res.put("version", "20220129");
+        res.put("version", "20220225");
         res.put("currentTime", new Date());
         res.put("judgeServerName", name);
         res.put("cpu", Runtime.getRuntime().availableProcessors());
-        res.put("languages", Arrays.asList("G++ 7.5.0", "GCC 7.5.0", "Python 3.6.9",
-                "Python 2.7.17", "OpenJDK 1.8", "Golang 1.16", "C# Mono 4.6.2"));
+        res.put("languages", Arrays.asList("G++ 7.5.0", "GCC 7.5.0", "Python 3.7.5",
+                "Python 2.7.17", "OpenJDK 1.8", "Golang 1.16", "C# Mono 4.6.2",
+                "PHP 7.3.33","JavaScript Node 14.19.0","JavaScript V8 8.4.109",
+                "PyPy 2.7.18 (7.3.8)","PyPy 3.8.12 (7.3.8)"));
 
         if (maxTaskNum == -1) {
             res.put("maxTaskNum", Runtime.getRuntime().availableProcessors() + 1);

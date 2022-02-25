@@ -106,8 +106,9 @@ public class JudgeController {
     @RequestMapping(value = "/submit-problem-judge", method = RequestMethod.POST)
     @Transactional(rollbackFor = Exception.class)
     public CommonResult submitProblemJudge(@RequestBody ToJudgeDto judgeDto, HttpServletRequest request) {
-
-        if (judgeDto.getCode().length() < 50 && !judgeDto.getLanguage().contains("Py")) {
+        if (judgeDto.getCode().length() < 50
+                && !judgeDto.getLanguage().contains("Py")
+                && !judgeDto.getLanguage().contains("PHP")) {
             return CommonResult.errorResponse("提交的代码是无效的，代码字符长度请不要低于50！", CommonResult.STATUS_FORBIDDEN);
         }
 
