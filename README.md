@@ -103,6 +103,7 @@ docker ps # 查看当前运行的容器状态
 | 2022-01-04 | 增加交互判题、重构judgeserver的三种判题模式（普通、特殊、交互） | Himit_ZH |
 | 2022-01-29 | 重构remote judge，增加AtCoder、SPOJ的支持                    | Himit_ZH |
 | 2022-02-19 | 修改首页前端布局和题目列表页                                 | Himit_ZH |
+| 2022-02-25 | 支持PyPy2、PyPy3、JavaScript V8、JavaScript Node、PHP        | Himit_ZH |
 
 ## 五、部分截图
 
