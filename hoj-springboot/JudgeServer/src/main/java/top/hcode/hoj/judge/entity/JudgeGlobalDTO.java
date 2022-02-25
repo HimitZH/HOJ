@@ -40,6 +40,11 @@ public class JudgeGlobalDTO implements Serializable {
     private String userFileId;
 
     /**
+     * 用户程序代码文件的绝对路径
+     */
+    private String userFileSrc;
+
+    /**
      * 整个评测的工作目录
      */
     private String runDir;

@@ -293,6 +293,7 @@ public class SandboxRun {
      * @param maxStack      评测的最大限制栈空间 mb
      * @param exeName       评测的用户程序名称
      * @param fileId        评测的用户程序文件id
+     * @param fileSrc       评测的用户程序文件绝对路径，如果userFileId存在则为null
      * @MethodName testCase
      * @Description 普通评测
      * @Return JSONArray
@@ -306,7 +307,8 @@ public class SandboxRun {
                                      Long maxOutputSize,
                                      Integer maxStack,
                                      String exeName,
-                                     String fileId) throws SystemError {
+                                     String fileId,
+                                     String fileSrc) throws SystemError {
 
         JSONObject cmd = new JSONObject();
         cmd.set("args", args);
@@ -342,7 +344,11 @@ public class SandboxRun {
         cmd.set("stackLimit", maxStack * 1024 * 1024L);
 
         JSONObject exeFile = new JSONObject();
-        exeFile.set("fileId", fileId);
+        if (!StringUtils.isEmpty(fileId)) {
+            exeFile.set("fileId", fileId);
+        } else {
+            exeFile.set("src", fileSrc);
+        }
         JSONObject copyIn = new JSONObject();
         copyIn.set(exeName, exeFile);
 
@@ -460,6 +466,7 @@ public class SandboxRun {
      * @param envs                   测评的环境变量
      * @param userExeName            用户程序的名字
      * @param userFileId             用户程序在编译后返回的id，主要是对应内存中已编译后的文件
+     * @param userFileSrc            用户程序文件的绝对路径，如果userFileId存在则为null
      * @param userMaxTime            用户程序的最大测评时间 ms
      * @param userMaxStack           用户程序的最大测评栈空间 mb
      * @param testCaseInputPath      题目数据的输入文件路径
@@ -480,6 +487,7 @@ public class SandboxRun {
                                              List<String> envs,
                                              String userExeName,
                                              String userFileId,
+                                             String userFileSrc,
                                              Long userMaxTime,
                                              Long userMaxMemory,
                                              Integer userMaxStack,
@@ -525,7 +533,11 @@ public class SandboxRun {
         pipeInputCmd.set("stackLimit", userMaxStack * 1024 * 1024L);
 
         JSONObject exeFile = new JSONObject();
-        exeFile.set("fileId", userFileId);
+        if (!StringUtils.isEmpty(userFileId)) {
+            exeFile.set("fileId", userFileId);
+        } else {
+            exeFile.set("src", userFileSrc);
+        }
         JSONObject copyIn = new JSONObject();
         copyIn.set(userExeName, exeFile);
 

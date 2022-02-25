@@ -42,6 +42,7 @@ public class InteractiveJudge extends AbstractJudge {
                 runConfig.getEnvs(),
                 runConfig.getExeName(),
                 judgeGlobalDTO.getUserFileId(),
+                judgeGlobalDTO.getUserFileSrc(),
                 judgeGlobalDTO.getTestTime(),
                 judgeGlobalDTO.getMaxMemory(),
                 judgeGlobalDTO.getMaxStack(),

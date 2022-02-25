@@ -2,6 +2,7 @@ package top.hcode.hoj.config;
 
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -191,6 +192,10 @@ public class StartupRunner implements CommandLineRunner {
 
         configService.sendNewConfigToNacos();
 
+        upsertHOJLanguage("PHP", "PyPy2", "PyPy3", "JavaScript Node", "JavaScript V8");
+
+        checkAllLanguageUpdate();
+
         if (openRemoteJudge.equals("true")) {
             // 初始化清空表
             remoteJudgeAccountService.remove(new QueryWrapper<>());
@@ -217,7 +222,7 @@ public class StartupRunner implements CommandLineRunner {
     private void addRemoteJudgeAccountToMySQL(String oj, List<String> usernameList, List<String> passwordList) {
 
 
-        if (CollectionUtils.isEmpty(usernameList) || CollectionUtils.isEmpty(passwordList)|| usernameList.size() != passwordList.size()) {
+        if (CollectionUtils.isEmpty(usernameList) || CollectionUtils.isEmpty(passwordList) || usernameList.size() != passwordList.size()) {
             log.error("[{}]: There is no account or password configured for remote judge, " +
                             "username list:{}, password list:{}", oj, Arrays.toString(usernameList.toArray()),
                     Arrays.toString(passwordList.toArray()));
@@ -243,6 +248,46 @@ public class StartupRunner implements CommandLineRunner {
         }
     }
 
+
+    private void upsertHOJLanguage(String... languageList) {
+        /**
+         * 2022.02.25 新增js、pypy、php语言
+         */
+        for (String language : languageList) {
+            QueryWrapper<Language> languageQueryWrapper = new QueryWrapper<>();
+            languageQueryWrapper.eq("oj", "ME")
+                    .eq("name", language);
+            int count = languageService.count(languageQueryWrapper);
+            if (count == 0) {
+                Language newLanguage = buildHOJLanguage(language);
+                boolean isOk = languageService.save(newLanguage);
+                if (!isOk) {
+                    log.error("[HOJ] Failed to add new language [{}]! Please check whether the language table corresponding to the database has the language!", language);
+                }
+            }
+        }
+    }
+
+    private void checkAllLanguageUpdate() {
+
+        /**
+         * 2022.02.25 更新原有的python3.6.9为python3.7.5
+         */
+        UpdateWrapper<Language> languageUpdateWrapper = new UpdateWrapper<>();
+        languageUpdateWrapper.eq("oj", "ME")
+                .eq("name", "Python3")
+                .set("description", "Python 3.7.5");
+        languageService.update(languageUpdateWrapper);
+
+        /**
+         * 2022.02.25 删除cf的Microsoft Visual C++ 2010
+         */
+        UpdateWrapper<Language> deleteWrapper = new UpdateWrapper<>();
+        deleteWrapper.eq("name", "Microsoft Visual C++ 2010")
+                .eq("oj", "CF");
+        languageService.remove(deleteWrapper);
+    }
+
     private void checkRemoteOJLanguage(Constants.RemoteOJ... remoteOJList) {
         for (Constants.RemoteOJ remoteOJ : remoteOJList) {
             QueryWrapper<Language> languageQueryWrapper = new QueryWrapper<>();
@@ -252,10 +297,101 @@ public class StartupRunner implements CommandLineRunner {
                 List<Language> languageList = new LanguageContext(remoteOJ).buildLanguageList();
                 boolean isOk = languageService.saveBatch(languageList);
                 if (!isOk) {
-                    log.error("[{}] failed to initialize language list! Please check whether the language table corresponding to the database has the OJ language!", remoteOJ.getName());
+                    log.error("[{}] Failed to initialize language list! Please check whether the language table corresponding to the database has the OJ language!", remoteOJ.getName());
                 }
             }
         }
     }
 
+
+    private Language buildHOJLanguage(String lang) {
+        Language language = new Language();
+        switch (lang) {
+            case "PHP":
+                language.setName("PHP")
+                        .setCompileCommand("/usr/bin/php {src_path}")
+                        .setContentType("text/x-php")
+                        .setDescription("PHP 7.3.33")
+                        .setTemplate("<?=array_sum(fscanf(STDIN, \"%d %d\"));")
+                        .setIsSpj(false)
+                        .setOj("ME");
+                return language;
+            case "JavaScript Node":
+                language.setName("JavaScript Node")
+                        .setCompileCommand("/usr/bin/node {src_path}")
+                        .setContentType("text/javascript")
+                        .setDescription("Node.js 14.19.0")
+                        .setTemplate("var readline = require('readline');\n" +
+                                "const rl = readline.createInterface({\n" +
+                                "        input: process.stdin,\n" +
+                                "        output: process.stdout\n" +
+                                "});\n" +
+                                "rl.on('line', function(line){\n" +
+                                "   var tokens = line.split(' ');\n" +
+                                "    console.log(parseInt(tokens[0]) + parseInt(tokens[1]));\n" +
+                                "});")
+                        .setIsSpj(false)
+                        .setOj("ME");
+                return language;
+            case "JavaScript V8":
+                language.setName("JavaScript V8")
+                        .setCompileCommand("/usr/bin/jsv8/d8 {src_path}")
+                        .setContentType("text/javascript")
+                        .setDescription("JavaScript V8 8.4.109")
+                        .setTemplate("const [a, b] = readline().split(' ').map(n => parseInt(n, 10));\n" +
+                                "print((a + b).toString());")
+                        .setIsSpj(false)
+                        .setOj("ME");
+                return language;
+            case "PyPy2":
+                language.setName("PyPy2")
+                        .setContentType("text/x-python")
+                        .setCompileCommand("/usr/bin/pypy -m py_compile {src_path}")
+                        .setDescription("PyPy 2.7.18 (7.3.8)")
+                        .setTemplate("print sum(int(x) for x in raw_input().split(' '))")
+                        .setCodeTemplate("//PREPEND BEGIN\n" +
+                                "//PREPEND END\n" +
+                                "\n" +
+                                "//TEMPLATE BEGIN\n" +
+                                "def add(a, b):\n" +
+                                "    return a + b\n" +
+                                "//TEMPLATE END\n" +
+                                "\n" +
+                                "\n" +
+                                "if __name__ == '__main__':  \n" +
+                                "    //APPEND BEGIN\n" +
+                                "    a, b = 1, 1\n" +
+                                "    print add(a, b)\n" +
+                                "    //APPEND END")
+                        .setIsSpj(false)
+                        .setOj("ME");
+                return language;
+            case "PyPy3":
+                language.setName("PyPy3")
+                        .setContentType("text/x-python")
+                        .setDescription("PyPy 3.8.12 (7.3.8)")
+                        .setCompileCommand("/usr/bin/pypy3 -m py_compile {src_path}")
+                        .setTemplate("print(sum(int(x) for x in input().split(' ')))")
+                        .setCodeTemplate("//PREPEND BEGIN\n" +
+                                "//PREPEND END\n" +
+                                "\n" +
+                                "//TEMPLATE BEGIN\n" +
+                                "def add(a, b):\n" +
+                                "    return a + b\n" +
+                                "//TEMPLATE END\n" +
+                                "\n" +
+                                "\n" +
+                                "if __name__ == '__main__':  \n" +
+                                "    //APPEND BEGIN\n" +
+                                "    a, b = 1, 1\n" +
+                                "    print(add(a, b))\n" +
+                                "    //APPEND END")
+                        .setIsSpj(false)
+                        .setOj("ME");
+                return language;
+        }
+        return null;
+    }
+
 }
+

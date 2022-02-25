@@ -42,6 +42,7 @@ public class JudgeRun {
                                          String testCasesDir,
                                          JSONObject testCasesInfo,
                                          String userFileId,
+                                         String userFileSrc,
                                          Boolean getUserOutput)
             throws SystemError, ExecutionException, InterruptedException {
 
@@ -72,6 +73,7 @@ public class JudgeRun {
                 .problemId(problem.getId())
                 .judgeMode(judgeMode)
                 .userFileId(userFileId)
+                .userFileSrc(userFileSrc)
                 .runDir(runDir)
                 .testTime(testTime)
                 .maxMemory((long) problem.getMemoryLimit())
