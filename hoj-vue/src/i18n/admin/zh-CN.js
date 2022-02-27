@@ -300,6 +300,8 @@ export const m = {
   View_Contest_Announcement_List:'查看比赛公告列表',
   Download_Contest_AC_Submission:'下载比赛通过的提交代码',
   Exclude_admin_submissions:'排除管理员的提交',
+  SplitType_User:'以用户名分割文件夹',
+  SplitType_Problem:'以题目ID分割文件夹',
   Delete_Contest_Tips:'此操作将删除该比赛以及比赛的提交、讨论、公告、记录等数据, 是否继续?',
 
   // /views/admin/contest/Contest.vue

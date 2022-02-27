@@ -180,6 +180,10 @@
         v-model="excludeAdmin"
         :active-text="$t('m.Exclude_admin_submissions')"
       ></el-switch>
+      <el-radio-group v-model="splitType" style="margin-top:10px">
+        <el-radio label="user">{{ $t('m.SplitType_User') }}</el-radio>
+        <el-radio label="problem">{{ $t('m.SplitType_Problem') }}</el-radio>
+      </el-radio-group>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="downloadSubmissions">{{
           $t('m.OK')
@@ -208,6 +212,7 @@ export default {
       keyword: '',
       loading: false,
       excludeAdmin: true,
+      splitType: 'user',
       currentPage: 1,
       currentId: 1,
       downloadDialogVisible: false,
@@ -254,7 +259,7 @@ export default {
       this.currentId = contestId;
     },
     downloadSubmissions() {
-      let url = `/api/file/download-contest-ac-submission?cid=${this.currentId}&excludeAdmin=${this.excludeAdmin}`;
+      let url = `/api/file/download-contest-ac-submission?cid=${this.currentId}&excludeAdmin=${this.excludeAdmin}&splitType=${this.splitType}`;
       utils.downloadFile(url);
       this.downloadDialogVisible = false;
     },
