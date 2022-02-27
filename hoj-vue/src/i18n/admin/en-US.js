@@ -304,6 +304,8 @@ export const m = {
   View_Contest_Announcement_List:'View Contest Announcement List',
   Download_Contest_AC_Submission:'Download Contest AC Submissions',
   Exclude_admin_submissions:'Exclude admin submissions',
+  SplitType_User:'Split folders by username',
+  SplitType_Problem:'Split folders by problem id',
   Delete_Contest_Tips:'This operation will delete the contest and its submission, discussion, announcement, record and other data. Do you want to continue?',  
   
   // /views/admin/contest/Contest.vue

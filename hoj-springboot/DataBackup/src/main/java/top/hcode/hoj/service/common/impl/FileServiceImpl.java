@@ -148,6 +148,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
         for (OIContestRankVo oiContestRankVo : oiContestRankVoList) {
             List<Object> rowData = new LinkedList<>();
             rowData.add(oiContestRankVo.getRank() == -1 ? "*" : oiContestRankVo.getRank().toString());
+            rowData.add(oiContestRankVo.getUsername());
             if ("username".equals(rankShowName)) {
                 rowData.add(oiContestRankVo.getUsername());
             } else if ("realname".equals(rankShowName)) {

@@ -132,7 +132,6 @@
 
 <script>
 import api from '@/common/api';
-import utils from '@/common/utils';
 import { TRAINING_TYPE } from '@/common/constants';
 import { mapGetters } from 'vuex';
 import myMessage from '@/common/message';

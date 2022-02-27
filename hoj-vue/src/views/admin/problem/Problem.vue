@@ -670,6 +670,7 @@ export default {
           trigger: 'blur',
         },
       },
+      backPath: '',
       loadingCompile: false,
       mode: '', // 该题目是编辑或者创建
       contest: {},
@@ -891,6 +892,7 @@ export default {
     init() {
       if (this.mode === 'edit') {
         this.pid = this.$route.params.problemId;
+        this.backPath = this.$route.query.back;
         this.title = this.$i18n.t('m.Edit_Problem');
         let funcName = {
           'admin-edit-problem': 'admin_getProblem',
@@ -1490,7 +1492,11 @@ export default {
             });
           } else {
             myMessage.success('success');
-            this.$router.push({ name: 'admin-problem-list' });
+            if (this.backPath) {
+              this.$router.push({ path: this.backPath });
+            } else {
+              this.$router.push({ name: 'admin-problem-list' });
+            }
           }
         })
         .catch(() => {});
