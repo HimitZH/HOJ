@@ -270,11 +270,13 @@
 
       <div class="panel-options">
         <el-pagination
+          v-if="showPagination"
           class="page"
           layout="prev, pager, next, sizes"
           @current-change="currentChange"
           :page-size="query.pageSize"
           :total="total"
+          :current-page.sync="query.currentPage"
           @size-change="onPageSizeChange"
           :page-sizes="[10, 30, 50, 100]"
         >
@@ -375,6 +377,8 @@ export default {
       otherOJProblemId: '',
       REMOTE_OJ: {},
       displayId: '',
+
+      showPagination: false,
 
       predefineColors: [
         '#ff4500',
@@ -488,9 +492,11 @@ export default {
             this.loading = false;
             this.total = res.data.data.total;
             this.problemList = res.data.data.records;
+            this.showPagination = true;
           },
           (err) => {
             this.loading = false;
+            this.showPagination = true;
           }
         );
       } else {
