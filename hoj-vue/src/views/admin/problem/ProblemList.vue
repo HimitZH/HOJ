@@ -272,7 +272,7 @@
         <el-pagination
           class="page"
           layout="prev, pager, next, sizes"
-          @current-change="query.currentPage"
+          @current-change="currentChange"
           :page-size="query.pageSize"
           :total="total"
           @size-change="onPageSizeChange"

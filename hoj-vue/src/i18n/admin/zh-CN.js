@@ -67,7 +67,7 @@ export const m = {
   Import_User: '导入用户',
   Import_User_Tips1:'用户数据导入仅支持csv格式的用户数据。',
   Import_User_Tips2:'共七列数据：用户名和密码不能为空，邮箱、真实姓名、性别、昵称和学校可选填，否则该行数据可能导入失败。',
-  Import_User_Tips3:'第一行不必写(“用户名”，“密码”，“邮箱”，"真实姓名"，“性别”，“昵称”，“学校”)这四个列名',
+  Import_User_Tips3:'第一行不必写(“用户名”，“密码”，“邮箱”，"真实姓名"，“性别”，“昵称”，“学校”)这七个列名',
   Import_User_Tips4:'性别为男请使用“male”或“0”，女请使用“female”或“1”，不填默认为“secrecy”。',
   Import_User_Tips5:'请导入保存为UTF-8编码的文件，否则中文可能会乱码。',
   Choose_File:'选择文件',
