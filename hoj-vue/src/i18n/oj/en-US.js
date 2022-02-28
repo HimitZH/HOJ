@@ -168,6 +168,7 @@ export const m = {
   My_OJ:'Mine',
   Level:'Level',
   Tags:'Tags',
+  Search_Filter_Tag:'Enter the tag name...',
   Pick_a_random_question:'Pick a random question',
   Touch_Get_Status:'Please touch or hover the mouse to the designated problem line to view the submission status',
   Good_luck_to_you:'Good luck to you!',

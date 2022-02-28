@@ -276,10 +276,22 @@
       <el-card :padding="10" style="margin-top:20px">
         <div slot="header" style="text-align: center;">
           <span class="taglist-title">{{ OJName + ' ' + $t('m.Tags') }}</span>
+          <div style="margin: 10px 0;">
+            <el-input
+              size="medium"
+              prefix-icon="el-icon-search"
+              :placeholder="$t('m.Search_Filter_Tag')"
+              v-model="searchTag"
+              @keyup.enter.native="filterSearchTag"
+              @input="filterSearchTag"
+              clearable
+            >
+            </el-input>
+          </div>
         </div>
-        <template v-if="tagList.length > 0" v-loading="loadings.tag">
+        <template v-if="searchTagList.length > 0" v-loading="loadings.tag">
           <el-button
-            v-for="tag in tagList"
+            v-for="tag in searchTagList"
             :key="tag.id"
             @click="addTag(tag)"
             type="ghost"
@@ -358,6 +370,8 @@ export default {
         { color: '#1989fa', percentage: 80 },
         { color: '#67c23a', percentage: 100 },
       ],
+      searchTag: '',
+      searchTagList: [],
     };
   },
   created() {
@@ -528,6 +542,7 @@ export default {
       api.getProblemTagList(oj).then(
         (res) => {
           this.tagList = res.data.data;
+          this.searchTagList = res.data.data;
           let tidLen = this.query.tagId.length;
           let tagLen = this.tagList.length;
           for (let x = 0; x < tidLen; x++) {
@@ -545,6 +560,16 @@ export default {
           this.loadings.tag = false;
         }
       );
+    },
+    filterSearchTag() {
+      if (this.searchTag) {
+        this.searchTagList = this.tagList.filter(
+          (item) =>
+            item.name.toLowerCase().indexOf(this.searchTag.toLowerCase()) >= 0
+        );
+      } else {
+        this.searchTagList = this.tagList;
+      }
     },
     changeTagVisible(visible) {
       this.$refs.problemList.getColumnByField('tag').visible = visible;

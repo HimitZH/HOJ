@@ -67,7 +67,7 @@ export const m = {
   Import_User: 'Import User',
   Import_User_Tips1:'The imported user data only supports user data in CSV format.',
   Import_User_Tips2:'There are seven columns of data: username, password, email, realname and gender. The username and password cannot be empty, others can be enmpty, otherwise the data in this row may fail to be imported.',
-  Import_User_Tips3:'The first line does not need to write the three column names ("username", "password", "email","realname","gender","nickname","school").',
+  Import_User_Tips3:'The first line does not need to write the seven column names ("username", "password", "email","realname","gender","nickname","school").',
   Import_User_Tips4:'If the gender is male, please use "male" or "0", if the gender is female, please use "female" or "1". If it is not filled in, it is assumed to be "secrecy".',
   Import_User_Tips5:'Please import the file saved as UTF-8 code, otherwise Chinese may be garbled.',
   Choose_File:'Choose File',
