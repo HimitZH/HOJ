@@ -104,11 +104,18 @@
         </div>
       </div>
       <div class="body-article">
-        <div
-          class="markdown-body"
-          v-dompurify-html="contentHtml"
-          v-highlight
-        ></div>
+        <template
+          v-if="discussion.role == 'root' || discussion.role == 'admin'"
+        >
+          <div class="markdown-body" v-html="contentHtml" v-highlight></div>
+        </template>
+        <template v-else>
+          <div
+            class="markdown-body"
+            v-dompurify-html="contentHtml"
+            v-highlight
+          ></div>
+        </template>
       </div>
     </div>
     <el-dialog
