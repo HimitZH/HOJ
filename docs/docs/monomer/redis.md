@@ -3,7 +3,7 @@
 ## docker部署
 
 ```shell
-docker run -d --name redis -p 6379:6379 
+docker run -d --name redis -p 6379:6379 \
 -v /hoj/data/redis/data:/data \
 --restart="always" \
 redis \
