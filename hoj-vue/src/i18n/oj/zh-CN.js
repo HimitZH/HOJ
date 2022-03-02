@@ -385,6 +385,8 @@ export const m = {
 
    // /views/oj/contest/children/OIContestRank.vue
    Total_Score: '总分',
+   Based_on_The_Highest_Score_Submitted_For_Each_Problem:'以每题提交的最高得分计算',
+   Based_on_The_Recent_Score_Submitted_Of_Each_Problem:'以每题提交的最近得分计算',
 
    // /views/oj/about/Introduction.vue
    Compiler: '编译器',

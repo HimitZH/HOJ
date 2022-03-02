@@ -303,15 +303,25 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
             // 封榜解除 获取最新数据
             // 获取每个用户每道题最近一次提交
             List<ContestRecordVo> oiContestRecordList = getOIContestRecord(contest.getId(),
-                    contest.getAuthor(), false, contest.getSealRankTime(), contest.getStartTime(), contest.getEndTime());
+                    contest.getAuthor(),
+                    false,
+                    contest.getSealRankTime(),
+                    contest.getStartTime(),
+                    contest.getEndTime(),
+                    contest.getOiRankScoreType());
             // 计算排名
             orderResultList = calcOIRank(oiContestRecordList, contest, removeStar, currentUserId, concernedList);
         } else {
-            String key = Constants.Contest.OI_CONTEST_RANK_CACHE.getName() + "_" + contest.getId();
+            String key = Constants.Contest.OI_CONTEST_RANK_CACHE.getName() + "_" + contest.getOiRankScoreType() + "_" + contest.getId();
             List<ContestRecordVo> oiContestRecordList = (List<ContestRecordVo>) redisUtils.get(key);
             if (oiContestRecordList == null) {
                 oiContestRecordList = getOIContestRecord(contest.getId(),
-                        contest.getAuthor(), true, contest.getSealRankTime(), contest.getStartTime(), contest.getEndTime());
+                        contest.getAuthor(),
+                        true,
+                        contest.getSealRankTime(),
+                        contest.getStartTime(),
+                        contest.getEndTime(),
+                        contest.getOiRankScoreType());
                 redisUtils.set(key, oiContestRecordList, 2 * 3600);
             }
             // 计算排名
@@ -321,8 +331,18 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
     }
 
     @Override
-    public List<ContestRecordVo> getOIContestRecord(Long cid, String contestAuthor, Boolean isOpenSealRank, Date sealTime, Date startTime, Date endTime) {
-        return contestRecordMapper.getOIContestRecord(cid, contestAuthor, isOpenSealRank, sealTime, startTime, endTime);
+    public List<ContestRecordVo> getOIContestRecord(Long cid,
+                                                    String contestAuthor,
+                                                    Boolean isOpenSealRank,
+                                                    Date sealTime,
+                                                    Date startTime,
+                                                    Date endTime,
+                                                    String oiRankScoreType) {
+        if (Objects.equals(Constants.Contest.OI_RANK_RECENT_SCORE.getName(), oiRankScoreType)) {
+            return contestRecordMapper.getOIContestRecordByRecentSubmission(cid, contestAuthor, isOpenSealRank, sealTime, startTime, endTime);
+        } else {
+            return contestRecordMapper.getOIContestRecordByHighestSubmission(cid, contestAuthor, isOpenSealRank, sealTime, startTime, endTime);
+        }
     }
 
     @Override
@@ -540,6 +560,8 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
 
         HashMap<String, HashMap<String, Integer>> uidMapTime = new HashMap<>();
 
+        boolean isHighestRankScore = Constants.Contest.OI_RANK_HIGHEST_SCORE.getName().equals(contest.getOiRankScoreType());
+
         int index = 0;
         for (ContestRecordVo contestRecord : oiContestRecord) {
 
@@ -547,7 +569,7 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
                 continue;
             }
 
-            if (contestRecord.getStatus() == 1) { // AC
+            if (contestRecord.getStatus().equals(Constants.Contest.RECORD_AC.getCode())) { // AC
                 HashMap<String, Integer> pidMapTime = uidMapTime.get(contestRecord.getUid());
                 if (pidMapTime != null) {
                     Integer useTime = pidMapTime.get(contestRecord.getDisplayId());
@@ -592,15 +614,21 @@ public class ContestRecordServiceImpl extends ServiceImpl<ContestRecordMapper, C
             // 记录总分
             HashMap<String, Integer> submissionInfo = oiContestRankVo.getSubmissionInfo();
             Integer score = submissionInfo.get(contestRecord.getDisplayId());
-
-            if (contestRecord.getScore() != null) {
-                if (score != null) { // 为了避免同个提交时间的重复计算
-                    oiContestRankVo.setTotalScore(oiContestRankVo.getTotalScore() - score + contestRecord.getScore());
-                } else {
+            if (isHighestRankScore){
+                if (score == null){
                     oiContestRankVo.setTotalScore(oiContestRankVo.getTotalScore() + contestRecord.getScore());
+                    submissionInfo.put(contestRecord.getDisplayId(), contestRecord.getScore());
                 }
+            }else {
+                if (contestRecord.getScore() != null) {
+                    if (score != null) { // 为了避免同个提交时间的重复计算
+                        oiContestRankVo.setTotalScore(oiContestRankVo.getTotalScore() - score + contestRecord.getScore());
+                    } else {
+                        oiContestRankVo.setTotalScore(oiContestRankVo.getTotalScore() + contestRecord.getScore());
+                    }
+                }
+                submissionInfo.put(contestRecord.getDisplayId(), contestRecord.getScore());
             }
-            submissionInfo.put(contestRecord.getDisplayId(), contestRecord.getScore());
 
         }
 

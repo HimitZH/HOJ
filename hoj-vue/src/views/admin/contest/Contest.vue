@@ -49,8 +49,11 @@
               <el-input v-model="durationText" disabled> </el-input>
             </el-form-item>
           </el-col>
+        </el-row>
+
+        <el-row>
           <el-col :md="8" :xs="24">
-            <el-form-item :label="$t('m.Contest_Rule_Type')">
+            <el-form-item :label="$t('m.Contest_Rule_Type')" required>
               <el-radio
                 class="radio"
                 v-model="contest.type"
@@ -68,8 +71,30 @@
             </el-form-item>
           </el-col>
 
+          <el-col :md="8" :xs="24">
+            <el-form-item
+              :label="$t('m.OI_Rank_Score_Type')"
+              v-show="contest.type == 1"
+            >
+              <el-radio
+                class="radio"
+                v-model="contest.oiRankScoreType"
+                label="Recent"
+                >{{ $t('m.OI_Rank_Score_Type_Recent') }}</el-radio
+              >
+              <el-radio
+                class="radio"
+                v-model="contest.oiRankScoreType"
+                label="Highest"
+                >{{ $t('m.OI_Rank_Score_Type_Highest') }}</el-radio
+              >
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
           <el-col :md="8" :xs="24" v-if="contest.sealRank">
-            <el-form-item :label="$t('m.Seal_Time_Rank')">
+            <el-form-item :label="$t('m.Seal_Time_Rank')" required>
               <el-switch
                 v-model="contest.sealRank"
                 active-color="#13ce66"
@@ -79,8 +104,8 @@
             </el-form-item>
           </el-col>
 
-          <el-col :md="16" :xs="24" v-else>
-            <el-form-item :label="$t('m.Real_Time_Rank')">
+          <el-col :md="24" :xs="24" v-else>
+            <el-form-item :label="$t('m.Real_Time_Rank')" required>
               <el-switch
                 v-model="contest.sealRank"
                 active-color="#13ce66"
@@ -119,7 +144,7 @@
             <el-form-item
               :label="$t('m.Auto_Real_Rank')"
               required
-              v-if="contest.sealRank"
+              v-show="contest.sealRank"
             >
               <el-switch
                 v-model="contest.autoRealRank"
@@ -129,7 +154,9 @@
               </el-switch>
             </el-form-item>
           </el-col>
+        </el-row>
 
+        <el-row>
           <el-col :md="8" :xs="24">
             <el-form-item :label="$t('m.Contest_Outside_ScoreBoard')" required>
               <el-switch
@@ -151,7 +178,9 @@
               </el-switch>
             </el-form-item>
           </el-col>
+        </el-row>
 
+        <el-row>
           <el-col :span="24">
             <el-form-item :label="$t('m.Rank_Show_Name')" required>
               <el-radio-group v-model="contest.rankShowName">
@@ -349,6 +378,7 @@ export default {
         openAccountLimit: false,
         accountLimitRule: '',
         starAccount: [],
+        oiRankScoreType: 'Recent',
       },
       formRule: {
         prefix: '',

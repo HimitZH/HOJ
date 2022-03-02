@@ -1,5 +1,6 @@
 package top.hcode.hoj.judge.task;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileWriter;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
@@ -84,6 +85,10 @@ public class SpecialJudge extends AbstractJudge {
                         testCaseOutputFileName,
                         spjExeSrc,
                         spjRunConfig);
+
+                // 删除用户输出文件
+                FileUtil.del(userOutputFilePath);
+
                 int code = spjResult.getInt("code");
                 if (code == SPJ_WA) {
                     result.set("status", Constants.Judge.STATUS_WRONG_ANSWER.getStatus());

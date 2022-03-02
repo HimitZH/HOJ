@@ -148,14 +148,41 @@
                       {{ getDuration(contest.startTime, contest.endTime) }}
                     </li>
                     <li>
-                      <el-button
-                        size="mini"
-                        round
-                        :type="contest.type == 0 ? 'primary' : 'warning'"
-                        @click="onRuleChange(contest.type)"
-                        ><i class="fa fa-trophy"></i>
-                        {{ contest.type | parseContestType }}
-                      </el-button>
+                      <template v-if="contest.type == 0">
+                        <el-button
+                          size="mini"
+                          round
+                          :type="'primary'"
+                          @click="onRuleChange(contest.type)"
+                          ><i class="fa fa-trophy"></i>
+                          {{ contest.type | parseContestType }}
+                        </el-button>
+                      </template>
+                      <template v-else>
+                        <el-tooltip
+                          :content="
+                            $t('m.Contest_Rank') +
+                              '：' +
+                              (contest.oiRankScoreType == 'Recent'
+                                ? $t(
+                                    'm.Based_on_The_Recent_Score_Submitted_Of_Each_Problem'
+                                  )
+                                : $t(
+                                    'm.Based_on_The_Highest_Score_Submitted_For_Each_Problem'
+                                  ))
+                          "
+                          placement="top"
+                        >
+                          <el-button
+                            size="mini"
+                            round
+                            :type="'warning'"
+                            @click="onRuleChange(contest.type)"
+                            ><i class="fa fa-trophy"></i>
+                            {{ contest.type | parseContestType }}
+                          </el-button>
+                        </el-tooltip>
+                      </template>
                     </li>
                     <li>
                       <el-tooltip

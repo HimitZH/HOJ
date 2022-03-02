@@ -55,7 +55,8 @@ public interface ContestRecordService extends IService<ContestRecord> {
                                              Boolean isOpenSealRank,
                                              Date sealTime,
                                              Date startTime,
-                                             Date endTime);
+                                             Date endTime,
+                                             String oiRankScoreType);
 
     List<ContestRecordVo> getACMContestRecord(String username, Long cid);
 

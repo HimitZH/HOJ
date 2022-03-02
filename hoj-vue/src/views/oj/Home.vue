@@ -109,15 +109,43 @@
                 </div>
               </div>
               <div class="contest-type-auth">
-                <el-button
-                  :type="contest.type == 0 ? 'primary' : 'warning'"
-                  round
-                  @click="goContestList(contest.type)"
-                  size="mini"
-                  style="margin-right: 10px;"
-                  ><i class="fa fa-trophy"></i>
-                  {{ contest.type | parseContestType }}
-                </el-button>
+                <template v-if="contest.type == 0">
+                  <el-button
+                    :type="'primary'"
+                    round
+                    @click="goContestList(contest.type)"
+                    size="mini"
+                    style="margin-right: 10px;"
+                    ><i class="fa fa-trophy"></i>
+                    {{ contest.type | parseContestType }}
+                  </el-button>
+                </template>
+                <template v-else>
+                  <el-tooltip
+                    :content="
+                      $t('m.Contest_Rank') +
+                        '：' +
+                        (contest.oiRankScoreType == 'Recent'
+                          ? $t(
+                              'm.Based_on_The_Recent_Score_Submitted_Of_Each_Problem'
+                            )
+                          : $t(
+                              'm.Based_on_The_Highest_Score_Submitted_For_Each_Problem'
+                            ))
+                    "
+                    placement="top"
+                  >
+                    <el-button
+                      :type="'warning'"
+                      round
+                      @click="goContestList(contest.type)"
+                      size="mini"
+                      style="margin-right: 10px;"
+                      ><i class="fa fa-trophy"></i>
+                      {{ contest.type | parseContestType }}
+                    </el-button>
+                  </el-tooltip>
+                </template>
                 <el-tooltip
                   :content="$t('m.' + CONTEST_TYPE_REVERSE[contest.auth].tips)"
                   placement="top"

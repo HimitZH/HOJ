@@ -124,7 +124,10 @@ public class Constants {
         RECORD_NOT_AC_NOT_PENALTY(0, "未AC通过不罚时"),
         RECORD_AC(1, "AC通过"),
 
-        OI_CONTEST_RANK_CACHE(null,"oi_contest_rank_cache");
+        OI_CONTEST_RANK_CACHE(null,"oi_contest_rank_cache"),
+
+        OI_RANK_RECENT_SCORE(null,"Recent"),
+        OI_RANK_HIGHEST_SCORE(null,"Highest");
 
         private final Integer code;
         private final String name;

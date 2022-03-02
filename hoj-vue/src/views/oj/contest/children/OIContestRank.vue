@@ -1,7 +1,13 @@
 <template>
   <el-card shadow>
     <div slot="header">
-      <span class="panel-title">{{ $t('m.Contest_Rank') }}</span>
+      <span class="panel-title"
+        >{{ $t('m.Contest_Rank') }}（{{
+          contest.oiRankScoreType == 'Recent'
+            ? $t('m.Based_on_The_Recent_Score_Submitted_Of_Each_Problem')
+            : $t('m.Based_on_The_Highest_Score_Submitted_For_Each_Problem')
+        }}）</span
+      >
       <span style="float:right;font-size: 20px;">
         <el-popover trigger="hover" placement="left-start">
           <i class="el-icon-s-tools" slot="reference"></i>
