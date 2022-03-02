@@ -382,6 +382,8 @@ export const m = {
 
   // /views/oj/contest/children/OIContestRank.vue
   Total_Score: 'Total Score',
+  Based_on_The_Highest_Score_Submitted_For_Each_Problem:'Based on the highest score submitted for each problem',
+  Based_on_The_Recent_Score_Submitted_Of_Each_Problem:'Based on the recent score submitted of each problem',
 
   // /views/oj/about/Introduction.vue
   Compiler: 'Compiler',

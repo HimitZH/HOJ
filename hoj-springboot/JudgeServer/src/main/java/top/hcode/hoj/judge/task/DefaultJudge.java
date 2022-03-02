@@ -75,11 +75,11 @@ public class DefaultJudge extends AbstractJudge {
         // ns->ms
         result.set("time", sandBoxRes.getTime());
 
-        if (!StringUtils.isEmpty(sandBoxRes.getStdout())) {
-            // 对于当前测试样例，用户程序的输出对应生成的文件
-            FileWriter stdWriter = new FileWriter(judgeGlobalDTO.getRunDir() + "/" + judgeDTO.getTestCaseId() + ".out");
-            stdWriter.write(sandBoxRes.getStdout());
-        }
+//        if (!StringUtils.isEmpty(sandBoxRes.getStdout())) {
+//            // 对于当前测试样例，用户程序的输出对应生成的文件
+//            FileWriter stdWriter = new FileWriter(judgeGlobalDTO.getRunDir() + "/" + judgeDTO.getTestCaseId() + ".out");
+//            stdWriter.write(sandBoxRes.getStdout());
+//        }
 
         if (!StringUtils.isEmpty(sandBoxRes.getStderr())) {
             // 对于当前测试样例，用户的错误提示生成对应文件

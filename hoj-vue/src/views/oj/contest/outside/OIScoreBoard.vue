@@ -26,16 +26,37 @@
             <i class="el-icon-user-solid" style="color:rgb(48, 145, 242);"></i
             >x{{ contest.count }}
           </el-button>
-          <el-button
-            size="small"
-            v-if="contest != null"
-            :type="contest.type == 0 ? 'primary' : 'warning'"
-          >
-            <i class="fa fa-trophy"></i>
-            {{ contest.type | parseContestType }}
-          </el-button>
+
+          <template v-if="contest.type == 0">
+            <el-button size="small" :type="'primary'">
+              <i class="fa fa-trophy"></i>
+              {{ contest.type | parseContestType }}
+            </el-button>
+          </template>
+          <template v-else>
+            <el-tooltip
+              :content="
+                $t('m.Contest_Rank') +
+                  '：' +
+                  (contest.oiRankScoreType == 'Recent'
+                    ? $t(
+                        'm.Based_on_The_Recent_Score_Submitted_Of_Each_Problem'
+                      )
+                    : $t(
+                        'm.Based_on_The_Highest_Score_Submitted_For_Each_Problem'
+                      ))
+              "
+              placement="top"
+            >
+              <el-button size="small" :type="'warning'">
+                <i class="fa fa-trophy"></i>
+                {{ contest.type | parseContestType }}
+              </el-button>
+            </el-tooltip>
+          </template>
         </el-col>
       </el-row>
+
       <div class="contest-time">
         <el-row>
           <el-col :xs="24" :md="12" class="left">

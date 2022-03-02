@@ -549,7 +549,7 @@ IF NOT EXISTS (
 	AND column_name = 'star_account'
 ) THEN
 	ALTER TABLE `hoj`.`contest`  ADD COLUMN `star_account` mediumtext COMMENT '打星用户列表';
-	ALTER TABLE `hoj`.`contest`  ADD COLUMN `open_rank` BOOLEAN DEFAULT 0 NULL  COMMENT '是否开放比赛榜单';
+	ALTER TABLE `hoj`.`contest`  ADD COLUMN `open_rank` BOOLEAN DEFAULT 0 NULL  COMMENT '是否开放赛外榜单';
 END
 IF ; END$$
  
@@ -589,3 +589,67 @@ DELIMITER ;
 CALL judge_Delete_tid ;
 
 DROP PROCEDURE judge_Delete_tid;
+
+
+/*
+* 2022.01.03 problem表增加mode，user_extra_file，judge_extra_file用于区别普通判题、特殊判题、交互判题
+			 
+*/
+DROP PROCEDURE
+IF EXISTS problem_Add_judge_mode;
+DELIMITER $$
+ 
+CREATE PROCEDURE problem_Add_judge_mode ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'problem'
+	AND column_name = 'judge_mode'
+) THEN
+	ALTER TABLE `hoj`.`problem`  ADD COLUMN `judge_mode` varchar(255) DEFAULT 'default' COMMENT '题目评测模式,default、spj、interactive';
+	ALTER TABLE `hoj`.`problem`  ADD COLUMN `user_extra_file` mediumtext DEFAULT NULL COMMENT '题目评测时用户程序的额外额外文件 json key:name value:content';
+	ALTER TABLE `hoj`.`problem`  ADD COLUMN `judge_extra_file` mediumtext DEFAULT NULL COMMENT '题目评测时交互或特殊程序的额外额外文件 json key:name value:content';
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL problem_Add_judge_mode ;
+
+DROP PROCEDURE problem_Add_judge_mode;
+
+
+/*
+* 2022.03.02 contest表增加oi_rank_score_type
+			 
+*/
+DROP PROCEDURE
+IF EXISTS contest_Add_oi_rank_score_type;
+DELIMITER $$
+ 
+CREATE PROCEDURE contest_Add_oi_rank_score_type ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'contest'
+	AND column_name = 'oi_rank_score_type'
+) THEN
+	ALTER TABLE `hoj`.`contest`  ADD COLUMN `oi_rank_score_type` varchar(255) DEFAULT 'Recent' COMMENT 'oi排行榜得分方式，Recent、Highest';
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL contest_Add_oi_rank_score_type ;
+
+DROP PROCEDURE contest_Add_oi_rank_score_type;
+
+
