@@ -58,6 +58,7 @@
                 class="radio"
                 v-model="contest.type"
                 :label="0"
+                @change="setSealRankTimeDefaultValue"
                 :disabled="disableRuleType"
                 >ACM</el-radio
               >
@@ -66,6 +67,7 @@
                 v-model="contest.type"
                 :label="1"
                 :disabled="disableRuleType"
+                @change="setSealRankTimeDefaultValue"
                 >OI</el-radio
               >
             </el-form-item>
@@ -110,6 +112,7 @@
                 v-model="contest.sealRank"
                 active-color="#13ce66"
                 inactive-color=""
+                @change="setSealRankTimeDefaultValue"
               >
               </el-switch>
             </el-form-item>
@@ -360,7 +363,7 @@ export default {
       title: 'Create Contest',
       disableRuleType: false,
       durationText: '', // 比赛时长文本表示
-      seal_rank_time: 0, // 当开启封榜模式，即实时榜单关闭时，可选择前半小时，前一小时，全程封榜,默认半小时1800s
+      seal_rank_time: 2, // 当开启封榜模式，即实时榜单关闭时，可选择前半小时，前一小时，全程封榜,默认全程封榜
       contest: {
         title: '',
         description: '',
@@ -369,7 +372,7 @@ export default {
         duration: 0,
         type: 0,
         pwd: '',
-        sealRank: true,
+        sealRank: false,
         sealRankTime: '', //封榜时间
         autoRealRank: true,
         auth: 0,
@@ -606,6 +609,22 @@ export default {
         this.contest.starAccount.map((item) => item.name).indexOf(username),
         1
       );
+    },
+
+    setSealRankTimeDefaultValue() {
+      if (this.contest.sealRank == true) {
+        if (this.contest.type == 0) {
+          // ACM比赛开启封榜 默认为一小时,如果比赛时长小于一小时，则默认为全程
+          if (this.contest.duration < 3600) {
+            this.seal_rank_time = 2;
+          } else {
+            this.seal_rank_time = 1;
+          }
+        } else {
+          // OI比赛开启封榜 默认全程
+          this.seal_rank_time = 2;
+        }
+      }
     },
   },
 };
