@@ -65,21 +65,14 @@ public class JwtFilter extends AuthenticatingFilter {
         } else {
             // 判断是否已过期
             Claims claim = jwtUtils.getClaimByToken(token);
-            HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-            HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
             if (claim == null || jwtUtils.isTokenExpired(claim.getExpiration())) {
-                httpResponse.setContentType("application/json;charset=utf-8");
-                httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
-                httpResponse.setHeader("Url-Type", httpRequest.getHeader("Url-Type")); // 为了前端能区别请求来源
-                httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                CommonResult result = CommonResult.errorResponse("登录身份已失效，请重新登录！", CommonResult.STATUS_ACCESS_DENIED);
-                String json = JSONUtil.toJsonStr(result);
-                httpResponse.getWriter().print(json);
                 return true;
             }
             String userId = claim.getSubject();
             if (!redisUtils.hasKey(TOKEN_REFRESH + userId) && redisUtils.hasKey(TOKEN_KEY + userId)) {
                 //过了需更新token时间，但是还未过期，则进行token刷新
+                HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
+                HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
                 this.refreshToken(httpRequest, httpResponse, userId);
             }
         }
