@@ -75,7 +75,7 @@ public class JwtFilter extends AuthenticatingFilter {
                 CommonResult result = CommonResult.errorResponse("登录身份已失效，请重新登录！", CommonResult.STATUS_ACCESS_DENIED);
                 String json = JSONUtil.toJsonStr(result);
                 httpResponse.getWriter().print(json);
-                return false;
+                return true;
             }
             String userId = claim.getSubject();
             if (!redisUtils.hasKey(TOKEN_REFRESH + userId) && redisUtils.hasKey(TOKEN_KEY + userId)) {
