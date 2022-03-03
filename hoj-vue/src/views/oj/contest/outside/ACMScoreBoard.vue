@@ -247,7 +247,7 @@
           :key="problem.displayId"
         >
           <template v-slot:header>
-            <span style="vertical-align: top;" v-if="problem.color">
+            <span class="contest-rank-balloon" v-if="problem.color">
               <svg
                 t="1633685184463"
                 class="icon"
@@ -266,6 +266,12 @@
               </svg>
             </span>
             <span>
+              <a class="emphasis" style="color:#495060;">
+                {{ problem.displayId }}
+              </a>
+            </span>
+            <br />
+            <span>
               <el-tooltip effect="dark" placement="top">
                 <div slot="content">
                   {{ problem.displayId + '. ' + problem.displayTitle }}
@@ -280,18 +286,14 @@
                       getProblemCount(problemErrorCountMap[problem.displayId])
                   }}
                 </div>
-                <div>
-                  <span class="emphasis" style="color:#495060;"
-                    >{{ problem.displayId }}({{
-                      getProblemCount(problemACCountMap[problem.displayId])
-                    }}/{{
-                      getProblemCount(problemACCountMap[problem.displayId]) +
-                        getProblemCount(
-                          problemErrorCountMap[problem.displayId]
-                        )
-                    }})
-                  </span>
-                </div>
+                <span
+                  >({{
+                    getProblemCount(problemACCountMap[problem.displayId])
+                  }}/{{
+                    getProblemCount(problemACCountMap[problem.displayId]) +
+                      getProblemCount(problemErrorCountMap[problem.displayId])
+                  }})
+                </span>
               </el-tooltip>
             </span>
           </template>

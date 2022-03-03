@@ -222,7 +222,7 @@
           :key="problem.displayId"
         >
           <template v-slot:header>
-            <span style="vertical-align: top;" v-if="problem.color">
+            <span class="contest-rank-balloon" v-if="problem.color">
               <svg
                 t="1633685184463"
                 class="icon"
@@ -241,6 +241,16 @@
               </svg>
             </span>
             <span>
+              <a
+                @click="getContestProblemById(problem.displayId)"
+                class="emphasis"
+                style="color:#495060;"
+              >
+                {{ problem.displayId }}
+              </a>
+            </span>
+            <br />
+            <span>
               <el-tooltip effect="dark" placement="top">
                 <div slot="content">
                   {{ problem.displayId + '. ' + problem.displayTitle }}
@@ -249,18 +259,7 @@
                   <br />
                   {{ 'Rejected: ' + (problem.total - problem.ac) }}
                 </div>
-                <div>
-                  <span>
-                    <a
-                      @click="getContestProblemById(problem.displayId)"
-                      class="emphasis"
-                      style="color:#495060;"
-                      >{{ problem.displayId }}({{ problem.ac }}/{{
-                        problem.total
-                      }})
-                    </a>
-                  </span>
-                </div>
+                <span>({{ problem.ac }}/{{ problem.total }}) </span>
               </el-tooltip>
             </span>
           </template>
@@ -607,6 +606,7 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .echarts {
   margin: 20px auto;

@@ -301,6 +301,12 @@ a:hover {
   background-color: lightyellow;
 }
 
+.contest-rank-balloon {
+  vertical-align: top;
+  margin-left: -10px !important;
+  margin-right: -7px !important;
+}
+
 .oi-100 {
   background-color: #19be6b;
   color: #fff;
