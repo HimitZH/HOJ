@@ -260,7 +260,7 @@
           :key="problem.displayId"
         >
           <template v-slot:header>
-            <span style="vertical-align: top;" v-if="problem.color">
+            <span class="contest-rank-balloon" v-if="problem.color">
               <svg
                 t="1633685184463"
                 class="icon"
@@ -279,6 +279,12 @@
               </svg>
             </span>
             <span>
+              <a class="emphasis" style="color:#495060;">
+                {{ problem.displayId }}
+              </a>
+            </span>
+            <br />
+            <span>
               <el-tooltip effect="dark" placement="top">
                 <div slot="content">
                   {{ problem.displayId + '. ' + problem.displayTitle }}
@@ -293,18 +299,14 @@
                       getProblemCount(problemErrorCountMap[problem.displayId])
                   }}
                 </div>
-                <div>
-                  <span class="emphasis" style="color:#495060;"
-                    >{{ problem.displayId }}({{
-                      getProblemCount(problemACCountMap[problem.displayId])
-                    }}/{{
-                      getProblemCount(problemACCountMap[problem.displayId]) +
-                        getProblemCount(
-                          problemErrorCountMap[problem.displayId]
-                        )
-                    }})
-                  </span>
-                </div>
+                <span
+                  >({{
+                    getProblemCount(problemACCountMap[problem.displayId])
+                  }}/{{
+                    getProblemCount(problemACCountMap[problem.displayId]) +
+                      getProblemCount(problemErrorCountMap[problem.displayId])
+                  }})
+                </span>
               </el-tooltip>
             </span>
           </template>
@@ -392,13 +394,14 @@ export default {
       let acCountMap = {};
       let errorCountMap = {};
       dataRank.forEach((rank, i) => {
-        let info = rank.submissionInfo;
+        let submissionInfo = rank.submissionInfo;
+        let timeInfo = rank.timeInfo;
         let cellClass = {};
         if (this.concernedList.indexOf(rank.uid) != -1) {
           dataRank[i].isConcerned = true;
         }
-        Object.keys(info).forEach((problemID) => {
-          dataRank[i][problemID] = info[problemID];
+        Object.keys(submissionInfo).forEach((problemID) => {
+          dataRank[i][problemID] = submissionInfo[problemID];
           if (!acCountMap[problemID]) {
             acCountMap[problemID] = 0;
           }
@@ -406,16 +409,16 @@ export default {
             errorCountMap[problemID] = 0;
           }
 
-          let score = info[problemID];
-          if (score == 0) {
-            cellClass[problemID] = 'oi-0';
-            errorCountMap[problemID] += 1;
-          } else if (score > 0 && score < 100) {
-            cellClass[problemID] = 'oi-between';
-            errorCountMap[problemID] += 1;
-          } else if (score == 100) {
+          let score = submissionInfo[problemID];
+          if (timeInfo != null && timeInfo[problemID] != undefined) {
             cellClass[problemID] = 'oi-100';
             acCountMap[problemID] += 1;
+          } else if (score == 0) {
+            cellClass[problemID] = 'oi-0';
+            errorCountMap[problemID] += 1;
+          } else {
+            cellClass[problemID] = 'oi-between';
+            errorCountMap[problemID] += 1;
           }
         });
         dataRank[i].cellClassName = cellClass;
