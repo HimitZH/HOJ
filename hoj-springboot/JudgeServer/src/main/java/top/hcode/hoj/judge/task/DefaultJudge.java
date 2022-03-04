@@ -81,17 +81,10 @@ public class DefaultJudge extends AbstractJudge {
 //            stdWriter.write(sandBoxRes.getStdout());
 //        }
 
-        if (!StringUtils.isEmpty(sandBoxRes.getStderr())) {
-            // 对于当前测试样例，用户的错误提示生成对应文件
-            FileWriter errWriter = new FileWriter(judgeGlobalDTO.getRunDir() + "/" + judgeDTO.getTestCaseId() + ".err");
-            errWriter.write(sandBoxRes.getStderr());
-            // 同时记录错误信息
-            errMsg.append(sandBoxRes.getStderr());
-        }
-
         // 记录该测试点的错误信息
         if (!StringUtils.isEmpty(errMsg.toString())) {
-            result.set("errMsg", errMsg.toString());
+            String str = errMsg.toString();
+            result.set("errMsg", str.substring(0, Math.min(1024 * 1024, str.length())));
         }
 
         if (judgeGlobalDTO.getNeedUserOutputFile()) { // 如果需要获取用户对于该题目的输出
