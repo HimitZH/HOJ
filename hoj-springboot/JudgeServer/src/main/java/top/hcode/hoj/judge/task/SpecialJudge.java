@@ -126,15 +126,8 @@ public class SpecialJudge extends AbstractJudge {
 
         // 记录该测试点的错误信息
         if (!StringUtils.isEmpty(errMsg.toString())) {
-            result.set("errMsg", errMsg.toString());
-        }
-
-        if (!StringUtils.isEmpty(sandBoxRes.getStderr())) {
-            // 同时记录错误信息
-            errMsg.append(sandBoxRes.getStderr());
-            // 对于当前测试样例，用户的错误提示生成对应文件
-            FileWriter errWriter = new FileWriter(judgeGlobalDTO.getRunDir() + File.separator + judgeDTO.getTestCaseId() + ".err");
-            errWriter.write(sandBoxRes.getStderr());
+            String str = errMsg.toString();
+            result.set("errMsg", str.substring(0, Math.min(1024 * 1024, str.length())));
         }
 
         return result;
