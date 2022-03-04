@@ -210,7 +210,16 @@
         </vxe-table-column>
         <vxe-table-column title="Option" min-width="200">
           <template v-slot="{ row }">
-            <el-tooltip effect="dark" :content="$t('m.Edit')" placement="top">
+            <el-tooltip
+              effect="dark"
+              :content="$t('m.Edit')"
+              placement="top"
+              v-if="
+                isSuperAdmin ||
+                  isProblemAdmin ||
+                  row.author == userInfo.username
+              "
+            >
               <el-button
                 icon="el-icon-edit-outline"
                 size="mini"

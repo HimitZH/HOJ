@@ -309,9 +309,22 @@ public class AdminContestController {
     @GetMapping("/problem")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult getProblem(@Valid @RequestParam("pid") Long pid) {
+    public CommonResult getProblem(@Valid @RequestParam("pid") Long pid, HttpServletRequest request) {
         Problem problem = problemService.getById(pid);
+
         if (problem != null) { // 查询成功
+
+            // 获取当前登录的用户
+            HttpSession session = request.getSession();
+            UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+            boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+            boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
+            // 只有超级管理员和题目管理员、题目创建者才能操作
+            if (!isRoot && !isProblemAdmin && !userRolesVo.getUsername().equals(problem.getAuthor())) {
+                return CommonResult.errorResponse("对不起，你无权限查看题目！", CommonResult.STATUS_FORBIDDEN);
+            }
+
             return CommonResult.successResponse(problem, "查询成功！");
         } else {
             return CommonResult.errorResponse("查询失败！", CommonResult.STATUS_FAIL);
@@ -378,6 +391,17 @@ public class AdminContestController {
     @Transactional(rollbackFor = Exception.class)
     public CommonResult updateProblem(@RequestBody ProblemDto problemDto, HttpServletRequest request) {
 
+        // 获取当前登录的用户
+        HttpSession session = request.getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
+        // 只有超级管理员和题目管理员、题目创建者才能操作
+        if (!isRoot && !isProblemAdmin && !userRolesVo.getUsername().equals(problemDto.getProblem().getAuthor())) {
+            return CommonResult.errorResponse("对不起，你无权限修改题目！", CommonResult.STATUS_FORBIDDEN);
+        }
+
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("problem_id", problemDto.getProblem().getProblemId().toUpperCase());
         Problem problem = problemService.getOne(queryWrapper);
@@ -386,11 +410,10 @@ public class AdminContestController {
         if (problem != null && problem.getId().longValue() != problemDto.getProblem().getId()) {
             return CommonResult.errorResponse("当前的Problem ID 已被使用，请重新更换新的！", CommonResult.STATUS_FAIL);
         }
-        // 获取当前登录的用户
-        HttpSession session = request.getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
         // 记录修改题目的用户
         problemDto.getProblem().setModifiedUser(userRolesVo.getUsername());
+
         boolean result = problemService.adminUpdateProblem(problemDto);
         if (result) { // 更新成功
             return CommonResult.successResponse(null, "修改成功！");
