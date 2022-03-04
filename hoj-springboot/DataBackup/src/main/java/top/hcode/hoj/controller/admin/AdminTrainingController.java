@@ -136,7 +136,7 @@ public class AdminTrainingController {
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
         // 是否为超级管理员
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-        // 只有超级管理员和比赛拥有者才能操作
+        // 只有超级管理员和训练拥有者才能操作
         if (!isRoot && !userRolesVo.getUsername().equals(trainingDto.getTraining().getAuthor())) {
             return CommonResult.errorResponse("对不起，你无权限操作！", CommonResult.STATUS_FORBIDDEN);
         }
@@ -163,7 +163,7 @@ public class AdminTrainingController {
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
         // 是否为超级管理员
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-        // 只有超级管理员和比赛拥有者才能操作
+        // 只有超级管理员和训练拥有者才能操作
         if (!isRoot && !userRolesVo.getUsername().equals(author)) {
             return CommonResult.errorResponse("对不起，你无权限操作！", CommonResult.STATUS_FORBIDDEN);
         }
