@@ -14,6 +14,7 @@ import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeRes;
@@ -194,22 +195,26 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
                 remoteJudgeRes.setMemory((int) result.get("memoryConsumedBytes") / 1024);
                 if (resultStatus == Constants.Judge.STATUS_COMPILE_ERROR) {
 
-                    String html = HttpUtil.createGet(HOST)
-                            .timeout(30000).execute().body();
-                    String csrfToken = ReUtil.get("data-csrf='(\\w+)'", html, 1);
+                    String csrfToken = getCsrfToken(HOST);
 
-                    String ceJson = HttpUtil.createPost(HOST + CE_INFO_URL)
-                            .form(MapUtil
-                                    .builder(new HashMap<String, Object>())
-                                    .put("csrf_token", csrfToken)
-                                    .put("submissionId", getRemoteJudgeDTO().getSubmitId().toString()).map())
-                            .timeout(30000)
-                            .execute()
-                            .body();
-                    JSONObject CEInfoJson = JSONUtil.parseObj(ceJson);
-                    String CEInfo = CEInfoJson.getStr("checkerStdoutAndStderr#1");
+                    HttpRequest httpRequest = HttpUtil.createPost(HOST + CE_INFO_URL)
+                            .timeout(30000);
 
-                    remoteJudgeRes.setErrorInfo(CEInfo);
+                    httpRequest.form(MapUtil
+                            .builder(new HashMap<String, Object>())
+                            .put("csrf_token", csrfToken)
+                            .put("submissionId", getRemoteJudgeDTO().getSubmitId().toString()).map());
+
+                    HttpResponse response = httpRequest.execute();
+                    if (response.getStatus() == 200) {
+                        JSONObject CEInfoJson = JSONUtil.parseObj(response.body());
+                        String CEInfo = CEInfoJson.getStr("checkerStdoutAndStderr#1");
+                        remoteJudgeRes.setErrorInfo(CEInfo);
+                    } else {
+                        // 非200则说明cf没有提供编译失败的详情
+                        remoteJudgeRes.setErrorInfo("Oops! Because Codeforces does not provide compilation details, it is unable to provide the reason for compilation failure!");
+                    }
+
                 }
                 remoteJudgeRes.setStatus(resultStatus.getStatus());
                 return remoteJudgeRes;
