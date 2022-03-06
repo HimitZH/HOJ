@@ -7,6 +7,7 @@ import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jsqlparser.statement.select.Wait;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeRes;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: Himit_ZH
@@ -63,6 +65,39 @@ public class AtCoderJudge extends RemoteJudgeStrategy {
             throw new RuntimeException("Login to AtCoder failed, the response status:" + remoteJudgeDTO.getLoginStatus());
         }
 
+        HttpResponse response = trySubmit();
+
+        if (response.getStatus() == 200) { // 说明被限制提交频率了，
+            String timeStr = ReUtil.get("Wait for (\\d+) second to submit again.", response.body(), 1);
+            if (timeStr != null) {
+                int time = Integer.parseInt(timeStr);
+                try {
+                    TimeUnit.SECONDS.sleep(time + 1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                response = trySubmit();
+            }
+        }
+
+        if (response.getStatus() != 302) {
+            log.error("Submit to AtCoder failed, the response status:{}, It may be that the frequency of submission operation is too fast. Please try later", response.getStatus());
+            throw new RuntimeException("Submit to AtCoder failed, the response status:" + response.getStatus());
+        }
+        Long maxRunId = getMaxRunId(remoteJudgeDTO.getUsername(), remoteJudgeDTO.getContestId(), remoteJudgeDTO.getCompleteProblemId());
+
+        remoteJudgeDTO.setCookies(remoteJudgeDTO.getCookies())
+                .setSubmitId(maxRunId);
+        // 停留2秒钟后再归还账号，避免提交频率过快
+        try {
+            TimeUnit.SECONDS.sleep(2);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private HttpResponse trySubmit() {
+        RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
         List<HttpCookie> cookies = remoteJudgeDTO.getCookies();
         String csrfToken = remoteJudgeDTO.getCsrfToken();
 
@@ -76,18 +111,11 @@ public class AtCoderJudge extends RemoteJudgeStrategy {
         httpRequest.cookie(cookies);
         HttpResponse response = httpRequest.execute();
         remoteJudgeDTO.setSubmitStatus(response.getStatus());
-        if (response.getStatus() != 302) {
-            log.error("Submit to AtCoder failed, the response status:{},", response.getStatus());
-            throw new RuntimeException("Submit to AtCoder failed, the response status:" + response.getStatus());
-        }
-        Long maxRunId = getMaxRunId(remoteJudgeDTO.getUsername(),remoteJudgeDTO.getContestId(),remoteJudgeDTO.getCompleteProblemId());
-
-        remoteJudgeDTO.setCookies(cookies)
-                .setSubmitId(maxRunId);
+        return response;
     }
 
     @Override
-    public RemoteJudgeRes result(){
+    public RemoteJudgeRes result() {
 
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
 
@@ -118,7 +146,7 @@ public class AtCoderJudge extends RemoteJudgeStrategy {
     }
 
     @Override
-    public void login(){
+    public void login() {
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
         String csrfToken = getCsrfToken(HOST + LOGIN_URL);
         HttpRequest request = HttpUtil.createPost(HOST + LOGIN_URL);
