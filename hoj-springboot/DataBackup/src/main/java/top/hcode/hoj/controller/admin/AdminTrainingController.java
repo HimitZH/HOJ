@@ -198,7 +198,7 @@ public class AdminTrainingController {
     @RequiresRoles(value = {"root", "problem_admin"}, logical = Logical.OR)
     public CommonResult updateProblem(@RequestBody TrainingProblem trainingProblem) {
         boolean isOk = trainingProblemService.saveOrUpdate(trainingProblem);
-        if (isOk) { // 删除成功
+        if (isOk) { // 更新成功
             return CommonResult.successResponse(null, "修改成功！");
         } else {
             return CommonResult.errorResponse("修改失败！", CommonResult.STATUS_FAIL);
