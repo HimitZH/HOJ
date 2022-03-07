@@ -19,6 +19,9 @@ import top.hcode.hoj.service.training.TrainingProblemService;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -45,12 +48,18 @@ public class TrainingProblemServiceImpl extends ServiceImpl<TrainingProblemMappe
 
     @Override
     public List<ProblemVo> getTrainingProblemList(Long tid) {
-        return trainingProblemMapper.getTrainingProblemList(tid);
+        List<ProblemVo> trainingProblemList = trainingProblemMapper.getTrainingProblemList(tid);
+        return trainingProblemList.stream().filter(distinctByKey(ProblemVo::getPid)).collect(Collectors.toList());
+    }
+
+    static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+        Map<Object,Boolean> seen = new ConcurrentHashMap<>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
     @Override
     public Integer getUserTrainingACProblemCount(String uid, List<Long> pidList) {
-        if (CollectionUtils.isEmpty(pidList)){
+        if (CollectionUtils.isEmpty(pidList)) {
             return 0;
         }
         QueryWrapper<Judge> judgeQueryWrapper = new QueryWrapper<>();
@@ -74,7 +83,9 @@ public class TrainingProblemServiceImpl extends ServiceImpl<TrainingProblemMappe
         List<TrainingProblem> trainingProblemList = trainingProblemMapper.selectList(trainingProblemQueryWrapper);
         HashMap<Long, TrainingProblem> trainingProblemMap = new HashMap<>();
         trainingProblemList.forEach(trainingProblem -> {
-            trainingProblemMap.put(trainingProblem.getPid(), trainingProblem);
+            if (!trainingProblemMap.containsKey(trainingProblem.getPid())) {
+                trainingProblemMap.put(trainingProblem.getPid(), trainingProblem);
+            }
             pidList.add(trainingProblem.getPid());
         });
 
@@ -105,7 +116,8 @@ public class TrainingProblemServiceImpl extends ServiceImpl<TrainingProblemMappe
         IPage<Problem> problemListPager = problemService.page(iPage, problemQueryWrapper);
 
         if (queryExisted) {
-            List<Problem> sortProblemList = problemListPager.getRecords()
+            List<Problem> problemListPagerRecords = problemListPager.getRecords();
+            List<Problem> sortProblemList = problemListPagerRecords
                     .stream()
                     .sorted(Comparator.comparingInt(problem -> trainingProblemMap.get(problem.getId()).getRank()))
                     .collect(Collectors.toList());
