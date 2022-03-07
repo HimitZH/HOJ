@@ -108,7 +108,8 @@ public class JudgeController {
     public CommonResult submitProblemJudge(@RequestBody ToJudgeDto judgeDto, HttpServletRequest request) {
         if (judgeDto.getCode().length() < 50
                 && !judgeDto.getLanguage().contains("Py")
-                && !judgeDto.getLanguage().contains("PHP")) {
+                && !judgeDto.getLanguage().contains("PHP")
+                && !judgeDto.getLanguage().contains("JavaScript")) {
             return CommonResult.errorResponse("提交的代码是无效的，代码字符长度请不要低于50！", CommonResult.STATUS_FORBIDDEN);
         }
 
