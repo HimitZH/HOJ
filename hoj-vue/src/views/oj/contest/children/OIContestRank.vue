@@ -66,6 +66,7 @@
         ref="OIContestRank"
         :data="dataRank"
         :cell-class-name="cellClassName"
+        @cell-click="getUserProblemSubmission"
       >
         <vxe-table-column
           field="rank"
@@ -222,6 +223,7 @@
           min-width="80"
           v-for="problem in contestProblems"
           :key="problem.displayId"
+          :field="problem.displayId"
         >
           <template v-slot:header>
             <span v-if="problem.color" class="contest-rank-balloon">
@@ -266,7 +268,10 @@
             </span>
           </template>
           <template v-slot="{ row }">
-            <div v-if="row.submissionInfo[problem.displayId]">
+            <div
+              v-if="row.submissionInfo[problem.displayId]"
+              class="submission-hover"
+            >
               <span>{{ row.submissionInfo[problem.displayId] }}</span>
               <br />
               <span
@@ -450,6 +455,19 @@ export default {
         },
       });
     },
+    getUserProblemSubmission({ row, column }) {
+      if (
+        column.property !== 'rank' &&
+        column.property !== 'totalScore' &&
+        column.property !== 'username' &&
+        column.property !== 'realname'
+      ) {
+        this.$router.push({
+          name: 'ContestSubmissionList',
+          query: { username: row.username, problemID: column.property },
+        });
+      }
+    },
     applyToChart(rankData) {
       let [user, scores] = [[], []];
       let len = rankData.length;
@@ -571,5 +589,8 @@ a.emphasis:hover {
 /deep/.vxe-table .vxe-cell {
   padding-left: 5px !important;
   padding-right: 5px !important;
+}
+.submission-hover:hover {
+  cursor: pointer;
 }
 </style>

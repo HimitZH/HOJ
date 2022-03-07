@@ -57,8 +57,10 @@
         auto-resize
         size="medium"
         align="center"
+        ref="ACMContestRank"
         :data="dataRank"
         :cell-class-name="cellClassName"
+        @cell-click="getUserProblemSubmission"
       >
         <vxe-table-column
           field="rank"
@@ -220,6 +222,7 @@
           min-width="74"
           v-for="problem in contestProblems"
           :key="problem.displayId"
+          :field="problem.displayId"
         >
           <template v-slot:header>
             <span class="contest-rank-balloon" v-if="problem.color">
@@ -264,7 +267,10 @@
             </span>
           </template>
           <template v-slot="{ row }">
-            <span v-if="row.submissionInfo[problem.displayId]">
+            <span
+              v-if="row.submissionInfo[problem.displayId]"
+              class="submission-hover"
+            >
               <el-tooltip effect="dark" placement="top">
                 <div slot="content">
                   {{ row.submissionInfo[problem.displayId].specificTime }}
@@ -450,6 +456,20 @@ export default {
           problemID: pid,
         },
       });
+    },
+    getUserProblemSubmission({ row, column }) {
+      if (
+        column.property != 'rank' &&
+        column.property != 'rating' &&
+        column.property != 'totalTime' &&
+        column.property != 'username' &&
+        column.property != 'realname'
+      ) {
+        this.$router.push({
+          name: 'ContestSubmissionList',
+          query: { username: row.username, problemID: column.property },
+        });
+      }
     },
     cellClassName({ row, rowIndex, column, columnIndex }) {
       if (row.username == this.userInfo.username) {
@@ -675,5 +695,8 @@ a.emphasis:hover {
 }
 .submission-error {
   font-weight: 400;
+}
+.submission-hover:hover {
+  cursor: pointer;
 }
 </style>
