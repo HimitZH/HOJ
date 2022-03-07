@@ -12,10 +12,12 @@
         align="center"
         :data="dataRank"
         :cell-class-name="cellClassName"
+        ref="TraningtRank"
         :seq-config="{ startIndex: (this.page - 1) * this.limit }"
+        @cell-click="getUserProblemSubmission"
       >
         <vxe-table-column
-          field="id"
+          field="rank"
           type="seq"
           width="50"
           fixed="left"
@@ -114,6 +116,7 @@
           min-width="70"
           v-for="(problem, index) in trainingProblemList"
           :key="index"
+          :field="problem.problemId"
         >
           <template v-slot:header>
             <span
@@ -135,7 +138,7 @@
                   }}
                 </div>
                 <span
-                  class="judge-status"
+                  class="judge-status submission-hover"
                   :style="
                     'color:' +
                       JUDGE_STATUS[row.submissionInfo[problem.problemId].status]
@@ -242,6 +245,20 @@ export default {
           problemID: pid,
         },
       });
+    },
+    getUserProblemSubmission({ row, column }) {
+      if (
+        column.property !== 'rank' &&
+        column.property !== 'totalScore' &&
+        column.property !== 'username' &&
+        column.property !== 'realname' &&
+        column.property !== 'rating'
+      ) {
+        this.$router.push({
+          name: 'SubmissionList',
+          query: { username: row.username, problemID: column.property },
+        });
+      }
     },
     cellClassName({ row, rowIndex, column, columnIndex }) {
       if (column.property === 'username' && row.userCellClassName) {

@@ -515,9 +515,11 @@ export default {
             this.total = res.data.data.problemList.total;
             this.problemList = res.data.data.problemList.records;
             this.contestProblemMap = res.data.data.contestProblemMap;
+            this.showPagination = true;
           },
           (err) => {
             this.loading = false;
+            this.showPagination = true;
           }
         );
       }

@@ -359,6 +359,9 @@ a:hover {
 .own-submit-row {
   background: rgb(230, 255, 223) !important;
 }
+.submission-hover:hover {
+  cursor: pointer;
+}
 .vxe-table {
   color: #000 !important;
   font-size: 12px !important;

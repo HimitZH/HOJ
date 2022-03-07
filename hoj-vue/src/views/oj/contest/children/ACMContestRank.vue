@@ -696,7 +696,4 @@ a.emphasis:hover {
 .submission-error {
   font-weight: 400;
 }
-.submission-hover:hover {
-  cursor: pointer;
-}
 </style>
