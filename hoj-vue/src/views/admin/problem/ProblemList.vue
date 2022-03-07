@@ -100,22 +100,14 @@
           min-width="100"
           field="problemId"
           :title="$t('m.Display_ID')"
-          v-if="!query.contestId"
-        >
-        </vxe-table-column>
-        <vxe-table-column
-          field="title"
-          min-width="150"
-          :title="$t('m.Title')"
-          show-overflow
-          v-if="!query.contestId"
+          v-if="!isContest"
         >
         </vxe-table-column>
 
         <vxe-table-column
           min-width="150"
           :title="$t('m.Original_Display')"
-          v-if="isContest"
+          v-else
           align="left"
         >
           <template v-slot="{ row }">
@@ -128,9 +120,18 @@
         </vxe-table-column>
 
         <vxe-table-column
+          field="title"
+          min-width="150"
+          :title="$t('m.Title')"
+          show-overflow
+          v-if="!isContest"
+        >
+        </vxe-table-column>
+
+        <vxe-table-column
           min-width="150"
           :title="$t('m.Contest_Display')"
-          v-if="isContest"
+          v-else
           align="left"
         >
           <template v-slot="{ row }">
@@ -421,6 +422,7 @@ export default {
         : 0;
       this.query.oj = query.oj || 'All';
       this.query.contestId = this.$route.params.contestId;
+      this.contestProblemMap = {};
       this.getProblemList();
       this.REMOTE_OJ = Object.assign({}, REMOTE_OJ);
     },
