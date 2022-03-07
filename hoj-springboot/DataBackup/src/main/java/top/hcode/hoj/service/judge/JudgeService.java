@@ -24,6 +24,8 @@ import java.util.List;
 
 public interface JudgeService extends IService<Judge> {
 
+    CommonResult checkSubmissionInfo(ToJudgeDto toJudgeDto);
+
     CommonResult submitProblem(ToJudgeDto judgeDto, Judge judge);
 
     IPage<JudgeVo> getCommonJudgeList(Integer limit,
