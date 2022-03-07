@@ -590,7 +590,4 @@ a.emphasis:hover {
   padding-left: 5px !important;
   padding-right: 5px !important;
 }
-.submission-hover:hover {
-  cursor: pointer;
-}
 </style>
