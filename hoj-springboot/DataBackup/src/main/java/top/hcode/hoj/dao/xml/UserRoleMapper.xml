@@ -86,7 +86,7 @@
                 or u.realname like CONCAT("%",#{keyword},"%")
             </if>
         </where>
-        order by u.gmt_create desc
+        order by u.gmt_create desc, u.uuid desc
     </select>
 
     <!-- 子查询 -->
@@ -106,7 +106,7 @@
                 or u.realname like CONCAT("%",#{keyword},"%"))
             </if>
         </where>
-        order by u.gmt_create desc
+        order by u.gmt_create desc, u.uuid desc
     </select>
 
 </mapper>
