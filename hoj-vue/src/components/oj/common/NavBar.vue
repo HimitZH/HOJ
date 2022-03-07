@@ -517,6 +517,7 @@
       width="370px"
       class="dialog"
       :title="title"
+      :close-on-click-modal="false"
     >
       <component :is="modalStatus.mode" v-if="modalVisible"></component>
       <div slot="footer" style="display: none"></div>
