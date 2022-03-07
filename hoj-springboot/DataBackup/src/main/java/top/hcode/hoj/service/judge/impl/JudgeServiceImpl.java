@@ -55,7 +55,7 @@ public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements
     @Override
     public CommonResult checkSubmissionInfo(ToJudgeDto toJudgeDto) {
 
-        if (!HOJ_LANGUAGE_LIST.contains(toJudgeDto.getLanguage())) {
+        if (!toJudgeDto.getIsRemote() && !HOJ_LANGUAGE_LIST.contains(toJudgeDto.getLanguage())) {
             return CommonResult.errorResponse("提交的代码的语言错误！请使用" + HOJ_LANGUAGE_LIST + "中之一的语言！", CommonResult.STATUS_FAIL);
         }
 
