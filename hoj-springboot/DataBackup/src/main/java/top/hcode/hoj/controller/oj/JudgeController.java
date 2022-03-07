@@ -1,7 +1,6 @@
 package top.hcode.hoj.controller.oj;
 
-import cn.hutool.core.date.DateUnit;
-import cn.hutool.core.date.DateUtil;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -15,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.dao.JudgeMapper;
 import top.hcode.hoj.judge.remote.RemoteJudgeDispatcher;
 import top.hcode.hoj.judge.self.JudgeDispatcher;
 import top.hcode.hoj.pojo.dto.SubmitIdListDto;
@@ -24,13 +22,11 @@ import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.JudgeCase;
 import top.hcode.hoj.pojo.entity.user.UserAcproblem;
 import top.hcode.hoj.pojo.entity.contest.Contest;
-import top.hcode.hoj.pojo.entity.contest.ContestProblem;
 import top.hcode.hoj.pojo.entity.contest.ContestRecord;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 
-import top.hcode.hoj.service.contest.impl.ContestProblemServiceImpl;
 import top.hcode.hoj.service.contest.impl.ContestRecordServiceImpl;
 import top.hcode.hoj.service.contest.impl.ContestServiceImpl;
 import top.hcode.hoj.service.judge.impl.JudgeCaseServiceImpl;
@@ -44,10 +40,7 @@ import top.hcode.hoj.utils.RedisUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @Author: Himit_ZH
@@ -106,15 +99,10 @@ public class JudgeController {
     @RequestMapping(value = "/submit-problem-judge", method = RequestMethod.POST)
     @Transactional(rollbackFor = Exception.class)
     public CommonResult submitProblemJudge(@RequestBody ToJudgeDto judgeDto, HttpServletRequest request) {
-        if (judgeDto.getCode().length() < 50
-                && !judgeDto.getLanguage().contains("Py")
-                && !judgeDto.getLanguage().contains("PHP")
-                && !judgeDto.getLanguage().contains("JavaScript")) {
-            return CommonResult.errorResponse("提交的代码是无效的，代码字符长度请不要低于50！", CommonResult.STATUS_FORBIDDEN);
-        }
 
-        if (judgeDto.getCode().length() > 65535) {
-            return CommonResult.errorResponse("提交的代码是无效的，代码字符长度请不要超过65535！", CommonResult.STATUS_FORBIDDEN);
+        CommonResult checkResult = judgeService.checkSubmissionInfo(judgeDto);
+        if (checkResult != null) {
+            return checkResult;
         }
 
         // 需要获取一下该token对应用户的数据
