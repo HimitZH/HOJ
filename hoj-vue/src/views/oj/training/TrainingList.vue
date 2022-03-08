@@ -158,7 +158,7 @@
     <Pagination
       :total="total"
       :pageSize="limit"
-      @on-change="getTrainingList"
+      @on-change="filterByPage"
       :current.sync="currentPage"
     ></Pagination>
   </el-row>
@@ -193,6 +193,8 @@ export default {
     };
   },
   created() {
+    let route = this.$route.query;
+    this.currentPage = parseInt(route.currentPage) || 1;
     this.TRAINING_TYPE = Object.assign({}, TRAINING_TYPE);
     this.getTrainingCategoryList();
   },
@@ -203,11 +205,16 @@ export default {
     init() {
       let route = this.$route.query;
       this.query.keyword = route.keyword || '';
-      this.currentPage = parseInt(route.currentPage) || 1;
       this.query.categoryId = route.categoryId || null;
       this.query.auth = route.auth || null;
-      this.getTrainingList(1);
+      this.getTrainingList();
     },
+
+    filterByPage(page) {
+      this.currentPage = page;
+      this.filterByChange();
+    },
+
     filterByCategory(categoryId) {
       this.query.categoryId = categoryId;
       this.filterByChange();
@@ -226,10 +233,10 @@ export default {
         query: utils.filterEmptyValue(query),
       });
     },
-    getTrainingList(page) {
+    getTrainingList() {
       this.loading = true;
       let query = Object.assign({}, this.query);
-      api.getTrainingList(page, this.limit, query).then(
+      api.getTrainingList(this.currentPage, this.limit, query).then(
         (res) => {
           this.trainingList = res.data.data.records;
           this.total = res.data.data.total;
