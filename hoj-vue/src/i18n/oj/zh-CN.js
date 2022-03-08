@@ -258,7 +258,7 @@ export const m = {
   Input_File:'输入文件',
   Output_File:'输出文件',
   Case_tips:'信息提示',
-  Unknown:'未知',
+  Nothing:'无',
 
   // /views/oj/rank/ACMRank.vue
   ACM_Ranklist: 'ACM 排行榜',

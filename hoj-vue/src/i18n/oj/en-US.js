@@ -255,7 +255,7 @@ export const m = {
   Input_File:'Input File',
   Output_File:'Output File',
   Case_tips:'Case Tips',
-  Unknown:'Unknown',
+  Nothing:'Nothing',
 
   // /views/oj/rank/ACMRank.vue
   ACM_Ranklist: 'ACM Ranklist',

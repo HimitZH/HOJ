@@ -527,9 +527,9 @@ public class JudgeController {
 
         HttpSession session = request.getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-        boolean root = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
 
-        if (judge.getCid() != 0 && userRolesVo != null && !root) {
+        if (judge.getCid() != 0 && userRolesVo != null && !isRoot) {
             Contest contest = contestService.getById(judge.getCid());
             // 如果不是比赛管理员 比赛封榜不能看
             if (!contest.getUid().equals(userRolesVo.getUid())) {
@@ -547,7 +547,15 @@ public class JudgeController {
         }
 
 
-        QueryWrapper<JudgeCase> wrapper = new QueryWrapper<JudgeCase>().eq("submit_id", submitId)
+        QueryWrapper<JudgeCase> wrapper = new QueryWrapper<>();
+
+
+        if (userRolesVo == null || (!isRoot
+                && !SecurityUtils.getSubject().hasRole("admin")
+                && !SecurityUtils.getSubject().hasRole("problem_admin"))) {
+            wrapper.select("time", "memory", "score", "status", "user_output");
+        }
+        wrapper.eq("submit_id", submitId)
                 .last("order by length(input_data) asc,input_data asc");
 
         // 当前所有测试点只支持 空间 时间 状态码 IO得分 输出文件名 输入文件名和错误信息提示查看而已

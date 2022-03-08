@@ -101,9 +101,9 @@
               <el-tooltip placement="top">
                 <div slot="content">
                   {{ $t('m.Problem_Score') }}：{{
-                    row.score != null ? row.score : $t('m.Unknown')
+                    row.score != null ? row.score : $t('m.Nothing')
                   }}<br />{{ $t('m.OI_Rank_Score') }}：{{
-                    row.oiRankScore != null ? row.oiRankScore : $t('m.Unknown')
+                    row.oiRankScore != null ? row.oiRankScore : $t('m.Nothing')
                   }}<br />
                   {{
                     $t('m.OI_Rank_Calculation_Rule')
@@ -142,13 +142,16 @@
           >
             <el-tooltip placement="top">
               <div slot="content">
-                {{ $t('m.Input_File') }}：{{
-                  item.inputData ? item.inputData : $t('m.Unknown')
-                }}<br />{{ $t('m.Output_File') }}：{{
-                  item.outputData ? item.outputData : $t('m.Unknown')
-                }}
-                <br />{{ $t('m.Case_tips') }}：{{
-                  item.userOutput ? item.userOutput : $t('m.Unknown')
+                <template v-if="item.inputData">
+                  {{ $t('m.Input_File') }}：{{ item.inputData }}<br />
+                </template>
+
+                <template v-if="item.outputData">
+                  {{ $t('m.Output_File') }}：{{ item.outputData }}<br />
+                </template>
+
+                {{ $t('m.Case_tips') }}：{{
+                  item.userOutput ? item.userOutput : $t('m.Nothing')
                 }}
               </div>
               <div
