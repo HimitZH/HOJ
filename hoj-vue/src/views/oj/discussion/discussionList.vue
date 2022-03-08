@@ -448,6 +448,15 @@ export default {
       },
     };
   },
+  created() {
+    this.routeName = this.$route.name;
+    let query = this.$route.query;
+    // 必须在这里先获取当前页码，不然分页组件的显示有误
+    this.query.currentPage = parseInt(query.currentPage) || 1;
+    if (this.query.currentPage < 1) {
+      this.query.currentPage = 1;
+    }
+  },
   mounted() {
     this.discussionDialogTitle = this.$i18n.t('m.Edit_Discussion');
     this.loading.category = true;
@@ -470,10 +479,6 @@ export default {
     init() {
       this.routeName = this.$route.name;
       let query = this.$route.query;
-      this.query.currentPage = parseInt(query.currentPage) || 1;
-      if (this.query.currentPage < 1) {
-        this.query.currentPage = 1;
-      }
       this.query.keyword = query.keyword || '';
       this.query.cid = query.cid || '';
       this.query.pid = this.$route.params.problemID || '';
@@ -483,14 +488,12 @@ export default {
       } else {
         this.currentCategory = '';
       }
-
       if (this.query.pid) {
         this.discussion.pid = this.query.pid;
         this.changeDomTitle({ title: this.query.pid + ' Discussion' });
       } else {
         this.discussion.pid = null;
       }
-
       this.getDiscussionList();
     },
 
@@ -511,7 +514,11 @@ export default {
 
     changeRoute(page) {
       this.query.currentPage = page;
-      this.getDiscussionList();
+      this.pushRouter(
+        this.query,
+        { problemID: this.query.pid },
+        this.routeName
+      );
     },
 
     getInfoByUsername(uid, username) {
