@@ -12,8 +12,8 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import top.hcode.hoj.dao.RoleAuthMapper;
-import top.hcode.hoj.dao.UserRoleMapper;
+import top.hcode.hoj.mapper.RoleAuthMapper;
+import top.hcode.hoj.mapper.UserRoleMapper;
 import top.hcode.hoj.pojo.entity.user.Auth;
 import top.hcode.hoj.pojo.entity.user.Role;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
@@ -30,12 +30,15 @@ import java.util.List;
 @Slf4j
 @Component
 public class AccountRealm extends AuthorizingRealm {
+
     @Autowired
     private JwtUtils jwtUtils;
+
     @Autowired
-    private UserRoleMapper userRoleDao;
+    private UserRoleMapper userRoleMapper;
+
     @Autowired
-    private RoleAuthMapper roleAuthDao;
+    private RoleAuthMapper roleAuthMapper;
 
     @Override
     public boolean supports(AuthenticationToken token) {
@@ -49,7 +52,7 @@ public class AccountRealm extends AuthorizingRealm {
         //用户角色列表
         List<String> roleNameList = new LinkedList<>();
         //获取该用户角色所有的权限
-        List<Role> roles = userRoleDao.getRolesByUid(user.getUid());
+        List<Role> roles = userRoleMapper.getRolesByUid(user.getUid());
         // 角色变动，同时需要修改会话里面的数据
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userInfo = (UserRolesVo) session.getAttribute("userInfo");
@@ -57,7 +60,7 @@ public class AccountRealm extends AuthorizingRealm {
         session.setAttribute("userInfo",userInfo);
         for (Role role:roles) {
             roleNameList.add(role.getRole());
-            for (Auth auth : roleAuthDao.getRoleAuths(role.getId()).getAuths()) {
+            for (Auth auth : roleAuthMapper.getRoleAuths(role.getId()).getAuths()) {
                 permissionsNameList.add(auth.getPermission());
             }
         }
@@ -72,7 +75,7 @@ public class AccountRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         JwtToken jwt = (JwtToken) token;
         String userId = jwtUtils.getClaimByToken((String) jwt.getPrincipal()).getSubject();
-        UserRolesVo userRoles = userRoleDao.getUserRoles(userId, null);
+        UserRolesVo userRoles = userRoleMapper.getUserRoles(userId, null);
         if(userRoles == null) {
             throw new UnknownAccountException("账户不存在！");
         }

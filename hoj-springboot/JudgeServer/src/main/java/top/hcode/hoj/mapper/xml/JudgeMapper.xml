@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.mapper.JudgeMapper">
+    <select id="getCommonJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="false">
+        select j.uid,j.submit_id,j.submit_time,j.uid,u.username,u.nickname,j.pid,j.status,j.auth,
+        j.error_message,j.time,j.memory,j.length,j.language,j.cid,j.cpid,p.source,j.ip,j.judger
+        from problem p,user_info u,judge j
+        <where>
+            p.id = j.pid and j.uid = u.uuid
+            <if test="cid!=0 and cid!=null">
+                AND j.cid = #{cid}
+            </if>
+            <if test="pid!=0">
+                AND j.pid = #{pid}
+            </if>
+            <if test="username!='' and username!=null">
+                AND u.username = #{username}
+            </if>
+            <if test="source!=''and source!=null">
+                AND p.source = #{source}
+            </if>
+            <if test="language!=''and language!=null">
+                AND j.language = #{language}
+            </if>
+            <if test="status!=-100">
+                AND j.status = #{status}
+            </if>
+        </where>
+        order by j.submit_time,j.submit_id Desc
+    </select>
+
+</mapper>

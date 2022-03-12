@@ -29,7 +29,7 @@ spring:
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
 
 mybatis-plus:
-  mapper-locations: classpath*:top/hcode/hoj/dao/xml/**Mapper.xml
+  mapper-locations: classpath*:top/hcode/hoj/mapper/xml/**Mapper.xml
   type-aliases-package: top.hcode.hoj.pojo.entity
   # 关闭打印 mybatis-plus 的 LOGO
   global-config:

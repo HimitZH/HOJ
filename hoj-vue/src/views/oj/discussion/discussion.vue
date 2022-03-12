@@ -301,11 +301,12 @@ export default {
         return;
       }
       api.toLikeDiscussion(did, toLike).then((res) => {
-        myMessage.success(res.data.msg);
         if (toLike) {
           this.discussion.likeNum++;
           this.discussion.hasLike = true;
+          myMessage.success(this.$i18n.t('m.Like_Successfully'));
         } else {
+          myMessage.success(this.$i18n.t('m.Cancel_Like_Successfully'));
           this.discussion.likeNum--;
           this.discussion.hasLike = false;
         }

@@ -14,6 +14,7 @@ import java.util.List;
  */
 @Component
 public class ConfigUtils {
+
     @Autowired
     private ConfigVo configVo;
 

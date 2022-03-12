@@ -12,7 +12,7 @@ import top.hcode.hoj.utils.Constants;
  */
 public class LanguageContext {
 
-    LanguageStrategy languageStrategy;
+    private LanguageStrategy languageStrategy;
 
     public LanguageContext(LanguageStrategy languageStrategy) {
         this.languageStrategy = languageStrategy;

@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.service.user.impl.UserInfoServiceImpl;
+import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.utils.JwtUtils;
 import top.hcode.hoj.utils.RedisUtils;
 
@@ -32,9 +32,7 @@ import java.io.IOException;
 public class JwtFilter extends AuthenticatingFilter {
 
     @Autowired
-    JwtUtils jwtUtils;
-    @Autowired
-    UserInfoServiceImpl userInfoService;
+    private JwtUtils jwtUtils;
 
     private final static String TOKEN_KEY = "token-key:";
 
@@ -109,7 +107,7 @@ public class JwtFilter extends AuthenticatingFilter {
         try {
             //处理登录失败的异常
             Throwable throwable = e.getCause() == null ? e : e.getCause();
-            CommonResult result = CommonResult.errorResponse(throwable.getMessage(), CommonResult.STATUS_ACCESS_DENIED);
+            CommonResult<Void> result = CommonResult.errorResponse(throwable.getMessage(), ResultStatus.ACCESS_DENIED);
             String json = JSONUtil.toJsonStr(result);
             httpResponse.setContentType("application/json;charset=utf-8");
             httpResponse.setHeader("Access-Control-Expose-Headers", "Refresh-Token,Authorization,Url-Type"); //让前端可用访问

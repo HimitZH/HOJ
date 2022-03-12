@@ -2,14 +2,9 @@ package top.hcode.hoj.service.impl;
 
 
 import cn.hutool.system.oshi.OshiUtil;
-import com.sun.management.OperatingSystemMXBean;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.service.SystemConfigService;
 
-import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 
 /**
@@ -18,7 +13,6 @@ import java.util.HashMap;
  * @Description:
  */
 @Service
-@Data
 public class SystemConfigServiceImpl implements SystemConfigService {
 
     public HashMap<String, Object> getSystemConfig() {

@@ -9,10 +9,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.common.result.ResultStatus;
+import top.hcode.hoj.dao.judge.JudgeEntityService;
+import top.hcode.hoj.dao.judge.JudgeServerEntityService;
 import top.hcode.hoj.pojo.entity.judge.*;
-import top.hcode.hoj.service.judge.impl.JudgeServerServiceImpl;
-import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
-import top.hcode.hoj.service.judge.impl.RemoteJudgeAccountServiceImpl;
+import top.hcode.hoj.dao.judge.impl.RemoteJudgeAccountEntityServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 
@@ -33,10 +34,10 @@ public class Dispatcher {
     private RestTemplate restTemplate;
 
     @Autowired
-    private JudgeServerServiceImpl judgeServerService;
+    private JudgeServerEntityService judgeServerEntityService;
 
     @Autowired
-    private JudgeServiceImpl judgeService;
+    private JudgeEntityService judgeEntityService;
 
     @Autowired
     private ChooseUtils chooseUtils;
@@ -46,7 +47,7 @@ public class Dispatcher {
     private final static Map<String, Future> futureTaskMap = new ConcurrentHashMap<>(20);
 
     @Autowired
-    private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
+    private RemoteJudgeAccountEntityServiceImpl remoteJudgeAccountService;
 
     public CommonResult dispatcher(String type, String path, Object data) {
         switch (type) {
@@ -157,20 +158,20 @@ public class Dispatcher {
     }
 
 
-    private void checkResult(CommonResult result, Long submitId) {
+    private void checkResult(CommonResult<Void> result, Long submitId) {
 
         Judge judge = new Judge();
         if (result == null) { // 调用失败
             judge.setSubmitId(submitId);
             judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
             judge.setErrorMessage("Failed to connect the judgeServer. Please resubmit this submission again!");
-            judgeService.updateById(judge);
+            judgeEntityService.updateById(judge);
         } else {
-            if (result.getStatus().intValue() != CommonResult.STATUS_SUCCESS) { // 如果是结果码不是200 说明调用有错误
+            if (result.getStatus() != ResultStatus.SUCCESS.getStatus()) { // 如果是结果码不是200 说明调用有错误
                 // 判为系统错误
                 judge.setStatus(Constants.Judge.STATUS_SYSTEM_ERROR.getStatus())
                         .setErrorMessage(result.getMsg());
-                judgeService.updateById(judge);
+                judgeEntityService.updateById(judge);
             }
         }
 
@@ -179,7 +180,7 @@ public class Dispatcher {
     public void reduceCurrentTaskNum(Integer id) {
         UpdateWrapper<JudgeServer> judgeServerUpdateWrapper = new UpdateWrapper<>();
         judgeServerUpdateWrapper.setSql("task_number = task_number-1").eq("id", id);
-        boolean isOk = judgeServerService.update(judgeServerUpdateWrapper);
+        boolean isOk = judgeServerEntityService.update(judgeServerUpdateWrapper);
         if (!isOk) { // 重试八次
             tryAgainUpdateJudge(judgeServerUpdateWrapper);
         }
@@ -189,7 +190,7 @@ public class Dispatcher {
         boolean retryable;
         int attemptNumber = 0;
         do {
-            boolean success = judgeServerService.update(updateWrapper);
+            boolean success = judgeServerEntityService.update(updateWrapper);
             if (success) {
                 return;
             } else {
@@ -272,7 +273,7 @@ public class Dispatcher {
                 .eq("ip", ip)
                 .eq("is_remote", true)
                 .eq("port", port);
-        boolean isOk = judgeServerService.update(judgeServerUpdateWrapper);
+        boolean isOk = judgeServerEntityService.update(judgeServerUpdateWrapper);
 
         if (!isOk) { // 重试8次
             tryAgainUpdateServer(judgeServerUpdateWrapper, ip, port);
@@ -283,7 +284,7 @@ public class Dispatcher {
         boolean retryable;
         int attemptNumber = 0;
         do {
-            boolean success = judgeServerService.update(updateWrapper);
+            boolean success = judgeServerEntityService.update(updateWrapper);
             if (success) {
                 return;
             } else {

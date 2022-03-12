@@ -104,6 +104,7 @@ docker ps # 查看当前运行的容器状态
 | 2022-01-29 | 重构remote judge，增加AtCoder、SPOJ的支持                    | Himit_ZH |
 | 2022-02-19 | 修改首页前端布局和题目列表页                                 | Himit_ZH |
 | 2022-02-25 | 支持PyPy2、PyPy3、JavaScript V8、JavaScript Node、PHP        | Himit_ZH |
+| 2022-03-12 | 后端接口全部重构，赛外榜单增加缓存                           | Himit_ZH |
 
 ## 五、部分截图
 

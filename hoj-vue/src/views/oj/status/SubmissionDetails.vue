@@ -406,7 +406,11 @@ export default {
       api.updateSubmission(data).then(
         (res) => {
           this.getSubmission();
-          myMessage.success(this.$i18n.t('m.Shared_successfully'));
+          if (shared) {
+            myMessage.success(this.$i18n.t('m.Shared_successfully'));
+          } else {
+            myMessage.success(this.$i18n.t('m.Cancel_Sharing_Successfully'));
+          }
         },
         () => {}
       );

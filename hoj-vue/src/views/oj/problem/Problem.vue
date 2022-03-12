@@ -1257,7 +1257,7 @@ export default {
               });
               return;
             } else {
-              myMessage.success(res.data.msg);
+              myMessage.success(this.$i18n.t('m.Submit_code_successfully'));
             }
             // 更新store的可提交权限
             if (!this.canSubmit) {
@@ -1315,7 +1315,7 @@ export default {
       this.submitting = true;
       api.reSubmitRemoteJudge(submitId).then(
         (res) => {
-          myMessage.success(res.data.msg);
+          myMessage.success(this.$i18n.t('m.Resubmitted_Successfully'));
           this.submitted = true;
           this.checkSubmissionStatus();
         },

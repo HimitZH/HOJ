@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.mapper.ContestRecordMapper">
+
+    <select id="getACInfo" resultType="top.hcode.hoj.pojo.entity.contest.ContestRecord">
+        SELECT c.id,c.uid,c.username,c.display_id,c.cid,u.realname,c.pid,c.time,c.status,c.checked,c.submit_id,
+        c.submit_time FROM contest_record c,user_info u,
+        (SELECT status,uid,pid,cpid,
+        MIN(submit_id) AS min_submit_id,
+        MIN(submit_time) AS min_submit_time
+        FROM contest_record GROUP BY status,uid,pid,cpid
+        ) AS t
+        <where>
+            t.status = c.status AND t.uid=c.uid AND t.pid=c.pid AND c.uid = u.uuid
+            AND t.cpid=c.cpid
+            AND t.min_submit_id=c.submit_id
+            AND t.min_submit_time=c.submit_time
+            <if test="status!=null">
+                AND c.status=#{status}
+            </if>
+            <if test="cid!=null">
+                AND c.cid = #{cid}
+            </if>
+        </where>
+        ORDER BY c.checked ASC,c.submit_time ASC
+    </select>
+
+    <select id="getOIContestRecordByRecentSubmission" resultType="top.hcode.hoj.pojo.vo.ContestRecordVo">
+        SELECT cr.id,cr.cid,cr.uid,cr.pid,cr.cpid,cr.display_id,cr.submit_id,cr.username,cr.status,cr.submit_time,
+        cr.time,cr.score,cr.use_time,cr.checked,cr.gmt_create,cr.gmt_modified,
+        u.gender,u.realname as realname,u.avatar,u.school,u.nickname
+        FROM
+        (SELECT uid,pid,cpid,MAX(time) AS time FROM contest_record
+        <where>
+            cid=#{cid} AND status IS NOT NULL
+            <if test="contestAuthor!=null">
+                AND username!=#{contestAuthor}
+            </if>
+            <choose>
+                <when test="isOpenSealRank">
+                    AND submit_time BETWEEN #{startTime} AND #{sealTime}
+                </when>
+                <otherwise>
+                    AND submit_time BETWEEN #{startTime} AND #{endTime}
+                </otherwise>
+            </choose>
+        </where>
+        GROUP BY uid,pid,cpid) t,
+        contest_record cr,user_info u WHERE t.uid = cr.uid AND t.pid =cr.pid
+        AND t.cpid = cr.cpid AND u.uuid = cr.uid AND t.time = cr.time
+    </select>
+
+    <select id="getOIContestRecordByHighestSubmission" resultType="top.hcode.hoj.pojo.vo.ContestRecordVo">
+        SELECT cr.id,cr.cid,cr.uid,cr.pid,cr.cpid,cr.display_id,cr.submit_id,cr.username,cr.status,cr.submit_time,
+        cr.time,cr.score,cr.use_time,cr.checked,cr.gmt_create,cr.gmt_modified,
+        u.gender,u.realname as realname,u.avatar,u.school,u.nickname
+        FROM
+        (SELECT uid,pid,cpid,MAX(score) AS score FROM contest_record
+        <where>
+            cid=#{cid} AND status IS NOT NULL
+            <if test="contestAuthor!=null">
+                AND username!=#{contestAuthor}
+            </if>
+            <choose>
+                <when test="isOpenSealRank">
+                    AND submit_time BETWEEN #{startTime} AND #{sealTime}
+                </when>
+                <otherwise>
+                    AND submit_time BETWEEN #{startTime} AND #{endTime}
+                </otherwise>
+            </choose>
+        </where>
+        GROUP BY uid,pid,cpid) t,
+        contest_record cr,user_info u WHERE t.uid = cr.uid AND t.pid =cr.pid
+        AND t.cpid = cr.cpid AND u.uuid = cr.uid AND t.score = cr.score
+    </select>
+
+
+    <select id="getACMContestRecord" resultType="top.hcode.hoj.pojo.vo.ContestRecordVo">
+        SELECT cr.id,cr.cid,cr.uid,cr.pid,cr.cpid,cr.display_id,cr.submit_id,cr.username,cr.status,cr.submit_time,
+        cr.time,cr.score,cr.use_time,cr.checked,cr.gmt_create,cr.gmt_modified,
+        u.gender,u.realname as realname,u.avatar,u.school,u.nickname
+        FROM contest_record cr,user_info u
+        WHERE cr.uid = u.uuid
+        AND cr.cid = #{cid}
+        AND cr.status IS NOT NULL
+        AND cr.username != #{username}
+        ORDER BY cr.time ASC
+    </select>
+</mapper>

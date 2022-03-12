@@ -8,14 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import top.hcode.hoj.dao.judge.JudgeEntityService;
+import top.hcode.hoj.dao.judge.RemoteJudgeAccountEntityService;
 import top.hcode.hoj.judge.AbstractReceiver;
 import top.hcode.hoj.judge.ChooseUtils;
 import top.hcode.hoj.judge.Dispatcher;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
 import top.hcode.hoj.pojo.entity.judge.ToJudge;
-import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
-import top.hcode.hoj.service.judge.impl.RemoteJudgeAccountServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RemoteJudgeReceiver extends AbstractReceiver {
 
     @Autowired
-    private JudgeServiceImpl judgeService;
+    private JudgeEntityService judgeEntityService;
 
     @Autowired
     private Dispatcher dispatcher;
@@ -41,7 +41,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
     private ChooseUtils chooseUtils;
 
     @Autowired
-    private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
+    private RemoteJudgeAccountEntityService remoteJudgeAccountEntityService;
 
     private final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 
@@ -124,7 +124,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
                     judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
                     judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
                             "Cause: Waiting for account scheduling timeout");
-                    judgeService.updateById(judge);
+                    judgeEntityService.updateById(judge);
                     Future future = futureTaskMap.get(key);
                     if (future != null) {
                         boolean isCanceled = future.cancel(true);
@@ -166,7 +166,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
             QueryWrapper<RemoteJudgeAccount> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("oj", Constants.RemoteOJ.POJ.getName())
                     .eq("username", judge.getVjudgeUsername());
-            int count = remoteJudgeAccountService.count(queryWrapper);
+            int count = remoteJudgeAccountEntityService.count(queryWrapper);
             if (count == 0) {
                 // poj以往的账号丢失了，那么只能重新从头到尾提交
                 isHasSubmitIdRemoteReJudge = false;
@@ -185,7 +185,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
                     judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
                     judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
                             "Cause: Waiting for account scheduling timeout");
-                    judgeService.updateById(judge);
+                    judgeEntityService.updateById(judge);
                     Future future = futureTaskMap.get(key);
                     if (future != null) {
                         boolean isCanceled = future.cancel(true);
@@ -238,7 +238,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
                     judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
                     judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
                             "Cause: Waiting for account scheduling timeout");
-                    judgeService.updateById(judge);
+                    judgeEntityService.updateById(judge);
                     Future future = futureTaskMap.get(key);
                     if (future != null) {
                         boolean isCanceled = future.cancel(true);

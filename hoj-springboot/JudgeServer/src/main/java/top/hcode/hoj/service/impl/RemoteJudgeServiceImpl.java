@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.pojo.entity.judge.JudgeServer;
 import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
-import top.hcode.hoj.service.JudgeServerService;
-import top.hcode.hoj.service.RemoteJudgeAccountService;
+import top.hcode.hoj.dao.JudgeServerEntityService;
+import top.hcode.hoj.dao.RemoteJudgeAccountEntityService;
 import top.hcode.hoj.service.RemoteJudgeService;
 
 /**
@@ -21,10 +21,10 @@ import top.hcode.hoj.service.RemoteJudgeService;
 public class RemoteJudgeServiceImpl implements RemoteJudgeService {
 
     @Autowired
-    private RemoteJudgeAccountService remoteJudgeAccountService;
+    private RemoteJudgeAccountEntityService remoteJudgeAccountEntityService;
 
     @Autowired
-    private JudgeServerService judgeServerService;
+    private JudgeServerEntityService judgeServerEntityService;
 
     @Override
     public void changeAccountStatus(String remoteJudge, String username) {
@@ -37,7 +37,7 @@ public class RemoteJudgeServiceImpl implements RemoteJudgeService {
         }
         remoteJudgeAccountUpdateWrapper.eq("oj", remoteJudge);
 
-        boolean isOk = remoteJudgeAccountService.update(remoteJudgeAccountUpdateWrapper);
+        boolean isOk = remoteJudgeAccountEntityService.update(remoteJudgeAccountUpdateWrapper);
 
         if (!isOk) { // 重试8次
             tryAgainUpdateAccount(remoteJudgeAccountUpdateWrapper, remoteJudge, username);
@@ -48,7 +48,7 @@ public class RemoteJudgeServiceImpl implements RemoteJudgeService {
         boolean retryable;
         int attemptNumber = 0;
         do {
-            boolean success = remoteJudgeAccountService.update(updateWrapper);
+            boolean success = remoteJudgeAccountEntityService.update(updateWrapper);
             if (success) {
                 return;
             } else {
@@ -78,7 +78,7 @@ public class RemoteJudgeServiceImpl implements RemoteJudgeService {
                 .eq("ip", ip)
                 .eq("is_remote", true)
                 .eq("port", port);
-        boolean isOk = judgeServerService.update(judgeServerUpdateWrapper);
+        boolean isOk = judgeServerEntityService.update(judgeServerUpdateWrapper);
 
         if (!isOk) { // 重试8次
             tryAgainUpdateServer(judgeServerUpdateWrapper, ip, port);
@@ -89,7 +89,7 @@ public class RemoteJudgeServiceImpl implements RemoteJudgeService {
         boolean retryable;
         int attemptNumber = 0;
         do {
-            boolean success = judgeServerService.update(updateWrapper);
+            boolean success = judgeServerEntityService.update(updateWrapper);
             if (success) {
                 return;
             } else {

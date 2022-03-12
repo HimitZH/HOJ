@@ -320,7 +320,7 @@ export default {
         }).then(
           (res) => {
             this.loadingUploadBtn = false;
-            myMessage.success(res.data.msg);
+            myMessage.success(this.$i18n.t('m.Upload_Avatar_Successfully'));
             this.uploadModalVisible = false;
             this.avatarOption.imgSrc = '';
             this.$store.dispatch('setUserInfo', res.data.data);

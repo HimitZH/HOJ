@@ -257,6 +257,8 @@ export const m = {
   Import_QDOJ_Problem:'导入QDUOJ的题目',
   Import_FPS_Problem:'导入FPS格式的题目',
   Export_Problem_NULL_Tips:'选择导出的题目不能为空',
+  Upload_Problem_Succeeded:'上传题目成功',
+  Upload_Problem_Failed:'上传题目失败',
 
    // /views/admin/training/TrainingList.vue
    Order_Number:'序号',

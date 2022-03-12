@@ -11,13 +11,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import top.hcode.hoj.crawler.language.LanguageContext;
-import top.hcode.hoj.crawler.language.SPOJLanguageStrategy;
+import top.hcode.hoj.dao.judge.RemoteJudgeAccountEntityService;
+import top.hcode.hoj.dao.problem.LanguageEntityService;
+import top.hcode.hoj.manager.admin.system.ConfigManager;
 import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
 import top.hcode.hoj.pojo.entity.problem.Language;
 import top.hcode.hoj.pojo.vo.ConfigVo;
-import top.hcode.hoj.service.common.impl.ConfigServiceImpl;
-import top.hcode.hoj.service.judge.impl.RemoteJudgeAccountServiceImpl;
-import top.hcode.hoj.service.problem.impl.LanguageServiceImpl;
 import top.hcode.hoj.utils.Constants;
 
 import java.util.Arrays;
@@ -37,13 +36,13 @@ public class StartupRunner implements CommandLineRunner {
     private ConfigVo configVo;
 
     @Autowired
-    private ConfigServiceImpl configService;
+    private ConfigManager configManager;
 
     @Autowired
-    private RemoteJudgeAccountServiceImpl remoteJudgeAccountService;
+    private RemoteJudgeAccountEntityService remoteJudgeAccountEntityService;
 
     @Autowired
-    private LanguageServiceImpl languageService;
+    private LanguageEntityService languageEntityService;
 
     @Value("${OPEN_REMOTE_JUDGE:true}")
     private String openRemoteJudge;
@@ -190,7 +189,7 @@ public class StartupRunner implements CommandLineRunner {
         configVo.setSpojUsernameList(spojUsernameList);
         configVo.setSpojPasswordList(spojPasswordList);
 
-        configService.sendNewConfigToNacos();
+        configManager.sendNewConfigToNacos();
 
         upsertHOJLanguage("PHP", "PyPy2", "PyPy3", "JavaScript Node", "JavaScript V8");
 
@@ -198,7 +197,7 @@ public class StartupRunner implements CommandLineRunner {
 
         if (openRemoteJudge.equals("true")) {
             // 初始化清空表
-            remoteJudgeAccountService.remove(new QueryWrapper<>());
+            remoteJudgeAccountEntityService.remove(new QueryWrapper<>());
             addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.HDU.getName(), hduUsernameList, hduPasswordList);
             addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.POJ.getName(), pojUsernameList, pojPasswordList);
             addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.CODEFORCES.getName(), cfUsernameList, cfPasswordList);
@@ -241,7 +240,7 @@ public class StartupRunner implements CommandLineRunner {
         }
 
         if (remoteAccountList.size() > 0) {
-            boolean addOk = remoteJudgeAccountService.saveOrUpdateBatch(remoteAccountList);
+            boolean addOk = remoteJudgeAccountEntityService.saveOrUpdateBatch(remoteAccountList);
             if (!addOk) {
                 log.error("Remote judge initialization failed. Failed to add account for: [{}]. Please check the configuration file and restart!", oj);
             }
@@ -257,10 +256,10 @@ public class StartupRunner implements CommandLineRunner {
             QueryWrapper<Language> languageQueryWrapper = new QueryWrapper<>();
             languageQueryWrapper.eq("oj", "ME")
                     .eq("name", language);
-            int count = languageService.count(languageQueryWrapper);
+            int count = languageEntityService.count(languageQueryWrapper);
             if (count == 0) {
                 Language newLanguage = buildHOJLanguage(language);
-                boolean isOk = languageService.save(newLanguage);
+                boolean isOk = languageEntityService.save(newLanguage);
                 if (!isOk) {
                     log.error("[HOJ] Failed to add new language [{}]! Please check whether the language table corresponding to the database has the language!", language);
                 }
@@ -277,7 +276,7 @@ public class StartupRunner implements CommandLineRunner {
         languageUpdateWrapper.eq("oj", "ME")
                 .eq("name", "Python3")
                 .set("description", "Python 3.7.5");
-        languageService.update(languageUpdateWrapper);
+        languageEntityService.update(languageUpdateWrapper);
 
         /**
          * 2022.02.25 删除cf的Microsoft Visual C++ 2010
@@ -285,17 +284,17 @@ public class StartupRunner implements CommandLineRunner {
         UpdateWrapper<Language> deleteWrapper = new UpdateWrapper<>();
         deleteWrapper.eq("name", "Microsoft Visual C++ 2010")
                 .eq("oj", "CF");
-        languageService.remove(deleteWrapper);
+        languageEntityService.remove(deleteWrapper);
     }
 
     private void checkRemoteOJLanguage(Constants.RemoteOJ... remoteOJList) {
         for (Constants.RemoteOJ remoteOJ : remoteOJList) {
             QueryWrapper<Language> languageQueryWrapper = new QueryWrapper<>();
             languageQueryWrapper.eq("oj", remoteOJ.getName());
-            int count = languageService.count(languageQueryWrapper);
+            int count = languageEntityService.count(languageQueryWrapper);
             if (count == 0) {
                 List<Language> languageList = new LanguageContext(remoteOJ).buildLanguageList();
-                boolean isOk = languageService.saveBatch(languageList);
+                boolean isOk = languageEntityService.saveBatch(languageList);
                 if (!isOk) {
                     log.error("[{}] Failed to initialize language list! Please check whether the language table corresponding to the database has the OJ language!", remoteOJ.getName());
                 }

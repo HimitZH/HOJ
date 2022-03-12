@@ -126,6 +126,8 @@ public class Constants {
 
         OI_CONTEST_RANK_CACHE(null,"oi_contest_rank_cache"),
 
+        CONTEST_RANK_CAL_RESULT_CACHE(null,"contest_rank_cal_result_cache"),
+
         OI_RANK_RECENT_SCORE(null,"Recent"),
         OI_RANK_HIGHEST_SCORE(null,"Highest");
 

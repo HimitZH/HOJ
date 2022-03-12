@@ -271,7 +271,7 @@ export default {
       if (response.status != 200) {
         myMessage.error(response.msg);
       } else {
-        myMessage.success(response.msg);
+        myMessage.success(this.$i18n.t('m.Upload_Problem_Succeeded'));
         this.getProblems();
       }
     },
@@ -279,7 +279,7 @@ export default {
       this.loading.HOJ = false;
       this.loading.QDOJ = false;
       this.loading.FPS = false;
-      myMessage.error('Upload failed');
+      myMessage.error(this.$i18n.t('m.Upload_Problem_Failed'));
     },
     filterByKeyword() {
       this.getProblems();

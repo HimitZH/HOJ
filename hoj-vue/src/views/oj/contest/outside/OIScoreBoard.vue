@@ -416,7 +416,7 @@ export default {
           } else if (score == 0) {
             cellClass[problemID] = 'oi-0';
             errorCountMap[problemID] += 1;
-          } else {
+          } else if (score != null) {
             cellClass[problemID] = 'oi-between';
             errorCountMap[problemID] += 1;
           }

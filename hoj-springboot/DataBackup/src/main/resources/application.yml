@@ -3,7 +3,7 @@ spring:
     active: prod
 
 mybatis-plus:
-  mapper-locations: classpath*:top/hcode/hoj/dao/xml/**Mapper.xml
+  mapper-locations: classpath*:top/hcode/hoj/mapper/xml/**Mapper.xml
   type-aliases-package: top.hcode.hoj.pojo.entity
   configuration:
     cache-enabled: false

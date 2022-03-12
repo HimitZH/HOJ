@@ -1,8 +1,7 @@
 package top.hcode.hoj.controller.admin;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -11,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.discussion.Discussion;
 import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
-import top.hcode.hoj.service.discussion.impl.DiscussionReportServiceImpl;
-import top.hcode.hoj.service.discussion.impl.DiscussionServiceImpl;
+
+import top.hcode.hoj.service.admin.discussion.AdminDiscussionService;
 
 import java.util.List;
 
@@ -26,59 +25,35 @@ import java.util.List;
 public class AdminDiscussionController {
 
     @Autowired
-    private DiscussionReportServiceImpl discussionReportService;
-
-    @Autowired
-    private DiscussionServiceImpl discussionService;
+    private AdminDiscussionService adminDiscussionService;
 
     @PutMapping("/discussion")
     @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     @RequiresAuthentication
-    public CommonResult updateDiscussion(@RequestBody Discussion discussion) {
-        boolean isOk = discussionService.updateById(discussion);
-        if (isOk) {
-            return CommonResult.successResponse(null, "修改成功");
-        } else {
-            return CommonResult.errorResponse("修改失败");
-        }
+    public CommonResult<Void> updateDiscussion(@RequestBody Discussion discussion) {
+        return adminDiscussionService.updateDiscussion(discussion);
     }
-
 
     @DeleteMapping("/discussion")
     @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     @RequiresAuthentication
-    public CommonResult removeDiscussion(@RequestBody List<Integer> didList) {
-        boolean isOk = discussionService.removeByIds(didList);
-        if (isOk) {
-            return CommonResult.successResponse(null, "删除成功");
-        } else {
-            return CommonResult.errorResponse("删除失败");
-        }
+    public CommonResult<Void> removeDiscussion(@RequestBody List<Integer> didList) {
+        return adminDiscussionService.removeDiscussion(didList);
     }
 
     @GetMapping("/discussion-report")
     @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     @RequiresAuthentication
-    public CommonResult getDiscussionReport(@RequestParam(value = "limit", defaultValue = "10") Integer limit,
+    public CommonResult<IPage<DiscussionReport>> getDiscussionReport(@RequestParam(value = "limit", defaultValue = "10") Integer limit,
                                             @RequestParam(value = "currentPage", defaultValue = "1") Integer currentPage) {
-        QueryWrapper<DiscussionReport> discussionReportQueryWrapper = new QueryWrapper<>();
-
-        discussionReportQueryWrapper.orderByAsc("status");
-        IPage<DiscussionReport> iPage = new Page<>(currentPage, limit);
-        IPage<DiscussionReport> discussionReportList = discussionReportService.page(iPage, discussionReportQueryWrapper);
-        return CommonResult.successResponse(discussionReportList, "获取成功");
+        return adminDiscussionService.getDiscussionReport(limit, currentPage);
     }
 
     @PutMapping("/discussion-report")
     @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     @RequiresAuthentication
-    public CommonResult updateDiscussionReport(@RequestBody DiscussionReport discussionReport) {
-        boolean isOk = discussionReportService.updateById(discussionReport);
-        if (isOk) {
-            return CommonResult.successResponse(null, "修改成功");
-        } else {
-            return CommonResult.errorResponse("修改失败");
-        }
+    public CommonResult<Void> updateDiscussionReport(@RequestBody DiscussionReport discussionReport) {
+        return adminDiscussionService.updateDiscussionReport(discussionReport);
     }
 
 }

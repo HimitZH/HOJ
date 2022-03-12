@@ -38,7 +38,7 @@
                 ></el-switch>
               </p>
             </template>
-            <template>
+            <template v-if="isContestAdmin">
               <el-button type="primary" size="small" @click="downloadRankCSV">{{
                 $t('m.Download_as_CSV')
               }}</el-button>

@@ -5,9 +5,11 @@ import cn.hutool.json.JSONUtil;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
+import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
@@ -18,21 +20,25 @@ import top.hcode.hoj.utils.RedisUtils;
  */
 @Component
 @Slf4j(topic = "hoj")
+@RefreshScope
 public class JudgeDispatcher {
 
     @Autowired
     private RedisUtils redisUtils;
 
     @Autowired
-    private JudgeServiceImpl judgeService;
+    private JudgeEntityService judgeEntityService;
 
     @Autowired
     private JudgeReceiver judgeReceiver;
 
-    public void sendTask(Judge judge, String token, Boolean isContest) {
+    @Value("${hoj.judge.token}")
+    private String judgeToken;
+
+    public void sendTask(Judge judge, Boolean isContest) {
         JSONObject task = new JSONObject();
         task.set("judge", judge);
-        task.set("token", token);
+        task.set("token", judgeToken);
         task.set("isContest", isContest);
         try {
             boolean isOk;
@@ -42,7 +48,7 @@ public class JudgeDispatcher {
                 isOk = redisUtils.llPush(Constants.Queue.GENERAL_JUDGE_WAITING.getName(), JSONUtil.toJsonStr(task));
             }
             if (!isOk) {
-                judgeService.updateById(new Judge()
+                judgeEntityService.updateById(new Judge()
                         .setSubmitId(judge.getSubmitId())
                         .setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
                         .setErrorMessage("Please try to submit again!")
@@ -52,7 +58,7 @@ public class JudgeDispatcher {
             judgeReceiver.processWaitingTask();
         } catch (Exception e) {
             log.error("调用redis将判题纳入判题等待队列异常,此次判题任务判为系统错误--------------->{}", e.getMessage());
-            judgeService.failToUseRedisPublishJudge(judge.getSubmitId(), judge.getPid(), isContest);
+            judgeEntityService.failToUseRedisPublishJudge(judge.getSubmitId(), judge.getPid(), isContest);
         }
     }
 }

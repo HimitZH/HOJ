@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.mapper.TrainingProblemMapper">
+
+
+    <select id="getTrainingProblemCount" resultType="java.lang.Long">
+        select p.id from training_problem tp,problem p
+        where tp.tid = #{tid} and tp.pid = p.id and p.auth = 1
+    </select>
+
+
+    <resultMap id="map_TrainingProblemList" type="top.hcode.hoj.pojo.vo.ProblemVo">
+        <id column="pid" property="pid"></id>
+        <result column="problem_id" property="problemId"></result>
+        <result column="title" property="title"></result>
+        <result column="difficulty" property="difficulty"></result>
+        <result column="type" property="type"></result>
+        <result column="total" property="total"></result>
+        <result column="ac" property="ac"></result>
+        <collection property="tags" ofType="top.hcode.hoj.pojo.entity.problem.Tag" select="getProblemTag" column="pid">
+        </collection>
+    </resultMap>
+
+    <select id="getTrainingProblemList" resultMap="map_TrainingProblemList">
+        SELECT p.id AS pid, p.problem_id, p.title, p.difficulty, p.type
+        ,(SELECT COUNT(*)
+            FROM judge j
+            WHERE j.cid = 0 AND j.pid = p.id AND j.status = 0
+        ) as ac,
+        (SELECT COUNT(*)
+            FROM judge j
+            WHERE j.cid = 0 AND j.pid = p.id
+        ) as total
+        FROM problem p,
+        training_problem tp
+        where p.id = tp.pid
+        and p.auth = 1
+        and tp.tid = #{tid}
+        order by tp.`rank` asc
+    </select>
+
+    <!-- 子查询 :为了防止分页总数据数出错-->
+    <select id="getProblemTag" resultType="top.hcode.hoj.pojo.entity.problem.Tag">
+        select t.* from tag t,problem_tag pt where t.id = pt.tid and pt.pid = #{pid}
+    </select>
+</mapper>

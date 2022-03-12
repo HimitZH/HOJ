@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.mapper.ContestProblemMapper">
+    <select id="getContestProblemList" resultType="top.hcode.hoj.pojo.vo.ContestProblemVo">
+        select cp.id,cp.display_id,cp.cid,cp.pid,cp.display_title,cp.color,
+        (select count(*) from judge
+        <where>
+            cpid=cp.id and cid=cp.cid and pid=cp.pid
+            <if test="adminList!=null and adminList.size>0">
+                and uid NOT IN
+                <foreach collection="adminList" index="index" item="item"
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <choose>
+                <when test="isAdmin">
+                    AND submit_time >= #{startTime} AND #{endTime}>submit_time
+                </when>
+                <when test="sealTime!=null">
+                    AND submit_time >= #{startTime} AND #{sealTime}>submit_time
+                </when>
+                <otherwise>
+                    AND submit_time >= #{startTime} AND #{endTime}>submit_time
+                </otherwise>
+            </choose>
+        </where>
+        ) as total,
+        (select count(*) from judge
+        <where>
+             cpid=cp.id and cid=cp.cid and pid =cp.pid and status=0
+            <if test="adminList!=null and adminList.size>0">
+                and uid NOT IN
+                <foreach collection="adminList" index="index" item="item"
+                         open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <choose>
+                <when test="isAdmin">
+                    AND submit_time >= #{startTime} AND #{endTime}>=submit_time
+                </when>
+                <when test="sealTime!=null">
+                    AND submit_time >= #{startTime} AND #{sealTime}>=submit_time
+                </when>
+                <otherwise>
+                    AND submit_time >= #{startTime} AND #{endTime}>=submit_time
+                </otherwise>
+            </choose>
+        </where>
+        ) as ac
+        from contest_problem cp,problem p
+        where cp.cid = #{cid} and cp.pid=p.id and p.auth!=2 order by cp.display_id asc
+    </select>
+</mapper>

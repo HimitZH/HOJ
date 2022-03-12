@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.mapper.UserSysNoticeMapper">
+
+    <resultMap id="map_SysMsgList" type="top.hcode.hoj.pojo.vo.SysMsgVo">
+        <id column="id" property="id"></id>
+        <result column="type" property="type"></result>
+        <result column="state" property="state"></result>
+        <result column="gmt_create" property="gmtCreate"></result>
+        <result column="title" property="title"></result>
+        <result column="content" property="content"></result>
+        <result column="admin_id" property="adminId"></result>
+    </resultMap>
+
+    <select id="getSysOrMineNotice" resultMap="map_SysMsgList">
+        select
+        u.id as id,
+        u.type as type,
+        u.state as state,
+        u.gmt_create as gmt_create,
+        a.title as title,
+        a.content as content,
+        a.admin_id as admin_id
+        from user_sys_notice u,admin_sys_notice a
+        <where>
+         u.sys_notice_id = a.id
+         <if test="uid!=null">
+            and u.recipient_id = #{uid}
+         </if>
+         <if test="type!=null">
+             and u.type = #{type}
+         </if>
+        </where>
+        order by u.state asc,u.gmt_create desc
+    </select>
+</mapper>

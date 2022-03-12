@@ -44,7 +44,7 @@
                 ></el-switch>
               </p>
             </template>
-            <template>
+            <template v-if="isContestAdmin">
               <el-button type="primary" size="small" @click="downloadRankCSV">{{
                 $t('m.Download_as_CSV')
               }}</el-button>
@@ -500,7 +500,7 @@ export default {
             cellClass[problemID] = 'oi-100';
           } else if (score == 0) {
             cellClass[problemID] = 'oi-0';
-          } else {
+          } else if (score != null) {
             cellClass[problemID] = 'oi-between';
           }
         });
