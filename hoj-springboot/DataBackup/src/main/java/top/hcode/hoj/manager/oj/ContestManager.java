@@ -17,7 +17,6 @@ import top.hcode.hoj.pojo.dto.UserReadContestAnnouncementDto;
 import top.hcode.hoj.pojo.entity.common.Announcement;
 import top.hcode.hoj.pojo.entity.contest.*;
 import top.hcode.hoj.pojo.entity.problem.*;
-import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.vo.*;
 import top.hcode.hoj.dao.common.AnnouncementEntityService;
 import top.hcode.hoj.dao.contest.*;
@@ -288,8 +287,7 @@ public class ContestManager {
         }
 
         // 筛去 比赛管理员和超级管理员的提交
-        List<UserInfo> superAdminList = userInfoEntityService.getSuperAdminList();
-        List<String> superAdminUidList = superAdminList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
+        List<String> superAdminUidList = userInfoEntityService.getSuperAdminUidList();
         superAdminUidList.add(contest.getUid());
 
         // 获取题目的提交记录

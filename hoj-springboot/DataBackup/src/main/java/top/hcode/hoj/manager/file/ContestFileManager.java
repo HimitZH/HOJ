@@ -160,8 +160,7 @@ public class ContestFileManager {
         contestProblemQueryWrapper.eq("cid", contest.getId());
         List<ContestProblem> contestProblemList = contestProblemEntityService.list(contestProblemQueryWrapper);
 
-        List<UserInfo> superAdminList = userInfoEntityService.getSuperAdminList();
-        List<String> superAdminUsernameList = superAdminList.stream().map(UserInfo::getUsername).collect(Collectors.toList());
+        List<String> superAdminUidList = userInfoEntityService.getSuperAdminUidList();
 
         QueryWrapper<Judge> judgeQueryWrapper = new QueryWrapper<>();
         judgeQueryWrapper.eq("cid", cid)
@@ -169,7 +168,7 @@ public class ContestFileManager {
                 .isNotNull(!isACM, "score") // OI模式取得分不为null的
                 .between("submit_time", contest.getStartTime(), contest.getEndTime())
                 .ne(excludeAdmin, "uid", contest.getUid()) // 排除比赛创建者和root
-                .notIn(excludeAdmin && superAdminUsernameList.size() > 0, "username", superAdminUsernameList)
+                .notIn(excludeAdmin && superAdminUidList.size() > 0, "uid", superAdminUidList)
                 .orderByDesc("submit_time");
 
         List<Judge> judgeList = judgeEntityService.list(judgeQueryWrapper);

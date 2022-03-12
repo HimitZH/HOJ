@@ -165,6 +165,8 @@ public class Constants {
         ACM_RANK_CACHE("acm_rank_cache"),
         OI_RANK_CACHE("oi_rank_cache"),
 
+        SUPER_ADMIN_UID_LIST_CACHE("super_admin_uid_list_case"),
+
         SUBMIT_NON_CONTEST_LOCK("submit_non_contest_lock:"),
         SUBMIT_CONTEST_LOCK("submit_contest_lock:"),
         DISCUSSION_ADD_NUM_LOCK("discussion_add_num_lock:"),

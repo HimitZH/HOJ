@@ -23,6 +23,7 @@ import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.dao.user.UserRecordEntityService;
 import top.hcode.hoj.dao.user.UserRoleEntityService;
+import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
 import java.util.HashMap;
@@ -75,34 +76,39 @@ public class AdminUserManager {
         boolean setNewPwd = adminEditUserDto.getSetNewPwd();
 
 
-        UpdateWrapper<UserInfo> updateWrapper1 = new UpdateWrapper<>();
+        UpdateWrapper<UserInfo> userInfoUpdateWrapper = new UpdateWrapper<>();
 
-        updateWrapper1.eq("uuid", uid)
+        userInfoUpdateWrapper.eq("uuid", uid)
                 .set("username", username)
                 .set("realname", realname)
                 .set("email", email)
                 .set(setNewPwd, "password", SecureUtil.md5(password))
                 .set("status", status);
-        boolean result1 = userInfoEntityService.update(updateWrapper1);
+        boolean addUserInfo = userInfoEntityService.update(userInfoUpdateWrapper);
 
         QueryWrapper<UserRole> userRoleQueryWrapper = new QueryWrapper<>();
         userRoleQueryWrapper.eq("uid", uid);
         UserRole userRole = userRoleEntityService.getOne(userRoleQueryWrapper, false);
-        boolean result2 = false;
+        boolean addUserRole = false;
         int oldType = userRole.getRoleId().intValue();
         if (userRole.getRoleId().intValue() != type) {
             userRole.setRoleId((long) type);
-            result2 = userRoleEntityService.updateById(userRole);
+            addUserRole = userRoleEntityService.updateById(userRole);
+            if (type == 1000 || oldType == 1000) {
+                // 新增或者去除超级管理员需要删除缓存
+                String cacheKey = Constants.Account.SUPER_ADMIN_UID_LIST_CACHE.getCode();
+                redisUtils.del(cacheKey);
+            }
         }
-        if (result1) {
+        if (addUserInfo) {
             // 需要重新登录
             userRoleEntityService.deleteCache(uid, true);
-        } else if (result2) {
+        } else if (addUserRole) {
             // 需要重新授权
             userRoleEntityService.deleteCache(uid, false);
         }
 
-        if (result2) {
+        if (addUserRole) {
             // 获取当前登录的用户
             Session session = SecurityUtils.getSubject().getSession();
             UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
