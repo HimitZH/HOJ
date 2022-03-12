@@ -7,6 +7,8 @@ import top.hcode.hoj.mapper.UserInfoMapper;
 import top.hcode.hoj.dao.user.UserInfoEntityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.utils.RedisUtils;
 
 import java.util.List;
 
@@ -24,14 +26,24 @@ public class UserInfoEntityServiceImpl extends ServiceImpl<UserInfoMapper, UserI
     @Autowired
     private UserInfoMapper userInfoMapper;
 
+    @Autowired
+    private RedisUtils redisUtils;
+
     @Override
     public Boolean addUser(RegisterDto registerDto) {
         return userInfoMapper.addUser(registerDto) == 1;
     }
 
     @Override
-    public List<UserInfo> getSuperAdminList() {
-        return userInfoMapper.getSuperAdminList();
+    public List<String> getSuperAdminUidList() {
+
+        String cacheKey = Constants.Account.SUPER_ADMIN_UID_LIST_CACHE.getCode();
+        List<String> superAdminUidList = (List<String>) redisUtils.get(cacheKey);
+        if (superAdminUidList == null) {
+            superAdminUidList = userInfoMapper.getSuperAdminUidList();
+            redisUtils.set(cacheKey, superAdminUidList, 12 * 3600);
+        }
+        return superAdminUidList;
     }
 
 }

@@ -16,7 +16,6 @@ import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.manager.admin.training.AdminTrainingRecordManager;
 import top.hcode.hoj.pojo.dto.RegisterTrainingDto;
 import top.hcode.hoj.pojo.entity.training.*;
-import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.vo.*;
 import top.hcode.hoj.dao.training.*;
 import top.hcode.hoj.dao.user.UserInfoEntityService;
@@ -280,9 +279,7 @@ public class TrainingManager {
         Map<Long, String> tpIdMapDisplayId = getTPIdMapDisplayId(tid);
         List<TrainingRecordVo> trainingRecordVoList = trainingRecordEntityService.getTrainingRecord(tid);
 
-        List<UserInfo> superAdminList = userInfoEntityService.getSuperAdminList();
-
-        List<String> superAdminUidList = superAdminList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
+        List<String> superAdminUidList = userInfoEntityService.getSuperAdminUidList();
 
 
         List<TrainingRankVo> result = new ArrayList<>();

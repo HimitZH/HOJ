@@ -41,8 +41,7 @@ public class ContestProblemEntityServiceImpl extends ServiceImpl<ContestProblemM
     @Override
     public List<ContestProblemVo> getContestProblemList(Long cid, Date startTime, Date endTime, Date sealTime, Boolean isAdmin, String contestAuthorUid) {
         // 筛去 比赛管理员和超级管理员的提交
-        List<UserInfo> superAdminList = userInfoEntityService.getSuperAdminList();
-        List<String> superAdminUidList = superAdminList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
+        List<String> superAdminUidList = userInfoEntityService.getSuperAdminUidList();
         superAdminUidList.add(contestAuthorUid);
 
         return contestProblemMapper.getContestProblemList(cid, startTime, endTime, sealTime, isAdmin, superAdminUidList);

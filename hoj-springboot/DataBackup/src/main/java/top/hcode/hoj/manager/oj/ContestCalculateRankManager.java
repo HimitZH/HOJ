@@ -164,9 +164,7 @@ public class ContestCalculateRankManager {
 
         List<ContestRecordVo> contestRecordList = contestRecordEntityService.getACMContestRecord(contest.getAuthor(), contest.getId());
 
-        List<UserInfo> superAdminList = getSuperAdminList();
-
-        List<String> superAdminUidList = superAdminList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
+        List<String> superAdminUidList = getSuperAdminUidList();
 
         List<ACMContestRankVo> result = new ArrayList<>();
 
@@ -375,9 +373,7 @@ public class ContestCalculateRankManager {
 
         List<ContestRecordVo> oiContestRecord = contestRecordEntityService.getOIContestRecord(contest, isOpenSealRank);
 
-        List<UserInfo> superAdminList = getSuperAdminList();
-
-        List<String> superAdminUidList = superAdminList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
+        List<String> superAdminUidList = getSuperAdminUidList();
 
         List<OIContestRankVo> result = new ArrayList<>();
 
@@ -480,8 +476,8 @@ public class ContestCalculateRankManager {
     }
 
 
-    private List<UserInfo> getSuperAdminList() {
-        return userInfoEntityService.getSuperAdminList();
+    private List<String> getSuperAdminUidList() {
+        return userInfoEntityService.getSuperAdminUidList();
     }
 
     private boolean isInSealTimeSubmission(Contest contest, Date submissionDate) {

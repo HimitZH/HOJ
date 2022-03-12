@@ -23,7 +23,6 @@ import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -62,8 +61,8 @@ public class CommentEntityServiceImpl extends ServiceImpl<CommentMapper, Comment
             boolean onlyMineAndAdmin = contest.getStatus().equals(Constants.Contest.STATUS_RUNNING.getCode())
                     && !isRoot && !contest.getUid().equals(uid);
             if (onlyMineAndAdmin) { // 自己和比赛管理者评论可看
-                List<UserInfo> superAdminList = userInfoEntityService.getSuperAdminList();
-                List<String> myAndAdminUidList = superAdminList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
+
+                List<String> myAndAdminUidList = userInfoEntityService.getSuperAdminUidList();
                 myAndAdminUidList.add(uid);
                 myAndAdminUidList.add(contest.getUid());
                 return commentMapper.getCommentList(page, cid, did, true, myAndAdminUidList);
@@ -83,8 +82,8 @@ public class CommentEntityServiceImpl extends ServiceImpl<CommentMapper, Comment
             boolean onlyMineAndAdmin = contest.getStatus().equals(Constants.Contest.STATUS_RUNNING.getCode())
                     && !isRoot && !contest.getUid().equals(uid);
             if (onlyMineAndAdmin) { // 自己和比赛管理者评论可看
-                List<UserInfo> superAdminList = userInfoEntityService.getSuperAdminList();
-                List<String> myAndAdminUidList = superAdminList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
+
+                List<String> myAndAdminUidList = userInfoEntityService.getSuperAdminUidList();
                 myAndAdminUidList.add(uid);
                 myAndAdminUidList.add(contest.getUid());
                 replyQueryWrapper.in("from_uid", myAndAdminUidList);

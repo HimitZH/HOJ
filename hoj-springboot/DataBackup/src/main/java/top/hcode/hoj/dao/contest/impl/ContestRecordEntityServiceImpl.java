@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.hcode.hoj.pojo.entity.contest.Contest;
-import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.entity.contest.ContestRecord;
 import top.hcode.hoj.mapper.ContestRecordMapper;
 import top.hcode.hoj.pojo.vo.ContestRecordVo;
@@ -16,7 +15,6 @@ import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -46,8 +44,7 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
         HashMap<Long, String> pidMapUidAndPid = new HashMap<>(12);
         HashMap<String, Long> UidAndPidMapTime = new HashMap<>(12);
 
-        List<UserInfo> superAdminList = userInfoEntityService.getSuperAdminList();
-        List<String> superAdminUidList = superAdminList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
+        List<String> superAdminUidList = userInfoEntityService.getSuperAdminUidList();
 
         List<ContestRecord> userACInfo = new LinkedList<>();
 
