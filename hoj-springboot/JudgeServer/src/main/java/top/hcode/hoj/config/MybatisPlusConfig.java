@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @Configuration
 @EnableTransactionManagement
-@MapperScan("top.hcode.hoj.dao")
+@MapperScan("top.hcode.hoj.mapper")
 public class MybatisPlusConfig {
 
     // 注册乐观锁插件

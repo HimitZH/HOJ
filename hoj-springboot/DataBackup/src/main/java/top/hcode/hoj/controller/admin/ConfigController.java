@@ -1,23 +1,20 @@
 package top.hcode.hoj.controller.admin;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.lang.Validator;
-import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.text.UnicodeUtil;
+
+import cn.hutool.json.JSONObject;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.common.File;
-import top.hcode.hoj.pojo.vo.ConfigVo;
-import top.hcode.hoj.service.common.impl.ConfigServiceImpl;
-import top.hcode.hoj.service.common.impl.EmailServiceImpl;
-import top.hcode.hoj.service.common.impl.FileServiceImpl;
+import top.hcode.hoj.service.admin.system.ConfigService;
+
 
 import javax.mail.MessagingException;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: Himit_ZH
@@ -29,16 +26,7 @@ import java.util.HashMap;
 public class ConfigController {
 
     @Autowired
-    private ConfigVo configVo;
-
-    @Autowired
-    private ConfigServiceImpl configService;
-
-    @Autowired
-    private EmailServiceImpl emailService;
-
-    @Autowired
-    private FileServiceImpl fileService;
+    private ConfigService configService;
 
     /**
      * @MethodName getServiceInfo
@@ -47,131 +35,71 @@ public class ConfigController {
      * @Return CommonResult
      * @Since 2020/12/3
      */
-
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     @RequestMapping("/get-service-info")
-    public CommonResult getServiceInfo() {
-
-        return CommonResult.successResponse(configService.getServiceInfo());
+    public CommonResult<JSONObject> getServiceInfo() {
+        return configService.getServiceInfo();
     }
 
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     @RequestMapping("/get-judge-service-info")
-    public CommonResult getJudgeServiceInfo() {
-        return CommonResult.successResponse(configService.getJudgeServiceInfo());
+    public CommonResult<List<JSONObject>> getJudgeServiceInfo() {
+        return configService.getJudgeServiceInfo();
     }
 
     @RequiresPermissions("system_info_admin")
     @RequestMapping("/get-web-config")
-    public CommonResult getWebConfig() {
-
-        return CommonResult.successResponse(
-                MapUtil.builder().put("baseUrl", UnicodeUtil.toString(configVo.getBaseUrl()))
-                        .put("name", UnicodeUtil.toString(configVo.getName()))
-                        .put("shortName", UnicodeUtil.toString(configVo.getShortName()))
-                        .put("description", UnicodeUtil.toString(configVo.getDescription()))
-                        .put("register", configVo.getRegister())
-                        .put("recordName", UnicodeUtil.toString(configVo.getRecordName()))
-                        .put("recordUrl", UnicodeUtil.toString(configVo.getRecordUrl()))
-                        .put("projectName", UnicodeUtil.toString(configVo.getProjectName()))
-                        .put("projectUrl", UnicodeUtil.toString(configVo.getProjectUrl())).map()
-        );
+    public CommonResult<Map<Object,Object>> getWebConfig() {
+        return configService.getWebConfig();
     }
 
 
     @RequiresPermissions("system_info_admin")
     @DeleteMapping("/home-carousel")
-    public CommonResult deleteHomeCarousel(@RequestParam("id") Long id) {
+    public CommonResult<Void> deleteHomeCarousel(@RequestParam("id") Long id) {
 
-        File imgFile = fileService.getById(id);
-        if (imgFile == null) {
-            return CommonResult.errorResponse("文件id错误，图片不存在");
-        }
-        boolean isOk = fileService.removeById(id);
-        if (isOk) {
-            FileUtil.del(imgFile.getFilePath());
-            return CommonResult.successResponse("删除成功！");
-        } else {
-            return CommonResult.errorResponse("删除失败！");
-        }
+        return configService.deleteHomeCarousel(id);
     }
 
     @RequiresPermissions("system_info_admin")
     @RequestMapping(value = "/set-web-config", method = RequestMethod.PUT)
-    public CommonResult setWebConfig(@RequestBody HashMap<String, Object> params) {
+    public CommonResult<Void> setWebConfig(@RequestBody HashMap<String, Object> params) {
 
-        boolean result = configService.setWebConfig(params);
-        if (result) {
-            return CommonResult.successResponse(null, "修改网站前端配置成功！");
-        } else {
-            return CommonResult.errorResponse("修改失败！");
-        }
+        return configService.setWebConfig(params);
     }
 
     @RequiresPermissions("system_info_admin")
     @RequestMapping("/get-email-config")
-    public CommonResult getEmailConfig() {
-        return CommonResult.successResponse(
-                MapUtil.builder().put("emailUsername", configVo.getEmailUsername())
-                        .put("emailPassword", configVo.getEmailPassword())
-                        .put("emailHost", configVo.getEmailHost())
-                        .put("emailPort", configVo.getEmailPort())
-                        .put("emailBGImg", configVo.getEmailBGImg())
-                        .put("emailSsl", configVo.getEmailSsl()).map()
-        );
+    public CommonResult<Map<Object,Object>> getEmailConfig() {
+
+        return configService.getEmailConfig();
     }
 
     @RequiresPermissions("system_info_admin")
     @PutMapping("/set-email-config")
-    public CommonResult setEmailConfig(@RequestBody HashMap<String, Object> params) {
+    public CommonResult<Void> setEmailConfig(@RequestBody HashMap<String, Object> params) {
 
-        boolean result = configService.setEmailConfig(params);
-        if (result) {
-            return CommonResult.successResponse(null, "修改邮箱配置成功！");
-        } else {
-            return CommonResult.errorResponse("修改失败！");
-        }
+        return configService.setEmailConfig(params);
     }
 
     @RequiresPermissions("system_info_admin")
     @PostMapping("/test-email")
-    public CommonResult testEmail(@RequestBody HashMap<String, Object> params) throws MessagingException {
-        String email = (String) params.get("email");
-        boolean isEmail = Validator.isEmail(email);
-        if (isEmail) {
-            emailService.testEmail(email);
-            return CommonResult.successResponse(null, "测试邮件已发送至指定邮箱！");
-        } else {
-            return CommonResult.errorResponse("测试的邮箱不正确！");
-        }
+    public CommonResult<Void> testEmail(@RequestBody HashMap<String, Object> params) throws MessagingException {
+
+        return configService.testEmail(params);
     }
 
     @RequiresPermissions("system_info_admin")
     @RequestMapping("/get-db-and-redis-config")
-    public CommonResult getDBAndRedisConfig() {
+    public CommonResult<Map<Object,Object>> getDBAndRedisConfig() {
 
-        return CommonResult.successResponse(
-                MapUtil.builder().put("dbName", configVo.getMysqlDBName())
-                        .put("dbHost", configVo.getMysqlHost())
-                        .put("dbPost", configVo.getMysqlPort())
-                        .put("dbUsername", configVo.getMysqlUsername())
-                        .put("dbPassword", configVo.getMysqlPassword())
-                        .put("redisHost", configVo.getRedisHost())
-                        .put("redisPort", configVo.getRedisPort())
-                        .put("redisPassword", configVo.getRedisPassword())
-                        .map()
-        );
+        return configService.getDBAndRedisConfig();
     }
 
     @RequiresPermissions("system_info_admin")
     @PutMapping("/set-db-and-redis-config")
-    public CommonResult setDBAndRedisConfig(@RequestBody HashMap<String, Object> params) {
-        boolean result = configService.setDBAndRedisConfig(params);
-        if (result) {
-            return CommonResult.successResponse(null, "修改数据库配置成功！");
-        } else {
-            return CommonResult.errorResponse("修改失败！");
-        }
+    public CommonResult<Void> setDBAndRedisConfig(@RequestBody HashMap<String, Object> params) {
+        return configService.setDBAndRedisConfig(params);
     }
 
 }

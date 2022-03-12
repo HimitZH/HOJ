@@ -296,6 +296,8 @@ export const m = {
   Import_QDOJ_Problem:'Import QDOJ Problem',
   Import_FPS_Problem:'Import FPS Problem',
   Export_Problem_NULL_Tips:'The problem selected for export cannot be empty',
+  Upload_Problem_Succeeded:'Upload Problem Succeeded',
+  Upload_Problem_Failed:'Upload Problem Failed',
 
   // /views/admin/contest/ContestList.vue
   Visible:'Visible',

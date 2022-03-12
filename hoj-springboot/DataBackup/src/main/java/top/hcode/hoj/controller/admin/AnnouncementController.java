@@ -9,9 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.common.Announcement;
 import top.hcode.hoj.pojo.vo.AnnouncementVo;
-import top.hcode.hoj.service.common.impl.AnnouncementServiceImpl;
+import top.hcode.hoj.service.admin.announcement.AdminAnnouncementService;
 
-import javax.validation.Valid;
 
 /**
  * @Author: Himit_ZH
@@ -23,53 +22,31 @@ import javax.validation.Valid;
 public class AnnouncementController {
 
     @Autowired
-    private AnnouncementServiceImpl announcementDao;
+    private AdminAnnouncementService adminAnnouncementService;
 
     @GetMapping("/api/admin/announcement")
     @RequiresPermissions("announcement_admin")
-    public CommonResult getAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
-                                            @RequestParam(value = "currentPage", required = false) Integer currentPage){
-        if (currentPage == null || currentPage < 1) currentPage = 1;
-        if (limit == null || limit < 1) limit = 10;
-        IPage<AnnouncementVo> announcementList = announcementDao.getAnnouncementList(limit, currentPage,false);
-        if (announcementList.getTotal() == 0) { // 未查询到一条数据
-            return CommonResult.successResponse(announcementList,"暂无数据");
-        } else {
-            return CommonResult.successResponse(announcementList, "获取成功");
-        }
+    public CommonResult<IPage<AnnouncementVo>> getAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
+                                                                   @RequestParam(value = "currentPage", required = false) Integer currentPage) {
+        return adminAnnouncementService.getAnnouncementList(limit, currentPage);
     }
 
     @DeleteMapping("/api/admin/announcement")
     @RequiresPermissions("announcement_admin")
-    public CommonResult deleteAnnouncement(@Valid @RequestParam("aid")long aid){
-        boolean result = announcementDao.removeById(aid);
-        if (result) { // 删除成功
-            return CommonResult.successResponse(null,"删除成功！");
-        } else {
-            return CommonResult.errorResponse("删除失败！",CommonResult.STATUS_FAIL);
-        }
+    public CommonResult<Void> deleteAnnouncement(@RequestParam("aid") Long aid) {
+        return adminAnnouncementService.deleteAnnouncement(aid);
     }
 
     @PostMapping("/api/admin/announcement")
     @RequiresRoles("root")  // 只有超级管理员能操作
     @RequiresPermissions("announcement_admin")
-    public CommonResult addAnnouncement(@RequestBody Announcement announcement){
-        boolean result = announcementDao.save(announcement);
-        if (result) { // 添加成功
-            return CommonResult.successResponse(null,"添加成功！");
-        } else {
-            return CommonResult.errorResponse("添加失败",CommonResult.STATUS_FAIL);
-        }
+    public CommonResult<Void> addAnnouncement(@RequestBody Announcement announcement) {
+        return adminAnnouncementService.addAnnouncement(announcement);
     }
 
     @PutMapping("/api/admin/announcement")
     @RequiresPermissions("announcement_admin")
-    public CommonResult updateAnnouncement(@RequestBody Announcement announcement){
-        boolean result = announcementDao.saveOrUpdate(announcement);
-        if (result) { // 更新成功
-            return CommonResult.successResponse(null,"修改成功！");
-        } else {
-            return CommonResult.errorResponse("修改失败",CommonResult.STATUS_FAIL);
-        }
+    public CommonResult<Void> updateAnnouncement(@RequestBody Announcement announcement) {
+        return adminAnnouncementService.updateAnnouncement(announcement);
     }
 }

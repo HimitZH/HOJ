@@ -1,22 +1,21 @@
 package top.hcode.hoj.judge;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.io.file.FileWriter;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.CompileError;
 import top.hcode.hoj.common.exception.SubmitError;
 import top.hcode.hoj.common.exception.SystemError;
+import top.hcode.hoj.dao.JudgeCaseEntityService;
+import top.hcode.hoj.dao.JudgeEntityService;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.JudgeCase;
 import top.hcode.hoj.pojo.entity.problem.Problem;
-import top.hcode.hoj.service.impl.JudgeCaseServiceImpl;
-import top.hcode.hoj.service.impl.JudgeServiceImpl;
 import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.JudgeUtils;
 
@@ -29,13 +28,13 @@ import java.util.*;
 public class JudgeStrategy {
 
     @Resource
-    private JudgeServiceImpl judgeService;
+    private JudgeEntityService judgeEntityService;
 
     @Resource
     private ProblemTestCaseUtils problemTestCaseUtils;
 
     @Resource
-    private JudgeCaseServiceImpl judgeCaseService;
+    private JudgeCaseEntityService JudgeCaseEntityService;
 
     @Resource
     private JudgeRun judgeRun;
@@ -71,7 +70,7 @@ public class JudgeStrategy {
             String version = testCasesInfo.getStr("version");
 
             // 检查是否为spj或者interactive，同时是否有对应编译完成的文件，若不存在，就先编译生成该文件，同时也要检查版本
-            Boolean isOk = checkOrCompileExtraProgram(problem, version);
+            boolean isOk = checkOrCompileExtraProgram(problem);
             if (!isOk) {
                 result.put("code", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
                 result.put("errMsg", "The special judge or interactive program code does not exist.");
@@ -82,7 +81,7 @@ public class JudgeStrategy {
 
             // 更新状态为评测数据中
             judge.setStatus(Constants.Judge.STATUS_JUDGING.getStatus());
-            judgeService.updateById(judge);
+            judgeEntityService.updateById(judge);
             // 开始测试每个测试点
             List<JSONObject> allCaseResultList = judgeRun.judgeAllCase(judge.getSubmitId(),
                     problem,
@@ -130,36 +129,82 @@ public class JudgeStrategy {
         return result;
     }
 
-    private Boolean checkOrCompileExtraProgram(Problem problem, String version) throws CompileError, SystemError {
+    private Boolean checkOrCompileExtraProgram(Problem problem) throws CompileError, SystemError {
 
         Constants.JudgeMode judgeMode = Constants.JudgeMode.getJudgeMode(problem.getJudgeMode());
+
+        String currentVersion = problem.getCaseVersion();
+
         Constants.CompileConfig compiler;
-        String filePath;
+
+        String programFilePath;
+
+        String programVersionPath;
 
         switch (judgeMode) {
             case DEFAULT:
                 return true;
             case SPJ:
                 compiler = Constants.CompileConfig.getCompilerByLanguage("SPJ-" + problem.getSpjLanguage());
-                filePath = Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + File.separator +
+
+                programFilePath = Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + File.separator +
                         problem.getId() + File.separator + compiler.getExeName();
 
-                // 如果不存在该已经编译好的程序，则需要再次进行编译 版本变动也需要重新编译
-                if (!FileUtil.exist(filePath) || !problem.getCaseVersion().equals(version)) {
-                    return Compiler.compileSpj(problem.getSpjCode(), problem.getId(), problem.getSpjLanguage(),
+                programVersionPath = Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + File.separator +
+                        problem.getId() + File.separator + "version";
+
+                // 如果不存在该已经编译好的程序，则需要再次进行编译
+                if (!FileUtil.exist(programFilePath) || !FileUtil.exist(programVersionPath)) {
+                    boolean isCompileSpjOk = Compiler.compileSpj(problem.getSpjCode(), problem.getId(), problem.getSpjLanguage(),
                             JudgeUtils.getProblemExtraFileMap(problem, "judge"));
+
+                    FileWriter fileWriter = new FileWriter(programVersionPath);
+                    fileWriter.write(currentVersion);
+                    return isCompileSpjOk;
+                }
+
+                FileReader spjVersionReader = new FileReader(programVersionPath);
+                String recordSpjVersion = spjVersionReader.readString();
+
+                // 版本变动也需要重新编译
+                if (!currentVersion.equals(recordSpjVersion)) {
+                    boolean isCompileSpjOk = Compiler.compileSpj(problem.getSpjCode(), problem.getId(), problem.getSpjLanguage(),
+                            JudgeUtils.getProblemExtraFileMap(problem, "judge"));
+                    FileWriter fileWriter = new FileWriter(programVersionPath);
+                    fileWriter.write(currentVersion);
+                    return isCompileSpjOk;
                 }
 
                 break;
             case INTERACTIVE:
                 compiler = Constants.CompileConfig.getCompilerByLanguage("INTERACTIVE-" + problem.getSpjLanguage());
-                filePath = Constants.JudgeDir.INTERACTIVE_WORKPLACE_DIR.getContent() + File.separator +
+                programFilePath = Constants.JudgeDir.INTERACTIVE_WORKPLACE_DIR.getContent() + File.separator +
                         problem.getId() + File.separator + compiler.getExeName();
 
+                programVersionPath = Constants.JudgeDir.INTERACTIVE_WORKPLACE_DIR.getContent() + File.separator +
+                        problem.getId() + File.separator + "version";
+
                 // 如果不存在该已经编译好的程序，则需要再次进行编译 版本变动也需要重新编译
-                if (!FileUtil.exist(filePath) || !problem.getCaseVersion().equals(version)) {
-                    return Compiler.compileInteractive(problem.getSpjCode(), problem.getId(), problem.getSpjLanguage(),
+                if (!FileUtil.exist(programFilePath) || !FileUtil.exist(programVersionPath)) {
+                    boolean isCompileInteractive = Compiler.compileInteractive(problem.getSpjCode(), problem.getId(), problem.getSpjLanguage(),
                             JudgeUtils.getProblemExtraFileMap(problem, "judge"));
+                    FileWriter fileWriter = new FileWriter(programVersionPath);
+                    fileWriter.write(currentVersion);
+                    return isCompileInteractive;
+                }
+
+                FileReader interactiveVersionFileReader = new FileReader(programVersionPath);
+                String recordInteractiveVersion = interactiveVersionFileReader.readString();
+
+                // 版本变动也需要重新编译
+                if (!currentVersion.equals(recordInteractiveVersion)) {
+                    boolean isCompileInteractive = Compiler.compileSpj(problem.getSpjCode(), problem.getId(), problem.getSpjLanguage(),
+                            JudgeUtils.getProblemExtraFileMap(problem, "judge"));
+
+                    FileWriter fileWriter = new FileWriter(programVersionPath);
+                    fileWriter.write(currentVersion);
+
+                    return isCompileInteractive;
                 }
 
                 break;
@@ -262,7 +307,7 @@ public class JudgeStrategy {
         });
 
         // 更新到数据库
-        boolean addCaseRes = judgeCaseService.saveBatch(allCaseResList);
+        boolean addCaseRes = JudgeCaseEntityService.saveBatch(allCaseResList);
         if (!addCaseRes) {
             log.error("题号为：" + problem.getId() + "，提交id为：" + judge.getSubmitId() + "的各个测试数据点的结果更新到数据库操作失败");
         }

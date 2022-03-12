@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.mapper.ProblemMapper">
+
+    <resultMap id="map_ProblemList" type="top.hcode.hoj.pojo.vo.ProblemVo">
+        <id column="pid" property="pid"></id>
+        <result column="problem_id" property="problemId"></result>
+        <result column="title" property="title"></result>
+        <result column="difficulty" property="difficulty"></result>
+        <result column="type" property="type"></result>
+        <collection property="tags" ofType="top.hcode.hoj.pojo.entity.problem.Tag" select="getProblemTag" column="pid">
+        </collection>
+    </resultMap>
+
+    <!-- 主查询 -->
+    <select id="getProblemList" resultMap="map_ProblemList">
+        SELECT DISTINCT p.id AS pid, p.problem_id, p.title, p.difficulty, p.type
+        FROM problem p
+        <if test="tid != null and tid.size() > 0">
+            INNER JOIN
+            (
+            SELECT pid FROM
+            problem_tag
+            <where>
+                <foreach collection="tid" item="id" open="" separator=" or" close="">
+                    tid = #{id}
+                </foreach>
+            </where>
+            GROUP BY pid
+            HAVING COUNT(pid) = #{tagListSize}
+            ) pt
+            ON p.id = pt.pid
+        </if>
+        <where>
+            p.auth = 1
+            <if test="keyword != null and keyword != ''">
+                and (
+                p.title like concat('%',#{keyword},'%') or p.problem_id like concat('%',#{keyword},'%')
+                <if test="pid != null and pid != ''">
+                    or p.id = #{pid}
+                </if>
+                )
+            </if>
+            <if test="difficulty != null">
+                and p.difficulty = #{difficulty}
+            </if>
+            <if test="oj != null and oj !='Mine'">
+                and p.problem_id like concat(#{oj},'%') and p.is_remote=true
+            </if>
+            <if test="oj != null and oj =='Mine'">
+                and p.is_remote=false
+            </if>
+        </where>
+        order by length(p.problem_id) asc,p.problem_id asc
+    </select>
+
+    <!-- 子查询 :为了防止分页总数据数出错-->
+    <select id="getProblemTag" resultType="top.hcode.hoj.pojo.entity.problem.Tag">
+        select t.* from tag t,problem_tag pt where t.id = pt.tid and pt.pid = #{pid}
+    </select>
+
+
+</mapper>

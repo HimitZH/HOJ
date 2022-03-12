@@ -1,113 +1,84 @@
 package top.hcode.hoj.service.impl;
 
-
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
-import top.hcode.hoj.common.exception.CompileError;
 import top.hcode.hoj.common.exception.SystemError;
-import top.hcode.hoj.dao.JudgeMapper;
-import top.hcode.hoj.judge.*;
-import top.hcode.hoj.judge.Compiler;
+import top.hcode.hoj.dao.JudgeEntityService;
+import top.hcode.hoj.dao.ProblemEntityService;
+import top.hcode.hoj.judge.JudgeContext;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.ToJudge;
 import top.hcode.hoj.pojo.entity.problem.Problem;
-import top.hcode.hoj.pojo.entity.user.UserAcproblem;
-import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
+import top.hcode.hoj.remoteJudge.RemoteJudgeContext;
 import top.hcode.hoj.service.JudgeService;
 import top.hcode.hoj.util.Constants;
-import top.hcode.hoj.util.JudgeUtils;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 
 /**
- * <p>
- * 服务实现类
- * </p>
- *
- * @author Himit_ZH
- * @since 2020-10-23
+ * @Author: Himit_ZH
+ * @Date: 2022/3/12 15:54
+ * @Description:
  */
 @Service
-@Slf4j(topic = "hoj")
-public class JudgeServiceImpl extends ServiceImpl<JudgeMapper, Judge> implements JudgeService {
+@RefreshScope
+public class JudgeServiceImpl implements JudgeService {
 
+    @Value("${hoj-judge-server.name}")
+    private String name;
+
+    @Resource
+    private JudgeEntityService judgeEntityService;
+
+    @Resource
+    private ProblemEntityService problemEntityService;
+
+    @Resource
+    private JudgeContext judgeContext;
 
     @Autowired
-    private JudgeStrategy judgeStrategy;
-
-    @Autowired
-    private UserAcproblemServiceImpl userAcproblemService;
-
-
-    @Autowired
-    private ContestRecordServiceImpl contestRecordService;
-
+    private RemoteJudgeContext remoteJudgeContext;
 
     @Override
-    public Judge Judge(Problem problem, Judge judge) {
+    public void judge(Judge judge) {
+        judge.setStatus(Constants.Judge.STATUS_COMPILING.getStatus()); // 标志该判题过程进入编译阶段
+        // 写入当前判题服务的名字
+        judge.setJudger(name);
+        judgeEntityService.updateById(judge);
+        // 进行判题操作
+        Problem problem = problemEntityService.getById(judge.getPid());
+        Judge finalJudge = judgeContext.Judge(problem, judge);
 
-        // c和c++为一倍时间和空间，其它语言为2倍时间和空间
-        if (!judge.getLanguage().equals("C++") && !judge.getLanguage().equals("C") &&
-                !judge.getLanguage().equals("C++ With O2") && !judge.getLanguage().equals("C With O2")) {
-            problem.setTimeLimit(problem.getTimeLimit() * 2);
-            problem.setMemoryLimit(problem.getMemoryLimit() * 2);
+        // 更新该次提交
+        judgeEntityService.updateById(finalJudge);
+
+        if (finalJudge.getStatus().intValue() != Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus()) {
+            // 更新其它表
+            judgeContext.updateOtherTable(finalJudge.getSubmitId(),
+                    finalJudge.getStatus(),
+                    finalJudge.getCid(),
+                    finalJudge.getUid(),
+                    finalJudge.getPid(),
+                    finalJudge.getScore(),
+                    finalJudge.getTime());
         }
+    }
 
-        HashMap<String, Object> judgeResult = judgeStrategy.judge(problem, judge);
-
-        // 如果是编译失败、提交错误或者系统错误就有错误提醒
-        if (judgeResult.get("code") == Constants.Judge.STATUS_COMPILE_ERROR.getStatus() ||
-                judgeResult.get("code") == Constants.Judge.STATUS_SYSTEM_ERROR.getStatus() ||
-                judgeResult.get("code") == Constants.Judge.STATUS_RUNTIME_ERROR.getStatus() ||
-                judgeResult.get("code") == Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus()) {
-            judge.setErrorMessage((String) judgeResult.getOrDefault("errMsg", ""));
-        }
-        // 设置最终结果状态码
-        judge.setStatus((Integer) judgeResult.get("code"));
-        // 设置最大时间和最大空间不超过题目限制时间和空间
-        // kb
-        Integer memory = (Integer) judgeResult.get("memory");
-        judge.setMemory(Math.min(memory, problem.getMemoryLimit() * 1024));
-        // ms
-        Integer time = (Integer) judgeResult.get("time");
-        judge.setTime(Math.min(time, problem.getTimeLimit()));
-        // score
-        judge.setScore((Integer) judgeResult.getOrDefault("score", null));
-        // oi_rank_score
-        judge.setOiRankScore((Integer) judgeResult.getOrDefault("oiRankScore", null));
-
-        return judge;
+    @Override
+    public void remoteJudge(ToJudge toJudge) {
+        remoteJudgeContext.judge(toJudge);
     }
 
     @Override
     public Boolean compileSpj(String code, Long pid, String spjLanguage, HashMap<String, String> extraFiles) throws SystemError {
-        return Compiler.compileSpj(code, pid, spjLanguage, extraFiles);
+        return judgeContext.compileSpj(code, pid, spjLanguage, extraFiles);
     }
 
     @Override
     public Boolean compileInteractive(String code, Long pid, String interactiveLanguage, HashMap<String, String> extraFiles) throws SystemError {
-        return Compiler.compileInteractive(code, pid, interactiveLanguage, extraFiles);
+        return judgeContext.compileInteractive(code, pid, interactiveLanguage, extraFiles);
     }
-
-
-    @Override
-    public void updateOtherTable(Long submitId, Integer status, Long cid, String uid, Long pid, Integer score, Integer useTime) {
-
-        if (cid == 0) { // 非比赛提交
-            // 如果是AC,就更新user_acproblem表,
-            if (status.intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
-                userAcproblemService.saveOrUpdate(new UserAcproblem()
-                        .setPid(pid)
-                        .setUid(uid)
-                        .setSubmitId(submitId)
-                );
-            }
-
-        } else { //如果是比赛提交
-            contestRecordService.UpdateContestRecord(uid, score, status, submitId, cid, useTime);
-        }
-    }
-
 }

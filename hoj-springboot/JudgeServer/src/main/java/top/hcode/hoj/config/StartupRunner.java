@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import top.hcode.hoj.dao.JudgeServerEntityService;
 import top.hcode.hoj.pojo.entity.judge.JudgeServer;
-import top.hcode.hoj.service.impl.JudgeServerServiceImpl;
 import top.hcode.hoj.util.IpUtils;
 
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public class StartupRunner implements CommandLineRunner {
     private static final int cpuNum = Runtime.getRuntime().availableProcessors();
 
     @Autowired
-    private JudgeServerServiceImpl judgeServerService;
+    private JudgeServerEntityService judgeServerEntityService;
 
     @Override
     @Transactional
@@ -61,8 +61,8 @@ public class StartupRunner implements CommandLineRunner {
         }
         UpdateWrapper<JudgeServer> judgeServerQueryWrapper = new UpdateWrapper<>();
         judgeServerQueryWrapper.eq("ip", ip).eq("port", port);
-        judgeServerService.remove(judgeServerQueryWrapper);
-        boolean isOk1 = judgeServerService.save(new JudgeServer()
+        judgeServerEntityService.remove(judgeServerQueryWrapper);
+        boolean isOk1 = judgeServerEntityService.save(new JudgeServer()
                 .setCpuCore(cpuNum)
                 .setIp(ip)
                 .setPort(port)
@@ -75,7 +75,7 @@ public class StartupRunner implements CommandLineRunner {
             if (maxRemoteTaskNum == -1) {
                 maxRemoteTaskNum = cpuNum * 2 + 1;
             }
-            isOk2 = judgeServerService.save(new JudgeServer()
+            isOk2 = judgeServerEntityService.save(new JudgeServer()
                     .setCpuCore(cpuNum)
                     .setIp(ip)
                     .setPort(port)
@@ -88,7 +88,7 @@ public class StartupRunner implements CommandLineRunner {
         if (!isOk1 || !isOk2) {
             log.error("初始化判题机信息到数据库失败，请重新启动试试！");
         } else {
-            HashMap<String, Object> judgeServerInfo = judgeServerService.getJudgeServerInfo();
+            HashMap<String, Object> judgeServerInfo = judgeServerEntityService.getJudgeServerInfo();
             log.info("HOJ-JudgeServer had successfully started! The judge config and sandbox config Info:" + judgeServerInfo);
         }
 

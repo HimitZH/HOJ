@@ -146,10 +146,7 @@
                 ></i>
                 <i
                   class="el-icon-refresh"
-                  v-if="
-                    row.status == JUDGE_STATUS_RESERVE['sf'] &&
-                      row.uid == userInfo.uid
-                  "
+                  v-if="row.status == JUDGE_STATUS_RESERVE['sf']"
                   @click="reSubmit(row)"
                 ></i>
                 {{ JUDGE_STATUS[row.status].name }}
@@ -455,7 +452,7 @@ export default {
         xTable.reloadRow(row, null, null);
 
         this.submissions[row.index] = res.data.data;
-        myMessage.success(res.data.msg);
+        myMessage.success(this.$i18n.t('m.Resubmitted_Successfully'));
 
         // 加入待重判列表
         this.needCheckSubmitIds[row.submitId] = row.index;

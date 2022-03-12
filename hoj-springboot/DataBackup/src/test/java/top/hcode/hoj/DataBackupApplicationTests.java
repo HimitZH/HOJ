@@ -15,14 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
-import top.hcode.hoj.dao.*;
+import top.hcode.hoj.mapper.*;
 import top.hcode.hoj.pojo.entity.problem.Language;
 import top.hcode.hoj.pojo.entity.problem.Problem;
-import top.hcode.hoj.service.common.impl.AnnouncementServiceImpl;
-import top.hcode.hoj.service.discussion.impl.DiscussionServiceImpl;
-import top.hcode.hoj.service.problem.impl.LanguageServiceImpl;
-import top.hcode.hoj.service.user.impl.UserInfoServiceImpl;
-import top.hcode.hoj.service.user.impl.UserRoleServiceImpl;
+import top.hcode.hoj.dao.common.impl.AnnouncementEntityServiceImpl;
+import top.hcode.hoj.dao.discussion.impl.DiscussionEntityServiceImpl;
+import top.hcode.hoj.dao.problem.impl.LanguageEntityServiceImpl;
+import top.hcode.hoj.dao.user.impl.UserInfoEntityServiceImpl;
+import top.hcode.hoj.dao.user.impl.UserRoleEntityServiceImpl;
 import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.JsoupUtils;
 import top.hcode.hoj.utils.RedisUtils;
@@ -47,7 +47,7 @@ public class DataBackupApplicationTests {
     private UserRoleMapper userRoleMapper;
 
     @Autowired
-    private UserRoleServiceImpl userRoleService;
+    private UserRoleEntityServiceImpl userRoleService;
 
     @Autowired
     private RoleAuthMapper roleAuthMapper;
@@ -56,14 +56,14 @@ public class DataBackupApplicationTests {
     private ContestMapper contestMapper;
 
     @Autowired
-    private UserInfoServiceImpl userInfoService;
+    private UserInfoEntityServiceImpl userInfoService;
 
 
     @Autowired
-    private AnnouncementServiceImpl announcementService;
+    private AnnouncementEntityServiceImpl announcementService;
 
     @Autowired
-    private DiscussionServiceImpl discussionService;
+    private DiscussionEntityServiceImpl discussionService;
 
     @Test
     public void Test1() {
@@ -219,7 +219,7 @@ public class DataBackupApplicationTests {
 
 
     @Autowired
-    private LanguageServiceImpl languageService;
+    private LanguageEntityServiceImpl languageService;
 
     @Test
     public void Test8() throws IOException {

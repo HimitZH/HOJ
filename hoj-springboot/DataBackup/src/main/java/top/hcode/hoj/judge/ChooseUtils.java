@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import top.hcode.hoj.dao.RemoteJudgeAccountMapper;
+import top.hcode.hoj.mapper.RemoteJudgeAccountMapper;
+import top.hcode.hoj.dao.judge.JudgeServerEntityService;
 import top.hcode.hoj.pojo.entity.judge.JudgeServer;
 import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
-import top.hcode.hoj.service.judge.impl.JudgeServerServiceImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +37,7 @@ public class ChooseUtils {
     private String JudgeServiceName;
 
     @Autowired
-    private JudgeServerServiceImpl judgeServerService;
+    private JudgeServerEntityService judgeServerEntityService;
 
     @Autowired
     private RemoteJudgeAccountMapper remoteJudgeAccountMapper;
@@ -77,13 +77,13 @@ public class ChooseUtils {
          * 在MySQL Server过滤条件，发现不满足后，会调用unlock_row方法，
          * 把不满足条件的记录释放锁 (违背了二段锁协议的约束)。
          */
-        List<JudgeServer> judgeServerList = judgeServerService.list(judgeServerQueryWrapper);
+        List<JudgeServer> judgeServerList = judgeServerEntityService.list(judgeServerQueryWrapper);
 
         // 获取可用判题机
         for (JudgeServer judgeServer : judgeServerList) {
             if (judgeServer.getTaskNumber() < judgeServer.getMaxTaskNumber()) {
                 judgeServer.setTaskNumber(judgeServer.getTaskNumber() + 1);
-                boolean isOk = judgeServerService.updateById(judgeServer);
+                boolean isOk = judgeServerEntityService.updateById(judgeServer);
                 if (isOk) {
                     return judgeServer;
                 }
@@ -120,7 +120,7 @@ public class ChooseUtils {
          * 在MySQL Server过滤条件，发现不满足后，会调用unlock_row方法，
          * 把不满足条件的记录释放锁 (违背了二段锁协议的约束)。
          */
-        List<JudgeServer> judgeServerList = judgeServerService.list(judgeServerQueryWrapper);
+        List<JudgeServer> judgeServerList = judgeServerEntityService.list(judgeServerQueryWrapper);
         // CF的VJ判題需要一机一题(根据序号保持一定的固定)
         int len = judgeServerList.size();
         for (int i = 0; i < len; i++) {
@@ -130,7 +130,7 @@ public class ChooseUtils {
                 judgeServerUpdateWrapper.set(fixedTag, false)
                         .eq("id", judgeServer.getId())
                         .eq(fixedTag, true);
-                boolean isOk = judgeServerService.update(judgeServerUpdateWrapper);
+                boolean isOk = judgeServerEntityService.update(judgeServerUpdateWrapper);
                 if (isOk) {
                     return judgeServer;
                 }

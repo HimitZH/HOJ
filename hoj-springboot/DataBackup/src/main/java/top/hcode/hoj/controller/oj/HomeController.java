@@ -1,7 +1,5 @@
 package top.hcode.hoj.controller.oj;
 
-import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.text.UnicodeUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,50 +7,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.common.File;
 import top.hcode.hoj.pojo.vo.ACMRankVo;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
-import top.hcode.hoj.pojo.vo.ConfigVo;
+import top.hcode.hoj.pojo.vo.AnnouncementVo;;
 import top.hcode.hoj.pojo.vo.ContestVo;
-import top.hcode.hoj.service.common.impl.AnnouncementServiceImpl;
-import top.hcode.hoj.service.common.impl.FileServiceImpl;
-import top.hcode.hoj.service.contest.impl.ContestServiceImpl;
-import top.hcode.hoj.service.user.impl.UserRecordServiceImpl;
-import top.hcode.hoj.utils.Constants;
-import top.hcode.hoj.utils.RedisUtils;
+import top.hcode.hoj.service.oj.HomeService;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 /**
  * @Author: Himit_ZH
  * @Date: 2020/12/26 14:12
- * @Description: 处理客户端主页的请求
+ * @Description: 处理首页的请求
  */
 @RestController
 @RequestMapping("/api")
 public class HomeController {
 
     @Autowired
-    private ContestServiceImpl contestService;
-
-    @Autowired
-    private ConfigVo configVo;
-
-    @Autowired
-    private AnnouncementServiceImpl announcementDao;
-
-    @Autowired
-
-    private UserRecordServiceImpl userRecordService;
-
-    @Autowired
-    private RedisUtils redisUtils;
-
-    @Autowired
-    private FileServiceImpl fileService;
+    private HomeService homeService;
 
     /**
      * @MethodName getRecentContest
@@ -63,11 +37,9 @@ public class HomeController {
      */
 
     @GetMapping("/get-recent-contest")
-    public CommonResult getRecentContest() {
-        List<ContestVo> contests = contestService.getWithinNext14DaysContests();
-        return CommonResult.successResponse(contests);
+    public CommonResult<List<ContestVo>> getRecentContest() {
+        return homeService.getRecentContest();
     }
-
 
 
     /**
@@ -78,17 +50,9 @@ public class HomeController {
      * @Since 2021/9/4
      */
     @GetMapping("/home-carousel")
-    public CommonResult getHomeCarousel() {
-        List<File> fileList = fileService.queryCarouselFileList();
-        List<HashMap<String, Object>> apiList = fileList.stream().map(f -> {
-            HashMap<String, Object> param = new HashMap<>(2);
-            param.put("id", f.getId());
-            param.put("url", Constants.File.IMG_API.getPath() + f.getName());
-            return param;
-        }).collect(Collectors.toList());
-        return CommonResult.successResponse(apiList);
+    public CommonResult<List<HashMap<String, Object>>> getHomeCarousel() {
+        return homeService.getHomeCarousel();
     }
-
 
 
     /**
@@ -99,12 +63,9 @@ public class HomeController {
      * @Since 2021/1/15
      */
     @GetMapping("/get-recent-seven-ac-rank")
-    public CommonResult getRecentSevenACRank() {
-        List<ACMRankVo> recent7ACRank = userRecordService.getRecent7ACRank();
-
-        return CommonResult.successResponse(recent7ACRank, "获取成功！");
+    public CommonResult<List<ACMRankVo>> getRecentSevenACRank() {
+        return homeService.getRecentSevenACRank();
     }
-
 
 
     /**
@@ -116,13 +77,8 @@ public class HomeController {
      */
 
     @GetMapping("/get-recent-other-contest")
-    public CommonResult getRecentOtherContest() {
-        String redisKey = Constants.Schedule.RECENT_OTHER_CONTEST.getCode();
-        List<HashMap<String, Object>> contestsList;
-        // 从redis获取比赛列表
-        contestsList = (ArrayList<HashMap<String, Object>>) redisUtils.get(redisKey);
-
-        return CommonResult.successResponse(contestsList,"获取其它OJ最近比赛列表成功");
+    public CommonResult<List<HashMap<String, Object>>> getRecentOtherContest() {
+        return homeService.getRecentOtherContest();
     }
 
 
@@ -136,12 +92,9 @@ public class HomeController {
 
     @GetMapping("/get-common-announcement")
 
-    public CommonResult getCommonAnnouncement(@RequestParam(value = "limit", required = false) Integer limit,
-                                              @RequestParam(value = "currentPage", required = false) Integer currentPage) {
-        if (currentPage == null || currentPage < 1) currentPage = 1;
-        if (limit == null || limit < 1) limit = 10;
-        IPage<AnnouncementVo> announcementList = announcementDao.getAnnouncementList(limit, currentPage, true);
-        return CommonResult.successResponse(announcementList);
+    public CommonResult<IPage<AnnouncementVo>> getCommonAnnouncement(@RequestParam(value = "limit", required = false) Integer limit,
+                                                                     @RequestParam(value = "currentPage", required = false) Integer currentPage) {
+        return homeService.getCommonAnnouncement(limit, currentPage);
     }
 
     /**
@@ -153,20 +106,8 @@ public class HomeController {
      */
 
     @GetMapping("/get-website-config")
-    public CommonResult getWebConfig() {
-
-        return CommonResult.successResponse(
-                MapUtil.builder().put("baseUrl", UnicodeUtil.toString(configVo.getBaseUrl()))
-                        .put("name", UnicodeUtil.toString(configVo.getName()))
-                        .put("shortName", UnicodeUtil.toString(configVo.getShortName()))
-                        .put("register", configVo.getRegister())
-                        .put("recordName", UnicodeUtil.toString(configVo.getRecordName()))
-                        .put("recordUrl", UnicodeUtil.toString(configVo.getRecordUrl()))
-                        .put("description", UnicodeUtil.toString(configVo.getDescription()))
-                        .put("email", UnicodeUtil.toString(configVo.getEmailUsername()))
-                        .put("projectName", UnicodeUtil.toString(configVo.getProjectName()))
-                        .put("projectUrl", UnicodeUtil.toString(configVo.getProjectUrl())).map()
-        );
+    public CommonResult<Map<Object, Object>> getWebConfig() {
+        return homeService.getWebConfig();
     }
 
 }

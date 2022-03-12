@@ -6,15 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
+import top.hcode.hoj.dao.JudgeEntityService;
+import top.hcode.hoj.service.RemoteJudgeService;
+import top.hcode.hoj.judge.JudgeContext;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeRes;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
-import top.hcode.hoj.service.impl.JudgeServiceImpl;
 
-import top.hcode.hoj.service.impl.RemoteJudgeServiceImpl;
 import top.hcode.hoj.util.Constants;
 
 import java.util.Map;
@@ -24,14 +24,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j(topic = "hoj")
 @Component
-@RefreshScope
 public class RemoteJudgeGetResult {
 
     @Autowired
-    private JudgeServiceImpl judgeService;
+    private JudgeEntityService judgeEntityService;
 
     @Autowired
-    private RemoteJudgeServiceImpl remoteJudgeService;
+    private JudgeContext judgeContext;
+
+    @Autowired
+    private RemoteJudgeService remoteJudgeService;
 
     @Value("${hoj-judge-server.name}")
     private String name;
@@ -55,7 +57,7 @@ public class RemoteJudgeGetResult {
                     judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
                             .set("error_message", "Waiting for remote judge result exceeds the maximum number of times, please try submitting again!")
                             .eq("submit_id", remoteJudgeDTO.getJudgeId());
-                    judgeService.update(judgeUpdateWrapper);
+                    judgeEntityService.update(judgeUpdateWrapper);
 
                     log.error("[{}] Get Result Failed!", remoteJudgeDTO.getOj());
                     changeRemoteJudgeLock(remoteJudgeDTO.getOj(),
@@ -125,9 +127,9 @@ public class RemoteJudgeGetResult {
 
                         judge.setScore(score);
                         // 写回数据库
-                        judgeService.updateById(judge);
+                        judgeEntityService.updateById(judge);
                         // 同步其它表
-                        judgeService.updateOtherTable(remoteJudgeDTO.getJudgeId(),
+                        judgeContext.updateOtherTable(remoteJudgeDTO.getJudgeId(),
                                 status,
                                 remoteJudgeDTO.getCid(),
                                 remoteJudgeDTO.getUid(),
@@ -136,9 +138,9 @@ public class RemoteJudgeGetResult {
                                 judge.getTime());
 
                     } else {
-                        judgeService.updateById(judge);
+                        judgeEntityService.updateById(judge);
                         // 同步其它表
-                        judgeService.updateOtherTable(remoteJudgeDTO.getJudgeId(),
+                        judgeContext.updateOtherTable(remoteJudgeDTO.getJudgeId(),
                                 status,
                                 remoteJudgeDTO.getCid(),
                                 remoteJudgeDTO.getUid(),
@@ -159,7 +161,7 @@ public class RemoteJudgeGetResult {
                             .setStatus(status)
                             .setJudger(name);
                     // 写回数据库
-                    judgeService.updateById(judge);
+                    judgeEntityService.updateById(judge);
                 }
 
             }

@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.SystemError;
+import top.hcode.hoj.dao.ProblemCaseEntityService;
 import top.hcode.hoj.pojo.entity.problem.ProblemCase;
-import top.hcode.hoj.service.impl.ProblemCaseServiceImpl;
 import top.hcode.hoj.util.Constants;
 
 import java.io.File;
@@ -32,7 +32,7 @@ import java.util.List;
 public class ProblemTestCaseUtils {
 
     @Autowired
-    ProblemCaseServiceImpl problemCaseService;
+    private ProblemCaseEntityService problemCaseEntityService;
 
     // 本地无文件初始化测试数据，写成json文件
     public JSONObject initTestCase(List<HashMap<String, Object>> testCases,
@@ -164,7 +164,7 @@ public class ProblemTestCaseUtils {
 
         QueryWrapper<ProblemCase> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("pid", problemId);
-        List<ProblemCase> problemCases = problemCaseService.list(queryWrapper);
+        List<ProblemCase> problemCases = problemCaseEntityService.list(queryWrapper);
 
         if (problemCases.size() == 0) { // 数据库也为空的话
             throw new SystemError("problemID:[" + problemId + "] test case has not found.", null, null);

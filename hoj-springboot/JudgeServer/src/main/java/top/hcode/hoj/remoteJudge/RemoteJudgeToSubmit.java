@@ -6,11 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
+import top.hcode.hoj.dao.JudgeEntityService;
+import top.hcode.hoj.judge.JudgeContext;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
-import top.hcode.hoj.service.impl.JudgeServiceImpl;
-import top.hcode.hoj.service.impl.RemoteJudgeServiceImpl;
+import top.hcode.hoj.service.RemoteJudgeService;
 import top.hcode.hoj.util.Constants;
 
 @Component
@@ -19,10 +20,13 @@ import top.hcode.hoj.util.Constants;
 public class RemoteJudgeToSubmit {
 
     @Autowired
-    private JudgeServiceImpl judgeService;
+    private JudgeEntityService judgeEntityService;
 
     @Autowired
-    private RemoteJudgeServiceImpl remoteJudgeService;
+    private RemoteJudgeService remoteJudgeService;
+
+    @Autowired
+    private JudgeContext judgeContext;
 
 
     @Value("${hoj-judge-server.name}")
@@ -60,9 +64,9 @@ public class RemoteJudgeToSubmit {
             judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
                     .set("error_message", errLog)
                     .eq("submit_id", remoteJudgeDTO.getJudgeId());
-            judgeService.update(judgeUpdateWrapper);
+            judgeEntityService.update(judgeUpdateWrapper);
             // 更新其它表
-            judgeService.updateOtherTable(remoteJudgeDTO.getSubmitId(),
+            judgeContext.updateOtherTable(remoteJudgeDTO.getSubmitId(),
                     Constants.Judge.STATUS_SYSTEM_ERROR.getStatus(),
                     remoteJudgeDTO.getCid(),
                     remoteJudgeDTO.getUid(),
@@ -73,7 +77,7 @@ public class RemoteJudgeToSubmit {
         }
 
         // 提交成功顺便更新状态为-->STATUS_PENDING 判题中...
-        judgeService.updateById(new Judge()
+        judgeEntityService.updateById(new Judge()
                 .setSubmitId(remoteJudgeDTO.getJudgeId())
                 .setStatus(Constants.Judge.STATUS_PENDING.getStatus())
                 .setVjudgeSubmitId(submitId)

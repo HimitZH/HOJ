@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.mapper.ProblemCountMapper">
+    <select id="getContestProblemCount" resultType="top.hcode.hoj.pojo.entity.problem.ProblemCount">
+        SELECT COUNT(IF(status=-3,status,NULL)) AS pe,
+               COUNT(IF(status=-2,status,NULL)) AS ce,
+               COUNT(IF(status=-1,status,NULL)) AS wa,
+               COUNT(IF(status=0,status,NULL)) AS ac,
+               COUNT(IF(status=1,status,NULL)) AS tle,
+               COUNT(IF(status=2,status,NULL)) AS mle,
+               COUNT(IF(status=3,status,NULL)) AS re,
+               COUNT(IF(status=4,status,NULL)) AS se,
+               COUNT(IF(status=8,status,NULL)) AS pa,
+               COUNT(*) AS total
+        FROM judge where pid=#{pid} and cpid = #{cpid} and cid = #{cid}
+    </select>
+</mapper>

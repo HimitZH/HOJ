@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.mapper.TrainingRecordMapper">
+    <select id="getTrainingRecord" resultType="top.hcode.hoj.pojo.vo.TrainingRecordVo">
+        SELECT tr.tid,tr.uid,tr.pid,tr.tpid,tr.submit_id,j.status,j.score,j.time as use_time,
+        u.gender,u.realname as realname,u.username,u.avatar,u.school,u.nickname
+        FROM training_record tr,user_info u,judge j
+        WHERE tr.uid = u.uuid
+        AND tr.submit_id = j.submit_id
+        AND tr.tid = #{tid}
+        AND j.status IN (-3,-2,-1,0,1,2,3,8)
+        ORDER BY j.gmt_create ASC
+    </select>
+</mapper>

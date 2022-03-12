@@ -6,12 +6,12 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import top.hcode.hoj.dao.JudgeEntityService;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.ToJudge;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeFactory;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
-import top.hcode.hoj.service.impl.JudgeServiceImpl;
 import top.hcode.hoj.util.Constants;
 
 import javax.annotation.Resource;
@@ -32,7 +32,7 @@ public class RemoteJudgeContext {
     private RemoteJudgeGetResult remoteJudgeGetResult;
 
     @Resource
-    private JudgeServiceImpl judgeService;
+    private JudgeEntityService judgeEntityService;
 
     @Async
     public void judge(ToJudge toJudge) {
@@ -103,7 +103,7 @@ public class RemoteJudgeContext {
             judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus())
                     .set("error_message", "The judge server does not support this oj:" + remoteJudgeDTO.getOj())
                     .eq("submit_id", remoteJudgeDTO.getJudgeId());
-            judgeService.update(judgeUpdateWrapper);
+            judgeEntityService.update(judgeUpdateWrapper);
             return null;
         }
         remoteJudgeStrategy.setRemoteJudgeDTO(remoteJudgeDTO);

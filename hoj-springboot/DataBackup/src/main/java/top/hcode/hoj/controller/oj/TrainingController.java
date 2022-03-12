@@ -1,27 +1,15 @@
 package top.hcode.hoj.controller.oj;
 
-import cn.hutool.core.bean.BeanUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.contest.Contest;
-import top.hcode.hoj.pojo.entity.training.Training;
-import top.hcode.hoj.pojo.entity.training.TrainingCategory;
-import top.hcode.hoj.pojo.entity.training.TrainingRegister;
-import top.hcode.hoj.pojo.vo.ProblemVo;
-import top.hcode.hoj.pojo.vo.TrainingRankVo;
-import top.hcode.hoj.pojo.vo.TrainingVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.service.training.impl.*;
-import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.pojo.dto.RegisterTrainingDto;
+import top.hcode.hoj.pojo.vo.*;
+import top.hcode.hoj.service.oj.TrainingService;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -35,19 +23,7 @@ import java.util.List;
 public class TrainingController {
 
     @Resource
-    private TrainingServiceImpl trainingService;
-
-    @Resource
-    private TrainingRegisterServiceImpl trainingRegisterService;
-
-    @Resource
-    private TrainingCategoryServiceImpl trainingCategoryService;
-
-    @Resource
-    private TrainingProblemServiceImpl trainingProblemService;
-
-    @Resource
-    private TrainingRecordServiceImpl trainingRecordService;
+    private TrainingService trainingService;
 
     /**
      * @param limit
@@ -61,23 +37,18 @@ public class TrainingController {
      * @Since 2021/11/20
      */
     @GetMapping("/get-training-list")
-    public CommonResult getTrainingList(@RequestParam(value = "limit", required = false) Integer limit,
-                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
-                                        @RequestParam(value = "keyword", required = false) String keyword,
-                                        @RequestParam(value = "categoryId", required = false) Long categoryId,
-                                        @RequestParam(value = "auth", required = false) String auth) {
+    public CommonResult<IPage<TrainingVo>> getTrainingList(@RequestParam(value = "limit", required = false) Integer limit,
+                                                           @RequestParam(value = "currentPage", required = false) Integer currentPage,
+                                                           @RequestParam(value = "keyword", required = false) String keyword,
+                                                           @RequestParam(value = "categoryId", required = false) Long categoryId,
+                                                           @RequestParam(value = "auth", required = false) String auth) {
 
-        // 页数，每页题数若为空，设置默认值
-        if (currentPage == null || currentPage < 1) currentPage = 1;
-        if (limit == null || limit < 1) limit = 30;
-        IPage<TrainingVo> trainingList = trainingService.getTrainingList(limit, currentPage, categoryId, auth, keyword);
-        return CommonResult.successResponse(trainingList, "success");
+        return trainingService.getTrainingList(limit, currentPage, keyword, categoryId, auth);
     }
 
 
     /**
      * @param tid
-     * @param request
      * @MethodName getTraining
      * @Description 根据tid获取指定训练详情
      * @Return
@@ -85,37 +56,12 @@ public class TrainingController {
      */
     @GetMapping("/get-training-detail")
     @RequiresAuthentication
-    public CommonResult getTraining(@RequestParam(value = "tid") Long tid, HttpServletRequest request) {
-
-        Training training = trainingService.getById(tid);
-        if (training == null || !training.getStatus()) {
-            return CommonResult.errorResponse("该训练不存在或不允许显示！");
-        }
-
-        TrainingVo trainingVo = BeanUtil.copyProperties(training, TrainingVo.class);
-        TrainingCategory trainingCategory = trainingCategoryService.getTrainingCategoryByTrainingId(training.getId());
-        trainingVo.setCategoryName(trainingCategory.getName());
-        trainingVo.setCategoryColor(trainingCategory.getColor());
-        List<Long> trainingProblemIdList = trainingProblemService.getTrainingProblemIdList(training.getId());
-        trainingVo.setProblemCount(trainingProblemIdList.size());
-
-        // 获取当前登录的用户
-        HttpSession session = request.getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-        if (userRolesVo != null
-                && trainingRegisterService.checkTrainingAuth(training, request) == null) {
-            Integer userTrainingACProblemCount = trainingProblemService.getUserTrainingACProblemCount(userRolesVo.getUid(), trainingProblemIdList);
-            trainingVo.setAcCount(userTrainingACProblemCount);
-        } else {
-            trainingVo.setAcCount(0);
-        }
-
-        return CommonResult.successResponse(trainingVo, "success");
+    public CommonResult<TrainingVo> getTraining(@RequestParam(value = "tid") Long tid) {
+        return trainingService.getTraining(tid);
     }
 
     /**
      * @param tid
-     * @param request
      * @MethodName getTrainingProblemList
      * @Description 根据tid获取指定训练的题单题目列表
      * @Return
@@ -123,24 +69,12 @@ public class TrainingController {
      */
     @GetMapping("/get-training-problem-list")
     @RequiresAuthentication
-    public CommonResult getTrainingProblemList(@RequestParam(value = "tid") Long tid, HttpServletRequest request) {
-
-        Training training = trainingService.getById(tid);
-        if (training == null || !training.getStatus()) {
-            return CommonResult.errorResponse("该训练不存在或不允许显示！");
-        }
-
-        CommonResult result = trainingRegisterService.checkTrainingAuth(training, request);
-        if (result != null) {
-            return result;
-        }
-        List<ProblemVo> trainingProblemList = trainingProblemService.getTrainingProblemList(tid);
-        return CommonResult.successResponse(trainingProblemList, "success");
+    public CommonResult<List<ProblemVo>> getTrainingProblemList(@RequestParam(value = "tid") Long tid) {
+        return trainingService.getTrainingProblemList(tid);
     }
 
     /**
-     * @param params
-     * @param request
+     * @param registerTrainingDto
      * @MethodName toRegisterTraining
      * @Description 注册校验私有权限的训练
      * @Return
@@ -148,21 +82,13 @@ public class TrainingController {
      */
     @PostMapping("/register-training")
     @RequiresAuthentication
-    public CommonResult toRegisterTraining(@RequestBody HashMap<String, Object> params, HttpServletRequest request) {
-        String tidStr = (String) params.get("tid");
-        String password = (String) params.get("password");
-        if (StringUtils.isEmpty(tidStr) || StringUtils.isEmpty(password)) {
-            return CommonResult.errorResponse("请求参数不能为空！");
-        }
-        Long tid = Long.valueOf(tidStr);
-
-        return trainingRegisterService.toRegisterTraining(tid, password, request);
+    public CommonResult<Void> toRegisterTraining(@RequestBody RegisterTrainingDto registerTrainingDto) {
+        return trainingService.toRegisterTraining(registerTrainingDto);
     }
 
 
     /**
      * @param tid
-     * @param request
      * @MethodName getTrainingAccess
      * @Description 私有权限的训练需要获取当前用户是否有进入训练的权限
      * @Return
@@ -170,26 +96,8 @@ public class TrainingController {
      */
     @RequiresAuthentication
     @GetMapping("/get-training-access")
-    public CommonResult getTrainingAccess(@RequestParam(value = "tid") Long tid, HttpServletRequest request) {
-
-        // 获取当前登录的用户
-        HttpSession session = request.getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-
-        QueryWrapper<TrainingRegister> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("tid", tid).eq("uid", userRolesVo.getUid());
-        TrainingRegister trainingRegister = trainingRegisterService.getOne(queryWrapper, false);
-        boolean access = false;
-        if (trainingRegister != null) {
-            access = true;
-            Training training = trainingService.getById(tid);
-            if (training == null || !training.getStatus()) {
-                return CommonResult.errorResponse("对不起，该训练不存在!");
-            }
-        }
-        HashMap<String, Object> result = new HashMap<>();
-        result.put("access", access);
-        return CommonResult.successResponse(result);
+    public CommonResult<AccessVo> getTrainingAccess(@RequestParam(value = "tid") Long tid) {
+        return trainingService.getTrainingAccess(tid);
     }
 
 
@@ -197,7 +105,6 @@ public class TrainingController {
      * @param tid
      * @param limit
      * @param currentPage
-     * @param request
      * @MethodName getTrainingRank
      * @Description 获取训练的排行榜分页
      * @Return
@@ -205,26 +112,10 @@ public class TrainingController {
      */
     @GetMapping("/get-training-rank")
     @RequiresAuthentication
-    public CommonResult getTrainingRank(@RequestParam(value = "tid", required = true) Long tid,
-                                        @RequestParam(value = "limit", required = false) Integer limit,
-                                        @RequestParam(value = "currentPage", required = false) Integer currentPage,
-                                        HttpServletRequest request) {
-
-        Training training = trainingService.getById(tid);
-        if (training == null || !training.getStatus()) {
-            return CommonResult.errorResponse("该训练不存在或不允许显示！");
-        }
-
-        CommonResult result = trainingRegisterService.checkTrainingAuth(training, request);
-        if (result != null) {
-            return result;
-        }
-
-        // 页数，每页数若为空，设置默认值
-        if (currentPage == null || currentPage < 1) currentPage = 1;
-        if (limit == null || limit < 1) limit = 30;
-        IPage<TrainingRankVo> trainingRankPager = trainingRecordService.getTrainingRank(tid, training.getAuthor(), currentPage, limit);
-        return CommonResult.successResponse(trainingRankPager, "success");
+    public CommonResult<IPage<TrainingRankVo>> getTrainingRank(@RequestParam(value = "tid", required = true) Long tid,
+                                                               @RequestParam(value = "limit", required = false) Integer limit,
+                                                               @RequestParam(value = "currentPage", required = false) Integer currentPage) {
+        return trainingService.getTrainingRank(tid, limit, currentPage);
     }
 
 }

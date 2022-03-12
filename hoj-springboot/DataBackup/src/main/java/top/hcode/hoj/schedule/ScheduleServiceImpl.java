@@ -16,7 +16,11 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.dao.common.FileEntityService;
+import top.hcode.hoj.dao.judge.JudgeEntityService;
+import top.hcode.hoj.dao.msg.AdminSysNoticeEntityService;
+import top.hcode.hoj.dao.msg.UserSysNoticeEntityService;
+import top.hcode.hoj.dao.user.SessionEntityService;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.user.Session;
 import top.hcode.hoj.pojo.entity.user.UserInfo;
@@ -24,14 +28,9 @@ import top.hcode.hoj.pojo.entity.user.UserRecord;
 import top.hcode.hoj.pojo.entity.msg.AdminSysNotice;
 import top.hcode.hoj.pojo.entity.common.File;
 import top.hcode.hoj.pojo.entity.msg.UserSysNotice;
-import top.hcode.hoj.service.common.impl.FileServiceImpl;
-import top.hcode.hoj.service.judge.impl.JudgeServiceImpl;
-import top.hcode.hoj.service.judge.impl.RejudgeServiceImpl;
-import top.hcode.hoj.service.user.UserInfoService;
-import top.hcode.hoj.service.user.UserRecordService;
-import top.hcode.hoj.service.msg.impl.AdminSysNoticeServiceImpl;
-import top.hcode.hoj.service.msg.impl.UserSysNoticeServiceImpl;
-import top.hcode.hoj.service.user.impl.SessionServiceImpl;
+import top.hcode.hoj.service.admin.rejudge.RejudgeService;
+import top.hcode.hoj.dao.user.UserInfoEntityService;
+import top.hcode.hoj.dao.user.UserRecordEntityService;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.JsoupUtils;
 import top.hcode.hoj.utils.RedisUtils;
@@ -70,31 +69,31 @@ import java.util.stream.Collectors;
 public class ScheduleServiceImpl implements ScheduleService {
 
     @Autowired
-    private FileServiceImpl fileService;
+    private FileEntityService fileEntityService;
 
     @Autowired
     private RedisUtils redisUtils;
 
     @Autowired
-    private UserInfoService userInfoDao;
+    private UserInfoEntityService userInfoEntityService;
 
     @Autowired
-    private UserRecordService userRecordDao;
+    private UserRecordEntityService userRecordEntityService;
 
     @Resource
-    private SessionServiceImpl sessionService;
+    private SessionEntityService sessionEntityService;
 
     @Resource
-    private AdminSysNoticeServiceImpl adminSysNoticeService;
+    private AdminSysNoticeEntityService adminSysNoticeEntityService;
 
     @Resource
-    private UserSysNoticeServiceImpl userSysNoticeService;
+    private UserSysNoticeEntityService userSysNoticeEntityService;
 
     @Resource
-    private JudgeServiceImpl judgeService;
+    private JudgeEntityService judgeEntityService;
 
     @Resource
-    private RejudgeServiceImpl rejudgeService;
+    private RejudgeService rejudgeService;
 
     /**
      * @MethodName deleteAvatar
@@ -106,7 +105,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Scheduled(cron = "0 0 3 * * *")
     @Override
     public void deleteAvatar() {
-        List<File> files = fileService.queryDeleteAvatarList();
+        List<File> files = fileEntityService.queryDeleteAvatarList();
         // 如果查不到，直接结束
         if (files.isEmpty()) {
             return;
@@ -121,7 +120,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             }
         }
 
-        boolean isSuccess = fileService.removeByIds(idLists);
+        boolean isSuccess = fileEntityService.removeByIds(idLists);
         if (!isSuccess) {
             log.error("数据库file表删除头像数据失败----------------->sql语句执行失败");
         }
@@ -238,7 +237,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
         // 查询cf_username不为空的数据
         userInfoQueryWrapper.isNotNull("cf_username");
-        List<UserInfo> userInfoList = userInfoDao.list(userInfoQueryWrapper);
+        List<UserInfo> userInfoList = userInfoEntityService.list(userInfoQueryWrapper);
         for (UserInfo userInfo : userInfoList) {
             // 获取cf名字
             String cfUsername = userInfo.getCfUsername();
@@ -262,7 +261,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 UpdateWrapper<UserRecord> userRecordUpdateWrapper = new UpdateWrapper<>();
                 // 将对应的cf分数修改
                 userRecordUpdateWrapper.eq("uid", uuid).set("rating", cfRating);
-                boolean result = userRecordDao.update(userRecordUpdateWrapper);
+                boolean result = userRecordEntityService.update(userRecordUpdateWrapper);
                 if (!result) {
                     log.error("插入UserRecord表失败------------------------------->");
                 }
@@ -303,16 +302,16 @@ public class ScheduleServiceImpl implements ScheduleService {
         String strTime = DateFormatUtils.format(dateTime, "yyyy-MM-dd HH:mm:ss");
         sessionQueryWrapper.select("distinct uid");
         sessionQueryWrapper.apply("UNIX_TIMESTAMP(gmt_create) >= UNIX_TIMESTAMP('" + strTime + "')");
-        List<Session> sessionList = sessionService.list(sessionQueryWrapper);
+        List<Session> sessionList = sessionEntityService.list(sessionQueryWrapper);
         if (sessionList.size() > 0) {
             List<String> uidList = sessionList.stream().map(Session::getUid).collect(Collectors.toList());
             QueryWrapper<Session> queryWrapper = new QueryWrapper<>();
             queryWrapper.in("uid", uidList)
                     .apply("UNIX_TIMESTAMP('" + strTime + "') > UNIX_TIMESTAMP(gmt_create)");
-            List<Session> needDeletedSessionList = sessionService.list(queryWrapper);
+            List<Session> needDeletedSessionList = sessionEntityService.list(queryWrapper);
             if (needDeletedSessionList.size() > 0) {
                 List<Long> needDeletedIdList = needDeletedSessionList.stream().map(Session::getId).collect(Collectors.toList());
-                boolean isOk = sessionService.removeByIds(needDeletedIdList);
+                boolean isOk = sessionEntityService.removeByIds(needDeletedIdList);
                 if (!isOk) {
                     log.error("=============数据库session表定时删除用户6个月前的记录失败===============");
                 }
@@ -332,14 +331,14 @@ public class ScheduleServiceImpl implements ScheduleService {
     public void syncNoticeToRecentHalfYearUser() {
         QueryWrapper<AdminSysNotice> adminSysNoticeQueryWrapper = new QueryWrapper<>();
         adminSysNoticeQueryWrapper.eq("state", false);
-        List<AdminSysNotice> adminSysNotices = adminSysNoticeService.list(adminSysNoticeQueryWrapper);
+        List<AdminSysNotice> adminSysNotices = adminSysNoticeEntityService.list(adminSysNoticeQueryWrapper);
         if (adminSysNotices.size() == 0) {
             return;
         }
 
         QueryWrapper<Session> sessionQueryWrapper = new QueryWrapper<>();
         sessionQueryWrapper.select("DISTINCT uid");
-        List<Session> sessionList = sessionService.list(sessionQueryWrapper);
+        List<Session> sessionList = sessionEntityService.list(sessionQueryWrapper);
         List<String> userIds = sessionList.stream().map(Session::getUid).collect(Collectors.toList());
 
         for (AdminSysNotice adminSysNotice : adminSysNotices) {
@@ -353,7 +352,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                                 .setSysNoticeId(adminSysNotice.getId());
                         userSysNoticeList.add(userSysNotice);
                     }
-                    boolean isOk1 = userSysNoticeService.saveOrUpdateBatch(userSysNoticeList);
+                    boolean isOk1 = userSysNoticeEntityService.saveOrUpdateBatch(userSysNoticeList);
                     if (isOk1) {
                         adminSysNotice.setState(true);
                     }
@@ -363,7 +362,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                     userSysNotice.setRecipientId(adminSysNotice.getRecipientId())
                             .setType("Mine")
                             .setSysNoticeId(adminSysNotice.getId());
-                    boolean isOk2 = userSysNoticeService.saveOrUpdate(userSysNotice);
+                    boolean isOk2 = userSysNoticeEntityService.saveOrUpdate(userSysNotice);
                     if (isOk2) {
                         adminSysNotice.setState(true);
                     }
@@ -374,7 +373,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         }
 
-        boolean isUpdateNoticeOk = adminSysNoticeService.saveOrUpdateBatch(adminSysNotices);
+        boolean isUpdateNoticeOk = adminSysNoticeEntityService.saveOrUpdateBatch(adminSysNotices);
         if (!isUpdateNoticeOk) {
             log.error("=============推送系统通知更新状态失败===============");
         }
@@ -391,7 +390,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         judgeQueryWrapper.select("distinct submit_id");
         judgeQueryWrapper.eq("status", Constants.Judge.STATUS_PENDING.getStatus());
         judgeQueryWrapper.apply("UNIX_TIMESTAMP('" + strTime + "') > UNIX_TIMESTAMP(gmt_modified)");
-        List<Judge> judgeList = judgeService.list(judgeQueryWrapper);
+        List<Judge> judgeList = judgeEntityService.list(judgeQueryWrapper);
         if (!CollectionUtils.isEmpty(judgeList)) {
             log.info("Half An Hour Check Pending Submission to Rejudge:" + Arrays.toString(judgeList.toArray()));
             for (Judge judge : judgeList) {

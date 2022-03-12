@@ -14,6 +14,7 @@ import java.net.UnknownHostException;
  */
 @Slf4j(topic = "hoj")
 public class IpUtils {
+
     public static String getUserIpAddr(HttpServletRequest request) {
         String ipAddress = null;
         try {

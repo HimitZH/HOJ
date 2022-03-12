@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.mapper.RoleAuthMapper">
+    <resultMap id="map_RoleAuths" type="top.hcode.hoj.pojo.vo.RoleAuthsVo">
+        <id column="id" property="id"></id>
+        <result column="role" property="role"></result>
+        <result column="description" property="description"></result>
+        <result column="status" property="status"></result>
+        <result column="gmt_create" property="gmtCreate"></result>
+        <result column="gmt_modified" property="gmtModified"></result>
+        <collection property="auths" ofType="top.hcode.hoj.pojo.entity.user.Auth">
+            <id column="auth_id" property="id"></id>
+            <result column="name" property="name"></result>
+            <result column="permission" property="permission"></result>
+            <result column="auth_status" property="status"></result>
+            <result column="gmt_create" property="gmtCreate"></result>
+            <result column="gmt_modified" property="gmtModified"></result>
+        </collection>
+    </resultMap>
+    <select id="getRoleAuths" resultMap="map_RoleAuths">
+       SELECT r.*,a.id as auth_id,a.name,a.permission,a.status as auth_status FROM role r
+       LEFT OUTER JOIN role_auth ra ON r.id=ra.role_id LEFT JOIN auth a ON ra.auth_id = a.id WHERE r.id= #{rid}
+    </select>
+</mapper>
