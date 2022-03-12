@@ -42,10 +42,7 @@ import top.hcode.hoj.validator.ContestValidator;
 import top.hcode.hoj.validator.JudgeValidator;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @Author: Himit_ZH
@@ -475,7 +472,7 @@ public class JudgeManager {
 
         // 如果该题不支持开放测试点结果查看
         if (!problem.getOpenCaseResult()) {
-            throw new StatusForbiddenException("对不起，该题测试样例详情不支持开放！");
+            return null;
         }
 
         Session session = SecurityUtils.getSubject().getSession();
