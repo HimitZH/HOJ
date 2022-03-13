@@ -315,7 +315,7 @@ export default {
             : 'admin_deleteAnnouncement';
           api[funcName](announcementId).then((res) => {
             this.loading = true;
-            myMessage.success(res.data.msg);
+            myMessage.success(this.$i18n.t('m.Delete_successfully'));
             this.init();
           });
         })

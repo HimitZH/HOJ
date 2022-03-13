@@ -792,7 +792,6 @@ export default {
           .admin_generateUser(data)
           .then((res) => {
             this.loadingGenerate = false;
-            myMessage.success(res.data.msg);
             let url = '/api/file/generate-user-excel?key=' + res.data.data.key;
             utils.downloadFile(url).then(() => {
               this.$alert(this.$i18n.t('m.Generate_User_Success'), 'Tips');

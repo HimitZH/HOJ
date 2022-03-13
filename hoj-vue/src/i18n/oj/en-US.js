@@ -297,11 +297,12 @@ export const m = {
   Delete_successfully:'Delete successfully',
   Post_successfully:'Post successfully',
 
-  // /views/oj/discussion/discussionList.vue
+  // /views/oj/discussion/discussion.vue
   Report:'Report',
   Like:'Like',
   Liked:'Liked',
   Report_Reason:'Report Reason',
+  The_report_label_and_reason_cannot_be_empty:'The report label and reason cannot be empty.',
   
   // 404.vue
   Page_Not_Found:"Sorry, the page can't be found",
@@ -453,6 +454,8 @@ export const m = {
   Submit_Comment:'Submit',
   All_Comment:'All Comment',
   Reply:'Reply',
+  Reply_Successfully:'Reply Successfully',
+  Comment_Successfully:'Comment Successfully',
   Reply_Total:'Total',
   Replies:'replies',
   Click_Show_All:'Click to Show All',

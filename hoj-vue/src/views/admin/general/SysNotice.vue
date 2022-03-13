@@ -270,7 +270,7 @@ export default {
           let funcName = 'admin_deleteNotice';
           api[funcName](noticeId).then((res) => {
             this.loading = true;
-            myMessage.success(res.data.msg);
+            myMessage.success(this.$i18n.t('m.Delete_successfully'));
             this.init();
           });
         })

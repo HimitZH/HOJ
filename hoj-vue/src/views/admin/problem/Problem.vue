@@ -1181,7 +1181,7 @@ export default {
           this.loadingCompile = false;
           this.problem.spjCompileOk = true;
           this.error.spj = '';
-          myMessage.success(res.data.msg);
+          myMessage.success(this.$i18n.t('m.Compiled_Successfully'));
         },
         (err) => {
           this.loadingCompile = false;

@@ -28,6 +28,7 @@ export const m = {
   Discussion_Admin:'Admin Discussion',
   Home_Page:'Home Page',
   Logout:'Logout',
+  Log_Out_Successfully:'Log out successfully',
 
   // /views/admin/Dashboard.vue
   Last_Login: 'Last Login',
@@ -207,6 +208,7 @@ export const m = {
   SPJ_Language: 'SPJ Program Language',
   Interactive_Language:'Interactive Program Langugae',
   Compile: 'Compile',
+  Compiled_Successfully:'Compiled Successfully',
   Code_Template: 'Code Template',
   Type: 'Type',
   Judge_Samples:'Judge Samples',

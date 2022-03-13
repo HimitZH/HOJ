@@ -330,7 +330,9 @@ export default {
         return;
       }
       if (this.report.tagList.length == 0 && !this.report.content) {
-        myMessage.warning('举报标签和理由不能都为空');
+        myMessage.warning(
+          this.$i18n.t('m.The_report_label_and_reason_cannot_be_empty')
+        );
         return;
       }
       var reportMsg = '';

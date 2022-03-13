@@ -380,7 +380,7 @@ export default {
             api
               .admin_deleteDiscussion(didList)
               .then((res) => {
-                myMessage.success(res.data.msg);
+                myMessage.success(this.$i18n.t('m.Delete_successfully'));
                 this.selectedDiscussions = [];
                 this.getDiscussionList(this.currentPage);
               })

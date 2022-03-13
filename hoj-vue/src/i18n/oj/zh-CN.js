@@ -299,11 +299,12 @@ export const m = {
   Delete_successfully:'删除成功',
   Post_successfully:'发布成功',
 
-  // /views/oj/discussion/discussionList.vue
+  // /views/oj/discussion/discussion.vue
   Report:'举报',
   Like:'点赞',
   Liked:'已点赞',
   Report_Reason:'举报原因',
+  The_report_label_and_reason_cannot_be_empty:'举报标签和理由不能都为空',
 
   // 404.vue
   Page_Not_Found:"页面找不到啦",
@@ -455,6 +456,8 @@ export const m = {
   Submit_Comment:'提交评论',
   All_Comment:'全部评论',
   Reply:'回复',
+  Reply_Successfully:'回复成功',
+  Comment_Successfully:'评论成功',
   Reply_Total:'总共',
   Replies:'条回复',
   Click_Show_All:'点击查看全部',
