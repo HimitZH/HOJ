@@ -28,10 +28,8 @@ import top.hcode.hoj.dao.problem.ProblemEntityService;
 import top.hcode.hoj.utils.Constants;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @Author: Himit_ZH
@@ -64,7 +62,8 @@ public class AdminContestProblemManager {
         List<Long> pidList = new LinkedList<>();
 
         List<ContestProblem> contestProblemList = contestProblemEntityService.list(contestProblemQueryWrapper);
-        HashMap<Long, Object> contestProblemMap = new HashMap<>();
+
+        HashMap<Long, ContestProblem> contestProblemMap = new HashMap<>();
         contestProblemList.forEach(contestProblem -> {
             contestProblemMap.put(contestProblem.getPid(), contestProblem);
             pidList.add(contestProblem.getPid());
@@ -110,8 +109,28 @@ public class AdminContestProblemManager {
                     .like("author", keyword));
         }
 
-        IPage<Problem> problemList = problemEntityService.page(iPage, problemQueryWrapper);
-        contestProblem.put("problemList", problemList);
+        IPage<Problem> problemListPage = problemEntityService.page(iPage, problemQueryWrapper);
+
+
+        List<Problem> problemList = problemListPage.getRecords();
+
+        List<Problem> sortedProblemList = problemList.stream().sorted(Comparator.comparing(Problem::getId, (a, b) -> {
+            ContestProblem x = contestProblemMap.get(a);
+            ContestProblem y = contestProblemMap.get(b);
+            if (x == null && y != null) {
+                return 1;
+            } else if (x != null && y == null) {
+                return -1;
+            } else if (x == null) {
+                return -1;
+            } else {
+                return x.getDisplayId().compareTo(y.getDisplayId());
+            }
+        })).collect(Collectors.toList());
+
+        problemListPage.setRecords(sortedProblemList);
+
+        contestProblem.put("problemList", problemListPage);
         contestProblem.put("contestProblemMap", contestProblemMap);
 
         return contestProblem;

@@ -8,7 +8,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.mapper.SessionMapper;
 import top.hcode.hoj.pojo.entity.msg.AdminSysNotice;
@@ -41,7 +40,6 @@ public class SessionEntityServiceImpl extends ServiceImpl<SessionMapper, Session
 
     @Override
     @Async
-    @Transactional(rollbackFor = Exception.class)
     public void checkRemoteLogin(String uid) {
         QueryWrapper<Session> sessionQueryWrapper = new QueryWrapper<>();
         sessionQueryWrapper.eq("uid", uid)
