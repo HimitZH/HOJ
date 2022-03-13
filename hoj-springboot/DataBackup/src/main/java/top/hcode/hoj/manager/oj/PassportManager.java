@@ -99,7 +99,7 @@ public class PassportManager {
 
         UserRolesVo userRolesVo = userRoleEntityService.getUserRoles(null, loginDto.getUsername());
 
-        if (userRolesVo == null){
+        if (userRolesVo == null) {
             throw new StatusFailException("用户名或密码错误！请注意大小写！");
         }
 
@@ -136,7 +136,10 @@ public class PassportManager {
 
         UserInfoVo userInfoVo = new UserInfoVo();
         BeanUtil.copyProperties(userRolesVo, userInfoVo, "roles");
-        userInfoVo.setRoleList(userRolesVo.getRoles().stream().map(Role::getRole).collect(Collectors.toList()));
+        userInfoVo.setRoleList(userRolesVo.getRoles()
+                .stream()
+                .map(Role::getRole)
+                .collect(Collectors.toList()));
         return userInfoVo;
     }
 
