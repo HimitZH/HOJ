@@ -532,7 +532,7 @@ export default {
       if (command === 'logout') {
         api.admin_logout().then((res) => {
           this.$router.push({ path: '/admin/login' });
-          mMessage.success(res.data.msg);
+          mMessage.success(this.$i18n.t('m.Log_Out_Successfully'));
           this.$store.commit('clearUserInfoAndToken');
         });
       }

@@ -28,6 +28,7 @@ export const m = {
   Discussion_Admin:'讨论管理',
   Home_Page:'主页',
   Logout:'退出登录',
+  Log_Out_Successfully:'退出登录成功',
 
   // /views/admin/Dashboard.vue
   Last_Login: '最近登录',
@@ -205,6 +206,7 @@ export const m = {
   Interactive_Language:'交互判题程序语言',
   SPJ_Language: '特殊判题程序语言',
   Compile: '编译',
+  Compiled_Successfully:'编译成功',
   Code_Template: '代码模板',
   Type: '类型',
   Judge_Samples:'评测数据',

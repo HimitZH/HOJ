@@ -660,7 +660,7 @@ export default {
         this.comments = [res.data.data].concat(this.comments);
         this.totalComment++;
         this.total++;
-        myMessage.success(res.data.msg);
+        myMessage.success(this.$i18n.t('m.Comment_Successfully'));
         this.ownInputComment = '';
         this.$nextTick((_) => {
           addCodeBtn();
@@ -711,7 +711,7 @@ export default {
           addCodeBtn();
         });
         this.totalComment++;
-        myMessage.success(res.data.msg);
+        myMessage.success(this.$i18n.t('m.Reply_Successfully'));
         this.replyInputComment = '';
       });
     },
@@ -767,7 +767,7 @@ export default {
             this.total--;
             this.totalComment -= comment.replyList.length;
             this.comments.splice(commentIndex, 1);
-            myMessage.success(res.data.msg);
+            myMessage.success(this.$i18n.t('m.Delete_successfully'));
           });
         })
         .catch(() => {});
@@ -789,7 +789,7 @@ export default {
             reply: reply,
           };
           api.deleteReply(replyDeleteData).then((res) => {
-            myMessage.success(res.data.msg);
+            myMessage.success(this.$i18n.t('m.Delete_successfully'));
             if (!this.comments[commentIndex].backupReplyList) {
               api
                 .getAllReply(this.comments[commentIndex].id, this.cid)
