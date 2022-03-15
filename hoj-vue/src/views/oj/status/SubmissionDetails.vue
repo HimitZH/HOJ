@@ -124,7 +124,10 @@
         </vxe-table-column>
       </vxe-table>
     </el-col>
-    <el-col :span="24" v-if="testCaseResult">
+    <el-col
+      :span="24"
+      v-if="testCaseResult != null && testCaseResult.length > 0"
+    >
       <el-card style="margin-top: 13px;" shadow="hover">
         <div slot="header">
           <span class="panel-title home-title">{{
