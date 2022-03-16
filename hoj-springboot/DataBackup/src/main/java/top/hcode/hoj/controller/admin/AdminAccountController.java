@@ -10,6 +10,7 @@ import top.hcode.hoj.common.result.CommonResult;
 
 import top.hcode.hoj.pojo.dto.LoginDto;
 
+import top.hcode.hoj.pojo.vo.UserInfoVo;
 import top.hcode.hoj.service.admin.account.AdminAccountService;
 
 
@@ -27,7 +28,7 @@ public class AdminAccountController {
     private AdminAccountService adminAccountService;
 
     @PostMapping("/login")
-    public CommonResult<Void> login(@Validated @RequestBody LoginDto loginDto){
+    public CommonResult<UserInfoVo> login(@Validated @RequestBody LoginDto loginDto){
        return adminAccountService.login(loginDto);
     }
 

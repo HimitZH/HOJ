@@ -64,7 +64,7 @@ public class AdminUserManager {
         return userRoleEntityService.getUserList(limit, currentPage, keyword, onlyAdmin);
     }
 
-    public void editUser(AdminEditUserDto adminEditUserDto) {
+    public void editUser(AdminEditUserDto adminEditUserDto) throws StatusFailException {
 
         String username = adminEditUserDto.getUsername();
         String uid = adminEditUserDto.getUid();
@@ -75,6 +75,25 @@ public class AdminUserManager {
         int status = adminEditUserDto.getStatus();
         boolean setNewPwd = adminEditUserDto.getSetNewPwd();
 
+        String titleName = adminEditUserDto.getTitleName();
+        String titleColor = adminEditUserDto.getTitleColor();
+
+        if (!StringUtils.isEmpty(realname) && realname.length() > 50) {
+            throw new StatusFailException("真实姓名的长度不能超过50位");
+        }
+
+        if (!StringUtils.isEmpty(titleName) && titleName.length() > 20) {
+            throw new StatusFailException("头衔的长度建议不要超过20位");
+        }
+
+        if (!StringUtils.isEmpty(password) && (password.length() < 6 || password.length() > 20)) {
+            throw new StatusFailException("密码长度建议为6~20位！");
+        }
+
+        if (username.length() > 20) {
+            throw new StatusFailException("用户名长度建议不能超过20位!");
+        }
+
 
         UpdateWrapper<UserInfo> userInfoUpdateWrapper = new UpdateWrapper<>();
 
@@ -83,32 +102,34 @@ public class AdminUserManager {
                 .set("realname", realname)
                 .set("email", email)
                 .set(setNewPwd, "password", SecureUtil.md5(password))
+                .set("title_name", titleName)
+                .set("title_color", titleColor)
                 .set("status", status);
-        boolean addUserInfo = userInfoEntityService.update(userInfoUpdateWrapper);
+        boolean updateUserInfo = userInfoEntityService.update(userInfoUpdateWrapper);
 
         QueryWrapper<UserRole> userRoleQueryWrapper = new QueryWrapper<>();
         userRoleQueryWrapper.eq("uid", uid);
         UserRole userRole = userRoleEntityService.getOne(userRoleQueryWrapper, false);
-        boolean addUserRole = false;
+        boolean changeUserRole = false;
         int oldType = userRole.getRoleId().intValue();
         if (userRole.getRoleId().intValue() != type) {
             userRole.setRoleId((long) type);
-            addUserRole = userRoleEntityService.updateById(userRole);
+            changeUserRole = userRoleEntityService.updateById(userRole);
             if (type == 1000 || oldType == 1000) {
                 // 新增或者去除超级管理员需要删除缓存
                 String cacheKey = Constants.Account.SUPER_ADMIN_UID_LIST_CACHE.getCode();
                 redisUtils.del(cacheKey);
             }
         }
-        if (addUserInfo) {
+        if (updateUserInfo && setNewPwd) {
             // 需要重新登录
             userRoleEntityService.deleteCache(uid, true);
-        } else if (addUserRole) {
+        } else if (changeUserRole) {
             // 需要重新授权
             userRoleEntityService.deleteCache(uid, false);
         }
 
-        if (addUserRole) {
+        if (changeUserRole) {
             // 获取当前登录的用户
             Session session = SecurityUtils.getSubject().getSession();
             UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");

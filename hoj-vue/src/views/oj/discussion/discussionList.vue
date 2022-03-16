@@ -695,7 +695,6 @@ export default {
   font-size: 0.75rem;
   padding: 0.1875rem 0.25rem;
   line-height: 1;
-  vertical-align: middle;
 }
 </style>
 <style scoped>

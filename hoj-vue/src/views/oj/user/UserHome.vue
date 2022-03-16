@@ -39,8 +39,15 @@
             <i class="fa fa-venus"></i>
           </span>
         </p>
-        <p>
-          <span v-if="profile.nickname">
+        <p v-if="profile.titleName">
+          <span>
+            <el-tag effect="dark" size="small" :color="profile.titleColor">
+              {{ profile.titleName }}
+            </el-tag>
+          </span>
+        </p>
+        <p v-if="profile.nickname">
+          <span>
             <el-tag
               effect="plain"
               size="small"
@@ -364,7 +371,6 @@ export default {
 .gender-male {
   font-size: 16px;
   margin-left: 5px;
-
   color: white;
   border-radius: 4px;
   padding: 2px;

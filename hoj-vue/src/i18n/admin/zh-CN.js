@@ -87,6 +87,8 @@ export const m = {
   The_usernames_will_be:'生成的用户名将会是',
   Set_New_PWD:'设置新密码',
   General_New_Password: '新密码',
+  Title_Color:'头衔颜色',
+  Title_Name:'头衔名称',
   The_end_number_cannot_be_less_than_the_start_number:'结束数字不能小于开始数字',
   Please_select_6_to_25_characters_for_password_length:'请输入6~25作为密码的长度',
   Start_Number_Required:'开始数字不能为空',

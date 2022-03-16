@@ -16,6 +16,8 @@
         <result column="blog" property="blog"></result>
         <result column="email" property="email"></result>
         <result column="signature" property="signature"></result>
+        <result column="title_name" property="titleName"></result>
+        <result column="title_color" property="titleColor"></result>
         <result column="status" property="status"></result>
         <result column="avatar" property="avatar"></result>
         <result column="gmt_create" property="gmtCreate"></result>
@@ -68,6 +70,8 @@
         <result column="signature" property="signature"></result>
         <result column="status" property="status"></result>
         <result column="avatar" property="avatar"></result>
+        <result column="title_name" property="titleName"></result>
+        <result column="title_color" property="titleColor"></result>
         <result column="gmt_create" property="gmtCreate"></result>
         <result column="gmt_modified" property="gmtModified"></result>
         <collection property="roles" ofType="top.hcode.hoj.pojo.entity.user.Role" select="getUserListRoles"

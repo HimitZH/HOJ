@@ -3,23 +3,24 @@
 <mapper namespace="top.hcode.hoj.mapper.UserRecordMapper">
     <select id="getACMRankList" resultType="top.hcode.hoj.pojo.vo.ACMRankVo" useCache="true">
         SELECT u.uuid as uid,u.nickname,u.username,left(u.signature,100) as signature,u.avatar,
-    (SELECT COUNT( DISTINCT pid ) FROM user_acproblem WHERE uid = u.uuid) AS ac,
-    (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid AND cid=0) AS total
-    FROM user_info u
-    <where>
-        u.status = 0
-        <if test="uidList!=null">
-            AND u.uuid in
-            <foreach collection="uidList" item="uid" open="(" separator="," close=")">
-                #{uid}
-            </foreach>
-        </if>
-    </where>
-    ORDER BY ac DESC,total ASC
+        u.title_name,u.title_color,
+        (SELECT COUNT( DISTINCT pid ) FROM user_acproblem WHERE uid = u.uuid) AS ac,
+        (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid AND cid=0) AS total
+        FROM user_info u
+        <where>
+            u.status = 0
+            <if test="uidList!=null">
+                AND u.uuid in
+                <foreach collection="uidList" item="uid" open="(" separator="," close=")">
+                    #{uid}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY ac DESC,total ASC
     </select>
 
     <select id="getRecent7ACRank" resultType="top.hcode.hoj.pojo.vo.ACMRankVo">
-        SELECT u.uuid as uid,u.nickname,u.username,u.avatar,
+        SELECT u.uuid as uid,u.nickname,u.username,u.avatar,u.title_name,u.title_color,
         (SELECT COUNT( DISTINCT pid ) FROM user_acproblem WHERE uid =u.uuid
         and DATE(gmt_create) >= DATE_SUB(CURDATE(),INTERVAL 7 DAY)) AS ac,
         (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid AND cid=0
@@ -33,7 +34,8 @@
 
 
     <select id="getOIRankList" resultType="top.hcode.hoj.pojo.vo.OIRankVo" useCache="true">
-        SELECT ui.uuid AS uid, ui.nickname, ui.username, left(ui.signature,100) as signature, ui.avatar
+        SELECT ui.uuid AS uid, ui.nickname, ui.username, left(ui.signature,100) as signature, ui.avatar,
+            ui.title_name,ui.title_color
             , (
                 SELECT COUNT(DISTINCT pid)
                 FROM user_acproblem
@@ -77,6 +79,8 @@
         <result column="github" property="github"></result>
         <result column="blog" property="blog"></result>
         <result column="avatar" property="avatar"></result>
+        <result column="title_name" property="titleName"></result>
+        <result column="title_color" property="titleColor"></result>
         <result column="rating" property="rating"></result>
         <result column="total" property="total"></result>
         <collection property="scoreList" ofType="java.lang.Integer" select="getProblemScore" column="uid">
@@ -84,7 +88,8 @@
     </resultMap>
 
     <select id="getUserHomeInfo" resultMap="map_UserHomeVo">
-        SELECT u.uuid as uid,u.username,u.nickname,u.gender,u.signature,u.school,u.github,u.blog,u.avatar,ur.rating,
+        SELECT u.uuid as uid,u.username,u.nickname,u.gender,u.signature,u.school,u.github,u.blog,
+        u.avatar,u.title_name,u.title_color,ur.rating,
         (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid AND cid=0) AS total
         FROM user_info u,user_record ur
         <where>

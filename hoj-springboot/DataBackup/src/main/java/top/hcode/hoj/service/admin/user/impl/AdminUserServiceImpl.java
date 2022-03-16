@@ -31,8 +31,12 @@ public class AdminUserServiceImpl implements AdminUserService {
 
     @Override
     public CommonResult<Void> editUser(AdminEditUserDto adminEditUserDto) {
-        adminUserManager.editUser(adminEditUserDto);
-        return CommonResult.successResponse();
+        try {
+            adminUserManager.editUser(adminEditUserDto);
+            return CommonResult.successResponse();
+        } catch (StatusFailException e) {
+            return CommonResult.errorResponse(e.getMessage());
+        }
     }
 
     @Override
@@ -58,8 +62,7 @@ public class AdminUserServiceImpl implements AdminUserService {
     @Override
     public CommonResult<Map<Object, Object>> generateUser(Map<String, Object> params) {
         try {
-            adminUserManager.generateUser(params);
-            return CommonResult.successResponse();
+            return CommonResult.successResponse(adminUserManager.generateUser(params));
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
         }

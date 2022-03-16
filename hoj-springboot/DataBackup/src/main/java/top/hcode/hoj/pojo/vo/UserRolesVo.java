@@ -62,6 +62,12 @@ public class UserRolesVo implements Serializable {
     @ApiModelProperty(value = "头像地址")
     private String avatar;
 
+    @ApiModelProperty(value = "头衔名称")
+    private String titleName;
+
+    @ApiModelProperty(value = "头衔背景颜色")
+    private String titleColor;
+
     @ApiModelProperty(value = "个性签名")
     private String signature;
 

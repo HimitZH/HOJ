@@ -82,6 +82,11 @@ public class PassportManager {
         // 去掉账号密码首尾的空格
         loginDto.setPassword(loginDto.getPassword().trim());
         loginDto.setUsername(loginDto.getUsername().trim());
+
+        if (StringUtils.isEmpty(loginDto.getUsername()) || StringUtils.isEmpty(loginDto.getPassword())) {
+            throw new StatusFailException("用户名或密码不能为空！");
+        }
+
         if (loginDto.getPassword().length() < 6 || loginDto.getPassword().length() > 20) {
             throw new StatusFailException("密码长度应该为6~20位！");
         }
@@ -206,8 +211,16 @@ public class PassportManager {
             throw new StatusFailException("验证码不正确");
         }
 
+        if (StringUtils.isEmpty(registerDto.getPassword())) {
+            throw new StatusFailException("密码不能为空");
+        }
+
         if (registerDto.getPassword().length() < 6 || registerDto.getPassword().length() > 20) {
             throw new StatusFailException("密码长度应该为6~20位！");
+        }
+
+        if (StringUtils.isEmpty(registerDto.getUsername())) {
+            throw new StatusFailException("用户名不能为空");
         }
 
         if (registerDto.getUsername().length() > 20) {
