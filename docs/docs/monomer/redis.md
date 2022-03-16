@@ -4,7 +4,7 @@
 
 ```shell
 docker run -d --name redis -p 6379:6379 \
--v /hoj/data/redis/data:/data \
+-v $PWD/hoj/data/redis/data:/data \
 --restart="always" \
 redis \
 --requirepass "redis_password" 
