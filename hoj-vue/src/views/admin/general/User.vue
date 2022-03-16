@@ -47,17 +47,25 @@
       >
         <vxe-table-column type="checkbox" width="60"></vxe-table-column>
         <vxe-table-column
-          field="uid"
-          title="UUID"
-          width="130"
-          show-overflow
-        ></vxe-table-column>
-        <vxe-table-column
           field="username"
           :title="$t('m.User')"
-          min-width="140"
+          min-width="200"
           show-overflow
-        ></vxe-table-column>
+        >
+          <template v-slot="{ row }">
+            <span>{{ row.username }}</span>
+            <span style="margin-left:2px">
+              <el-tag
+                effect="dark"
+                size="small"
+                v-if="row.titleName"
+                :color="row.titleColor"
+              >
+                {{ row.titleName }}
+              </el-tag>
+            </span>
+          </template>
+        </vxe-table-column>
         <vxe-table-column
           field="realname"
           :title="$t('m.RealName')"
@@ -389,17 +397,17 @@
         <el-row :gutter="10">
           <el-col :span="24">
             <el-form-item :label="$t('m.Username')" required prop="username">
-              <el-input v-model="selectUser.username"></el-input>
+              <el-input v-model="selectUser.username" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item :label="$t('m.RealName')" prop="realname">
-              <el-input v-model="selectUser.realname"></el-input>
+              <el-input v-model="selectUser.realname" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item :label="$t('m.Email')" prop="email">
-              <el-input v-model="selectUser.email"></el-input>
+              <el-input v-model="selectUser.email" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -421,12 +429,13 @@
               <el-input
                 v-model="selectUser.password"
                 :placeholder="$t('m.General_New_Password')"
+                size="small"
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item :label="$t('m.User_Type')">
-              <el-select v-model="selectUser.type">
+              <el-select v-model="selectUser.type" size="small">
                 <el-option
                   label="超级管理员"
                   :value="1000"
@@ -473,6 +482,16 @@
                   :key="1007"
                 ></el-option>
               </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item :label="$t('m.Title_Name')">
+              <el-input v-model="selectUser.titleName" size="small"></el-input>
+            </el-form-item>
+            <el-form-item :label="$t('m.Title_Color')">
+              <el-color-picker
+                v-model="selectUser.titleColor"
+              ></el-color-picker>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -587,6 +606,8 @@ export default {
         type: 1002,
         status: 0,
         setNewPwd: false,
+        titleName: '',
+        titleColor: '',
       },
       updateUserRules: {
         username: [
@@ -716,6 +737,8 @@ export default {
       this.selectUser.password = '';
       this.selectUser.type = this.getRole(row.roles);
       this.selectUser.status = row.status;
+      this.selectUser.titleName = row.titleName;
+      this.selectUser.titleColor = row.titleColor;
     },
     // 获取用户列表
     getUserList(page) {
@@ -873,6 +896,9 @@ export default {
 }
 /deep/.el-dialog__body {
   padding-bottom: 0;
+}
+/deep/.el-form-item {
+  margin-bottom: 10px !important;
 }
 .notification p {
   margin: 0;

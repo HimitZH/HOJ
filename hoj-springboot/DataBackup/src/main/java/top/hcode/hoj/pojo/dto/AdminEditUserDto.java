@@ -29,4 +29,8 @@ public class AdminEditUserDto {
     private Integer status;
 
     private Boolean setNewPwd;
+
+    private String titleName;
+
+    private String titleColor;
 }

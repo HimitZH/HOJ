@@ -3,7 +3,6 @@ package top.hcode.hoj.pojo.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import top.hcode.hoj.pojo.entity.discussion.Reply;
 
 import java.util.Date;
 import java.util.List;
@@ -16,8 +15,6 @@ import java.util.List;
 @ApiModel(value = "评论数据列表VO", description = "")
 @Data
 public class CommentVo {
-
-    private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "评论id")
     private Integer id;
@@ -37,6 +34,12 @@ public class CommentVo {
     @ApiModelProperty(value = "评论者角色")
     private String fromRole;
 
+    @ApiModelProperty(value = "评论者头衔名称")
+    private String fromTitleName;
+
+    @ApiModelProperty(value = "评论者头衔背景颜色")
+    private String fromTitleColor;
+
     @ApiModelProperty(value = "点赞数量")
     private Integer likeNum;
 
@@ -46,5 +49,5 @@ public class CommentVo {
     private Date gmtCreate;
 
     @ApiModelProperty(value = "该评论回复列表")
-    private List<Reply> replyList;
+    private List<ReplyVo> replyList;
 }

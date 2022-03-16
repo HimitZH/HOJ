@@ -6,6 +6,7 @@ import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.admin.account.AdminAccountManager;
+import top.hcode.hoj.pojo.vo.UserInfoVo;
 import top.hcode.hoj.service.admin.account.AdminAccountService;
 import top.hcode.hoj.pojo.dto.LoginDto;
 
@@ -24,15 +25,14 @@ public class AdminAccountServiceImpl implements AdminAccountService {
     private AdminAccountManager adminAccountManager;
 
     @Override
-    public CommonResult<Void> login(LoginDto loginDto) {
+    public CommonResult<UserInfoVo> login(LoginDto loginDto) {
         try {
-            adminAccountManager.login(loginDto);
+            return CommonResult.successResponse(adminAccountManager.login(loginDto));
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
         } catch (StatusAccessDeniedException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.ACCESS_DENIED);
         }
-        return CommonResult.successResponse("登录成功！");
     }
 
     @Override

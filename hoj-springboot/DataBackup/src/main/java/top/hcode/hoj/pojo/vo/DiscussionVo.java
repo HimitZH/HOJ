@@ -45,6 +45,12 @@ public class DiscussionVo {
     @ApiModelProperty(value = "发表者头像地址")
     private String avatar;
 
+    @ApiModelProperty(value = "发表者头衔名称")
+    private String titleName;
+
+    @ApiModelProperty(value = "发表者头衔背景颜色")
+    private String titleColor;
+
     @ApiModelProperty(value = "发表者角色")
     private String role;
 

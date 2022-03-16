@@ -3,6 +3,7 @@ package top.hcode.hoj.service.admin.account;
 
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.LoginDto;
+import top.hcode.hoj.pojo.vo.UserInfoVo;
 
 /**
  * @Author: Himit_ZH
@@ -11,7 +12,7 @@ import top.hcode.hoj.pojo.dto.LoginDto;
  */
 public interface AdminAccountService {
 
-    public CommonResult<Void> login(LoginDto loginDto);
+    public CommonResult<UserInfoVo> login(LoginDto loginDto);
 
     public CommonResult<Void> logout();
 }

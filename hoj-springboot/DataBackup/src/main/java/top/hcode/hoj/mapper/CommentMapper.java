@@ -24,7 +24,9 @@ import java.util.List;
 @Repository
 public interface CommentMapper extends BaseMapper<Comment> {
 
-    IPage<CommentVo> getCommentList(Page<CommentVo> page, @Param("cid") Long cid, @Param("did") Integer did,
+    IPage<CommentVo> getCommentList(Page<CommentVo> page,
+                                    @Param("cid") Long cid,
+                                    @Param("did") Integer did,
                                     @Param("onlyMineAndAdmin") Boolean onlyMineAndAdmin,
                                     @Param("myAndAdminUidList") List<String> myAndAdminUidList);
 }

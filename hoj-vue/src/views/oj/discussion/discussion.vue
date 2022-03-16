@@ -30,6 +30,11 @@
               ></avatar>
               <span class="user-name">{{ discussion.author }}</span>
             </a>
+            <span v-if="discussion.titleName">
+              <el-tag effect="dark" size="small" :color="discussion.titleColor">
+                {{ discussion.titleName }}
+              </el-tag>
+            </span>
           </span>
           <span
             class="role-root role"
@@ -404,7 +409,7 @@ export default {
   color: #999;
 }
 .title-article .title-msg span {
-  margin-right: 3px;
+  margin-right: 2px;
 }
 .title-article .title-msg span a.c999 {
   color: #999 !important;

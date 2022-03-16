@@ -30,6 +30,12 @@ public class OIRankVo implements Serializable {
     @ApiModelProperty(value = "头像地址")
     private String avatar;
 
+    @ApiModelProperty(value = "头衔、称号")
+    private String titleName;
+
+    @ApiModelProperty(value = "头衔、称号的颜色")
+    private String titleColor;
+
     @ApiModelProperty(value = "OI得分列表")
     private Integer score;
 

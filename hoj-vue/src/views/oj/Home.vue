@@ -227,7 +227,7 @@
             <vxe-table-column
               field="username"
               :title="$t('m.Username')"
-              min-width="100"
+              min-width="200"
               align="left"
             >
               <template v-slot="{ row }">
@@ -244,18 +244,16 @@
                   style="color:#2d8cf0;"
                   >{{ row.username }}</a
                 >
+                <span style="margin-left:2px" v-if="row.titleName">
+                  <el-tag effect="dark" size="small" :color="row.titleColor">
+                    {{ row.titleName }}
+                  </el-tag>
+                </span>
               </template>
             </vxe-table-column>
             <vxe-table-column
               field="ac"
               :title="$t('m.AC')"
-              min-width="50"
-              align="left"
-            >
-            </vxe-table-column>
-            <vxe-table-column
-              field="total"
-              :title="$t('m.Total')"
               min-width="50"
               align="left"
             >

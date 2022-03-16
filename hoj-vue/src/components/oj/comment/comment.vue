@@ -194,12 +194,17 @@
           <div class="right">
             <div class="name">
               <span
-                style="margin-right:3px;"
+                style="margin-right:3px;vertical-align: middle;"
                 class="user-info"
                 @click="getInfoByUsername(item.fromUid, item.fromName)"
                 :title="item.fromName"
                 >{{ item.fromName }}</span
               >
+              <span v-if="item.fromTitleName" style="margin-right: 4px;">
+                <el-tag effect="dark" size="small" :color="item.fromTitleColor">
+                  {{ item.fromTitleName }}
+                </el-tag>
+              </span>
               <span
                 class="role-root role"
                 title="Super Administrator"
@@ -277,7 +282,22 @@
                     color="#FFF"
                     :src="reply.fromAvatar"
                   ></avatar>
-                  {{ reply.fromName }}
+                  <span style="vertical-align: middle;">{{
+                    reply.fromName
+                  }}</span>
+                </span>
+                <span
+                  v-if="reply.fromTitleName"
+                  style="margin-right: 4px;"
+                  class="hidden-xs-only"
+                >
+                  <el-tag
+                    effect="dark"
+                    size="small"
+                    :color="reply.fromTitleColor"
+                  >
+                    {{ reply.fromTitleName }}
+                  </el-tag>
                 </span>
                 <span
                   class="role-root role"
@@ -1163,7 +1183,7 @@ export default {
 }
 .container .comment .reply .item .reply-content .reply-text {
   margin-left: 5px;
-  margin-right: 5px;
+  margin-right: 2px;
   color: #333;
   font-size: 14px;
   font-weight: normal;
@@ -1175,6 +1195,7 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  cursor: pointer;
 }
 .container .comment .reply .item .reply-bottom {
   display: flex;

@@ -87,6 +87,8 @@ export const m = {
   The_usernames_will_be:'The usernames will be',
   Set_New_PWD:'Set PWD',
   General_New_Password: 'New PWD',
+  Title_Color:'Title Color',
+  Title_Name:'Title Name',
   The_end_number_cannot_be_less_than_the_start_number:'The end number cannot be less than the start number',
   Please_select_6_to_25_characters_for_password_length:'Please select 6 ~ 25 characters for password length',
   Start_Number_Required:'The Start Number is required.',

@@ -13,6 +13,8 @@
         <result column="uid" property="uid"></result>
         <result column="author" property="author"></result>
         <result column="avatar" property="avatar"></result>
+        <result column="title_name" property="titleName"></result>
+        <result column="title_color" property="titleColor"></result>
         <result column="role" property="role"></result>
         <result column="view_num" property="viewNum"></result>
         <result column="like_num" property="likeNum"></result>
@@ -26,11 +28,11 @@
 
     <!-- 主查询  -->
     <select id="getDiscussion" resultMap="map_DiscussionVo" resultType="top.hcode.hoj.pojo.vo.DiscussionVo">
-        SELECT d.*,c.id as category_id,c.name as category_name,
+        SELECT d.*,c.id as category_id,c.name as category_name,u.title_name,u.title_color,
         (SELECT 1 FROM discussion_like dl WHERE dl.uid = #{uid} AND dl.did = #{did} LIMIT 1) as has_like
-        FROM discussion d,category c
+        FROM discussion d,category c,user_info u
         <where>
-            c.id = d.category_id
+            c.id = d.category_id and d.uid = u.uuid
             <if test="did!=null">
                 and d.id=#{did}
             </if>
