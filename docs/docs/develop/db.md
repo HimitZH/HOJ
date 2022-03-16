@@ -527,7 +527,7 @@ contest_explanation表 赛后题解表**(未使用)**
 
  
 
-##训练(题单)模块
+## 训练(题单)模块
 
 题单训练表 training
 

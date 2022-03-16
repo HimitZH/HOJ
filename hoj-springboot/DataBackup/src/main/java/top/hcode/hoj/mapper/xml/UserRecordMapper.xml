@@ -24,7 +24,7 @@
         (SELECT COUNT( DISTINCT pid ) FROM user_acproblem WHERE uid =u.uuid
         and DATE(gmt_create) >= DATE_SUB(CURDATE(),INTERVAL 7 DAY)) AS ac
         FROM user_info u WHERE u.status = 0
-        ORDER BY ac DESC,total ASC LIMIT 10
+        ORDER BY ac DESC,u.gmt_create DESC LIMIT 10
     </select>
 
 
