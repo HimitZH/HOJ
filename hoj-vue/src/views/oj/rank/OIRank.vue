@@ -36,7 +36,7 @@
         <vxe-table-column
           field="username"
           :title="$t('m.User')"
-          min-width="150"
+          min-width="200"
           show-overflow
           align="left"
         >

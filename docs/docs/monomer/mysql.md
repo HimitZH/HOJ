@@ -20,7 +20,7 @@ docker run启动
 
 ```shell
 docker run -d --name hoj-mysql \
--v ./hoj/data/mysql/data:/var/lib/mysql \
+-v $PWD/hoj/data/mysql/data:/var/lib/mysql \
 -e MYSQL_ROOT_PASSWORD="hoj123456" \
 -e TZ="Asia/Shanghai" \
 -e NACOS_USERNAME=root \
