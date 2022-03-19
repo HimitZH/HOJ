@@ -6,6 +6,7 @@ import top.hcode.hoj.pojo.entity.discussion.Comment;
 import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.pojo.vo.CommentListVo;
 import top.hcode.hoj.pojo.vo.CommentVo;
+import top.hcode.hoj.pojo.vo.ReplyVo;
 
 import java.util.List;
 
@@ -19,9 +20,9 @@ public interface CommentService {
 
     public CommonResult<Void> addDiscussionLike(Integer cid, Boolean toLike, Integer sourceId, String sourceType);
 
-    public CommonResult<List<Reply>> getAllReply(Integer commentId, Long cid);
+    public CommonResult<List<ReplyVo>> getAllReply(Integer commentId, Long cid);
 
-    public CommonResult<Void> addReply(ReplyDto replyDto);
+    public CommonResult<ReplyVo> addReply(ReplyDto replyDto);
 
     public CommonResult<Void> deleteReply(ReplyDto replyDto);
 }

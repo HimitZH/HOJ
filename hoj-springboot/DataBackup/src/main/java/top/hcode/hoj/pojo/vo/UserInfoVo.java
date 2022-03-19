@@ -25,6 +25,12 @@ public class UserInfoVo {
     @ApiModelProperty(value = "头像")
     private String avatar;
 
+    @ApiModelProperty(value = "头衔名称")
+    private String titleName;
+
+    @ApiModelProperty(value = "头衔背景颜色")
+    private String titleColor;
+
     @ApiModelProperty(value = "邮箱")
     private String email;
 

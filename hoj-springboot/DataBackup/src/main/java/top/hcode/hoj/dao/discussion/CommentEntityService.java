@@ -5,6 +5,7 @@ import top.hcode.hoj.pojo.entity.discussion.Comment;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.pojo.vo.CommentVo;
+import top.hcode.hoj.pojo.vo.ReplyVo;
 
 import java.util.List;
 
@@ -19,8 +20,6 @@ import java.util.List;
 public interface CommentEntityService extends IService<Comment> {
 
     IPage<CommentVo> getCommentList(int limit, int currentPage, Long cid, Integer did, Boolean isRoot, String uid);
-
-    List<Reply> getAllReplyByCommentId(Long cid, String uid, Boolean isRoot, Integer commentId);
 
     void updateCommentMsg(String recipientId, String senderId, String content, Integer discussionId);
 
