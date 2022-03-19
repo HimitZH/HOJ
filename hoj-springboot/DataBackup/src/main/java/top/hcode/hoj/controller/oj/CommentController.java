@@ -61,7 +61,7 @@ public class CommentController {
 
     @GetMapping("/reply")
     public CommonResult<List<ReplyVo>> getAllReply(@RequestParam("commentId") Integer commentId,
-                                                 @RequestParam(value = "cid", required = false) Long cid) {
+                                                   @RequestParam(value = "cid", required = false) Long cid) {
         return commentService.getAllReply(commentId, cid);
     }
 
