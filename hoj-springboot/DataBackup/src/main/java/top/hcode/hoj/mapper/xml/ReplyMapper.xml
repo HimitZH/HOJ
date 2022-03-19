@@ -3,10 +3,12 @@
 <mapper namespace="top.hcode.hoj.mapper.ReplyMapper">
 
     <select id="getAllReplyByCommentId" resultType="top.hcode.hoj.pojo.vo.ReplyVo">
-        select r.*,u.title_name as from_title_name,u.title_color as from_title_color from reply r,user_info u
+        select r.*,u.title_name as from_title_name,u.title_color as from_title_color
+        from reply r,user_info u
         <where>
-            r.comment_id=#{commentId}
-            and r.status=0
+            r.comment_id = #{commentId}
+            and r.status = 0
+            and r.from_uid = u.uuid
             <if test="myAndAdminUidList!=null">
                 and r.from_uid in
                 <foreach collection="myAndAdminUidList" item="uid" open="(" separator="," close=")">
