@@ -2,6 +2,9 @@ package top.hcode.hoj.dao.discussion;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.hcode.hoj.pojo.entity.discussion.Reply;
+import top.hcode.hoj.pojo.vo.ReplyVo;
+
+import java.util.List;
 
 /**
  * @Author: Himit_ZH
@@ -9,6 +12,8 @@ import top.hcode.hoj.pojo.entity.discussion.Reply;
  * @Description:
  */
 public interface ReplyEntityService extends IService<Reply> {
+
+    public List<ReplyVo> getAllReplyByCommentId(Long cid, String uid, Boolean isRoot, Integer commentId);
 
     public void updateReplyMsg(Integer sourceId, String sourceType, String content,
                                Integer quoteId, String quoteType, String recipientId,String senderId);

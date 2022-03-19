@@ -10,6 +10,7 @@ import top.hcode.hoj.pojo.entity.discussion.Comment;
 import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.pojo.vo.CommentListVo;
 import top.hcode.hoj.pojo.vo.CommentVo;
+import top.hcode.hoj.pojo.vo.ReplyVo;
 import top.hcode.hoj.service.oj.CommentService;
 
 import java.util.List;
@@ -59,7 +60,7 @@ public class CommentController {
     }
 
     @GetMapping("/reply")
-    public CommonResult<List<Reply>> getAllReply(@RequestParam("commentId") Integer commentId,
+    public CommonResult<List<ReplyVo>> getAllReply(@RequestParam("commentId") Integer commentId,
                                                  @RequestParam(value = "cid", required = false) Long cid) {
         return commentService.getAllReply(commentId, cid);
     }
@@ -67,7 +68,7 @@ public class CommentController {
     @PostMapping("/reply")
     @RequiresPermissions("reply_add")
     @RequiresAuthentication
-    public CommonResult<Void> addReply(@RequestBody ReplyDto replyDto) {
+    public CommonResult<ReplyVo> addReply(@RequestBody ReplyDto replyDto) {
         return commentService.addReply(replyDto);
     }
 

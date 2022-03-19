@@ -1,15 +1,22 @@
 package top.hcode.hoj.dao.discussion.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import top.hcode.hoj.dao.contest.ContestEntityService;
+import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.mapper.ReplyMapper;
+import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.msg.MsgRemind;
 import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.dao.discussion.ReplyEntityService;
 import top.hcode.hoj.dao.msg.MsgRemindEntityService;
+import top.hcode.hoj.pojo.vo.ReplyVo;
+import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @Author: Himit_ZH
@@ -22,10 +29,39 @@ public class ReplyEntityServiceImpl extends ServiceImpl<ReplyMapper, Reply> impl
     @Resource
     private MsgRemindEntityService msgRemindEntityService;
 
+    @Autowired
+    private ContestEntityService contestEntityService;
+
+    @Autowired
+    private UserInfoEntityService userInfoEntityService;
+
+    @Autowired
+    private ReplyMapper replyMapper;
+
+    @Override
+    public List<ReplyVo> getAllReplyByCommentId(Long cid, String uid, Boolean isRoot, Integer commentId) {
+
+
+        if (cid != null) {
+            Contest contest = contestEntityService.getById(cid);
+            boolean onlyMineAndAdmin = contest.getStatus().equals(Constants.Contest.STATUS_RUNNING.getCode())
+                    && !isRoot && !contest.getUid().equals(uid);
+            if (onlyMineAndAdmin) { // 自己和比赛管理者评论可看
+
+                List<String> myAndAdminUidList = userInfoEntityService.getSuperAdminUidList();
+                myAndAdminUidList.add(uid);
+                myAndAdminUidList.add(contest.getUid());
+                return replyMapper.getAllReplyByCommentId(commentId, myAndAdminUidList);
+            }
+
+        }
+        return replyMapper.getAllReplyByCommentId(commentId, null);
+    }
+
     @Async
     @Override
     public void updateReplyMsg(Integer sourceId, String sourceType, String content,
-                               Integer quoteId, String quoteType, String recipientId,String senderId) {
+                               Integer quoteId, String quoteType, String recipientId, String senderId) {
         if (content.length() > 200) {
             content = content.substring(0, 200) + "...";
         }

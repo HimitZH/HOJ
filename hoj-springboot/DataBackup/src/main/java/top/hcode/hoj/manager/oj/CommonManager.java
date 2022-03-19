@@ -2,6 +2,7 @@ package top.hcode.hoj.manager.oj;
 
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.wf.captcha.ArithmeticCaptcha;
 import com.wf.captcha.SpecCaptcha;
 import com.wf.captcha.base.Captcha;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,10 +52,12 @@ public class CommonManager {
     @Autowired
     private TrainingCategoryEntityService trainingCategoryEntityService;
 
-    
+
     public CaptchaVo getCaptcha() {
-        SpecCaptcha specCaptcha = new SpecCaptcha(90, 30, 4);
+        ArithmeticCaptcha specCaptcha = new ArithmeticCaptcha(90, 30, 4);
         specCaptcha.setCharType(Captcha.TYPE_DEFAULT);
+        // 2位数运算
+        specCaptcha.setLen(2);
         String verCode = specCaptcha.text().toLowerCase();
         String key = IdUtil.simpleUUID();
         // 存入redis并设置过期时间为30分钟
@@ -65,12 +68,12 @@ public class CommonManager {
         captchaVo.setCaptchaKey(key);
         return captchaVo;
     }
-    
-    
+
+
     public List<TrainingCategory> getTrainingCategory() {
         return trainingCategoryEntityService.list();
     }
-    
+
     public List<Tag> getAllProblemTagsList(String oj) {
         List<Tag> tagList;
         oj = oj.toUpperCase();

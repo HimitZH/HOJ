@@ -1,22 +1,18 @@
 package top.hcode.hoj.dao.discussion.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import top.hcode.hoj.mapper.CommentMapper;
-import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.discussion.Comment;
-import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.pojo.entity.msg.MsgRemind;
 import top.hcode.hoj.pojo.vo.CommentVo;
 import top.hcode.hoj.dao.contest.ContestEntityService;
 import top.hcode.hoj.dao.discussion.CommentEntityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
-import top.hcode.hoj.dao.discussion.ReplyEntityService;
 import top.hcode.hoj.dao.msg.MsgRemindEntityService;
 import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.utils.Constants;
@@ -44,9 +40,6 @@ public class CommentEntityServiceImpl extends ServiceImpl<CommentMapper, Comment
     @Autowired
     private UserInfoEntityService userInfoEntityService;
 
-    @Autowired
-    private ReplyEntityService replyEntityService;
-
     @Resource
     private MsgRemindEntityService msgRemindEntityService;
 
@@ -70,28 +63,6 @@ public class CommentEntityServiceImpl extends ServiceImpl<CommentMapper, Comment
 
         }
         return commentMapper.getCommentList(page, cid, did, false, null);
-    }
-
-    @Override
-    public List<Reply> getAllReplyByCommentId(Long cid, String uid, Boolean isRoot, Integer commentId) {
-        QueryWrapper<Reply> replyQueryWrapper = new QueryWrapper<>();
-        replyQueryWrapper.eq("comment_id", commentId);
-
-        if (cid != null) {
-            Contest contest = contestEntityService.getById(cid);
-            boolean onlyMineAndAdmin = contest.getStatus().equals(Constants.Contest.STATUS_RUNNING.getCode())
-                    && !isRoot && !contest.getUid().equals(uid);
-            if (onlyMineAndAdmin) { // 自己和比赛管理者评论可看
-
-                List<String> myAndAdminUidList = userInfoEntityService.getSuperAdminUidList();
-                myAndAdminUidList.add(uid);
-                myAndAdminUidList.add(contest.getUid());
-                replyQueryWrapper.in("from_uid", myAndAdminUidList);
-            }
-
-        }
-        replyQueryWrapper.orderByDesc("gmt_create");
-        return replyEntityService.list(replyQueryWrapper);
     }
 
     @Async

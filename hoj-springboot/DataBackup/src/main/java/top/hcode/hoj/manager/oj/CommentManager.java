@@ -1,5 +1,6 @@
 package top.hcode.hoj.manager.oj;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.extra.emoji.EmojiUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -20,6 +21,7 @@ import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.pojo.entity.user.UserAcproblem;
 import top.hcode.hoj.pojo.vo.CommentListVo;
 import top.hcode.hoj.pojo.vo.CommentVo;
+import top.hcode.hoj.pojo.vo.ReplyVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.dao.discussion.CommentEntityService;
 import top.hcode.hoj.dao.discussion.CommentLikeEntityService;
@@ -151,6 +153,8 @@ public class CommentManager {
             commentVo.setLikeNum(0);
             commentVo.setGmtCreate(comment.getGmtCreate());
             commentVo.setReplyList(new LinkedList<>());
+            commentVo.setFromTitleName(userRolesVo.getTitleName());
+            commentVo.setFromTitleColor(userRolesVo.getTitleColor());
             // 如果是讨论区的回复，发布成功需要添加统计该讨论的回复数
             if (comment.getDid() != null) {
                 Discussion discussion = discussionEntityService.getById(comment.getDid());
@@ -253,21 +257,21 @@ public class CommentManager {
 
     }
 
-    public List<Reply> getAllReply(Integer commentId, Long cid) {
+    public List<ReplyVo> getAllReply(Integer commentId, Long cid) {
 
         // 如果有登录，则获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
-        return commentEntityService.getAllReplyByCommentId(cid,
+        return replyEntityService.getAllReplyByCommentId(cid,
                 userRolesVo != null ? userRolesVo.getUid() : null,
                 isRoot,
                 commentId);
     }
 
 
-    public void addReply(ReplyDto replyDto) throws StatusFailException {
+    public ReplyVo addReply(ReplyDto replyDto) throws StatusFailException {
 
         if (StringUtils.isEmpty(replyDto.getReply().getContent().trim())) {
             throw new StatusFailException("回复内容不能为空！");
@@ -310,6 +314,12 @@ public class CommentManager {
                         reply.getToUid(),
                         reply.getFromUid());
             }
+
+            ReplyVo replyVo = new ReplyVo();
+            BeanUtil.copyProperties(reply, replyVo);
+            replyVo.setFromTitleName(userRolesVo.getTitleName());
+            replyVo.setFromTitleColor(userRolesVo.getTitleColor());
+            return replyVo;
         } else {
             throw new StatusFailException("回复失败，请重新尝试！");
         }

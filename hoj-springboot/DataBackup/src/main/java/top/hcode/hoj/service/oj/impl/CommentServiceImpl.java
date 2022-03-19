@@ -11,6 +11,7 @@ import top.hcode.hoj.pojo.entity.discussion.Comment;
 import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.pojo.vo.CommentListVo;
 import top.hcode.hoj.pojo.vo.CommentVo;
+import top.hcode.hoj.pojo.vo.ReplyVo;
 import top.hcode.hoj.service.oj.CommentService;
 
 import javax.annotation.Resource;
@@ -66,15 +67,14 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommonResult<List<Reply>> getAllReply(Integer commentId, Long cid) {
+    public CommonResult<List<ReplyVo>> getAllReply(Integer commentId, Long cid) {
         return CommonResult.successResponse(commentManager.getAllReply(commentId, cid));
     }
 
     @Override
-    public CommonResult<Void> addReply(ReplyDto replyDto) {
+    public CommonResult<ReplyVo> addReply(ReplyDto replyDto) {
         try {
-            commentManager.addReply(replyDto);
-            return CommonResult.successResponse();
+            return CommonResult.successResponse(commentManager.addReply(replyDto));
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
         }
