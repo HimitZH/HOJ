@@ -29,6 +29,7 @@ import top.hcode.hoj.dao.training.TrainingProblemEntityService;
 import top.hcode.hoj.dao.training.TrainingRecordEntityService;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.validator.ContestValidator;
+import top.hcode.hoj.validator.TrainingValidator;
 
 import javax.annotation.Resource;
 
@@ -65,7 +66,7 @@ public class BeforeDispatchInitManager {
     private TrainingRecordEntityService trainingRecordEntityService;
 
     @Resource
-    private TrainingManager trainingManager;
+    private TrainingValidator trainingValidator;
 
     @Resource
     private ContestValidator contestValidator;
@@ -165,7 +166,7 @@ public class BeforeDispatchInitManager {
             throw new StatusFailException("该训练不存在或不允许显示！");
         }
 
-        trainingManager.checkTrainingAuth(training, userRolesVo);
+        trainingValidator.checkTrainingAuth(training, userRolesVo);
 
         // 查询获取对应的pid和cpid
         QueryWrapper<TrainingProblem> trainingProblemQueryWrapper = new QueryWrapper<>();
