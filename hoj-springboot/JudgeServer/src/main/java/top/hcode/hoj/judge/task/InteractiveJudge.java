@@ -81,9 +81,9 @@ public class InteractiveJudge extends AbstractJudge {
             // Broken Pipe
             result.set("status", Constants.Judge.STATUS_RUNTIME_ERROR.getStatus());
             if (userExitCode < 32) {
-                errMsg.append(String.format("Your program return exitCode: %s (%s)\n", userExitCode, SandboxRun.signals.get(userExitCode)));
+                errMsg.append(String.format("The program return exit status code: %s (%s)\n", userExitCode, SandboxRun.signals.get(userExitCode)));
             } else {
-                errMsg.append(String.format("Your program return exitCode: %s\n", userExitCode));
+                errMsg.append(String.format("The program return exit status code: %s\n", userExitCode));
             }
         } else {
             // 根据交互程序的退出状态码及输出进行判断

@@ -111,9 +111,9 @@ public class SpecialJudge extends AbstractJudge {
         } else if (sandBoxRes.getExitCode() != 0) {
             result.set("status", Constants.Judge.STATUS_RUNTIME_ERROR.getStatus());
             if (sandBoxRes.getExitCode() < 32) {
-                errMsg.append(String.format("Your program return ExitCode: %s (%s)\n", sandBoxRes.getExitCode(), SandboxRun.signals.get(sandBoxRes.getExitCode())));
+                errMsg.append(String.format("The program return exit status code: %s (%s)\n", sandBoxRes.getExitCode(), SandboxRun.signals.get(sandBoxRes.getExitCode())));
             } else {
-                errMsg.append(String.format("Your program return ExitCode: %s\n", sandBoxRes.getExitCode()));
+                errMsg.append(String.format("The program return exit status code: %s\n", sandBoxRes.getExitCode()));
             }
         } else {
             result.set("status", sandBoxRes.getStatus());
