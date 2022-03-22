@@ -166,7 +166,7 @@ public class BeforeDispatchInitManager {
             throw new StatusFailException("该训练不存在或不允许显示！");
         }
 
-        trainingValidator.checkTrainingAuth(training, userRolesVo);
+        trainingValidator.validateTrainingAuth(training, userRolesVo);
 
         // 查询获取对应的pid和cpid
         QueryWrapper<TrainingProblem> trainingProblemQueryWrapper = new QueryWrapper<>();

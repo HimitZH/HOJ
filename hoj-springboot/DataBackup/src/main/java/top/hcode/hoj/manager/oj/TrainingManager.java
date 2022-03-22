@@ -127,7 +127,7 @@ public class TrainingManager {
             throw new StatusFailException("该训练不存在或不允许显示！");
         }
 
-        trainingValidator.checkTrainingAuth(training);
+        trainingValidator.validateTrainingAuth(training);
 
         return trainingProblemEntityService.getTrainingProblemList(tid);
 
@@ -230,7 +230,7 @@ public class TrainingManager {
             throw new StatusFailException("该训练不存在或不允许显示！");
         }
 
-        trainingValidator.checkTrainingAuth(training);
+        trainingValidator.validateTrainingAuth(training);
 
         // 页数，每页数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;

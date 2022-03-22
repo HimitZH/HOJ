@@ -67,28 +67,27 @@ public class UserRoleEntityServiceImpl extends ServiceImpl<UserRoleMapper, UserR
     @Override
     public void deleteCache(String uid, boolean isRemoveSession) {
         //从缓存中获取Session
-        Session session = null;
         Collection<Session> sessions = redisSessionDAO.getActiveSessions();
-        AccountProfile accountProfile;
-        Object attribute = null;
         for (Session sessionInfo : sessions) {
             //遍历Session,找到该用户名称对应的Session
-            attribute = sessionInfo.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY);
+            Object attribute = sessionInfo.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY);
             if (attribute == null) {
                 continue;
             }
-            accountProfile = (AccountProfile) ((SimplePrincipalCollection) attribute).getPrimaryPrincipal();
+            AccountProfile accountProfile = (AccountProfile) ((SimplePrincipalCollection) attribute).getPrimaryPrincipal();
             if (accountProfile == null) {
                 continue;
             }
+            // 如果该session是指定的uid用户的
             if (Objects.equals(accountProfile.getUid(), uid)) {
-                session = sessionInfo;
-                break;
+                deleteSession(isRemoveSession, sessionInfo, attribute);
             }
         }
-        if (session == null || attribute == null) {
-            return;
-        }
+
+    }
+
+
+    private void deleteSession(boolean isRemoveSession, Session session, Object attribute) {
         //删除session 会强制退出！主要是在禁用用户或角色时，强制用户退出的
         if (isRemoveSession) {
             redisSessionDAO.delete(session);
@@ -99,6 +98,7 @@ public class UserRoleEntityServiceImpl extends ServiceImpl<UserRoleMapper, UserR
         Authenticator authc = securityManager.getAuthenticator();
         ((LogoutAware) authc).onLogout((SimplePrincipalCollection) attribute);
     }
+
 
     private final static List<String> ChineseRole = Arrays.asList("超级管理员", "普通管理员",
             "普通用户(默认)", "普通用户(禁止提交)", "普通用户(禁止发讨论)", "普通用户(禁言)", "普通用户(禁止提交&禁止发讨论)",

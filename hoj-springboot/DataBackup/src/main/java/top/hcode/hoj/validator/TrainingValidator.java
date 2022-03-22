@@ -25,14 +25,14 @@ public class TrainingValidator {
     @Resource
     private TrainingRegisterEntityService trainingRegisterEntityService;
 
-    public void checkTrainingAuth(Training training) throws StatusAccessDeniedException, StatusForbiddenException {
+    public void validateTrainingAuth(Training training) throws StatusAccessDeniedException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-        checkTrainingAuth(training, userRolesVo);
+        validateTrainingAuth(training, userRolesVo);
     }
 
 
-    public void checkTrainingAuth(Training training, UserRolesVo userRolesVo) throws StatusAccessDeniedException, StatusForbiddenException {
+    public void validateTrainingAuth(Training training, UserRolesVo userRolesVo) throws StatusAccessDeniedException, StatusForbiddenException {
         if (Constants.Training.AUTH_PRIVATE.getValue().equals(training.getAuth())) {
             if (userRolesVo == null) {
                 throw new StatusAccessDeniedException("该训练属于私有题单，请先登录以校验权限！");
