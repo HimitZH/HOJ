@@ -309,7 +309,7 @@ public class Constants {
 
         JS_NODE("JavaScript Node","/usr/bin/node {1}","main.js",defaultEnv),
 
-        JS_V8("JavaScript V8","/usr/bin/jsv8 {1}","main.js",defaultEnv),
+        JS_V8("JavaScript V8","/usr/bin/jsv8/d8 {1}","main.js",defaultEnv),
 
         SPJ_C("SPJ-C", "{0}/{1} {2} {3} {4}", "spj", defaultEnv),
 
