@@ -90,16 +90,16 @@ public class StartupRunner implements CommandLineRunner {
     private String judgeToken;
 
     // 邮箱配置
-    @Value("${EMAIL_USERNAME:your_email_username}")
+    @Value("${EMAIL_USERNAME}")
     private String emailUsername;
 
-    @Value("${EMAIL_PASSWORD:your_email_password}")
+    @Value("${EMAIL_PASSWORD}")
     private String emailPassword;
 
-    @Value("${EMAIL_SERVER_HOST:your_email_host}")
+    @Value("${EMAIL_SERVER_HOST}")
     private String emailHost;
 
-    @Value("${EMAIL_SERVER_PORT:465}")
+    @Value("${EMAIL_SERVER_PORT}")
     private Integer emailPort;
 
     @Value("${HDU_ACCOUNT_USERNAME_LIST:}")
@@ -169,10 +169,18 @@ public class StartupRunner implements CommandLineRunner {
         configVo.setRedisPort(redisPort);
         configVo.setRedisPassword(redisPassword);
 
-        configVo.setEmailHost(emailHost);
-        configVo.setEmailPort(emailPort);
-        configVo.setEmailUsername(emailUsername);
-        configVo.setEmailPassword(emailPassword);
+        if (configVo.getEmailHost() == null || !"your_email_host".equals(emailHost)) {
+            configVo.setEmailHost(emailHost);
+        }
+        if (configVo.getEmailPort() == null || emailPort != 456) {
+            configVo.setEmailPort(emailPort);
+        }
+        if (configVo.getEmailUsername() == null || !"your_email_username".equals(emailUsername)) {
+            configVo.setEmailUsername(emailUsername);
+        }
+        if (configVo.getEmailPassword() == null || !"your_email_password".equals(emailPassword)) {
+            configVo.setEmailPassword(emailPassword);
+        }
 
         configVo.setHduUsernameList(hduUsernameList);
         configVo.setHduPasswordList(hduPasswordList);
