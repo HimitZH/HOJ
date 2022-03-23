@@ -52,11 +52,11 @@ public class CommentController {
 
     @GetMapping("/comment-like")
     @RequiresAuthentication
-    public CommonResult<Void> addDiscussionLike(@RequestParam("cid") Integer cid,
+    public CommonResult<Void> addCommentLike(@RequestParam("cid") Integer cid,
                                                 @RequestParam("toLike") Boolean toLike,
                                                 @RequestParam("sourceId") Integer sourceId,
                                                 @RequestParam("sourceType") String sourceType) {
-        return commentService.addDiscussionLike(cid, toLike, sourceId, sourceType);
+        return commentService.addCommentLike(cid, toLike, sourceId, sourceType);
     }
 
     @GetMapping("/reply")

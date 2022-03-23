@@ -215,7 +215,7 @@ public class CommentManager {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public void addDiscussionLike(Integer cid, Boolean toLike, Integer sourceId, String sourceType) throws StatusFailException {
+    public void addCommentLike(Integer cid, Boolean toLike, Integer sourceId, String sourceType) throws StatusFailException {
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
@@ -240,7 +240,10 @@ public class CommentManager {
             if (comment != null) {
                 comment.setLikeNum(comment.getLikeNum() + 1);
                 commentEntityService.updateById(comment);
-                commentEntityService.updateCommentLikeMsg(comment.getFromUid(), userRolesVo.getUid(), sourceId, sourceType);
+                // 当前的评论要不是点赞者的 才发送点赞消息
+                if (!userRolesVo.getUsername().equals(comment.getFromName())) {
+                    commentEntityService.updateCommentLikeMsg(comment.getFromUid(), userRolesVo.getUid(), sourceId, sourceType);
+                }
             }
         } else { // 取消点赞
             if (commentLike != null) { // 如果存在就删除
