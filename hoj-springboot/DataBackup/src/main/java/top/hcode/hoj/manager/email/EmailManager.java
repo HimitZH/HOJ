@@ -94,7 +94,10 @@ public class EmailManager {
      * @Since 2021/6/12
      */
     public boolean isOk() {
-        return !ojEmailFrom.equals("your_email_username") && !ojEmailPassword.equals("your_email_password")
+        return ojEmailFrom != null
+                && ojEmailPassword != null
+                && !ojEmailFrom.equals("your_email_username")
+                && !ojEmailPassword.equals("your_email_password")
                 && Validator.isEmail(ojEmailFrom);
     }
 
