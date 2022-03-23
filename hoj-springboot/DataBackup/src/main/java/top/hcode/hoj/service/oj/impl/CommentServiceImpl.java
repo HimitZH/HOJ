@@ -57,9 +57,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommonResult<Void> addDiscussionLike(Integer cid, Boolean toLike, Integer sourceId, String sourceType) {
+    public CommonResult<Void> addCommentLike(Integer cid, Boolean toLike, Integer sourceId, String sourceType) {
         try {
-            commentManager.addDiscussionLike(cid, toLike, sourceId, sourceType);
+            commentManager.addCommentLike(cid, toLike, sourceId, sourceType);
             return CommonResult.successResponse();
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());

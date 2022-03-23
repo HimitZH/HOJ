@@ -236,8 +236,10 @@ public class DiscussionManager {
             if (discussion != null) {
                 discussion.setLikeNum(discussion.getLikeNum() + 1);
                 discussionEntityService.updateById(discussion);
-                // 更新点赞消息
-                discussionEntityService.updatePostLikeMsg(discussion.getUid(), userRolesVo.getUid(), did);
+                // 当前帖子要不是点赞者的 才发送点赞消息
+                if(!userRolesVo.getUsername().equals(discussion.getAuthor())) {
+                    discussionEntityService.updatePostLikeMsg(discussion.getUid(), userRolesVo.getUid(), did);
+                }
             }
         } else { // 取消点赞
             if (discussionLike != null) { // 如果存在就删除
