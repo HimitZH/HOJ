@@ -51,6 +51,11 @@
           >{{ $t('m.NavBar_Discussion') }}</el-menu-item
         >
 
+        <el-menu-item index="/group"
+          ><i class="el-icon-s-custom"></i
+          >{{ $t('m.NavBar_Group') }}</el-menu-item
+        >
+
         <el-submenu index="about">
           <template slot="title"
             ><i class="el-icon-info"></i>{{ $t('m.NavBar_About') }}</template
@@ -463,6 +468,20 @@
             </mu-list-item-action>
             <mu-list-item-title>{{
               $t('m.NavBar_Discussion')
+            }}</mu-list-item-title>
+          </mu-list-item>
+
+          <mu-list-item
+            button
+            to="/group"
+            @click="opendrawer = !opendrawer"
+            active-class="mobile-menu-active"
+          >
+            <mu-list-item-action>
+              <mu-icon value=":fa fa-group" size="24"></mu-icon>
+            </mu-list-item-action>
+            <mu-list-item-title>{{
+              $t('m.NavBar_Group')
             }}</mu-list-item-title>
           </mu-list-item>
 

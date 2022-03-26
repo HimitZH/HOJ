@@ -19,5 +19,5 @@ public interface ContestFileService {
 
     public void downloadContestACSubmission(Long cid, Boolean excludeAdmin, String splitType, HttpServletResponse response) throws StatusFailException, StatusForbiddenException;
 
-    public void downloadContestPrintText(Long id, HttpServletResponse response);
+    public void downloadContestPrintText(Long id, HttpServletResponse response) throws StatusForbiddenException;
 }

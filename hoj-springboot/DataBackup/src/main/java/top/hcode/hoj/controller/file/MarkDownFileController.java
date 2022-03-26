@@ -1,9 +1,6 @@
 package top.hcode.hoj.controller.file;
 
-
-import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,16 +29,15 @@ public class MarkDownFileController {
     @RequestMapping(value = "/upload-md-img", method = RequestMethod.POST)
     @RequiresAuthentication
     @ResponseBody
-    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult<Map<Object, Object>> uploadMDImg(@RequestParam("image") MultipartFile image) {
-        return markDownFileService.uploadMDImg(image);
+    public CommonResult<Map<Object, Object>> uploadMDImg(@RequestParam("image") MultipartFile image,
+                                                         @RequestParam(value = "gid", required = false) Long gid) {
+        return markDownFileService.uploadMDImg(image, gid);
     }
 
 
     @RequestMapping(value = "/delete-md-img", method = RequestMethod.GET)
     @RequiresAuthentication
     @ResponseBody
-    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult<Void> deleteMDImg(@RequestParam("fileId") Long fileId) {
         return markDownFileService.deleteMDImg(fileId);
     }
@@ -50,9 +46,9 @@ public class MarkDownFileController {
     @RequestMapping(value = "/upload-md-file", method = RequestMethod.POST)
     @RequiresAuthentication
     @ResponseBody
-    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult<Map<Object, Object>> uploadMd(@RequestParam("file") MultipartFile file) {
-        return markDownFileService.uploadMd(file);
+    public CommonResult<Map<Object, Object>> uploadMd(@RequestParam("file") MultipartFile file,
+                                                      @RequestParam(value = "gid", required = false) Long gid) {
+        return markDownFileService.uploadMd(file, gid);
     }
 
 }

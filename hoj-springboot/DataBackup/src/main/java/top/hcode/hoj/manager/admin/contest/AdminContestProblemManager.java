@@ -2,6 +2,8 @@ package top.hcode.hoj.manager.admin.contest;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.map.MapUtil;
+import top.hcode.hoj.dao.contest.ContestEntityService;
+import top.hcode.hoj.pojo.entity.contest.Contest;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -51,6 +53,9 @@ public class AdminContestProblemManager {
     @Autowired
     private RemoteProblemManager remoteProblemManager;
 
+    @Autowired
+    private ContestEntityService contestEntityService;
+
     public HashMap<String, Object> getProblemList(Integer limit, Integer currentPage, String keyword,
                                                   Long cid, Integer problemType, String oj) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
@@ -62,7 +67,6 @@ public class AdminContestProblemManager {
         List<Long> pidList = new LinkedList<>();
 
         List<ContestProblem> contestProblemList = contestProblemEntityService.list(contestProblemQueryWrapper);
-
         HashMap<Long, ContestProblem> contestProblemMap = new HashMap<>();
         contestProblemList.forEach(contestProblem -> {
             contestProblemMap.put(contestProblem.getPid(), contestProblem);
@@ -70,20 +74,19 @@ public class AdminContestProblemManager {
         });
 
         HashMap<String, Object> contestProblem = new HashMap<>();
-        if (pidList.size() == 0 && problemType == null) { // 该比赛原本就无题目数据
-            contestProblem.put("problemList", pidList);
-            contestProblem.put("contestProblemMap", contestProblemMap);
-            return contestProblem;
-        }
 
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
 
         if (problemType != null) { // 必备条件 隐藏的不可取来做比赛题目
-            problemQueryWrapper
+            problemQueryWrapper.eq("is_public", true)
                     // vj题目不限制赛制
                     .and(wrapper -> wrapper.eq("type", problemType)
                             .or().eq("is_remote", true))
                     .ne("auth", 2); // 同时需要与比赛相同类型的题目，权限需要是公开的（隐藏的不可加入！）
+            Contest contest = contestEntityService.getById(cid);
+            if (contest.getGid() != null) { //团队比赛不能查看公共题库的隐藏题目
+                problemQueryWrapper.ne("auth", 3);
+            }
         }
 
         // 逻辑判断，如果是查询已有的就应该是in，如果是查询不要重复的，使用not in
@@ -92,7 +95,6 @@ public class AdminContestProblemManager {
         } else {
             problemQueryWrapper.in(pidList.size() > 0, "id", pidList);
         }
-
 
         // 根据oj筛选过滤
         if (oj != null && !"All".equals(oj)) {
@@ -109,26 +111,31 @@ public class AdminContestProblemManager {
                     .like("author", keyword));
         }
 
+        if (pidList.size() == 0 && problemType == null) {
+            problemQueryWrapper = new QueryWrapper<>();
+            problemQueryWrapper.eq("id", null);
+        }
+
         IPage<Problem> problemListPage = problemEntityService.page(iPage, problemQueryWrapper);
 
+        if (pidList.size() > 0 && problemType == null) {
+            List<Problem> problemList = problemListPage.getRecords();
 
-        List<Problem> problemList = problemListPage.getRecords();
-
-        List<Problem> sortedProblemList = problemList.stream().sorted(Comparator.comparing(Problem::getId, (a, b) -> {
-            ContestProblem x = contestProblemMap.get(a);
-            ContestProblem y = contestProblemMap.get(b);
-            if (x == null && y != null) {
-                return 1;
-            } else if (x != null && y == null) {
-                return -1;
-            } else if (x == null) {
-                return -1;
-            } else {
-                return x.getDisplayId().compareTo(y.getDisplayId());
-            }
-        })).collect(Collectors.toList());
-
-        problemListPage.setRecords(sortedProblemList);
+            List<Problem> sortedProblemList = problemList.stream().sorted(Comparator.comparing(Problem::getId, (a, b) -> {
+                ContestProblem x = contestProblemMap.get(a);
+                ContestProblem y = contestProblemMap.get(b);
+                if (x == null && y != null) {
+                    return 1;
+                } else if (x != null && y == null) {
+                    return -1;
+                } else if (x == null) {
+                    return -1;
+                } else {
+                    return x.getDisplayId().compareTo(y.getDisplayId());
+                }
+            })).collect(Collectors.toList());
+            problemListPage.setRecords(sortedProblemList);
+        }
 
         contestProblem.put("problemList", problemListPage);
         contestProblem.put("contestProblemMap", contestProblemMap);

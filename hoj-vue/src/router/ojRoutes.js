@@ -32,6 +32,15 @@ import TrainingList from "@/views/oj/training/TrainingList.vue"
 import TrainingDetails from "@/views/oj/training/TrainingDetails.vue"
 import TrainingProblemList from "@/views/oj/training/TrainingProblemList.vue"
 import TrainingRank from "@/views/oj/training/TrainingRank.vue"
+import GroupList from '@/views/oj/group/GroupList.vue'
+import GroupDetails from '@/views/oj/group/GroupDetails.vue'
+import GroupAnnouncementList from '@/views/oj/group/children/GroupAnnouncementList.vue'
+import GroupProblemList from '@/views/oj/group/children/GroupProblemList.vue'
+import GroupTrainingList from '@/views/oj/group/children/GroupTrainingList.vue'
+import GroupContestList from '@/views/oj/group/children/GroupContestList.vue'
+import GroupDiscussionList from '@/views/oj/group/children/GroupDiscussionList.vue'
+import GroupMemberList from '@/views/oj/group/children/GroupMemberList.vue'
+import GroupSetting from '@/views/oj/group/children/GroupSetting.vue'
 import NotFound from "@/views/404.vue"
 
 const ojRoutes = [
@@ -155,7 +164,7 @@ const ojRoutes = [
         name: 'ContestACInfo',
         path: 'ac-info',
         component: ACMInfoAdmin,
-        meta: { title: 'Contest AC Info',requireAdmin: true}
+        meta: { title: 'Contest AC Info'}
       },
       {
         name:'ContestRejudgeAdmin',
@@ -248,6 +257,62 @@ const ojRoutes = [
     name:'DiscussionDetail',
     meta: {title: 'Discussion Detail'},
     component: Discussion
+  },
+  {
+    path: '/group',
+    name: 'GroupList',
+    component: GroupList,
+    meta: {title: 'Group'}
+  },
+  {
+    path: '/group/:groupID',
+    name: 'GroupDetails',
+    component: GroupDetails,
+    meta: {title: 'Group Details'},
+    children: [
+      {
+        path: 'announcement',
+        name: 'GroupAnnouncementList',
+        component: GroupAnnouncementList,
+        meta: { title: 'Group Announcement' },
+      },
+      {
+        path: 'problem',
+        name: 'GroupProblemList',
+        component: GroupProblemList,
+        meta: { title: 'Group Problem' },
+      },
+      {
+        path: 'training',
+        name: 'GroupTrainingList',
+        component: GroupTrainingList,
+        meta: { title: 'Group Training' }
+      },
+      {
+        path: 'contest',
+        name: 'GroupContestList',
+        component: GroupContestList,
+        meta: { title: 'Group Contest' }
+      },
+      {
+        path: 'discussion',
+        name: 'GroupDiscussionList',
+        component: GroupDiscussionList,
+        meta: { title: 'Group Discussion' }
+      },
+      {
+        path: 'member',
+        name: 'GroupMemberList',
+        component: GroupMemberList,
+        meta: { title: 'Group Member' }
+      },
+      {
+        path: 'setting',
+        name: 'GroupSetting',
+        component: GroupSetting,
+        meta: { title: 'Group Setting' }
+      },
+    ]
   },
   {
     path: '/introduction',

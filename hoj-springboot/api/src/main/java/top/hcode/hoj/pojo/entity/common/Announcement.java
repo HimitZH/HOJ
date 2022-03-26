@@ -39,6 +39,9 @@ public class Announcement {
     @ApiModelProperty(value = "0可见，1不可见")
     private int status;
 
+    @ApiModelProperty(value = "团队ID")
+    private Long gid;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 

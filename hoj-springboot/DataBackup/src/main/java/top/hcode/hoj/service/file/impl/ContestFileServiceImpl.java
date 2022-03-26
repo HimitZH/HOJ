@@ -32,7 +32,7 @@ public class ContestFileServiceImpl implements ContestFileService {
     }
 
     @Override
-    public void downloadContestPrintText(Long id, HttpServletResponse response) {
+    public void downloadContestPrintText(Long id, HttpServletResponse response) throws StatusForbiddenException {
         contestFileManager.downloadContestPrintText(id, response);
     }
 }

@@ -35,6 +35,13 @@ public class ImageController {
         return imageService.uploadAvatar(image);
     }
 
+    @RequestMapping(value = "/upload-group-avatar", method = RequestMethod.POST)
+    @RequiresAuthentication
+    @ResponseBody
+    public CommonResult<Map<Object, Object>> uploadGroupAvatar(@RequestParam(value = "image", required = true) MultipartFile image,
+                                                               @RequestParam(value = "gid", required = true) Long gid) {
+        return imageService.uploadGroupAvatar(image, gid);
+    }
 
     @RequestMapping(value = "/upload-carouse-img", method = RequestMethod.POST)
     @RequiresAuthentication
