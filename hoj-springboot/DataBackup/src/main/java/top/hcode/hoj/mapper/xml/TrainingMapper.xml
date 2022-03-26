@@ -12,6 +12,7 @@
         <result column="problem_count" property="problemCount"></result>
         <result column="category_name" property="categoryName"></result>
         <result column="category_color" property="categoryColor"></result>
+        <result column="gid" property="gid"></result>
         <result column="gmt_modified" property="gmtModified"></result>
     </resultMap>
 
@@ -24,7 +25,7 @@
             left join training_category tc
             on mtc.cid = tc.id
             <where>
-                t.status = true
+                t.status = true and t.is_public = true
                     <if test="categoryId != null">
                         and tc.id = #{categoryId}
                     </if>

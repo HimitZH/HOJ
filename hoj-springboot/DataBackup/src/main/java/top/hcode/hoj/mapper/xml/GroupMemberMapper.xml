@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.mapper.GroupMemberMapper">
+
+    <resultMap id="map_MemberList" type="top.hcode.hoj.pojo.vo.GroupMemberVo">
+        <result column="id" property="id"></result>
+        <result column="gid" property="gid"></result>
+        <result column="uid" property="uid"></result>
+        <result column="username" property="username"></result>
+        <result column="auth" property="auth"></result>
+        <result column="reason" property="reason"></result>
+        <result column="gmt_create" property="gmtCreate"></result>
+        <result column="gmt_modified" property="gmtModify"></result>
+    </resultMap>
+
+    <select id="getMemberList" resultMap="map_MemberList">
+        SELECT gm.id, gm.gid, gm.uid, gm.auth, gm.gmt_create, gm.gmt_modified, ui.username
+        FROM group_member gm, user_info ui
+        <where>
+            gm.gid = #{gid} and gm.uid = ui.uuid and (gm.auth = 3 or gm.auth = 4 or gm.auth = 5)
+            <if test="auth != 0">
+                and gm.auth = #{auth}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                and ui.username like concat('%',#{keyword},'%')
+            </if>
+        </where>
+        ORDER BY gm.gmt_create DESC
+    </select>
+
+    <select id="getApplyList" resultMap="map_MemberList">
+        SELECT gm.*, ui.username
+        FROM group_member gm, user_info ui
+        <where>
+            gm.gid = #{gid} and gm.uid = ui.uuid
+            <if test="auth != 0">
+                and gm.auth = #{auth}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                and ui.username like concat('%',#{keyword},'%')
+            </if>
+        </where>
+        ORDER BY gm.gmt_create DESC
+    </select>
+</mapper>

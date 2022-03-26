@@ -978,7 +978,7 @@ export default {
         modeTips = 'Interactive_Judge_Mode_Tips';
       }
       const h = this.$createElement;
-      this.$msgbox({
+      mMessage.box({
         title: this.$i18n.t('m.' + modeName),
         message: h('div', null, [
           h(
@@ -1187,7 +1187,7 @@ export default {
           this.loadingCompile = false;
           this.problem.spjCompileOk = false;
           const h = this.$createElement;
-          this.$msgbox({
+          mMessage.box({
             title: 'Compile Error',
             type: 'error',
             message: h('pre', err.data.msg),

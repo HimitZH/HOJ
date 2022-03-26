@@ -20,6 +20,7 @@ const state = {
     chart: true,
   },
   disPlayIdMapColor:{}, // 展示id对应的气球颜色
+  groupContestAuth: 0,
 }
 
 const getters = {
@@ -31,7 +32,7 @@ const getters = {
   },
   isContestAdmin: (state, getters, _, rootGetters) => {
     return rootGetters.isAuthenticated &&
-      (state.contest.author === rootGetters.userInfo.username || rootGetters.isSuperAdmin)
+      (state.contest.author === rootGetters.userInfo.username || rootGetters.isSuperAdmin || state.groupContestAuth == 5)
   },
   canSubmit:(state, getters)=>{
      return state.intoAccess||state.submitAccess || state.contest.auth === CONTEST_TYPE.PUBLIC ||getters.isContestAdmin
@@ -176,6 +177,9 @@ const mutations = {
   contestIntoAccess(state, payload) {
     state.intoAccess = payload.intoAccess
   },
+  changeGroupContestAuth(state, payload) {
+    state.groupContestAuth = payload.groupContestAuth
+  },
   contestSubmitAccess(state, payload) {
     state.submitAccess = payload.submitAccess
   },
@@ -191,6 +195,7 @@ const mutations = {
     }
     state.forceUpdate = false
     state.removeStar = false
+    state.groupContestAuth = 0
   },
   now(state, payload) {
     state.now = payload.now
@@ -207,6 +212,9 @@ const actions = {
         resolve(res)
         let contest = res.data.data
         commit('changeContest', {contest: contest})
+        if (contest.gid) {
+          dispatch('getGroupContestAuth', {gid: contest.gid})
+        }
         commit('now', {now: moment(contest.now)})
         if (contest.auth == CONTEST_TYPE.PRIVATE) {
           dispatch('getContestAccess',{auth:CONTEST_TYPE.PRIVATE})
@@ -252,6 +260,14 @@ const actions = {
         }else{
           commit('contestSubmitAccess', {submitAccess: res.data.data.access})
         }
+        resolve(res)
+      }).catch()
+    })
+  },
+  getGroupContestAuth ({commit, rootState}, gid) {
+    return new Promise((resolve, reject) => {
+      api.getGroupAuth(gid.gid).then(res => {
+        commit('changeGroupContestAuth', {groupContestAuth: res.data.data})
         resolve(res)
       }).catch()
     })

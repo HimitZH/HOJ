@@ -1,5 +1,6 @@
 package top.hcode.hoj.manager.oj;
 
+import top.hcode.hoj.validator.GroupValidator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.SecurityUtils;
@@ -92,6 +93,9 @@ public class ContestManager {
     @Autowired
     private ContestRankManager contestRankManager;
 
+    @Autowired
+    private GroupValidator groupValidator;
+
     public IPage<ContestVo> getContestList(Integer limit, Integer currentPage, Integer status, Integer type, String keyword) {
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
@@ -100,12 +104,25 @@ public class ContestManager {
     }
 
 
-    public ContestVo getContestInfo(Long cid) throws StatusFailException {
+    public ContestVo getContestInfo(Long cid) throws StatusFailException, StatusForbiddenException {
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         ContestVo contestInfo = contestEntityService.getContestInfoById(cid);
         if (contestInfo == null) {
             throw new StatusFailException("对不起，该比赛不存在!");
         }
+
+        Contest contest = contestEntityService.getById(cid);
+
+        if (!contest.getIsPublic()) {
+            if (!groupValidator.isGroupMember(userRolesVo.getUid(), contest.getGid()) && !isRoot) {
+                throw new StatusForbiddenException("对不起，您无权限操作！");
+            }
+        }
+
         // 设置当前服务器系统时间
         contestInfo.setNow(new Date());
 
@@ -113,7 +130,7 @@ public class ContestManager {
     }
 
 
-    public void toRegisterContest(RegisterContestDto registerContestDto) throws StatusFailException {
+    public void toRegisterContest(RegisterContestDto registerContestDto) throws StatusFailException, StatusForbiddenException {
 
         Long cid = registerContestDto.getCid();
         String password = registerContestDto.getPassword();
@@ -124,10 +141,19 @@ public class ContestManager {
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
         Contest contest = contestEntityService.getById(cid);
 
         if (contest == null || !contest.getVisible()) {
             throw new StatusFailException("对不起，该比赛不存在!");
+        }
+
+        if (!contest.getIsPublic()) {
+            if (!groupValidator.isGroupMember(userRolesVo.getUid(), contest.getGid()) && !isRoot) {
+                throw new StatusForbiddenException("对不起，您无权限操作！");
+            }
         }
 
         if (!contest.getPwd().equals(password)) { // 密码不对
@@ -201,7 +227,13 @@ public class ContestManager {
         contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
 
         List<ContestProblemVo> contestProblemList;
-        boolean isAdmin = isRoot || contest.getAuthor().equals(userRolesVo.getUsername());
+        boolean isAdmin = isRoot || contest.getAuthor().equals(userRolesVo.getUsername()) || groupValidator.isGroupRoot(userRolesVo.getUid(), contest.getGid());
+
+        if (!contest.getIsPublic()) {
+            if (!isRoot && !contest.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupMember(userRolesVo.getUid(), contest.getGid())) {
+                throw new StatusForbiddenException("对不起，您无权限操作！");
+            }
+        }
         // 如果比赛开启封榜
         if (contestValidator.isSealRank(userRolesVo.getUid(), contest, true, isRoot)) {
             contestProblemList = contestProblemEntityService.getContestProblemList(cid, contest.getStartTime(), contest.getEndTime(),
@@ -228,6 +260,12 @@ public class ContestManager {
 
         // 需要对该比赛做判断，是否处于开始或结束状态才可以获取题目，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
         contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
+
+        if (!contest.getIsPublic()) {
+            if (!isRoot && !contest.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupMember(userRolesVo.getUid(), contest.getGid())) {
+                throw new StatusForbiddenException("对不起，您无权限操作！");
+            }
+        }
 
         // 根据cid和displayId获取pid
         QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
@@ -330,6 +368,11 @@ public class ContestManager {
         // 需要对该比赛做判断，是否处于开始或结束状态才可以获取题目，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
         contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
 
+        if (!contest.getIsPublic()) {
+            if (!isRoot && !contest.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupMember(userRolesVo.getUid(), contest.getGid())) {
+                throw new StatusForbiddenException("对不起，您无权限操作！");
+            }
+        }
 
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
@@ -423,9 +466,14 @@ public class ContestManager {
         // 需要对该比赛做判断，是否处于开始或结束状态才可以获取题目，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
         contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
 
+        if (!contest.getIsPublic()) {
+            if (!isRoot && !contest.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupMember(userRolesVo.getUid(), contest.getGid())) {
+                throw new StatusForbiddenException("对不起，您无权限操作！");
+            }
+        }
+
         // 校验该比赛是否开启了封榜模式，超级管理员和比赛创建者可以直接看到实际榜单
         boolean isOpenSealRank = contestValidator.isSealRank(userRolesVo.getUid(), contest, forceRefresh, isRoot);
-
 
         IPage resultList;
         if (contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) {
@@ -465,6 +513,12 @@ public class ContestManager {
 
         // 需要对该比赛做判断，是否处于开始或结束状态才可以获取题目，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
         contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
+
+        if (!contest.getIsPublic()) {
+            if (!isRoot && !contest.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupMember(userRolesVo.getUid(), contest.getGid())) {
+                throw new StatusForbiddenException("对不起，您无权限操作！");
+            }
+        }
 
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;
@@ -514,6 +568,12 @@ public class ContestManager {
 
         // 需要对该比赛做判断，是否处于开始或结束状态才可以获取题目，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
         contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
+
+        if (!contest.getIsPublic()) {
+            if (!isRoot && !contest.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupMember(userRolesVo.getUid(), contest.getGid())) {
+                throw new StatusForbiddenException("对不起，您无权限操作！");
+            }
+        }
 
         String lockKey = Constants.Account.CONTEST_ADD_PRINT_LOCK.getCode() + userRolesVo.getUid();
         if (redisUtils.hasKey(lockKey)) {

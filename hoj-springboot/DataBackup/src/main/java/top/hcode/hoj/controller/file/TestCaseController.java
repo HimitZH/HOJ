@@ -1,10 +1,7 @@
 package top.hcode.hoj.controller.file;
 
-
-
-import org.apache.shiro.authz.annotation.Logical;
+import top.hcode.hoj.common.exception.StatusForbiddenException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -31,16 +28,15 @@ public class TestCaseController {
 
     @PostMapping("/upload-testcase-zip")
     @ResponseBody
-    @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult<Map<Object, Object>> uploadTestcaseZip(@RequestParam("file") MultipartFile file) {
-        return testCaseService.uploadTestcaseZip(file);
+    public CommonResult<Map<Object, Object>> uploadTestcaseZip(@RequestParam("file") MultipartFile file,
+                                                               @RequestParam(value = "gid", required = false) Long gid) {
+        return testCaseService.uploadTestcaseZip(file, gid);
     }
 
 
     @GetMapping("/download-testcase")
     @RequiresAuthentication
-    @RequiresRoles(value = {"root", "problem_admin"}, logical = Logical.OR)
-    public void downloadTestcase(@RequestParam("pid") Long pid, HttpServletResponse response) throws StatusFailException {
+    public void downloadTestcase(@RequestParam("pid") Long pid, HttpServletResponse response) throws StatusFailException, StatusForbiddenException {
         testCaseService.downloadTestcase(pid, response);
     }
 }

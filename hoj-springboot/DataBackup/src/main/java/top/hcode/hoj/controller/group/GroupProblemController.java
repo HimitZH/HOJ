@@ -1,0 +1,95 @@
+package top.hcode.hoj.controller.group;
+
+import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.entity.judge.CompileDTO;
+import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.pojo.entity.problem.ProblemCase;
+import top.hcode.hoj.pojo.entity.problem.Tag;
+import top.hcode.hoj.pojo.vo.ProblemVo;
+import top.hcode.hoj.service.group.problem.GroupProblemService;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * @Author: LengYun
+ * @Date: 2022/3/11 13:36
+ * @Description:
+ */
+@RestController
+@RequiresAuthentication
+@RequestMapping("/api/group")
+public class GroupProblemController {
+
+    @Autowired
+    private GroupProblemService groupProblemService;
+
+    @GetMapping("/get-problem-list")
+    public CommonResult<IPage<ProblemVo>> getProblemList(@RequestParam(value = "limit", required = false) Integer limit,
+                                                         @RequestParam(value = "currentPage", required = false) Integer currentPage,
+                                                         @RequestParam(value = "gid", required = true) Long gid) {
+        return groupProblemService.getProblemList(limit, currentPage, gid);
+    }
+
+    @GetMapping("/get-admin-problem-list")
+    public CommonResult<IPage<Problem>> getAdminProblemList(@RequestParam(value = "limit", required = false) Integer limit,
+                                                            @RequestParam(value = "currentPage", required = false) Integer currentPage,
+                                                            @RequestParam(value = "gid", required = true) Long gid) {
+        return groupProblemService.getAdminProblemList(limit, currentPage, gid);
+    }
+
+    @GetMapping("/problem")
+    public CommonResult<Problem> getProblem(@RequestParam("pid") Long pid) {
+        return groupProblemService.getProblem(pid);
+    }
+
+    @PostMapping("/problem")
+    public CommonResult<Void> addProblem(@RequestBody ProblemDto problemDto) {
+        return groupProblemService.addProblem(problemDto);
+    }
+
+    @PutMapping("/problem")
+    public CommonResult<Void> updateProblem(@RequestBody ProblemDto problemDto) {
+        return groupProblemService.updateProblem(problemDto);
+    }
+
+    @DeleteMapping("/problem")
+    public CommonResult<Void> deleteProblem(@RequestParam(value = "pid", required = true) Long pid) {
+        return groupProblemService.deleteProblem(pid);
+    }
+
+    @GetMapping("/get-problem-cases")
+    public CommonResult<List<ProblemCase>> getProblemCases(@RequestParam("pid") Long pid,
+                                                           @RequestParam(value = "isUpload", defaultValue = "true") Boolean isUpload) {
+        return groupProblemService.getProblemCases(pid, isUpload);
+    }
+
+    @GetMapping("/get-all-problem-tags")
+    public CommonResult<List<Tag>> getAllProblemTagsList(@RequestParam("gid") Long gid) {
+        return groupProblemService.getAllProblemTagsList(gid);
+    }
+
+    @PostMapping("/compile-spj")
+    public CommonResult<Void> compileSpj(@RequestBody CompileDTO compileDTO,
+                                   @RequestParam("gid") Long gid) {
+        return groupProblemService.compileSpj(compileDTO, gid);
+    }
+
+    @PostMapping("/compile-interactive")
+    public CommonResult<Void> compileInteractive(@RequestBody CompileDTO compileDTO,
+                                           @RequestParam("gid") Long gid) {
+        return groupProblemService.compileInteractive(compileDTO, gid);
+    }
+
+    @PutMapping("/change-problem-auth")
+    public CommonResult<Void> changeProblemAuth(@RequestParam(value = "pid", required = true) Long pid,
+                                                @RequestParam(value = "auth", required = true) Integer auth) {
+        return groupProblemService.changeProblemAuth(pid, auth);
+    }
+}

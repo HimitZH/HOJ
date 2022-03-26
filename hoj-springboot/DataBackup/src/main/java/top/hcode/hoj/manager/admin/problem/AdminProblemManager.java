@@ -66,7 +66,7 @@ public class AdminProblemManager {
         IPage<Problem> problemList;
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
-        queryWrapper.orderByDesc("gmt_create")
+        queryWrapper.eq("is_public", true).orderByDesc("gmt_create")
                 .orderByDesc("id");
 
         // 根据oj筛选过滤

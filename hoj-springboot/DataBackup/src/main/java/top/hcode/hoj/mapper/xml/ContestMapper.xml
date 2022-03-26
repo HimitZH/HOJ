@@ -3,10 +3,10 @@
 <mapper namespace="top.hcode.hoj.mapper.ContestMapper">
     <select id="getContestList" resultType="top.hcode.hoj.pojo.vo.ContestVo" useCache="true">
         select c.id,c.author,c.title,c.description,c.type,c.status,c.source,c.auth,c.start_time,
-        c.end_time,c.duration,c.open_rank,c.oi_rank_score_type
+        c.end_time,c.duration,c.open_rank,c.oi_rank_score_type,c.gid
         from contest c
         <where>
-            c.visible=true
+            c.visible = true and c.is_public = true
             <if test="keyword!=null and keyword!=''">
                 and c.title like concat('%',#{keyword},'%')
             </if>
@@ -35,13 +35,13 @@
     <select id="getContestInfoById" resultType="top.hcode.hoj.pojo.vo.ContestVo" useCache="true">
         select c.id,c.author,c.open_print,c.title,c.type,c.status,c.description,c.seal_rank,
         c.seal_rank_time,c.source,c.auth,c.start_time,c.end_time,c.duration,c.rank_show_name,
-        c.open_rank,c.oi_rank_score_type
+        c.open_rank,c.oi_rank_score_type,c.gid
         from contest c where c.id = #{cid} and c.visible=true
     </select>
 
     <select id="getWithinNext14DaysContests" resultType="top.hcode.hoj.pojo.vo.ContestVo">
-        SELECT c.id,c.author,c.title,c.type,c.source,c.auth,c.status,c.start_time,c.end_time,c.duration,c.oi_rank_score_type
-        FROM contest c WHERE DATE_ADD(CURDATE(), INTERVAL 14 DAY) >= DATE(start_time) AND c.status != 1 AND c.visible=true
+        SELECT c.id,c.author,c.title,c.type,c.source,c.auth,c.status,c.start_time,c.end_time,c.duration,c.oi_rank_score_type,c.gid
+        FROM contest c WHERE DATE_ADD(CURDATE(), INTERVAL 14 DAY) >= DATE(start_time) AND c.status != 1 AND c.visible=true AND c.is_public = true
         order by c.start_time DESC
     </select>
 </mapper>
