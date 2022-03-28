@@ -27,7 +27,7 @@ public class DiscussionController {
     private DiscussionService discussionService;
 
 
-    @GetMapping("/discussions")
+    @GetMapping("/get-discussion-list")
     public CommonResult<IPage<Discussion>> getDiscussionList(@RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
                                                              @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage,
                                                              @RequestParam(value = "cid", required = false) Integer categoryId,
@@ -40,7 +40,7 @@ public class DiscussionController {
 
     }
 
-    @GetMapping("/discussion")
+    @GetMapping("/get-discussion-detail")
     public CommonResult<DiscussionVo> getDiscussion(@RequestParam(value = "did", required = true) Integer did) {
         return discussionService.getDiscussion(did);
     }

@@ -2,6 +2,9 @@ package top.hcode.hoj.validator;
 
 import cn.hutool.core.util.ReUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
@@ -26,9 +29,15 @@ public class ContestValidator {
     @Resource
     private ContestRegisterEntityService contestRegisterEntityService;
 
+    @Autowired
+    private GroupValidator groupValidator;
+
     public boolean isSealRank(String uid, Contest contest, Boolean forceRefresh, Boolean isRoot) {
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
         // 如果是管理员同时选择强制刷新榜单，则封榜无效
-        if (forceRefresh && (isRoot || contest.getUid().equals(uid))) {
+        Long gid = contest.getGid();
+        if (forceRefresh && (isRoot || contest.getUid().equals(uid) || groupValidator.isGroupRoot(userRolesVo.getUid(), gid))) {
             return false;
         } else if (contest.getSealRank() && contest.getSealRankTime() != null) { // 该比赛开启封榜模式
             Date now = new Date();
@@ -57,7 +66,8 @@ public class ContestValidator {
             throw new StatusFailException("对不起，该比赛不存在！");
         }
 
-        if (!isRoot && !contest.getUid().equals(userRolesVo.getUid())) { // 若不是比赛管理者
+        Long gid = contest.getGid();
+        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !isRoot && !contest.getUid().equals(userRolesVo.getUid())) { // 若不是比赛管理者
 
             // 判断一下比赛的状态，还未开始不能查看题目。
             if (contest.getStatus().intValue() != Constants.Contest.STATUS_RUNNING.getCode() &&

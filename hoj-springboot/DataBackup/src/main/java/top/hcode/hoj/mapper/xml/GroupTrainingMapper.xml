@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.mapper.GroupTrainingMapper">
+
+    <resultMap id="map_TrainingList" type="top.hcode.hoj.pojo.vo.TrainingVo">
+        <id column="id" property="id"></id>
+        <result column="title" property="title"></result>
+        <result column="description" property="description"></result>
+        <result column="author" property="author"></result>
+        <result column="auth" property="auth"></result>
+        <result column="rank" property="rank"></result>
+        <result column="problem_count" property="problemCount"></result>
+        <result column="category_name" property="categoryName"></result>
+        <result column="category_color" property="categoryColor"></result>
+        <result column="gmt_modified" property="gmtModified"></result>
+    </resultMap>
+
+    <select id="getTrainingList" resultMap="map_TrainingList">
+        SELECT t.*,COALESCE(tp.problem_count,0) as problem_count FROM (
+            select t.*,tc.name as category_name,tc.color as category_color
+            from training t
+            left join mapping_training_category mtc
+            on t.id = mtc.tid
+            left join training_category tc
+            on mtc.cid = tc.id
+            where t.gid = #{gid} and t.status = true
+        ) t LEFT JOIN
+        (
+            SELECT tp.tid,COUNT(*) AS problem_count FROM training_problem tp,problem p
+            WHERE tp.pid = p.id AND p.auth = 1 GROUP BY tp.tid
+        ) tp
+        ON t.id = tp.tid
+        WHERE t.gid = #{gid}
+        ORDER BY t.rank ASC
+    </select>
+
+    <select id="getAdminTrainingList" resultType="top.hcode.hoj.pojo.entity.training.Training">
+        SELECT t.*
+        FROM training t
+        WHERE t.gid = #{gid}
+        ORDER BY t.id DESC
+    </select>
+
+</mapper>

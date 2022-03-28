@@ -41,6 +41,9 @@ public class Tag implements Serializable {
     @ApiModelProperty(value = "标签所属oj")
     private String oj;
 
+    @ApiModelProperty(value = "团队ID")
+    private Long gid;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 

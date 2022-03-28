@@ -36,6 +36,9 @@ public class TrainingCategory implements Serializable {
     @ApiModelProperty(value = "训练题单专用分类背景颜色")
     private String color;
 
+    @ApiModelProperty(value = "团队ID")
+    private Long gid;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 

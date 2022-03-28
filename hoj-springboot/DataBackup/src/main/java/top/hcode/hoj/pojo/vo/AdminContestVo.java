@@ -88,6 +88,9 @@ public class AdminContestVo {
     @ApiModelProperty(value = "oi排行榜得分方式，Recent、Highest（最近一次提交、最高得分提交）")
     private String oiRankScoreType;
 
+    @ApiModelProperty(value = "团队id")
+    private Long gid;
+
     private Date gmtCreate;
 
     private Date gmtModified;

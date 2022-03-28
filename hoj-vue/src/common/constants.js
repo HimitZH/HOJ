@@ -211,6 +211,30 @@ export const TRAINING_TYPE = {
   }
 }
 
+export const GROUP_TYPE = {
+  PUBLIC: 1,
+  PROTECTED: 2,
+  PRIVATE: 3
+}
+
+export const GROUP_TYPE_REVERSE = {
+  '1':{
+    name: 'Public',
+    color: 'success',
+    tips: 'Group_Public_Tips',
+  },
+  '2':{
+    name: 'Protected',
+    color: 'warning',
+    tips: 'Group_Protected_Tips',
+  },
+  '3':{
+    name: 'Private',
+    color: 'danger',
+    tips: 'Group_Private_Tips',
+  }
+}
+
 export const RULE_TYPE = {
   ACM: 0,
   OI: 1

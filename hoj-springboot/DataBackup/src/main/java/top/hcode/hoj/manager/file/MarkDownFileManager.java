@@ -3,9 +3,11 @@ package top.hcode.hoj.manager.file;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
+import top.hcode.hoj.validator.GroupValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import top.hcode.hoj.common.exception.StatusFailException;
@@ -31,7 +33,21 @@ public class MarkDownFileManager {
     @Resource
     private FileEntityService fileEntityService;
 
-    public Map<Object, Object> uploadMDImg(MultipartFile image) throws StatusFailException, StatusSystemErrorException {
+    @Autowired
+    private GroupValidator groupValidator;
+
+    public Map<Object, Object> uploadMDImg(MultipartFile image, Long gid) throws StatusFailException, StatusSystemErrorException, StatusForbiddenException {
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        Boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
+        Boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
+
+        if (!isRoot && !isProblemAdmin && !isAdmin && !groupValidator.isGroupMember(userRolesVo.getUid(), gid)) {
+            throw new StatusForbiddenException("对不起，您无权限操作！");
+        }
+
         if (image == null) {
             throw new StatusFailException("上传的图片不能为空！");
         }
@@ -57,9 +73,6 @@ public class MarkDownFileManager {
             throw new StatusSystemErrorException("服务器异常：图片文件上传失败！");
         }
 
-        // 获取当前登录用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
         top.hcode.hoj.pojo.entity.common.File file = new top.hcode.hoj.pojo.entity.common.File();
         file.setFolderPath(Constants.File.MARKDOWN_FILE_FOLDER.getPath())
                 .setName(filename)
@@ -75,10 +88,7 @@ public class MarkDownFileManager {
 
     }
 
-
     public void deleteMDImg(Long fileId) throws StatusFailException, StatusForbiddenException {
-
-        // 获取当前登录用户
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
@@ -94,10 +104,11 @@ public class MarkDownFileManager {
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
-        boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
 
-        if (!file.getUid().equals(userRolesVo.getUid()) && !isRoot && !isAdmin && !isProblemAdmin) {
-            throw new StatusForbiddenException("错误：无权删除他人文件！");
+        Long gid = file.getGid();
+
+        if (!file.getUid().equals(userRolesVo.getUid()) && !isRoot && !isProblemAdmin && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
+            throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
         boolean isOk = FileUtil.del(file.getFilePath());
@@ -106,11 +117,20 @@ public class MarkDownFileManager {
         } else {
             throw new StatusFailException("删除失败");
         }
-
     }
 
+    public Map<Object, Object> uploadMd(MultipartFile file, Long gid) throws StatusFailException, StatusSystemErrorException, StatusForbiddenException {
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-    public Map<Object, Object> uploadMd(MultipartFile file) throws StatusFailException, StatusSystemErrorException {
+        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        Boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
+        Boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
+
+        if (!isRoot && !isProblemAdmin && !isAdmin && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
+            throw new StatusForbiddenException("对不起，您无权限操作！");
+        }
+
         if (file == null) {
             throw new StatusFailException("上传的文件不能为空！");
         }
