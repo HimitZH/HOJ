@@ -49,7 +49,7 @@ public class ImageManager {
     private GroupValidator groupValidator;
 
     @Transactional(rollbackFor = Exception.class)
-    public Map<Object,Object> uploadAvatar(MultipartFile image) throws StatusFailException, StatusSystemErrorException {
+    public Map<Object, Object> uploadAvatar(MultipartFile image) throws StatusFailException, StatusSystemErrorException {
         if (image == null) {
             throw new StatusFailException("上传的头像图片文件不能为空！");
         }
@@ -118,12 +118,12 @@ public class ImageManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Map<Object,Object> uploadGroupAvatar(MultipartFile image, Long gid) throws StatusFailException, StatusSystemErrorException, StatusForbiddenException {
+    public Map<Object, Object> uploadGroupAvatar(MultipartFile image, Long gid) throws StatusFailException, StatusSystemErrorException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !isRoot) {
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        if (!isRoot && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -181,7 +181,7 @@ public class ImageManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Map<Object,Object> uploadCarouselImg(MultipartFile image) throws StatusFailException, StatusSystemErrorException {
+    public Map<Object, Object> uploadCarouselImg(MultipartFile image) throws StatusFailException, StatusSystemErrorException {
 
         if (image == null) {
             throw new StatusFailException("上传的图片文件不能为空！");

@@ -97,7 +97,9 @@ public class ContestFileManager {
 
         Long gid = contest.getGid();
 
-        if (!isRoot && !contest.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
+        if (!isRoot
+                && !contest.getUid().equals(userRolesVo.getUid())
+                && !(contest.getIsGroup() && groupValidator.isGroupRoot(userRolesVo.getUid(), gid))) {
             throw new StatusForbiddenException("错误：您并非该比赛的管理员，无权下载榜单！");
         }
 
@@ -157,8 +159,9 @@ public class ContestFileManager {
         // 除非是root 其它管理员只能下载自己的比赛ac记录
 
         Long gid = contest.getGid();
-
-        if (!isRoot && !contest.getUid().equals(userRolesVo.getUid()) && groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
+        if (!isRoot
+                && !contest.getUid().equals(userRolesVo.getUid())
+                && !(contest.getIsGroup() && groupValidator.isGroupRoot(userRolesVo.getUid(), gid))) {
             throw new StatusForbiddenException("错误：您并非该比赛的管理员，无权下载AC记录！");
         }
 
@@ -338,7 +341,8 @@ public class ContestFileManager {
 
         Long gid = contest.getGid();
 
-        if (!isRoot && !contest.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
+        if (!isRoot && !contest.getUid().equals(userRolesVo.getUid())
+                && !(contest.getIsGroup() && groupValidator.isGroupRoot(userRolesVo.getUid(), gid))) {
             throw new StatusForbiddenException("错误：您并非该比赛的管理员，无权下载打印代码！");
         }
 

@@ -53,8 +53,6 @@ public class JudgeServiceImpl implements JudgeService {
             return CommonResult.successResponse(judgeManager.resubmit(submitId));
         } catch (StatusNotFoundException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.NOT_FOUND);
-        } catch (StatusForbiddenException e) {
-            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
         }
     }
 
@@ -66,8 +64,6 @@ public class JudgeServiceImpl implements JudgeService {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.NOT_FOUND);
         } catch (StatusAccessDeniedException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.ACCESS_DENIED);
-        } catch (StatusForbiddenException e) {
-            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
         }
     }
 

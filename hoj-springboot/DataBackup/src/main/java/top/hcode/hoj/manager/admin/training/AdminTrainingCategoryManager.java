@@ -22,7 +22,8 @@ public class AdminTrainingCategoryManager {
 
     public TrainingCategory addTrainingCategory(TrainingCategory trainingCategory) throws StatusFailException {
         QueryWrapper<TrainingCategory> trainingCategoryQueryWrapper = new QueryWrapper<>();
-        trainingCategoryQueryWrapper.eq("gid", trainingCategory.getGid()).eq("name", trainingCategory.getName());
+        trainingCategoryQueryWrapper.eq(trainingCategory.getGid() != null, "gid", trainingCategory.getGid())
+                .eq("name", trainingCategory.getName());
         TrainingCategory existedTrainingCategory = trainingCategoryEntityService.getOne(trainingCategoryQueryWrapper, false);
 
         if (existedTrainingCategory != null) {

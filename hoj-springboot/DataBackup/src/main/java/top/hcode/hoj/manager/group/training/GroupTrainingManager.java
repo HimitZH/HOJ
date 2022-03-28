@@ -144,7 +144,7 @@ public class GroupTrainingManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long gid = trainingDto.getTraining().getGid();
 
@@ -158,7 +158,7 @@ public class GroupTrainingManager {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
-        trainingDto.getTraining().setIsPublic(false);
+        trainingDto.getTraining().setIsGroup(true);
 
         Training training = trainingDto.getTraining();
         trainingEntityService.save(training);
@@ -191,7 +191,7 @@ public class GroupTrainingManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long tid = trainingDto.getTraining().getId();
 
@@ -213,7 +213,7 @@ public class GroupTrainingManager {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
-        trainingDto.getTraining().setIsPublic(training.getIsPublic());
+        trainingDto.getTraining().setIsGroup(training.getIsGroup());
 
         trainingEntityService.updateById(trainingDto.getTraining());
 
@@ -268,7 +268,7 @@ public class GroupTrainingManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Training training = trainingEntityService.getById(tid);
 
@@ -298,7 +298,7 @@ public class GroupTrainingManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Training training = trainingEntityService.getById(tid);
 

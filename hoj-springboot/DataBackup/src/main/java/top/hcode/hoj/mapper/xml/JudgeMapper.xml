@@ -7,12 +7,7 @@
         from judge j,problem p
         <where>
             p.id = j.pid AND j.cid = 0 AND j.cpid = 0 AND p.auth = 1 AND
-            (p.is_public = true OR j.uid = #{myUid} OR #{isRoot} OR #{myUid} IN (
-                select gm.uid
-                from group_member gm
-                where (gm.auth = 3 or gm.auth = 4 or gm.auth = 5) and p.gid = gm.gid
-                )
-            )
+            p.is_group = false
             <if test="searchPid!=null">
                 <if test="completeProblemID != true">
                     AND p.problem_id like concat('%',#{searchPid},'%')

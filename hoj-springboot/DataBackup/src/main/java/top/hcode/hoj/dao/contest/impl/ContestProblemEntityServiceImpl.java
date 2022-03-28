@@ -3,6 +3,7 @@ package top.hcode.hoj.dao.contest.impl;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.util.CollectionUtils;
 import top.hcode.hoj.pojo.entity.contest.ContestProblem;
 import top.hcode.hoj.mapper.ContestProblemMapper;
 import top.hcode.hoj.pojo.entity.contest.ContestRecord;
@@ -39,10 +40,20 @@ public class ContestProblemEntityServiceImpl extends ServiceImpl<ContestProblemM
     private ContestRecordEntityService contestRecordEntityService;
 
     @Override
-    public List<ContestProblemVo> getContestProblemList(Long cid, Date startTime, Date endTime, Date sealTime, Boolean isAdmin, String contestAuthorUid) {
+    public List<ContestProblemVo> getContestProblemList(Long cid,
+                                                        Date startTime,
+                                                        Date endTime,
+                                                        Date sealTime,
+                                                        Boolean isAdmin,
+                                                        String contestAuthorUid,
+                                                        List<String> groupRootUidList) {
         // 筛去 比赛管理员和超级管理员的提交
         List<String> superAdminUidList = userInfoEntityService.getSuperAdminUidList();
         superAdminUidList.add(contestAuthorUid);
+
+        if (!CollectionUtils.isEmpty(groupRootUidList)) {
+            superAdminUidList.addAll(groupRootUidList);
+        }
 
         return contestProblemMapper.getContestProblemList(cid, startTime, endTime, sealTime, isAdmin, superAdminUidList);
     }

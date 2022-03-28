@@ -32,7 +32,7 @@
             ON p.id = pt.pid
         </if>
         <where>
-            p.auth = 1 and p.is_public = true
+            p.auth = 1 and p.is_group = false
             <if test="keyword != null and keyword != ''">
                 and (
                 p.title like concat('%',#{keyword},'%') or p.problem_id like concat('%',#{keyword},'%')

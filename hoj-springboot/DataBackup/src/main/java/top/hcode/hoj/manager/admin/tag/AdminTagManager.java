@@ -20,7 +20,8 @@ public class AdminTagManager {
 
     public Tag addProblem(Tag tag) throws StatusFailException {
         QueryWrapper<Tag> tagQueryWrapper = new QueryWrapper<>();
-        tagQueryWrapper.eq("gid", tag.getGid()).eq("name", tag.getName())
+        tagQueryWrapper.eq(tag.getGid() != null, "gid", tag.getGid())
+                .eq("name", tag.getName())
                 .eq("oj", tag.getOj());
         Tag existTag = tagEntityService.getOne(tagQueryWrapper, false);
 

@@ -1,5 +1,6 @@
 package top.hcode.hoj.dao.group.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import top.hcode.hoj.dao.group.GroupMemberEntityService;
 import top.hcode.hoj.mapper.GroupMemberMapper;
 import top.hcode.hoj.pojo.entity.group.GroupMember;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author: LengYun
@@ -22,6 +24,7 @@ public class GroupMemberEntityServiceImpl extends ServiceImpl<GroupMemberMapper,
 
     @Autowired
     private GroupMemberMapper groupMemberMapper;
+
     @Override
     public IPage<GroupMemberVo> getMemberList(int limit, int currentPage, String keyword, Integer auth, Long gid) {
         IPage<GroupMemberVo> iPage = new Page<>(currentPage, limit);
@@ -36,5 +39,13 @@ public class GroupMemberEntityServiceImpl extends ServiceImpl<GroupMemberMapper,
         List<GroupMemberVo> applyList = groupMemberMapper.getApplyList(iPage, keyword, auth, gid);
 
         return iPage.setRecords(applyList);
+    }
+
+    @Override
+    public List<String> getGroupRootUidList(Long gid) {
+        QueryWrapper<GroupMember> groupMemberQueryWrapper = new QueryWrapper<>();
+        groupMemberQueryWrapper.eq("gid", gid).eq("auth", 5);
+        List<GroupMember> groupMembers = groupMemberMapper.selectList(groupMemberQueryWrapper);
+        return groupMembers.stream().map(GroupMember::getUid).collect(Collectors.toList());
     }
 }

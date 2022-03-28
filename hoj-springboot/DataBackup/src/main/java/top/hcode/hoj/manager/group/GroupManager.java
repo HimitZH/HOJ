@@ -46,7 +46,7 @@ public class GroupManager {
     @Autowired
     private GroupValidator groupValidator;
 
-    public IPage<GroupVo> getGroupList(Integer limit, Integer currentPage, String keyword, Integer auth, Boolean onlyMine) {
+    public IPage<GroupVo> getGroupList(Integer limit, Integer currentPage, String keyword, Integer auth, boolean onlyMine) {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
@@ -70,7 +70,7 @@ public class GroupManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Group group = groupEntityService.getById(gid);
         if (group == null || group.getStatus() == 1 && !isRoot) {
@@ -80,7 +80,7 @@ public class GroupManager {
             throw new StatusForbiddenException("该团队并非公开团队，不支持访问！");
         }
 
-        if (!isRoot && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid))  {
+        if (!isRoot && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             group.setCode(null);
         }
 
@@ -91,7 +91,7 @@ public class GroupManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         boolean access = false;
 
@@ -111,7 +111,7 @@ public class GroupManager {
         return accessVo;
     }
 
-    public Integer getGroupAuth(Long gid) throws StatusFailException, StatusNotFoundException, StatusForbiddenException {
+    public Integer getGroupAuth(Long gid) {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
@@ -131,9 +131,9 @@ public class GroupManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-        Boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
-        Boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
+        boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
 
         if (!isRoot && !isAdmin && !isProblemAdmin) {
 
@@ -141,7 +141,7 @@ public class GroupManager {
             queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
             int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
 
-            if (userAcProblemCount < 20 ) {
+            if (userAcProblemCount < 20) {
                 throw new StatusForbiddenException("对不起，您暂时无权限创建团队！请先去提交题目通过20道以上!");
             }
 
@@ -210,7 +210,7 @@ public class GroupManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         if (!groupValidator.isGroupRoot(userRolesVo.getUid(), group.getId()) && !isRoot) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
@@ -254,7 +254,7 @@ public class GroupManager {
             throw new StatusFailException("团队简称已存在，请修改后重试！");
         }
 
-        Boolean isOk = groupEntityService.updateById(group);
+        boolean isOk = groupEntityService.updateById(group);
         if (!isOk) {
             throw new StatusFailException("更新失败，请重新尝试！");
         }
@@ -264,7 +264,7 @@ public class GroupManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Group group = groupEntityService.getById(gid);
 
@@ -276,7 +276,7 @@ public class GroupManager {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
-        Boolean isOk = groupEntityService.removeById(gid);
+        boolean isOk = groupEntityService.removeById(gid);
         if (!isOk) {
             throw new StatusFailException("删除失败，请重新尝试！");
         }

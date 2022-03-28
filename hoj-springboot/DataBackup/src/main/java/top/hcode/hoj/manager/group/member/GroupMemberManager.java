@@ -45,7 +45,7 @@ public class GroupMemberManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Group group = groupEntityService.getById(gid);
 
@@ -72,7 +72,7 @@ public class GroupMemberManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Group group = groupEntityService.getById(gid);
 
@@ -99,7 +99,7 @@ public class GroupMemberManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Group group = groupEntityService.getById(gid);
 
@@ -139,14 +139,14 @@ public class GroupMemberManager {
             }
             isOk = groupMemberEntityService.update(groupMemberUpdateWrapper);
         } else {
-            GroupMember groupMember1 = new GroupMember();
-            groupMember1.setUid(uid).setGid(gid).setReason(reason);
+            GroupMember newGroupMember = new GroupMember();
+            newGroupMember.setUid(uid).setGid(gid).setReason(reason);
             if (group.getAuth() == 1) {
-                groupMember1.setAuth(3);
+                newGroupMember.setAuth(3);
             } else {
-                groupMember1.setAuth(1);
+                newGroupMember.setAuth(1);
             }
-            isOk = groupMemberEntityService.save(groupMember1);
+            isOk = groupMemberEntityService.save(newGroupMember);
         }
         if (!isOk) {
             throw new StatusFailException("申请失败，请重新尝试！");
@@ -157,7 +157,7 @@ public class GroupMemberManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long gid = groupMemberDto.getGid();
 
@@ -170,28 +170,28 @@ public class GroupMemberManager {
         QueryWrapper<GroupMember> groupMemberQueryWrapper = new QueryWrapper<>();
         groupMemberQueryWrapper.eq("gid", gid).eq("uid", userRolesVo.getUid()).in("auth", 4, 5);
 
-        GroupMember groupMember = groupMemberEntityService.getOne(groupMemberQueryWrapper);
+        GroupMember currentGroupMember = groupMemberEntityService.getOne(groupMemberQueryWrapper);
 
-        if (groupMember == null && !isRoot && !groupValidator.isGroupOwner(userRolesVo.getUid(), gid)) {
+        if (currentGroupMember == null || (!isRoot && !groupValidator.isGroupOwner(userRolesVo.getUid(), gid))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
-        QueryWrapper<GroupMember> groupMemberQueryWrapper1 = new QueryWrapper<>();
-        groupMemberQueryWrapper1.eq("gid", gid).eq("uid", groupMemberDto.getUid());
+        QueryWrapper<GroupMember> changeGroupMemberQueryWrapper = new QueryWrapper<>();
+        changeGroupMemberQueryWrapper.eq("gid", gid).eq("uid", groupMemberDto.getUid());
 
-        GroupMember groupMember1 = groupMemberEntityService.getOne(groupMemberQueryWrapper1);
+        GroupMember changeGroupMember = groupMemberEntityService.getOne(changeGroupMemberQueryWrapper);
 
-        if (groupMember1 == null) {
+        if (changeGroupMember == null) {
             throw new StatusNotFoundException("该用户不在团队中！");
         }
 
         if (!isRoot && !groupValidator.isGroupOwner(userRolesVo.getUid(), gid)) {
-            if (groupMember1.getAuth() >= groupMember.getAuth() || groupMemberDto.getAuth() >= groupMember.getAuth() || groupValidator.isGroupOwner(groupMemberDto.getUid(), gid)) {
+            if (changeGroupMember.getAuth() >= currentGroupMember.getAuth() || groupMemberDto.getAuth() >= currentGroupMember.getAuth() || groupValidator.isGroupOwner(groupMemberDto.getUid(), gid)) {
                 throw new StatusForbiddenException("对不起，您无权限操作！");
             }
         }
 
-        Boolean isOk = groupMemberEntityService.updateById(groupMemberDto);
+        boolean isOk = groupMemberEntityService.updateById(groupMemberDto);
         if (!isOk) {
             throw new StatusFailException("更新失败，请重新尝试！");
         }
@@ -201,7 +201,7 @@ public class GroupMemberManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Group group = groupEntityService.getById(gid);
 
@@ -212,28 +212,30 @@ public class GroupMemberManager {
         QueryWrapper<GroupMember> groupMemberQueryWrapper = new QueryWrapper<>();
         groupMemberQueryWrapper.eq("gid", gid).eq("uid", userRolesVo.getUid()).in("auth", 3, 4, 5);
 
-        GroupMember groupMember = groupMemberEntityService.getOne(groupMemberQueryWrapper);
+        GroupMember currentGroupMember = groupMemberEntityService.getOne(groupMemberQueryWrapper);
 
-        if (groupMember == null && !isRoot && !groupValidator.isGroupOwner(userRolesVo.getUid(), gid)) {
+
+        if (currentGroupMember == null || (!isRoot && !groupValidator.isGroupOwner(userRolesVo.getUid(), gid))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
-        QueryWrapper<GroupMember> groupMemberQueryWrapper1 = new QueryWrapper<>();
-        groupMemberQueryWrapper1.eq("gid", gid).eq("uid", uid);
 
-        GroupMember groupMember1 = groupMemberEntityService.getOne(groupMemberQueryWrapper1);
+        QueryWrapper<GroupMember> changeGroupMemberQueryWrapper = new QueryWrapper<>();
+        changeGroupMemberQueryWrapper.eq("gid", gid).eq("uid", uid);
 
-        if (groupMember1 == null) {
+        GroupMember changeGroupMember = groupMemberEntityService.getOne(changeGroupMemberQueryWrapper);
+
+        if (changeGroupMember == null) {
             throw new StatusNotFoundException("该用户不在团队中！");
         }
 
         if (!isRoot && !groupValidator.isGroupOwner(userRolesVo.getUid(), gid) && !userRolesVo.getUid().equals(uid)) {
-            if (!userRolesVo.getUid().equals(uid) && (groupMember1.getAuth() >= groupMember.getAuth() || groupValidator.isGroupOwner(uid, gid))) {
+            if (!userRolesVo.getUid().equals(uid) && (changeGroupMember.getAuth() >= currentGroupMember.getAuth() || groupValidator.isGroupOwner(uid, gid))) {
                 throw new StatusForbiddenException("对不起，您无权限操作！");
             }
         }
 
-        Boolean isOk = groupMemberEntityService.remove(groupMemberQueryWrapper1);
+        boolean isOk = groupMemberEntityService.remove(changeGroupMemberQueryWrapper);
         if (!isOk) {
             throw new StatusFailException("删除失败，请重新尝试！");
         }

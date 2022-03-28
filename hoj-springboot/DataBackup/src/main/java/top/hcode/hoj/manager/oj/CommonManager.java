@@ -1,15 +1,9 @@
 package top.hcode.hoj.manager.oj;
 
 import cn.hutool.core.util.IdUtil;
-import top.hcode.hoj.common.exception.StatusForbiddenException;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.validator.GroupValidator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.wf.captcha.ArithmeticCaptcha;
-import com.wf.captcha.SpecCaptcha;
 import com.wf.captcha.base.Captcha;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.pojo.entity.problem.*;
@@ -57,9 +51,6 @@ public class CommonManager {
     @Autowired
     private TrainingCategoryEntityService trainingCategoryEntityService;
 
-    @Autowired
-    private GroupValidator groupValidator;
-    
     public CaptchaVo getCaptcha() {
         ArithmeticCaptcha specCaptcha = new ArithmeticCaptcha(90, 30, 4);
         specCaptcha.setCharType(Captcha.TYPE_DEFAULT);
@@ -75,14 +66,14 @@ public class CommonManager {
         captchaVo.setCaptchaKey(key);
         return captchaVo;
     }
-    
-    
+
+
     public List<TrainingCategory> getTrainingCategory() {
         QueryWrapper<TrainingCategory> trainingCategoryQueryWrapper = new QueryWrapper<>();
         trainingCategoryQueryWrapper.isNull("gid");
         return trainingCategoryEntityService.list(trainingCategoryQueryWrapper);
     }
-    
+
     public List<Tag> getAllProblemTagsList(String oj) {
         List<Tag> tagList;
         oj = oj.toUpperCase();
@@ -98,20 +89,7 @@ public class CommonManager {
     }
 
 
-    public Collection<Tag> getProblemTags(Long pid) throws StatusForbiddenException {
-        Problem problem = problemEntityService.getById(pid);
-
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-
-        if (!problem.getIsPublic()) {
-            if (!groupValidator.isGroupRoot(userRolesVo.getUid(), problem.getGid()) && !userRolesVo.getUid().equals(problem.getAuthor()) && !isRoot) {
-                throw new StatusForbiddenException("对不起，您无权限操作！");
-            }
-        }
-
+    public Collection<Tag> getProblemTags(Long pid){
         Map<String, Object> map = new HashMap<>();
         map.put("pid", pid);
         List<Long> tidList = problemTagEntityService.listByMap(map)
@@ -142,20 +120,7 @@ public class CommonManager {
         return languageEntityService.list(queryWrapper);
     }
 
-    public Collection<Language> getProblemLanguages(Long pid) throws StatusForbiddenException {
-        Problem problem = problemEntityService.getById(pid);
-
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-
-        if (!problem.getIsPublic()) {
-            if (!groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid()) && !isRoot) {
-                throw new StatusForbiddenException("对不起，您无权限操作！");
-            }
-        }
-
+    public Collection<Language> getProblemLanguages(Long pid){
         QueryWrapper<ProblemLanguage> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("pid", pid).select("lid");
         List<Long> idList = problemLanguageEntityService.list(queryWrapper)
@@ -164,20 +129,7 @@ public class CommonManager {
 
     }
 
-    public List<CodeTemplate> getProblemCodeTemplate(Long pid) throws StatusForbiddenException {
-        Problem problem = problemEntityService.getById(pid);
-
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-
-        if (!problem.getIsPublic()) {
-            if (!groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid()) && !isRoot) {
-                throw new StatusForbiddenException("对不起，您无权限操作！");
-            }
-        }
-
+    public List<CodeTemplate> getProblemCodeTemplate(Long pid) {
         QueryWrapper<CodeTemplate> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("pid", pid);
         return codeTemplateEntityService.list(queryWrapper);

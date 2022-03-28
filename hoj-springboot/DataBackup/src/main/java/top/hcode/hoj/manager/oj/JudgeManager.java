@@ -159,11 +159,7 @@ public class JudgeManager {
      * @Since 2021/2/12
      */
     @Transactional(rollbackFor = Exception.class)
-    public Judge resubmit(Long submitId) throws StatusNotFoundException, StatusForbiddenException {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+    public Judge resubmit(Long submitId) throws StatusNotFoundException {
 
         Judge judge = judgeEntityService.getById(submitId);
         if (judge == null) {
@@ -171,12 +167,6 @@ public class JudgeManager {
         }
 
         Problem problem = problemEntityService.getById(judge.getPid());
-
-        if (!problem.getIsPublic()) {
-            if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid())) {
-                throw new StatusForbiddenException("对不起，您无权限操作！");
-            }
-        }
 
         // 如果是非比赛题目
         if (judge.getCid() == 0) {
@@ -237,7 +227,7 @@ public class JudgeManager {
      * @Description 获取单个提交记录的详情
      * @Since 2021/1/2
      */
-    public SubmissionInfoVo getSubmission(Long submitId) throws StatusNotFoundException, StatusAccessDeniedException, StatusForbiddenException {
+    public SubmissionInfoVo getSubmission(Long submitId) throws StatusNotFoundException, StatusAccessDeniedException{
 
         Judge judge = judgeEntityService.getById(submitId);
         if (judge == null) {
@@ -266,7 +256,7 @@ public class JudgeManager {
                 throw new StatusAccessDeniedException("请先登录！");
             }
             Contest contest = contestEntityService.getById(judge.getCid());
-            if (!isRoot && !userRolesVo.getUid().equals(contest.getUid()) && !groupValidator.isGroupRoot(userRolesVo.getUid(), contest.getGid())) {
+            if (!isRoot && !userRolesVo.getUid().equals(contest.getUid())) {
                 // 如果是比赛,那么还需要判断是否为封榜,比赛管理员和超级管理员可以有权限查看(ACM题目除外)
                 if (contest.getType().intValue() == Constants.Contest.TYPE_OI.getCode()
                         && contestValidator.isSealRank(userRolesVo.getUid(), contest, true, false)) {
@@ -286,15 +276,8 @@ public class JudgeManager {
                 }
             }
         } else {
-            boolean admin = SecurityUtils.getSubject().hasRole("problem_admin");// 是否为题目管理员
-            Problem problem = problemEntityService.getById(judge.getPid());
-
-            if (!problem.getIsPublic()) {
-                if (isRoot && !groupValidator.isGroupRoot(userRolesVo.getUid(), problem.getGid())) {
-                    throw new StatusForbiddenException("对不起，您无权限操作！");
-                }
-            }
-            if (!judge.getShare() && !isRoot && !admin) {
+            boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");// 是否为题目管理员
+            if (!judge.getShare() && !isRoot && !isProblemAdmin) {
                 if (userRolesVo != null) { // 当前是登陆状态
                     // 需要判断是否为当前登陆用户自己的提交代码
                     if (!judge.getUid().equals(userRolesVo.getUid())) {
@@ -333,13 +316,10 @@ public class JudgeManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-
-        Problem problem = problemEntityService.getById(judge.getPid());
-
-        if (!userRolesVo.getUid().equals(judge.getUid()) && !isRoot && !groupValidator.isGroupRoot(userRolesVo.getUid(), problem.getGid())) { // 判断该提交是否为当前用户的
+        if (!userRolesVo.getUid().equals(judge.getUid())) { // 判断该提交是否为当前用户的
             throw new StatusForbiddenException("对不起，您不能修改他人的代码分享权限！");
         }
+
         Judge judgeInfo = judgeEntityService.getById(judge.getSubmitId());
         if (judgeInfo.getCid() != 0) { // 如果是比赛提交，不可分享！
             throw new StatusForbiddenException("对不起，您不能分享比赛题目的提交代码！");
@@ -386,26 +366,13 @@ public class JudgeManager {
             searchUsername = searchUsername.trim();
         }
 
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-
-        String myUid = "";
-
-        if (userRolesVo != null) {
-            myUid = userRolesVo.getUid();
-        }
-
         return judgeEntityService.getCommonJudgeList(limit,
                 currentPage,
                 searchPid,
                 searchStatus,
                 searchUsername,
                 uid,
-                completeProblemID,
-                myUid,
-                isRoot);
+                completeProblemID);
     }
 
 
@@ -459,7 +426,9 @@ public class JudgeManager {
 
         Contest contest = contestEntityService.getById(submitIdListDto.getCid());
 
-        boolean isContestAdmin = isRoot || userRolesVo.getUid().equals(contest.getUid()) || groupValidator.isGroupRoot(userRolesVo.getUid(), contest.getGid());
+        boolean isContestAdmin = isRoot
+                || userRolesVo.getUid().equals(contest.getUid())
+                || (contest.getIsGroup() && groupValidator.isGroupRoot(userRolesVo.getUid(), contest.getGid()));
         // 如果是封榜时间且不是比赛管理员和超级管理员
         boolean isSealRank = contestValidator.isSealRank(userRolesVo.getUid(), contest, true, isRoot);
 
@@ -517,7 +486,8 @@ public class JudgeManager {
         if (judge.getCid() != 0 && userRolesVo != null && !isRoot) {
             Contest contest = contestEntityService.getById(judge.getCid());
             // 如果不是比赛管理员 比赛封榜不能看
-            if (!contest.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupRoot(userRolesVo.getUid(), contest.getGid())) {
+            if (!contest.getUid().equals(userRolesVo.getUid()) ||
+                    (contest.getIsGroup() && !groupValidator.isGroupRoot(userRolesVo.getUid(), contest.getGid()))) {
                 // 当前是比赛期间 同时处于封榜时间
                 if (contest.getSealRank() && contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()
                         && contest.getSealRankTime().before(new Date())) {

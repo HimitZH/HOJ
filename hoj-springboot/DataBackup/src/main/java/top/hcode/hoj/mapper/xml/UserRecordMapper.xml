@@ -5,7 +5,7 @@
         SELECT u.uuid as uid,u.nickname,u.username,left(u.signature,100) as signature,u.avatar,
         u.title_name,u.title_color,
         (SELECT COUNT( DISTINCT pid ) FROM user_acproblem WHERE uid = u.uuid) AS ac,
-        (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid AND cid=0) AS total
+        (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid AND cid=0 AND gid is null) AS total
         FROM user_info u
         <where>
             u.status = 0
@@ -49,7 +49,7 @@
                 FROM user_info u left join (
                         SELECT MAX(oi_rank_score) AS score, uid, pid
                         FROM judge
-                        WHERE cid=0
+                        WHERE cid=0 AND gid is null
                         GROUP BY pid, uid
                     ) s
                 ON s.uid = u.uuid
@@ -88,7 +88,7 @@
     <select id="getUserHomeInfo" resultMap="map_UserHomeVo">
         SELECT u.uuid as uid,u.username,u.nickname,u.gender,u.signature,u.school,u.github,u.blog,
         u.avatar,u.title_name,u.title_color,ur.rating,
-        (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid AND cid=0) AS total
+        (SELECT COUNT(uid) FROM judge WHERE uid=u.uuid AND cid=0 AND gid is null) AS total
         FROM user_info u,user_record ur
         <where>
          u.uuid = ur.uid AND u.status = 0
@@ -104,7 +104,7 @@
     <!-- 子查询-->
     <select id="getProblemScore" resultType="java.lang.Integer">
         SELECT MAX(oi_rank_score) AS sum_score FROM judge
-        WHERE uid=#{uid} AND cid=0 AND score IS NOT NULL GROUP BY pid
+        WHERE uid=#{uid} AND cid=0 AND gid is null AND score IS NOT NULL GROUP BY pid
     </select>
 
 </mapper>

@@ -54,7 +54,7 @@ public class AdminContestManager {
                     .like("title", keyword).or()
                     .like("id", keyword);
         }
-        queryWrapper.eq("is_public", true).orderByDesc("start_time");
+        queryWrapper.eq("is_group", false).orderByDesc("start_time");
         return contestEntityService.page(iPage, queryWrapper);
     }
 

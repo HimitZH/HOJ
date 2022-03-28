@@ -44,11 +44,7 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public CommonResult<Collection<Tag>> getProblemTags(Long pid) {
-        try {
-            return CommonResult.successResponse(commonManager.getProblemTags(pid));
-        } catch (StatusForbiddenException e) {
-            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
-        }
+        return CommonResult.successResponse(commonManager.getProblemTags(pid));
     }
 
     @Override
@@ -58,19 +54,11 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public CommonResult<Collection<Language>> getProblemLanguages(Long pid) {
-        try {
-            return CommonResult.successResponse(commonManager.getProblemLanguages(pid));
-        } catch (StatusForbiddenException e) {
-            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
-        }
+        return CommonResult.successResponse(commonManager.getProblemLanguages(pid));
     }
 
     @Override
     public CommonResult<List<CodeTemplate>> getProblemCodeTemplate(Long pid) {
-        try {
-            return CommonResult.successResponse(commonManager.getProblemCodeTemplate(pid));
-        } catch (StatusForbiddenException e) {
-            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
-        }
+        return CommonResult.successResponse(commonManager.getProblemCodeTemplate(pid));
     }
 }

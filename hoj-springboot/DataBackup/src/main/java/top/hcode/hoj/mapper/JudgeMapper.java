@@ -30,9 +30,7 @@ public interface JudgeMapper extends BaseMapper<Judge> {
                                       @Param("status") Integer status,
                                       @Param("username") String username,
                                       @Param("uid") String uid,
-                                      @Param("completeProblemID") Boolean completeProblemID,
-                                      @Param("myUid") String myUid,
-                                      @Param("isRoot") Boolean isRoot);
+                                      @Param("completeProblemID") Boolean completeProblemID);
 
     IPage<JudgeVo> getContestJudgeList(Page<JudgeVo> page,
                                        @Param("displayId") String displayId,
