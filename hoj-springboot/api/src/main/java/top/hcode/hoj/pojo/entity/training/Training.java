@@ -53,6 +53,12 @@ public class Training implements Serializable {
     @TableField("`rank`")
     private Integer rank;
 
+    @ApiModelProperty(value = "全站可见")
+    private Boolean isPublic;
+
+    @ApiModelProperty(value = "团队ID")
+    private Long gid;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 

@@ -1,5 +1,6 @@
 package top.hcode.hoj.manager.oj;
 
+import top.hcode.hoj.validator.GroupValidator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.shiro.SecurityUtils;
@@ -58,6 +59,9 @@ public class ProblemManager {
     @Autowired
     private ContestValidator contestValidator;
 
+    @Autowired
+    private GroupValidator groupValidator;
+
     /**
      * @MethodName getProblemList
      * @Params * @param null
@@ -89,7 +93,7 @@ public class ProblemManager {
     public RandomProblemVo getRandomProblem() throws StatusFailException {
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         // 必须是公开题目
-        queryWrapper.select("problem_id").eq("auth", 1);
+        queryWrapper.select("problem_id").eq("auth", 1).eq("is_public", true);
         List<Problem> list = problemEntityService.list(queryWrapper);
         if (list.size() == 0) {
             throw new StatusFailException("获取随机题目失败，题库暂无公开题目！");
@@ -209,6 +213,10 @@ public class ProblemManager {
      * @Since 2020/10/27
      */
     public ProblemInfoVo getProblemInfo(String problemId) throws StatusNotFoundException, StatusForbiddenException {
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         QueryWrapper<Problem> wrapper = new QueryWrapper<Problem>().eq("problem_id", problemId);
         //查询题目详情，题目标签，题目语言，题目做题情况
@@ -218,6 +226,12 @@ public class ProblemManager {
         }
         if (problem.getAuth() != 1) {
             throw new StatusForbiddenException("该题号对应题目并非公开题目，不支持访问！");
+        }
+
+        if (!problem.getIsPublic()) {
+            if (!groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid()) && !isRoot) {
+                throw new StatusForbiddenException("该题号对应题目并非公开题目，不支持访问！");
+            }
         }
 
         QueryWrapper<ProblemTag> problemTagQueryWrapper = new QueryWrapper<>();

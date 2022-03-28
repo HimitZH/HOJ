@@ -170,6 +170,7 @@ public class Constants {
         SUBMIT_NON_CONTEST_LOCK("submit_non_contest_lock:"),
         SUBMIT_CONTEST_LOCK("submit_contest_lock:"),
         DISCUSSION_ADD_NUM_LOCK("discussion_add_num_lock:"),
+        GROUP_ADD_NUM_LOCK("group_add_num_lock"),
         CONTEST_ADD_PRINT_LOCK("contest_add_print_lock:"),
 
         REMOTE_JUDGE_CF_ACCOUNT_NUM("remote_judge_cf_account:");
@@ -193,7 +194,9 @@ public class Constants {
     public enum File {
 
 
-        USER_AVATAR_FOLDER("/hoj/file/avatar"),
+        USER_AVATAR_FOLDER("/hoj/file/avatar/user"),
+
+        GROUP_AVATAR_FOLDER("/hoj/file/avatar/group"),
 
         HOME_CAROUSEL_FOLDER("/hoj/file/carousel"),
 

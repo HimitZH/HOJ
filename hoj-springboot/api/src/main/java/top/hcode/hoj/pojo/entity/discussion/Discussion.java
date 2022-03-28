@@ -67,6 +67,9 @@ public class Discussion {
     @ApiModelProperty(value = "是否封禁或删除 0正常，1封禁")
     private Integer status;
 
+    @ApiModelProperty(value = "团队ID")
+    private Long gid;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 

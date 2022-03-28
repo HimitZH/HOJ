@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.mapper.GroupMapper">
+
+    <resultMap id="map_GroupList" type="top.hcode.hoj.pojo.vo.GroupVo">
+        <id column="id" property="id"></id>
+        <result column="avatar" property="avatar"></result>
+        <result column="name" property="name"></result>
+        <result column="short_name" property="shortName"></result>
+        <result column="brief" property="brief"></result>
+        <result column="description" property="description"></result>
+        <result column="owner" property="owner"></result>
+        <result column="auth" property="auth"></result>
+        <result column="visible" property="visible"></result>
+        <result column="member_count" property="memberCount"></result>
+        <result column="gmt_create" property="gmtCreate"></result>
+    </resultMap>
+
+    <select id="getGroupList" resultMap="map_GroupList">
+        SELECT g.*, count(distinct gm.uid) as member_count
+        FROM group_member gm, `group` g
+        <where>
+            g.status = 0 and g.id = gm.gid and (gm.auth = 3 or gm.auth = 4 or gm.auth = 5)
+            <if test="uid == null || uid == ''">
+                and g.visible = true
+            </if>
+            <if test="uid != null || uid != ''">
+                and (g.visible = true or #{uid} in (select uid from group_member where gid = g.id and (auth = 3 or auth = 4 or auth = 5)))
+            </if>
+            <if test="onlyMine">
+                and #{uid} in (select uid from group_member where gid = g.id and (auth = 3 or auth = 4 or auth = 5))
+            </if>
+            <if test="auth != 0">
+                and g.auth = #{auth}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                and (
+                g.name like concat('%',#{keyword},'%') or g.owner like concat('%',#{keyword},'%') or g.short_name like concat('%',#{keyword},'%')
+                )
+            </if>
+        </where>
+        GROUP BY g.id ORDER BY g.id ASC
+    </select>
+</mapper>
