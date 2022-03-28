@@ -6,6 +6,7 @@ import cn.hutool.core.io.file.FileWriter;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ZipUtil;
 import cn.hutool.json.JSONUtil;
+import top.hcode.hoj.validator.GroupValidator;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,6 @@ import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestPrint;
 import top.hcode.hoj.pojo.entity.contest.ContestProblem;
 import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.vo.ACMContestRankVo;
 import top.hcode.hoj.pojo.vo.OIContestRankVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
@@ -77,6 +77,9 @@ public class ContestFileManager {
     @Autowired
     private ContestValidator contestValidator;
 
+    @Autowired
+    private GroupValidator groupValidator;
+
     public void downloadContestRank(Long cid, Boolean forceRefresh, Boolean removeStar, HttpServletResponse response) throws IOException, StatusFailException, StatusForbiddenException {
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
@@ -92,7 +95,9 @@ public class ContestFileManager {
         // 是否为超级管理员
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
-        if (!isRoot && !contest.getUid().equals(userRolesVo.getUid())) {
+        Long gid = contest.getGid();
+
+        if (!isRoot && !contest.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("错误：您并非该比赛的管理员，无权下载榜单！");
         }
 
@@ -150,8 +155,11 @@ public class ContestFileManager {
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         // 除非是root 其它管理员只能下载自己的比赛ac记录
-        if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot) {
-            throw new StatusForbiddenException("错误：您并非该比赛的管理员，无权下载榜单！");
+
+        Long gid = contest.getGid();
+
+        if (!isRoot && !contest.getUid().equals(userRolesVo.getUid()) && groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
+            throw new StatusForbiddenException("错误：您并非该比赛的管理员，无权下载AC记录！");
         }
 
         boolean isACM = contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode();
@@ -318,9 +326,22 @@ public class ContestFileManager {
 
     }
 
-
-    public void downloadContestPrintText(Long id, HttpServletResponse response) {
+    public void downloadContestPrintText(Long id, HttpServletResponse response) throws StatusForbiddenException {
         ContestPrint contestPrint = contestPrintEntityService.getById(id);
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        Long cid = contestPrint.getCid();
+
+        Contest contest = contestEntityService.getById(cid);
+
+        Long gid = contest.getGid();
+
+        if (!isRoot && !contest.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
+            throw new StatusForbiddenException("错误：您并非该比赛的管理员，无权下载打印代码！");
+        }
+
         String filename = contestPrint.getUsername() + "_Contest_Print.txt";
         String filePath = Constants.File.CONTEST_TEXT_PRINT_FOLDER.getPath() + File.separator + id + File.separator + filename;
         if (!FileUtil.exist(filePath)) {

@@ -3,6 +3,7 @@ package top.hcode.hoj.validator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.common.exception.StatusAccessDeniedException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
@@ -25,6 +26,9 @@ public class TrainingValidator {
     @Resource
     private TrainingRegisterEntityService trainingRegisterEntityService;
 
+    @Autowired
+    private GroupValidator groupValidator;
+
     public void validateTrainingAuth(Training training) throws StatusAccessDeniedException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
@@ -40,7 +44,7 @@ public class TrainingValidator {
             boolean isRoot = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
             boolean isAuthor = training.getAuthor().equals(userRolesVo.getUsername()); // 是否为该私有训练的创建者
 
-            if (!isRoot && !isAuthor) { // 如果两者都不是，需要做注册权限校验
+            if (!isRoot && !isAuthor && !groupValidator.isGroupRoot(userRolesVo.getUid(), training.getGid())) { // 如果两者都不是，需要做注册权限校验
                 checkTrainingRegister(training.getId(), userRolesVo.getUid());
             }
         }
@@ -69,7 +73,7 @@ public class TrainingValidator {
             boolean isRoot = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
             boolean isAuthor = training.getAuthor().equals(userRolesVo.getUsername()); // 是否为该私有训练的创建者
 
-            if (!isRoot && !isAuthor) { // 如果两者都不是，需要做注册权限校验
+            if (!isRoot && !isAuthor && !groupValidator.isGroupRoot(userRolesVo.getUid(), training.getGid())) { // 如果两者都不是，需要做注册权限校验
                 QueryWrapper<TrainingRegister> trainingRegisterQueryWrapper = new QueryWrapper<>();
                 trainingRegisterQueryWrapper.eq("tid", training.getId());
                 trainingRegisterQueryWrapper.eq("uid", userRolesVo.getUid());

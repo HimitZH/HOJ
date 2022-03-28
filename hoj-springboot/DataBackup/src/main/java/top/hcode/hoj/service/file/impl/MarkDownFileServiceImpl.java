@@ -25,13 +25,15 @@ public class MarkDownFileServiceImpl implements MarkDownFileService {
     private MarkDownFileManager markDownFileManager;
 
     @Override
-    public CommonResult<Map<Object, Object>> uploadMDImg(MultipartFile image) {
+    public CommonResult<Map<Object, Object>> uploadMDImg(MultipartFile image, Long gid) {
         try {
-            return CommonResult.successResponse(markDownFileManager.uploadMDImg(image));
+            return CommonResult.successResponse(markDownFileManager.uploadMDImg(image, gid));
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
         } catch (StatusSystemErrorException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.SYSTEM_ERROR);
+        } catch (StatusForbiddenException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
         }
     }
 
@@ -48,13 +50,15 @@ public class MarkDownFileServiceImpl implements MarkDownFileService {
     }
 
     @Override
-    public CommonResult<Map<Object, Object>> uploadMd(MultipartFile file) {
+    public CommonResult<Map<Object, Object>> uploadMd(MultipartFile file, Long gid) {
         try {
-            return CommonResult.successResponse(markDownFileManager.uploadMd(file));
+            return CommonResult.successResponse(markDownFileManager.uploadMd(file, gid));
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
         } catch (StatusSystemErrorException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.SYSTEM_ERROR);
+        } catch (StatusForbiddenException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
         }
     }
 }

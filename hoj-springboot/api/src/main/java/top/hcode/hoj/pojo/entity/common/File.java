@@ -28,6 +28,9 @@ public class File {
     @ApiModelProperty(value = "用户id")
     private String uid;
 
+    @ApiModelProperty(value = "团队id")
+    private Long gid;
+
     @ApiModelProperty(value = "文件所属类型，例如avatar")
     @TableField("`type`")
     private String type;

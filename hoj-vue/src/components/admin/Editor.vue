@@ -90,18 +90,21 @@ export default {
     };
   },
   created() {
-    if (this.isAdminRole) {
+    if (this.isAdminRole || this.isGroupAdmin) {
       this.toolbars.imagelink = true;
     }
   },
   methods: {
     // 将图片上传到服务器，返回地址替换到md中
     $imgAdd(pos, $file) {
-      if (!this.isAdminRole) {
+      if (!this.isAdminRole && !this.isGroupAdmin) {
         return;
       }
       var formdata = new FormData();
       formdata.append('image', $file);
+      if (this.$route.params.groupID) {
+        formdata.append('gid', this.$route.params.groupID);
+      }
       //将下面上传接口替换为你自己的服务器接口
       this.$http({
         url: '/api/file/upload-md-img',
@@ -134,6 +137,7 @@ export default {
       // 创建form格式的数据，将文件放入form中
       const formdata = new FormData();
       formdata.append('file', file);
+      formdata.append('gid', this.$route.params.groupID);
 
       this.$http({
         url: '/api/file/upload-md-file',
@@ -153,7 +157,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['isAdminRole']),
+    ...mapGetters(['isAdminRole', 'isGroupAdmin']),
   },
   watch: {
     value(val) {

@@ -2,8 +2,12 @@ package top.hcode.hoj.manager.oj;
 
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
+import top.hcode.hoj.validator.GroupValidator;
+import top.hcode.hoj.validator.TrainingValidator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.common.exception.StatusAccessDeniedException;
@@ -29,7 +33,6 @@ import top.hcode.hoj.dao.training.TrainingProblemEntityService;
 import top.hcode.hoj.dao.training.TrainingRecordEntityService;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.validator.ContestValidator;
-import top.hcode.hoj.validator.TrainingValidator;
 
 import javax.annotation.Resource;
 
@@ -71,8 +74,12 @@ public class BeforeDispatchInitManager {
     @Resource
     private ContestValidator contestValidator;
 
+    @Autowired
+    private GroupValidator groupValidator;
 
     public void initCommonSubmission(String problemId,  Judge judge) throws StatusForbiddenException {
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
         problemQueryWrapper.eq("problem_id", problemId);
@@ -80,6 +87,14 @@ public class BeforeDispatchInitManager {
 
         if (problem.getAuth() == 2) {
             throw new StatusForbiddenException("错误！当前题目不可提交！");
+        }
+
+        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        if (!problem.getIsPublic()) {
+            if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid())) {
+                throw new StatusForbiddenException("对不起，您无权限操作！");
+            }
         }
 
         judge.setCpid(0L).setPid(problem.getId()).setDisplayPid(problem.getProblemId());
@@ -130,6 +145,15 @@ public class BeforeDispatchInitManager {
         if (problem.getAuth() == 2) {
             throw new StatusForbiddenException("错误！当前题目不可提交！");
         }
+
+        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        if (!problem.getIsPublic()) {
+            if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid())) {
+                throw new StatusForbiddenException("对不起，您无权限操作！");
+            }
+        }
+
         judge.setDisplayPid(problem.getProblemId());
 
         // 将新提交数据插入数据库
@@ -179,6 +203,15 @@ public class BeforeDispatchInitManager {
         if (problem.getAuth() == 2) {
             throw new StatusForbiddenException("错误！当前题目不可提交！");
         }
+
+        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        if (!problem.getIsPublic()) {
+            if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid())) {
+                throw new StatusForbiddenException("对不起，您无权限操作！");
+            }
+        }
+
         judge.setDisplayPid(problem.getProblemId());
 
         // 将新提交数据插入数据库

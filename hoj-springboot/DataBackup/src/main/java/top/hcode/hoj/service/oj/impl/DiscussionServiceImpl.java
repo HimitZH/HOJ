@@ -30,7 +30,11 @@ public class DiscussionServiceImpl implements DiscussionService {
 
     @Override
     public CommonResult<IPage<Discussion>> getDiscussionList(Integer limit, Integer currentPage, Integer categoryId, String pid, Boolean onlyMine, String keyword, Boolean admin) {
-        return CommonResult.successResponse(discussionManager.getDiscussionList(limit, currentPage, categoryId, pid, onlyMine, keyword, admin));
+        try {
+            return CommonResult.successResponse(discussionManager.getDiscussionList(limit, currentPage, categoryId, pid, onlyMine, keyword, admin));
+        } catch (StatusForbiddenException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
+        }
     }
 
     @Override
@@ -52,7 +56,9 @@ public class DiscussionServiceImpl implements DiscussionService {
         } catch (StatusForbiddenException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
         } catch (StatusFailException e) {
-            return CommonResult.errorResponse(e.getMessage());
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FAIL);
+        } catch (StatusNotFoundException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.NOT_FOUND);
         }
     }
 
@@ -63,6 +69,8 @@ public class DiscussionServiceImpl implements DiscussionService {
             return CommonResult.successResponse();
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
+        } catch (StatusForbiddenException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
         }
     }
 
@@ -73,6 +81,8 @@ public class DiscussionServiceImpl implements DiscussionService {
             return CommonResult.successResponse();
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
+        } catch (StatusForbiddenException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
         }
     }
 
@@ -83,6 +93,8 @@ public class DiscussionServiceImpl implements DiscussionService {
             return CommonResult.successResponse();
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
+        } catch (StatusForbiddenException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
         }
     }
 

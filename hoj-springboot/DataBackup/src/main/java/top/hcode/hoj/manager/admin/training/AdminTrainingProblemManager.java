@@ -69,11 +69,6 @@ public class AdminTrainingProblemManager {
         });
 
         HashMap<String, Object> trainingProblem = new HashMap<>();
-        if (pidList.size() == 0 && queryExisted) { // 该训练原本就无题目数据
-            trainingProblem.put("problemList", pidList);
-            trainingProblem.put("contestProblemMap", trainingProblemMap);
-            return trainingProblem;
-        }
 
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
 
@@ -82,7 +77,7 @@ public class AdminTrainingProblemManager {
             problemQueryWrapper.in(pidList.size() > 0, "id", pidList);
         } else {
             // 权限需要是公开的（隐藏的，比赛中不可加入！）
-            problemQueryWrapper.eq("auth", 1);
+            problemQueryWrapper.eq("auth", 1).eq("is_public", true);
             problemQueryWrapper.notIn(pidList.size() > 0, "id", pidList);
         }
 
@@ -92,18 +87,25 @@ public class AdminTrainingProblemManager {
                     .like("author", keyword));
         }
 
-        IPage<Problem> problemListPager = problemEntityService.page(iPage, problemQueryWrapper);
+        if (pidList.size() == 0 && queryExisted) {
+            problemQueryWrapper = new QueryWrapper<>();
+            problemQueryWrapper.eq("id", null);
+        }
 
-        if (queryExisted) {
-            List<Problem> problemListPagerRecords = problemListPager.getRecords();
-            List<Problem> sortProblemList = problemListPagerRecords
+        IPage<Problem> problemListPage = problemEntityService.page(iPage, problemQueryWrapper);
+
+        if (queryExisted && pidList.size() > 0) {
+            List<Problem> problemListPageRecords = problemListPage.getRecords();
+            List<Problem> sortProblemList = problemListPageRecords
                     .stream()
                     .sorted(Comparator.comparingInt(problem -> trainingProblemMap.get(problem.getId()).getRank()))
                     .collect(Collectors.toList());
-            problemListPager.setRecords(sortProblemList);
+            problemListPage.setRecords(sortProblemList);
         }
-        trainingProblem.put("problemList", problemListPager);
+
+        trainingProblem.put("problemList", problemListPage);
         trainingProblem.put("trainingProblemMap", trainingProblemMap);
+
         return trainingProblem;
     }
 

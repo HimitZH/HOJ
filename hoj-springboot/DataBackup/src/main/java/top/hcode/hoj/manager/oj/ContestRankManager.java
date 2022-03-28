@@ -1,7 +1,13 @@
 package top.hcode.hoj.manager.oj;
 
+import top.hcode.hoj.common.exception.StatusForbiddenException;
+import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.validator.GroupValidator;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.vo.ACMContestRankVo;
@@ -23,6 +29,9 @@ public class ContestRankManager {
     @Resource
     private ContestCalculateRankManager contestCalculateRankManager;
 
+    @Autowired
+    private GroupValidator groupValidator;
+
 
     /**
      * @param isOpenSealRank
@@ -40,7 +49,17 @@ public class ContestRankManager {
                                                          List<String> concernedList,
                                                          Contest contest,
                                                          int currentPage,
-                                                         int limit) {
+                                                         int limit) throws StatusForbiddenException{
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        if (!contest.getIsPublic()) {
+            if (!isRoot && !contest.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupMember(userRolesVo.getUid(), contest.getGid())) {
+                throw new StatusForbiddenException("对不起，您无权限操作！");
+            }
+        }
         // 进行排序计算
         List<ACMContestRankVo> orderResultList = contestCalculateRankManager.calcACMRank(isOpenSealRank,
                 removeStar,
@@ -82,7 +101,17 @@ public class ContestRankManager {
                                                        List<String> concernedList,
                                                        Contest contest,
                                                        int currentPage,
-                                                       int limit) {
+                                                       int limit) throws StatusForbiddenException {
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        if (!contest.getIsPublic()) {
+            if (!isRoot && !contest.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupMember(userRolesVo.getUid(), contest.getGid())) {
+                throw new StatusForbiddenException("对不起，您无权限操作！");
+            }
+        }
 
         List<OIContestRankVo> orderResultList = contestCalculateRankManager.calcOIRank(isOpenSealRank,
                 removeStar,

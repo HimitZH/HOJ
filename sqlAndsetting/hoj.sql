@@ -27,11 +27,13 @@ CREATE TABLE `announcement` (
   `content` longtext,
   `uid` varchar(255) DEFAULT NULL,
   `status` int(11) DEFAULT '0' COMMENT '0可见，1不可见',
+  `gid` bigint(20) unsigned DEFAULT NULL,
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`),
-  CONSTRAINT `announcement_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `announcement_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `announcement_ibfk_2` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `auth` */
@@ -152,11 +154,14 @@ CREATE TABLE `contest` (
   `open_rank` tinyint(1) DEFAULT '0' COMMENT '是否开放比赛榜单',
   `star_account` mediumtext COMMENT '打星用户列表',
   `oi_rank_score_type` varchar(255) DEFAULT 'Recent' COMMENT 'oi排行榜得分方式，Recent、Highest',
+  `is_public` tinyint(1) DEFAULT '1',
+  `gid` bigint(20) unsigned DEFAULT NULL,
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`uid`),
   KEY `uid` (`uid`),
-  CONSTRAINT `contest_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `contest_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `contest_ibfk_2` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `contest_announcement` */
@@ -326,6 +331,7 @@ CREATE TABLE `discussion` (
   `top_priority` tinyint(1) DEFAULT '0' COMMENT '优先级，是否置顶',
   `comment_num` int(11) DEFAULT '0' COMMENT '评论数量',
   `status` int(1) DEFAULT '0' COMMENT '是否封禁该讨论',
+  `gid` bigint(20) unsigned DEFAULT NULL,
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
@@ -336,7 +342,8 @@ CREATE TABLE `discussion` (
   CONSTRAINT `discussion_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `discussion_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `category` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE,
   CONSTRAINT `discussion_ibfk_4` FOREIGN KEY (`avatar`) REFERENCES `user_info` (`avatar`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  CONSTRAINT `discussion_ibfk_6` FOREIGN KEY (`pid`) REFERENCES `problem` (`problem_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `discussion_ibfk_6` FOREIGN KEY (`pid`) REFERENCES `problem` (`problem_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `discussion_ibfk_3` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `discussion_like` */
@@ -388,11 +395,13 @@ CREATE TABLE `file` (
   `file_path` varchar(255) DEFAULT NULL COMMENT '文件绝对路径',
   `type` varchar(255) DEFAULT NULL COMMENT '文件所属类型，例如avatar',
   `delete` tinyint(1) DEFAULT '0' COMMENT '是否删除',
+  `gid` bigint(20) unsigned DEFAULT NULL,
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `uid` (`uid`),
-  CONSTRAINT `file_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `file_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `file_ibfk_2` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `judge` */
@@ -540,12 +549,15 @@ CREATE TABLE `problem` (
   `is_upload_case` tinyint(1) DEFAULT '1' COMMENT '题目测试数据是否是上传文件的',
   `case_version` varchar(40) DEFAULT '0' COMMENT '题目测试数据的版本号',
   `modified_user` varchar(255) DEFAULT NULL COMMENT '修改题目的管理员用户名',
+  `is_public` tinyint(1) DEFAULT '1',
+  `gid` bigint(20) unsigned DEFAULT NULL,
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `author` (`author`),
   KEY `problem_id` (`problem_id`),
-  CONSTRAINT `problem_ibfk_1` FOREIGN KEY (`author`) REFERENCES `user_info` (`username`) ON DELETE NO ACTION ON UPDATE CASCADE
+  CONSTRAINT `problem_ibfk_1` FOREIGN KEY (`author`) REFERENCES `user_info` (`username`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  CONSTRAINT `problem_ibfk_2` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `problem_case` */
@@ -684,10 +696,12 @@ CREATE TABLE `tag` (
   `name` varchar(255) NOT NULL COMMENT '标签名字',
   `color` varchar(10) DEFAULT NULL COMMENT '标签颜色',
   `oj` varchar(255) DEFAULT 'ME' COMMENT '标签所属oj',
+  `gid` bigint(20) unsigned DEFAULT NULL,
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`,`oj`)
+  UNIQUE KEY `name` (`name`,`oj`, `gid`),
+  CONSTRAINT `tag_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `user_acproblem` */
@@ -866,9 +880,12 @@ CREATE TABLE `training` (
   `private_pwd` varchar(255) DEFAULT NULL COMMENT '训练题单权限为Private时的密码',
   `rank` int DEFAULT '0' COMMENT '编号，升序',
   `status` tinyint(1) DEFAULT '1' COMMENT '是否可用',
+  `is_public` tinyint(1) DEFAULT '1',
+  `gid` bigint(20) unsigned DEFAULT NULL,
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  CONSTRAINT `training_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Table structure for table `training_category` */
@@ -879,9 +896,11 @@ CREATE TABLE `training_category` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
   `color` varchar(255) DEFAULT NULL,
+  `gid` bigint(20) unsigned DEFAULT NULL,
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  CONSTRAINT `training_category_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Table structure for table `training_problem` */
@@ -963,6 +982,49 @@ CREATE TABLE `mapping_training_category` (
   KEY `cid` (`cid`),
   CONSTRAINT `mapping_training_category_ibfk_1` FOREIGN KEY (`tid`) REFERENCES `training` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `mapping_training_category_ibfk_2` FOREIGN KEY (`cid`) REFERENCES `training_category` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Table structure for table `group` */
+
+DROP TABLE IF EXISTS `group`;
+
+CREATE TABLE `group` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `avatar` varchar(255) DEFAULT NULL COMMENT '头像地址',
+  `name` varchar(25) DEFAULT NULL COMMENT '团队名称',
+  `short_name` varchar(10) DEFAULT NULL COMMENT '团队简称，创建题目时题号自动添加的前缀',
+  `brief` varchar(50) COMMENT '团队简介',
+  `description` longtext COMMENT '团队介绍',
+  `owner` varchar(255) NOT NULL COMMENT '团队拥有者用户名',
+  `auth` int(11) NOT NULL COMMENT '0为Public，1为Protected，2为Private',
+  `visible` tinyint(1) DEFAULT '1' COMMENT '是否可见',
+  `status` tinyint(1) DEFAULT '0' COMMENT '是否封禁',
+  `code` varchar(6) DEFAULT NULL COMMENT '邀请码',
+  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `NAME_UNIQUE` (`name`),
+  UNIQUE KEY `short_name` (`short_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
+
+/*Table structure for table `group_member` */
+
+DROP TABLE IF EXISTS `group_member`;
+
+CREATE TABLE `group_member` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `gid` bigint unsigned NOT NULL COMMENT '团队id',
+  `uid` varchar(32) NOT NULL COMMENT '用户id',
+  `auth` int(11) DEFAULT '1' COMMENT '1未审批，2拒绝，3普通成员，4团队管理员，5团队拥有者',
+  `reason` varchar(100) DEFAULT NULL COMMENT '申请理由',
+  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `gid_uid_unique` (`gid`, `uid`),
+  KEY `gid` (`gid`),
+  KEY `uid` (`uid`),
+  CONSTRAINT `group_member_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `group_member_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -1049,7 +1111,7 @@ delete from `user_info`;
 
 /*Data for the table `auth` */
 
-insert  into `auth`(`id`,`name`,`permission`,`status`,`gmt_create`,`gmt_modified`) values (1,'problem','problem_admin',0,'2020-10-25 00:17:17','2021-05-15 06:51:23'),(2,'submit','submit',0,'2020-10-25 00:17:22','2021-05-15 06:41:59'),(3,'contest','contest_admin',0,'2020-10-25 00:17:33','2021-05-15 06:51:28'),(4,'rejudge','rejudge',0,'2020-10-25 00:17:49','2021-05-15 06:50:55'),(5,'announcement','announcement_admin',0,'2021-05-15 06:54:28','2021-05-15 06:54:31'),(6,'user','user_admin',0,'2021-05-15 06:54:30','2021-05-15 06:55:04'),(7,'system_info','system_info_admin',0,'2021-05-15 06:57:34','2021-05-15 06:57:41'),(8,'dicussion','discussion_add',0,'2021-05-15 06:57:36','2021-05-15 07:50:45'),(9,'dicussion','discussion_del',0,'2021-05-15 07:01:02','2021-05-15 07:51:31'),(10,'dicussion','discussion_edit',0,'2021-05-15 07:02:15','2021-05-15 07:51:34'),(11,'comment','comment_add',0,'2021-05-15 07:03:48','2021-05-15 07:03:48'),(12,'reply','reply_add',0,'2021-05-15 07:04:55','2021-05-15 07:04:55');
+insert  into `auth`(`id`,`name`,`permission`,`status`,`gmt_create`,`gmt_modified`) values (1,'problem','problem_admin',0,'2020-10-25 00:17:17','2021-05-15 06:51:23'),(2,'submit','submit',0,'2020-10-25 00:17:22','2021-05-15 06:41:59'),(3,'contest','contest_admin',0,'2020-10-25 00:17:33','2021-05-15 06:51:28'),(4,'rejudge','rejudge',0,'2020-10-25 00:17:49','2021-05-15 06:50:55'),(5,'announcement','announcement_admin',0,'2021-05-15 06:54:28','2021-05-15 06:54:31'),(6,'user','user_admin',0,'2021-05-15 06:54:30','2021-05-15 06:55:04'),(7,'system_info','system_info_admin',0,'2021-05-15 06:57:34','2021-05-15 06:57:41'),(8,'dicussion','discussion_add',0,'2021-05-15 06:57:36','2021-05-15 07:50:45'),(9,'dicussion','discussion_del',0,'2021-05-15 07:01:02','2021-05-15 07:51:31'),(10,'dicussion','discussion_edit',0,'2021-05-15 07:02:15','2021-05-15 07:51:34'),(11,'comment','comment_add',0,'2021-05-15 07:03:48','2021-05-15 07:03:48'),(12,'reply','reply_add',0,'2021-05-15 07:04:55','2021-05-15 07:04:55'),(13,'group','group_add',0,'2022-03-11 13:36:55','2022-03-11 13:36:55');
 
 /*Data for the table `category` */
 
@@ -1065,7 +1127,7 @@ insert  into `role`(`id`,`role`,`description`,`status`,`gmt_create`,`gmt_modifie
 
 /*Data for the table `role_auth` */
 
-insert  into `role_auth`(`id`,`auth_id`,`role_id`,`gmt_create`,`gmt_modified`) values (1,1,1000,'2020-10-25 00:18:17','2020-10-25 00:18:17'),(2,2,1000,'2020-10-25 00:18:38','2021-05-15 07:17:35'),(3,3,1000,'2020-10-25 00:18:48','2021-05-15 07:17:44'),(4,4,1000,'2021-05-15 07:17:56','2021-05-15 07:17:56'),(5,5,1000,'2021-05-15 07:18:20','2021-05-15 07:18:20'),(6,6,1000,'2021-05-15 07:18:29','2021-05-15 07:18:29'),(7,7,1000,'2021-05-15 07:18:42','2021-05-15 07:18:42'),(8,8,1000,'2021-05-15 07:18:59','2021-05-15 07:18:59'),(9,9,1000,'2021-05-15 07:19:07','2021-05-15 07:19:07'),(10,10,1000,'2021-05-15 07:19:10','2021-05-15 07:19:10'),(11,11,1000,'2021-05-15 07:19:13','2021-05-15 07:19:13'),(12,12,1000,'2021-05-15 07:19:18','2021-05-15 07:19:30'),(13,1,1001,'2021-05-15 07:19:29','2021-05-15 07:20:02'),(14,2,1001,'2021-05-15 07:20:25','2021-05-15 07:20:25'),(15,3,1001,'2021-05-15 07:20:33','2021-05-15 07:20:33'),(16,8,1001,'2021-05-15 07:21:56','2021-05-15 07:21:56'),(17,9,1001,'2021-05-15 07:22:03','2021-05-15 07:22:03'),(18,10,1001,'2021-05-15 07:22:10','2021-05-15 07:22:10'),(19,11,1001,'2021-05-15 07:22:17','2021-05-15 07:22:17'),(20,12,1001,'2021-05-15 07:22:21','2021-05-15 07:22:21'),(21,2,1002,'2021-05-15 07:22:40','2021-05-15 07:22:40'),(22,8,1002,'2021-05-15 07:23:49','2021-05-15 07:23:49'),(23,9,1002,'2021-05-15 07:24:10','2021-05-15 07:24:10'),(24,10,1002,'2021-05-15 07:24:14','2021-05-15 07:24:14'),(25,11,1002,'2021-05-15 07:24:19','2021-05-15 07:24:19'),(26,12,1002,'2021-05-15 07:24:23','2021-05-15 07:24:23'),(27,8,1003,'2021-05-15 07:32:56','2021-05-15 07:32:56'),(28,9,1003,'2021-05-15 07:33:01','2021-05-15 07:33:01'),(29,10,1003,'2021-05-15 07:33:05','2021-05-15 07:33:05'),(30,11,1003,'2021-05-15 07:33:09','2021-05-15 07:33:09'),(31,12,1003,'2021-05-15 07:33:22','2021-05-15 07:33:22'),(32,2,1004,'2021-05-15 07:33:38','2021-05-15 07:33:38'),(33,9,1004,'2021-05-15 07:34:27','2021-05-15 07:34:27'),(34,10,1004,'2021-05-15 07:34:31','2021-05-15 07:34:31'),(35,11,1004,'2021-05-15 07:34:42','2021-05-15 07:34:42'),(36,12,1004,'2021-05-15 07:34:47','2021-05-15 07:34:47'),(37,2,1005,'2021-05-15 07:35:11','2021-05-15 07:35:11'),(38,9,1005,'2021-05-15 07:35:46','2021-05-15 07:35:46'),(39,10,1005,'2021-05-15 07:36:01','2021-05-15 07:36:01'),(40,9,1006,'2021-05-15 07:40:09','2021-05-15 07:40:09'),(41,10,1006,'2021-05-15 07:40:16','2021-05-15 07:40:16'),(42,11,1006,'2021-05-15 07:40:30','2021-05-15 07:40:30'),(43,12,1006,'2021-05-15 07:40:37','2021-05-15 07:40:37'),(44,9,1007,'2021-05-15 07:40:54','2021-05-15 07:40:54'),(45,10,1007,'2021-05-15 07:41:04','2021-05-15 07:41:04'),(46,1,1008,'2021-06-12 23:16:10','2021-06-12 23:16:10'),(47,2,1008,'2021-06-12 23:16:15','2021-06-12 23:16:15'),(48,3,1008,'2021-06-12 23:16:19','2021-06-12 23:16:19'),(49,8,1008,'2021-06-12 23:16:24','2021-06-12 23:16:24'),(50,9,1008,'2021-06-12 23:16:45','2021-06-12 23:16:45'),(51,10,1008,'2021-06-12 23:16:48','2021-06-12 23:16:48'),(52,11,1008,'2021-06-12 23:16:52','2021-06-12 23:16:52'),(53,12,1008,'2021-06-12 23:16:58','2021-06-12 23:16:58');
+insert  into `role_auth`(`id`,`auth_id`,`role_id`,`gmt_create`,`gmt_modified`) values (1,1,1000,'2020-10-25 00:18:17','2020-10-25 00:18:17'),(2,2,1000,'2020-10-25 00:18:38','2021-05-15 07:17:35'),(3,3,1000,'2020-10-25 00:18:48','2021-05-15 07:17:44'),(4,4,1000,'2021-05-15 07:17:56','2021-05-15 07:17:56'),(5,5,1000,'2021-05-15 07:18:20','2021-05-15 07:18:20'),(6,6,1000,'2021-05-15 07:18:29','2021-05-15 07:18:29'),(7,7,1000,'2021-05-15 07:18:42','2021-05-15 07:18:42'),(8,8,1000,'2021-05-15 07:18:59','2021-05-15 07:18:59'),(9,9,1000,'2021-05-15 07:19:07','2021-05-15 07:19:07'),(10,10,1000,'2021-05-15 07:19:10','2021-05-15 07:19:10'),(11,11,1000,'2021-05-15 07:19:13','2021-05-15 07:19:13'),(12,12,1000,'2021-05-15 07:19:18','2021-05-15 07:19:30'),(13,1,1001,'2021-05-15 07:19:29','2021-05-15 07:20:02'),(14,2,1001,'2021-05-15 07:20:25','2021-05-15 07:20:25'),(15,3,1001,'2021-05-15 07:20:33','2021-05-15 07:20:33'),(16,8,1001,'2021-05-15 07:21:56','2021-05-15 07:21:56'),(17,9,1001,'2021-05-15 07:22:03','2021-05-15 07:22:03'),(18,10,1001,'2021-05-15 07:22:10','2021-05-15 07:22:10'),(19,11,1001,'2021-05-15 07:22:17','2021-05-15 07:22:17'),(20,12,1001,'2021-05-15 07:22:21','2021-05-15 07:22:21'),(21,2,1002,'2021-05-15 07:22:40','2021-05-15 07:22:40'),(22,8,1002,'2021-05-15 07:23:49','2021-05-15 07:23:49'),(23,9,1002,'2021-05-15 07:24:10','2021-05-15 07:24:10'),(24,10,1002,'2021-05-15 07:24:14','2021-05-15 07:24:14'),(25,11,1002,'2021-05-15 07:24:19','2021-05-15 07:24:19'),(26,12,1002,'2021-05-15 07:24:23','2021-05-15 07:24:23'),(27,8,1003,'2021-05-15 07:32:56','2021-05-15 07:32:56'),(28,9,1003,'2021-05-15 07:33:01','2021-05-15 07:33:01'),(29,10,1003,'2021-05-15 07:33:05','2021-05-15 07:33:05'),(30,11,1003,'2021-05-15 07:33:09','2021-05-15 07:33:09'),(31,12,1003,'2021-05-15 07:33:22','2021-05-15 07:33:22'),(32,2,1004,'2021-05-15 07:33:38','2021-05-15 07:33:38'),(33,9,1004,'2021-05-15 07:34:27','2021-05-15 07:34:27'),(34,10,1004,'2021-05-15 07:34:31','2021-05-15 07:34:31'),(35,11,1004,'2021-05-15 07:34:42','2021-05-15 07:34:42'),(36,12,1004,'2021-05-15 07:34:47','2021-05-15 07:34:47'),(37,2,1005,'2021-05-15 07:35:11','2021-05-15 07:35:11'),(38,9,1005,'2021-05-15 07:35:46','2021-05-15 07:35:46'),(39,10,1005,'2021-05-15 07:36:01','2021-05-15 07:36:01'),(40,9,1006,'2021-05-15 07:40:09','2021-05-15 07:40:09'),(41,10,1006,'2021-05-15 07:40:16','2021-05-15 07:40:16'),(42,11,1006,'2021-05-15 07:40:30','2021-05-15 07:40:30'),(43,12,1006,'2021-05-15 07:40:37','2021-05-15 07:40:37'),(44,9,1007,'2021-05-15 07:40:54','2021-05-15 07:40:54'),(45,10,1007,'2021-05-15 07:41:04','2021-05-15 07:41:04'),(46,1,1008,'2021-06-12 23:16:10','2021-06-12 23:16:10'),(47,2,1008,'2021-06-12 23:16:15','2021-06-12 23:16:15'),(48,3,1008,'2021-06-12 23:16:19','2021-06-12 23:16:19'),(49,8,1008,'2021-06-12 23:16:24','2021-06-12 23:16:24'),(50,9,1008,'2021-06-12 23:16:45','2021-06-12 23:16:45'),(51,10,1008,'2021-06-12 23:16:48','2021-06-12 23:16:48'),(52,11,1008,'2021-06-12 23:16:52','2021-06-12 23:16:52'),(53,12,1008,'2021-06-12 23:16:58','2021-06-12 23:16:58'),(54,13,1000,'2021-06-12 23:16:58','2021-06-12 23:16:58'),(55,13,1001,'2021-06-12 23:16:58','2021-06-12 23:16:58'),(56,13,1002,'2021-06-12 23:16:58','2021-06-12 23:16:58'),(57,13,1008,'2021-06-12 23:16:58','2021-06-12 23:16:58');
 
 insert  into `user_info`(`uuid`,`username`,`password`,`gmt_create`,`gmt_modified`) values('1','root','9f09812f6e5165b85e258c48901d4d74',NOW(),NOW());
 

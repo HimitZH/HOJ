@@ -56,7 +56,7 @@ public class CommonController {
         return commonService.getLanguages(pid, all);
     }
 
-    @GetMapping("/get-Problem-languages")
+    @GetMapping("/get-problem-languages")
     public CommonResult<Collection<Language>> getProblemLanguages(@RequestParam("pid") Long pid) {
         return commonService.getProblemLanguages(pid);
     }

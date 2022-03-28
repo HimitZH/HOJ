@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.hcode.hoj.mapper.GroupAnnouncementMapper">
+    <resultMap id="map_AnnouncementVo" type="top.hcode.hoj.pojo.vo.AnnouncementVo">
+        <id column="id" property="id"></id>
+        <result column="title" property="title"></result>
+        <result column="content" property="content"></result>
+        <result column="uid" property="uid"></result>
+        <result column="username" property="username"></result>
+        <result column="status" property="status"></result>
+        <result column="gmt_create" property="gmtCreate"></result>
+        <result column="gmt_modified" property="gmtModified"></result>
+    </resultMap>
+
+    <select id="getAnnouncementList" resultMap="map_AnnouncementVo" useCache="true">
+        SELECT a.*,u.username FROM user_info u,announcement a
+        WHERE a.uid = u.uuid AND a.gid = #{gid} AND (SELECT COUNT(*) FROM contest_announcement ca WHERE ca.aid = a.id) = 0 AND a.status = 0
+        ORDER BY a.gmt_create DESC
+    </select>
+
+    <select id="getAdminAnnouncementList" resultMap="map_AnnouncementVo" useCache="true">
+        SELECT a.*,u.username FROM user_info u,announcement a
+        WHERE a.uid = u.uuid AND a.gid = #{gid} AND (SELECT COUNT(*) FROM contest_announcement ca WHERE ca.aid=a.id) = 0
+        ORDER BY a.gmt_create DESC
+    </select>
+
+</mapper>
