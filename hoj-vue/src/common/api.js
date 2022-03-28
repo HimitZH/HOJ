@@ -36,7 +36,7 @@ axios.interceptors.request.use(
   },
   error => {
     // NProgress.done();
-    mmMessage.error(error.response.data.mMessage);
+    mMessage.error(error.response.data.msg);
     return Promise.error(error);
   })
 
@@ -231,7 +231,7 @@ const ojApi = {
 
   // Problem详情页的相关请求
   getProblem(problemId){
-    return ajax('/api/get-problem','get',{
+    return ajax('/api/get-problem-detail','get',{
       params:{
         problemId
       }
@@ -255,7 +255,7 @@ const ojApi = {
   },
   // 获取单个提交的信息
   getSubmission (submitId) {
-    return ajax('/api/submission', 'get', {
+    return ajax('/api/get-submission-detail', 'get', {
       params: {
         submitId
       }
@@ -286,7 +286,7 @@ const ojApi = {
   },
   getSubmissionList (limit, params) {
     params.limit = limit
-    return ajax('/api/submissions', 'get', {
+    return ajax('/api/get-submission-list', 'get', {
       params
     })
   },
@@ -575,13 +575,13 @@ const ojApi = {
         params[element] = searchParams[element]
       }
     })
-    return ajax("/api/discussions",'get',{
+    return ajax("/api/get-discussion-list",'get',{
       params
     })
   },
 
   getDiscussion(did){
-    return ajax("/api/discussion",'get',{
+    return ajax("/api/get-discussion-detail",'get',{
       params:{
         did
       }
@@ -672,6 +672,419 @@ const ojApi = {
     })
   },
 
+  // Group
+  getGroupList(currentPage, limit, query) {
+    let params = { currentPage, limit }
+    Object.keys(query).forEach((element) => {
+      if (query[element] !== '' && query[element] !== null && query[element] !== undefined) {
+        params[element] = query[element]
+      }
+    })
+    return ajax('/api/get-group-list', 'get', {
+      params: params
+    })
+  },
+
+  getGroup(gid) {
+    return ajax('/api/get-group-detail', 'get', {
+      params: { gid }
+    })
+  },
+
+  addGroup(data) {
+    return ajax("/api/group", 'post', {
+      data
+    })
+  },
+
+  updateGroup(data) {
+    return ajax("/api/group", 'put', {
+      data
+    })
+  },
+
+  deleteGroup(gid) {
+    return ajax("/api/group", 'delete', {
+      params: { gid }
+    })
+  },
+
+  getGroupAccess(gid) {
+    return ajax('/api/get-group-access', 'get', {
+      params: { gid }
+    })
+  },
+
+  getGroupAuth(gid) {
+    return ajax('/api/get-group-auth', 'get', {
+      params: { gid }
+    })
+  },
+
+  // Group Member
+  getGroupMemberList(currentPage, limit, gid) {
+    return ajax('/api/group/get-member-list', 'get', {
+      params: { currentPage, limit, gid }
+    })
+  },
+
+  getGroupApplyList(currentPage, limit, gid) {
+    return ajax('/api/group/get-apply-list', 'get', {
+      params: { currentPage, limit, gid }
+    })
+  },
+
+  addGroupMember(uid, gid, code, reason) {
+    return ajax("/api/group/member", 'post', {
+      params: { uid, gid, code, reason }
+    })
+  },
+
+  updateGroupMember(data) {
+    return ajax("/api/group/member", 'put', {
+      data
+    })
+  },
+
+  deleteGroupMember(uid, gid) {
+    return ajax("/api/group/member", 'delete', {
+      params: { uid, gid }
+    })
+  },
+
+  // Group Announcement
+  getGroupAnnouncementList(currentPage, limit, gid) {
+    return ajax('/api/group/get-announcement-list', 'get', {
+      params: { currentPage, limit, gid }
+    })
+  },
+
+  getGroupAdminAnnouncementList(currentPage, limit, gid) {
+    return ajax('/api/group/get-admin-announcement-list', 'get', {
+      params: { currentPage, limit, gid }
+    })
+  },
+
+  addGroupAnnouncement(data) {
+    return ajax("/api/group/announcement", 'post', {
+      data
+    })
+  },
+
+  updateGroupAnnouncement(data) {
+    return ajax("/api/group/announcement", 'put', {
+      data
+    })
+  },
+
+  deleteGroupAnnouncement(aid) {
+    return ajax("/api/group/announcement", 'delete', {
+      params: { aid }
+    })
+  },
+
+  // Group Problem
+  getGroupProblemList(currentPage, limit, gid) {
+    return ajax('/api/group/get-problem-list', 'get', {
+      params: { currentPage, limit, gid }
+    })
+  },
+
+  getGroupAdminProblemList(currentPage, limit, gid){
+    return ajax('/api/group/get-admin-problem-list', 'get', {
+      params: { currentPage, limit, gid }
+    })
+  },
+
+  getGroupProblem(pid) {
+    return ajax("/api/group/problem", 'get', {
+      params: { pid }
+    })
+  },
+
+  addGroupProblem(data) {
+    return ajax("/api/group/problem", 'post', {
+      data: data
+    })
+  },
+
+  updateGroupProblem(data) {
+    return ajax("/api/group/problem", 'put', {
+      data
+    })
+  },
+
+  deleteGroupProblem(pid) {
+    return ajax("/api/group/problem", 'delete', {
+      params: { pid }
+    })
+  },
+  
+  getGroupProblemCases(pid, isUpload) {
+    return ajax("/api/group/get-problem-cases", 'get', {
+      params: { pid, isUpload }
+    })
+  },
+  getGroupProblemTags(pid) {
+    return ajax('/api/get-problem-tags', 'get',{
+      params:{
+        pid
+      }
+    })
+  },
+
+  getGroupProblemTagList (gid) {
+    return ajax('/api/group/get-all-problem-tags', 'get',{
+      params:{
+        gid
+      }
+    })
+  },
+
+  groupCompileSpj(data, gid) {
+    return ajax("/api/group/compile-spj", 'post', {
+      data: data,
+      params: { gid }
+    })
+  },
+
+  groupCompileSpj(data, gid) {
+    return ajax("/api/group/compile-interactive", 'post', {
+      data: data,
+      params: { gid }
+    })
+  },
+
+  changeGroupProblemAuth(pid, auth) {
+    return ajax("/api/group/change-problem-auth", 'put', {
+      params: { pid, auth }
+    })
+  },
+
+  // Group Training
+  getGroupTrainingList(currentPage, limit, gid) {
+    return ajax('/api/group/get-training-list', 'get', {
+      params: { currentPage, limit, gid }
+    })
+  },
+
+  getGroupAdminTrainingList(currentPage, limit, gid) {
+    return ajax('/api/group/get-admin-training-list','get', {
+      params: {currentPage, limit, gid}
+    })
+  },
+
+  getGroupTraining(tid) {
+    return ajax("/api/group/training", 'get', {
+      params: { tid }
+    })
+  },
+
+  addGroupTraining(data) {
+    return ajax("/api/group/training", 'post', {
+      data
+    })
+  },
+
+  updateGroupTraining(data) {
+    return ajax("/api/group/training",'put',{
+      data
+    })
+  },
+
+  deleteGroupTraining(tid) {
+    return ajax("/api/group/training", 'delete', {
+      params: { tid }
+    })
+  },
+
+  changeGroupTrainingStatus(tid, status) {
+    return ajax("/api/group/change-training-status", 'put', {
+      params:{ tid, status }
+    })
+  },
+
+  getGroupTrainingProblemList(currentPage, limit, query) {
+    let params = { currentPage, limit }
+    Object.keys(query).forEach((element) => {
+      if (query[element] !== '' && query[element] !== null && query[element] !== undefined) {
+        params[element] = query[element]
+      }
+    })
+    return ajax("/api/group/get-training-problem-list",'get',{
+      params: params
+    })
+  },
+
+  updateGroupTrainingProblem(data) {
+    return ajax("/api/group/training-problem", 'put', {
+      data
+    })
+  },
+
+  deleteGroupTrainingProblem(pid, tid) {
+    return ajax("/api/group/training-problem",'delete', {
+      params:{ pid, tid }
+    })
+  },
+
+  addGroupTrainingProblemFromPublic(data) {
+    return ajax("/api/group/add-training-problem-from-public", 'post', {
+      data
+    })
+  },
+
+  addGroupTrainingProblemFromGroup(problemId, tid) {
+    return ajax("/api/group/add-training-problem-from-group", 'post', {
+      params:{ problemId, tid }
+    })
+  },
+
+  //Group Contest
+  getGroupContestList(currentPage, limit, gid) {
+    return ajax('/api/group/get-contest-list', 'get', {
+      params: {currentPage, limit, gid}
+    })
+  },
+
+  getGroupAdminContestList(currentPage, limit, gid) {
+    return ajax('/api/group/get-admin-contest-list','get', {
+      params: {currentPage, limit, gid}
+    })
+  },
+
+  getGroupContest(cid) {
+    return ajax("/api/group/contest", 'get', {
+      params: { cid }
+    })
+  },
+
+  addGroupContest(data) {
+    return ajax("/api/group/contest", 'post', {
+      data
+    })
+  },
+
+  updateGroupContest(data) {
+    return ajax("/api/group/contest",'put',{
+      data
+    })
+  },
+
+  deleteGroupContest(cid) {
+    return ajax("/api/group/contest", 'delete', {
+      params:{ cid }
+    })
+  },
+
+  changeGroupContestVisible(cid, visible) {
+    return ajax("/api/group/change-contest-visible", 'put', {
+      params:{ cid, visible }
+    })
+  },
+
+  getGroupContestProblemList(currentPage, limit, query) {
+    let params = { currentPage, limit }
+    Object.keys(query).forEach((element) => {
+      if (query[element] !== '' && query[element] !== null && query[element] !== undefined) {
+        params[element] = query[element]
+      }
+    })
+    return ajax("/api/group/get-contest-problem-list",'get',{
+      params: params
+    })
+  },
+
+  addGroupContestProblem(data) {
+    return ajax("/api/group/contest-problem", 'post', {
+      data
+    })
+  },
+
+  getGroupContestProblem(pid, cid) {
+    return ajax("/api/group/contest-problem", 'get', {
+      params:{ pid, cid }
+    })
+  },
+
+  updateGroupContestProblem(data) {
+    return ajax("/api/group/contest-problem", 'put', {
+      data
+    })
+  },
+
+  deleteGroupContestProblem(pid, cid) {
+    return ajax("/api/group/contest-problem",'delete', {
+      params:{ pid, cid }
+    })
+  },
+
+  addGroupContestProblemFromPublic(data) {
+    return ajax("/api/group/add-contest-problem-from-public", 'post', {
+      data
+    })
+  },
+
+  addGroupContestProblemFromGroup(problemId, cid, displayId) {
+    return ajax("/api/group/add-contest-problem-from-group", 'post', {
+      params:{ problemId, cid, displayId }
+    })
+  },
+
+  getGroupContestAnnouncementList(currentPage, limit, cid) {
+    return ajax('/api/group/get-contest-announcement-list', 'get', {
+      params: { currentPage, limit, cid }
+    })
+  },
+
+  addGroupContestAnnouncement(data) {
+    return ajax("/api/group/contest-announcement", 'post', {
+      data
+    })
+  },
+
+  updateGroupContestAnnouncement(data) {
+    return ajax("/api/group/contest-announcement", 'put', {
+      data
+    })
+  },
+
+  deleteGroupContestAnnouncement(aid, cid) {
+    return ajax("/api/group/contest-announcement", 'delete', {
+      params: { aid, cid }
+    })
+  },
+
+  // Group Discussion
+  getGroupDiscussionList(currentPage, limit, gid) {
+    return ajax('/api/group/get-discussion-list', 'get', {
+      params: { currentPage, limit, gid }
+    })
+  },
+
+  getGroupAdminDiscussionList(currentPage, limit, gid) {
+    return ajax('/api/group/get-admin-discussion-list', 'get', {
+      params: { currentPage, limit, gid }
+    })
+  },
+
+  addGroupDiscussion(data) {
+    return ajax("/api/group/discussion", 'post', {
+      data
+    })
+  },
+
+  updateGroupDiscussion(data) {
+    return ajax("/api/group/discussion", 'put', {
+      data
+    })
+  },
+
+  deleteGroupDiscussion(did) {
+    return ajax("/api/group/discussion", 'delete', {
+      params: { did }
+    })
+  },
 
   // 站内消息
 
@@ -917,7 +1330,7 @@ const adminApi = {
     })
   },
   getProblemLanguages (pid) {
-    return ajax('/api/get-Problem-languages', 'get',{
+    return ajax('/api/get-problem-languages', 'get',{
       params: {
         pid: pid
       }
@@ -1039,7 +1452,7 @@ const adminApi = {
     if (keyword) {
       params.keyword = keyword
     }
-    return ajax('/api/admin/training/list', 'get', {
+    return ajax('/api/admin/training/get-training-list', 'get', {
       params: params
     })
   },

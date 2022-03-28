@@ -74,4 +74,7 @@ public class ContestVo implements Serializable {
 
     @ApiModelProperty(value = "比赛的报名人数")
     private Integer count;
+
+    @ApiModelProperty(value = "团队ID")
+    private Long gid;
 }

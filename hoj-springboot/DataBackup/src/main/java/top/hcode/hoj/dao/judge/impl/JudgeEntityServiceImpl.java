@@ -47,11 +47,13 @@ public class JudgeEntityServiceImpl extends ServiceImpl<JudgeMapper, Judge> impl
                                              Integer status,
                                              String username,
                                              String uid,
-                                             Boolean completeProblemID) {
+                                             Boolean completeProblemID,
+                                             String myUid,
+                                             Boolean isRoot) {
         //新建分页
         Page<JudgeVo> page = new Page<>(currentPage, limit);
 
-        return judgeMapper.getCommonJudgeList(page, searchPid, status, username, uid, completeProblemID);
+        return judgeMapper.getCommonJudgeList(page, searchPid, status, username, uid, completeProblemID, myUid, isRoot);
     }
 
     @Override

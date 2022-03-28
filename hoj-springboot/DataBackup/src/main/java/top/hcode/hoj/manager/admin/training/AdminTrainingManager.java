@@ -63,7 +63,7 @@ public class AdminTrainingManager {
                     .like("`rank`", keyword);
         }
 
-        queryWrapper.orderByAsc("`rank`");
+        queryWrapper.eq("is_public", true).orderByAsc("`rank`");
 
         return trainingEntityService.page(iPage, queryWrapper);
     }

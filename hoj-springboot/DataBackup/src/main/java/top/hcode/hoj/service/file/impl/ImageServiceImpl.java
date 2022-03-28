@@ -1,5 +1,6 @@
 package top.hcode.hoj.service.file.impl;
 
+import top.hcode.hoj.common.exception.StatusForbiddenException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import top.hcode.hoj.common.exception.StatusFailException;
@@ -31,6 +32,19 @@ public class ImageServiceImpl implements ImageService {
             return CommonResult.errorResponse(e.getMessage());
         } catch (StatusSystemErrorException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.SYSTEM_ERROR);
+        }
+    }
+
+    @Override
+    public CommonResult<Map<Object, Object>> uploadGroupAvatar(MultipartFile image, Long gid) {
+        try {
+            return CommonResult.successResponse(imageManager.uploadGroupAvatar(image, gid));
+        } catch (StatusFailException e) {
+            return CommonResult.errorResponse(e.getMessage());
+        } catch (StatusSystemErrorException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.SYSTEM_ERROR);
+        } catch (StatusForbiddenException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
         }
     }
 

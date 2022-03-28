@@ -3,6 +3,10 @@ package top.hcode.hoj.manager.file;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
+import top.hcode.hoj.common.exception.StatusForbiddenException;
+import top.hcode.hoj.dao.group.GroupEntityService;
+import top.hcode.hoj.pojo.entity.group.Group;
+import top.hcode.hoj.validator.GroupValidator;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -37,6 +41,12 @@ public class ImageManager {
 
     @Autowired
     private UserInfoEntityService userInfoEntityService;
+
+    @Autowired
+    private GroupEntityService groupEntityService;
+
+    @Autowired
+    private GroupValidator groupValidator;
 
     @Transactional(rollbackFor = Exception.class)
     public Map<Object,Object> uploadAvatar(MultipartFile image) throws StatusFailException, StatusSystemErrorException {
@@ -107,7 +117,68 @@ public class ImageManager {
                 .map();
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public Map<Object,Object> uploadGroupAvatar(MultipartFile image, Long gid) throws StatusFailException, StatusSystemErrorException, StatusForbiddenException {
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
+        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !isRoot) {
+            throw new StatusForbiddenException("对不起，您无权限操作！");
+        }
+
+        if (image == null) {
+            throw new StatusFailException("上传的头像图片文件不能为空！");
+        }
+        if (image.getSize() > 1024 * 1024 * 2) {
+            throw new StatusFailException("上传的头像图片文件大小不能大于2M！");
+        }
+
+        String suffix = image.getOriginalFilename().substring(image.getOriginalFilename().lastIndexOf(".") + 1);
+        if (!"jpg,jpeg,gif,png,webp".toUpperCase().contains(suffix.toUpperCase())) {
+            throw new StatusFailException("请选择jpg,jpeg,gif,png,webp格式的头像图片！");
+        }
+
+        FileUtil.mkdir(Constants.File.GROUP_AVATAR_FOLDER.getPath());
+
+        String filename = IdUtil.simpleUUID() + "." + suffix;
+        try {
+            image.transferTo(FileUtil.file(Constants.File.GROUP_AVATAR_FOLDER.getPath() + File.separator + filename));
+        } catch (Exception e) {
+            log.error("头像文件上传异常-------------->", e);
+            throw new StatusSystemErrorException("服务器异常：头像上传失败！");
+        }
+
+        fileEntityService.updateFileToDeleteByGidAndType(gid, "avatar");
+
+        UpdateWrapper<Group> GroupUpdateWrapper = new UpdateWrapper<>();
+        GroupUpdateWrapper.set("avatar", Constants.File.IMG_API.getPath() + filename)
+                .eq("id", gid);
+        groupEntityService.update(GroupUpdateWrapper);
+
+        top.hcode.hoj.pojo.entity.common.File imgFile = new top.hcode.hoj.pojo.entity.common.File();
+        imgFile.setName(filename).setFolderPath(Constants.File.GROUP_AVATAR_FOLDER.getPath())
+                .setFilePath(Constants.File.GROUP_AVATAR_FOLDER.getPath() + File.separator + filename)
+                .setSuffix(suffix)
+                .setType("avatar")
+                .setGid(gid);
+        fileEntityService.saveOrUpdate(imgFile);
+
+        Group group = groupEntityService.getById(gid);
+
+        return MapUtil.builder()
+                .put("id", group.getId())
+                .put("avatar", Constants.File.IMG_API.getPath() + filename)
+                .put("name", group.getName())
+                .put("shortName", group.getShortName())
+                .put("brief", group.getBrief())
+                .put("description", group.getDescription())
+                .put("owner", group.getOwner())
+                .put("auth", group.getAuth())
+                .put("visible", group.getVisible())
+                .put("status", group.getStatus())
+                .map();
+    }
 
     @Transactional(rollbackFor = Exception.class)
     public Map<Object,Object> uploadCarouselImg(MultipartFile image) throws StatusFailException, StatusSystemErrorException {

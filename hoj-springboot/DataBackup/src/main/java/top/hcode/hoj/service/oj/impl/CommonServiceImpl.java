@@ -1,5 +1,7 @@
 package top.hcode.hoj.service.oj.impl;
 
+import top.hcode.hoj.common.exception.StatusForbiddenException;
+import top.hcode.hoj.common.result.ResultStatus;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.manager.oj.CommonManager;
@@ -42,7 +44,11 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public CommonResult<Collection<Tag>> getProblemTags(Long pid) {
-        return CommonResult.successResponse(commonManager.getProblemTags(pid));
+        try {
+            return CommonResult.successResponse(commonManager.getProblemTags(pid));
+        } catch (StatusForbiddenException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
+        }
     }
 
     @Override
@@ -52,11 +58,19 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public CommonResult<Collection<Language>> getProblemLanguages(Long pid) {
-        return CommonResult.successResponse(commonManager.getProblemLanguages(pid));
+        try {
+            return CommonResult.successResponse(commonManager.getProblemLanguages(pid));
+        } catch (StatusForbiddenException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
+        }
     }
 
     @Override
     public CommonResult<List<CodeTemplate>> getProblemCodeTemplate(Long pid) {
-        return CommonResult.successResponse(commonManager.getProblemCodeTemplate(pid));
+        try {
+            return CommonResult.successResponse(commonManager.getProblemCodeTemplate(pid));
+        } catch (StatusForbiddenException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
+        }
     }
 }

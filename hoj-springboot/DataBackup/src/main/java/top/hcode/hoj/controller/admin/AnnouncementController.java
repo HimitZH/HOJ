@@ -19,32 +19,33 @@ import top.hcode.hoj.service.admin.announcement.AdminAnnouncementService;
  */
 @RestController
 @RequiresAuthentication
+@RequestMapping("/api/admin")
 public class AnnouncementController {
 
     @Autowired
     private AdminAnnouncementService adminAnnouncementService;
 
-    @GetMapping("/api/admin/announcement")
+    @GetMapping("/announcement")
     @RequiresPermissions("announcement_admin")
     public CommonResult<IPage<AnnouncementVo>> getAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
                                                                    @RequestParam(value = "currentPage", required = false) Integer currentPage) {
         return adminAnnouncementService.getAnnouncementList(limit, currentPage);
     }
 
-    @DeleteMapping("/api/admin/announcement")
+    @DeleteMapping("/announcement")
     @RequiresPermissions("announcement_admin")
     public CommonResult<Void> deleteAnnouncement(@RequestParam("aid") Long aid) {
         return adminAnnouncementService.deleteAnnouncement(aid);
     }
 
-    @PostMapping("/api/admin/announcement")
+    @PostMapping("/announcement")
     @RequiresRoles("root")  // 只有超级管理员能操作
     @RequiresPermissions("announcement_admin")
     public CommonResult<Void> addAnnouncement(@RequestBody Announcement announcement) {
         return adminAnnouncementService.addAnnouncement(announcement);
     }
 
-    @PutMapping("/api/admin/announcement")
+    @PutMapping("/announcement")
     @RequiresPermissions("announcement_admin")
     public CommonResult<Void> updateAnnouncement(@RequestBody Announcement announcement) {
         return adminAnnouncementService.updateAnnouncement(announcement);

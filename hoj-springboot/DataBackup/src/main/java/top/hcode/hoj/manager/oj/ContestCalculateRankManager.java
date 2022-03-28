@@ -3,6 +3,8 @@ package top.hcode.hoj.manager.oj;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import top.hcode.hoj.validator.GroupValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -37,6 +39,8 @@ public class ContestCalculateRankManager {
     @Resource
     private ContestRecordEntityService contestRecordEntityService;
 
+    @Autowired
+    private GroupValidator groupValidator;
 
     public List<ACMContestRankVo> calcACMRank(boolean isOpenSealRank,
                                               boolean removeStar,
@@ -174,9 +178,11 @@ public class ContestCalculateRankManager {
 
         HashMap<String, Long> firstACMap = new HashMap<>();
 
+        Long gid = contest.getGid();
+
         for (ContestRecordVo contestRecord : contestRecordList) {
 
-            if (superAdminUidList.contains(contestRecord.getUid())) { // 超级管理员的提交不入排行榜
+            if (superAdminUidList.contains(contestRecord.getUid()) || groupValidator.isGroupRoot(contestRecord.getUid(), gid)) { // 超级管理员的提交不入排行榜
                 continue;
             }
 
@@ -384,9 +390,12 @@ public class ContestCalculateRankManager {
         boolean isHighestRankScore = Constants.Contest.OI_RANK_HIGHEST_SCORE.getName().equals(contest.getOiRankScoreType());
 
         int index = 0;
+
+        Long gid = contest.getGid();
+
         for (ContestRecordVo contestRecord : oiContestRecord) {
 
-            if (superAdminUidList.contains(contestRecord.getUid())) { // 超级管理员的提交不入排行榜
+            if (superAdminUidList.contains(contestRecord.getUid()) || groupValidator.isGroupRoot(contestRecord.getUid(), gid)) { // 超级管理员的提交不入排行榜
                 continue;
             }
 

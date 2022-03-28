@@ -18,9 +18,9 @@ import javax.annotation.Resource;
 import java.util.HashMap;
 
 /**
- * @Author: Himit_ZH
- * @Date: 2021/11/22 20:57
- * @Description:
+ * @Author Himit_ZH
+ * @Since 2022/01/23 20:22
+ * @Description
  */
 @RestController
 @RequestMapping("/api/admin/training")
@@ -33,7 +33,7 @@ public class AdminTrainingController {
     private AdminTrainingProblemService adminTrainingProblemService;
 
 
-    @GetMapping("/list")
+    @GetMapping("/get-training-list")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     public CommonResult<IPage<Training>> getTrainingList(@RequestParam(value = "limit", required = false) Integer limit,
