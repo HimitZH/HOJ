@@ -102,8 +102,8 @@ public class Contest implements Serializable {
     @ApiModelProperty(value = "oi排行榜得分方式，Recent、Highest（最近一次提交、最高得分提交）")
     private String oiRankScoreType;
 
-    @ApiModelProperty(value = "全站可见")
-    private Boolean isPublic;
+    @ApiModelProperty(value = "是否为团队内比赛")
+    private Boolean isGroup;
 
     @ApiModelProperty(value = "团队ID")
     private Long gid;

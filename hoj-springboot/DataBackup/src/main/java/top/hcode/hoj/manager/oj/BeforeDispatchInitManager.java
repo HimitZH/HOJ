@@ -77,7 +77,7 @@ public class BeforeDispatchInitManager {
     @Autowired
     private GroupValidator groupValidator;
 
-    public void initCommonSubmission(String problemId,  Judge judge) throws StatusForbiddenException {
+    public void initCommonSubmission(String problemId, Judge judge) throws StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
@@ -89,15 +89,18 @@ public class BeforeDispatchInitManager {
             throw new StatusForbiddenException("错误！当前题目不可提交！");
         }
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
-        if (!problem.getIsPublic()) {
+        if (problem.getIsGroup()) {
             if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid())) {
-                throw new StatusForbiddenException("对不起，您无权限操作！");
+                throw new StatusForbiddenException("对不起，您并非该题目所属的团队内成员，无权进行提交！");
             }
         }
 
-        judge.setCpid(0L).setPid(problem.getId()).setDisplayPid(problem.getProblemId());
+        judge.setCpid(0L)
+                .setPid(problem.getId())
+                .setGid(problem.getGid())
+                .setDisplayPid(problem.getProblemId());
 
         // 将新提交数据插入数据库
         judgeEntityService.save(judge);
@@ -118,8 +121,8 @@ public class BeforeDispatchInitManager {
         }
 
         // 是否为超级管理员或者该比赛的创建者，则为比赛管理者
-        boolean root = SecurityUtils.getSubject().hasRole("root");
-        if (!root && !contest.getUid().equals(userRolesVo.getUid())) {
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        if (!isRoot && !contest.getUid().equals(userRolesVo.getUid())) {
             if (contest.getStatus().intValue() == Constants.Contest.STATUS_SCHEDULED.getCode()) {
                 throw new StatusForbiddenException("比赛未开始，不可提交！");
             }
@@ -139,18 +142,17 @@ public class BeforeDispatchInitManager {
         contestProblemQueryWrapper.eq("cid", cid).eq("display_id", displayId);
         ContestProblem contestProblem = contestProblemEntityService.getOne(contestProblemQueryWrapper, false);
         judge.setCpid(contestProblem.getId())
-                .setPid(contestProblem.getPid());
+                .setPid(contestProblem.getPid())
+                .setGid(contest.getGid());
 
         Problem problem = problemEntityService.getById(contestProblem.getPid());
         if (problem.getAuth() == 2) {
             throw new StatusForbiddenException("错误！当前题目不可提交！");
         }
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-
-        if (!problem.getIsPublic()) {
+        if (problem.getIsGroup()) {
             if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid())) {
-                throw new StatusForbiddenException("对不起，您无权限操作！");
+                throw new StatusForbiddenException("对不起，您并非该题目所属团队内的成员，无权提交！");
             }
         }
 
@@ -181,7 +183,6 @@ public class BeforeDispatchInitManager {
     }
 
 
-
     @Transactional(rollbackFor = Exception.class)
     public void initTrainingSubmission(Long tid, String displayId, UserRolesVo userRolesVo, Judge judge) throws StatusForbiddenException, StatusFailException, StatusAccessDeniedException {
 
@@ -204,15 +205,8 @@ public class BeforeDispatchInitManager {
             throw new StatusForbiddenException("错误！当前题目不可提交！");
         }
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-
-        if (!problem.getIsPublic()) {
-            if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid())) {
-                throw new StatusForbiddenException("对不起，您无权限操作！");
-            }
-        }
-
-        judge.setDisplayPid(problem.getProblemId());
+        judge.setDisplayPid(problem.getProblemId())
+                .setGid(training.getGid());
 
         // 将新提交数据插入数据库
         judgeEntityService.save(judge);

@@ -40,11 +40,12 @@ public class MarkDownFileManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-        Boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
-        Boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
+        boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
 
-        if (!isRoot && !isProblemAdmin && !isAdmin && !groupValidator.isGroupMember(userRolesVo.getUid(), gid)) {
+        if (!isRoot && !isProblemAdmin && !isAdmin
+                && !(gid != null && groupValidator.isGroupMember(userRolesVo.getUid(), gid))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -107,7 +108,10 @@ public class MarkDownFileManager {
 
         Long gid = file.getGid();
 
-        if (!file.getUid().equals(userRolesVo.getUid()) && !isRoot && !isProblemAdmin && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
+        if (!file.getUid().equals(userRolesVo.getUid())
+                && !isRoot
+                && !isProblemAdmin
+                && !(gid != null && groupValidator.isGroupRoot(userRolesVo.getUid(), gid))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -123,11 +127,12 @@ public class MarkDownFileManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-        Boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
-        Boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
+        boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
 
-        if (!isRoot && !isProblemAdmin && !isAdmin && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
+        if (!isRoot && !isProblemAdmin && !isAdmin
+                && !(gid != null && groupValidator.isGroupAdmin(userRolesVo.getUid(), gid))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 

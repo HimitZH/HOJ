@@ -12,20 +12,23 @@
             size="small"
             @click="handleCreatePage"
             :icon="createPage ? 'el-icon-back' : 'el-icon-plus'"
-          >{{ createPage ? $t('m.Back') : $t('m.Create') }}</el-button>
+            >{{ createPage ? $t('m.Back') : $t('m.Create') }}</el-button
+          >
           <el-button
             v-if="editPage && adminPage"
             type="danger"
             size="small"
             @click="handleEditPage"
             icon="el-icon-back"
-          >{{ $t('m.Back') }}</el-button>`
+            >{{ $t('m.Back') }}</el-button
+          >`
           <el-button
             :type="adminPage ? 'warning' : 'success'"
             size="small"
             @click="handleAdminPage"
             :icon="adminPage ? 'el-icon-back' : 'el-icon-s-opportunity'"
-          >{{ adminPage ? $t('m.Back') : $t('m.Problem_Admin') }}</el-button>
+            >{{ adminPage ? $t('m.Back') : $t('m.Problem_Admin') }}</el-button
+          >
         </el-col>
       </el-row>
     </div>
@@ -48,24 +51,24 @@
         >
           <template v-slot="{ row }">
             <template v-if="isGetStatusOk">
-            <el-tooltip
-              :content="JUDGE_STATUS[row.myStatus]['name']"
-              placement="top"
-            >
-              <template v-if="row.myStatus == 0">
-                <i
-                  class="el-icon-check"
-                  :style="getIconColor(row.myStatus)"
-                ></i>
-              </template>
+              <el-tooltip
+                :content="JUDGE_STATUS[row.myStatus]['name']"
+                placement="top"
+              >
+                <template v-if="row.myStatus == 0">
+                  <i
+                    class="el-icon-check"
+                    :style="getIconColor(row.myStatus)"
+                  ></i>
+                </template>
 
-              <template v-else-if="row.myStatus != -10">
-                <i
-                  class="el-icon-minus"
-                  :style="getIconColor(row.myStatus)"
-                ></i>
-              </template>
-            </el-tooltip>
+                <template v-else-if="row.myStatus != -10">
+                  <i
+                    class="el-icon-minus"
+                    :style="getIconColor(row.myStatus)"
+                  ></i>
+                </template>
+              </el-tooltip>
             </template>
           </template>
         </vxe-table-column>
@@ -118,7 +121,7 @@
               <span
                 class="el-tag el-tag--small"
                 :style="
-                'margin-right:7px;color:#FFF;background-color:' +
+                  'margin-right:7px;color:#FFF;background-color:' +
                     (tag.color ? tag.color : '#409eff')
                 "
                 v-for="tag in row.tags"
@@ -155,7 +158,12 @@
         :layout="'prev, pager, next, sizes'"
       ></Pagination>
     </div>
-    <ProblemList ref="problemList" v-if="adminPage && !createPage" @handleEditPage="handleEditPage" @currentChange="currentChange"></ProblemList>
+    <ProblemList
+      ref="problemList"
+      v-if="adminPage && !createPage"
+      @handleEditPage="handleEditPage"
+      @currentChange="currentChange"
+    ></ProblemList>
     <Problem
       v-if="createPage && !editPage"
       mode="add"
@@ -174,16 +182,15 @@ import { mapGetters } from 'vuex';
 import utils from '@/common/utils';
 import { JUDGE_STATUS } from '@/common/constants';
 import Pagination from '@/components/oj/common/Pagination';
-import ProblemList from '@/components/oj/group/ProblemList'
-import Problem from '@/components/oj/group/Problem'
+import ProblemList from '@/components/oj/group/ProblemList';
+import Problem from '@/components/oj/group/Problem';
 import api from '@/common/api';
-import mMessage from '@/common/message';
 export default {
   name: 'GroupProblemList',
   components: {
     Pagination,
     ProblemList,
-    Problem
+    Problem,
   },
   data() {
     return {
@@ -210,10 +217,10 @@ export default {
     this.routeName = this.$route.name;
     if (this.routeName === 'GroupProblemList') {
       this.title = this.$t('m.Create_Problem');
-      this.apiMethod = 'addGroupProblem'
+      this.apiMethod = 'addGroupProblem';
     } else if (this.routeName === 'GroupContestProblemList') {
       this.title = this.$t('m.Create_Contest_Problem');
-      this.apiMethod = 'addGroupContestProblem'
+      this.apiMethod = 'addGroupContestProblem';
     }
     this.init();
   },
@@ -232,32 +239,42 @@ export default {
     },
     getGroupProblemList() {
       this.loading = true;
-      api.getGroupProblemList(this.currentPage, this.limit, this.$route.params.groupID).then(
-        (res) => {
-          this.problemList = res.data.data.records;
-          this.total = res.data.data.total;
-          this.loading = false;
-          if (this.isAuthenticated) {
-            let pidList = [];
-            if (this.problemList && this.problemList.length > 0) {
-              for (let index = 0; index < this.problemList.length; index++) {
-                pidList.push(this.problemList[index].pid);
-              }
-              api.getUserProblemStatus(pidList, false).then((res) => {
-                let result = res.data.data;
+      api
+        .getGroupProblemList(
+          this.currentPage,
+          this.limit,
+          this.$route.params.groupID
+        )
+        .then(
+          (res) => {
+            this.problemList = res.data.data.records;
+            this.total = res.data.data.total;
+            this.loading = false;
+            if (this.isAuthenticated) {
+              let pidList = [];
+              if (this.problemList && this.problemList.length > 0) {
                 for (let index = 0; index < this.problemList.length; index++) {
-                  this.problemList[index]['myStatus'] =
-                    result[this.problemList[index].pid]['status'];
+                  pidList.push(this.problemList[index].pid);
                 }
-                this.isGetStatusOk = true;
-              });
+                api.getUserProblemStatus(pidList, false).then((res) => {
+                  let result = res.data.data;
+                  for (
+                    let index = 0;
+                    index < this.problemList.length;
+                    index++
+                  ) {
+                    this.problemList[index]['myStatus'] =
+                      result[this.problemList[index].pid]['status'];
+                  }
+                  this.isGetStatusOk = true;
+                });
+              }
             }
+          },
+          (err) => {
+            this.loading = false;
           }
-        },
-        (err) => {
-          this.loading = false;
-        }
-      );
+        );
     },
     goGroupProblem(event) {
       this.$router.push({

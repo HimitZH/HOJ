@@ -134,6 +134,7 @@ public class RemoteJudgeGetResult {
                                 remoteJudgeDTO.getCid(),
                                 remoteJudgeDTO.getUid(),
                                 remoteJudgeDTO.getPid(),
+                                remoteJudgeDTO.getGid(),
                                 score,
                                 judge.getTime());
 
@@ -145,6 +146,7 @@ public class RemoteJudgeGetResult {
                                 remoteJudgeDTO.getCid(),
                                 remoteJudgeDTO.getUid(),
                                 remoteJudgeDTO.getPid(),
+                                remoteJudgeDTO.getGid(),
                                 null,
                                 null);
                     }

@@ -7,6 +7,7 @@ import top.hcode.hoj.dao.contest.ContestRegisterEntityService;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestRegister;
 import top.hcode.hoj.pojo.vo.ReplyVo;
+import top.hcode.hoj.validator.ContestValidator;
 import top.hcode.hoj.validator.GroupValidator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -70,6 +71,9 @@ public class CommentManager {
     @Autowired
     private GroupValidator groupValidator;
 
+    @Autowired
+    private ContestValidator contestValidator;
+
     public CommentListVo getComments(Long cid, Integer did, Integer limit, Integer currentPage) throws StatusForbiddenException {
 
         // 如果有登录，则获取当前登录的用户
@@ -79,12 +83,10 @@ public class CommentManager {
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Discussion discussion = discussionEntityService.getById(did);
-        Long gid = null;
         if (discussion != null) {
-            gid = discussion.getGid();
-        }
-        if (gid != null) {
-            if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), gid)) {
+            if (discussion.getGid() != null
+                    && !isRoot
+                    && !groupValidator.isGroupMember(userRolesVo.getUid(), discussion.getGid())) {
                 throw new StatusForbiddenException("对不起，您无权限操作！");
             }
         }
@@ -134,9 +136,9 @@ public class CommentManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-        Boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
-        Boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
+        boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
 
         Long cid = comment.getCid();
 
@@ -162,22 +164,7 @@ public class CommentManager {
             }
         } else {
             Contest contest = contestEntityService.getById(cid);
-            Long gid = contest.getGid();
-            if (contest.getAuth() != 0) {
-                QueryWrapper<ContestRegister> contestRegisterQueryWrapper = new QueryWrapper<>();
-                contestRegisterQueryWrapper.eq("cid", cid).eq("uid", userRolesVo.getUid());
-                ContestRegister contestRegister = contestRegisterEntityService.getOne(contestRegisterQueryWrapper);
-
-                if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !isRoot && contestRegister == null && !contest.getUid().equals(userRolesVo.getUid())) {
-                    throw new StatusForbiddenException("对不起，您无权限操作！");
-                }
-            } else {
-                if (!contest.getIsPublic()) {
-                    if (!groupValidator.isGroupMember(userRolesVo.getUid(), gid) && !isRoot && !contest.getUid().equals(userRolesVo.getUid())) {
-                        throw new StatusForbiddenException("对不起，您无权限操作！");
-                    }
-                }
-            }
+            contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
         }
 
         comment.setFromAvatar(userRolesVo.getAvatar())
@@ -235,9 +222,9 @@ public class CommentManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-        Boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
-        Boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
+        boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
         // 如果不是评论本人 或者不是管理员 无权限删除该评论
 
         Long cid = comment.getCid();
@@ -251,15 +238,19 @@ public class CommentManager {
                     throw new StatusForbiddenException("无权删除该评论");
                 }
             } else {
-                if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid) && !comment.getFromUid().equals(userRolesVo.getUid()) && !isRoot) {
+                if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)
+                        && !comment.getFromUid().equals(userRolesVo.getUid())
+                        && !isRoot) {
                     throw new StatusForbiddenException("无权删除该评论");
                 }
             }
         } else {
             Contest contest = contestEntityService.getById(cid);
-
             Long gid = contest.getGid();
-            if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !comment.getFromUid().equals(userRolesVo.getUid()) && !isRoot && !contest.getUid().equals(userRolesVo.getUid())) {
+            if (!comment.getFromUid().equals(userRolesVo.getUid())
+                    && !isRoot
+                    && !contest.getUid().equals(userRolesVo.getUid())
+                    && !(contest.getIsGroup() && groupValidator.isGroupRoot(userRolesVo.getUid(), gid))) {
                 throw new StatusForbiddenException("无权删除该评论");
             }
         }
@@ -364,9 +355,9 @@ public class CommentManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-        Boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
-        Boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
+        boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
 
         Reply reply = replyDto.getReply();
 
@@ -380,7 +371,7 @@ public class CommentManager {
                 queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
                 int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
 
-                if (userAcProblemCount < 10 ) {
+                if (userAcProblemCount < 10) {
                     throw new StatusForbiddenException("对不起，您暂时不能回复！请先去提交题目通过10道以上!");
                 }
             }
@@ -394,22 +385,7 @@ public class CommentManager {
             }
         } else {
             Contest contest = contestEntityService.getById(cid);
-            Long gid = contest.getGid();
-            if (contest.getAuth() != 0) {
-                QueryWrapper<ContestRegister> contestRegisterQueryWrapper = new QueryWrapper<>();
-                contestRegisterQueryWrapper.eq("cid", cid).eq("uid", userRolesVo.getUid());
-                ContestRegister contestRegister = contestRegisterEntityService.getOne(contestRegisterQueryWrapper);
-
-                if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !isRoot && contestRegister == null && !contest.getUid().equals(userRolesVo.getUid())) {
-                    throw new StatusForbiddenException("对不起，您无权限操作！");
-                }
-            } else {
-                if (!contest.getIsPublic()) {
-                    if (!groupValidator.isGroupMember(userRolesVo.getUid(), gid) && !isRoot && !contest.getUid().equals(userRolesVo.getUid())) {
-                        throw new StatusForbiddenException("对不起，您无权限操作！");
-                    }
-                }
-            }
+            contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
         }
         reply.setFromAvatar(userRolesVo.getAvatar())
                 .setFromName(userRolesVo.getUsername())
@@ -460,9 +436,9 @@ public class CommentManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-        Boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
-        Boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
+        boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
 
         Reply reply = replyDto.getReply();
 
@@ -475,19 +451,25 @@ public class CommentManager {
 
             Long gid = discussion.getGid();
             if (gid == null) {
-                if (!reply.getFromUid().equals(userRolesVo.getUid()) && !isRoot && !isProblemAdmin && !isAdmin) {
+                if (!reply.getFromUid().equals(userRolesVo.getUid())
+                        && !isRoot
+                        && !isProblemAdmin
+                        && !isAdmin) {
                     throw new StatusForbiddenException("无权删除该回复");
                 }
             } else {
-                if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid) && !reply.getFromUid().equals(userRolesVo.getUid()) && !isRoot) {
+                if (!reply.getFromUid().equals(userRolesVo.getUid())
+                        && !isRoot
+                        && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
                     throw new StatusForbiddenException("无权删除该回复");
                 }
             }
         } else {
             Contest contest = contestEntityService.getById(cid);
-
-            Long gid = contest.getGid();
-            if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !reply.getFromUid().equals(userRolesVo.getUid()) && !isRoot && !contest.getUid().equals(userRolesVo.getUid())) {
+            if (!reply.getFromUid().equals(userRolesVo.getUid())
+                    && !isRoot
+                    && !contest.getUid().equals(userRolesVo.getUid())
+                    && !(contest.getIsGroup() && groupValidator.isGroupRoot(userRolesVo.getUid(), contest.getGid()))) {
                 throw new StatusForbiddenException("无权删除该回复");
             }
         }

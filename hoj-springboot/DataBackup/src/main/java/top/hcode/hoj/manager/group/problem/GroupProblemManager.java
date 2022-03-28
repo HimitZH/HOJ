@@ -172,7 +172,7 @@ public class GroupProblemManager {
             throw new StatusFailException("该题目的Problem ID已存在，请更换！");
         }
 
-        problemDto.getProblem().setIsPublic(false);
+        problemDto.getProblem().setIsGroup(true);
 
         List<Tag> tagList = new LinkedList<>();
         for (Tag tag : problemDto.getTags()) {
@@ -235,7 +235,7 @@ public class GroupProblemManager {
             throw new StatusFailException("当前的Problem ID 已被使用，请重新更换新的！");
         }
 
-        problemDto.getProblem().setIsPublic(problem.getIsPublic());
+        problemDto.getProblem().setIsGroup(problem.getIsGroup());
 
         List<Tag> tagList = new LinkedList<>();
         for (Tag tag : problemDto.getTags()) {

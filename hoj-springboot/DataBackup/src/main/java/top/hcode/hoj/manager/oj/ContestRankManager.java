@@ -49,17 +49,8 @@ public class ContestRankManager {
                                                          List<String> concernedList,
                                                          Contest contest,
                                                          int currentPage,
-                                                         int limit) throws StatusForbiddenException{
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+                                                         int limit){
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-
-        if (!contest.getIsPublic()) {
-            if (!isRoot && !contest.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupMember(userRolesVo.getUid(), contest.getGid())) {
-                throw new StatusForbiddenException("对不起，您无权限操作！");
-            }
-        }
         // 进行排序计算
         List<ACMContestRankVo> orderResultList = contestCalculateRankManager.calcACMRank(isOpenSealRank,
                 removeStar,
@@ -101,17 +92,7 @@ public class ContestRankManager {
                                                        List<String> concernedList,
                                                        Contest contest,
                                                        int currentPage,
-                                                       int limit) throws StatusForbiddenException {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-
-        if (!contest.getIsPublic()) {
-            if (!isRoot && !contest.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupMember(userRolesVo.getUid(), contest.getGid())) {
-                throw new StatusForbiddenException("对不起，您无权限操作！");
-            }
-        }
+                                                       int limit) {
 
         List<OIContestRankVo> orderResultList = contestCalculateRankManager.calcOIRank(isOpenSealRank,
                 removeStar,

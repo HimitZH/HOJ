@@ -62,7 +62,7 @@ public class GroupContestProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Contest contest = contestEntityService.getById(cid);
 
@@ -89,7 +89,7 @@ public class GroupContestProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long gid = problemDto.getProblem().getGid();
 
@@ -114,7 +114,7 @@ public class GroupContestProblemManager {
         }
 
         problemDto.getProblem().setAuth(3);
-        problemDto.getProblem().setIsPublic(false);
+        problemDto.getProblem().setIsGroup(true);
 
         List<Tag> tagList = new LinkedList<>();
         for (Tag tag : problemDto.getTags()) {
@@ -143,7 +143,7 @@ public class GroupContestProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Contest contest = contestEntityService.getById(cid);
 
@@ -177,7 +177,7 @@ public class GroupContestProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long cid = contestProblem.getCid();
 
@@ -211,7 +211,7 @@ public class GroupContestProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Contest contest = contestEntityService.getById(cid);
 
@@ -233,7 +233,7 @@ public class GroupContestProblemManager {
 
         QueryWrapper<ContestProblem> contestProblemQueryWrapper = new QueryWrapper<>();
         contestProblemQueryWrapper.eq("cid", cid).eq("pid", pid);
-        Boolean isOk = contestProblemEntityService.remove(contestProblemQueryWrapper);
+        boolean isOk = contestProblemEntityService.remove(contestProblemQueryWrapper);
         if (isOk) {
             UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
             judgeUpdateWrapper.eq("cid", cid).eq("pid", pid);
@@ -247,13 +247,13 @@ public class GroupContestProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long pid = contestProblemDto.getPid();
 
         Problem problem = problemEntityService.getById(pid);
 
-        if (problem == null || problem.getAuth() != 1 || !problem.getIsPublic()) {
+        if (problem == null || problem.getAuth() != 1 || problem.getIsGroup()) {
             throw new StatusNotFoundException("该题目不存在或已被隐藏！");
         }
 
@@ -304,7 +304,7 @@ public class GroupContestProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Contest contest = contestEntityService.getById(cid);
 

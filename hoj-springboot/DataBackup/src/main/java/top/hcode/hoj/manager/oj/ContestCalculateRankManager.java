@@ -3,13 +3,14 @@ package top.hcode.hoj.manager.oj;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import top.hcode.hoj.validator.GroupValidator;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import top.hcode.hoj.dao.group.GroupMemberEntityService;
+import top.hcode.hoj.pojo.entity.group.GroupMember;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.pojo.entity.contest.Contest;
-import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.vo.ACMContestRankVo;
 import top.hcode.hoj.pojo.vo.ContestRecordVo;
 import top.hcode.hoj.pojo.vo.OIContestRankVo;
@@ -40,7 +41,7 @@ public class ContestCalculateRankManager {
     private ContestRecordEntityService contestRecordEntityService;
 
     @Autowired
-    private GroupValidator groupValidator;
+    private GroupMemberEntityService groupMemberEntityService;
 
     public List<ACMContestRankVo> calcACMRank(boolean isOpenSealRank,
                                               boolean removeStar,
@@ -168,7 +169,7 @@ public class ContestCalculateRankManager {
 
         List<ContestRecordVo> contestRecordList = contestRecordEntityService.getACMContestRecord(contest.getAuthor(), contest.getId());
 
-        List<String> superAdminUidList = getSuperAdminUidList();
+        List<String> superAdminUidList = getSuperAdminUidList(contest.getGid());
 
         List<ACMContestRankVo> result = new ArrayList<>();
 
@@ -178,11 +179,9 @@ public class ContestCalculateRankManager {
 
         HashMap<String, Long> firstACMap = new HashMap<>();
 
-        Long gid = contest.getGid();
-
         for (ContestRecordVo contestRecord : contestRecordList) {
 
-            if (superAdminUidList.contains(contestRecord.getUid()) || groupValidator.isGroupRoot(contestRecord.getUid(), gid)) { // 超级管理员的提交不入排行榜
+            if (superAdminUidList.contains(contestRecord.getUid())) { // 超级管理员的提交不入排行榜
                 continue;
             }
 
@@ -379,7 +378,7 @@ public class ContestCalculateRankManager {
 
         List<ContestRecordVo> oiContestRecord = contestRecordEntityService.getOIContestRecord(contest, isOpenSealRank);
 
-        List<String> superAdminUidList = getSuperAdminUidList();
+        List<String> superAdminUidList = getSuperAdminUidList(contest.getGid());
 
         List<OIContestRankVo> result = new ArrayList<>();
 
@@ -391,11 +390,9 @@ public class ContestCalculateRankManager {
 
         int index = 0;
 
-        Long gid = contest.getGid();
-
         for (ContestRecordVo contestRecord : oiContestRecord) {
 
-            if (superAdminUidList.contains(contestRecord.getUid()) || groupValidator.isGroupRoot(contestRecord.getUid(), gid)) { // 超级管理员的提交不入排行榜
+            if (superAdminUidList.contains(contestRecord.getUid())) { // 超级管理员的提交不入排行榜
                 continue;
             }
 
@@ -485,8 +482,21 @@ public class ContestCalculateRankManager {
     }
 
 
-    private List<String> getSuperAdminUidList() {
-        return userInfoEntityService.getSuperAdminUidList();
+    private List<String> getSuperAdminUidList(Long gid) {
+
+        List<String> superAdminUidList = userInfoEntityService.getSuperAdminUidList();
+
+        if (gid != null) {
+            QueryWrapper<GroupMember> groupMemberQueryWrapper = new QueryWrapper<>();
+            groupMemberQueryWrapper.eq("gid", gid).eq("auth", 5);
+
+            List<GroupMember> groupRootList = groupMemberEntityService.list(groupMemberQueryWrapper);
+
+            for (GroupMember groupMember : groupRootList) {
+                superAdminUidList.add(groupMember.getUid());
+            }
+        }
+        return superAdminUidList;
     }
 
     private boolean isInSealTimeSubmission(Contest contest, Date submissionDate) {

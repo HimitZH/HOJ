@@ -56,15 +56,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public CommonResult<Integer> getGroupAuth(Long gid) {
-        try {
-            return CommonResult.successResponse(groupManager.getGroupAuth(gid));
-        } catch (StatusNotFoundException e) {
-            return CommonResult.errorResponse(e.getMessage(), ResultStatus.NOT_FOUND);
-        } catch (StatusForbiddenException e) {
-            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
-        } catch (StatusFailException e) {
-            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FAIL);
-        }
+        return CommonResult.successResponse(groupManager.getGroupAuth(gid));
     }
 
     @Override

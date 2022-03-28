@@ -6,7 +6,7 @@
         c.end_time,c.duration,c.open_rank,c.oi_rank_score_type,c.gid
         from contest c
         <where>
-            c.visible = true and c.is_public = true
+            c.visible = true and c.is_group = false
             <if test="keyword!=null and keyword!=''">
                 and c.title like concat('%',#{keyword},'%')
             </if>
@@ -41,7 +41,7 @@
 
     <select id="getWithinNext14DaysContests" resultType="top.hcode.hoj.pojo.vo.ContestVo">
         SELECT c.id,c.author,c.title,c.type,c.source,c.auth,c.status,c.start_time,c.end_time,c.duration,c.oi_rank_score_type,c.gid
-        FROM contest c WHERE DATE_ADD(CURDATE(), INTERVAL 14 DAY) >= DATE(start_time) AND c.status != 1 AND c.visible=true AND c.is_public = true
+        FROM contest c WHERE DATE_ADD(CURDATE(), INTERVAL 14 DAY) >= DATE(start_time) AND c.status != 1 AND c.visible=true AND c.is_group = false
         order by c.start_time DESC
     </select>
 </mapper>

@@ -90,6 +90,11 @@ public class RemoteJudgeDTO implements Serializable {
     private Long cid;
 
     /**
+     * 远程测评的团队id
+     */
+    private Long gid;
+
+    /**
      * 远程测评的judge_id;
      */
     private Long judgeId;

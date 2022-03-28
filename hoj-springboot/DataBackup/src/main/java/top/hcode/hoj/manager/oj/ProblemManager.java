@@ -93,7 +93,7 @@ public class ProblemManager {
     public RandomProblemVo getRandomProblem() throws StatusFailException {
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         // 必须是公开题目
-        queryWrapper.select("problem_id").eq("auth", 1).eq("is_public", true);
+        queryWrapper.select("problem_id").eq("auth", 1).eq("is_group", true);
         List<Problem> list = problemEntityService.list(queryWrapper);
         if (list.size() == 0) {
             throw new StatusFailException("获取随机题目失败，题库暂无公开题目！");
@@ -216,20 +216,20 @@ public class ProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         QueryWrapper<Problem> wrapper = new QueryWrapper<Problem>().eq("problem_id", problemId);
         //查询题目详情，题目标签，题目语言，题目做题情况
         Problem problem = problemEntityService.getOne(wrapper, false);
         if (problem == null) {
-           throw new StatusNotFoundException("该题号对应的题目不存在");
+            throw new StatusNotFoundException("该题号对应的题目不存在");
         }
         if (problem.getAuth() != 1) {
             throw new StatusForbiddenException("该题号对应题目并非公开题目，不支持访问！");
         }
 
-        if (!problem.getIsPublic()) {
-            if (!groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid()) && !isRoot) {
+        if (problem.getIsGroup()) {
+            if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid())) {
                 throw new StatusForbiddenException("该题号对应题目并非公开题目，不支持访问！");
             }
         }
@@ -277,8 +277,7 @@ public class ProblemManager {
                 .setSpjLanguage(null);
 
         // 将数据统一写入到一个Vo返回数据实体类中
-        ProblemInfoVo problemInfoVo = new ProblemInfoVo(problem, tags, languagesStr, problemCount, LangNameAndCode);
-        return problemInfoVo;
+        return new ProblemInfoVo(problem, tags, languagesStr, problemCount, LangNameAndCode);
     }
 
 }

@@ -58,7 +58,7 @@ public class GroupTrainingProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Training training = trainingEntityService.getById(tid);
 
@@ -85,7 +85,7 @@ public class GroupTrainingProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Training training = trainingEntityService.getById(trainingProblem.getTid());
 
@@ -138,7 +138,7 @@ public class GroupTrainingProblemManager {
         QueryWrapper<TrainingProblem> trainingProblemQueryWrapper = new QueryWrapper<>();
         trainingProblemQueryWrapper.eq("tid", tid).eq("pid", pid);
 
-        Boolean isOk = trainingProblemEntityService.remove(trainingProblemQueryWrapper);
+        boolean isOk = trainingProblemEntityService.remove(trainingProblemQueryWrapper);
         if (!isOk) {
             throw new StatusFailException("删除失败！");
         }
@@ -148,13 +148,13 @@ public class GroupTrainingProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long pid = trainingProblemDto.getPid();
 
         Problem problem = problemEntityService.getById(pid);
 
-        if (problem == null || problem.getAuth() != 1 || !problem.getIsPublic()) {
+        if (problem == null || problem.getAuth() != 1 || problem.getIsGroup()) {
             throw new StatusNotFoundException("该题目不存在或已被隐藏！");
         }
 

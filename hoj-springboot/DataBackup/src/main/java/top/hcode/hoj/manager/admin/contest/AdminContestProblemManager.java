@@ -78,7 +78,7 @@ public class AdminContestProblemManager {
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
 
         if (problemType != null) { // 必备条件 隐藏的不可取来做比赛题目
-            problemQueryWrapper.eq("is_public", true)
+            problemQueryWrapper.eq("is_group", false)
                     // vj题目不限制赛制
                     .and(wrapper -> wrapper.eq("type", problemType)
                             .or().eq("is_remote", true))

@@ -53,8 +53,8 @@ public class Training implements Serializable {
     @TableField("`rank`")
     private Integer rank;
 
-    @ApiModelProperty(value = "全站可见")
-    private Boolean isPublic;
+    @ApiModelProperty(value = "是否为团队内的训练")
+    private Boolean isGroup;
 
     @ApiModelProperty(value = "团队ID")
     private Long gid;

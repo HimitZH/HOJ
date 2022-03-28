@@ -4,7 +4,7 @@
 
     <select id="getAnnouncementList" resultMap="map_AnnouncementVo" useCache="true">
         SELECT a.*,u.username FROM user_info u,announcement a  where a.uid = u.uuid
-        and (SELECT COUNT(*) FROM contest_announcement ca WHERE ca.aid=a.id) = 0 and a.gid = null
+        and (SELECT COUNT(*) FROM contest_announcement ca WHERE ca.aid=a.id) = 0 and a.gid is null
         <if test="notAdmin">
             and a.status = 0
         </if>
