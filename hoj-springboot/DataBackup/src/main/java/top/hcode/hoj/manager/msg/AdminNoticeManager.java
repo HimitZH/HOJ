@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.pojo.entity.msg.AdminSysNotice;
 import top.hcode.hoj.pojo.entity.msg.UserSysNotice;
@@ -106,6 +107,38 @@ public class AdminNoticeManager {
                     .setSysNoticeId(adminSysNotice.getId())
                     .setType(type);
             userSysNoticeEntityService.save(userSysNotice);
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Async
+    public void addSingleNoticeToBatchUser(String adminId,
+                                           List<String> recipientIdList,
+                                           String title,
+                                           String content,
+                                           String type) {
+        if (CollectionUtils.isEmpty(recipientIdList)) {
+            return;
+        }
+        AdminSysNotice adminSysNotice = new AdminSysNotice();
+        adminSysNotice.setAdminId(adminId)
+                .setType("Single")
+                .setTitle(title)
+                .setContent(content)
+                .setState(true);
+        boolean isOk = adminSysNoticeEntityService.save(adminSysNotice);
+        if (isOk) {
+            List<UserSysNotice> userSysNoticeList = new ArrayList<>();
+            for (String recipientId : recipientIdList) {
+                UserSysNotice userSysNotice = new UserSysNotice();
+                userSysNotice.setRecipientId(recipientId)
+                        .setSysNoticeId(adminSysNotice.getId())
+                        .setType(type);
+                userSysNoticeList.add(userSysNotice);
+            }
+            if (userSysNoticeList.size() > 0) {
+                userSysNoticeEntityService.saveBatch(userSysNoticeList);
+            }
         }
     }
 }

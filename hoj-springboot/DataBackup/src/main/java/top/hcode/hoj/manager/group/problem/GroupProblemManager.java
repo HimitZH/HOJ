@@ -76,7 +76,7 @@ public class GroupProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Group group = groupEntityService.getById(gid);
 
@@ -99,7 +99,7 @@ public class GroupProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Group group = groupEntityService.getById(gid);
 
@@ -121,7 +121,7 @@ public class GroupProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Problem problem = problemEntityService.getById(pid);
 
@@ -148,7 +148,7 @@ public class GroupProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long gid = problemDto.getProblem().getGid();
 
@@ -158,7 +158,7 @@ public class GroupProblemManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid) && !isRoot) {
+        if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -199,7 +199,7 @@ public class GroupProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long pid = problemDto.getProblem().getId();
 
@@ -217,7 +217,8 @@ public class GroupProblemManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUsername().equals(problem.getAuthor()) && !isRoot) {
+        if (!userRolesVo.getUsername().equals(problem.getAuthor()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -269,7 +270,7 @@ public class GroupProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Problem problem = problemEntityService.getById(pid);
 
@@ -301,7 +302,7 @@ public class GroupProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Problem problem = problemEntityService.getById(pid);
 
@@ -317,7 +318,8 @@ public class GroupProblemManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUsername().equals(problem.getAuthor()) && !isRoot) {
+        if (!userRolesVo.getUsername().equals(problem.getAuthor()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -329,11 +331,11 @@ public class GroupProblemManager {
         return problemCaseEntityService.list(problemCaseQueryWrapper);
     }
 
-    public List<Tag> getAllProblemTagsList(Long gid) throws StatusNotFoundException, StatusForbiddenException{
+    public List<Tag> getAllProblemTagsList(Long gid) throws StatusNotFoundException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Group group = groupEntityService.getById(gid);
 
@@ -341,7 +343,7 @@ public class GroupProblemManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid) && !isRoot) {
+        if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -357,7 +359,7 @@ public class GroupProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Group group = groupEntityService.getById(gid);
 
@@ -365,7 +367,7 @@ public class GroupProblemManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid) && !isRoot) {
+        if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -382,7 +384,7 @@ public class GroupProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Group group = groupEntityService.getById(gid);
 
@@ -390,7 +392,7 @@ public class GroupProblemManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid) && !isRoot) {
+        if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -407,7 +409,7 @@ public class GroupProblemManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Problem problem = problemEntityService.getById(pid);
 
@@ -423,7 +425,8 @@ public class GroupProblemManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUsername().equals(problem.getAuthor()) && !isRoot) {
+        if (!userRolesVo.getUsername().equals(problem.getAuthor()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 

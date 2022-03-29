@@ -19,4 +19,10 @@ public interface GroupMemberEntityService extends IService<GroupMember> {
     IPage<GroupMemberVo> getApplyList(int limit, int currentPage, String keyword, Integer auth, Long gid);
 
     List<String> getGroupRootUidList(Long gid);
+
+    void addApplyNoticeToGroupRoot(Long gid, String groupName, String newMemberUid);
+
+    void addRemoveNoticeToGroupMember(Long gid, String groupName, String operator, String memberUid);
+
+    void addDissolutionNoticeToGroupMember(Long gid, String groupName, List<String> groupMemberUidList, String operator);
 }

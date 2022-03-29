@@ -5,10 +5,8 @@ import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
 import top.hcode.hoj.dao.group.GroupEntityService;
 import top.hcode.hoj.dao.group.GroupMemberEntityService;
-import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.pojo.entity.group.GroupMember;
 import top.hcode.hoj.pojo.entity.group.Group;
-import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.vo.GroupMemberVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.validator.GroupValidator;
@@ -20,6 +18,9 @@ import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author: LengYun
@@ -35,8 +36,6 @@ public class GroupMemberManager {
     @Autowired
     private GroupMemberEntityService groupMemberEntityService;
 
-    @Autowired
-    private UserInfoEntityService userInfoEntityService;
 
     @Autowired
     private GroupValidator groupValidator;
@@ -103,7 +102,9 @@ public class GroupMemberManager {
 
         Group group = groupEntityService.getById(gid);
 
-        if (group == null || group.getStatus() == 1 && !isRoot || !group.getVisible() && !groupValidator.isGroupMember(userRolesVo.getUid(), gid) && !isRoot) {
+        if (group == null || group.getStatus() == 1
+                && !isRoot || !group.getVisible()
+                && !groupValidator.isGroupMember(userRolesVo.getUid(), gid) && !isRoot) {
             throw new StatusNotFoundException("该团队不存在或已被封禁或未公开显示！");
         }
 
@@ -150,6 +151,8 @@ public class GroupMemberManager {
         }
         if (!isOk) {
             throw new StatusFailException("申请失败，请重新尝试！");
+        } else {
+            groupMemberEntityService.addApplyNoticeToGroupRoot(gid, group.getName(), uid);
         }
     }
 
@@ -209,6 +212,29 @@ public class GroupMemberManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
+        if (userRolesVo.getUsername().equals(group.getOwner())) {
+            if (userRolesVo.getUid().equals(uid)) {
+                QueryWrapper<GroupMember> groupMemberQueryWrapper = new QueryWrapper<>();
+                groupMemberQueryWrapper.eq("gid", gid).in("auth", 3, 4, 5);
+                List<GroupMember> groupMemberList = groupMemberEntityService.list(groupMemberQueryWrapper);
+                List<String> groupMemberUidList = groupMemberList.stream()
+                        .map(groupMember -> group.getUid())
+                        .collect(Collectors.toList());
+                boolean isOk = groupEntityService.removeById(gid);
+                if (!isOk) {
+                    throw new StatusFailException("删除失败，请重新尝试！");
+                } else {
+                    groupMemberEntityService.addDissolutionNoticeToGroupMember(gid,
+                            group.getName(),
+                            groupMemberUidList,
+                            userRolesVo.getUsername());
+                }
+                return;
+            } else {
+                throw new StatusForbiddenException("对不起，您无权移除团队的Owner来解散团队！");
+            }
+        }
+
         QueryWrapper<GroupMember> groupMemberQueryWrapper = new QueryWrapper<>();
         groupMemberQueryWrapper.eq("gid", gid).eq("uid", userRolesVo.getUid()).in("auth", 3, 4, 5);
 
@@ -230,7 +256,8 @@ public class GroupMemberManager {
         }
 
         if (!isRoot && !groupValidator.isGroupOwner(userRolesVo.getUid(), gid) && !userRolesVo.getUid().equals(uid)) {
-            if (!userRolesVo.getUid().equals(uid) && (changeGroupMember.getAuth() >= currentGroupMember.getAuth() || groupValidator.isGroupOwner(uid, gid))) {
+            if (!userRolesVo.getUid().equals(uid) && (changeGroupMember.getAuth() >= currentGroupMember.getAuth()
+                    || groupValidator.isGroupOwner(uid, gid))) {
                 throw new StatusForbiddenException("对不起，您无权限操作！");
             }
         }
@@ -238,15 +265,8 @@ public class GroupMemberManager {
         boolean isOk = groupMemberEntityService.remove(changeGroupMemberQueryWrapper);
         if (!isOk) {
             throw new StatusFailException("删除失败，请重新尝试！");
-        }
-
-        QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
-        userInfoQueryWrapper.eq("uuid", uid);
-
-        UserInfo userInfo = userInfoEntityService.getOne(userInfoQueryWrapper);
-
-        if (userInfo.getUsername().equals(group.getOwner())) {
-            groupEntityService.removeById(gid);
+        } else {
+            groupMemberEntityService.addRemoveNoticeToGroupMember(gid, group.getName(), userRolesVo.getUsername(), uid);
         }
     }
 }
