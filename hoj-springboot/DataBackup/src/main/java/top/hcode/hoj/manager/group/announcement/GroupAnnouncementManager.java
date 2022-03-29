@@ -49,7 +49,7 @@ public class GroupAnnouncementManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupMember(userRolesVo.getUid(), gid) && !isRoot) {
+        if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -71,7 +71,7 @@ public class GroupAnnouncementManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid) && !isRoot) {
+        if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -95,7 +95,7 @@ public class GroupAnnouncementManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid) && !isRoot) {
+        if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -119,7 +119,8 @@ public class GroupAnnouncementManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUid().equals(announcement.getUid()) && !isRoot) {
+        if (!userRolesVo.getUid().equals(announcement.getUid()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -149,7 +150,8 @@ public class GroupAnnouncementManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUid().equals(announcement.getUid()) && !isRoot) {
+        if (!userRolesVo.getUid().equals(announcement.getUid()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 

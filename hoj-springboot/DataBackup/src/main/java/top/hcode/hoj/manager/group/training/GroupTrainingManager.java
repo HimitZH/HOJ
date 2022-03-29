@@ -1,5 +1,6 @@
 package top.hcode.hoj.manager.group.training;
 
+import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
@@ -60,7 +61,7 @@ public class GroupTrainingManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Group group = groupEntityService.getById(gid);
 
@@ -68,7 +69,7 @@ public class GroupTrainingManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupMember(userRolesVo.getUid(), gid) && !isRoot) {
+        if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -82,7 +83,7 @@ public class GroupTrainingManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Group group = groupEntityService.getById(gid);
 
@@ -90,7 +91,7 @@ public class GroupTrainingManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid) && !isRoot) {
+        if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -104,7 +105,7 @@ public class GroupTrainingManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Training training = trainingEntityService.getById(tid);
 
@@ -120,7 +121,8 @@ public class GroupTrainingManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUsername().equals(training.getAuthor()) && !isRoot) {
+        if (!userRolesVo.getUsername().equals(training.getAuthor()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -140,6 +142,7 @@ public class GroupTrainingManager {
         return trainingDto;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void addTraining(TrainingDto trainingDto) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
@@ -154,7 +157,7 @@ public class GroupTrainingManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid) && !isRoot) {
+        if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -187,6 +190,7 @@ public class GroupTrainingManager {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void updateTraining(TrainingDto trainingDto) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
@@ -209,7 +213,8 @@ public class GroupTrainingManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUsername().equals(training.getAuthor()) && !isRoot) {
+        if (!userRolesVo.getUsername().equals(training.getAuthor()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -284,7 +289,8 @@ public class GroupTrainingManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUsername().equals(training.getAuthor()) && !isRoot) {
+        if (!userRolesVo.getUsername().equals(training.getAuthor()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -314,7 +320,8 @@ public class GroupTrainingManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUsername().equals(training.getAuthor()) && !isRoot) {
+        if (!userRolesVo.getUsername().equals(training.getAuthor()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 

@@ -56,7 +56,7 @@ public class GroupContestManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Group group = groupEntityService.getById(gid);
 
@@ -64,7 +64,7 @@ public class GroupContestManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupMember(userRolesVo.getUid(), gid) && !isRoot) {
+        if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -86,7 +86,7 @@ public class GroupContestManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid) && !isRoot) {
+        if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -116,7 +116,8 @@ public class GroupContestManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUid().equals(contest.getUid()) && !isRoot) {
+        if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -145,7 +146,7 @@ public class GroupContestManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid) && !isRoot) {
+        if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -166,7 +167,7 @@ public class GroupContestManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        Boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long cid = adminContestVo.getId();
 
@@ -184,7 +185,8 @@ public class GroupContestManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUid().equals(contest.getUid()) && !isRoot) {
+        if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -227,7 +229,8 @@ public class GroupContestManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUid().equals(contest.getUid()) && !isRoot) {
+        if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -257,7 +260,8 @@ public class GroupContestManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUid().equals(contest.getUid()) && !isRoot) {
+        if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 

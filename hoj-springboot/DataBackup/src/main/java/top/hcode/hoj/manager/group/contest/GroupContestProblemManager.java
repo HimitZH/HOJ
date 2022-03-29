@@ -1,6 +1,7 @@
 package top.hcode.hoj.manager.group.contest;
 
 import cn.hutool.core.map.MapUtil;
+import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
@@ -99,7 +100,7 @@ public class GroupContestProblemManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid) && !isRoot) {
+        if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -118,7 +119,7 @@ public class GroupContestProblemManager {
 
         List<Tag> tagList = new LinkedList<>();
         for (Tag tag : problemDto.getTags()) {
-            if (tag.getGid() != null && tag.getGid() != gid) {
+            if (tag.getGid() != null && !tag.getGid().equals(gid)) {
                 throw new StatusForbiddenException("对不起，您无权限操作！");
             }
 
@@ -159,7 +160,8 @@ public class GroupContestProblemManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUid().equals(contest.getUid()) && !isRoot) {
+        if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -195,7 +197,8 @@ public class GroupContestProblemManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUid().equals(contest.getUid()) && !isRoot) {
+        if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -227,7 +230,8 @@ public class GroupContestProblemManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUid().equals(contest.getUid()) && !isRoot) {
+        if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -273,7 +277,8 @@ public class GroupContestProblemManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUid().equals(contest.getUid()) && !isRoot) {
+        if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -300,6 +305,7 @@ public class GroupContestProblemManager {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void addProblemFromGroup(String problemId, Long cid, String displayId) throws StatusNotFoundException, StatusForbiddenException, StatusFailException {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
@@ -320,7 +326,8 @@ public class GroupContestProblemManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUid().equals(contest.getUid()) && !isRoot) {
+        if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 

@@ -1,5 +1,6 @@
 package top.hcode.hoj.manager.group;
 
+import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
@@ -22,6 +23,9 @@ import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author: LengYun
@@ -127,6 +131,7 @@ public class GroupManager {
         return auth;
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void addGroup(Group group) throws StatusFailException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
@@ -156,6 +161,7 @@ public class GroupManager {
             }
         }
         group.setOwner(userRolesVo.getUsername());
+        group.setUid(userRolesVo.getUid());
 
         if (!StringUtils.isEmpty(group.getName()) && (group.getName().length() < 5 || group.getName().length() > 25)) {
             throw new StatusFailException("团队名称的长度应为 5 到 25！");
@@ -272,13 +278,25 @@ public class GroupManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !isRoot) {
+        if (!isRoot && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
+
+        QueryWrapper<GroupMember> groupMemberQueryWrapper = new QueryWrapper<>();
+        groupMemberQueryWrapper.eq("gid", gid).in("auth", 3, 4, 5);
+        List<GroupMember> groupMemberList = groupMemberEntityService.list(groupMemberQueryWrapper);
+        List<String> groupMemberUidList = groupMemberList.stream()
+                .map(groupMember -> group.getUid())
+                .collect(Collectors.toList());
 
         boolean isOk = groupEntityService.removeById(gid);
         if (!isOk) {
             throw new StatusFailException("删除失败，请重新尝试！");
+        } else {
+            groupMemberEntityService.addDissolutionNoticeToGroupMember(gid,
+                    group.getName(),
+                    groupMemberUidList,
+                    userRolesVo.getUsername());
         }
     }
 }
