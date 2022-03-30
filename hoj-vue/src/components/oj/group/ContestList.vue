@@ -28,10 +28,7 @@
             placement="top"
             effect="light"
           >
-            <el-tag
-              :type="CONTEST_TYPE_REVERSE[row.auth].color"
-              effect="plain"
-            >
+            <el-tag :type="CONTEST_TYPE_REVERSE[row.auth].color" effect="plain">
               {{ $t('m.' + CONTEST_TYPE_REVERSE[row.auth].name) }}
             </el-tag>
           </el-tooltip>
@@ -189,7 +186,7 @@ import Pagination from '@/components/oj/common/Pagination';
 import api from '@/common/api';
 import mMessage from '@/common/message';
 import utils from '@/common/utils';
-import Contest from '@/components/oj/group/Contest'
+import Contest from '@/components/oj/group/Contest';
 import {
   CONTEST_STATUS_REVERSE,
   CONTEST_TYPE,
@@ -200,7 +197,7 @@ export default {
   name: 'GroupContestList',
   components: {
     Pagination,
-    Contest
+    Contest,
   },
   data() {
     return {
@@ -238,21 +235,27 @@ export default {
     },
     handleEditPage() {
       this.editPage = false;
-      this.$emit("currentChange", 1);
-      this.$emit("handleEditPage");
+      this.$emit('currentChange', 1);
+      this.$emit('handleEditPage');
     },
     getAdminContestList() {
       this.loading = true;
-      api.getGroupAdminContestList(this.currentPage, this.limit, this.$route.params.groupID).then(
-        (res) => {
-          this.contestList = res.data.data.records;
-          this.total = res.data.data.total;
-          this.loading = false;
-        },
-        (err) => {
-          this.loading = false;
-        }
-      );
+      api
+        .getGroupAdminContestList(
+          this.currentPage,
+          this.limit,
+          this.$route.params.groupID
+        )
+        .then(
+          (res) => {
+            this.contestList = res.data.data.records;
+            this.total = res.data.data.total;
+            this.loading = false;
+          },
+          (err) => {
+            this.loading = false;
+          }
+        );
     },
     openDownloadOptions(contestId) {
       this.downloadDialogVisible = true;
@@ -266,29 +269,35 @@ export default {
     goEditContest(contestId) {
       this.editPage = true;
       this.cid = contestId;
-      this.$emit("handleEditPage");
+      this.$emit('handleEditPage');
     },
     goContestProblemList(contestId) {
-      this.$emit("handleProblemPage", contestId);
+      this.$emit('handleProblemPage', contestId);
     },
     goContestAnnouncementList(contestId) {
-      this.$emit("handleAnnouncementPage", contestId);
+      this.$emit('handleAnnouncementPage', contestId);
     },
     changeContestVisible(cid, visible) {
       api.changeGroupContestVisible(cid, visible).then((res) => {
         mMessage.success(this.$i18n.t('m.Update_Successfully'));
-        this.$emit("currentChange", 1);
+        this.$emit('currentChange', 1);
         this.currentChange(1);
       });
     },
     deleteContest(id) {
-      this.$confirm(this.$i18n.t('m.Delete_Contest_Tips'), this.$i18n.t('m.Warning'), {
-        type: 'warning',
-      }).then(() => {
-          api.deleteGroupContest(id, this.$route.params.groupID)
+      this.$confirm(
+        this.$i18n.t('m.Delete_Contest_Tips'),
+        this.$i18n.t('m.Warning'),
+        {
+          type: 'warning',
+        }
+      ).then(
+        () => {
+          api
+            .deleteGroupContest(id, this.$route.params.groupID)
             .then((res) => {
               mMessage.success(this.$i18n.t('m.Delete_successfully'));
-              this.$emit("currentChange", 1);
+              this.$emit('currentChange', 1);
               this.currentChange(1);
             })
             .catch(() => {});
@@ -298,7 +307,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['isGroupAdmin', 'userInfo']),
+    ...mapGetters(['isGroupRoot', 'userInfo']),
   },
 };
 </script>

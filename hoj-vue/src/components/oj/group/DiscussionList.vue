@@ -39,11 +39,7 @@
           {{ row.gmtCreate | localtime }}
         </template>
       </vxe-table-column>
-      <vxe-table-column
-        field="status"
-        :title="$t('m.Status')"
-        min-width="100"
-      >
+      <vxe-table-column field="status" :title="$t('m.Status')" min-width="100">
         <template v-slot="{ row }">
           <el-select
             v-model="row.status"
@@ -124,7 +120,7 @@ export default {
   name: 'GroupDiscussionList',
   components: {
     Pagination,
-    Editor
+    Editor,
   },
   data() {
     return {
@@ -152,44 +148,55 @@ export default {
     },
     getGroupAdminDiscussionList() {
       this.loading = true;
-      api.getGroupAdminDiscussionList(this.currentPage, this.limit, this.$route.params.groupID).then(
-        (res) => {
-          this.adminDiscussionList = res.data.data.records;
-          this.adminTotal = res.data.data.total;
-          this.loading = false;
-        },
-        (err) => {
-          this.loading = false;
-        }
-      );
+      api
+        .getGroupAdminDiscussionList(
+          this.currentPage,
+          this.limit,
+          this.$route.params.groupID
+        )
+        .then(
+          (res) => {
+            this.adminDiscussionList = res.data.data.records;
+            this.adminTotal = res.data.data.total;
+            this.loading = false;
+          },
+          (err) => {
+            this.loading = false;
+          }
+        );
     },
     goGroupDiscussion(discussionId) {
       this.$router.push({
-        name: 'DiscussionDetails',
+        name: 'GroupDiscussionDetails',
         params: {
           discussionID: discussionId,
+          groupID: this.$route.params.groupID,
         },
       });
     },
     updateGroupDiscussion(row) {
       api.updateGroupDiscussion(row).then((res) => {
         mMessage.success(this.$i18n.t('m.Update_Successfully'));
-        this.$emit("currentChange", 1);
+        this.$emit('currentChange', 1);
         this.currentChange(1);
       });
     },
     deleteGroupDiscussion(uid, gid) {
-      this.$confirm(this.$i18n.t('m.Delete_Discussion_Tips'), this.$i18n.t('m.Warning'), {
-        confirmButtonText: this.$i18n.t('m.OK'),
-        cancelButtonText: this.$i18n.t('m.Cancel'),
-        type: 'warning',
-      })
+      this.$confirm(
+        this.$i18n.t('m.Delete_Discussion_Tips'),
+        this.$i18n.t('m.Warning'),
+        {
+          confirmButtonText: this.$i18n.t('m.OK'),
+          cancelButtonText: this.$i18n.t('m.Cancel'),
+          type: 'warning',
+        }
+      )
         .then(() => {
           this.loading = true;
           api.deleteGroupDiscussion(uid, gid).then((res) => {
             this.loading = true;
             mMessage.success(this.$i18n.t('m.Delete_successfully'));
-            this.$emit("currentChange", 1);
+            this.$emit('currentChange', 1);
             this.currentChange(1);
           });
         })

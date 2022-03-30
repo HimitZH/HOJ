@@ -565,7 +565,7 @@ export default {
     },
     toDiscussionDetail(discussionID) {
       this.$router.push({
-        name: 'DiscussionDetail',
+        name: 'DiscussionDetails',
         params: { discussionID: discussionID },
       });
     },

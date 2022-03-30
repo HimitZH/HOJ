@@ -222,17 +222,17 @@ public class GroupProblemManager {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
+        problemDto.getProblem().setProblemId(group.getShortName() + problemDto.getProblem().getProblemId());
         String problemId = problemDto.getProblem().getProblemId().toUpperCase();
 
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
         problemQueryWrapper.eq("problem_id", problemId);
 
-        Problem problem1 = problemEntityService.getOne(problemQueryWrapper);
+        Problem existedProblem = problemEntityService.getOne(problemQueryWrapper);
 
-        problemDto.getProblem().setProblemId(group.getShortName() + problemDto.getProblem().getProblemId());
         problemDto.getProblem().setModifiedUser(userRolesVo.getUsername());
 
-        if (problem1 != null && problem1.getId().longValue() != pid) {
+        if (existedProblem != null && existedProblem.getId().longValue() != pid) {
             throw new StatusFailException("当前的Problem ID 已被使用，请重新更换新的！");
         }
 
@@ -255,7 +255,7 @@ public class GroupProblemManager {
 
         boolean isOk = problemEntityService.adminUpdateProblem(problemDto);
         if (isOk) {
-            if (problem1 == null) {
+            if (existedProblem == null) {
                 UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
                 judgeUpdateWrapper.eq("pid", problemDto.getProblem().getId())
                         .set("display_pid", problemId);

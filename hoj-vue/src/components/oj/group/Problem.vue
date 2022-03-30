@@ -23,7 +23,7 @@
                   v-model="problem.problemId"
                   :disabled="problem.isRemote"
                 >
-                  <template slot="prepend" >
+                  <template slot="prepend">
                     {{ group.shortName.toUpperCase() }}
                   </template>
                 </el-input>
@@ -366,8 +366,13 @@
             </div>
             <el-form-item label="" :error="error.spj">
               <el-col :span="24">
-                <el-radio-group v-model="problem.judgeMode" @change="switchMode">
-                  <el-radio label="default">{{ $t('m.General_Judge') }}</el-radio>
+                <el-radio-group
+                  v-model="problem.judgeMode"
+                  @change="switchMode"
+                >
+                  <el-radio label="default">{{
+                    $t('m.General_Judge')
+                  }}</el-radio>
                   <el-radio label="spj">{{ $t('m.Special_Judge') }}</el-radio>
                   <el-radio label="interactive">{{
                     $t('m.Interactive_Judge')
@@ -636,24 +641,24 @@ export default {
   props: {
     mode: {
       type: String,
-      default: 'edit'
+      default: 'edit',
     },
     title: {
       type: String,
-      default: 'Edit Problem'
+      default: 'Edit Problem',
     },
     apiMethod: {
       type: String,
-      default: 'addGroupProblem'
+      default: 'addGroupProblem',
     },
     pid: {
       type: Number,
-      default: null
+      default: null,
     },
     contestId: {
       type: Number,
-      default: null
-    }
+      default: null,
+    },
   },
   data() {
     return {
@@ -750,13 +755,15 @@ export default {
   mounted() {
     this.PROBLEM_LEVEL = Object.assign({}, PROBLEM_LEVEL);
     this.uploadFileUrl = '/api/file/upload-testcase-zip';
-    api.getGroupProblemTagList(this.$route.params.groupID).then((res) => {
+    api
+      .getGroupProblemTagList(this.$route.params.groupID)
+      .then((res) => {
         this.allTags = res.data.data;
         for (let tag of res.data.data) {
           this.allTagsTmp.push({ value: tag.name, oj: tag.oj });
         }
-      }
-    ).catch(() => {});
+      })
+      .catch(() => {});
     api.getLanguages(this.$route.params.problemId, false).then((res) => {
       let allLanguage = res.data.data;
       this.allLanguage = allLanguage;
@@ -889,7 +896,9 @@ export default {
             this.addJudgeExtraFile = true;
             this.judgeExtraFile = JSON.parse(this.problem.judgeExtraFile);
           }
-          api.getGroupProblemCases(this.pid, this.problem.isUploadCase).then((res) => {
+          api
+            .getGroupProblemCases(this.pid, this.problem.isUploadCase)
+            .then((res) => {
               if (this.problem.isUploadCase) {
                 this.problem.testCaseScore = res.data.data;
               } else {
@@ -900,8 +909,8 @@ export default {
         });
         if (this.contestId) {
           api.getGroupContestProblem(this.pid, this.contestId).then((res) => {
-              this.contestProblem = res.data.data;
-            });
+            this.contestProblem = res.data.data;
+          });
         }
         this.getProblemCodeTemplateAndLanguage();
         api.getGroupProblemTags(this.pid).then((res) => {
@@ -938,7 +947,7 @@ export default {
         modeTips = 'Interactive_Judge_Mode_Tips';
       }
       const h = this.$createElement;
-      mMessage.box({
+      this.$msgbox({
         title: this.$i18n.t('m.' + modeName),
         message: h('div', null, [
           h(
@@ -1121,11 +1130,11 @@ export default {
         extraFiles: this.judgeExtraFile,
       };
       this.loadingCompile = true;
-      let apiMethodName = 'compileGroupSPJ';
+      let apiMethodName = 'groupCompileSpj';
       if (this.problem.judgeMode == 'interactive') {
-        apiMethodName = 'compileGroupInteractive';
+        apiMethodName = 'groupCompileInteractive';
       }
-      api[apiMethodName](data).then(
+      api[apiMethodName](data, this.$route.params.groupID).then(
         (res) => {
           this.loadingCompile = false;
           this.problem.spjCompileOk = true;
@@ -1136,7 +1145,7 @@ export default {
           this.loadingCompile = false;
           this.problem.spjCompileOk = false;
           const h = this.$createElement;
-          mMessage.box({
+          this.$msgbox({
             title: 'Compile Error',
             type: 'error',
             message: h('pre', err.data.msg),
@@ -1357,10 +1366,7 @@ export default {
       } else {
         this.problem.userExtraFile = null;
       }
-      if (
-        this.judgeExtraFile &&
-        Object.keys(this.judgeExtraFile).length != 0
-      ) {
+      if (this.judgeExtraFile && Object.keys(this.judgeExtraFile).length != 0) {
         this.problem.judgeExtraFile = JSON.stringify(this.judgeExtraFile);
       } else {
         this.problem.judgeExtraFile = null;
@@ -1387,21 +1393,22 @@ export default {
               this.contestProblem['pid'] = res.data.data.pid;
               this.contestProblem['cid'] = this.contestId;
             }
-            api.updateGroupContestProblem(this.contestProblem).then((res) => {
-            });
+            api
+              .updateGroupContestProblem(this.contestProblem)
+              .then((res) => {});
           }
           if (this.mode === 'edit') {
             mMessage.success(this.$t('m.Update_Successfully'));
-            this.$emit("handleEditPage");
+            this.$emit('handleEditPage');
           } else {
             mMessage.success(this.$t('m.Create_Successfully'));
             if (this.contestId) {
-              this.$emit("handleCreateProblemPage");
+              this.$emit('handleCreateProblemPage');
             } else {
-              this.$emit("handleCreatePage");
+              this.$emit('handleCreatePage');
             }
           }
-          this.$emit("currentChange", 1);
+          this.$emit('currentChange', 1);
         })
         .catch(() => {});
     },

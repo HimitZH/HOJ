@@ -857,7 +857,7 @@ const ojApi = {
     })
   },
 
-  groupCompileSpj(data, gid) {
+  groupCompileInteractive(data, gid) {
     return ajax("/api/group/compile-interactive", 'post', {
       data: data,
       params: { gid }
