@@ -25,7 +25,7 @@
             left join training_category tc
             on mtc.cid = tc.id
             <where>
-                t.status = true and t.is_public = true
+                t.status = true and t.is_group = false
                     <if test="categoryId != null">
                         and tc.id = #{categoryId}
                     </if>

@@ -56,7 +56,9 @@
               class="category-item"
               :effect="query.auth ? 'plain' : 'dark'"
               @click="filterByAuth(null)"
-            > {{ $t('m.All') }} </el-tag>
+            >
+              {{ $t('m.All') }}
+            </el-tag>
             <el-tag
               size="medium"
               class="category-item"
@@ -65,7 +67,9 @@
               :effect="query.auth == index ? 'dark' : 'plain'"
               :key="index"
               @click="filterByAuth(index)"
-            > {{ $t('m.Group_' + key.name) }} </el-tag>
+            >
+              {{ $t('m.Group_' + key.name) }}
+            </el-tag>
           </div>
         </section>
       </el-card>
@@ -73,23 +77,39 @@
     <el-col :span="24">
       <el-row :gutter="20">
         <el-col
-          :xxl="4" :xl="6" :lg="8" :md="8" :sm="12" :xs="24"
+          :xxl="4"
+          :xl="6"
+          :lg="8"
+          :md="8"
+          :sm="12"
+          :xs="24"
           v-if="!groupList.length"
           style="margin-top: 10px; margin-bottom: 10px"
         >
-          <el-card :body-style="{ padding: '0px' }" style="border-radius: 10px;">
+          <el-card
+            :body-style="{ padding: '0px' }"
+            style="border-radius: 10px;"
+          >
             <el-empty :description="$t('m.No_Groups')"></el-empty>
           </el-card>
         </el-col>
         <el-col
-          :xxl="4" :xl="6" :lg="8" :md="8" :sm="12" :xs="24"
+          :xxl="4"
+          :xl="6"
+          :lg="8"
+          :md="8"
+          :sm="12"
+          :xs="24"
           v-for="group in groupList"
           :key="group.id"
           style="margin-top: 10px; margin-bottom: 10px"
         >
           <el-row :gutter="1">
             <el-col :span="7" style="text-align: center;">
-              <el-card :body-style="{ padding: '0px' }" style="border-radius: 10px; height: 170px">
+              <el-card
+                :body-style="{ padding: '0px' }"
+                style="border-radius: 10px; height: 170px"
+              >
                 <el-image
                   :src="group.avatar ? group.avatar : defaultAvatar"
                   @click="toGroup(group.id)"
@@ -101,14 +121,14 @@
                   type="primary"
                   :underline="false"
                   @click="toUserHome(group.owner)"
-                ><i class="el-icon-user-solid"></i> {{ group.owner }} </el-link>
+                  ><i class="el-icon-user-solid"></i> {{ group.owner }}
+                </el-link>
               </el-card>
             </el-col>
             <el-col :span="17" :class="GROUP_TYPE_REVERSE[group.auth].name">
               <el-card
                 :body-style="{ padding: '0px' }"
                 style="border-radius: 10px; height: 170px"
-                
               >
                 <div slot="header" style="height: 24px">
                   <a class="group-name" @click="toGroup(group.id)">{{
@@ -116,12 +136,14 @@
                   }}</a>
                 </div>
                 <div style="height: 86px">
-                  <span style="font-size: 14px; padding: 10px">{{ group.brief }}</span>
+                  <span style="font-size: 14px; padding: 10px">{{
+                    group.brief
+                  }}</span>
                 </div>
                 <el-divider></el-divider>
                 <div style="font-size: 16px; padding: 3.5px">
                   <span>
-                    <i class="fa fa-users"></i>
+                    <i class="el-icon-user-solid"></i>
                     <i class="el-icon-close">{{ group.memberCount }}</i>
                     <el-tooltip
                       :content="$t('m.' + GROUP_TYPE_REVERSE[group.auth].tips)"
@@ -132,18 +154,22 @@
                         :type="GROUP_TYPE_REVERSE[group.auth].color"
                         effect="plain"
                         @click="filterByAuth(group.auth)"
-                      > {{ $t('m.Group_' + GROUP_TYPE_REVERSE[group.auth].name) }} </el-tag>
+                      >
+                        {{
+                          $t('m.Group_' + GROUP_TYPE_REVERSE[group.auth].name)
+                        }}
+                      </el-tag>
                     </el-tooltip>
-                    <el-tooltip
-                      :content="$t('m.Group_Hidden_Tips')"
-                    >
+                    <el-tooltip :content="$t('m.Group_Hidden_Tips')">
                       <el-tag
                         v-if="!group.visible"
                         class="group-auth"
                         size="medium"
                         type="primary"
                         effect="plain"
-                      > {{ $t('m.Group_Hidden') }} </el-tag>
+                      >
+                        {{ $t('m.Group_Hidden') }}
+                      </el-tag>
                     </el-tooltip>
                   </span>
                   <span style="float: right">
@@ -174,12 +200,7 @@
       :fullscreen="true"
       @open="onOpenEditDialog"
     >
-      <el-form
-        label-position="top"
-        :model="group"
-        :rules="rules"
-        ref="group"
-      >
+      <el-form label-position="top" :model="group" :rules="rules" ref="group">
         <el-row :gutter="20">
           <el-col :md="12" :xs="24">
             <el-form-item :label="$t('m.Group_Name')" required prop="name">
@@ -195,7 +216,11 @@
             </el-form-item>
           </el-col>
           <el-col :md="12" :xs="24">
-            <el-form-item :label="$t('m.Group_Short_Name')" required prop="shortName">
+            <el-form-item
+              :label="$t('m.Group_Short_Name')"
+              required
+              prop="shortName"
+            >
               <el-input
                 v-model="group.shortName"
                 :placeholder="$t('m.Group_Short_Name')"
@@ -227,19 +252,28 @@
                   :content="$t('m.Group_Public_Tips')"
                   placement="right"
                 >
-                  <el-option :label="$t('m.Group_Public')" :value="1"></el-option>
+                  <el-option
+                    :label="$t('m.Group_Public')"
+                    :value="1"
+                  ></el-option>
                 </el-tooltip>
                 <el-tooltip
                   :content="$t('m.Group_Protected_Tips')"
                   placement="right"
                 >
-                  <el-option :label="$t('m.Group_Protected')" :value="2"></el-option>
+                  <el-option
+                    :label="$t('m.Group_Protected')"
+                    :value="2"
+                  ></el-option>
                 </el-tooltip>
                 <el-tooltip
                   :content="$t('m.Group_Private_Tips')"
                   placement="right"
                 >
-                  <el-option :label="$t('m.Group_Private')" :value="3"></el-option>
+                  <el-option
+                    :label="$t('m.Group_Private')"
+                    :value="3"
+                  ></el-option>
                 </el-tooltip>
               </el-select>
             </el-form-item>
@@ -268,23 +302,25 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item :label="$t('m.Group_Description')" required prop="description">
+            <el-form-item
+              :label="$t('m.Group_Description')"
+              required
+              prop="description"
+            >
               <Editor :value.sync="group.description"></Editor>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button
-          type="danger"
-          @click.native="showEditGroupDialog = false"
-          >{{ $t('m.Cancel') }}</el-button
-        >
+        <el-button type="danger" @click.native="showEditGroupDialog = false">{{
+          $t('m.Cancel')
+        }}</el-button>
         <el-button type="primary" @click.native="submitGroup">{{
           $t('m.OK')
         }}</el-button>
       </span>
-      </el-dialog>
+    </el-dialog>
   </el-row>
 </template>
 
@@ -301,7 +337,7 @@ export default {
   components: {
     Avatar,
     Pagination,
-    Editor
+    Editor,
   },
   data() {
     return {
@@ -311,7 +347,7 @@ export default {
       query: {
         keyword: '',
         auth: 0,
-        onlyMine: false
+        onlyMine: false,
       },
       total: 0,
       group: {
@@ -435,7 +471,7 @@ export default {
       this.handleRouter();
     },
     handleOnlyMine(onlyMine) {
-      this.query.onlyMine = onlyMine
+      this.query.onlyMine = onlyMine;
       this.handleRouter();
     },
     handleAuth(auth) {
@@ -524,7 +560,7 @@ export default {
             this.init();
           });
         }
-      })
+      });
     },
   },
   computed: {
@@ -541,8 +577,8 @@ export default {
         this.backupGroup = this.group;
       }
     },
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
@@ -583,11 +619,11 @@ section {
 }
 
 /deep/ .Public .el-card {
-  border-color: rgba(103, 194, 58, 0.50);
+  border-color: rgba(103, 194, 58, 0.5);
 }
 
 /deep/ .Public .el-card__header {
-  background-color: rgba(103, 194, 58, 0.20);
+  background-color: rgba(103, 194, 58, 0.2);
 }
 
 .Public .group-name {
@@ -595,11 +631,11 @@ section {
 }
 
 /deep/ .Protected .el-card {
-  border-color: rgba(230, 162, 60, 0.50);
+  border-color: rgba(230, 162, 60, 0.5);
 }
 
 /deep/ .Protected .el-card__header {
-  background-color: rgba(230, 162, 60, 0.20);
+  background-color: rgba(230, 162, 60, 0.2);
 }
 
 .Protected .group-name {
@@ -607,15 +643,15 @@ section {
 }
 
 /deep/ .Private .el-card {
-  border-color: rgba(245, 108, 108, 0.50);
+  border-color: rgba(245, 108, 108, 0.5);
 }
 
 /deep/ .Private .el-card__header {
-  background-color: rgba(245, 108, 108, 0.20);
+  background-color: rgba(245, 108, 108, 0.2);
 }
 
 .Private .group-name {
-  color: rgb(245,108,108);
+  color: rgb(245, 108, 108);
 }
 
 .group-auth {

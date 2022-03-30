@@ -52,8 +52,11 @@
         >
 
         <el-menu-item index="/group"
-          ><i class="el-icon-s-custom"></i
-          >{{ $t('m.NavBar_Group') }}</el-menu-item
+          ><i
+            class="fa fa-users"
+            style="margin-right: 5px;width: 24px;text-align: center;"
+          ></i
+          >{{ $t('m.NavBar_Group') }}(beta)</el-menu-item
         >
 
         <el-submenu index="about">
@@ -478,11 +481,11 @@
             active-class="mobile-menu-active"
           >
             <mu-list-item-action>
-              <mu-icon value=":fa fa-group" size="24"></mu-icon>
+              <mu-icon value=":fa fa-users" size="24"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>{{
-              $t('m.NavBar_Group')
-            }}</mu-list-item-title>
+            <mu-list-item-title
+              >{{ $t('m.NavBar_Group') }}(beta)</mu-list-item-title
+            >
           </mu-list-item>
 
           <mu-list-item
