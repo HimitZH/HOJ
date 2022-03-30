@@ -119,7 +119,7 @@
                 v-if="contestID || groupID"
                 @click="getProblemUri(row.displayPid)"
                 style="color: rgb(87, 163, 243)"
-                >{{ row.displayPid + ' ' + row.title }}>
+                >{{ row.displayPid + ' ' + row.title }}
               </span>
               <span
                 v-else
