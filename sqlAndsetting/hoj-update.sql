@@ -653,3 +653,105 @@ CALL contest_Add_oi_rank_score_type ;
 DROP PROCEDURE contest_Add_oi_rank_score_type;
 
 
+/*
+* 2022.03.28 增加团队模块
+			 
+*/
+DROP PROCEDURE
+IF EXISTS add_group;
+DELIMITER $$
+ 
+CREATE PROCEDURE add_group ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'group'
+) THEN
+	CREATE TABLE `group` (
+	  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+	  `avatar` varchar(255) DEFAULT NULL COMMENT '头像地址',
+	  `name` varchar(25) DEFAULT NULL COMMENT '团队名称',
+	  `short_name` varchar(10) DEFAULT NULL COMMENT '团队简称，创建题目时题号自动添加的前缀',
+	  `brief` varchar(50) COMMENT '团队简介',
+	  `description` longtext COMMENT '团队介绍',
+	  `owner` varchar(255) NOT NULL COMMENT '团队拥有者用户名',
+	  `uid` varchar(32) NOT NULL COMMENT '团队拥有者用户id',
+	  `auth` int(11) NOT NULL COMMENT '0为Public，1为Protected，2为Private',
+	  `visible` tinyint(1) DEFAULT '1' COMMENT '是否可见',
+	  `status` tinyint(1) DEFAULT '0' COMMENT '是否封禁',
+	  `code` varchar(6) DEFAULT NULL COMMENT '邀请码',
+	  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+	  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`id`),
+	  UNIQUE KEY `NAME_UNIQUE` (`name`),
+	  UNIQUE KEY `short_name` (`short_name`),
+	  CONSTRAINT `group_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
+	) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
+
+	CREATE TABLE `group_member` (
+	  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+	  `gid` bigint unsigned NOT NULL COMMENT '团队id',
+	  `uid` varchar(32) NOT NULL COMMENT '用户id',
+	  `auth` int(11) DEFAULT '1' COMMENT '1未审批，2拒绝，3普通成员，4团队管理员，5团队拥有者',
+	  `reason` varchar(100) DEFAULT NULL COMMENT '申请理由',
+	  `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
+	  `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+	  PRIMARY KEY (`id`),
+	  UNIQUE KEY `gid_uid_unique` (`gid`, `uid`),
+	  KEY `gid` (`gid`),
+	  KEY `uid` (`uid`),
+	  CONSTRAINT `group_member_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+	  CONSTRAINT `group_member_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	
+	ALTER TABLE `hoj`.`announcement`  ADD COLUMN `gid` bigint(20) unsigned DEFAULT NULL;
+	ALTER TABLE `hoj`.`announcement` ADD CONSTRAINT `announcement_ibfk_2` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+	
+
+	ALTER TABLE `hoj`.`contest`  ADD COLUMN `is_group` tinyint(1) DEFAULT '0';
+	ALTER TABLE `hoj`.`contest`  ADD COLUMN `gid` bigint(20) unsigned DEFAULT NULL;
+	ALTER TABLE `hoj`.`contest` ADD CONSTRAINT `contest_ibfk_2` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+	
+	ALTER TABLE `hoj`.`judge`  ADD COLUMN `gid` bigint(20) unsigned DEFAULT NULL;
+	ALTER TABLE `hoj`.`judge` ADD CONSTRAINT `judge_ibfk_4` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+	
+	
+	ALTER TABLE `hoj`.`discussion`  ADD COLUMN `gid` bigint(20) unsigned DEFAULT NULL;
+	ALTER TABLE `hoj`.`discussion` ADD CONSTRAINT `discussion_ibfk_3` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+	
+	ALTER TABLE `hoj`.`file`  ADD COLUMN `gid` bigint(20) unsigned DEFAULT NULL;
+	ALTER TABLE `hoj`.`file` ADD  CONSTRAINT `file_ibfk_2` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+	
+	ALTER TABLE `hoj`.`problem`  ADD COLUMN `is_group` tinyint(1) DEFAULT '0';
+	ALTER TABLE `hoj`.`problem`  ADD COLUMN `gid` bigint(20) unsigned DEFAULT NULL;
+	ALTER TABLE `hoj`.`problem` ADD CONSTRAINT `problem_ibfk_2` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+	ALTER TABLE `hoj`.`tag`  ADD COLUMN `gid` bigint(20) unsigned DEFAULT NULL;
+	ALTER TABLE `hoj`.`tag` ADD CONSTRAINT `tag_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+	
+
+	ALTER TABLE `hoj`.`training`  ADD COLUMN `is_group` tinyint(1) DEFAULT '0';
+	ALTER TABLE `hoj`.`training`  ADD COLUMN `gid` bigint(20) unsigned DEFAULT NULL;
+	ALTER TABLE `hoj`.`training` ADD CONSTRAINT `training_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+	
+	ALTER TABLE `hoj`.`training_category`  ADD COLUMN `gid` bigint(20) unsigned DEFAULT NULL;
+	ALTER TABLE `hoj`.`training_category` ADD CONSTRAINT `training_category_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+	
+	insert  into `auth`(`id`,`name`,`permission`,`status`,`gmt_create`,`gmt_modified`) values (13,'group','group_add',0,'2022-03-11 13:36:55','2022-03-11 13:36:55');
+	
+	insert  into `role_auth`(`id`,`auth_id`,`role_id`,`gmt_create`,`gmt_modified`) values (54,13,1000,'2021-06-12 23:16:58','2021-06-12 23:16:58'),(55,13,1001,'2021-06-12 23:16:58','2021-06-12 23:16:58'),
+	(56,13,1002,'2021-06-12 23:16:58','2021-06-12 23:16:58'),(57,13,1008,'2021-06-12 23:16:58','2021-06-12 23:16:58');
+	
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL add_group ;
+
+DROP PROCEDURE add_group;
+
