@@ -2,86 +2,124 @@
   <el-card>
     <div class="filter-row">
       <el-row>
-        <el-col :span="3">
+        <el-col :md="3" :xs="5">
           <span class="title">{{ $t('m.Group_Contest') }}</span>
         </el-col>
-        <el-col :span="18" v-if="(isSuperAdmin || isGroupAdmin) && !problemPage && !editProblemPage && !announcementPage">
+        <el-col
+          :md="18"
+          :xs="19"
+          v-if="
+            (isSuperAdmin || isGroupAdmin) &&
+              !problemPage &&
+              !editProblemPage &&
+              !announcementPage
+          "
+        >
           <el-button
             v-if="!editPage"
             :type="createPage ? 'danger' : 'primary'"
             size="small"
             @click="handleCreatePage"
             :icon="createPage ? 'el-icon-back' : 'el-icon-plus'"
-          >{{ createPage ? $t('m.Back') : $t('m.Create') }}</el-button>
+            >{{ createPage ? $t('m.Back') : $t('m.Create') }}</el-button
+          >
           <el-button
             v-if="editPage && adminPage"
             type="danger"
             size="small"
             @click="handleEditPage"
             icon="el-icon-back"
-          >{{ $t('m.Back') }}</el-button>`
+            >{{ $t('m.Back') }}</el-button
+          >`
           <el-button
             :type="adminPage ? 'warning' : 'success'"
             size="small"
             @click="handleAdminPage"
             :icon="adminPage ? 'el-icon-back' : 'el-icon-s-opportunity'"
-          >{{ adminPage ? $t('m.Back') : $t('m.Contest_Admin') }}</el-button>
+            >{{ adminPage ? $t('m.Back') : $t('m.Contest_Admin') }}</el-button
+          >
         </el-col>
-        <el-col :span="18" v-else-if="(isSuperAdmin || isGroupAdmin) && problemPage && !editProblemPage && !createProblemPage && !announcementPage" >
+        <el-col
+          :span="18"
+          v-else-if="
+            (isSuperAdmin || isGroupAdmin) &&
+              problemPage &&
+              !editProblemPage &&
+              !createProblemPage &&
+              !announcementPage
+          "
+        >
           <el-button
             type="primary"
             size="small"
             @click="handleCreateProblemPage"
             icon="el-icon-plus"
-          >{{ $t('m.Create') }}</el-button>
+            >{{ $t('m.Create') }}</el-button
+          >
           <el-button
             type="primary"
             size="small"
             @click="publicPage = true"
             icon="el-icon-plus"
-          >{{ $t('m.Add_From_Public_Problem') }}</el-button>
+            >{{ $t('m.Add_From_Public_Problem') }}</el-button
+          >
           <el-button
             type="success"
             size="small"
             @click="handleGroupPage"
             icon="el-icon-plus"
-          >{{ $t('m.Add_From_Group_Problem') }}</el-button>
+            >{{ $t('m.Add_From_Group_Problem') }}</el-button
+          >
           <el-button
             type="warning"
             size="small"
             @click="handleProblemPage(null)"
             icon="el-icon-back"
-          >{{ $t('m.Back') }}</el-button>
+            >{{ $t('m.Back') }}</el-button
+          >
         </el-col>
-        <el-col :span="18" v-else-if="(isSuperAdmin || isGroupAdmin) && (editProblemPage || createProblemPage)">
+        <el-col
+          :span="18"
+          v-else-if="
+            (isSuperAdmin || isGroupAdmin) &&
+              (editProblemPage || createProblemPage)
+          "
+        >
           <el-button
             v-if="editProblemPage"
             type="danger"
             size="small"
             @click="handleEditProblemPage"
             icon="el-icon-back"
-          >{{ $t('m.Back') }}</el-button>`
+            >{{ $t('m.Back') }}</el-button
+          >`
           <el-button
             v-if="createProblemPage"
             type="danger"
             size="small"
             @click="handleCreateProblemPage"
             icon="el-icon-back"
-          >{{ $t('m.Back') }}</el-button>`
+            >{{ $t('m.Back') }}</el-button
+          >`
         </el-col>
-        <el-col :span="18" v-else-if="(isSuperAdmin || isGroupAdmin) && announcementPage">
+        <el-col
+          :span="18"
+          v-else-if="(isSuperAdmin || isGroupAdmin) && announcementPage"
+        >
           <el-button
             type="primary"
             size="small"
             @click="handleCreateAnnouncementPage"
             icon="el-icon-plus"
-          >{{ $t('m.Create') }}</el-button>
+            >{{ $t('m.Create') }}</el-button
+          >
           <el-button
             type="warning"
             size="small"
             @click="handleAnnouncementPage"
             icon="el-icon-back"
-          >{{ $t('m.Back') }}</el-button>
+            >{{ $t('m.Back') }}</el-button
+          >
         </el-col>
       </el-row>
     </div>
@@ -110,30 +148,16 @@
                 width="95px"
               />
             </el-col>
-            <el-col
-              :xs="10"
-              :sm="16"
-              :md="19"
-              :lg="20"
-              class="contest-main"
-            >
+            <el-col :xs="10" :sm="16" :md="19" :lg="20" class="contest-main">
               <p class="contest-title">
                 <a class="entry" @click.stop="goGroupContest(contest.id)">
                   {{ contest.title }}
                 </a>
                 <template v-if="contest.auth == 1">
-                  <i
-                    class="el-icon-lock"
-                    size="20"
-                    style="color:#d9534f"
-                  ></i>
+                  <i class="el-icon-lock" size="20" style="color:#d9534f"></i>
                 </template>
                 <template v-if="contest.auth == 2">
-                  <i
-                    class="el-icon-lock"
-                    size="20"
-                    style="color:#f0ad4e"
-                  ></i>
+                  <i class="el-icon-lock" size="20" style="color:#f0ad4e"></i>
                 </template>
               </p>
               <ul class="detail">
@@ -203,9 +227,7 @@
                       effect="plain"
                     >
                       {{
-                        $t(
-                          'm.' + CONTEST_TYPE_REVERSE[contest.auth]['name']
-                        )
+                        $t('m.' + CONTEST_TYPE_REVERSE[contest.auth]['name'])
                       }}
                     </el-tag>
                   </el-tooltip>
@@ -237,22 +259,14 @@
                 </li>
               </ul>
             </el-col>
-            <el-col
-              :xs="4"
-              :sm="4"
-              :md="2"
-              :lg="2"
-              style="text-align: center"
-            >
+            <el-col :xs="4" :sm="4" :md="2" :lg="2" style="text-align: center">
               <el-tag
                 effect="dark"
                 :color="CONTEST_STATUS_REVERSE[contest.status]['color']"
                 size="medium"
               >
                 <i class="fa fa-circle" aria-hidden="true"></i>
-                {{
-                  $t('m.' + CONTEST_STATUS_REVERSE[contest.status]['name'])
-                }}
+                {{ $t('m.' + CONTEST_STATUS_REVERSE[contest.status]['name']) }}
               </el-tag>
             </el-col>
           </el-row>
@@ -338,13 +352,13 @@
 <script>
 import { mapGetters } from 'vuex';
 import Pagination from '@/components/oj/common/Pagination';
-import ContestList from '@/components/oj/group/ContestList'
-import Contest from '@/components/oj/group/Contest'
-import Problem from '@/components/oj/group/Problem'
-import ProblemList from '@/components/oj/group/ProblemList'
+import ContestList from '@/components/oj/group/ContestList';
+import Contest from '@/components/oj/group/Contest';
+import Problem from '@/components/oj/group/Problem';
+import ProblemList from '@/components/oj/group/ProblemList';
 import AddPublicProblem from '@/components/oj/group/AddPublicProblem.vue';
 import AddGroupProblem from '@/components/oj/group/AddGroupProblem.vue';
-import AnnouncementList from '@/components/oj/group/AnnouncementList'
+import AnnouncementList from '@/components/oj/group/AnnouncementList';
 import api from '@/common/api';
 import mMessage from '@/common/message';
 import time from '@/common/time';
@@ -364,7 +378,7 @@ export default {
     ProblemList,
     AddPublicProblem,
     AddGroupProblem,
-    AnnouncementList
+    AnnouncementList,
   },
   data() {
     return {
@@ -411,16 +425,22 @@ export default {
     },
     getGroupContestList() {
       this.loading = true;
-      api.getGroupContestList(this.currentPage, this.limit, this.$route.params.groupID).then(
-        (res) => {
-          this.contestList = res.data.data.records;
-          this.total = res.data.data.total;
-          this.loading = false;
-        },
-        (err) => {
-          this.loading = false;
-        }
-      );
+      api
+        .getGroupContestList(
+          this.currentPage,
+          this.limit,
+          this.$route.params.groupID
+        )
+        .then(
+          (res) => {
+            this.contestList = res.data.data.records;
+            this.total = res.data.data.total;
+            this.loading = false;
+          },
+          (err) => {
+            this.loading = false;
+          }
+        );
     },
     goGroupContest(contestId) {
       this.$router.push({
@@ -486,7 +506,6 @@ export default {
     handleCreateAnnouncementPage() {
       this.$refs.contestAnnouncementList.openAnnouncementDialog(null);
     },
-    
   },
   computed: {
     ...mapGetters(['isAuthenticated', 'isSuperAdmin', 'isGroupAdmin']),
