@@ -116,16 +116,16 @@
           >
             <template v-slot="{ row }">
               <span
-                v-if="contestID || groupID"
-                @click="getProblemUri(row.displayPid)"
-                style="color: rgb(87, 163, 243)"
-                >{{ row.displayPid + ' ' + row.title }}
-              </span>
-              <span
-                v-else
+                v-if="contestID"
                 @click="getProblemUri(row.displayId)"
                 style="color: rgb(87, 163, 243)"
                 >{{ row.displayId + ' ' + row.title }}
+              </span>
+              <span
+                v-else
+                @click="getProblemUri(row.displayPid)"
+                style="color: rgb(87, 163, 243)"
+                >{{ row.displayPid + ' ' + row.title }}
               </span>
             </template>
           </vxe-table-column>
