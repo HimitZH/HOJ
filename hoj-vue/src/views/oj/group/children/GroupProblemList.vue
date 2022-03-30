@@ -256,18 +256,25 @@ export default {
                 for (let index = 0; index < this.problemList.length; index++) {
                   pidList.push(this.problemList[index].pid);
                 }
-                api.getUserProblemStatus(pidList, false).then((res) => {
-                  let result = res.data.data;
-                  for (
-                    let index = 0;
-                    index < this.problemList.length;
-                    index++
-                  ) {
-                    this.problemList[index]['myStatus'] =
-                      result[this.problemList[index].pid]['status'];
-                  }
-                  this.isGetStatusOk = true;
-                });
+                api
+                  .getUserProblemStatus(
+                    pidList,
+                    false,
+                    null,
+                    this.$route.params.groupID
+                  )
+                  .then((res) => {
+                    let result = res.data.data;
+                    for (
+                      let index = 0;
+                      index < this.problemList.length;
+                      index++
+                    ) {
+                      this.problemList[index]['myStatus'] =
+                        result[this.problemList[index].pid]['status'];
+                    }
+                    this.isGetStatusOk = true;
+                  });
               }
             }
           },
@@ -278,7 +285,7 @@ export default {
     },
     goGroupProblem(event) {
       this.$router.push({
-        name: 'ProblemDetails',
+        name: 'GroupProblemDetails',
         params: {
           problemID: event.row.problemId,
         },

@@ -129,7 +129,11 @@ public class ProblemManager {
         } else {
             queryWrapper.eq("cid", 0);
         }
-
+        if (pidListDto.getGid() != null) {
+            queryWrapper.eq("gid", pidListDto.getGid());
+        } else {
+            queryWrapper.isNull("gid");
+        }
         List<Judge> judges = judgeEntityService.list(queryWrapper);
 
         boolean isACMContest = true;
@@ -212,7 +216,7 @@ public class ProblemManager {
      * @Description 获取指定题目的详情信息，标签，所支持语言，做题情况（只能查询公开题目 也就是auth为1）
      * @Since 2020/10/27
      */
-    public ProblemInfoVo getProblemInfo(String problemId) throws StatusNotFoundException, StatusForbiddenException {
+    public ProblemInfoVo getProblemInfo(String problemId, Long gid) throws StatusNotFoundException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
@@ -259,7 +263,7 @@ public class ProblemManager {
         });
 
         // 获取题目的提交记录
-        ProblemCountVo problemCount = judgeEntityService.getProblemCount(problem.getId());
+        ProblemCountVo problemCount = judgeEntityService.getProblemCount(problem.getId(), gid);
 
         // 获取题目的代码模板
         QueryWrapper<CodeTemplate> codeTemplateQueryWrapper = new QueryWrapper<>();

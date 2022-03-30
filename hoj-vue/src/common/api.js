@@ -215,12 +215,13 @@ const ojApi = {
   },
 
   // 查询当前登录用户对题目的提交状态
-  getUserProblemStatus(pidList,isContestProblemList,cid){
+  getUserProblemStatus(pidList,isContestProblemList,cid,gid){
     return ajax("/api/get-user-problem-status",'post',{
       data:{
         pidList,
         isContestProblemList,
-        cid
+        cid,
+        gid
       }
     })
   },
@@ -230,10 +231,11 @@ const ojApi = {
   },
 
   // Problem详情页的相关请求
-  getProblem(problemId){
+  getProblem(problemId,cid,gid){
     return ajax('/api/get-problem-detail','get',{
       params:{
-        problemId
+        problemId,
+        gid
       }
     })
   },
@@ -734,9 +736,9 @@ const ojApi = {
     })
   },
 
-  addGroupMember(uid, gid, code, reason) {
+  addGroupMember(gid, code, reason) {
     return ajax("/api/group/member", 'post', {
-      params: { uid, gid, code, reason }
+      params: {  gid, code, reason }
     })
   },
 
@@ -746,9 +748,16 @@ const ojApi = {
     })
   },
 
+
   deleteGroupMember(uid, gid) {
     return ajax("/api/group/member", 'delete', {
       params: { uid, gid }
+    })
+  },
+
+  exitGroup(gid) {
+    return ajax("/api/group/member/exit", 'delete', {
+      params: { gid }
     })
   },
 

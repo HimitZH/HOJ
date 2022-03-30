@@ -561,8 +561,12 @@ export const m = {
   Apply_Group: '申请加入',
   Apply_Successfully: '申请成功',
   Exit_Group: '退出团队',
-  Exit_Group_Tips: '确定要退出团队吗？退出后您将无法再查看团队资源！另外，如果你是团队负责人，那么团队也将被一同解散！',
+  Exit_Group_Tips: '确定要退出团队吗？退出后您将无法再查看团队资源！',
   Exit_Successfully: '退出成功',
+  Disband_Group:'解散团队',
+  Disband_Group_Tips:'您是否确定要解散该团队？',
+  Disband_Successfully:'解散成功',
+  
   Group_Number: '团队编号',
   Group_Home: '主页 ',
   Group_Problem: '题目',

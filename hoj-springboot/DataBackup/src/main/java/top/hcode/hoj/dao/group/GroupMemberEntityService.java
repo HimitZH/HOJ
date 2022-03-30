@@ -22,6 +22,8 @@ public interface GroupMemberEntityService extends IService<GroupMember> {
 
     void addApplyNoticeToGroupRoot(Long gid, String groupName, String newMemberUid);
 
+    void addWelcomeNoticeToGroupNewMember(Long gid, String groupName,String memberUid);
+
     void addRemoveNoticeToGroupMember(Long gid, String groupName, String operator, String memberUid);
 
     void addDissolutionNoticeToGroupMember(Long gid, String groupName, List<String> groupMemberUidList, String operator);

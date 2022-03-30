@@ -14,6 +14,7 @@ import top.hcode.hoj.pojo.entity.judge.JudgeCase;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.SubmissionInfoVo;
 import top.hcode.hoj.service.oj.JudgeService;
+
 import java.util.*;
 
 /**
@@ -56,9 +57,10 @@ public class JudgeController {
                                                      @RequestParam(value = "problemID", required = false) String searchPid,
                                                      @RequestParam(value = "status", required = false) Integer searchStatus,
                                                      @RequestParam(value = "username", required = false) String searchUsername,
-                                                     @RequestParam(value = "completeProblemID", defaultValue = "false") Boolean completeProblemID) {
+                                                     @RequestParam(value = "completeProblemID", defaultValue = "false") Boolean completeProblemID,
+                                                     @RequestParam(value = "gid", required = false) Long gid) {
 
-        return judgeService.getJudgeList(limit, currentPage, onlyMine, searchPid, searchStatus, searchUsername, completeProblemID);
+        return judgeService.getJudgeList(limit, currentPage, onlyMine, searchPid, searchStatus, searchUsername, completeProblemID, gid);
     }
 
     /**
@@ -116,8 +118,8 @@ public class JudgeController {
     }
 
     /**
-     * @MethodName checkContestJudgeResult
      * @param submitIdListDto
+     * @MethodName checkContestJudgeResult
      * @Description 需要检查是否为封榜，是否可以查询结果，避免有人恶意查询
      * @Return
      * @Since 2021/6/11
@@ -130,8 +132,8 @@ public class JudgeController {
 
 
     /**
-     * @MethodName getJudgeCase
      * @param submitId
+     * @MethodName getJudgeCase
      * @Description 获得指定提交id的测试样例结果，暂不支持查看测试数据，只可看测试点结果，时间，空间，或者IO得分
      * @Return
      * @Since 2020/10/29

@@ -47,17 +47,28 @@ public class JudgeEntityServiceImpl extends ServiceImpl<JudgeMapper, Judge> impl
                                              Integer status,
                                              String username,
                                              String uid,
-                                             Boolean completeProblemID) {
+                                             Boolean completeProblemID,
+                                             Long gid) {
         //新建分页
         Page<JudgeVo> page = new Page<>(currentPage, limit);
 
-        return judgeMapper.getCommonJudgeList(page, searchPid, status, username, uid, completeProblemID);
+        return judgeMapper.getCommonJudgeList(page, searchPid, status, username, uid, completeProblemID, gid);
     }
 
     @Override
-    public IPage<JudgeVo> getContestJudgeList(Integer limit, Integer currentPage, String displayId, Long cid, Integer status,
-                                              String username, String uid, Boolean beforeContestSubmit, String rule,
-                                              Date startTime, Date sealRankTime, String sealTimeUid, Boolean completeProblemID) {
+    public IPage<JudgeVo> getContestJudgeList(Integer limit,
+                                              Integer currentPage,
+                                              String displayId,
+                                              Long cid,
+                                              Integer status,
+                                              String username,
+                                              String uid,
+                                              Boolean beforeContestSubmit,
+                                              String rule,
+                                              Date startTime,
+                                              Date sealRankTime,
+                                              String sealTimeUid,
+                                              Boolean completeProblemID) {
         //新建分页
         Page<JudgeVo> page = new Page<>(currentPage, limit);
 
@@ -89,17 +100,17 @@ public class JudgeEntityServiceImpl extends ServiceImpl<JudgeMapper, Judge> impl
     }
 
     @Override
-    public ProblemCountVo getProblemCount(Long pid) {
-        return judgeMapper.getProblemCount(pid);
+    public ProblemCountVo getProblemCount(Long pid, Long gid) {
+        return judgeMapper.getProblemCount(pid, gid);
     }
 
     @Override
-    public int getTodayJudgeNum(){
+    public int getTodayJudgeNum() {
         return judgeMapper.getTodayJudgeNum();
     }
 
     @Override
-    public List<ProblemCountVo> getProblemListCount(List<Long> pidList){
+    public List<ProblemCountVo> getProblemListCount(List<Long> pidList) {
         return judgeMapper.getProblemListCount(pidList);
     }
 

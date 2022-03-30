@@ -194,7 +194,7 @@ public class Constants {
     public enum File {
 
 
-        USER_AVATAR_FOLDER("/hoj/file/avatar/user"),
+        USER_AVATAR_FOLDER("/hoj/file/avatar"),
 
         GROUP_AVATAR_FOLDER("/hoj/file/avatar/group"),
 

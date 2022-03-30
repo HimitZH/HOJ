@@ -16,9 +16,11 @@ public interface GroupMemberService {
 
     public CommonResult<IPage<GroupMemberVo>> getApplyList(Integer limit, Integer currentPage, String keyword, Integer auth, Long gid);
 
-    public CommonResult<Void> addMember(String uid, Long gid, String code, String reason);
+    public CommonResult<Void> addMember(Long gid, String code, String reason);
 
     public CommonResult<Void> updateMember(GroupMember groupMember);
 
     public CommonResult<Void> deleteMember(String uid, Long gid);
+
+    public CommonResult<Void> exitGroup(Long gid);
 }

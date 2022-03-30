@@ -53,9 +53,9 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public CommonResult<ProblemInfoVo> getProblemInfo(String problemId) {
+    public CommonResult<ProblemInfoVo> getProblemInfo(String problemId, Long gid) {
         try {
-            return CommonResult.successResponse(problemManager.getProblemInfo(problemId));
+            return CommonResult.successResponse(problemManager.getProblemInfo(problemId, gid));
         } catch (StatusNotFoundException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.NOT_FOUND);
         } catch (StatusForbiddenException e) {

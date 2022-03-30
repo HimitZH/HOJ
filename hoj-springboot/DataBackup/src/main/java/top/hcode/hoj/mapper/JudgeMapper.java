@@ -30,7 +30,8 @@ public interface JudgeMapper extends BaseMapper<Judge> {
                                       @Param("status") Integer status,
                                       @Param("username") String username,
                                       @Param("uid") String uid,
-                                      @Param("completeProblemID") Boolean completeProblemID);
+                                      @Param("completeProblemID") Boolean completeProblemID,
+                                      @Param("gid") Long gid);
 
     IPage<JudgeVo> getContestJudgeList(Page<JudgeVo> page,
                                        @Param("displayId") String displayId,
@@ -43,7 +44,7 @@ public interface JudgeMapper extends BaseMapper<Judge> {
                                        @Param("startTime") Date startTime,
                                        @Param("sealRankTime") Date sealRankTime,
                                        @Param("sealTimeUid") String sealTimeUid,
-                                       @Param("completeProblemID")Boolean completeProblemID);
+                                       @Param("completeProblemID") Boolean completeProblemID);
 
     int getTodayJudgeNum();
 
@@ -54,7 +55,7 @@ public interface JudgeMapper extends BaseMapper<Judge> {
                                           @Param("sealRankTime") Date sealRankTime,
                                           @Param("adminList") List<String> adminList);
 
-    ProblemCountVo getProblemCount(@Param("pid") Long pid);
+    ProblemCountVo getProblemCount(@Param("pid") Long pid, @Param("gid") Long gid);
 
     List<ProblemCountVo> getProblemListCount(@Param("pidList") List<Long> pidList);
 }
