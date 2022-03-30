@@ -373,6 +373,8 @@ export default {
       this.route_name = 'GroupProblemList';
     } else if (this.route_name == 'GroupSubmissionDeatil') {
       this.route_name = 'GroupSubmissionList';
+    } else if (this.route_name == 'GroupDiscussionDetails') {
+      this.route_name = 'GroupDiscussionList';
     }
     this.GROUP_TYPE = Object.assign({}, GROUP_TYPE);
     this.GROUP_TYPE_REVERSE = Object.assign({}, GROUP_TYPE_REVERSE);
@@ -429,7 +431,7 @@ export default {
         .then(() => {
           this.loading = true;
           api
-            .deleteGroupMember(this.userInfo.uid, this.$route.params.groupID)
+            .exitGroup(this.userInfo.uid, this.$route.params.groupID)
             .then((res) => {
               this.loading = false;
               mMessage.success(this.$i18n.t('m.Exit_Successfully'));
@@ -519,6 +521,8 @@ export default {
         this.route_name = 'GroupContestList';
       } else if (newVal.name == 'GroupSubmissionDeatil') {
         this.route_name = 'GroupSubmissionList';
+      } else if (newVal.name == 'GroupDiscussionDetails') {
+        this.route_name = 'GroupDiscussionList';
       } else {
         this.route_name = newVal.name;
       }

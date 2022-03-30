@@ -378,9 +378,10 @@ export default {
     },
     goGroupDiscussion(discussionId) {
       this.$router.push({
-        name: 'DiscussionDetails',
+        name: 'GroupDiscussionDetails',
         params: {
           discussionID: discussionId,
+          groupID: this.$route.params.groupID,
         },
       });
     },

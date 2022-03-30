@@ -254,8 +254,8 @@ const ojRoutes = [
   },
   {
     path: '/discussion-detail/:discussionID',
-    name:'DiscussionDetail',
-    meta: {title: 'Discussion Detail'},
+    name:'DiscussionDetails',
+    meta: {title: 'Discussion Details'},
     component: Discussion
   },
   {
@@ -317,6 +317,12 @@ const ojRoutes = [
         name: 'GroupDiscussionList',
         component: GroupDiscussionList,
         meta: { title: 'Group Discussion' }
+      },
+      {
+        path: 'discussion-detail/:discussionID',
+        name:'GroupDiscussionDetails',
+        meta: {title: 'Group Discussion Details'},
+        component: Discussion
       },
       {
         path: 'member',

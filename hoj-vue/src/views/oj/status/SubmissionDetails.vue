@@ -330,6 +330,14 @@ export default {
             problemID: row.displayPid,
           },
         });
+      } else if (row.gid) {
+        this.$router.push({
+          name: 'GroupProblemDetails',
+          params: {
+            problemID: row.displayPid,
+            groupID: row.gid,
+          },
+        });
       } else {
         this.$router.push({
           name: 'ProblemDetails',

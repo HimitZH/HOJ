@@ -286,7 +286,7 @@ public class GroupManager {
         groupMemberQueryWrapper.eq("gid", gid).in("auth", 3, 4, 5);
         List<GroupMember> groupMemberList = groupMemberEntityService.list(groupMemberQueryWrapper);
         List<String> groupMemberUidList = groupMemberList.stream()
-                .map(groupMember -> group.getUid())
+                .map(GroupMember::getUid)
                 .collect(Collectors.toList());
 
         boolean isOk = groupEntityService.removeById(gid);

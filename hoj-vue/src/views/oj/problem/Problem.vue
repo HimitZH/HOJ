@@ -1134,9 +1134,6 @@ export default {
       });
     },
 
-    handleRoute(route) {
-      this.$router.push(route);
-    },
     onChangeLang(newLang) {
       if (this.code == this.problemData.codeTemplate[this.language]) {
         //原语言模板未变化，只改变语言
@@ -1409,6 +1406,11 @@ export default {
             problemID: this.problemID,
             submitID: this.submissionId,
           },
+        });
+      } else if (this.groupID) {
+        this.$router.push({
+          name: 'GroupSubmissionDeatil',
+          params: { submitID: this.submissionId, gid: this.groupID },
         });
       } else {
         this.$router.push({
