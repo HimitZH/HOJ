@@ -154,7 +154,7 @@ CREATE TABLE `contest` (
   `open_rank` tinyint(1) DEFAULT '0' COMMENT '是否开放比赛榜单',
   `star_account` mediumtext COMMENT '打星用户列表',
   `oi_rank_score_type` varchar(255) DEFAULT 'Recent' COMMENT 'oi排行榜得分方式，Recent、Highest',
-  `is_public` tinyint(1) DEFAULT '1',
+  `is_group` tinyint(1) DEFAULT '0',
   `gid` bigint(20) unsigned DEFAULT NULL,
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -424,6 +424,7 @@ CREATE TABLE `judge` (
   `length` int(11) DEFAULT NULL COMMENT '代码长度',
   `code` longtext NOT NULL COMMENT '代码',
   `language` varchar(255) DEFAULT NULL COMMENT '代码语言',
+  `gid` bigint(20) unsigned DEFAULT NULL COMMENT '团队id，不为团队内提交则为null',
   `cid` bigint(20) unsigned NOT NULL DEFAULT '0' COMMENT '比赛id，非比赛题目默认为0',
   `cpid` bigint(20) unsigned DEFAULT '0' COMMENT '比赛中题目排序id，非比赛题目默认为0',
   `judger` varchar(20) DEFAULT NULL COMMENT '判题机ip',
@@ -441,7 +442,8 @@ CREATE TABLE `judge` (
   KEY `username` (`username`),
   CONSTRAINT `judge_ibfk_1` FOREIGN KEY (`pid`) REFERENCES `problem` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `judge_ibfk_2` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `judge_ibfk_3` FOREIGN KEY (`username`) REFERENCES `user_info` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `judge_ibfk_3` FOREIGN KEY (`username`) REFERENCES `user_info` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `judge_ibfk_4` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `judge_case` */
@@ -549,7 +551,7 @@ CREATE TABLE `problem` (
   `is_upload_case` tinyint(1) DEFAULT '1' COMMENT '题目测试数据是否是上传文件的',
   `case_version` varchar(40) DEFAULT '0' COMMENT '题目测试数据的版本号',
   `modified_user` varchar(255) DEFAULT NULL COMMENT '修改题目的管理员用户名',
-  `is_public` tinyint(1) DEFAULT '1',
+  `is_group` tinyint(1) DEFAULT '0',
   `gid` bigint(20) unsigned DEFAULT NULL,
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP,
@@ -880,7 +882,7 @@ CREATE TABLE `training` (
   `private_pwd` varchar(255) DEFAULT NULL COMMENT '训练题单权限为Private时的密码',
   `rank` int DEFAULT '0' COMMENT '编号，升序',
   `status` tinyint(1) DEFAULT '1' COMMENT '是否可用',
-  `is_public` tinyint(1) DEFAULT '1',
+  `is_group` tinyint(1) DEFAULT '0',
   `gid` bigint(20) unsigned DEFAULT NULL,
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -996,6 +998,7 @@ CREATE TABLE `group` (
   `brief` varchar(50) COMMENT '团队简介',
   `description` longtext COMMENT '团队介绍',
   `owner` varchar(255) NOT NULL COMMENT '团队拥有者用户名',
+  `uid` varchar(32) NOT NULL COMMENT '团队拥有者用户id',
   `auth` int(11) NOT NULL COMMENT '0为Public，1为Protected，2为Private',
   `visible` tinyint(1) DEFAULT '1' COMMENT '是否可见',
   `status` tinyint(1) DEFAULT '0' COMMENT '是否封禁',
@@ -1004,7 +1007,8 @@ CREATE TABLE `group` (
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `NAME_UNIQUE` (`name`),
-  UNIQUE KEY `short_name` (`short_name`)
+  UNIQUE KEY `short_name` (`short_name`),
+  CONSTRAINT `group_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `group_member` */
