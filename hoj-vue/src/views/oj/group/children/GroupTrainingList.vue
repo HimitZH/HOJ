@@ -2,58 +2,79 @@
   <el-card>
     <div class="filter-row">
       <el-row>
-        <el-col :span="3">
+        <el-col :md="3" :xs="5">
           <span class="title">{{ $t('m.Group_Training') }}</span>
         </el-col>
-        <el-col :span="18" v-if="(isSuperAdmin || isGroupAdmin) && !problemPage && !editProblemPage">
+        <el-col
+          :md="18"
+          :xs="19"
+          v-if="
+            (isSuperAdmin || isGroupAdmin) && !problemPage && !editProblemPage
+          "
+        >
           <el-button
             v-if="!editPage"
             :type="createPage ? 'danger' : 'primary'"
             size="small"
             @click="handleCreatePage"
             :icon="createPage ? 'el-icon-back' : 'el-icon-plus'"
-          >{{ createPage ? $t('m.Back') : $t('m.Create') }}</el-button>
+            >{{ createPage ? $t('m.Back') : $t('m.Create') }}</el-button
+          >
           <el-button
             v-if="editPage && adminPage"
             type="danger"
             size="small"
             @click="handleEditPage"
             icon="el-icon-back"
-          >{{ $t('m.Back') }}</el-button>`
+            >{{ $t('m.Back') }}</el-button
+          >`
           <el-button
             :type="adminPage ? 'warning' : 'success'"
             size="small"
             @click="handleAdminPage"
             :icon="adminPage ? 'el-icon-back' : 'el-icon-s-opportunity'"
-          >{{ adminPage ? $t('m.Back') : $t('m.Training_Admin') }}</el-button>
+            >{{ adminPage ? $t('m.Back') : $t('m.Training_Admin') }}</el-button
+          >
         </el-col>
-        <el-col :span="18" v-else-if="(isSuperAdmin || isGroupAdmin) && problemPage && !editProblemPage">
+        <el-col
+          :span="18"
+          v-else-if="
+            (isSuperAdmin || isGroupAdmin) && problemPage && !editProblemPage
+          "
+        >
           <el-button
             type="primary"
             size="small"
             @click="publicPage = true"
             icon="el-icon-plus"
-          >{{ $t('m.Add_From_Public_Problem') }}</el-button>
+            >{{ $t('m.Add_From_Public_Problem') }}</el-button
+          >
           <el-button
             type="success"
             size="small"
             @click="handleGroupPage"
             icon="el-icon-plus"
-          >{{ $t('m.Add_From_Group_Problem') }}</el-button>
+            >{{ $t('m.Add_From_Group_Problem') }}</el-button
+          >
           <el-button
             type="warning"
             size="small"
             @click="handleProblemPage(null)"
             icon="el-icon-back"
-          >{{ $t('m.Back') }}</el-button>
+            >{{ $t('m.Back') }}</el-button
+          >
         </el-col>
-        <el-col :span="18" v-else-if="(isSuperAdmin || isGroupAdmin) && editProblemPage">
+        <el-col
+          :span="18"
+          v-else-if="(isSuperAdmin || isGroupAdmin) && editProblemPage"
+        >
           <el-button
             type="danger"
             size="small"
             @click="handleEditProblemPage"
             icon="el-icon-back"
-          >{{ $t('m.Back') }}</el-button>`
+            >{{ $t('m.Back') }}</el-button
+          >`
         </el-col>
       </el-row>
     </div>
@@ -207,9 +228,9 @@
 import { mapGetters } from 'vuex';
 import { TRAINING_TYPE } from '@/common/constants';
 import Pagination from '@/components/oj/common/Pagination';
-import TrainingList from '@/components/oj/group/TrainingList'
-import Training from '@/components/oj/group/Training'
-import TrainingProblemList from '@/components/oj/group/TrainingProblemList'
+import TrainingList from '@/components/oj/group/TrainingList';
+import Training from '@/components/oj/group/Training';
+import TrainingProblemList from '@/components/oj/group/TrainingProblemList';
 import AddPublicProblem from '@/components/oj/group/AddPublicProblem.vue';
 import AddGroupProblem from '@/components/oj/group/AddGroupProblem.vue';
 import api from '@/common/api';
@@ -222,7 +243,7 @@ export default {
     Training,
     TrainingProblemList,
     AddPublicProblem,
-    AddGroupProblem
+    AddGroupProblem,
   },
   data() {
     return {
@@ -263,16 +284,22 @@ export default {
     },
     getGroupTrainingList() {
       this.loading = true;
-      api.getGroupTrainingList(this.currentPage, this.limit, this.$route.params.groupID).then(
-        (res) => {
-          this.trainingList = res.data.data.records;
-          this.total = res.data.data.total;
-          this.loading = false;
-        },
-        (err) => {
-          this.loading = false;
-        }
-      );
+      api
+        .getGroupTrainingList(
+          this.currentPage,
+          this.limit,
+          this.$route.params.groupID
+        )
+        .then(
+          (res) => {
+            this.trainingList = res.data.data.records;
+            this.total = res.data.data.total;
+            this.loading = false;
+          },
+          (err) => {
+            this.loading = false;
+          }
+        );
     },
     goGroupTraining(event) {
       this.$router.push({
@@ -305,7 +332,6 @@ export default {
       this.editProblemPage = !this.editProblemPage;
       this.$refs.trainingProblemList.editPage = this.editProblemPage;
     },
-    
   },
   computed: {
     ...mapGetters(['isAuthenticated', 'isSuperAdmin', 'isGroupAdmin']),

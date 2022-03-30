@@ -2,34 +2,45 @@
   <el-card>
     <div class="filter-row">
       <el-row>
-        <el-col :span="3">
+        <el-col :md="3" :xs="7">
           <span class="title">{{ $t('m.Group_Discussion') }}</span>
         </el-col>
-        <el-col :span="18">
+        <el-col :md="18" :xs="17">
           <el-button
             type="primary"
             size="small"
             @click="goCreateDiscussion"
             icon="el-icon-plus"
-          >{{ $t('m.Create') }}</el-button>
+            >{{ $t('m.Create') }}</el-button
+          >
           <el-button
             v-if="isSuperAdmin || isGroupAdmin"
             :type="adminPage ? 'warning' : 'success'"
             size="small"
             @click="handleAdminPage"
             :icon="adminPage ? 'el-icon-back' : 'el-icon-s-opportunity'"
-          >{{ adminPage ? $t('m.Back') : $t('m.Discussion_Admin') }}</el-button>
+            >{{
+              adminPage ? $t('m.Back') : $t('m.Discussion_Admin')
+            }}</el-button
+          >
         </el-col>
       </el-row>
     </div>
     <div v-if="!adminPage">
-      <el-empty v-if="discussionList.length == 0" :description="$t('m.No_Discussion')"></el-empty>
+      <el-empty
+        v-if="discussionList.length == 0"
+        :description="$t('m.No_Discussion')"
+      ></el-empty>
       <div
         class="title-article"
         v-for="(discussion, index) in discussionList"
         :key="index"
       >
-        <el-card shadow="hover" class="list-card" :body-style="{ padding: '0px' }">
+        <el-card
+          shadow="hover"
+          class="list-card"
+          :body-style="{ padding: '0px' }"
+        >
           <span class="svg-top" v-if="discussion.topPriority">
             <svg
               t="1620283436433"
@@ -72,18 +83,13 @@
               >{{ $t('m.Go_to_problem') }}</el-button
             >
           </h1>
-          <a
-            @click="goGroupDiscussion(discussion.id)"
-            class="article-hlink2"
-          >
+          <a @click="goGroupDiscussion(discussion.id)" class="article-hlink2">
             <p>{{ discussion.description }}</p>
           </a>
           <div class="title-msg">
             <span>
               <a
-                @click="
-                  getInfoByUsername(discussion.uid, discussion.author)
-                "
+                @click="getInfoByUsername(discussion.uid, discussion.author)"
                 :title="discussion.author"
               >
                 <avatar
@@ -223,7 +229,10 @@
         :layout="'prev, pager, next, sizes'"
       ></Pagination>
     </div>
-    <DiscussionList v-if="adminPage" @currentChange="currentChange"></DiscussionList>
+    <DiscussionList
+      v-if="adminPage"
+      @currentChange="currentChange"
+    ></DiscussionList>
     <el-dialog
       :title="title"
       :visible.sync="showEditDiscussionDialog"
@@ -288,7 +297,7 @@
 import Avatar from 'vue-avatar';
 import { mapGetters } from 'vuex';
 import Pagination from '@/components/oj/common/Pagination';
-import DiscussionList from '@/components/oj/group/DiscussionList'
+import DiscussionList from '@/components/oj/group/DiscussionList';
 import Editor from '@/components/admin/Editor.vue';
 import api from '@/common/api';
 import mMessage from '@/common/message';
@@ -298,7 +307,7 @@ export default {
     Pagination,
     DiscussionList,
     Avatar,
-    Editor
+    Editor,
   },
   data() {
     return {
@@ -350,16 +359,22 @@ export default {
     },
     getGroupDiscussionList() {
       this.loading = true;
-      api.getGroupDiscussionList(this.currentPage, this.limit, this.$route.params.groupID).then(
-        (res) => {
-          this.discussionList = res.data.data.records;
-          this.total = res.data.data.total;
-          this.loading = false;
-        },
-        (err) => {
-          this.loading = false;
-        }
-      );
+      api
+        .getGroupDiscussionList(
+          this.currentPage,
+          this.limit,
+          this.$route.params.groupID
+        )
+        .then(
+          (res) => {
+            this.discussionList = res.data.data.records;
+            this.total = res.data.data.total;
+            this.loading = false;
+          },
+          (err) => {
+            this.loading = false;
+          }
+        );
     },
     goGroupDiscussion(discussionId) {
       this.$router.push({
@@ -385,7 +400,7 @@ export default {
     },
     goCreateDiscussion() {
       this.showEditDiscussionDialog = true;
-      this.title = this.$i18n.t('m.Create_Discussion')
+      this.title = this.$i18n.t('m.Create_Discussion');
     },
     submitDiscussion() {
       let discussion = Object.assign({}, this.discussion);
@@ -425,7 +440,9 @@ export default {
             type: 'warning',
           }).then(() => {
             api
-              .deleteGroupDiscussion(this.discussionList[parseInt(tmpArr[1])].id)
+              .deleteGroupDiscussion(
+                this.discussionList[parseInt(tmpArr[1])].id
+              )
               .then((res) => {
                 mMessage.success(this.$i18n.t('m.Delete_successfully'));
                 this.currentChange(1);
@@ -442,7 +459,13 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['isAuthenticated', 'isSuperAdmin', 'isGroupAdmin', 'userInfo', 'isAdminRole']),
+    ...mapGetters([
+      'isAuthenticated',
+      'isSuperAdmin',
+      'isGroupAdmin',
+      'userInfo',
+      'isAdminRole',
+    ]),
   },
 };
 </script>

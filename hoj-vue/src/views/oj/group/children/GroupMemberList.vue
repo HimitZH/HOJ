@@ -2,17 +2,18 @@
   <el-card>
     <div class="filter-row">
       <el-row>
-        <el-col :span="3">
+        <el-col :md="3" :xs="5">
           <span class="title">{{ $t('m.Group_Member') }}</span>
         </el-col>
-        <el-col :span="18">
+        <el-col :md="18" :xs="19">
           <el-button
             v-if="isSuperAdmin || isGroupAdmin"
             :type="adminPage ? 'warning' : 'success'"
             size="small"
-            @click="adminPage = !adminPage;"
+            @click="adminPage = !adminPage"
             :icon="adminPage ? 'el-icon-back' : 'el-icon-s-opportunity'"
-          >{{ adminPage ? $t('m.Back') : $t('m.Member_Admin') }}</el-button>
+            >{{ adminPage ? $t('m.Back') : $t('m.Member_Admin') }}</el-button
+          >
         </el-col>
       </el-row>
     </div>
@@ -55,11 +56,7 @@
           :title="$t('m.Member_Auth')"
         >
           <template v-slot="{ row }">
-            <el-select
-              v-model="row.auth"
-              disabled
-              size="small"
-            >
+            <el-select v-model="row.auth" disabled size="small">
               <el-option :label="$t('m.Applying')" :value="1"></el-option>
               <el-option :label="$t('m.Refused')" :value="2"></el-option>
               <el-option :label="$t('m.General_Member')" :value="3"></el-option>
@@ -94,7 +91,7 @@ export default {
   components: {
     Pagination,
     Editor,
-    MemberList
+    MemberList,
   },
   data() {
     return {
@@ -123,16 +120,22 @@ export default {
     },
     getGroupMemberList() {
       this.loading = true;
-      api.getGroupMemberList(this.currentPage, this.limit, this.$route.params.groupID).then(
-        (res) => {
-          this.memberList = res.data.data.records;
-          this.total = res.data.data.total;
-          this.loading = false;
-        },
-        (err) => {
-          this.loading = false;
-        }
-      );
+      api
+        .getGroupMemberList(
+          this.currentPage,
+          this.limit,
+          this.$route.params.groupID
+        )
+        .then(
+          (res) => {
+            this.memberList = res.data.data.records;
+            this.total = res.data.data.total;
+            this.loading = false;
+          },
+          (err) => {
+            this.loading = false;
+          }
+        );
     },
   },
   computed: {

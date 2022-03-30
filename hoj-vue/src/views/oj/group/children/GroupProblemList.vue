@@ -2,10 +2,10 @@
   <el-card>
     <div class="filter-row">
       <el-row>
-        <el-col :span="3">
+        <el-col :md="3" :xs="5">
           <span class="title">{{ $t('m.Group_Problem') }}</span>
         </el-col>
-        <el-col :span="18" v-if="isSuperAdmin || isGroupAdmin">
+        <el-col :md="18" :xs="19" v-if="isSuperAdmin || isGroupAdmin">
           <el-button
             v-if="!editPage"
             :type="createPage ? 'danger' : 'primary'"
