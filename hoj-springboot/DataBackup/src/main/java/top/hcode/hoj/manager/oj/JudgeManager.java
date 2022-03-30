@@ -342,7 +342,8 @@ public class JudgeManager {
                                        String searchPid,
                                        Integer searchStatus,
                                        String searchUsername,
-                                       Boolean completeProblemID) throws StatusAccessDeniedException {
+                                       Boolean completeProblemID,
+                                       Long gid) throws StatusAccessDeniedException {
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 30;
@@ -372,7 +373,8 @@ public class JudgeManager {
                 searchStatus,
                 searchUsername,
                 uid,
-                completeProblemID);
+                completeProblemID,
+                gid);
     }
 
 

@@ -24,6 +24,6 @@ public interface ProblemService {
 
     public CommonResult<HashMap<Long, Object>> getUserProblemStatus(PidListDto pidListDto);
 
-    public CommonResult<ProblemInfoVo> getProblemInfo(String problemId);
+    public CommonResult<ProblemInfoVo> getProblemInfo(String problemId, Long gid);
 
 }

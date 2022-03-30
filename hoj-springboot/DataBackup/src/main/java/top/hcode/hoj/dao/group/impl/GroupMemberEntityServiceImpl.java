@@ -84,6 +84,23 @@ public class GroupMemberEntityServiceImpl extends ServiceImpl<GroupMemberMapper,
 
     @Async
     @Override
+    public void addWelcomeNoticeToGroupNewMember(Long gid, String groupName,String memberUid) {
+        String title = "欢迎加入团队(Welcome to The Group)";
+        String content = getWelcomeNewMember(gid, groupName);
+        adminNoticeManager.addSingleNoticeToUser(null, memberUid, title, content, "Mine");
+    }
+
+    public String getWelcomeNewMember(Long gid, String groupName) {
+        return "您好，您已经通过了审批，欢迎加入[" + gid + "]【" + groupName
+                + "】团队！" +
+                "\n\n" +
+                "Hello, you have passed the approval. Welcome to join the group [" + gid +
+                "]【" + groupName + "】!";
+    }
+
+
+    @Async
+    @Override
     public void addRemoveNoticeToGroupMember(Long gid, String groupName, String operator, String memberUid) {
         String title = "移除团队成员通知(Remove Group Member Notice)";
         String content = getRemoveMemberContent(gid, groupName, operator);

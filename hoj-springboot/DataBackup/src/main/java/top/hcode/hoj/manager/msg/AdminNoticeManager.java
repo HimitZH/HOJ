@@ -136,9 +136,7 @@ public class AdminNoticeManager {
                         .setType(type);
                 userSysNoticeList.add(userSysNotice);
             }
-            if (userSysNoticeList.size() > 0) {
-                userSysNoticeEntityService.saveBatch(userSysNoticeList);
-            }
+            userSysNoticeEntityService.saveBatch(userSysNoticeList);
         }
     }
 }

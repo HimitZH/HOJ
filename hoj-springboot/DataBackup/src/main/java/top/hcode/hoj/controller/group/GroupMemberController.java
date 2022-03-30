@@ -42,11 +42,10 @@ public class GroupMemberController {
 
     @PostMapping("/member")
     @RequiresAuthentication
-    public CommonResult<Void> addGroupMember(@RequestParam(value = "uid", required = true) String uid,
-                                             @RequestParam(value = "gid", required = true) Long gid,
+    public CommonResult<Void> addGroupMember(@RequestParam(value = "gid", required = true) Long gid,
                                              @RequestParam(value = "code", required = false) String code,
                                              @RequestParam(value = "reason", required = false) String reason) {
-        return groupMemberService.addMember(uid, gid, code, reason);
+        return groupMemberService.addMember(gid, code, reason);
     }
 
     @PutMapping("/member")
@@ -58,8 +57,15 @@ public class GroupMemberController {
     @DeleteMapping("/member")
     @RequiresAuthentication
     public CommonResult<Void> deleteMember(@RequestParam(value = "uid", required = true) String uid,
-                                                @RequestParam(value = "gid", required = true) Long gid) {
+                                           @RequestParam(value = "gid", required = true) Long gid) {
         return groupMemberService.deleteMember(uid, gid);
     }
+
+    @DeleteMapping("/member/exit")
+    @RequiresAuthentication
+    public CommonResult<Void> exitGroup(@RequestParam(value = "gid", required = true) Long gid) {
+        return groupMemberService.exitGroup(gid);
+    }
+
 
 }

@@ -283,6 +283,12 @@ const ojRoutes = [
         meta: { title: 'Group Problem' },
       },
       {
+        name: 'GroupProblemDetails',
+        path: 'problem/:problemID/',
+        component: Problem,
+        meta: { title: 'Group Problem Details' }
+      },
+      {
         path: 'training',
         name: 'GroupTrainingList',
         component: GroupTrainingList,
@@ -293,6 +299,18 @@ const ojRoutes = [
         name: 'GroupContestList',
         component: GroupContestList,
         meta: { title: 'Group Contest' }
+      },
+      {
+        path: 'status',
+        name: 'GroupSubmissionList',
+        component: SubmissionList,
+        meta: { title: 'Group Status' }
+      },
+      {
+        path: 'submission-detail/:submitID',
+        name: 'GroupSubmissionDeatil',
+        component: SubmissionDetails,
+        meta: {title: 'Group Submission Deatil' }
       },
       {
         path: 'discussion',

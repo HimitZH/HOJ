@@ -362,7 +362,8 @@ export default {
       total: 30,
       limit: 15,
       currentPage: 1,
-      contestID: '',
+      contestID: null,
+      groupID: null,
       routeName: '',
       checkStatusNum: 0,
       JUDGE_STATUS: '',
@@ -394,6 +395,7 @@ export default {
     init() {
       this.checkStatusNum = 0;
       this.contestID = this.$route.params.contestID;
+      this.groupID = this.$route.params.groupID;
       let query = this.$route.query;
       this.formFilter.problemID = query.problemID;
       this.formFilter.username = query.username || '';
@@ -467,6 +469,7 @@ export default {
     getSubmissions() {
       let params = this.buildQuery();
       params.contestID = this.contestID;
+      params.gid = this.groupID;
       if (this.contestID) {
         if (this.contestStatus == CONTEST_STATUS.SCHEDULED) {
           params.beforeContestSubmit = true;
@@ -700,15 +703,20 @@ export default {
     ...mapActions(['changeModalStatus']),
 
     showSubmitDetail(row) {
-      if (row.cid != 0) {
+      if (this.contestID != null) {
         // 比赛提交详情
         this.$router.push({
           name: 'ContestSubmissionDeatil',
           params: {
-            contestID: this.$route.params.contestID,
+            contestID: this.contestID,
             problemID: row.displayId,
             submitID: row.submitId,
           },
+        });
+      } else if (this.groupID != null) {
+        this.$router.push({
+          name: 'GroupSubmissionDeatil',
+          params: { submitID: row.submitId },
         });
       } else {
         this.$router.push({

@@ -28,7 +28,8 @@ public interface JudgeEntityService extends IService<Judge> {
                                       Integer status,
                                       String username,
                                       String uid,
-                                      Boolean completeProblemID);
+                                      Boolean completeProblemID,
+                                      Long gid);
 
     IPage<JudgeVo> getContestJudgeList(Integer limit,
                                        Integer currentPage,
@@ -54,7 +55,7 @@ public interface JudgeEntityService extends IService<Judge> {
                                           Date sealRankTime,
                                           List<String> adminList);
 
-    ProblemCountVo getProblemCount(Long pid);
+    ProblemCountVo getProblemCount(Long pid, Long gid);
 
     public int getTodayJudgeNum();
 

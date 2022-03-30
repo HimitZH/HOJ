@@ -47,9 +47,9 @@ public class GroupMemberServiceImpl implements GroupMemberService {
     }
 
     @Override
-    public CommonResult<Void> addMember(String uid, Long gid, String code, String reason) {
+    public CommonResult<Void> addMember(Long gid, String code, String reason) {
         try {
-            groupMemberManager.addMember(uid, gid, code ,reason);
+            groupMemberManager.addMember(gid, code, reason);
             return CommonResult.successResponse();
         } catch (StatusForbiddenException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
@@ -74,10 +74,26 @@ public class GroupMemberServiceImpl implements GroupMemberService {
         }
     }
 
+
     @Override
     public CommonResult<Void> deleteMember(String uid, Long gid) {
         try {
             groupMemberManager.deleteMember(uid, gid);
+            return CommonResult.successResponse();
+        } catch (StatusNotFoundException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.NOT_FOUND);
+        } catch (StatusForbiddenException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
+        } catch (StatusFailException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FAIL);
+        }
+    }
+
+
+    @Override
+    public CommonResult<Void> exitGroup(Long gid) {
+        try {
+            groupMemberManager.exitGroup(gid);
             return CommonResult.successResponse();
         } catch (StatusNotFoundException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.NOT_FOUND);

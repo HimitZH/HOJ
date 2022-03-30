@@ -68,9 +68,23 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public CommonResult<IPage<JudgeVo>> getJudgeList(Integer limit, Integer currentPage, Boolean onlyMine, String searchPid, Integer searchStatus, String searchUsername, Boolean completeProblemID) {
+    public CommonResult<IPage<JudgeVo>> getJudgeList(Integer limit,
+                                                     Integer currentPage,
+                                                     Boolean onlyMine,
+                                                     String searchPid,
+                                                     Integer searchStatus,
+                                                     String searchUsername,
+                                                     Boolean completeProblemID,
+                                                     Long gid) {
         try {
-            return CommonResult.successResponse(judgeManager.getJudgeList(limit, currentPage, onlyMine, searchPid, searchStatus, searchUsername, completeProblemID));
+            return CommonResult.successResponse(judgeManager.getJudgeList(limit,
+                    currentPage,
+                    onlyMine,
+                    searchPid,
+                    searchStatus,
+                    searchUsername,
+                    completeProblemID,
+                    gid));
         } catch (StatusAccessDeniedException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.ACCESS_DENIED);
         }

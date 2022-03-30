@@ -459,8 +459,7 @@ export default {
       this.route_name = newVal.name;
       if (newVal.name == 'ContestProblemDetails') {
         this.route_name = 'ContestProblemList';
-      }
-      if (this.route_name == 'ContestSubmissionDeatil') {
+      } else if (this.route_name == 'ContestSubmissionDeatil') {
         this.route_name = 'ContestSubmissionList';
       }
       this.contestID = newVal.params.contestID;

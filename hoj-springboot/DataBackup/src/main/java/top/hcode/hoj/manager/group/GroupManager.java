@@ -278,7 +278,7 @@ public class GroupManager {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!isRoot && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
+        if (!isRoot && !userRolesVo.getUid().equals(group.getUid())) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 

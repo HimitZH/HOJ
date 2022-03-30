@@ -22,4 +22,6 @@ public class PidListDto {
     private Boolean isContestProblemList;
 
     private Long cid;
+
+    private Long gid;
 }
