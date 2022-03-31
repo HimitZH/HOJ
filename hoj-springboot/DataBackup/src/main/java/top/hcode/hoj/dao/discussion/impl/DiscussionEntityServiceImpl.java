@@ -33,7 +33,7 @@ public class DiscussionEntityServiceImpl extends ServiceImpl<DiscussionMapper, D
     private MsgRemindEntityService msgRemindEntityService;
 
     @Async
-    public void updatePostLikeMsg(String recipientId, String senderId, Integer discussionId) {
+    public void updatePostLikeMsg(String recipientId, String senderId, Integer discussionId, Long gid) {
 
         MsgRemind msgRemind = new MsgRemind();
         msgRemind.setAction("Like_Post")
@@ -42,6 +42,13 @@ public class DiscussionEntityServiceImpl extends ServiceImpl<DiscussionMapper, D
                 .setSourceId(discussionId)
                 .setSourceType("Discussion")
                 .setUrl("/discussion-detail/" + discussionId);
+
+        if (gid != null) {
+            msgRemind.setUrl("/group/" + gid + "/discussion-detail/" + discussionId);
+        } else {
+            msgRemind.setUrl("/discussion-detail/" + discussionId);
+        }
+
         msgRemindEntityService.saveOrUpdate(msgRemind);
     }
 }
