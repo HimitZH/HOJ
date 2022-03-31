@@ -2,17 +2,32 @@
   <el-card>
     <div class="filter-row">
       <el-row>
-        <el-col :md="3" :xs="7">
-          <span class="title">{{ $t('m.Group_Discussion') }}</span>
+        <el-col :md="5" :xs="24">
+          <span class="title">{{
+            this.problemID
+              ? this.problemID + ' ' + $t('m.Problem_Discussion')
+              : $t('m.Group_Discussion')
+          }}</span>
         </el-col>
-        <el-col :md="18" :xs="17">
+        <el-col :md="15" :xs="24">
           <el-button
             type="primary"
             size="small"
             @click="goCreateDiscussion"
             icon="el-icon-plus"
-            >{{ $t('m.Create') }}</el-button
           >
+            {{
+              this.problemID ? $t('m.Post_problem_discussion') : $t('m.Create')
+            }}</el-button
+          >
+          <el-button
+            v-if="problemID"
+            type="success"
+            @click="goGroupAllDiscussion"
+            size="small"
+            icon="el-icon-back"
+            ><i class="el-icon-s-home"> {{ $t('m.Group_Discussion') }}</i>
+          </el-button>
           <el-button
             v-if="isSuperAdmin || isGroupAdmin"
             :type="adminPage ? 'warning' : 'success'"
@@ -37,7 +52,7 @@
         :key="index"
       >
         <el-card
-          shadow="hover"
+          shadow="always"
           class="list-card"
           :body-style="{ padding: '0px' }"
         >
@@ -73,13 +88,7 @@
               size="mini"
               style="margin-left:5px;"
               v-if="discussion.pid"
-              @click="
-                pushRouter(
-                  null,
-                  { problemID: discussion.pid },
-                  'ProblemDetails'
-                )
-              "
+              @click="goGroupProblemDetails(discussion.pid)"
               >{{ $t('m.Go_to_problem') }}</el-button
             >
           </h1>
@@ -334,6 +343,8 @@ export default {
       loading: false,
       adminPage: false,
       title: '',
+      problemID: null,
+      groupID: null,
     };
   },
   mounted() {
@@ -347,6 +358,8 @@ export default {
   },
   methods: {
     init() {
+      this.problemID = this.$route.params.problemID;
+      this.groupID = this.$route.params.groupID;
       this.getGroupDiscussionList();
     },
     onPageSizeChange(pageSize) {
@@ -363,7 +376,8 @@ export default {
         .getGroupDiscussionList(
           this.currentPage,
           this.limit,
-          this.$route.params.groupID
+          this.groupID,
+          this.problemID
         )
         .then(
           (res) => {
@@ -381,7 +395,24 @@ export default {
         name: 'GroupDiscussionDetails',
         params: {
           discussionID: discussionId,
-          groupID: this.$route.params.groupID,
+          groupID: this.groupID,
+        },
+      });
+    },
+    goGroupAllDiscussion() {
+      this.$router.push({
+        name: 'GroupDiscussionList',
+        params: {
+          groupID: this.groupID,
+        },
+      });
+    },
+    goGroupProblemDetails(pid) {
+      this.$router.push({
+        name: 'GroupProblemDetails',
+        params: {
+          groupID: this.groupID,
+          problemID: pid,
         },
       });
     },
@@ -405,6 +436,11 @@ export default {
     },
     submitDiscussion() {
       let discussion = Object.assign({}, this.discussion);
+
+      if (this.problemID) {
+        discussion.pid = this.problemID;
+      }
+
       if (this.title == this.$i18n.t('m.Create_Discussion')) {
         if (discussion.pid) {
           discussion.title = '[' + discussion.pid + '] ' + discussion.title;
@@ -467,6 +503,13 @@ export default {
       'userInfo',
       'isAdminRole',
     ]),
+  },
+  watch: {
+    $route(newVal, oldVal) {
+      if (newVal != oldVal) {
+        this.init();
+      }
+    },
   },
 };
 </script>

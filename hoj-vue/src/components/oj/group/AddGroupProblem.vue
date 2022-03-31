@@ -2,7 +2,11 @@
   <div>
     <el-form :model="problemId" @submit.native.prevent>
       <el-form-item :label="$t('m.Problem_ID')" required>
-        <el-input v-model="problemId" size="small" @keyup.enter.native="addGroupProblem" ></el-input>
+        <el-input
+          v-model="problemId"
+          size="small"
+          @keyup.enter.native="addGroupProblem"
+        ></el-input>
       </el-form-item>
       <el-form-item style="text-align:center">
         <el-button
@@ -25,11 +29,11 @@ export default {
   props: {
     trainingId: {
       type: Number,
-      default: null
+      default: null,
     },
     contestId: {
       type: Number,
-      default: null
+      default: null,
     },
   },
   data() {
@@ -46,31 +50,38 @@ export default {
           'Tips'
         ).then(
           ({ value }) => {
-            api.addGroupContestProblemFromGroup(this.problemId, this.contestId, value).then(
-              (res) => {
-                mMessage.success(this.$i18n.t('m.Add_Successfully'));
-                this.loading = false;
-                this.$emit("currentChangeProblem");
-                this.$emit("handleGroupPage");
-              },
-              () => {}
-            );
+            api
+              .addGroupContestProblemFromGroup(
+                this.problemId,
+                this.contestId,
+                value
+              )
+              .then(
+                (res) => {
+                  mMessage.success(this.$i18n.t('m.Add_Successfully'));
+                  this.loading = false;
+                  this.$emit('currentChangeProblem');
+                  this.$emit('handleGroupPage');
+                },
+                () => {}
+              );
           },
           () => {}
         );
       } else {
-        api.addGroupTrainingProblemFromGroup(this.problemId, this.trainingId).then(
-          (res) => {
-            this.mMessage.success(this.$i18n.t('m.Add_Successfully'));
-            this.loading = false;
-            this.$emit("currentChangeProblem");
-            this.$emit("handleGroupPage");
-          },
-          () => {}
-        );
+        api
+          .addGroupTrainingProblemFromGroup(this.problemId, this.trainingId)
+          .then(
+            (res) => {
+              mMessage.success(this.$i18n.t('m.Add_Successfully'));
+              this.loading = false;
+              this.$emit('currentChangeProblem');
+              this.$emit('handleGroupPage');
+            },
+            () => {}
+          );
       }
     },
   },
 };
 </script>
-

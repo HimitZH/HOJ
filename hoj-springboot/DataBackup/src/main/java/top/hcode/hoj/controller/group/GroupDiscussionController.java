@@ -24,8 +24,9 @@ public class GroupDiscussionController {
     @GetMapping("/get-discussion-list")
     public CommonResult<IPage<Discussion>> getDiscussionList(@RequestParam(value = "limit", required = false) Integer limit,
                                                              @RequestParam(value = "currentPage", required = false) Integer currentPage,
-                                                             @RequestParam(value = "gid", required = true) Long gid) {
-        return groupDiscussionService.getDiscussionList(limit, currentPage, gid);
+                                                             @RequestParam(value = "gid", required = true) Long gid,
+                                                             @RequestParam(value = "pid", required = false) String pid) {
+        return groupDiscussionService.getDiscussionList(limit, currentPage, gid, pid);
     }
 
     @GetMapping("/get-admin-discussion-list")

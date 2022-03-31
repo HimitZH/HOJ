@@ -583,6 +583,7 @@ export const m = {
 
   // /views/oj/group/GroupDiscussionList.vue
   No_Discussion: '暂无讨论',
+  Problem_Discussion:'题目讨论',
 
   // /views/oj/group/GroupMemberList.vue
   Applying: '申请中',

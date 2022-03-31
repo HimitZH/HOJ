@@ -12,12 +12,12 @@
         field="title"
         :title="$t('m.Title')"
         show-overflow
-        min-width="150"
+        min-width="130"
       ></vxe-table-column>
       <vxe-table-column
         field="author"
         :title="$t('m.Author')"
-        min-width="150"
+        min-width="130"
         show-overflow
       ></vxe-table-column>
       <vxe-table-column

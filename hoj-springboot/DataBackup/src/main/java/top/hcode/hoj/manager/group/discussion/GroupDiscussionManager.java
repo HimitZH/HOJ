@@ -1,5 +1,6 @@
 package top.hcode.hoj.manager.group.discussion;
 
+import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
@@ -49,7 +50,10 @@ public class GroupDiscussionManager {
     @Autowired
     private RedisUtils redisUtils;
 
-    public IPage<Discussion> getDiscussionList(Integer limit, Integer currentPage, Long gid) throws StatusNotFoundException, StatusForbiddenException {
+    public IPage<Discussion> getDiscussionList(Integer limit,
+                                               Integer currentPage,
+                                               Long gid,
+                                               String pid) throws StatusNotFoundException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
@@ -66,6 +70,10 @@ public class GroupDiscussionManager {
         }
 
         QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
+
+        if (!StringUtils.isEmpty(pid)) {
+            discussionQueryWrapper.eq("pid", pid);
+        }
 
         IPage<Discussion> iPage = new Page<>(currentPage, limit);
 
@@ -133,7 +141,7 @@ public class GroupDiscussionManager {
         String problemId = discussion.getPid();
         if (problemId != null) {
             QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
-            problemQueryWrapper.eq("problemId", problemId);
+            problemQueryWrapper.eq("problem_id", problemId);
             Problem problem = problemEntityService.getOne(problemQueryWrapper);
 
             if (problem == null) {

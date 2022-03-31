@@ -61,7 +61,7 @@
                     }}</el-tag>
                   </div>
                   <div class="problem-menu">
-                    <span v-if="!contestID && !groupID">
+                    <span v-if="!contestID">
                       <el-link
                         type="primary"
                         :underline="false"
@@ -1128,10 +1128,17 @@ export default {
       }
     },
     goProblemDiscussion() {
-      this.$router.push({
-        name: 'ProblemDiscussion',
-        params: { problemID: this.problemID },
-      });
+      if (this.groupID) {
+        this.$router.push({
+          name: 'GroupProblemDiscussion',
+          params: { problemID: this.problemID, groupID: this.groupID },
+        });
+      } else {
+        this.$router.push({
+          name: 'ProblemDiscussion',
+          params: { problemID: this.problemID },
+        });
+      }
     },
 
     onChangeLang(newLang) {

@@ -319,6 +319,12 @@ const ojRoutes = [
         meta: { title: 'Group Discussion' }
       },
       {
+        path: 'discussion/:problemID',
+        name: 'GroupProblemDiscussion',
+        meta: {title: 'Group Discussion'},
+        component:GroupDiscussionList
+      },
+      {
         path: 'discussion-detail/:discussionID',
         name:'GroupDiscussionDetails',
         meta: {title: 'Group Discussion Details'},

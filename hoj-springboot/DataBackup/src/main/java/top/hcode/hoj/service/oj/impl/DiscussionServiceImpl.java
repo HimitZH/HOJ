@@ -30,11 +30,7 @@ public class DiscussionServiceImpl implements DiscussionService {
 
     @Override
     public CommonResult<IPage<Discussion>> getDiscussionList(Integer limit, Integer currentPage, Integer categoryId, String pid, Boolean onlyMine, String keyword, Boolean admin) {
-        try {
-            return CommonResult.successResponse(discussionManager.getDiscussionList(limit, currentPage, categoryId, pid, onlyMine, keyword, admin));
-        } catch (StatusForbiddenException e) {
-            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
-        }
+        return CommonResult.successResponse(discussionManager.getDiscussionList(limit, currentPage, categoryId, pid, onlyMine, keyword, admin));
     }
 
     @Override
