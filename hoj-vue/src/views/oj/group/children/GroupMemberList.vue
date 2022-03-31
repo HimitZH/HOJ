@@ -31,6 +31,14 @@
           show-overflow
           :title="$t('m.Username')"
         >
+          <template v-slot="{ row }"
+            ><el-link
+              type="primary"
+              @click="goUserHome(row.username)"
+              style="font-size: 13px;"
+              >{{ row.username }}</el-link
+            >
+          </template>
         </vxe-table-column>
         <vxe-table-column
           min-width="150"
@@ -116,6 +124,12 @@ export default {
     currentChange(page) {
       this.currentPage = page;
       this.init();
+    },
+    goUserHome(username) {
+      this.$router.push({
+        path: '/user-home',
+        query: { username },
+      });
     },
     getGroupMemberList() {
       this.loading = true;

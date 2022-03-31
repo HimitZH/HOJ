@@ -207,7 +207,8 @@ public class CommentManager {
                     commentEntityService.updateCommentMsg(discussion.getUid(),
                             userRolesVo.getUid(),
                             comment.getContent(),
-                            comment.getDid());
+                            comment.getDid(),
+                            discussion.getGid());
                 }
             }
             return commentVo;

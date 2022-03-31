@@ -307,7 +307,10 @@ public class DiscussionManager {
             discussionEntityService.update(discussionUpdateWrapper);
             // 当前帖子要不是点赞者的 才发送点赞消息
             if (!userRolesVo.getUsername().equals(discussion.getAuthor())) {
-                discussionEntityService.updatePostLikeMsg(discussion.getUid(), userRolesVo.getUid(), did);
+                discussionEntityService.updatePostLikeMsg(discussion.getUid(),
+                        userRolesVo.getUid(),
+                        did,
+                        discussion.getGid());
             }
         } else { // 取消点赞
             if (discussionLike != null) { // 如果存在就删除

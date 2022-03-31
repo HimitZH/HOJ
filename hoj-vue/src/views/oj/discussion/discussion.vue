@@ -294,10 +294,18 @@ export default {
     },
 
     toProblem(pid) {
-      this.$router.push({
-        name: 'ProblemDetails',
-        params: { problemID: pid },
-      });
+      let groupID = this.$route.params.groupID;
+      if (groupID) {
+        this.$router.push({
+          name: 'GroupProblemDetails',
+          params: { problemID: pid, groupID: groupID },
+        });
+      } else {
+        this.$router.push({
+          name: 'ProblemDetails',
+          params: { problemID: pid },
+        });
+      }
     },
 
     toLikeDiscussion(did, toLike) {

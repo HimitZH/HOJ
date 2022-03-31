@@ -5,9 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.dao.contest.ContestEntityService;
+import top.hcode.hoj.dao.discussion.DiscussionEntityService;
 import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.mapper.ReplyMapper;
 import top.hcode.hoj.pojo.entity.contest.Contest;
+import top.hcode.hoj.pojo.entity.discussion.Discussion;
 import top.hcode.hoj.pojo.entity.msg.MsgRemind;
 import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.dao.discussion.ReplyEntityService;
@@ -34,6 +36,9 @@ public class ReplyEntityServiceImpl extends ServiceImpl<ReplyMapper, Reply> impl
 
     @Autowired
     private UserInfoEntityService userInfoEntityService;
+
+    @Autowired
+    private DiscussionEntityService discussionEntityService;
 
     @Autowired
     private ReplyMapper replyMapper;
@@ -73,9 +78,22 @@ public class ReplyEntityServiceImpl extends ServiceImpl<ReplyMapper, Reply> impl
                 .setSourceContent(content)
                 .setQuoteId(quoteId)
                 .setQuoteType(quoteType)
-                .setUrl(sourceType.equals("Discussion") ? "/discussion-detail/" + sourceId : "/contest/" + sourceId + "/comment")
                 .setRecipientId(recipientId)
                 .setSenderId(senderId);
+
+
+        if (sourceType.equals("Discussion")) {
+            Discussion discussion = discussionEntityService.getById(sourceId);
+            if (discussion != null) {
+                if (discussion.getGid() != null) {
+                    msgRemind.setUrl("/group/" + discussion.getGid() + "/discussion-detail/" + sourceId);
+                } else {
+                    msgRemind.setUrl("/discussion-detail/" + sourceId);
+                }
+            }
+        } else if (sourceType.equals("Contest")) {
+            msgRemind.setUrl("/contest/" + sourceId + "/comment");
+        }
 
         msgRemindEntityService.saveOrUpdate(msgRemind);
     }

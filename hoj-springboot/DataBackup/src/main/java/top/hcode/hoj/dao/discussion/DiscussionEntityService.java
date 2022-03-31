@@ -7,7 +7,7 @@ import top.hcode.hoj.pojo.vo.DiscussionVo;
 
 public interface DiscussionEntityService extends IService<Discussion> {
 
-    DiscussionVo getDiscussion(Integer did,String uid);
+    DiscussionVo getDiscussion(Integer did, String uid);
 
-    void updatePostLikeMsg(String recipientId, String senderId, Integer discussionId);
+    void updatePostLikeMsg(String recipientId, String senderId, Integer discussionId, Long gid);
 }
