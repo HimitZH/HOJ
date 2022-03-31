@@ -341,7 +341,7 @@ export default {
           url: 'http://acm.hdu.edu.cn',
           name: 'HDU',
           logo: require('@/assets/hdu-logo.png'),
-          status: false,
+          status: true,
         },
         {
           url: 'http://poj.org',
