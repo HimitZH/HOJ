@@ -460,7 +460,9 @@ export default {
             .then((res) => {
               this.loading = false;
               mMessage.success(this.$i18n.t('m.Disband_Successfully'));
-              this.$store.dispatch('getGroup');
+              this.$router.push({
+                name: 'GroupList',
+              });
             })
             .catch(() => {});
         })

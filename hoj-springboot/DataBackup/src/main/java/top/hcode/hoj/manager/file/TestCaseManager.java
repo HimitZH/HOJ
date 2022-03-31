@@ -128,18 +128,18 @@ public class TestCaseManager {
             String inputFileName = inputData.get(key);
             testcaseMap.put("input", inputFileName);
 
-            String outputFileName = key + ".out";
-            if (inputFileName.endsWith(".txt")) {
-                outputFileName = inputFileName.replaceAll("input", "output");
-            }
-
             // 若有名字对应的out文件不存在的，直接生成对应的out文件
-            if (outputData.getOrDefault(key, null) == null) {
-                FileWriter fileWriter = new FileWriter(fileDir + File.separator + outputFileName);
+            String oriOutputFileName = outputData.getOrDefault(key, null);
+            if (oriOutputFileName == null) {
+                oriOutputFileName = key + ".out";
+                if (inputFileName.endsWith(".txt")) {
+                    oriOutputFileName = inputFileName.replaceAll("input", "output");
+                }
+                FileWriter fileWriter = new FileWriter(fileDir + File.separator + oriOutputFileName);
                 fileWriter.write("");
             }
 
-            testcaseMap.put("output", outputFileName);
+            testcaseMap.put("output", oriOutputFileName);
             problemCaseList.add(testcaseMap);
         }
 

@@ -1,13 +1,7 @@
 package top.hcode.hoj.manager.oj;
 
-import top.hcode.hoj.common.exception.StatusForbiddenException;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.validator.GroupValidator;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.vo.ACMContestRankVo;
@@ -28,10 +22,6 @@ public class ContestRankManager {
 
     @Resource
     private ContestCalculateRankManager contestCalculateRankManager;
-
-    @Autowired
-    private GroupValidator groupValidator;
-
 
     /**
      * @param isOpenSealRank

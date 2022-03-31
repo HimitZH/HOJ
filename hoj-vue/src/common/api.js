@@ -1065,9 +1065,9 @@ const ojApi = {
   },
 
   // Group Discussion
-  getGroupDiscussionList(currentPage, limit, gid) {
+  getGroupDiscussionList(currentPage, limit, gid, pid) {
     return ajax('/api/group/get-discussion-list', 'get', {
-      params: { currentPage, limit, gid }
+      params: { currentPage, limit, gid, pid}
     })
   },
 

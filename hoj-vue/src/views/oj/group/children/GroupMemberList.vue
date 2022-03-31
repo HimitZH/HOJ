@@ -83,7 +83,6 @@
 import { mapGetters } from 'vuex';
 import Pagination from '@/components/oj/common/Pagination';
 import api from '@/common/api';
-import mMessage from '@/common/message';
 import Editor from '@/components/admin/Editor.vue';
 import MemberList from '@/components/oj/group/MemberList';
 export default {

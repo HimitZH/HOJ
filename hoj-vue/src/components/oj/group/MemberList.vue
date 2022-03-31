@@ -44,11 +44,31 @@
             size="small"
             :disabled="!isSuperAdmin && !isGroupOwner && row.auth >= userAuth"
           >
-            <el-option :label="$t('m.Applying')" :value="1" :disabled="!isSuperAdmin && !isGroupOwner && 1 >= userAuth"></el-option>
-            <el-option :label="$t('m.Refused')" :value="2" :disabled="!isSuperAdmin && !isGroupOwner && 2 >= userAuth"></el-option>
-            <el-option :label="$t('m.General_Member')" :value="3" :disabled="!isSuperAdmin && !isGroupOwner && 3 >= userAuth"></el-option>
-            <el-option :label="$t('m.Group_Admin')" :value="4" :disabled="!isSuperAdmin && !isGroupOwner && 4 >= userAuth"></el-option>
-            <el-option :label="$t('m.Group_Root')" :value="5" :disabled="!isSuperAdmin && !isGroupOwner && 5 >= userAuth"></el-option>
+            <el-option
+              :label="$t('m.Applying')"
+              :value="1"
+              :disabled="!isSuperAdmin && !isGroupOwner && 1 >= userAuth"
+            ></el-option>
+            <el-option
+              :label="$t('m.Refused')"
+              :value="2"
+              :disabled="!isSuperAdmin && !isGroupOwner && 2 >= userAuth"
+            ></el-option>
+            <el-option
+              :label="$t('m.General_Member')"
+              :value="3"
+              :disabled="!isSuperAdmin && !isGroupOwner && 3 >= userAuth"
+            ></el-option>
+            <el-option
+              :label="$t('m.Group_Admin')"
+              :value="4"
+              :disabled="!isSuperAdmin && !isGroupOwner && 4 >= userAuth"
+            ></el-option>
+            <el-option
+              :label="$t('m.Group_Root')"
+              :value="5"
+              :disabled="!isSuperAdmin && !isGroupOwner && 5 >= userAuth"
+            ></el-option>
           </el-select>
         </template>
       </vxe-table-column>
@@ -72,7 +92,11 @@
             effect="dark"
             :content="$t('m.Delete_Member')"
             placement="top"
-            v-if="isGroupOwner || row.auth < userAuth || userInfo.uid == row.uid"
+            v-if="
+              (isGroupOwner || row.auth < userAuth) &&
+                userInfo.uid != row.uid &&
+                row.uid != group.owner
+            "
           >
             <el-button
               icon="el-icon-delete-solid"
@@ -105,7 +129,7 @@ export default {
   name: 'GroupMemberList',
   components: {
     Pagination,
-    Editor
+    Editor,
   },
   data() {
     return {
@@ -138,49 +162,63 @@ export default {
     },
     getGroupAdminMemberList() {
       this.loading = true;
-      api.getGroupApplyList(this.currentPage, this.limit, this.$route.params.groupID).then(
-        (res) => {
-          this.adminMemberList = res.data.data.records;
-          this.adminTotal = res.data.data.total;
-          this.loading = false;
-        },
-        (err) => {
-          this.loading = false;
-        }
-      );
+      api
+        .getGroupApplyList(
+          this.currentPage,
+          this.limit,
+          this.$route.params.groupID
+        )
+        .then(
+          (res) => {
+            this.adminMemberList = res.data.data.records;
+            this.adminTotal = res.data.data.total;
+            this.loading = false;
+          },
+          (err) => {
+            this.loading = false;
+          }
+        );
     },
     updateGroupMember(data) {
-      api.updateGroupMember(data)
+      api
+        .updateGroupMember(data)
         .then((res) => {
           mMessage.success(this.$i18n.t('m.Update_Successfully'));
-          this.$emit("currentChange", 1);
+          this.$emit('currentChange', 1);
           this.$store.dispatch('getGroup');
           this.currentChange(1);
-        }).catch(() => {
-        });
+        })
+        .catch(() => {});
     },
     viewReason(value) {
       this.$alert(value, this.$t('m.Apply_Reason'), {
-        confirmButtonText: this.$t('m.OK')
+        confirmButtonText: this.$t('m.OK'),
       });
     },
     deleteMember(uid, gid) {
-      this.$confirm(this.$i18n.t('m.Delete_Member_Tips'), this.$i18n.t('m.Warning'), {
-        confirmButtonText: this.$i18n.t('m.OK'),
-        cancelButtonText: this.$i18n.t('m.Cancel'),
-        type: 'warning',
-      })
+      this.$confirm(
+        this.$i18n.t('m.Delete_Member_Tips'),
+        this.$i18n.t('m.Warning'),
+        {
+          confirmButtonText: this.$i18n.t('m.OK'),
+          cancelButtonText: this.$i18n.t('m.Cancel'),
+          type: 'warning',
+        }
+      )
         .then(() => {
           this.loading = true;
-          api.deleteGroupMember(uid, gid).then((res) => {
-            this.loading = false;
-            mMessage.success(this.$i18n.t('m.Delete_successfully'));
-            this.$emit("currentChange", 1);
-            this.$store.dispatch('getGroup');
-            this.currentChange(1);
-          }).catch(() => {
-            this.loading = false;
-          });
+          api
+            .deleteGroupMember(uid, gid)
+            .then((res) => {
+              this.loading = false;
+              mMessage.success(this.$i18n.t('m.Delete_successfully'));
+              this.$emit('currentChange', 1);
+              this.$store.dispatch('getGroup');
+              this.currentChange(1);
+            })
+            .catch(() => {
+              this.loading = false;
+            });
         })
         .catch(() => {
           this.loading = false;
@@ -188,7 +226,13 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['userInfo', 'isSuperAdmin', 'userAuth', 'isGroupOwner']),
+    ...mapGetters([
+      'userInfo',
+      'isSuperAdmin',
+      'userAuth',
+      'isGroupOwner',
+      'group',
+    ]),
   },
 };
 </script>

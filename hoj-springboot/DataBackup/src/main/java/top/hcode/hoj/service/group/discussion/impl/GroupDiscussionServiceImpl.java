@@ -25,9 +25,9 @@ public class GroupDiscussionServiceImpl implements GroupDiscussionService {
     private GroupDiscussionManager groupDiscussionManager;
 
     @Override
-    public CommonResult<IPage<Discussion>> getDiscussionList(Integer limit, Integer currentPage, Long gid) {
+    public CommonResult<IPage<Discussion>> getDiscussionList(Integer limit, Integer currentPage, Long gid, String pid) {
         try {
-            return CommonResult.successResponse(groupDiscussionManager.getDiscussionList(limit, currentPage, gid));
+            return CommonResult.successResponse(groupDiscussionManager.getDiscussionList(limit, currentPage, gid, pid));
         } catch (StatusForbiddenException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
         } catch (StatusNotFoundException e) {

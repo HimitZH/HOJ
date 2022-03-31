@@ -11,7 +11,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  */
 public interface GroupDiscussionService {
 
-    public CommonResult<IPage<Discussion>> getDiscussionList(Integer limit, Integer currentPage, Long gid);
+    public CommonResult<IPage<Discussion>> getDiscussionList(Integer limit, Integer currentPage, Long gid, String pid);
 
     public CommonResult<IPage<Discussion>> getAdminDiscussionList(Integer limit, Integer currentPage, Long gid);
 

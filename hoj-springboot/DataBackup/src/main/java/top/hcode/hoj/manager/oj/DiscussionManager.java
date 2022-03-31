@@ -70,11 +70,9 @@ public class DiscussionManager {
                                                String pid,
                                                boolean onlyMine,
                                                String keyword,
-                                               boolean admin) throws StatusForbiddenException {
+                                               boolean admin) {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-
-        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
 
@@ -100,14 +98,9 @@ public class DiscussionManager {
 
         if (!StringUtils.isEmpty(pid)) {
             discussionQueryWrapper.eq("pid", pid);
-            QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
-            problemQueryWrapper.eq("problem_id", pid);
-            Problem problem = problemEntityService.getOne(problemQueryWrapper);
+        }
 
-            if (problem.getIsGroup() && !isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid())) {
-                throw new StatusForbiddenException("对不起，您无权限操作！");
-            }
-        } else if (!(admin && isAdmin)) {
+        if (!(admin && isAdmin)) {
             discussionQueryWrapper.isNull("gid");
         }
 
@@ -243,7 +236,8 @@ public class DiscussionManager {
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
-        if (!isRoot && !discussion.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupAdmin(userRolesVo.getUid(), discussion.getGid())) {
+        if (!isRoot && !discussion.getUid().equals(userRolesVo.getUid())
+                && !(discussion.getGid() != null && groupValidator.isGroupAdmin(userRolesVo.getUid(), discussion.getGid()))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -262,7 +256,8 @@ public class DiscussionManager {
 
         Discussion discussion = discussionEntityService.getById(did);
 
-        if (!isRoot && !discussion.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupAdmin(userRolesVo.getUid(), discussion.getGid())) {
+        if (!isRoot && !discussion.getUid().equals(userRolesVo.getUid())
+                && !(discussion.getGid()!=null&&groupValidator.isGroupAdmin(userRolesVo.getUid(), discussion.getGid()))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 

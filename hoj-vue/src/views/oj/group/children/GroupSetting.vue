@@ -124,12 +124,7 @@
       </el-dialog>
     </div>
     <div class="section-title">{{ $t('m.UserInfo_Setting') }}</div>
-    <el-form
-      label-position="top"
-      :model="group"
-      :rules="rules"
-      ref="formGroup"
-    >
+    <el-form label-position="top" :model="group" :rules="rules" ref="formGroup">
       <el-row :gutter="20">
         <el-col :md="12" :xs="24">
           <el-form-item :label="$t('m.Group_Name')" required prop="name">
@@ -145,7 +140,11 @@
           </el-form-item>
         </el-col>
         <el-col :md="12" :xs="24">
-          <el-form-item :label="$t('m.Group_Short_Name')" required prop="shortName">
+          <el-form-item
+            :label="$t('m.Group_Short_Name')"
+            required
+            prop="shortName"
+          >
             <el-input
               v-model="group.shortName"
               :placeholder="$t('m.Group_Short_Name')"
@@ -183,18 +182,24 @@
                 :content="$t('m.Group_Protected_Tips')"
                 placement="right"
               >
-                <el-option :label="$t('m.Group_Protected')" :value="2"></el-option>
+                <el-option
+                  :label="$t('m.Group_Protected')"
+                  :value="2"
+                ></el-option>
               </el-tooltip>
               <el-tooltip
                 :content="$t('m.Group_Private_Tips')"
                 placement="right"
               >
-                <el-option :label="$t('m.Group_Private')" :value="3"></el-option>
+                <el-option
+                  :label="$t('m.Group_Private')"
+                  :value="3"
+                ></el-option>
               </el-tooltip>
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :md="8" :xs="24">
+        <el-col :md="8" :xs="24" v-if="group.auth != 1">
           <el-form-item :label="$t('m.Group_Code')" required prop="code">
             <el-input
               v-model="group.code"
@@ -218,7 +223,11 @@
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <el-form-item :label="$t('m.Group_Description')" required prop="description">
+          <el-form-item
+            :label="$t('m.Group_Description')"
+            required
+            prop="description"
+          >
             <Editor :value.sync="group.description"></Editor>
           </el-form-item>
         </el-col>

@@ -742,10 +742,12 @@ IF NOT EXISTS (
 	ALTER TABLE `hoj`.`training_category`  ADD COLUMN `gid` bigint(20) unsigned DEFAULT NULL;
 	ALTER TABLE `hoj`.`training_category` ADD CONSTRAINT `training_category_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 	
-	insert  into `auth`(`id`,`name`,`permission`,`status`,`gmt_create`,`gmt_modified`) values (13,'group','group_add',0,'2022-03-11 13:36:55','2022-03-11 13:36:55');
+	insert  into `auth`(`id`,`name`,`permission`,`status`,`gmt_create`,`gmt_modified`) values (13,'group','group_add',0,'2022-03-11 13:36:55','2022-03-11 13:36:55'),
+	(14,'group','group_del',0,'2022-03-11 13:36:55','2022-03-11 13:36:55');
 	
-	insert  into `role_auth`(`id`,`auth_id`,`role_id`,`gmt_create`,`gmt_modified`) values (54,13,1000,'2021-06-12 23:16:58','2021-06-12 23:16:58'),(55,13,1001,'2021-06-12 23:16:58','2021-06-12 23:16:58'),
-	(56,13,1002,'2021-06-12 23:16:58','2021-06-12 23:16:58'),(57,13,1008,'2021-06-12 23:16:58','2021-06-12 23:16:58');
+	insert  into `role_auth`(`auth_id`,`role_id`,`gmt_create`,`gmt_modified`) values (13,1000,'2021-06-12 23:16:58','2021-06-12 23:16:58'),(13,1001,'2021-06-12 23:16:58','2021-06-12 23:16:58'),
+	(13,1002,'2021-06-12 23:16:58','2021-06-12 23:16:58'),(13,1008,'2021-06-12 23:16:58','2021-06-12 23:16:58'),(14,1000,'2021-06-12 23:16:58','2021-06-12 23:16:58'),
+	(14,1001,'2021-06-12 23:16:58','2021-06-12 23:16:58'),(14,1002,'2021-06-12 23:16:58','2021-06-12 23:16:58'),(14,1008,'2021-06-12 23:16:58','2021-06-12 23:16:58');
 	
 END
 IF ; END$$

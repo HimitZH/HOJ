@@ -234,7 +234,6 @@ import TrainingProblemList from '@/components/oj/group/TrainingProblemList';
 import AddPublicProblem from '@/components/oj/group/AddPublicProblem.vue';
 import AddGroupProblem from '@/components/oj/group/AddGroupProblem.vue';
 import api from '@/common/api';
-import mMessage from '@/common/message';
 export default {
   name: 'GroupTrainingList',
   components: {

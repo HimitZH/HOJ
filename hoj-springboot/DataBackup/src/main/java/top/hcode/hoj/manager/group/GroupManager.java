@@ -175,8 +175,14 @@ public class GroupManager {
             throw new StatusFailException("团队简介的长度应为 5 到 50！");
         }
 
-        if (!StringUtils.isEmpty(group.getCode()) && group.getCode().length() != 6) {
-            throw new StatusFailException("团队邀请码的长度应为 6！");
+        if (group.getAuth() == null || group.getAuth() < 1 || group.getAuth() > 3) {
+            throw new StatusFailException("团队权限不能为空且应为1~3！");
+        }
+
+        if (group.getAuth() == 2 || group.getAuth() == 3) {
+            if (StringUtils.isEmpty(group.getCode()) || group.getCode().length() != 6) {
+                throw new StatusFailException("团队邀请码不能为空且长度应为 6！");
+            }
         }
 
         if (!StringUtils.isEmpty(group.getDescription()) && (group.getDescription().length() < 5 || group.getDescription().length() > 1000)) {
