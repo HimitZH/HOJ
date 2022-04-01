@@ -726,7 +726,6 @@ export default {
 <style scoped>
 #header {
   min-width: 300px;
-  position: fixed;
   top: 0;
   left: 0;
   height: auto;
