@@ -1,5 +1,6 @@
 package top.hcode.hoj.manager.group;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
@@ -49,6 +50,15 @@ public class GroupManager {
 
     @Autowired
     private GroupValidator groupValidator;
+
+    @Value("${hoj.web-config.default-user-limit.group.daily}")
+    private Integer defaultCreateGroupDailyLimit;
+
+    @Value("${hoj.web-config.default-user-limit.group.total}")
+    private Integer defaultCreateGroupLimit;
+
+    @Value("${hoj.web-config.default-user-limit.group.ac-initial-value}")
+    private Integer defaultCreateGroupACInitValue;
 
     public IPage<GroupVo> getGroupList(Integer limit, Integer currentPage, String keyword, Integer auth, boolean onlyMine) {
         Session session = SecurityUtils.getSubject().getSession();
@@ -146,7 +156,7 @@ public class GroupManager {
             queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
             int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
 
-            if (userAcProblemCount < 20) {
+            if (userAcProblemCount < defaultCreateGroupACInitValue) {
                 throw new StatusForbiddenException("对不起，您暂时无权限创建团队！请先去提交题目通过20道以上!");
             }
 
@@ -154,11 +164,20 @@ public class GroupManager {
             Integer num = (Integer) redisUtils.get(lockKey);
             if (num == null) {
                 redisUtils.set(lockKey, 1, 3600 * 24);
-            } else if (num >= 2) {
+            } else if (num >= defaultCreateGroupDailyLimit) {
                 throw new StatusForbiddenException("对不起，您今天创建团队次数已超过2次，已被限制！");
             } else {
                 redisUtils.incr(lockKey, 1);
             }
+
+            QueryWrapper<Group> existedGroupQueryWrapper = new QueryWrapper<>();
+            existedGroupQueryWrapper.eq("owner", userRolesVo.getUsername());
+            int existedGroupNum = groupEntityService.count(existedGroupQueryWrapper);
+
+            if (existedGroupNum >= defaultCreateGroupLimit) {
+                throw new StatusForbiddenException("对不起，您总共已创建了5个团队，不可再创建，已被限制！");
+            }
+
         }
         group.setOwner(userRolesVo.getUsername());
         group.setUid(userRolesVo.getUid());

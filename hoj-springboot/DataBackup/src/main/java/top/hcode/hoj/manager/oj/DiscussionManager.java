@@ -1,5 +1,6 @@
 package top.hcode.hoj.manager.oj;
 
+import org.springframework.beans.factory.annotation.Value;
 import top.hcode.hoj.dao.problem.ProblemEntityService;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.validator.GroupValidator;
@@ -63,6 +64,12 @@ public class DiscussionManager {
 
     @Autowired
     private GroupValidator groupValidator;
+
+    @Value("${hoj.web-config.default-user-limit.discussion.daily}")
+    private Integer defaultCreateDiscussionDailyLimit;
+
+    @Value("${hoj.web-config.default-user-limit.discussion.ac-initial-value}")
+    private Integer defaultCreateDiscussionACInitValue;
 
     public IPage<Discussion> getDiscussionList(Integer limit,
                                                Integer currentPage,
@@ -194,7 +201,7 @@ public class DiscussionManager {
             queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
             int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
 
-            if (userAcProblemCount < 10) {
+            if (userAcProblemCount < defaultCreateDiscussionACInitValue) {
                 throw new StatusForbiddenException("对不起，您暂时不能评论！请先去提交题目通过10道以上!");
             }
 
@@ -202,7 +209,7 @@ public class DiscussionManager {
             Integer num = (Integer) redisUtils.get(lockKey);
             if (num == null) {
                 redisUtils.set(lockKey, 1, 3600 * 24);
-            } else if (num >= 5) {
+            } else if (num >= defaultCreateDiscussionDailyLimit) {
                 throw new StatusForbiddenException("对不起，您今天发帖次数已超过5次，已被限制！");
             } else {
                 redisUtils.incr(lockKey, 1);

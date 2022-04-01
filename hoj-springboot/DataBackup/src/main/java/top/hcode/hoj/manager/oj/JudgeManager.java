@@ -1,5 +1,6 @@
 package top.hcode.hoj.manager.oj;
 
+import org.springframework.beans.factory.annotation.Value;
 import top.hcode.hoj.validator.GroupValidator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -91,6 +92,9 @@ public class JudgeManager {
     @Autowired
     private GroupValidator groupValidator;
 
+    @Value("${hoj.web-config.default-user-limit.submit.interval}")
+    private Integer defaultSubmitInterval;
+
     /**
      * @MethodName submitProblemJudge
      * @Description 核心方法 判题通过openfeign调用判题系统服务
@@ -115,7 +119,7 @@ public class JudgeManager {
             if (count > 1) {
                 throw new StatusForbiddenException("对不起，您的提交频率过快，请稍后再尝试！");
             }
-            redisUtils.expire(lockKey, 8);
+            redisUtils.expire(lockKey, defaultSubmitInterval);
         }
 
         HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
@@ -227,7 +231,7 @@ public class JudgeManager {
      * @Description 获取单个提交记录的详情
      * @Since 2021/1/2
      */
-    public SubmissionInfoVo getSubmission(Long submitId) throws StatusNotFoundException, StatusAccessDeniedException{
+    public SubmissionInfoVo getSubmission(Long submitId) throws StatusNotFoundException, StatusAccessDeniedException {
 
         Judge judge = judgeEntityService.getById(submitId);
         if (judge == null) {

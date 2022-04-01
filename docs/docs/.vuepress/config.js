@@ -14,7 +14,7 @@ module.exports = context => config({
         'vuepress-plugin-smooth-scroll',
         'vuepress-plugin-zooming'
     ],
-    base:'/docs/',
+    base:'/',
     themeConfig: {
         logo: '/favicon.ico',
         nav: [
