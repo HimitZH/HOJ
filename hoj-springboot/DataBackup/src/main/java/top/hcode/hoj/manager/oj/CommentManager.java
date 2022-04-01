@@ -151,7 +151,8 @@ public class CommentManager {
                 int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
 
                 if (userAcProblemCount < defaultCreateCommentACInitValue) {
-                    throw new StatusForbiddenException("对不起，您暂时不能评论！请先去提交题目通过10道以上!");
+                    throw new StatusForbiddenException("对不起，您暂时不能评论！请先去提交题目通过"
+                            + defaultCreateCommentACInitValue + "道以上!");
                 }
             }
 
@@ -374,7 +375,8 @@ public class CommentManager {
                 int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
 
                 if (userAcProblemCount < defaultCreateCommentACInitValue) {
-                    throw new StatusForbiddenException("对不起，您暂时不能回复！请先去提交题目通过10道以上!");
+                    throw new StatusForbiddenException("对不起，您暂时不能回复！请先去提交题目通过" +
+                            defaultCreateCommentACInitValue + "道以上!");
                 }
             }
             Discussion discussion = discussionEntityService.getById(comment.getDid());
