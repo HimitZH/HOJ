@@ -106,6 +106,7 @@ docker ps # 查看当前运行的容器状态
 | 2022-02-25 | 支持PyPy2、PyPy3、JavaScript V8、JavaScript Node、PHP        | Himit_ZH       |
 | 2022-03-12 | 后端接口全部重构，赛外榜单增加缓存                           | Himit_ZH       |
 | 2022-03-28 | 合并冷蕴提交的团队功能                                       | Himit_ZH、冷蕴 |
+| 2022-04-01 | 正式上线团队功能                                             | Himit_ZH、冷蕴 |
 
 ## 五、部分截图
 

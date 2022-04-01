@@ -98,7 +98,11 @@ public class AdminContestManager {
     public void addContest(AdminContestVo adminContestVo) throws StatusFailException {
         Contest contest = BeanUtil.copyProperties(adminContestVo, Contest.class, "starAccount");
         JSONObject accountJson = new JSONObject();
-        accountJson.set("star_account", adminContestVo.getStarAccount());
+        if (adminContestVo.getStarAccount() == null) {
+            accountJson.set("star_account", new ArrayList<>());
+        } else {
+            accountJson.set("star_account", adminContestVo.getStarAccount());
+        }
         contest.setStarAccount(accountJson.toString());
         boolean isOk = contestEntityService.save(contest);
         if (!isOk) { // 删除成功
