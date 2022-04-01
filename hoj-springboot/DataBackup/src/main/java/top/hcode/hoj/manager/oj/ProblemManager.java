@@ -93,7 +93,8 @@ public class ProblemManager {
     public RandomProblemVo getRandomProblem() throws StatusFailException {
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         // 必须是公开题目
-        queryWrapper.select("problem_id").eq("auth", 1).eq("is_group", true);
+        queryWrapper.select("problem_id").eq("auth", 1)
+                .eq("is_group", false);
         List<Problem> list = problemEntityService.list(queryWrapper);
         if (list.size() == 0) {
             throw new StatusFailException("获取随机题目失败，题库暂无公开题目！");

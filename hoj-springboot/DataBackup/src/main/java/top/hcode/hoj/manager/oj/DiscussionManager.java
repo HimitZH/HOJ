@@ -202,7 +202,7 @@ public class DiscussionManager {
             int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
 
             if (userAcProblemCount < defaultCreateDiscussionACInitValue) {
-                throw new StatusForbiddenException("对不起，您暂时不能评论！请先去提交题目通过10道以上!");
+                throw new StatusForbiddenException("对不起，您暂时不能评论！请先去提交题目通过" + defaultCreateDiscussionACInitValue + "道以上!");
             }
 
             String lockKey = Constants.Account.DISCUSSION_ADD_NUM_LOCK.getCode() + userRolesVo.getUid();
@@ -210,7 +210,7 @@ public class DiscussionManager {
             if (num == null) {
                 redisUtils.set(lockKey, 1, 3600 * 24);
             } else if (num >= defaultCreateDiscussionDailyLimit) {
-                throw new StatusForbiddenException("对不起，您今天发帖次数已超过5次，已被限制！");
+                throw new StatusForbiddenException("对不起，您今天发帖次数已超过" + defaultCreateDiscussionDailyLimit + "次，已被限制！");
             } else {
                 redisUtils.incr(lockKey, 1);
             }
@@ -264,7 +264,7 @@ public class DiscussionManager {
         Discussion discussion = discussionEntityService.getById(did);
 
         if (!isRoot && !discussion.getUid().equals(userRolesVo.getUid())
-                && !(discussion.getGid()!=null&&groupValidator.isGroupAdmin(userRolesVo.getUid(), discussion.getGid()))) {
+                && !(discussion.getGid() != null && groupValidator.isGroupAdmin(userRolesVo.getUid(), discussion.getGid()))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 

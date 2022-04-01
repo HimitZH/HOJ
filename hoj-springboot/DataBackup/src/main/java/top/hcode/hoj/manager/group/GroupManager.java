@@ -157,7 +157,8 @@ public class GroupManager {
             int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
 
             if (userAcProblemCount < defaultCreateGroupACInitValue) {
-                throw new StatusForbiddenException("对不起，您暂时无权限创建团队！请先去提交题目通过20道以上!");
+                throw new StatusForbiddenException("对不起，您暂时无权限创建团队！请先去提交题目通过" +
+                        defaultCreateGroupACInitValue + "道以上!");
             }
 
             String lockKey = Constants.Account.GROUP_ADD_NUM_LOCK.getCode() + userRolesVo.getUid();
@@ -165,7 +166,7 @@ public class GroupManager {
             if (num == null) {
                 redisUtils.set(lockKey, 1, 3600 * 24);
             } else if (num >= defaultCreateGroupDailyLimit) {
-                throw new StatusForbiddenException("对不起，您今天创建团队次数已超过2次，已被限制！");
+                throw new StatusForbiddenException("对不起，您今天创建团队次数已超过" + defaultCreateGroupDailyLimit + "次，已被限制！");
             } else {
                 redisUtils.incr(lockKey, 1);
             }
@@ -175,7 +176,7 @@ public class GroupManager {
             int existedGroupNum = groupEntityService.count(existedGroupQueryWrapper);
 
             if (existedGroupNum >= defaultCreateGroupLimit) {
-                throw new StatusForbiddenException("对不起，您总共已创建了5个团队，不可再创建，已被限制！");
+                throw new StatusForbiddenException("对不起，您总共已创建了" + defaultCreateGroupLimit + "个团队，不可再创建，已被限制！");
             }
 
         }
