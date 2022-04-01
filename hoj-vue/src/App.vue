@@ -381,7 +381,7 @@ a:hover {
 }
 @media screen and (min-width: 1050px) {
   #oj-content {
-    margin-top: 80px;
+    margin-top: 20px;
     padding: 0 3%;
   }
 }
