@@ -14,9 +14,9 @@
 
 基于前后端分离，分布式架构的在线测评平台（hoj），前端使用vue，后端主要使用springboot，redis，mysql，nacos等技术，**支持HDU、POJ、Codeforces（包括GYM）、AtCoder、SPOJ的vjudge判题，同时适配手机端、电脑端浏览，拥有讨论区与站内消息系统，支持私有训练、公开训练（题单），还有完善的判题模式（普通测评、特殊测评、交互测评）和完善的比赛功能（打星队伍、关注队伍、外榜）。**
 
-|              在线Demo              |                         在线文档                          |                     Github&Gitee仓库地址                     |   QQ群    |
-| :--------------------------------: | :-------------------------------------------------------: | :----------------------------------------------------------: | :-------: |
-| [https://hdoi.cn](https://hdoi.cn) | [https://www.hcode.top/docs](https://www.hcode.top/docs/) | [https://github.com/HimitZH/HOJ](https://github.com/HimitZH/HOJ)  [https://gitee.com/himitzh0730/hoj](https://gitee.com/himitzh0730/hoj) | 598587305 |
+|              在线Demo              |                   在线文档                   |                     Github&Gitee仓库地址                     |   QQ群    |
+| :--------------------------------: | :------------------------------------------: | :----------------------------------------------------------: | :-------: |
+| [https://hdoi.cn](https://hdoi.cn) | [https://docs.hdoi.cn](https://docs.hdoi.cn) | [https://github.com/HimitZH/HOJ](https://github.com/HimitZH/HOJ)  [https://gitee.com/himitzh0730/hoj](https://gitee.com/himitzh0730/hoj) | 598587305 |
 
 **注意：**
 
@@ -28,7 +28,7 @@
 
 ## 二、部署
 
-部署文档：[基于docker-compose部署](https://www.hcode.top/docs/deploy/docker)
+部署文档：[基于docker-compose部署](https://docs.hdoi.cn/deploy/docker)
 
 具体请看部署文档，已安装docker和docker-compose的可以执行以下命令快速部署
 

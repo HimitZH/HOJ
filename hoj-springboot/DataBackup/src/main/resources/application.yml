@@ -14,3 +14,18 @@ mybatis-plus:
 # 消费者将要去访问的微服务名称（注册成功进入nacos的微服务提供者）
 service-url:
   name: hoj-judgeserver # 服务名
+
+hoj:
+  web-config:
+    default-user-limit:
+      submit:
+        interval: 8               # 非比赛的提交间隔秒数
+      group:
+        daily: 2                  # 每天可以创建的团队数量
+        total: 5                  # 总共可以拥有的团队数量
+        ac-initial-value: 20      # 创建团队的前提：20道题目通过
+      discussion:
+        daily: 5                  # 每天可以创建的帖子数量
+        ac-initial-value: 10      # 创建讨论帖子的前提：10道题目通过
+      comment:
+        ac-initial-value: 10      # 评论和回复的前提：10道题目通过

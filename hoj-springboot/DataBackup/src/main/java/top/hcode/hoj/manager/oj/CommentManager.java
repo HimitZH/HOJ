@@ -2,6 +2,7 @@ package top.hcode.hoj.manager.oj;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.extra.emoji.EmojiUtil;
+import org.springframework.beans.factory.annotation.Value;
 import top.hcode.hoj.dao.contest.ContestEntityService;
 import top.hcode.hoj.dao.contest.ContestRegisterEntityService;
 import top.hcode.hoj.pojo.entity.contest.Contest;
@@ -66,13 +67,13 @@ public class CommentManager {
     private ContestEntityService contestEntityService;
 
     @Autowired
-    private ContestRegisterEntityService contestRegisterEntityService;
-
-    @Autowired
     private GroupValidator groupValidator;
 
     @Autowired
     private ContestValidator contestValidator;
+
+    @Value("${hoj.web-config.default-user-limit.comment.ac-initial-value}")
+    private Integer defaultCreateCommentACInitValue;
 
     public CommentListVo getComments(Long cid, Integer did, Integer limit, Integer currentPage) throws StatusForbiddenException {
 
@@ -149,7 +150,7 @@ public class CommentManager {
                 queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
                 int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
 
-                if (userAcProblemCount < 10) {
+                if (userAcProblemCount < defaultCreateCommentACInitValue) {
                     throw new StatusForbiddenException("对不起，您暂时不能评论！请先去提交题目通过10道以上!");
                 }
             }
@@ -372,7 +373,7 @@ public class CommentManager {
                 queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
                 int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
 
-                if (userAcProblemCount < 10) {
+                if (userAcProblemCount < defaultCreateCommentACInitValue) {
                     throw new StatusForbiddenException("对不起，您暂时不能回复！请先去提交题目通过10道以上!");
                 }
             }
