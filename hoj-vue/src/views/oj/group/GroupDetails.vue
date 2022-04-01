@@ -431,7 +431,7 @@ export default {
         .then(() => {
           this.loading = true;
           api
-            .exitGroup(this.userInfo.uid, this.$route.params.groupID)
+            .exitGroup(this.$route.params.groupID)
             .then((res) => {
               this.loading = false;
               mMessage.success(this.$i18n.t('m.Exit_Successfully'));
