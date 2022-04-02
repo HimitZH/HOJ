@@ -14,6 +14,12 @@
             ><i class="fa fa-github"></i>
           </a>
         </p>
+        <p>
+          {{ $t('m.Group_Function_Development_Contributor') }} / 冷蕴
+          <a href="https://github.com/IUaenaSong" class="icon" target="_blank"
+            ><i class="fa fa-github"></i>
+          </a>
+        </p>
         <p class="teal-text">
           <i class="el-icon-circle-check"></i> {{ $t('m.Open_Source') }}
         </p>

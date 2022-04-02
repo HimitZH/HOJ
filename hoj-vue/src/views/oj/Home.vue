@@ -92,9 +92,9 @@
               "
             >
               <div slot="header" class="clearfix contest-header">
-                <a class="contest-title" @click="goContest(contest.id)">
-                  <Marquee :val="contest.title"></Marquee>
-                </a>
+                <a class="contest-title" @click="goContest(contest.id)">{{
+                  contest.title
+                }}</a>
                 <div class="contest-status">
                   <el-tag
                     effect="dark"
@@ -308,13 +308,11 @@ import { mapState, mapGetters } from 'vuex';
 import Avatar from 'vue-avatar';
 import myMessage from '@/common/message';
 const Announcements = () => import('@/components/oj/common/Announcements.vue');
-import Marquee from '@/components/oj/common/Marquee'
 export default {
   name: 'home',
   components: {
     Announcements,
     Avatar,
-    Marquee,
   },
   data() {
     return {

@@ -431,6 +431,7 @@ export const m = {
 
   // /views/oj/about/Developer.vue
   Leader_BackEnd_FrontEnd_Engineer: '主导 & 后端 | 前端 开发者',
+  Group_Function_Development_Contributor:'团队功能开发贡献者',
   Distributed: '分布式',
   Distributed_Desc: '前后端分离，支持判题微服务集群',
   Customization: '定制化',

@@ -132,7 +132,7 @@
               >
                 <div slot="header" style="height: 24px">
                   <a class="group-name" @click="toGroup(group.id)">
-                    <Marquee :val="group.name"></Marquee>
+                    <Marquee :val="group.name" :id="group.id"></Marquee>
                   </a>
                 </div>
                 <div class="group-brief">
@@ -330,7 +330,7 @@ import Avatar from 'vue-avatar';
 import { mapGetters } from 'vuex';
 import Pagination from '@/components/oj/common/Pagination';
 import Editor from '@/components/admin/Editor';
-import Marquee from '@/components/oj/common/Marquee'
+import Marquee from '@/components/oj/common/Marquee';
 export default {
   name: 'GroupList',
   components: {
