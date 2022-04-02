@@ -13,7 +13,7 @@
     </resultMap>
 
     <!-- 主查询 -->
-    <select id="getProblemList" resultMap="map_ProblemList">
+    <select id="getProblemList" resultMap="map_ProblemList" useCache="true">
         SELECT DISTINCT p.id AS pid, p.problem_id, p.title, p.difficulty, p.type
         FROM problem p
         <if test="tid != null and tid.size() > 0">

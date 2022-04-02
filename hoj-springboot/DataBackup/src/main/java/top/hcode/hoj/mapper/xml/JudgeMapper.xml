@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.mapper.JudgeMapper">
-    <select id="getCommonJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="false">
+    <select id="getCommonJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="true">
         select j1.*,p.problem_id AS display_pid,p.title from (
             select j.submit_id,j.submit_time,j.username,j.uid,j.pid,j.status,j.share,
             j.time,j.memory,j.score,j.oi_rank_score,j.length,j.language,j.cid,j.cpid,j.judger
@@ -45,7 +45,7 @@
     </select>
 
 
-    <select id="getContestJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="false">
+    <select id="getContestJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="true">
         select j.submit_id,j.submit_time,j.uid,j.username,j.uid,cp.display_id,cp.display_title as title,
         j.status,j.share,j.time,j.memory,j.score,j.length,j.language,j.cid,j.cpid,j.judger
         from judge j right join
