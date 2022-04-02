@@ -2,12 +2,33 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.mapper.JudgeMapper">
     <select id="getCommonJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="false">
-        select j.uid,j.submit_id,j.submit_time,j.uid,j.username,j.uid,j.pid,j.status,j.share,
-        j.time,j.memory,j.score,j.oi_rank_score,j.length,j.language,j.cid,j.cpid,j.judger,p.problem_id as
-        display_pid,p.title
-        from judge j,problem p
+        select j1.*,p.problem_id AS display_pid,p.title from (
+            select j.submit_id,j.submit_time,j.username,j.uid,j.pid,j.status,j.share,
+            j.time,j.memory,j.score,j.oi_rank_score,j.length,j.language,j.cid,j.cpid,j.judger
+            from judge j
+            <where>
+                j.cid = 0 AND j.cpid = 0
+                <if test="username!='' and username!=null">
+                    AND j.username like concat('%',#{username},'%')
+                </if>
+                <if test="status!=null">
+                    AND j.status = #{status}
+                </if>
+                <if test="uid!=null and uid!=''">
+                    AND j.uid = #{uid}
+                </if>
+                <if test="gid==null">
+                    AND j.gid is NULL
+                </if>
+                <if test="gid!=null">
+                    AND j.gid = #{gid}
+                </if>
+            </where>
+        ) j1
+        left join problem p
+        on j1.pid = p.id
         <where>
-            p.id = j.pid AND j.cid = 0 AND j.cpid = 0 AND p.auth = 1
+            p.auth = 1
             <if test="searchPid!=null">
                 <if test="completeProblemID != true">
                     AND p.problem_id like concat('%',#{searchPid},'%')
@@ -16,42 +37,35 @@
                     AND p.problem_id = #{searchPid}
                 </if>
             </if>
-            <if test="username!='' and username!=null">
-                AND j.username like concat('%',#{username},'%')
-            </if>
-            <if test="status!=null">
-                AND j.status = #{status}
-            </if>
-            <if test="uid!=null and uid!=''">
-                AND j.uid = #{uid}
-            </if>
             <if test="gid==null">
-                AND p.is_group = false AND j.gid is NULL
-            </if>
-            <if test="gid!=null">
-                AND j.gid = #{gid}
+                AND p.is_group = false
             </if>
         </where>
-        order by j.submit_time DESC,j.submit_id DESC
+        order by submit_time DESC,submit_id DESC
     </select>
 
 
     <select id="getContestJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="false">
-        select j.uid,j.submit_id,j.submit_time,j.uid,j.username,j.uid,cp.display_id,cp.display_title as title,
+        select j.submit_id,j.submit_time,j.uid,j.username,j.uid,cp.display_id,cp.display_title as title,
         j.status,j.share,j.time,j.memory,j.score,j.length,j.language,j.cid,j.cpid,j.judger
-        from judge j,contest_problem cp
+        from judge j right join
+        (
+            select display_title,display_id,cid,pid from contest_problem
+            <where>
+                <if test="displayId!=null and displayId!=''">
+                    <if test="completeProblemID != true">
+                        AND display_id like concat('%',#{displayId},'%')
+                    </if>
+                    <if test="completeProblemID">
+                        AND display_id = #{displayId}
+                    </if>
+                </if>
+            </where>
+        ) cp
+        on j.pid = cp.pid AND j.cid = cp.cid
         <where>
-            j.pid=cp.pid AND j.cid = cp.cid
             <if test="cid!=null">
                 AND j.cid = #{cid}
-            </if>
-            <if test="displayId!=null and displayId!=''">
-                <if test="completeProblemID != true">
-                    AND cp.display_id like concat('%',#{displayId},'%')
-                </if>
-                <if test="completeProblemID">
-                    AND cp.display_id = #{displayId}
-                </if>
             </if>
             <if test="username!='' and username!=null">
                 AND j.username like concat('%',#{username},'%')
