@@ -360,7 +360,7 @@ public class AccountManager {
 
             UserInfoVo userInfoRes = new UserInfoVo();
             BeanUtil.copyProperties(userRoles, userInfoRes, "roles");
-            userInfoVo.setRoleList(userRoles.getRoles().stream().map(Role::getRole).collect(Collectors.toList()));
+            userInfoRes.setRoleList(userRoles.getRoles().stream().map(Role::getRole).collect(Collectors.toList()));
 
             return userInfoRes;
         } else {
