@@ -30,6 +30,7 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
     - 支持ACM、OI题目及比赛，比赛拥有外榜、打星队伍、关注队伍等功能
     - 拥有讨论区、题目讨论、比赛讨论、同时拥有站内消息系统
     - 支持私有训练、公开训练（题单）
+    - 支持私有团队、公开团队、保护团队
     - 支持testlib的特殊判题
     - 支持交互判题
   - 多样：支持自身题目数据评测，也支持其它知名OJ（HDU、Codeforces、GYM、POJ、AtCoder、SPOJ）题目的爬取与提交
@@ -48,17 +49,19 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 **以下截图页面均支持中英文国际化，点击底部的转换即可全网站转换，包括后台管理，同时浏览器会记住本次选择的语言**
 :::
 
+### 1. 首页
+
 > 首页页面 
 
-![首页](https://img-blog.csdnimg.cn/9405e0fa07c644c1a80470d7494f998b.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![首页](https://img-blog.csdnimg.cn/ab90fd3b4b904972b728013c9f2b776b.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 
 
 > 首页英文
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/0f0caa479b80421db6d5c79fe9238076.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![首页英文](https://img-blog.csdnimg.cn/e4982d7f4b0c4a07afa2017b836786f8.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
-
+### 2. 站内消息
 
 > 站内消息系统
 
@@ -67,6 +70,8 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 
 ![站内消息系统](https://img-blog.csdnimg.cn/513e7e37f52f48518c2fa1bf14eeea99.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+### 3. 题目
 
 > 题目列表页
 
@@ -78,6 +83,8 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 ![题目详情页](https://img-blog.csdnimg.cn/655a9886cf7d4683812c923b9ce2aa2e.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
+### 4. 训练
+
 > 训练列表页
 
 ![训练列表页](https://img-blog.csdnimg.cn/58ac74824fcf4963810beea7ba1203b9.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
@@ -85,6 +92,8 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 > 训练题目列表页
 
 ![训练题目列表页](https://img-blog.csdnimg.cn/b366a6a628984995b57a49c565a2ec47.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+### 5.  比赛
 
 > 比赛列表页
 
@@ -116,19 +125,28 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
   ![oi排行榜](https://img-blog.csdnimg.cn/67f6262854bb44efa70c374f1f156166.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
 
-  
 
-
+### 6. 评测
 
 > 提交列表页
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210609213021223.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
+### 7. 排行榜
+
 > 排行榜
 
 ![排行榜](https://img-blog.csdnimg.cn/407ad16361f34b44a282b07af68825e0.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
+### 8. 团队
 
+![团队列表页](https://img-blog.csdnimg.cn/7988504326c843ef94e937a2b4f32f03.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+![团队题目列表页](https://img-blog.csdnimg.cn/2c05e44f5a464381b9a357aff37b0086.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+
+
+### 9. 讨论
 
 > 公共讨论区
 
@@ -140,7 +158,7 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 ![评论组件](https://img-blog.csdnimg.cn/20210513142826730.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70#pic_center)
 
-
+### 10. 个人
 
 > 个人首页
 
@@ -154,13 +172,15 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 
 
-
+### 11. 管理后台
 
 > 管理后台首页
 
 ![管理后端](https://img-blog.csdnimg.cn/9b9674c0f30a441bb200a32756f24d2c.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 
+
+### 12. 手机端
 
 > 部分手机端显示
 

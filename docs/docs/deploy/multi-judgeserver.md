@@ -89,9 +89,9 @@
       # 写入主服务器ip
       RSYNC_MASTER_ADDR=127.0.0.1
       # 与主服务器的rsync密码一致
-   RSYNC_PASSWORD=hoj123456
+      RSYNC_PASSWORD=hoj123456
       ```
-
+    
    3. 启动即可
    
       ```shell
@@ -102,12 +102,8 @@
    
       ```
       访问 http://ip:8088/version
-   如果返回信息正常即启动成功！
+   	  如果返回信息正常即启动成功！
       ```
-
-      
-   
-   
 
 
 ## 分布式部署
@@ -119,7 +115,7 @@
    vim .env
    ```
 
-2. 修改`.env`的配置
+2. 修改`.env`文件的配置
 
    ```properties
    # nacos的配置
