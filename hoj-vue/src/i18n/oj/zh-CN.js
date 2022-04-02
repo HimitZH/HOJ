@@ -334,9 +334,9 @@ export const m = {
   Public: '公开赛',
   Private: '私有赛',
   Protected: '保护赛',
-  Contest_Public_Tips: '公开赛 - 每个用户都可查看与提交',
-  Contest_Protected_Tips: '保护赛 - 每个用户都可查看，但是提交需要密码',
-  Contest_Private_Tips: '私有赛 - 用户需要密码才可查看与提交',
+  Public_Tips: '公开赛 - 每个用户都可查看与提交',
+  Protected_Tips: '保护赛 - 每个用户都可查看，但是提交需要密码',
+  Private_Tips: '私有赛 - 用户需要密码才可查看与提交',
   Contest_Outside_ScoreBoard: '赛外榜单',
 
   // /views/oj/contest/ContestDetail.vue

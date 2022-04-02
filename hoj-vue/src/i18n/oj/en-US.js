@@ -332,9 +332,9 @@ export const m = {
   Public: 'Public',
   Private: 'Private',
   Protected: 'Protected',
-  Contest_Public_Tips: 'Public - Any one can see and submit.',
-  Contest_Protected_Tips: 'Protected - Any one can see, but only users knowing contest password can submit.',
-  Contest_Private_Tips: 'Private - Only users knowing contest password can see and submit.',
+  Public_Tips: 'Public - Any one can see and submit.',
+  Protected_Tips: 'Protected - Any one can see, but only users knowing contest password can submit.',
+  Private_Tips: 'Private - Only users knowing contest password can see and submit.',
   Contest_Outside_ScoreBoard: 'OutSide Contest ScoreBoard',
 
   // /views/oj/contest/ContestDetail.vue

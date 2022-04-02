@@ -131,14 +131,12 @@
                 style="border-radius: 10px; height: 170px"
               >
                 <div slot="header" style="height: 24px">
-                  <a class="group-name" @click="toGroup(group.id)">{{
-                    group.name
-                  }}</a>
+                  <a class="group-name" @click="toGroup(group.id)">
+                    <Marquee :val="group.name"></Marquee>
+                  </a>
                 </div>
-                <div style="height: 86px">
-                  <span style="font-size: 14px; padding: 10px">{{
-                    group.brief
-                  }}</span>
+                <div class="group-brief">
+                  <span>{{ group.brief }}</span>
                 </div>
                 <el-divider></el-divider>
                 <div style="font-size: 16px; padding: 3.5px">
@@ -331,13 +329,15 @@ import mMessage from '@/common/message';
 import Avatar from 'vue-avatar';
 import { mapGetters } from 'vuex';
 import Pagination from '@/components/oj/common/Pagination';
-import Editor from '@/components/admin/Editor.vue';
+import Editor from '@/components/admin/Editor';
+import Marquee from '@/components/oj/common/Marquee'
 export default {
   name: 'GroupList',
   components: {
     Avatar,
     Pagination,
     Editor,
+    Marquee,
   },
   data() {
     return {
@@ -654,6 +654,15 @@ section {
   color: rgb(245, 108, 108);
 }
 
+.group-brief {
+  height: 86px;
+  font-size: 14px;
+  padding: 0 10px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
 .group-auth {
   margin-left: 3px;
   margin-top: -1px;
