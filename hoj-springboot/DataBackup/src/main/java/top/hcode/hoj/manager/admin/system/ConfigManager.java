@@ -19,6 +19,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.manager.email.EmailManager;
+import top.hcode.hoj.pojo.entity.admin.DBAndRedisConfig;
+import top.hcode.hoj.pojo.entity.admin.EmailConfig;
+import top.hcode.hoj.pojo.entity.admin.WebConfig;
 import top.hcode.hoj.pojo.entity.common.File;
 import top.hcode.hoj.pojo.vo.ConfigVo;
 import top.hcode.hoj.dao.common.FileEntityService;
@@ -159,34 +162,34 @@ public class ConfigManager {
         }
     }
 
-    public void setWebConfig(HashMap<String, Object> params) throws StatusFailException {
+    public void setWebConfig(WebConfig config) throws StatusFailException {
 
-        if (!StringUtils.isEmpty(params.get("baseUrl"))) {
-            configVo.setBaseUrl((String) params.get("baseUrl"));
+        if (!StringUtils.isEmpty(config.getBaseUrl())) {
+            configVo.setBaseUrl(config.getBaseUrl());
         }
-        if (!StringUtils.isEmpty(params.get("name"))) {
-            configVo.setName((String) params.get("name"));
+        if (!StringUtils.isEmpty(config.getName())) {
+            configVo.setName(config.getName());
         }
-        if (!StringUtils.isEmpty(params.get("shortName"))) {
-            configVo.setShortName((String) params.get("shortName"));
+        if (!StringUtils.isEmpty(config.getShortName())) {
+            configVo.setShortName(config.getShortName());
         }
-        if (!StringUtils.isEmpty(params.get("description"))) {
-            configVo.setDescription((String) params.get("description"));
+        if (!StringUtils.isEmpty(config.getDescription())) {
+            configVo.setDescription(config.getDescription());
         }
-        if (params.get("register") != null) {
-            configVo.setRegister((Boolean) params.get("register"));
+        if (config.getRegister() != null) {
+            configVo.setRegister(config.getRegister());
         }
-        if (!StringUtils.isEmpty(params.get("recordName"))) {
-            configVo.setRecordName((String) params.get("recordName"));
+        if (!StringUtils.isEmpty(config.getRecordName())) {
+            configVo.setRecordName(config.getRecordName());
         }
-        if (!StringUtils.isEmpty(params.get("recordUrl"))) {
-            configVo.setRecordUrl((String) params.get("recordUrl"));
+        if (!StringUtils.isEmpty(config.getRecordUrl())) {
+            configVo.setRecordUrl(config.getRecordUrl());
         }
-        if (!StringUtils.isEmpty(params.get("projectName"))) {
-            configVo.setProjectName((String) params.get("projectName"));
+        if (!StringUtils.isEmpty(config.getProjectName())) {
+            configVo.setProjectName(config.getProjectName());
         }
-        if (!StringUtils.isEmpty(params.get("projectUrl"))) {
-            configVo.setProjectUrl((String) params.get("projectUrl"));
+        if (!StringUtils.isEmpty(config.getProjectUrl())) {
+            configVo.setProjectUrl(config.getProjectUrl());
         }
         boolean isOk = sendNewConfigToNacos();
         if (!isOk) {
@@ -203,29 +206,30 @@ public class ConfigManager {
                 .put("emailSsl", configVo.getEmailSsl()).map();
     }
 
-    public void setEmailConfig(HashMap<String, Object> params) throws StatusFailException {
+    public void setEmailConfig(EmailConfig config) throws StatusFailException {
 
-        if (!StringUtils.isEmpty(params.get("emailHost"))) {
-            configVo.setEmailHost((String) params.get("emailHost"));
+        if (!StringUtils.isEmpty(config.getEmailHost())) {
+            configVo.setEmailHost(config.getEmailHost());
         }
-        if (!StringUtils.isEmpty(params.get("emailPassword"))) {
-            configVo.setEmailPassword((String) params.get("emailPassword"));
+        if (!StringUtils.isEmpty(config.getEmailPassword())) {
+            configVo.setEmailPassword(config.getEmailPassword());
         }
-        if (!StringUtils.isEmpty(params.get("emailPort"))) {
-            configVo.setEmailPort((Integer) params.get("emailPort"));
-        }
-
-        if (!StringUtils.isEmpty(params.get("emailUsername"))) {
-            configVo.setEmailUsername((String) params.get("emailUsername"));
+        if (config.getEmailPort() != null && config.getEmailPort() >= 0) {
+            configVo.setEmailPort(config.getEmailPort());
         }
 
-        if (!StringUtils.isEmpty(params.get("emailBGImg"))) {
-            configVo.setEmailBGImg((String) params.get("emailBGImg"));
+        if (!StringUtils.isEmpty(config.getEmailUsername())) {
+            configVo.setEmailUsername(config.getEmailUsername());
         }
 
-        if (params.get("emailSsl") != null) {
-            configVo.setEmailSsl((Boolean) params.get("emailSsl"));
+        if (!StringUtils.isEmpty(config.getEmailBGImg())) {
+            configVo.setEmailBGImg(config.getEmailBGImg());
         }
+
+        if (config.getEmailSsl() != null) {
+            configVo.setEmailSsl(config.getEmailSsl());
+        }
+
         boolean isOk = sendNewConfigToNacos();
         if (!isOk) {
             throw new StatusFailException("修改失败");
@@ -233,8 +237,7 @@ public class ConfigManager {
     }
 
 
-    public void testEmail(HashMap<String, Object> params) throws StatusFailException {
-        String email = (String) params.get("email");
+    public void testEmail(String email) throws StatusFailException {
         boolean isEmail = Validator.isEmail(email);
         if (isEmail) {
             emailManager.testEmail(email);
@@ -256,32 +259,34 @@ public class ConfigManager {
     }
 
 
-    public void setDBAndRedisConfig(HashMap<String, Object> params) throws StatusFailException {
+    public void setDBAndRedisConfig(DBAndRedisConfig config) throws StatusFailException {
 
-        if (!StringUtils.isEmpty(params.get("dbName"))) {
-            configVo.setMysqlDBName((String) params.get("dbName"));
+        if (!StringUtils.isEmpty(config.getDbName())) {
+            configVo.setMysqlDBName(config.getDbName());
         }
-        if (!StringUtils.isEmpty(params.get("dbName"))) {
-            configVo.setMysqlHost((String) params.get("dbHost"));
+        if (!StringUtils.isEmpty(config.getDbHost())) {
+            configVo.setMysqlHost(config.getDbHost());
         }
-        if (params.get("dbPort") != null) {
-            configVo.setMysqlPort((Integer) params.get("dbPort"));
+        if (config.getDbPort() != null && config.getDbPort() >= 0) {
+            configVo.setMysqlPort(config.getDbPort());
         }
-        if (!StringUtils.isEmpty(params.get("dbUsername"))) {
-            configVo.setMysqlUsername((String) params.get("dbUsername"));
+        if (!StringUtils.isEmpty(config.getDbUsername())) {
+            configVo.setMysqlUsername(config.getDbUsername());
         }
-        if (!StringUtils.isEmpty(params.get("dbPassword"))) {
-            configVo.setMysqlPassword((String) params.get("dbPassword"));
+        if (!StringUtils.isEmpty(config.getDbPassword())) {
+            configVo.setMysqlPassword(config.getDbPassword());
         }
-        if (!StringUtils.isEmpty(params.get("redisHost"))) {
-            configVo.setRedisHost((String) params.get("redisHost"));
+
+        if (!StringUtils.isEmpty(config.getRedisHost())) {
+            configVo.setRedisHost(config.getRedisHost());
         }
-        if (params.get("redisPort") != null) {
-            configVo.setRedisPort((Integer) params.get("redisPort"));
+        if (config.getRedisPort() != null && config.getRedisPort() >= 0) {
+            configVo.setRedisPort(config.getRedisPort());
         }
-        if (params.get("redisPassword") != null) {
-            configVo.setRedisPassword((String) params.get("redisPassword"));
+        if (!StringUtils.isEmpty(config.getRedisPassword())) {
+            configVo.setRedisPassword(config.getRedisPassword());
         }
+
         boolean isOk = sendNewConfigToNacos();
 
         if (!isOk) {
