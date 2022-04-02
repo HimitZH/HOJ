@@ -4,6 +4,7 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.UnicodeUtil;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import cn.hutool.system.oshi.OshiUtil;
@@ -203,6 +204,7 @@ public class ConfigManager {
                 .put("emailSsl", configVo.getEmailSsl()).map();
     }
 
+
     public void setEmailConfig(HashMap<String, Object> params) throws StatusFailException {
 
         if (!StringUtils.isEmpty(params.get("emailHost"))) {
@@ -211,8 +213,18 @@ public class ConfigManager {
         if (!StringUtils.isEmpty(params.get("emailPassword"))) {
             configVo.setEmailPassword((String) params.get("emailPassword"));
         }
-        if (!StringUtils.isEmpty(params.get("emailPort"))) {
-            configVo.setEmailPort((Integer) params.get("emailPort"));
+        Object emailPort = params.get("emailPort");
+        if (emailPort != null) {
+            if (emailPort.getClass().equals(String.class)) {
+                String emailPortStr = (String) emailPort;
+                if (NumberUtil.isInteger(emailPortStr)) {
+                    configVo.setEmailPort(Integer.parseInt(emailPortStr));
+                } else {
+                    throw new StatusFailException("email port must be number!");
+                }
+            } else {
+                configVo.setEmailPort((Integer) emailPort);
+            }
         }
 
         if (!StringUtils.isEmpty(params.get("emailUsername"))) {
@@ -261,11 +273,21 @@ public class ConfigManager {
         if (!StringUtils.isEmpty(params.get("dbName"))) {
             configVo.setMysqlDBName((String) params.get("dbName"));
         }
-        if (!StringUtils.isEmpty(params.get("dbName"))) {
+        if (!StringUtils.isEmpty(params.get("dbHost"))) {
             configVo.setMysqlHost((String) params.get("dbHost"));
         }
-        if (params.get("dbPort") != null) {
-            configVo.setMysqlPort((Integer) params.get("dbPort"));
+        Object dbPort = params.get("dbPort");
+        if (dbPort != null) {
+            if (dbPort.getClass().equals(String.class)) {
+                String dbPortStr = (String) dbPort;
+                if (NumberUtil.isInteger(dbPortStr)) {
+                    configVo.setMysqlPort(Integer.parseInt(dbPortStr));
+                } else {
+                    throw new StatusFailException("db port must be number!");
+                }
+            } else {
+                configVo.setMysqlPort((Integer) dbPort);
+            }
         }
         if (!StringUtils.isEmpty(params.get("dbUsername"))) {
             configVo.setMysqlUsername((String) params.get("dbUsername"));
@@ -276,8 +298,18 @@ public class ConfigManager {
         if (!StringUtils.isEmpty(params.get("redisHost"))) {
             configVo.setRedisHost((String) params.get("redisHost"));
         }
-        if (params.get("redisPort") != null) {
-            configVo.setRedisPort((Integer) params.get("redisPort"));
+        Object redisPort = params.get("redisPort");
+        if (redisPort != null) {
+            if (redisPort.getClass().equals(String.class)) {
+                String redisPortStr = (String) redisPort;
+                if (NumberUtil.isInteger(redisPortStr)) {
+                    configVo.setRedisPort(Integer.parseInt(redisPortStr));
+                } else {
+                    throw new StatusFailException("redis port must be number!");
+                }
+            } else {
+                configVo.setRedisPort((Integer) redisPort);
+            }
         }
         if (params.get("redisPassword") != null) {
             configVo.setRedisPassword((String) params.get("redisPassword"));
