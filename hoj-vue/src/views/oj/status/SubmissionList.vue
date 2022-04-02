@@ -621,6 +621,8 @@ export default {
         // 避免重复同个路径请求导致报错
         let routeName = queryParams.contestID
           ? 'ContestSubmissionList'
+          : this.groupID
+          ? 'GroupSubmissionList'
           : 'SubmissionList';
         this.$router.push({
           name: routeName,

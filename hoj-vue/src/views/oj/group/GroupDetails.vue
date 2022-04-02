@@ -513,18 +513,19 @@ export default {
     ellipsis(value) {
       if (!value) return '';
       var l = value.length;
+      var ans = '';
       var blen = 0;
       for (let i = 0; i < l; i++) {
         if ((value.charCodeAt(i) & 0xff00) != 0) {
           blen++;
         }
         blen++;
+        if (blen > 26) {
+          return ans + '...';
+        }
+        ans += value.charAt(i);
       }
-      console.log(blen);
-      if (blen > 26) {
-        return value.slice(0, 13) + '...';
-      }
-      return value;
+      return ans;
     },
   },
   watch: {

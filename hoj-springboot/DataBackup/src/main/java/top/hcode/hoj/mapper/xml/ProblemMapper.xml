@@ -17,7 +17,7 @@
         SELECT DISTINCT p.id AS pid, p.problem_id, p.title, p.difficulty, p.type
         FROM problem p
         <if test="tid != null and tid.size() > 0">
-            INNER JOIN
+            RIGHT JOIN
             (
             SELECT pid FROM
             problem_tag
