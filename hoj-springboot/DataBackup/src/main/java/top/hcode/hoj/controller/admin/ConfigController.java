@@ -8,11 +8,13 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.pojo.entity.admin.DBAndRedisConfig;
+import top.hcode.hoj.pojo.entity.admin.EmailConfig;
+import top.hcode.hoj.pojo.entity.admin.WebConfig;
 import top.hcode.hoj.service.admin.system.ConfigService;
 
 
 import javax.mail.MessagingException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,9 +65,9 @@ public class ConfigController {
 
     @RequiresPermissions("system_info_admin")
     @RequestMapping(value = "/set-web-config", method = RequestMethod.PUT)
-    public CommonResult<Void> setWebConfig(@RequestBody HashMap<String, Object> params) {
+    public CommonResult<Void> setWebConfig(@RequestBody WebConfig config) {
 
-        return configService.setWebConfig(params);
+        return configService.setWebConfig(config);
     }
 
     @RequiresPermissions("system_info_admin")
@@ -77,16 +79,16 @@ public class ConfigController {
 
     @RequiresPermissions("system_info_admin")
     @PutMapping("/set-email-config")
-    public CommonResult<Void> setEmailConfig(@RequestBody HashMap<String, Object> params) {
+    public CommonResult<Void> setEmailConfig(@RequestBody EmailConfig config) {
 
-        return configService.setEmailConfig(params);
+        return configService.setEmailConfig(config);
     }
 
     @RequiresPermissions("system_info_admin")
     @PostMapping("/test-email")
-    public CommonResult<Void> testEmail(@RequestBody HashMap<String, Object> params) throws MessagingException {
+    public CommonResult<Void> testEmail(@RequestBody String email) throws MessagingException {
 
-        return configService.testEmail(params);
+        return configService.testEmail(email);
     }
 
     @RequiresPermissions("system_info_admin")
@@ -98,8 +100,8 @@ public class ConfigController {
 
     @RequiresPermissions("system_info_admin")
     @PutMapping("/set-db-and-redis-config")
-    public CommonResult<Void> setDBAndRedisConfig(@RequestBody HashMap<String, Object> params) {
-        return configService.setDBAndRedisConfig(params);
+    public CommonResult<Void> setDBAndRedisConfig(@RequestBody DBAndRedisConfig config) {
+        return configService.setDBAndRedisConfig(config);
     }
 
 }
