@@ -137,8 +137,10 @@ export default {
       // 创建form格式的数据，将文件放入form中
       const formdata = new FormData();
       formdata.append('file', file);
-      formdata.append('gid', this.$route.params.groupID);
-
+      let gid = this.$route.params.groupID;
+      if (gid != null && gid != undefined) {
+        formdata.append('gid', gid);
+      }
       this.$http({
         url: '/api/file/upload-md-file',
         method: 'post',
