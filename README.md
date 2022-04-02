@@ -12,7 +12,7 @@
 
 ## 一、前言
 
-基于前后端分离，分布式架构的在线测评平台（hoj），前端使用vue，后端主要使用springboot，redis，mysql，nacos等技术，**支持HDU、POJ、Codeforces（包括GYM）、AtCoder、SPOJ的vjudge判题，同时适配手机端、电脑端浏览，拥有讨论区与站内消息系统，支持私有训练、公开训练（题单），还有完善的判题模式（普通测评、特殊测评、交互测评）和完善的比赛功能（打星队伍、关注队伍、外榜）。**
+基于前后端分离，分布式架构的在线测评平台（hoj），前端使用vue，后端主要使用springboot，redis，mysql，nacos等技术，**支持HDU、POJ、Codeforces（包括GYM）、AtCoder、SPOJ的vjudge判题，同时适配手机端、电脑端浏览，拥有讨论区与站内消息系统，支持私有训练、公开训练（题单），支持团队功能，还有完善的判题模式（普通测评、特殊测评、交互测评）和完善的比赛功能（打星队伍、关注队伍、外榜）。**
 
 |              在线Demo              |                   在线文档                   |                     Github&Gitee仓库地址                     |   QQ群    |
 | :--------------------------------: | :------------------------------------------: | :----------------------------------------------------------: | :-------: |
@@ -112,17 +112,19 @@ docker ps # 查看当前运行的容器状态
 
 **以下截图页面均支持中英文国际化，点击底部的转换即可全网站转换，包括后台管理，同时浏览器会记住本次选择的语言**
 
+### 1. 首页
+
 > 首页页面 
 
-![首页](https://img-blog.csdnimg.cn/9405e0fa07c644c1a80470d7494f998b.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![首页](https://img-blog.csdnimg.cn/ab90fd3b4b904972b728013c9f2b776b.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 
 
 > 首页英文
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/0f0caa479b80421db6d5c79fe9238076.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![首页英文](https://img-blog.csdnimg.cn/e4982d7f4b0c4a07afa2017b836786f8.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
-
+### 2. 站内消息
 
 > 站内消息系统
 
@@ -131,6 +133,8 @@ docker ps # 查看当前运行的容器状态
 
 
 ![站内消息系统](https://img-blog.csdnimg.cn/513e7e37f52f48518c2fa1bf14eeea99.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+### 3. 题目
 
 > 题目列表页
 
@@ -142,6 +146,8 @@ docker ps # 查看当前运行的容器状态
 
 ![题目详情页](https://img-blog.csdnimg.cn/655a9886cf7d4683812c923b9ce2aa2e.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
+### 4. 训练
+
 > 训练列表页
 
 ![训练列表页](https://img-blog.csdnimg.cn/58ac74824fcf4963810beea7ba1203b9.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
@@ -149,6 +155,8 @@ docker ps # 查看当前运行的容器状态
 > 训练题目列表页
 
 ![训练题目列表页](https://img-blog.csdnimg.cn/b366a6a628984995b57a49c565a2ec47.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+### 5.  比赛
 
 > 比赛列表页
 
@@ -180,19 +188,28 @@ docker ps # 查看当前运行的容器状态
 
   ![oi排行榜](https://img-blog.csdnimg.cn/67f6262854bb44efa70c374f1f156166.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
 
-  
 
-
+### 6. 评测
 
 > 提交列表页
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210609213021223.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
 
+### 7. 排行榜
+
 > 排行榜
 
 ![排行榜](https://img-blog.csdnimg.cn/407ad16361f34b44a282b07af68825e0.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
+### 8. 团队
 
+![团队列表页](https://img-blog.csdnimg.cn/7988504326c843ef94e937a2b4f32f03.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+![团队题目列表页](https://img-blog.csdnimg.cn/2c05e44f5a464381b9a357aff37b0086.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+
+
+### 9. 讨论
 
 > 公共讨论区
 
@@ -204,7 +221,7 @@ docker ps # 查看当前运行的容器状态
 
 ![评论组件](https://img-blog.csdnimg.cn/20210513142826730.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70#pic_center)
 
-
+### 10. 个人
 
 > 个人首页
 
@@ -218,13 +235,15 @@ docker ps # 查看当前运行的容器状态
 
 
 
-
+### 11. 管理后台
 
 > 管理后台首页
 
 ![管理后端](https://img-blog.csdnimg.cn/9b9674c0f30a441bb200a32756f24d2c.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 
+
+### 12. 手机端
 
 > 部分手机端显示
 
