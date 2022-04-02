@@ -118,7 +118,7 @@ public class ImageManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Map<Object, Object> uploadGroupAvatar(MultipartFile image, Long gid) throws StatusFailException, StatusSystemErrorException, StatusForbiddenException {
+    public Group uploadGroupAvatar(MultipartFile image, Long gid) throws StatusFailException, StatusSystemErrorException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
@@ -166,18 +166,7 @@ public class ImageManager {
 
         Group group = groupEntityService.getById(gid);
 
-        return MapUtil.builder()
-                .put("id", group.getId())
-                .put("avatar", Constants.File.IMG_API.getPath() + filename)
-                .put("name", group.getName())
-                .put("shortName", group.getShortName())
-                .put("brief", group.getBrief())
-                .put("description", group.getDescription())
-                .put("owner", group.getOwner())
-                .put("auth", group.getAuth())
-                .put("visible", group.getVisible())
-                .put("status", group.getStatus())
-                .map();
+        return group;
     }
 
     @Transactional(rollbackFor = Exception.class)

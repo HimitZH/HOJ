@@ -429,6 +429,7 @@ export const m = {
 
   // /views/oj/about/Developer.vue
   Leader_BackEnd_FrontEnd_Engineer: 'Leader & BackEnd | FrontEnd Engineer',
+  Group_Function_Development_Contributor: 'Group Function Development Contributor',
   Distributed: 'Distributed',
   Distributed_Desc: 'It is divided into frontend and backend separation, and supports the micro service cluster',
   Customization: 'Customization',

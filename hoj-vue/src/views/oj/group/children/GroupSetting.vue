@@ -247,7 +247,7 @@
 <script>
 import api from '@/common/api';
 import mMessage from '@/common/message';
-import { mapState, mapGetters, mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import utils from '@/common/utils';
 import { VueCropper } from 'vue-cropper';
 import Avatar from 'vue-avatar';

@@ -158,7 +158,14 @@
                   <span>{{ $t('m.Group_Name') }}</span>
                 </span>
                 <span>
-                  <span>{{ group.name }}</span>
+                  <el-tooltip
+                    class="item"
+                    effect="dark"
+                    :content="group.name"
+                    placement="top"
+                  >
+                    <span>{{ group.name | ellipsis }}</span>
+                  </el-tooltip>
                 </span>
               </div>
               <div>
@@ -181,6 +188,7 @@
                 </span>
                 <span>
                   <el-tooltip
+                    v-if="group.auth != null && group.auth != undefined"
                     :content="$t('m.' + GROUP_TYPE_REVERSE[group.auth].tips)"
                   >
                     <el-tag
@@ -498,6 +506,25 @@ export default {
       } else {
         return null;
       }
+    },
+  },
+  filters: {
+    //文字数超出时，超出部分使用...
+    ellipsis(value) {
+      if (!value) return '';
+      var l = value.length;
+      var blen = 0;
+      for (let i = 0; i < l; i++) {
+        if ((value.charCodeAt(i) & 0xff00) != 0) {
+          blen++;
+        }
+        blen++;
+      }
+      console.log(blen);
+      if (blen > 26) {
+        return value.slice(0, 13) + '...';
+      }
+      return value;
     },
   },
   watch: {
