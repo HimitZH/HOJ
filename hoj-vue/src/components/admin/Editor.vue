@@ -102,8 +102,9 @@ export default {
       }
       var formdata = new FormData();
       formdata.append('image', $file);
-      if (this.$route.params.groupID) {
-        formdata.append('gid', this.$route.params.groupID);
+      let gid = this.$route.params.groupID;
+      if (gid != null && gid != undefined) {
+        formdata.append('gid', gid);
       }
       //将下面上传接口替换为你自己的服务器接口
       this.$http({
