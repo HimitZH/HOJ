@@ -212,18 +212,18 @@ public class GroupManager {
         QueryWrapper<Group> groupQueryWrapper = new QueryWrapper<>();
         groupQueryWrapper.eq("name", group.getName());
 
-        Group group1 = groupEntityService.getOne(groupQueryWrapper);
+        Group sameNameGroup = groupEntityService.getOne(groupQueryWrapper);
 
-        if (group1 != null) {
+        if (sameNameGroup != null) {
             throw new StatusFailException("团队名称已存在，请修改后重试！");
         }
 
         groupQueryWrapper = new QueryWrapper<>();
         groupQueryWrapper.eq("short_name", group.getShortName());
 
-        group1 = groupEntityService.getOne(groupQueryWrapper);
+        Group sameShortNameGroup = groupEntityService.getOne(groupQueryWrapper);
 
-        if (group1 != null) {
+        if (sameShortNameGroup != null) {
             throw new StatusFailException("团队简称已存在，请修改后重试！");
         }
 
@@ -271,18 +271,18 @@ public class GroupManager {
         QueryWrapper<Group> groupQueryWrapper = new QueryWrapper<>();
         groupQueryWrapper.eq("name", group.getName());
 
-        Group group1 = groupEntityService.getOne(groupQueryWrapper);
+        Group sameNameGroup = groupEntityService.getOne(groupQueryWrapper);
 
-        if (group1 != null && group1.getId().longValue() != group.getId()) {
+        if (sameNameGroup != null && sameNameGroup.getId().longValue() != group.getId()) {
             throw new StatusFailException("团队名称已存在，请修改后重试！");
         }
 
         groupQueryWrapper = new QueryWrapper<>();
         groupQueryWrapper.eq("short_name", group.getShortName());
 
-        group1 = groupEntityService.getOne(groupQueryWrapper);
+        Group sameShortNameGroup= groupEntityService.getOne(groupQueryWrapper);
 
-        if (group1 != null && group1.getId().longValue() != group.getId()) {
+        if (sameShortNameGroup != null && sameShortNameGroup.getId().longValue() != group.getId()) {
             throw new StatusFailException("团队简称已存在，请修改后重试！");
         }
 
