@@ -196,7 +196,7 @@ export default {
     return {
       total: 0,
       currentPage: 1,
-      limit: 2,
+      limit: 10,
       problemList: [],
       contestID: null,
       pid: null,
