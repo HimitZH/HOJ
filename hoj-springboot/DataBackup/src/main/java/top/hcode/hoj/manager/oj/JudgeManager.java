@@ -260,7 +260,8 @@ public class JudgeManager {
                 throw new StatusAccessDeniedException("请先登录！");
             }
             Contest contest = contestEntityService.getById(judge.getCid());
-            if (!isRoot && !userRolesVo.getUid().equals(contest.getUid())) {
+            if (!isRoot && !userRolesVo.getUid().equals(contest.getUid())
+                    && !(judge.getGid() != null && groupValidator.isGroupRoot(userRolesVo.getUid(), judge.getGid()))) {
                 // 如果是比赛,那么还需要判断是否为封榜,比赛管理员和超级管理员可以有权限查看(ACM题目除外)
                 if (contest.getType().intValue() == Constants.Contest.TYPE_OI.getCode()
                         && contestValidator.isSealRank(userRolesVo.getUid(), contest, true, false)) {
@@ -281,7 +282,8 @@ public class JudgeManager {
             }
         } else {
             boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");// 是否为题目管理员
-            if (!judge.getShare() && !isRoot && !isProblemAdmin) {
+            if (!judge.getShare() && !isRoot && !isProblemAdmin
+                    && !(judge.getGid() != null && groupValidator.isGroupRoot(userRolesVo.getUid(), judge.getGid()))) {
                 if (userRolesVo != null) { // 当前是登陆状态
                     // 需要判断是否为当前登陆用户自己的提交代码
                     if (!judge.getUid().equals(userRolesVo.getUid())) {
@@ -307,7 +309,6 @@ public class JudgeManager {
         return submissionInfoVo;
 
     }
-
 
     /**
      * @MethodName updateSubmission
