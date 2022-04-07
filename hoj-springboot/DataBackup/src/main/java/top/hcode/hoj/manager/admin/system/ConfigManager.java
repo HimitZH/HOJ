@@ -20,6 +20,7 @@ import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.manager.email.EmailManager;
 import top.hcode.hoj.pojo.dto.DBAndRedisConfigDto;
 import top.hcode.hoj.pojo.dto.EmailConfigDto;
+import top.hcode.hoj.pojo.dto.TestEmailDto;
 import top.hcode.hoj.pojo.dto.WebConfigDto;
 import top.hcode.hoj.pojo.entity.common.File;
 import top.hcode.hoj.pojo.vo.ConfigVo;
@@ -243,7 +244,11 @@ public class ConfigManager {
     }
 
 
-    public void testEmail(String email) throws StatusFailException {
+    public void testEmail(TestEmailDto testEmailDto) throws StatusFailException {
+        String email = testEmailDto.getEmail();
+        if (StringUtils.isEmpty(email)) {
+            throw new StatusFailException("测试的邮箱不能为空！");
+        }
         boolean isEmail = Validator.isEmail(email);
         if (isEmail) {
             emailManager.testEmail(email);

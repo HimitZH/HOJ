@@ -177,7 +177,7 @@ int main(int argc, char* argv[])
     if (a + b == ans){ // 判断结果
     	quitf(_ok, "correct");
     }else{
-    	else quitf(_wa,"incorrect");
+    	quitf(_wa,"incorrect");
     }
 }
 ```
@@ -288,3 +288,4 @@ int main(int argc, char* argv[]) {
         quitf(_wa, "Wrong Answer");
 }
 ```
+

@@ -7,6 +7,7 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.manager.admin.system.ConfigManager;
 import top.hcode.hoj.pojo.dto.DBAndRedisConfigDto;
 import top.hcode.hoj.pojo.dto.EmailConfigDto;
+import top.hcode.hoj.pojo.dto.TestEmailDto;
 import top.hcode.hoj.pojo.dto.WebConfigDto;
 import top.hcode.hoj.service.admin.system.ConfigService;
 
@@ -75,9 +76,9 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public CommonResult<Void> testEmail(String email) {
+    public CommonResult<Void> testEmail(TestEmailDto testEmailDto) {
         try {
-            configManager.testEmail(email);
+            configManager.testEmail(testEmailDto);
             return CommonResult.successResponse();
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
