@@ -8,11 +8,13 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.pojo.dto.DBAndRedisConfigDto;
+import top.hcode.hoj.pojo.dto.EmailConfigDto;
+import top.hcode.hoj.pojo.dto.WebConfigDto;
 import top.hcode.hoj.service.admin.system.ConfigService;
 
 
 import javax.mail.MessagingException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,7 +51,7 @@ public class ConfigController {
 
     @RequiresPermissions("system_info_admin")
     @RequestMapping("/get-web-config")
-    public CommonResult<Map<Object,Object>> getWebConfig() {
+    public CommonResult<WebConfigDto> getWebConfig() {
         return configService.getWebConfig();
     }
 
@@ -63,43 +65,40 @@ public class ConfigController {
 
     @RequiresPermissions("system_info_admin")
     @RequestMapping(value = "/set-web-config", method = RequestMethod.PUT)
-    public CommonResult<Void> setWebConfig(@RequestBody HashMap<String, Object> params) {
+    public CommonResult<Void> setWebConfig(@RequestBody WebConfigDto config) {
 
-        return configService.setWebConfig(params);
+        return configService.setWebConfig(config);
     }
 
     @RequiresPermissions("system_info_admin")
     @RequestMapping("/get-email-config")
-    public CommonResult<Map<Object,Object>> getEmailConfig() {
+    public CommonResult<EmailConfigDto> getEmailConfig() {
 
         return configService.getEmailConfig();
     }
 
     @RequiresPermissions("system_info_admin")
     @PutMapping("/set-email-config")
-    public CommonResult<Void> setEmailConfig(@RequestBody HashMap<String, Object> params) {
-
-        return configService.setEmailConfig(params);
+    public CommonResult<Void> setEmailConfig(@RequestBody EmailConfigDto config) {
+        return configService.setEmailConfig(config);
     }
 
     @RequiresPermissions("system_info_admin")
     @PostMapping("/test-email")
-    public CommonResult<Void> testEmail(@RequestBody HashMap<String, Object> params) throws MessagingException {
-
-        return configService.testEmail(params);
+    public CommonResult<Void> testEmail(@RequestBody String email) throws MessagingException {
+        return configService.testEmail(email);
     }
 
     @RequiresPermissions("system_info_admin")
     @RequestMapping("/get-db-and-redis-config")
-    public CommonResult<Map<Object,Object>> getDBAndRedisConfig() {
-
+    public CommonResult<DBAndRedisConfigDto> getDBAndRedisConfig() {
         return configService.getDBAndRedisConfig();
     }
 
     @RequiresPermissions("system_info_admin")
     @PutMapping("/set-db-and-redis-config")
-    public CommonResult<Void> setDBAndRedisConfig(@RequestBody HashMap<String, Object> params) {
-        return configService.setDBAndRedisConfig(params);
+    public CommonResult<Void> setDBAndRedisConfig(@RequestBody DBAndRedisConfigDto config) {
+        return configService.setDBAndRedisConfig(config);
     }
 
 }
