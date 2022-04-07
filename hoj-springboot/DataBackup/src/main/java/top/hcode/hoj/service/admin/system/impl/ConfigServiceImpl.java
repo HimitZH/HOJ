@@ -5,12 +5,13 @@ import org.springframework.stereotype.Service;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.manager.admin.system.ConfigManager;
+import top.hcode.hoj.pojo.dto.DBAndRedisConfigDto;
+import top.hcode.hoj.pojo.dto.EmailConfigDto;
+import top.hcode.hoj.pojo.dto.WebConfigDto;
 import top.hcode.hoj.service.admin.system.ConfigService;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author: Himit_ZH
@@ -44,14 +45,14 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public CommonResult<Map<Object, Object>> getWebConfig() {
+    public CommonResult<WebConfigDto> getWebConfig() {
         return CommonResult.successResponse(configManager.getWebConfig());
     }
 
     @Override
-    public CommonResult<Void> setWebConfig(HashMap<String, Object> params) {
+    public CommonResult<Void> setWebConfig(WebConfigDto config) {
         try {
-            configManager.setWebConfig(params);
+            configManager.setWebConfig(config);
             return CommonResult.successResponse();
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
@@ -59,14 +60,14 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public CommonResult<Map<Object, Object>> getEmailConfig() {
+    public CommonResult<EmailConfigDto> getEmailConfig() {
         return CommonResult.successResponse(configManager.getEmailConfig());
     }
 
     @Override
-    public CommonResult<Void> setEmailConfig(HashMap<String, Object> params) {
+    public CommonResult<Void> setEmailConfig(EmailConfigDto config) {
         try {
-            configManager.setEmailConfig(params);
+            configManager.setEmailConfig(config);
             return CommonResult.successResponse();
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
@@ -74,9 +75,9 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public CommonResult<Void> testEmail(HashMap<String, Object> params) {
+    public CommonResult<Void> testEmail(String email) {
         try {
-            configManager.testEmail(params);
+            configManager.testEmail(email);
             return CommonResult.successResponse();
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
@@ -84,14 +85,14 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public CommonResult<Map<Object, Object>> getDBAndRedisConfig() {
+    public CommonResult<DBAndRedisConfigDto> getDBAndRedisConfig() {
         return CommonResult.successResponse(configManager.getDBAndRedisConfig());
     }
 
     @Override
-    public CommonResult<Void> setDBAndRedisConfig(HashMap<String, Object> params) {
+    public CommonResult<Void> setDBAndRedisConfig(DBAndRedisConfigDto config) {
         try {
-            configManager.setDBAndRedisConfig(params);
+            configManager.setDBAndRedisConfig(config);
             return CommonResult.successResponse();
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
