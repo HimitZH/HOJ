@@ -4,6 +4,7 @@ import cn.hutool.json.JSONObject;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.DBAndRedisConfigDto;
 import top.hcode.hoj.pojo.dto.EmailConfigDto;
+import top.hcode.hoj.pojo.dto.TestEmailDto;
 import top.hcode.hoj.pojo.dto.WebConfigDto;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public interface ConfigService {
 
     public CommonResult<Void> setEmailConfig(EmailConfigDto config);
 
-    public CommonResult<Void> testEmail(String params);
+    public CommonResult<Void> testEmail(TestEmailDto testEmailDto);
 
     public CommonResult<DBAndRedisConfigDto> getDBAndRedisConfig();
 

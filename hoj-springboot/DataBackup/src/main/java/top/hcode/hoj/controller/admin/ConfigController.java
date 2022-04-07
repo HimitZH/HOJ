@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.DBAndRedisConfigDto;
 import top.hcode.hoj.pojo.dto.EmailConfigDto;
+import top.hcode.hoj.pojo.dto.TestEmailDto;
 import top.hcode.hoj.pojo.dto.WebConfigDto;
 import top.hcode.hoj.service.admin.system.ConfigService;
 
@@ -85,8 +86,8 @@ public class ConfigController {
 
     @RequiresPermissions("system_info_admin")
     @PostMapping("/test-email")
-    public CommonResult<Void> testEmail(@RequestBody String email) throws MessagingException {
-        return configService.testEmail(email);
+    public CommonResult<Void> testEmail(@RequestBody TestEmailDto testEmailDto) {
+        return configService.testEmail(testEmailDto);
     }
 
     @RequiresPermissions("system_info_admin")
