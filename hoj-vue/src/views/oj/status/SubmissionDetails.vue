@@ -205,7 +205,8 @@
       v-if="
         (submission.code && submission.share && codeShare) ||
           isMeSubmisson ||
-          isAdminRole
+          isAdminRole ||
+          (submission.gid && isGroupRoot)
       "
     >
       <el-col :span="24" style="margin-top: 13px;" v-if="submission.code">
@@ -461,6 +462,9 @@ export default {
     },
     isMeSubmisson() {
       return this.$store.getters.userInfo.uid === this.submission.uid;
+    },
+    isGroupRoot() {
+      return this.$store.getters.isGroupRoot;
     },
   },
 };
