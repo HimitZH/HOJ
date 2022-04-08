@@ -288,12 +288,13 @@ public class DiscussionManager {
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
-        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-
         Discussion discussion = discussionEntityService.getById(did);
-        if (!isRoot && !discussion.getUid().equals(userRolesVo.getUid())
-                && !(discussion.getGid() != null && groupValidator.isGroupMember(userRolesVo.getUid(), discussion.getGid()))) {
-            throw new StatusForbiddenException("对不起，您无权限操作！");
+        if (discussion.getGid() != null) {
+            boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+            if (!isRoot && !discussion.getUid().equals(userRolesVo.getUid())
+                    && !groupValidator.isGroupMember(userRolesVo.getUid(), discussion.getGid())) {
+                throw new StatusForbiddenException("对不起，您无权限操作！");
+            }
         }
 
         QueryWrapper<DiscussionLike> discussionLikeQueryWrapper = new QueryWrapper<>();
