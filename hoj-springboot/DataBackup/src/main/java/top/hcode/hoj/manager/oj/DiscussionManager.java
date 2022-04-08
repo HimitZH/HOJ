@@ -291,7 +291,8 @@ public class DiscussionManager {
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Discussion discussion = discussionEntityService.getById(did);
-        if (!isRoot && !discussion.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupAdmin(userRolesVo.getUid(), discussion.getGid())) {
+        if (!isRoot && !discussion.getUid().equals(userRolesVo.getUid())
+                && !(discussion.getGid() != null && groupValidator.isGroupMember(userRolesVo.getUid(), discussion.getGid()))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
