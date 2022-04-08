@@ -66,6 +66,7 @@ public class SPOJProblemStrategy extends ProblemStrategy {
                 .setSource(getProblemSource(problemId))
                 .setAuth(1)
                 .setOpenCaseResult(false)
+                .setIsGroup(false)
                 .setIsRemoveEndBlank(false)
                 .setDifficulty(1); // 默认为中等
 

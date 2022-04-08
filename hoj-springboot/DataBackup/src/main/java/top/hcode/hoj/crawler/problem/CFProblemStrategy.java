@@ -163,6 +163,7 @@ public class CFProblemStrategy extends ProblemStrategy {
                 .setAuthor(author)
                 .setOpenCaseResult(false)
                 .setIsRemoveEndBlank(false)
+                .setIsGroup(false)
                 .setDifficulty(1); // 默认为中等
 
         List<String> allTags = ReUtil.findAll(Pattern.compile("<span class=\"tag-box\" style=\"font-size:1\\.2rem;\" title=\"[\\s\\S]*?\">([\\s\\S]*?)</span>"), html, 1);

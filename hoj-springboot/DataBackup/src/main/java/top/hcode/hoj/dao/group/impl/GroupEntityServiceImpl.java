@@ -24,9 +24,15 @@ public class GroupEntityServiceImpl extends ServiceImpl<GroupMapper, Group> impl
     private GroupMapper groupMapper;
 
     @Override
-    public IPage<GroupVo> getGroupList(int limit, int currentPage, String keyword, Integer auth, String uid, Boolean onlyMine) {
+    public IPage<GroupVo> getGroupList(int limit,
+                                       int currentPage,
+                                       String keyword,
+                                       Integer auth,
+                                       String uid,
+                                       Boolean onlyMine,
+                                       Boolean isRoot) {
         IPage<GroupVo> iPage = new Page<>(currentPage, limit);
-        List<GroupVo> groupList = groupMapper.getGroupList(iPage, keyword, auth, uid, onlyMine);
+        List<GroupVo> groupList = groupMapper.getGroupList(iPage, keyword, auth, uid, onlyMine,isRoot);
 
         return iPage.setRecords(groupList);
     }

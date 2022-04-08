@@ -73,11 +73,12 @@ public class GroupManager {
         }
 
         String uid = "";
+        boolean isRoot = false;
         if (userRolesVo != null) {
             uid = userRolesVo.getUid();
+            isRoot = SecurityUtils.getSubject().hasRole("root");
         }
-
-        return groupEntityService.getGroupList(limit, currentPage, keyword, auth, uid, onlyMine);
+        return groupEntityService.getGroupList(limit, currentPage, keyword, auth, uid, onlyMine,isRoot);
     }
 
     public Group getGroup(Long gid) throws StatusNotFoundException, StatusForbiddenException {

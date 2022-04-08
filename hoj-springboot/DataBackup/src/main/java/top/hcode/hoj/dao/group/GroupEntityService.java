@@ -11,5 +11,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @Description:
  */
 public interface GroupEntityService extends IService<Group> {
-    IPage<GroupVo> getGroupList(int limit, int currentPage, String keyword, Integer auth, String uid, Boolean onlyMine);
+    IPage<GroupVo> getGroupList(int limit,
+                                int currentPage,
+                                String keyword,
+                                Integer auth,
+                                String uid,
+                                Boolean onlyMine,
+                                Boolean isRoot);
 }

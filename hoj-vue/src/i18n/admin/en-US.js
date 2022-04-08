@@ -183,6 +183,8 @@ export const m = {
   Contest_Display: 'Contest Display',
   Add_Rmote_OJ_Problem: 'Add Remote OJ Problem',
   Add_From_Public_Problem: 'Add From Public Problem',
+  ACM_Contest_Add_From_Public_Problem_Tips:'ACM Contest: Only ACM type problem and Remote Judge problem can be imported',
+  OI_Contest_Add_From_Public_Problem_Tips:'OI Contest: Only OI type problem and Remote Judge problem can be imported',
   Auth: 'Auth',
   Modified_User: 'Modified User',
   All_Problem: 'All Problem',

@@ -484,9 +484,9 @@ export default {
         query: this.query,
       });
     },
-    getGroupList(page = 1) {
+    getGroupList() {
       this.loading = true;
-      api.getGroupList(page, this.limit, this.query).then(
+      api.getGroupList(this.currentPage, this.limit, this.query).then(
         (res) => {
           this.groupList = res.data.data.records;
           this.total = res.data.data.total;
