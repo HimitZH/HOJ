@@ -122,6 +122,9 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
         Problem existedProblem = problemMapper.selectOne(problemQueryWrapper);
 
         problem.setProblemId(problem.getProblemId().toUpperCase());
+        if (problem.getIsGroup() == null) {
+            problem.setIsGroup(false);
+        }
         // 后面许多表的更新或删除需要用到题目id
         long pid = problemDto.getProblem().getId();
 
@@ -382,6 +385,9 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
 
         // 设置测试样例的版本号
         problem.setCaseVersion(String.valueOf(System.currentTimeMillis()));
+        if (problem.getIsGroup() == null) {
+            problem.setIsGroup(false);
+        }
         problem.setProblemId(problemId);
         boolean addProblemResult = problemMapper.insert(problem) == 1;
         long pid = problem.getId();

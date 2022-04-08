@@ -1,5 +1,12 @@
 <template>
   <div style="text-align:center">
+    <div style="margin-bottom:10px" v-if="contest.type != undefined">
+      <span class="tips">{{
+        contest.type == 0
+          ? $t('m.ACM_Contest_Add_From_Public_Problem_Tips')
+          : $t('m.OI_Contest_Add_From_Public_Problem_Tips')
+      }}</span>
+    </div>
     <vxe-input
       v-model="keyword"
       :placeholder="$t('m.Enter_keyword')"
@@ -154,5 +161,10 @@ export default {
 .page {
   margin-top: 20px;
   text-align: right;
+}
+.tips {
+  color: red;
+  font-weight: bolder;
+  font-size: 1rem;
 }
 </style>

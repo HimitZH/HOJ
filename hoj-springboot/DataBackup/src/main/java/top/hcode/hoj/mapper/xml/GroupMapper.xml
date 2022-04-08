@@ -21,11 +21,13 @@
         FROM group_member gm, `group` g
         <where>
             g.status = 0 and g.id = gm.gid and (gm.auth = 3 or gm.auth = 4 or gm.auth = 5)
-            <if test="uid == null || uid == ''">
-                and g.visible = true
-            </if>
-            <if test="uid != null || uid != ''">
-                and (g.visible = true or #{uid} in (select uid from group_member where gid = g.id and (auth = 3 or auth = 4 or auth = 5)))
+            <if test="isRoot == false">
+                <if test="uid == null || uid == ''">
+                    and g.visible = true
+                </if>
+                <if test="uid != null || uid != ''">
+                    and (g.visible = true or #{uid} in (select uid from group_member where gid = g.id and (auth = 3 or auth = 4 or auth = 5)))
+                </if>
             </if>
             <if test="onlyMine">
                 and #{uid} in (select uid from group_member where gid = g.id and (auth = 3 or auth = 4 or auth = 5))

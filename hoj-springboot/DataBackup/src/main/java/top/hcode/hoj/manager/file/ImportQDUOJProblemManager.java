@@ -29,6 +29,7 @@ import top.hcode.hoj.dao.problem.LanguageEntityService;
 import top.hcode.hoj.dao.problem.ProblemEntityService;
 import top.hcode.hoj.dao.problem.TagEntityService;
 import top.hcode.hoj.utils.Constants;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -181,7 +182,7 @@ public class ImportQDUOJProblemManager {
             ProblemDto problemDto = new ProblemDto();
 
             String mode = Constants.JudgeMode.DEFAULT.getMode();
-            if (qdojProblemDto.getIsSpj()){
+            if (qdojProblemDto.getIsSpj()) {
                 mode = Constants.JudgeMode.SPJ.getMode();
             }
 
@@ -218,6 +219,7 @@ public class ImportQDUOJProblemManager {
                     .setSpjLanguage(spjJson.getStr("language"));
         }
         problem.setAuth(1)
+                .setIsGroup(false)
                 .setIsUploadCase(true)
                 .setSource(problemJson.getStr("source", null))
                 .setDifficulty(1)

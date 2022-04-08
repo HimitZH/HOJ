@@ -66,6 +66,7 @@ public class AtCoderProblemStrategy extends ProblemStrategy {
                 .setAuth(1)
                 .setOpenCaseResult(false)
                 .setIsRemoveEndBlank(false)
+                .setIsGroup(false)
                 .setDifficulty(1); // 默认为中等
 
         if (body.contains("Problem Statement")) {

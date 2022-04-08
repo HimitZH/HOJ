@@ -181,6 +181,8 @@ export const m = {
   Display_Title: '展示标题',
   Add_Rmote_OJ_Problem: '添加远程OJ题目',
   Add_From_Public_Problem: '从公共题库添加题目',
+  ACM_Contest_Add_From_Public_Problem_Tips:'当前比赛为ACM赛制：只支持导入ACM类型的题目和远程题目',
+  OI_Contest_Add_From_Public_Problem_Tips:'当前比赛为OI赛制：只支持导入OI类型的题目和远程题目',
   Original_Display: '原题显示',
   Contest_Display: '比赛显示',
   Auth: '权限',

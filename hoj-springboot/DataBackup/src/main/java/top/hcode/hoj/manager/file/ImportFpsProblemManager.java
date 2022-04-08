@@ -106,6 +106,7 @@ public class ImportFpsProblemManager {
                     .setCodeShare(false)
                     .setIsRemote(false)
                     .setAuth(1)
+                    .setIsGroup(false)
                     .setProblemId(String.valueOf(System.currentTimeMillis()));
 
             Element title = XmlUtil.getElement(item, "title");

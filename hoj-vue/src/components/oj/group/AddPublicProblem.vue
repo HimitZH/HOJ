@@ -1,5 +1,12 @@
 <template>
   <div style="text-align:center">
+    <div style="margin-bottom:10px" v-if="contest.type != undefined">
+      <span class="tips">{{
+        contest.type == 0
+          ? $t('m.ACM_Contest_Add_From_Public_Problem_Tips')
+          : $t('m.OI_Contest_Add_From_Public_Problem_Tips')
+      }}</span>
+    </div>
     <vxe-input
       v-model="keyword"
       :placeholder="$t('m.Enter_keyword')"
@@ -59,15 +66,15 @@ export default {
   props: {
     apiMethod: {
       type: String,
-      default: 'getGroupTrainingProblemList'
+      default: 'getGroupTrainingProblemList',
     },
     trainingId: {
       type: Number,
-      default: null
+      default: null,
     },
     contestId: {
       type: Number,
-      default: null
+      default: null,
     },
   },
   data() {
@@ -83,7 +90,9 @@ export default {
   },
   mounted() {
     if (this.contestId) {
-      api.getGroupContest(this.contestId).then((res) => {
+      api
+        .getGroupContest(this.contestId)
+        .then((res) => {
           this.contest = res.data.data;
           this.init();
         })
@@ -138,7 +147,7 @@ export default {
             api.addGroupContestProblemFromPublic(data).then(
               (res) => {
                 mMessage.success(this.$i18n.t('m.Add_Successfully'));
-                this.$emit("currentChangeProblem");
+                this.$emit('currentChangeProblem');
                 this.currentChange(1);
               },
               () => {}
@@ -155,7 +164,7 @@ export default {
         api.addGroupTrainingProblemFromPublic(data).then(
           (res) => {
             mMessage.success(this.$i18n.t('m.Add_Successfully'));
-            this.$emit("currentChangeProblem");
+            this.$emit('currentChangeProblem');
             this.currentChange(1);
           },
           () => {}
@@ -172,5 +181,10 @@ export default {
 .page {
   margin-top: 20px;
   text-align: right;
+}
+.tips {
+  color: red;
+  font-weight: bolder;
+  font-size: 1rem;
 }
 </style>

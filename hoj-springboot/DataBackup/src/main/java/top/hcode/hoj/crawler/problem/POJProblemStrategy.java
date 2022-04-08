@@ -53,6 +53,7 @@ public class POJProblemStrategy extends ProblemStrategy {
                 .setAuthor(author)
                 .setOpenCaseResult(false)
                 .setIsRemoveEndBlank(false)
+                .setIsGroup(false)
                 .setDifficulty(1); // 默认为简单
         return new RemoteProblemInfo()
                 .setProblem(info)
