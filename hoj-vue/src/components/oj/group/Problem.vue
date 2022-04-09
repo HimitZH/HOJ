@@ -753,10 +753,11 @@ export default {
     };
   },
   mounted() {
+    let gid = this.$route.params.groupID;
     this.PROBLEM_LEVEL = Object.assign({}, PROBLEM_LEVEL);
-    this.uploadFileUrl = '/api/file/upload-testcase-zip';
+    this.uploadFileUrl = '/api/file/upload-testcase-zip?gid=' + gid;
     api
-      .getGroupProblemTagList(this.$route.params.groupID)
+      .getGroupProblemTagList(gid)
       .then((res) => {
         this.allTags = res.data.data;
         for (let tag of res.data.data) {
