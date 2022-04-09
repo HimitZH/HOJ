@@ -63,7 +63,7 @@ public class TestCaseManager {
         boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
 
         if (!isRoot && !isProblemAdmin && !isAdmin
-                && !(gid != null && groupValidator.isGroupMember(userRolesVo.getUid(), gid))) {
+                && !(gid != null && groupValidator.isGroupAdmin(userRolesVo.getUid(), gid))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
