@@ -19,6 +19,7 @@ import top.hcode.hoj.util.Constants;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class ProblemTestCaseUtils {
     public JSONObject initTestCase(List<HashMap<String, Object>> testCases,
                                    Long problemId,
                                    String version,
-                                  String mode) throws SystemError, UnsupportedEncodingException {
+                                   String mode) throws SystemError {
 
         if (testCases == null || testCases.size() == 0) {
             throw new SystemError("题号为：" + problemId + "的评测数据为空！", null, "The test cases does not exist.");
@@ -77,13 +78,13 @@ public class ProblemTestCaseUtils {
             // spj或interactive是根据特判程序输出判断结果，所以无需初始化测试数据
             if (Constants.JudgeMode.DEFAULT.getMode().equals(mode)) {
                 // 原数据MD5
-                jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(outputData.getBytes()));
+                jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(outputData.getBytes(StandardCharsets.UTF_8)));
                 // 原数据大小
-                jsonObject.set("outputSize", outputData.getBytes("utf-8").length);
+                jsonObject.set("outputSize", outputData.getBytes(StandardCharsets.UTF_8).length);
                 // 去掉全部空格的MD5，用来判断pe
-                jsonObject.set("allStrippedOutputMd5", DigestUtils.md5DigestAsHex(outputData.replaceAll("\\s+", "").getBytes()));
+                jsonObject.set("allStrippedOutputMd5", DigestUtils.md5DigestAsHex(outputData.replaceAll("\\s+", "").getBytes(StandardCharsets.UTF_8)));
                 // 默认去掉文末空格的MD5
-                jsonObject.set("EOFStrippedOutputMd5", DigestUtils.md5DigestAsHex(rtrim(outputData).getBytes()));
+                jsonObject.set("EOFStrippedOutputMd5", DigestUtils.md5DigestAsHex(rtrim(outputData).getBytes(StandardCharsets.UTF_8)));
             }
 
             testCaseList.add(jsonObject);
@@ -123,13 +124,13 @@ public class ProblemTestCaseUtils {
             // spj或interactive是根据特判程序输出判断结果，所以无需初始化测试数据
             if (Constants.JudgeMode.DEFAULT.getMode().equals(mode)) {
                 // 原数据MD5
-                jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(output.getBytes()));
+                jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(output.getBytes(StandardCharsets.UTF_8)));
                 // 原数据大小
-                jsonObject.set("outputSize", output.getBytes().length);
+                jsonObject.set("outputSize", output.getBytes(StandardCharsets.UTF_8).length);
                 // 去掉全部空格的MD5，用来判断pe
-                jsonObject.set("allStrippedOutputMd5", DigestUtils.md5DigestAsHex(output.replaceAll("\\s+", "").getBytes()));
+                jsonObject.set("allStrippedOutputMd5", DigestUtils.md5DigestAsHex(output.replaceAll("\\s+", "").getBytes(StandardCharsets.UTF_8)));
                 // 默认去掉文末空格的MD5
-                jsonObject.set("EOFStrippedOutputMd5", DigestUtils.md5DigestAsHex(rtrim(output).getBytes()));
+                jsonObject.set("EOFStrippedOutputMd5", DigestUtils.md5DigestAsHex(rtrim(output).getBytes(StandardCharsets.UTF_8)));
             }
 
             ((JSONArray) result.get("testCases")).put(jsonObject);
@@ -144,7 +145,7 @@ public class ProblemTestCaseUtils {
 
 
     // 获取指定题目的info数据
-    public JSONObject loadTestCaseInfo(Long problemId, String testCasesDir, String version, String mode) throws SystemError, UnsupportedEncodingException {
+    public JSONObject loadTestCaseInfo(Long problemId, String testCasesDir, String version, String mode) throws SystemError {
         if (FileUtil.exist(testCasesDir + File.separator + "info")) {
             FileReader fileReader = new FileReader(testCasesDir + File.separator + "info", CharsetUtil.UTF_8);
             String infoStr = fileReader.readString();
@@ -160,7 +161,7 @@ public class ProblemTestCaseUtils {
     }
 
     // 若没有测试数据，则尝试从数据库获取并且初始化到本地，如果数据库中该题目测试数据为空，rsync同步也出了问题，则直接判系统错误
-    public JSONObject tryInitTestCaseInfo(String testCasesDir, Long problemId, String version, String mode) throws SystemError, UnsupportedEncodingException {
+    public JSONObject tryInitTestCaseInfo(String testCasesDir, Long problemId, String version, String mode) throws SystemError {
 
         QueryWrapper<ProblemCase> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("pid", problemId);

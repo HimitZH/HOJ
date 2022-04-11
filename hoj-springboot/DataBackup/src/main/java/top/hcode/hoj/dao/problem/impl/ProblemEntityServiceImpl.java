@@ -30,6 +30,7 @@ import top.hcode.hoj.utils.Constants;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -527,13 +528,13 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
             // spj和interactive是根据特判程序输出判断结果，所以无需初始化测试数据
             if (Constants.JudgeMode.DEFAULT.getMode().equals(mode)) {
                 // 原数据MD5
-                jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(output.getBytes()));
+                jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(output.getBytes(StandardCharsets.UTF_8)));
                 // 原数据大小
-                jsonObject.set("outputSize", output.getBytes().length);
+                jsonObject.set("outputSize", output.getBytes(StandardCharsets.UTF_8).length);
                 // 去掉全部空格的MD5，用来判断pe
-                jsonObject.set("allStrippedOutputMd5", DigestUtils.md5DigestAsHex(output.replaceAll("\\s+", "").getBytes()));
+                jsonObject.set("allStrippedOutputMd5", DigestUtils.md5DigestAsHex(output.replaceAll("\\s+", "").getBytes(StandardCharsets.UTF_8)));
                 // 默认去掉文末空格的MD5
-                jsonObject.set("EOFStrippedOutputMd5", DigestUtils.md5DigestAsHex(rtrim(output).getBytes()));
+                jsonObject.set("EOFStrippedOutputMd5", DigestUtils.md5DigestAsHex(rtrim(output).getBytes(StandardCharsets.UTF_8)));
             }
 
             testCaseList.add(jsonObject);
@@ -587,17 +588,13 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
             // spj和interactive是根据特判程序输出判断结果，所以无需初始化测试数据
             if (Constants.JudgeMode.DEFAULT.getMode().equals(mode)) {
                 // 原数据MD5
-                jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(outputData.getBytes()));
+                jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(outputData.getBytes(StandardCharsets.UTF_8)));
                 // 原数据大小
-                try {
-                    jsonObject.set("outputSize", outputData.getBytes(CharsetUtil.UTF_8).length);
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
+                jsonObject.set("outputSize", outputData.getBytes(StandardCharsets.UTF_8).length);
                 // 去掉全部空格的MD5，用来判断pe
-                jsonObject.set("allStrippedOutputMd5", DigestUtils.md5DigestAsHex(outputData.replaceAll("\\s+", "").getBytes()));
+                jsonObject.set("allStrippedOutputMd5", DigestUtils.md5DigestAsHex(outputData.replaceAll("\\s+", "").getBytes(StandardCharsets.UTF_8)));
                 // 默认去掉文末空格的MD5
-                jsonObject.set("EOFStrippedOutputMd5", DigestUtils.md5DigestAsHex(rtrim(outputData).getBytes()));
+                jsonObject.set("EOFStrippedOutputMd5", DigestUtils.md5DigestAsHex(rtrim(outputData).getBytes(StandardCharsets.UTF_8)));
             }
 
             testCaseList.add(jsonObject);
