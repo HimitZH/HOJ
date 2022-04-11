@@ -84,7 +84,7 @@ public class CommentManager {
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
-        discussionQueryWrapper.select("gid").eq("id", did);
+        discussionQueryWrapper.select("id", "gid").eq("id", did);
         Discussion discussion = discussionEntityService.getOne(discussionQueryWrapper);
 
         if (discussion != null) {
@@ -160,7 +160,7 @@ public class CommentManager {
             }
 
             QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
-            discussionQueryWrapper.select("gid").eq("id", comment.getDid());
+            discussionQueryWrapper.select("id", "gid").eq("id", comment.getDid());
             Discussion discussion = discussionEntityService.getOne(discussionQueryWrapper);
 
             Long gid = discussion.getGid();
@@ -240,7 +240,7 @@ public class CommentManager {
         if (cid == null) {
 
             QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
-            discussionQueryWrapper.select("gid").eq("id", comment.getDid());
+            discussionQueryWrapper.select("id", "gid").eq("id", comment.getDid());
             Discussion discussion = discussionEntityService.getOne(discussionQueryWrapper);
 
             Long gid = discussion.getGid();
@@ -343,7 +343,7 @@ public class CommentManager {
         Comment comment = commentEntityService.getById(commentId);
 
         QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
-        discussionQueryWrapper.select("gid").eq("id", comment.getDid());
+        discussionQueryWrapper.select("id", "gid").eq("id", comment.getDid());
 
         Discussion discussion = discussionEntityService.getOne(discussionQueryWrapper);
         Long gid = discussion.getGid();
@@ -391,7 +391,7 @@ public class CommentManager {
                 }
             }
             QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
-            discussionQueryWrapper.select("gid").eq("id", comment.getDid());
+            discussionQueryWrapper.select("id", "gid").eq("id", comment.getDid());
             Discussion discussion = discussionEntityService.getOne(discussionQueryWrapper);
 
             Long gid = discussion.getGid();
