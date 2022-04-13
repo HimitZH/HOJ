@@ -1,5 +1,9 @@
 package top.hcode.hoj.controller.group;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.judge.CompileDTO;
@@ -8,12 +12,6 @@ import top.hcode.hoj.pojo.entity.problem.ProblemCase;
 import top.hcode.hoj.pojo.entity.problem.Tag;
 import top.hcode.hoj.pojo.vo.ProblemVo;
 import top.hcode.hoj.service.group.problem.GroupProblemService;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -77,13 +75,13 @@ public class GroupProblemController {
 
     @PostMapping("/compile-spj")
     public CommonResult<Void> compileSpj(@RequestBody CompileDTO compileDTO,
-                                   @RequestParam("gid") Long gid) {
+                                         @RequestParam("gid") Long gid) {
         return groupProblemService.compileSpj(compileDTO, gid);
     }
 
     @PostMapping("/compile-interactive")
     public CommonResult<Void> compileInteractive(@RequestBody CompileDTO compileDTO,
-                                           @RequestParam("gid") Long gid) {
+                                                 @RequestParam("gid") Long gid) {
         return groupProblemService.compileInteractive(compileDTO, gid);
     }
 
@@ -91,5 +89,12 @@ public class GroupProblemController {
     public CommonResult<Void> changeProblemAuth(@RequestParam(value = "pid", required = true) Long pid,
                                                 @RequestParam(value = "auth", required = true) Integer auth) {
         return groupProblemService.changeProblemAuth(pid, auth);
+    }
+
+
+    @PutMapping("/apply-public")
+    public CommonResult<Void> applyPublic(@RequestParam(value = "pid", required = true) Long pid,
+                                          @RequestParam(value = "isApplied", required = true) Boolean isApplied) {
+        return groupProblemService.applyPublic(pid, isApplied);
     }
 }

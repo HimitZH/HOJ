@@ -164,7 +164,7 @@
         COUNT(*) AS total
         FROM judge
         <where>
-            cid=0
+            cid=0 AND gid is null
             <if test="pidList!=null and pidList.size > 0">
                 AND pid in
                 <foreach collection="pidList" item="pid" open="(" separator="," close=")">

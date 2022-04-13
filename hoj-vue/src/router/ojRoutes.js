@@ -268,7 +268,7 @@ const ojRoutes = [
     path: '/group/:groupID',
     name: 'GroupDetails',
     component: GroupDetails,
-    meta: {title: 'Group Details'},
+    meta: {title: 'Group Details', requireAuth: true},
     children: [
       {
         path: 'announcement',

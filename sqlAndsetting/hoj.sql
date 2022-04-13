@@ -553,6 +553,7 @@ CREATE TABLE `problem` (
   `modified_user` varchar(255) DEFAULT NULL COMMENT '修改题目的管理员用户名',
   `is_group` tinyint(1) DEFAULT '0',
   `gid` bigint(20) unsigned DEFAULT NULL,
+  `apply_public_progress` int(11) DEFAULT NULL COMMENT '申请公开的进度：null为未申请，1为申请中，2为申请通过，3为申请拒绝',
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),

@@ -20,6 +20,7 @@ export const m = {
   Problem_Admin: '题目管理',
   Problem_List: '题目列表',
   Create_Problem: '增加题目',
+  Admin_Group_Apply_Problem:'团队题目审批',
   Export_Import_Problem: '导入|导出题目',
   Training_Admin: '训练管理',
   Training_List: '训练列表',
@@ -281,6 +282,12 @@ export const m = {
   Tag_Color: '标签颜色',
   Tag_Attribution: '标签归属',
   Delete_Tag_Tips: '你是否确定删除该标签？',
+
+  // /views/amdin/problem/GroupProblemList.vue
+  Search:'搜索',
+  Enter_Group_ID:'请输入团队ID',
+  Agreed:'已同意',
+  Examine:'审批',
 
   // /views/admin/problem/ImportAndExport.vue
   Export_Problem: '导出题目',

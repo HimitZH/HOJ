@@ -99,7 +99,6 @@ public class BeforeDispatchInitManager {
 
         judge.setCpid(0L)
                 .setPid(problem.getId())
-                .setGid(problem.getGid())
                 .setDisplayPid(problem.getProblemId());
 
         // 将新提交数据插入数据库

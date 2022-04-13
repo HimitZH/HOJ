@@ -34,7 +34,7 @@
     </select>
 
     <select id="getAdminProblemList" resultType="top.hcode.hoj.pojo.entity.problem.Problem">
-        SELECT p.*
+        SELECT p.id,p.problem_id,p.title,p.author,p.gmt_create,p.modified_user,p.auth,p.apply_public_progress,p.gid
         FROM problem p
         WHERE p.gid = #{gid}
         ORDER BY p.id DESC

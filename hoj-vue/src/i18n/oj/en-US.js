@@ -606,4 +606,10 @@ export const m = {
   // /views/oj/group/GroupSetting.vue
   Group_Visible: 'Show in group list',
   Group_Not_Visible: 'Hide in group list',
+
+  // GroupAdminProblemList.vue
+  Group_Problem_Apply_Public:'Apply to join the public problem bank',
+  Already_Public_Problem:'Already in the public problem bank',
+  Group_Problem_Apply_Public_Tips:'Are you sure you want to apply for this problem to be added to the public bank?',
+  Cancel_Group_Problem_Apply_Public_Tips:'Do you want to cancel the application for this problem to be added to the public bank?'
 }

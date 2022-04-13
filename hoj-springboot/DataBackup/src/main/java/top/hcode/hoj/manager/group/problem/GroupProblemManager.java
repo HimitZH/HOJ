@@ -1,11 +1,19 @@
 package top.hcode.hoj.manager.group.problem;
 
 import cn.hutool.core.io.FileUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
 import top.hcode.hoj.dao.group.GroupEntityService;
-import top.hcode.hoj.dao.group.GroupMemberEntityService;
 import top.hcode.hoj.dao.group.GroupProblemEntityService;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.dao.problem.ProblemCaseEntityService;
@@ -23,15 +31,6 @@ import top.hcode.hoj.pojo.vo.ProblemVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.validator.GroupValidator;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -435,6 +434,40 @@ public class GroupProblemManager {
                 .set("auth", auth)
                 .set("modified_user", userRolesVo.getUsername());
 
+        boolean isOk = problemEntityService.update(problemUpdateWrapper);
+        if (!isOk) {
+            throw new StatusFailException("修改失败");
+        }
+    }
+
+    public void applyPublic(Long pid, Boolean isApplied) throws StatusNotFoundException, StatusForbiddenException, StatusFailException {
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        Problem problem = problemEntityService.getById(pid);
+
+        if (problem == null) {
+            throw new StatusNotFoundException("该题目不存在！");
+        }
+        Long gid = problem.getGid();
+        Group group = groupEntityService.getById(gid);
+        if (group == null || group.getStatus() == 1 && !isRoot) {
+            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+        }
+        if (!userRolesVo.getUsername().equals(problem.getAuthor()) && !isRoot
+                && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
+            throw new StatusForbiddenException("对不起，您无权限操作！");
+        }
+        UpdateWrapper<Problem> problemUpdateWrapper = new UpdateWrapper<>();
+        problemUpdateWrapper.eq("id", pid);
+        if (isApplied) { // 申请
+            problemUpdateWrapper.set("apply_public_progress", 1);
+        } else { // 取消
+            problemUpdateWrapper.set("apply_public_progress", null);
+            problemUpdateWrapper.set("is_group", true);
+        }
         boolean isOk = problemEntityService.update(problemUpdateWrapper);
         if (!isOk) {
             throw new StatusFailException("修改失败");

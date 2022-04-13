@@ -27,6 +27,8 @@ public class ToJudgeDto {
 
     private Long tid;
 
+    private Long gid;
+
     private Boolean isRemote;
 
 }
