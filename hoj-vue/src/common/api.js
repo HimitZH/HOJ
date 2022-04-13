@@ -1022,6 +1022,12 @@ const ojApi = {
     })
   },
 
+  applyGroupProblemPublic(pid,isApplied) {
+    return ajax("/api/group/apply-public", 'put', {
+      params:{ pid, isApplied }
+    })
+  },
+
   deleteGroupContestProblem(pid, cid) {
     return ajax("/api/group/contest-problem",'delete', {
       params:{ pid, cid }
@@ -1453,6 +1459,19 @@ const adminApi = {
       params: {
         tid
       }
+    })
+  },
+
+  admin_getGroupApplyProblemList (params) {
+    params = utils.filterEmptyValue(params)
+    return ajax('/api/admin/group-problem/list', 'get', {
+      params
+    })
+  },
+
+  admin_changeGroupProblemApplyProgress (data) {
+    return ajax('/api/admin/group-problem/change-progress', 'put', {
+      data
     })
   },
 

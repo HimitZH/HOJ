@@ -3,11 +3,9 @@ package top.hcode.hoj.pojo.entity.problem;
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import org.apache.ibatis.type.JdbcType;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -124,6 +122,9 @@ public class Problem implements Serializable {
 
     @ApiModelProperty(value = "团队ID")
     private Long gid;
+
+    @ApiModelProperty(value = "申请公开的进度：null为未申请，1为申请中，2为申请通过，3为申请拒绝")
+    private Integer applyPublicProgress;
 
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;

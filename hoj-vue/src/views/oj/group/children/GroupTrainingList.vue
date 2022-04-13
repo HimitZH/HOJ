@@ -78,7 +78,7 @@
         </el-col>
       </el-row>
     </div>
-    <div v-if="!adminPage && !createPage && !problemPage">
+    <template v-if="!adminPage && !createPage && !problemPage">
       <vxe-table
         border="inner"
         stripe
@@ -171,7 +171,7 @@
         @on-page-size-change="onPageSizeChange"
         :layout="'prev, pager, next, sizes'"
       ></Pagination>
-    </div>
+    </template>
     <TrainingList
       ref="trainingList"
       v-if="adminPage && !createPage && !problemPage"

@@ -757,3 +757,34 @@ CALL add_group ;
 
 DROP PROCEDURE add_group;
 
+
+
+/*
+* 2022.04.13 problem表增加apply_public_progress
+			 
+*/
+DROP PROCEDURE
+IF EXISTS problem_Add_apply_public_progress;
+DELIMITER $$
+ 
+CREATE PROCEDURE problem_Add_apply_public_progress ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'problem'
+	AND column_name = 'apply_public_progress'
+) THEN
+	ALTER TABLE `hoj`.`problem`  ADD COLUMN `apply_public_progress` int(11) DEFAULT NULL COMMENT '申请公开的进度：null为未申请，1为申请中，2为申请通过，3为申请拒绝';
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL problem_Add_apply_public_progress ;
+
+DROP PROCEDURE problem_Add_apply_public_progress;
+

@@ -39,4 +39,6 @@ public interface GroupProblemService {
     public CommonResult<Void> compileInteractive(CompileDTO compileDTO, Long gid);
 
     public CommonResult<Void> changeProblemAuth(Long pid, Integer auth);
+
+    public CommonResult<Void> applyPublic(Long pid, Boolean isApplied);
 }

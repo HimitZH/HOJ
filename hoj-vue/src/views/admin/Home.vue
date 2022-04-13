@@ -46,9 +46,13 @@
           <el-menu-item index="/admin/problem/tag">{{
             $t('m.Admin_Tag')
           }}</el-menu-item>
+           <el-menu-item index="/admin/group-problem/apply"
+           v-if="isSuperAdmin || isProblemAdmin"
+           >{{$t('m.Admin_Group_Apply_Problem')}}
+           </el-menu-item>
           <el-menu-item
             index="/admin/problem/batch-operation"
-            v-if="isSuperAdmin"
+            v-if="isSuperAdmin || isProblemAdmin"
             >{{ $t('m.Export_Import_Problem') }}</el-menu-item
           >
         </el-submenu>
@@ -309,6 +313,19 @@
             >
               <mu-list-item-title>{{ $t('m.Admin_Tag') }}</mu-list-item-title>
             </mu-list-item>
+
+            <mu-list-item
+              v-if="isSuperAdmin || isProblemAdmin"
+              button
+              :ripple="false"
+              slot="nested"
+              to="/admin/group-problem/apply"
+              @click="opendrawer = !opendrawer"
+              active-class="mobile-menu-active"
+            >
+              <mu-list-item-title>{{ $t('m.Admin_Group_Apply_Problem') }}</mu-list-item-title>
+            </mu-list-item>
+
             <mu-list-item
               v-if="isSuperAdmin"
               button

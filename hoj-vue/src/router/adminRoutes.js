@@ -8,6 +8,7 @@ const Announcement= ()=>import('@/views/admin/general/Announcement')
 const SysNotice= ()=>import('@/views/admin/general/SysNotice')
 const SystemConfig= ()=>import('@/views/admin/general/SystemConfig')
 const ProblemList= ()=>import('@/views/admin/problem/ProblemList')
+const AdminGroupProblemList= ()=>import('@/views/admin/problem/GroupProblemList')
 const Problem= ()=>import('@/views/admin/problem/Problem')
 const Tag= ()=>import('@/views/admin/problem/Tag')
 const ProblemImportAndExport= ()=>import('@/views/admin/problem/ImportAndExport')
@@ -89,6 +90,12 @@ const adminRoutes= [
           name: 'admin-problem-tag',
           component: Tag,
           meta: { title:'Admin Tag'},
+        },
+        {
+          path: 'group-problem/apply',
+          name: 'admin-group-apply-problem',
+          component: AdminGroupProblemList,
+          meta: { title:'Admin Group Apply Problem'},
         },
         {
           path: 'problem/batch-operation',

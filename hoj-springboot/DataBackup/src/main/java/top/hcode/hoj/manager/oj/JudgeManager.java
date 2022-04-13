@@ -128,6 +128,7 @@ public class JudgeManager {
         judge.setShare(false) // 默认设置代码为单独自己可见
                 .setCode(judgeDto.getCode())
                 .setCid(judgeDto.getCid())
+                .setGid(judgeDto.getGid())
                 .setLanguage(judgeDto.getLanguage())
                 .setLength(judgeDto.getCode().length())
                 .setUid(userRolesVo.getUid())

@@ -144,7 +144,23 @@
             >
             </el-button>
           </el-tooltip>
-          <p v-if="contestId"></p>
+          <p></p>
+          <el-tooltip
+            effect="dark"
+            :content="getApplyContent(row.applyPublicProgress)"
+            placement="top"
+            v-if="
+              !contestId && row.gid == gid && (isGroupRoot || userInfo.username == row.author)
+            "
+          >
+            <el-button
+              :icon="getApplyIcon(row.applyPublicProgress)"
+              size="mini"
+              @click.native="applyPublic(row.id,row.applyPublicProgress)"
+              type="warning"
+            >
+            </el-button>
+          </el-tooltip>
           <el-tooltip
             effect="dark"
             :content="$t('m.Remove')"
@@ -315,6 +331,72 @@ export default {
         mMessage.success(this.$i18n.t('m.Update_Successfully'));
         this.$emit('currentChange', 1);
       });
+    },
+    getApplyContent(progress){
+      if(progress == null){
+        return this.$i18n.t('m.Group_Problem_Apply_Public');
+      }else if(progress == 1){
+        return this.$i18n.t('m.Applying');
+      }else if(progress == 2){
+        return this.$i18n.t('m.Already_Public_Problem');
+      }else if(progress == 3){
+        return this.$i18n.t('m.Refused');
+      }
+    },
+    getApplyIcon(progress){
+      if(progress == null){
+        return 'el-icon-upload2';
+      }else if(progress == 1){
+        return 'el-icon-loading';
+      }else if(progress == 2){
+        return 'el-icon-circle-check';
+      }else if(progress == 3){
+        return 'el-icon-circle-close';
+      }
+    },
+    applyPublic(pid, progress){
+      if(progress == null){
+        this.$confirm(
+        this.$i18n.t('m.Group_Problem_Apply_Public_Tips'),
+        this.$i18n.t('m.Tips'),
+        {
+          type: 'info',
+        }
+        ).then(
+          () => {
+            api
+              .applyGroupProblemPublic(pid, true)
+              .then((res) => {
+                mMessage.success('success');
+                this.$emit('currentChange', 1);
+                this.currentChange(1);
+              })
+              .catch(() => {});
+          },
+          () => {}
+        );
+      }else{
+        this.$confirm(
+        this.$i18n.t('m.Cancel_Group_Problem_Apply_Public_Tips'),
+        this.$i18n.t('m.Warning'),
+        {
+          type: 'warning',
+        }
+        ).then(
+          () => {
+            api
+              .applyGroupProblemPublic(pid, false)
+              .then((res) => {
+                mMessage.success('success');
+                this.$emit('currentChange', 1);
+                this.currentChange(1);
+              })
+              .catch(() => {});
+          },
+          () => {}
+        );
+      }
+
     },
     removeProblem(pid) {
       this.$confirm(

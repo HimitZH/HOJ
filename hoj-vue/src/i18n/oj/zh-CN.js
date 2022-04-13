@@ -606,4 +606,10 @@ export const m = {
   // /views/oj/group/GroupSetting.vue
   Group_Visible: '在团队列表显示',
   Group_Not_Visible: '在团队列表隐藏',
+
+  // GroupAdminProblemList.vue
+  Group_Problem_Apply_Public:'申请加入公开题库',
+  Already_Public_Problem:'已在公开题库中',
+  Group_Problem_Apply_Public_Tips:'您是否确定要申请该题目加入公开题库？',
+  Cancel_Group_Problem_Apply_Public_Tips:'您是否要取消申请该题目加入公开题库？'
 }

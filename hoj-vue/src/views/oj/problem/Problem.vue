@@ -1259,6 +1259,7 @@ export default {
         code: this.code,
         cid: this.contestID,
         tid: this.trainingID,
+        gid: this.groupID,
         isRemote: this.isRemote,
       };
       if (this.captchaRequired) {
