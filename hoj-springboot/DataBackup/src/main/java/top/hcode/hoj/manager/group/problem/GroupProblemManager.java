@@ -165,9 +165,8 @@ public class GroupProblemManager {
 
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
         problemQueryWrapper.eq("problem_id", problemDto.getProblem().getProblemId().toUpperCase());
-        Problem problem = problemEntityService.getOne(problemQueryWrapper);
-
-        if (problem != null) {
+        int sameProblemIDCount = problemEntityService.count(problemQueryWrapper);
+        if (sameProblemIDCount > 0) {
             throw new StatusFailException("该题目的Problem ID已存在，请更换！");
         }
 
