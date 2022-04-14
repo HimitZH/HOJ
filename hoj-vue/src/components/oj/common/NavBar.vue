@@ -640,7 +640,7 @@ export default {
                 sumMsg +
                 '条未读消息，请注意查看！',
               position: 'bottom-right',
-              duration: 30000,
+              duration: 10000,
             });
           } else {
             this.$notify.info({
@@ -652,7 +652,7 @@ export default {
                 sumMsg +
                 ' unread messages. Please check them!',
               position: 'bottom-right',
-              duration: 30000,
+              duration: 10000,
             });
           }
         }

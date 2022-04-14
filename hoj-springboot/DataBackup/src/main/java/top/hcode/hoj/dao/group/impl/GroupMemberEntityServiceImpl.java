@@ -72,30 +72,32 @@ public class GroupMemberEntityServiceImpl extends ServiceImpl<GroupMemberMapper,
     }
 
     private String getNewMemberApplyGroupContent(Long gid, String groupName, UserInfo newMemberUser) {
-        return "您好，您作为[" + gid + "]【" + groupName
-                + "】团队的超级管理员，目前有用户【" + newMemberUser.getUsername()
-                + "】正在申请参加该团队，请前往查看审批！" +
+        return "您好，您作为[" + gid + "]【**" + groupName
+                + "**】团队的超级管理员，目前有用户【[" + newMemberUser.getUsername()
+                + "](/user-home?username=" + newMemberUser.getUsername() + ")】正在申请参加该团队，" +
+                "请前往 [" + groupName + "](/group/" + gid + "/member) 查看审批！" +
                 "\n\n" +
-                "Hello, as the super administrator of the [" + gid + "]【" + groupName
-                + "】 group, a user 【" + newMemberUser.getUsername()
-                + "】 is applying to join the group. Please go to check and approve!";
+                "Hello, as the super administrator of the [" + gid + "]【**" + groupName
+                + "**】 group, a user 【[" + newMemberUser.getUsername()
+                + "](/user-home?username=" + newMemberUser.getUsername() + ")】 is applying to join the group. " +
+                "Please go to [" + groupName + "](/group/" + gid + "/member) check and approve!";
     }
 
 
     @Async
     @Override
-    public void addWelcomeNoticeToGroupNewMember(Long gid, String groupName,String memberUid) {
+    public void addWelcomeNoticeToGroupNewMember(Long gid, String groupName, String memberUid) {
         String title = "欢迎加入团队(Welcome to The Group)";
         String content = getWelcomeNewMember(gid, groupName);
         adminNoticeManager.addSingleNoticeToUser(null, memberUid, title, content, "Mine");
     }
 
     public String getWelcomeNewMember(Long gid, String groupName) {
-        return "您好，您已经通过了审批，欢迎加入[" + gid + "]【" + groupName
-                + "】团队！" +
+        return "您好，您已经通过了审批，欢迎加入[" + gid + "]【[" + groupName
+                + "](/group/" + gid + ")】团队！" +
                 "\n\n" +
                 "Hello, you have passed the approval. Welcome to join the group [" + gid +
-                "]【" + groupName + "】!";
+                "]【[" + groupName + "](/group/" + gid + ")】!";
     }
 
 
@@ -108,11 +110,11 @@ public class GroupMemberEntityServiceImpl extends ServiceImpl<GroupMemberMapper,
     }
 
     public String getRemoveMemberContent(Long gid, String groupName, String operator) {
-        return "您好，您已经被[" + gid + "]【" + groupName
-                + "】团队的管理员【" + operator + "】移除了团队！" +
+        return "您好，您已经被[" + gid + "]【[" + groupName + "](/group/" + gid + ")】" +
+                "团队的管理员【[" + operator + "](/user-home?username=" + operator + ")】移除了团队！" +
                 "\n\n" +
                 "Hello, You have been removed from the group [" + gid +
-                "]【" + groupName + "】 by the group admin 【" + operator + "】!";
+                "]【[" + groupName + "](/group/" + gid + ")】 by the group admin 【[" + operator + "](/user-home?username=" + operator + ")】!";
     }
 
 
@@ -126,11 +128,11 @@ public class GroupMemberEntityServiceImpl extends ServiceImpl<GroupMemberMapper,
     }
 
     private String getDissolutionGroupContent(Long gid, String groupName, String operator) {
-        return "您好，您所在的团队[" + gid + "]【" + groupName
-                + "】目前已经被管理员【" + operator + "】解散，请您注意！" +
+        return "您好，您所在的团队**[" + gid + "]【" + groupName
+                + "】**目前已经被管理员【[" + operator + "](/user-home?username=" + operator + ")】解散，请您注意！" +
                 "\n\n" +
-                "Hello, your team [" + gid + "]【" + groupName
-                + "】 has been dissolved by the administrator 【" + operator
-                + "】, please pay attention!";
+                "Hello, your team **[" + gid + "]【" + groupName
+                + "】** has been dissolved by the administrator【[" + operator
+                + "](/user-home?username=" + operator + ")】, please pay attention!";
     }
 }

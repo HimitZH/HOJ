@@ -46,4 +46,9 @@ public class UserInfoEntityServiceImpl extends ServiceImpl<UserInfoMapper, UserI
         return superAdminUidList;
     }
 
+    @Override
+    public List<String> getProblemAdminUidList() {
+        return userInfoMapper.getProblemAdminUidList();
+    }
+
 }
