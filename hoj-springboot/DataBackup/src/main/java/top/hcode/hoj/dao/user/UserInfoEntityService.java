@@ -19,4 +19,6 @@ public interface UserInfoEntityService extends IService<UserInfo> {
     public Boolean addUser(RegisterDto registerDto);
 
     public List<String> getSuperAdminUidList();
+
+    public List<String> getProblemAdminUidList();
 }

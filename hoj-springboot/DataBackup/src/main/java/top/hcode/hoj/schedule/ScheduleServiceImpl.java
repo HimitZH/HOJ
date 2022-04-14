@@ -20,17 +20,20 @@ import top.hcode.hoj.dao.common.FileEntityService;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.dao.msg.AdminSysNoticeEntityService;
 import top.hcode.hoj.dao.msg.UserSysNoticeEntityService;
+import top.hcode.hoj.dao.problem.ProblemEntityService;
 import top.hcode.hoj.dao.user.SessionEntityService;
+import top.hcode.hoj.dao.user.UserInfoEntityService;
+import top.hcode.hoj.dao.user.UserRecordEntityService;
+import top.hcode.hoj.manager.msg.AdminNoticeManager;
+import top.hcode.hoj.pojo.entity.common.File;
 import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.msg.AdminSysNotice;
+import top.hcode.hoj.pojo.entity.msg.UserSysNotice;
+import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.user.Session;
 import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.entity.user.UserRecord;
-import top.hcode.hoj.pojo.entity.msg.AdminSysNotice;
-import top.hcode.hoj.pojo.entity.common.File;
-import top.hcode.hoj.pojo.entity.msg.UserSysNotice;
 import top.hcode.hoj.service.admin.rejudge.RejudgeService;
-import top.hcode.hoj.dao.user.UserInfoEntityService;
-import top.hcode.hoj.dao.user.UserRecordEntityService;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.JsoupUtils;
 import top.hcode.hoj.utils.RedisUtils;
@@ -94,6 +97,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Resource
     private RejudgeService rejudgeService;
+
+    @Resource
+    private ProblemEntityService problemEntityService;
+
+    @Resource
+    private AdminNoticeManager adminNoticeManager;
 
     /**
      * @MethodName deleteAvatar
@@ -397,6 +406,37 @@ public class ScheduleServiceImpl implements ScheduleService {
                 rejudgeService.rejudge(judge.getSubmitId());
             }
         }
+    }
+
+    /**
+     * 每天6点检查一次有没有处于正在申请中的团队题目申请公开的进度单子，发消息给超级管理和题目管理员
+     */
+    @Override
+    @Scheduled(cron = "0 0 6 * * *")
+//    @Scheduled(cron = "0/5 * * * * *")
+    public void checkUnHandleGroupProblemApplyProgress() {
+        QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
+        problemQueryWrapper.eq("apply_public_progress", 1).isNotNull("gid");
+        int count = problemEntityService.count(problemQueryWrapper);
+        if (count > 0) {
+            String title = "团队题目审批通知(Group Problem Approval Notice)";
+            String content = getDissolutionGroupContent(count);
+            List<String> superAdminUidList = userInfoEntityService.getSuperAdminUidList();
+            List<String> problemAdminUidList = userInfoEntityService.getProblemAdminUidList();
+            if (!CollectionUtils.isEmpty(problemAdminUidList)) {
+                superAdminUidList.addAll(problemAdminUidList);
+            }
+            adminNoticeManager.addSingleNoticeToBatchUser(null, superAdminUidList, title, content, "Sys");
+        }
+    }
+
+    private String getDissolutionGroupContent(int count) {
+        return "您好，尊敬的管理员，目前有**" + count +
+                "**条团队题目正在申请公开的单子，请您尽快前往后台 [团队题目审批](/admin/group-problem/apply) 进行审批！"
+                + "\n\n" +
+                "Hello, dear administrator, there are currently **" + count
+                + "** problem problems applying for public list. " +
+                "Please go to the backstage [Group Problem Examine](/admin/group-problem/apply) for approval as soon as possible!";
     }
 
 }

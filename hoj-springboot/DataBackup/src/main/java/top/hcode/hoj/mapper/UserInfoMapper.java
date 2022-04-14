@@ -23,4 +23,6 @@ public interface UserInfoMapper extends BaseMapper<UserInfo> {
     int addUser(RegisterDto registerDto);
 
     List<String> getSuperAdminUidList();
+
+    List<String> getProblemAdminUidList();
 }

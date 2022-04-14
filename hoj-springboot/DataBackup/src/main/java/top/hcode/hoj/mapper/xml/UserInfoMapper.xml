@@ -7,6 +7,10 @@
         )
     </insert>
     <select id="getSuperAdminUidList" resultType="java.lang.String" useCache="true">
-        select u.uuid from user_info u,user_role ur where u.uuid = ur.uid and ur.role_id = 1000
+        select ur.uid from user_role ur where ur.role_id = 1000
+    </select>
+
+    <select id="getProblemAdminUidList" resultType="java.lang.String" useCache="true">
+        select ur.uid from user_role ur where ur.role_id = 1008
     </select>
 </mapper>
