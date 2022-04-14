@@ -247,7 +247,7 @@
                 </el-button>
               </span>
               <span v-else-if="userAuth == 1">
-                <el-button type="warining" size="small">
+                <el-button type="warning" size="small">
                   {{ $t('m.Applying') }}
                 </el-button>
               </span>
