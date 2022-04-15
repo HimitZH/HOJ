@@ -266,14 +266,16 @@ public class GroupManager {
         }
 
         QueryWrapper<Group> groupQueryWrapper = new QueryWrapper<>();
-        groupQueryWrapper.eq("name", group.getName());
+        groupQueryWrapper.eq("name", group.getName())
+                .ne("id", group.getId());
         int sameNameGroupCount = groupEntityService.count(groupQueryWrapper);
         if (sameNameGroupCount > 0) {
             throw new StatusFailException("团队名称已存在，请修改后重试！");
         }
 
         groupQueryWrapper = new QueryWrapper<>();
-        groupQueryWrapper.eq("short_name", group.getShortName());
+        groupQueryWrapper.eq("short_name", group.getShortName())
+                .ne("id", group.getId());
         int sameShortNameGroupCount = groupEntityService.count(groupQueryWrapper);
         if (sameShortNameGroupCount > 0) {
             throw new StatusFailException("团队简称已存在，请修改后重试！");
