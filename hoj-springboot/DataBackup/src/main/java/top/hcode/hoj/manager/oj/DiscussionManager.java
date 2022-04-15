@@ -179,13 +179,10 @@ public class DiscussionManager {
         String problemId = discussion.getPid();
         if (problemId != null) {
             QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
-            problemQueryWrapper.eq("problemId", problemId);
-            Problem problem = problemEntityService.getOne(problemQueryWrapper);
-
-            if (problem == null) {
-                throw new StatusNotFoundException("该题目不存在");
-            } else if (problem.getIsGroup()) {
-                discussion.setGid(problem.getGid());
+            problemQueryWrapper.eq("problem_id", problemId);
+            int problemCount = problemEntityService.count(problemQueryWrapper);
+            if (problemCount == 0) {
+                throw new StatusNotFoundException("对不起，该题目不存在，无法发布题解!");
             }
         }
 
