@@ -4,7 +4,8 @@ const state = {
   intoAccess: true, // 比赛进入权限
   training: {
     auth: TRAINING_TYPE.Public.name,
-    rankShowName:'username'
+    rankShowName:'username',
+    gid:null
   },
   trainingProblemList: [],
   itemVisible: {

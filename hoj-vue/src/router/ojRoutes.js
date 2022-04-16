@@ -295,6 +295,32 @@ const ojRoutes = [
         meta: { title: 'Group Training' }
       },
       {
+        name: 'GroupTrainingDetails',
+        path: 'training/:trainingID/',
+        component:TrainingDetails,
+        meta: {title: 'Group Training Details'},
+        children: [
+          {
+            name: 'GroupTrainingProblemList',
+            path: 'problems',
+            component: TrainingProblemList,
+            meta: { title: 'Group Training Problem' }
+          },
+          {
+            name: 'GroupTrainingProblemDetails',
+            path: 'problem/:problemID/',
+            component: Problem,
+            meta: { title: 'Group Training Problem Details' }
+          },
+          {
+            name: 'GroupTrainingRank',
+            path: 'rank',
+            component: TrainingRank,
+            meta: { title: 'Group Training Rank' }
+          }
+        ]
+      },
+      {
         path: 'contest',
         name: 'GroupContestList',
         component: GroupContestList,

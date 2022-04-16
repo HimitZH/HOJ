@@ -1,9 +1,6 @@
 package top.hcode.hoj.manager.oj;
 
 import cn.hutool.core.bean.BeanUtil;
-import top.hcode.hoj.dao.group.GroupMemberEntityService;
-import top.hcode.hoj.validator.GroupValidator;
-import top.hcode.hoj.validator.TrainingValidator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -13,17 +10,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestParam;
 import top.hcode.hoj.common.exception.StatusAccessDeniedException;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
+import top.hcode.hoj.dao.group.GroupMemberEntityService;
+import top.hcode.hoj.dao.training.*;
+import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.manager.admin.training.AdminTrainingRecordManager;
 import top.hcode.hoj.pojo.dto.RegisterTrainingDto;
 import top.hcode.hoj.pojo.entity.training.*;
 import top.hcode.hoj.pojo.vo.*;
-import top.hcode.hoj.dao.training.*;
-import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.validator.GroupValidator;
+import top.hcode.hoj.validator.TrainingValidator;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -137,14 +136,10 @@ public class TrainingManager {
      */
     public List<ProblemVo> getTrainingProblemList(Long tid) throws StatusAccessDeniedException,
             StatusForbiddenException, StatusFailException {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-
         Training training = trainingEntityService.getById(tid);
         if (training == null || !training.getStatus()) {
             throw new StatusFailException("该训练不存在或不允许显示！");
         }
-
         trainingValidator.validateTrainingAuth(training);
 
         return trainingProblemEntityService.getTrainingProblemList(tid);
@@ -267,7 +262,6 @@ public class TrainingManager {
             List<String> groupRootUidList = groupMemberEntityService.getGroupRootUidList(gid);
             superAdminUidList.addAll(groupRootUidList);
         }
-
 
         List<TrainingRankVo> result = new ArrayList<>();
 

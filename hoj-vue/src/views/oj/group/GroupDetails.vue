@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row :gutter="20">
-      <el-col :span="24" style="margin-top: 10px; margin-bottom: 10px;">
+      <el-col :span="24" style="margin-top: 10px;">
         <div class="sub-menu">
           <el-tabs @tab-click="tabClick" v-model="route_name">
             <el-tab-pane name="GroupDetails" lazy>
@@ -91,7 +91,9 @@
       <template
         v-if="
           route_name === 'GroupSubmissionList' ||
-            $route.name === 'GroupProblemDetails'
+            $route.name === 'GroupProblemDetails' ||
+            ($route.name != 'GroupTrainingList' 
+             && $route.name.startsWith('GroupTraining'))
         "
       >
         <el-col :span="24" style=" margin-bottom: 10px;">
@@ -383,6 +385,8 @@ export default {
       this.route_name = 'GroupSubmissionList';
     } else if (this.route_name == 'GroupDiscussionDetails') {
       this.route_name = 'GroupDiscussionList';
+    }else if(this.route_name.startsWith('GroupTraining')){
+      this.route_name = 'GroupTrainingList';
     }
     this.GROUP_TYPE = Object.assign({}, GROUP_TYPE);
     this.GROUP_TYPE_REVERSE = Object.assign({}, GROUP_TYPE_REVERSE);
@@ -553,6 +557,8 @@ export default {
         this.route_name = 'GroupSubmissionList';
       } else if (newVal.name == 'GroupDiscussionDetails') {
         this.route_name = 'GroupDiscussionList';
+      }else if(this.route_name.startsWith('GroupTraining')){
+        this.route_name = 'GroupTrainingList';
       } else {
         this.route_name = newVal.name;
       }
@@ -576,9 +582,6 @@ export default {
 }
 /deep/.el-tabs--top .el-tabs__item.is-top:nth-child(2) {
   padding-left: 20px;
-}
-/deep/.el-tabs__header {
-  margin-bottom: 0px;
 }
 .description-body {
   background: #fff;

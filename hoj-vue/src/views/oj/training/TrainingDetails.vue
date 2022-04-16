@@ -26,7 +26,7 @@
     </el-card>
     <div class="card-top">
       <el-tabs @tab-click="tabClick" v-model="route_name">
-        <el-tab-pane name="TrainingDetails" lazy>
+        <el-tab-pane :name="groupID?'GroupTrainingDetails':'TrainingDetails'" lazy>
           <span slot="label"
             ><i class="el-icon-s-home"></i>&nbsp;{{
               $t('m.Training_Introduction')
@@ -160,7 +160,7 @@
         </el-tab-pane>
 
         <el-tab-pane
-          name="TrainingProblemList"
+          :name="groupID?'GroupTrainingProblemList':'TrainingProblemList'"
           lazy
           :disabled="trainingMenuDisabled"
         >
@@ -171,13 +171,13 @@
           >
           <transition name="el-zoom-in-bottom">
             <router-view
-              v-if="route_name === 'TrainingProblemList'"
+              v-if="route_name === 'TrainingProblemList' || route_name === 'GroupTrainingProblemList'"
             ></router-view>
           </transition>
         </el-tab-pane>
 
         <el-tab-pane
-          name="TrainingRank"
+          :name="groupID?'GroupTrainingRank':'TrainingRank'"
           lazy
           :disabled="trainingMenuDisabled"
           v-if="isPrivateTraining"
@@ -188,7 +188,7 @@
             }}</span
           >
           <transition name="el-zoom-in-bottom">
-            <router-view v-if="route_name === 'TrainingRank'"></router-view>
+            <router-view v-if="route_name === 'TrainingRank' || route_name === 'GroupTrainingRank' "></router-view>
           </transition>
         </el-tab-pane>
       </el-tabs>
@@ -215,12 +215,21 @@ export default {
         { color: '#1989fa', percentage: 80 },
         { color: '#67c23a', percentage: 100 },
       ],
+      groupID:null,
     };
   },
   created() {
     this.route_name = this.$route.name;
-    if (this.route_name == 'TrainingProblemDetails') {
-      this.route_name = 'TrainingProblemList';
+    let gid = this.$route.params.groupID;
+    if(gid){
+      this.groupID = gid;
+      if (this.route_name == 'GroupTrainingProblemDetails') {
+        this.route_name = 'GroupTrainingProblemList';
+      }
+    }else{
+      if (this.route_name == 'TrainingProblemDetails') {
+        this.route_name = 'TrainingProblemList';
+      }
     }
     this.TRAINING_TYPE = Object.assign({}, TRAINING_TYPE);
     this.$store.dispatch('getTraining').then((res) => {
@@ -290,8 +299,14 @@ export default {
   watch: {
     $route(newVal) {
       this.route_name = newVal.name;
-      if (newVal.name == 'TrainingProblemDetails') {
-        this.route_name = 'TrainingProblemList';
+      if(this.groupID){
+         if (newVal.name == 'GroupTrainingProblemDetails') {
+          this.route_name = 'GroupTrainingProblemList';
+        }
+      }else{
+        if (newVal.name == 'TrainingProblemDetails') {
+          this.route_name = 'TrainingProblemList';
+        }
       }
       this.changeDomTitle({ title: this.training.title });
     },

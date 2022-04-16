@@ -600,6 +600,16 @@ export const m = {
   Delete_Member: '踢出该成员',
   Delete_Member_Tips: '确定要踢出该成员吗？踢出后该成员将无法再查看团队资源！另外，如果该成员是团队负责人，那么团队也将被一同解散！',
 
+  // /views/oj/group/GroupTrainingList.vue
+  Back_To_Admin_Training_List:'返回训练管理列表',
+  Back_To_Training_List:'返回训练列表',
+  Back_Admin_Training_Problem_List:'返回训练题目管理列表',
+  
+  // /views/oj/group/GroupContestList.vue
+  Back_To_Admin_Contest_List:'返回比赛管理列表',
+  Back_To_Contest_List:'返回比赛列表',
+  Back_Admin_Contest_Problem_List:'返回比赛题目管理列表',
+
   // /views/oj/group/GroupSetting.vue
   Add_From_Group_Problem: '从团队题库添加题目',
   

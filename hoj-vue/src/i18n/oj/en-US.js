@@ -582,6 +582,16 @@ export const m = {
   Apply_Reason_Check_Required: 'The apply reason is required.',
   Apply_Reason_Check_Min_Max: 'The length of apply reason is 5 to 100',
 
+  // /views/oj/group/GroupTrainingList.vue
+  Back_To_Admin_Training_List:'Back to Admin Trainingt List',
+  Back_To_Training_List:'Back To Training List',
+  Back_Admin_Training_Problem_List:'Back Admin Training Problem List',
+
+  // /views/oj/group/GroupContestList.vue
+  Back_To_Admin_Contest_List:'Back to Admin Contest List',
+  Back_To_Contest_List:'Back to Contest List',
+  Back_Admin_Contest_Problem_List:'Back to Admin Contest Problem List',
+  
   // /views/oj/group/GroupDiscussionList.vue
   No_Discussion: 'No Discussion',
   Problem_Discussion:'Problem Discussion',
