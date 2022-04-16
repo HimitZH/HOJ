@@ -184,7 +184,7 @@
               </el-form-item>
             </el-col>
             <el-col :md="12" :xs="24">
-              <el-form-item :label="$t('m.Tags')" required>
+              <el-form-item :label="$t('m.Tags')">
                 <el-tag
                   v-for="tag in problemTags"
                   closable
@@ -1271,12 +1271,13 @@ export default {
           }
         }
       }
-      if (!this.problemTags.length) {
-        this.error.tags =
-          this.$i18n.t('m.Tags') + ' ' + this.$i18n.t('m.is_required');
-        mMessage.error(this.error.tags);
-        return;
-      }
+      // 允许题目标签为空
+      // if (!this.problemTags.length) {
+      //   this.error.tags =
+      //     this.$i18n.t('m.Tags') + ' ' + this.$i18n.t('m.is_required');
+      //   mMessage.error(this.error.tags);
+      //   return;
+      // }
       let isChangeModeCode =
         this.spjRecord.spjLanguage != this.problem.spjLanguage ||
         this.spjRecord.spjCode != this.problem.spjCode;
@@ -1321,12 +1322,15 @@ export default {
       if (this.problem.isRemote) {
         ojName = this.problem.problemId.split('-')[0];
       }
-      let problemTagList = Object.assign([], this.problemTags);
-      for (let i = 0; i < problemTagList.length; i++) {
-        for (let tag2 of this.allTags) {
-          if (problemTagList[i].name == tag2.name && tag2.oj == ojName) {
-            problemTagList[i] = tag2;
-            break;
+      let problemTagList = [];
+      if(this.problemTags.length>0){
+        problemTagList = Object.assign([], this.problemTags);
+        for (let i = 0; i < problemTagList.length; i++) {
+          for (let tag2 of this.allTags) {
+            if (problemTagList[i].name == tag2.name && tag2.oj == ojName) {
+              problemTagList[i] = tag2;
+              break;
+            }
           }
         }
       }
