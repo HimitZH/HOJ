@@ -6,6 +6,7 @@ import com.wf.captcha.ArithmeticCaptcha;
 import com.wf.captcha.base.Captcha;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import top.hcode.hoj.pojo.entity.problem.*;
 import top.hcode.hoj.pojo.entity.training.TrainingCategory;
 import top.hcode.hoj.pojo.vo.CaptchaVo;
@@ -13,10 +14,7 @@ import top.hcode.hoj.dao.problem.*;
 import top.hcode.hoj.dao.training.TrainingCategoryEntityService;
 import top.hcode.hoj.utils.RedisUtils;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -89,13 +87,16 @@ public class CommonManager {
     }
 
 
-    public Collection<Tag> getProblemTags(Long pid){
+    public Collection<Tag> getProblemTags(Long pid) {
         Map<String, Object> map = new HashMap<>();
         map.put("pid", pid);
         List<Long> tidList = problemTagEntityService.listByMap(map)
                 .stream()
                 .map(ProblemTag::getTid)
                 .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(tidList)) {
+            return new ArrayList<>();
+        }
         return tagEntityService.listByIds(tidList);
     }
 
@@ -120,7 +121,7 @@ public class CommonManager {
         return languageEntityService.list(queryWrapper);
     }
 
-    public Collection<Language> getProblemLanguages(Long pid){
+    public Collection<Language> getProblemLanguages(Long pid) {
         QueryWrapper<ProblemLanguage> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("pid", pid).select("lid");
         List<Long> idList = problemLanguageEntityService.list(queryWrapper)
