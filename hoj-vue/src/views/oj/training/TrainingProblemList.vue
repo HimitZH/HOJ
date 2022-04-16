@@ -133,7 +133,14 @@ export default {
       isGetStatusOk: false,
       testcolor: 'rgba(0, 206, 209, 1)',
       showTags: false,
+      groupID:null,
     };
+  },
+  created(){
+    let gid = this.$route.params.groupID;
+    if(gid){
+      this.groupID = gid;
+    }
   },
   mounted() {
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
@@ -150,7 +157,7 @@ export default {
               pidList.push(this.problemList[index].pid);
             }
             this.isGetStatusOk = false;
-            api.getUserProblemStatus(pidList, false).then((res) => {
+            api.getUserProblemStatus(pidList, false,null,this.groupID).then((res) => {
               let result = res.data.data;
               for (let index = 0; index < this.problemList.length; index++) {
                 this.problemList[index]['myStatus'] =
@@ -163,13 +170,24 @@ export default {
       });
     },
     goTrainingProblem(event) {
-      this.$router.push({
-        name: 'TrainingProblemDetails',
-        params: {
-          trainingID: this.$route.params.trainingID,
-          problemID: event.row.problemId,
-        },
-      });
+      if(this.groupID){
+        this.$router.push({
+          name: 'GroupTrainingProblemDetails',
+          params: {
+            trainingID: this.$route.params.trainingID,
+            problemID: event.row.problemId,
+            groupID: this.groupID
+          },
+        });
+      }else{
+        this.$router.push({
+          name: 'TrainingProblemDetails',
+          params: {
+            trainingID: this.$route.params.trainingID,
+            problemID: event.row.problemId,
+          },
+        });
+      }
     },
     getACRate(ACCount, TotalCount) {
       return utils.getACRate(ACCount, TotalCount);
@@ -194,7 +212,7 @@ export default {
   },
   computed: {
     ...mapState({
-      problemList: (state) => state.training.trainingProblemList,
+      problemList: (state) => state.training.trainingProblemList
     }),
     ...mapGetters(['isAuthenticated']),
   },

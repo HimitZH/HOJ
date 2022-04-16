@@ -2,42 +2,44 @@
   <el-card>
     <div class="filter-row">
       <el-row>
-        <el-col :md="3" :xs="5">
+        <el-col :md="3" :xs="24">
           <span class="title">{{ $t('m.Group_Training') }}</span>
         </el-col>
         <el-col
           :md="18"
-          :xs="19"
+          :xs="24"
           v-if="
             (isSuperAdmin || isGroupAdmin) && !problemPage && !editProblemPage
           "
         >
           <el-button
             v-if="!editPage"
-            :type="createPage ? 'danger' : 'primary'"
+            :type="createPage ? 'warning' : 'primary'"
             size="small"
             @click="handleCreatePage"
             :icon="createPage ? 'el-icon-back' : 'el-icon-plus'"
-            >{{ createPage ? $t('m.Back') : $t('m.Create') }}</el-button
+            >{{ createPage ? $t('m.Back_To_Admin_Training_List') : $t('m.Create') }}</el-button
           >
           <el-button
             v-if="editPage && adminPage"
-            type="danger"
+            type="warning"
             size="small"
             @click="handleEditPage"
             icon="el-icon-back"
-            >{{ $t('m.Back') }}</el-button
+            >{{ $t('m.Back_To_Admin_Training_List') }}</el-button
           >
           <el-button
-            :type="adminPage ? 'warning' : 'success'"
+            :type="adminPage ? 'danger' : 'success'"
+            v-if="!editPage&&!createPage"
             size="small"
             @click="handleAdminPage"
             :icon="adminPage ? 'el-icon-back' : 'el-icon-s-opportunity'"
-            >{{ adminPage ? $t('m.Back') : $t('m.Training_Admin') }}</el-button
+            >{{ adminPage ? $t('m.Back_To_Training_List') : $t('m.Training_Admin') }}</el-button
           >
         </el-col>
         <el-col
-          :span="18"
+          :md="18"
+          :xs="24"
           v-else-if="
             (isSuperAdmin || isGroupAdmin) && problemPage && !editProblemPage
           "
@@ -61,19 +63,20 @@
             size="small"
             @click="handleProblemPage(null)"
             icon="el-icon-back"
-            >{{ $t('m.Back') }}</el-button
+            >{{ $t('m.Back_To_Admin_Training_List') }}</el-button
           >
         </el-col>
         <el-col
-          :span="18"
+          :md="18"
+          :xs="24"
           v-else-if="(isSuperAdmin || isGroupAdmin) && editProblemPage"
         >
           <el-button
-            type="danger"
+            type="primary"
             size="small"
             @click="handleEditProblemPage"
             icon="el-icon-back"
-            >{{ $t('m.Back') }}</el-button
+            >{{ $t('m.Back_Admin_Training_Problem_List') }}</el-button
           >`
         </el-col>
       </el-row>
@@ -302,9 +305,10 @@ export default {
     },
     goGroupTraining(event) {
       this.$router.push({
-        name: 'TrainingDetails',
+        name: 'GroupTrainingDetails',
         params: {
           trainingID: event.row.id,
+          groupID:this.$route.params.groupID
         },
       });
     },
