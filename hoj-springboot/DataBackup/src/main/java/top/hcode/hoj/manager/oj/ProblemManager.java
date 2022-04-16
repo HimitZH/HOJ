@@ -241,17 +241,19 @@ public class ProblemManager {
 
         QueryWrapper<ProblemTag> problemTagQueryWrapper = new QueryWrapper<>();
         problemTagQueryWrapper.eq("pid", problem.getId());
+
         // 获取该题号对应的标签id
         List<Long> tidList = new LinkedList<>();
         problemTagEntityService.list(problemTagQueryWrapper).forEach(problemTag -> {
             tidList.add(problemTag.getTid());
         });
-
-        List<Tag> tags = (List<Tag>) tagEntityService.listByIds(tidList);
+        List<Tag> tags = new ArrayList<>();
+        if (tidList.size() > 0) {
+            tags = (List<Tag>) tagEntityService.listByIds(tidList);
+        }
 
         // 记录 languageId对应的name
         HashMap<Long, String> tmpMap = new HashMap<>();
-
         // 获取题目提交的代码支持的语言
         List<String> languagesStr = new LinkedList<>();
         QueryWrapper<ProblemLanguage> problemLanguageQueryWrapper = new QueryWrapper<>();
