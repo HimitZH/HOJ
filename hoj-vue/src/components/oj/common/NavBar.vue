@@ -9,11 +9,18 @@
         text-color="#495060"
       >
         <div class="logo">
-          <el-image
-            style="width: 139px; height: 50px"
-            :src="imgUrl"
-            fit="scale-down"
-          ></el-image>
+          <el-tooltip
+            :content="$t('m.Click_To_Change_Web_Language')"
+            placement="bottom"
+            effect="dark"
+          >
+            <el-image
+              style="width: 139px; height: 50px"
+              :src="imgUrl"
+              fit="scale-down"
+              @click="changeWebLanguage"
+            ></el-image>
+          </el-tooltip>
         </div>
         <el-menu-item index="/home"
           ><i class="el-icon-s-home"></i>{{ $t('m.NavBar_Home') }}</el-menu-item
@@ -188,9 +195,17 @@
         <mu-button icon slot="left" @click="opendrawer = !opendrawer">
           <i class="el-icon-s-unfold"></i>
         </mu-button>
-        {{
-          websiteConfig.shortName ? websiteConfig.shortName.toUpperCase() : 'OJ'
-        }}
+        <el-tooltip
+            :content="$t('m.Click_To_Change_Web_Language')"
+            placement="bottom"
+            effect="dark"
+          >
+          <span  @click="changeWebLanguage">
+          {{
+            websiteConfig.shortName ? websiteConfig.shortName.toUpperCase() : 'OJ'
+          }}
+          </span>
+        </el-tooltip>
         <mu-button
           flat
           slot="right"
@@ -658,6 +673,9 @@ export default {
         }
       });
     },
+    changeWebLanguage() {
+      this.$store.commit('changeWebLanguage', { language: this.webLanguage == 'zh-CN' ? 'en-US' : 'zh-CN' });
+    },
   },
   computed: {
     ...mapGetters([
@@ -752,6 +770,7 @@ export default {
 }
 
 .logo {
+  cursor: pointer;
   margin-left: 2%;
   margin-right: 2%;
   float: left;
