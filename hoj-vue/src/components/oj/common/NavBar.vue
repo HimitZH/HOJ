@@ -200,7 +200,7 @@
             placement="bottom"
             effect="dark"
           >
-          <span  @click="changeWebLanguage">
+          <span @click="changeWebLanguage">
           {{
             websiteConfig.shortName ? websiteConfig.shortName.toUpperCase() : 'OJ'
           }}
