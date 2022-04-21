@@ -31,13 +31,6 @@ public class JudgeController {
     private JudgeService judgeService;
 
     /**
-     * @MethodName submitProblemJudge
-     * @Description 核心方法 判题通过openfeign调用判题系统服务
-     * @Return CommonResult
-     * @Since 2020/10/30
-     */
-
-    /**
      * @param limit
      * @param currentPage
      * @param onlyMine
@@ -74,13 +67,18 @@ public class JudgeController {
         return judgeService.getSubmission(submitId);
     }
 
+    /**
+     * @MethodName submitProblemJudge
+     * @Description 核心方法 判题就此开始
+     * @Return CommonResult
+     * @Since 2020/10/30
+     */
     @RequiresAuthentication
     @RequiresPermissions("submit")
     @RequestMapping(value = "/submit-problem-judge", method = RequestMethod.POST)
     public CommonResult<Judge> submitProblemJudge(@RequestBody ToJudgeDto judgeDto) {
         return judgeService.submitProblemJudge(judgeDto);
     }
-
 
     /**
      * @MethodName resubmit
