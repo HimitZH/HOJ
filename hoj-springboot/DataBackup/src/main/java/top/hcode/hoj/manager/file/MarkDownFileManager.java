@@ -44,8 +44,10 @@ public class MarkDownFileManager {
         boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
         boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
 
-        if (!isRoot && !isProblemAdmin && !isAdmin
-                && !(gid != null && groupValidator.isGroupMember(userRolesVo.getUid(), gid))) {
+        if (!isRoot
+                && !isProblemAdmin
+                && !isAdmin
+                && !(gid != null && groupValidator.isGroupAdmin(userRolesVo.getUid(), gid))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -111,7 +113,7 @@ public class MarkDownFileManager {
         if (!file.getUid().equals(userRolesVo.getUid())
                 && !isRoot
                 && !isProblemAdmin
-                && !(gid != null && groupValidator.isGroupRoot(userRolesVo.getUid(), gid))) {
+                && !(gid != null && groupValidator.isGroupAdmin(userRolesVo.getUid(), gid))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
