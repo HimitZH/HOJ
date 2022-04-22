@@ -41,6 +41,7 @@ import GroupContestList from '@/views/oj/group/children/GroupContestList.vue'
 import GroupDiscussionList from '@/views/oj/group/children/GroupDiscussionList.vue'
 import GroupMemberList from '@/views/oj/group/children/GroupMemberList.vue'
 import GroupSetting from '@/views/oj/group/children/GroupSetting.vue'
+import GroupRank from '@/views/oj/group/children/GroupRank.vue'
 import NotFound from "@/views/404.vue"
 
 const ojRoutes = [
@@ -367,6 +368,12 @@ const ojRoutes = [
         name: 'GroupSetting',
         component: GroupSetting,
         meta: { title: 'Group Setting' }
+      },
+      {
+        path: 'rank',
+        name: 'GroupRank',
+        component: GroupRank,
+        meta: { title: 'Group Rank' }
       },
     ]
   },

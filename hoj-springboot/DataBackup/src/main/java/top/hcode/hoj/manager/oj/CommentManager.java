@@ -398,7 +398,7 @@ public class CommentManager {
             Long gid = discussion.getGid();
             if (gid != null) {
                 if (!groupValidator.isGroupMember(userRolesVo.getUid(), gid) && !isRoot) {
-                    throw new StatusForbiddenException("对不起，您无权限操作！");
+                    throw new StatusForbiddenException("对不起，您无权限回复！");
                 }
             }
         } else {
@@ -408,7 +408,7 @@ public class CommentManager {
                     && !isRoot
                     && !contest.getUid().equals(userRolesVo.getUid())
                     && !(contest.getIsGroup() && groupValidator.isGroupRoot(userRolesVo.getUid(), gid))) {
-                throw new StatusForbiddenException("对不起，您无权限操作！");
+                throw new StatusForbiddenException("对不起，您无权限回复！");
             }
         }
         reply.setFromAvatar(userRolesVo.getAvatar())

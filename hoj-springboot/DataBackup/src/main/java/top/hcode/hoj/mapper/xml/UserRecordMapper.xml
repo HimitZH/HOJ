@@ -27,10 +27,6 @@
         ORDER BY ac DESC,u.gmt_create DESC LIMIT 10
     </select>
 
-
-
-
-
     <select id="getOIRankList" resultType="top.hcode.hoj.pojo.vo.OIRankVo" useCache="true">
         SELECT ui.uuid AS uid, ui.nickname, ui.username, left(ui.signature,100) as signature, ui.avatar,
             ui.title_name,ui.title_color
@@ -105,6 +101,51 @@
     <select id="getProblemScore" resultType="java.lang.Integer">
         SELECT MAX(oi_rank_score) AS sum_score FROM judge
         WHERE uid=#{uid} AND cid=0 AND gid is null AND score IS NOT NULL GROUP BY pid
+    </select>
+
+
+    <select id="getGroupRankList" resultType="top.hcode.hoj.pojo.vo.OIRankVo" useCache="true">
+        SELECT ui.uuid AS uid, ui.nickname, ui.username, ui.avatar,
+        ui.title_name,ui.title_color
+        , (
+        SELECT COUNT(DISTINCT pid)
+        FROM judge
+        WHERE uid = ui.uuid and gid = #{gid} and status = 0
+        ) AS ac
+        , (
+        SELECT COUNT(uid)
+        FROM judge
+        WHERE uid = ui.uuid and gid = #{gid}
+        ) AS total, ss.score AS score
+        FROM user_info ui
+        right join
+        (
+            SELECT u.uuid AS uid, COALESCE(SUM(s.score),0) AS score
+            FROM user_info u left join (
+            SELECT MAX(oi_rank_score) AS score, uid, pid
+            FROM judge
+            WHERE cid=0 AND gid = #{gid}
+            GROUP BY pid, uid
+            ) s
+            ON s.uid = u.uuid
+            <where>
+                u.status = 0
+                <if test="uidList!=null">
+                    AND u.uuid in
+                    <foreach collection="uidList" item="uid" open="(" separator="," close=")">
+                        #{uid}
+                    </foreach>
+                </if>
+            </where>
+            GROUP BY u.uuid
+        ) ss
+        on ss.uid = ui.uuid
+        <if test="rankType == 'ACM'">
+            ORDER BY ac DESC, total ASC
+        </if>
+        <if test="rankType == 'OI'">
+            ORDER BY score DESC, ac DESC
+        </if>
     </select>
 
 </mapper>

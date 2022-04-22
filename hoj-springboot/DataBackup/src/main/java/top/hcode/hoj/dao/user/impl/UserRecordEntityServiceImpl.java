@@ -11,6 +11,8 @@ import top.hcode.hoj.pojo.vo.UserHomeVo;
 import top.hcode.hoj.dao.user.UserRecordEntityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.utils.RedisUtils;
 
 import java.util.List;
 
@@ -27,6 +29,12 @@ public class UserRecordEntityServiceImpl extends ServiceImpl<UserRecordMapper, U
 
     @Autowired
     private UserRecordMapper userRecordMapper;
+
+    @Autowired
+    private RedisUtils redisUtils;
+
+    // 排行榜缓存时间 10s
+    private static final long cacheRankSecond = 10;
 
     @Override
     public List<ACMRankVo> getRecent7ACRank() {
@@ -48,4 +56,15 @@ public class UserRecordEntityServiceImpl extends ServiceImpl<UserRecordMapper, U
         return userRecordMapper.getACMRankList(page, uidList);
     }
 
+    @Override
+    public IPage<OIRankVo> getGroupRankList(Page<OIRankVo> page, Long gid, List<String> uidList, String rankType) {
+        IPage<OIRankVo> data = null;
+        String key = Constants.Account.GROUP_RANK_CACHE.getCode() + "_" + rankType + "_" + page.getCurrent() + "_" + page.getSize();
+        data = (IPage<OIRankVo>) redisUtils.get(key);
+        if (data == null) {
+            data = userRecordMapper.getGroupRankList(page, gid, uidList, rankType);
+            redisUtils.set(key, data, cacheRankSecond);
+        }
+        return data;
+    }
 }

@@ -54,6 +54,9 @@ public class RankManager {
         List<String> uidList = null;
         if (!StringUtils.isEmpty(searchUser)) {
             QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
+
+            userInfoQueryWrapper.select("uuid");
+
             userInfoQueryWrapper.and(wrapper -> wrapper
                     .like("username", searchUser)
                     .or()

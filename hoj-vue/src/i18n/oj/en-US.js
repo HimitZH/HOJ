@@ -576,6 +576,7 @@ export const m = {
   Group_Submission: 'Submission',
   Group_Discussion: 'Discussion',
   Group_Setting: 'Setting',
+  Group_Rank:'Rank',
   Group_Announcement: 'Announcement',
   Group_Member: 'Member',
   Apply_Reason: 'Apply Reason',
@@ -616,6 +617,10 @@ export const m = {
   // /views/oj/group/GroupSetting.vue
   Group_Visible: 'Show in group list',
   Group_Not_Visible: 'Hide in group list',
+
+  // /views/oj/group/GroupRank.vue
+  Group_ACM_Rank_Type: 'ACM Rank',
+  Group_OI_Rank_Type: 'OI Rank',
 
   // GroupAdminProblemList.vue
   Group_Problem_Apply_Public:'Apply to join the public problem bank',

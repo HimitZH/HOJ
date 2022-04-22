@@ -35,7 +35,7 @@ public class GroupMember implements Serializable {
     @ApiModelProperty(value = "用户id")
     private String uid;
 
-    @ApiModelProperty(value = "默认为0表示还未审批，1位通过，2为拒绝。")
+    @ApiModelProperty(value = "默认为1表示申请中，2为拒绝，3为普通成员，4为管理员，5为超级管理员")
     private Integer auth;
 
     @ApiModelProperty(value = "申请理由")
