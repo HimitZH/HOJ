@@ -84,6 +84,14 @@
                 <i class="el-icon-s-tools"></i>&nbsp;{{ $t('m.Group_Setting') }}
               </span>
             </el-tab-pane>
+            <el-tab-pane 
+              lazy 
+              name="GroupRank" 
+              :disabled="groupMenuDisabled">
+              <span slot="label">
+                <i class="el-icon-medal-1"></i>&nbsp;{{ $t('m.Group_Rank') }}
+              </span>
+            </el-tab-pane>
           </el-tabs>
         </div>
       </el-col>

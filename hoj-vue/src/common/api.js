@@ -1101,6 +1101,18 @@ const ojApi = {
     })
   },
 
+  getGroupRank(currentPage,limit,gid,type,searchUser){
+    return ajax('/api/get-group-rank-list','get',{
+      params: {
+       currentPage,
+        limit,
+        gid,
+        type,
+        searchUser
+      }
+    })
+  },
+
   // 站内消息
 
   getUnreadMsgCount(){

@@ -247,7 +247,7 @@
               class="comment-opt comment-reply"
               @click="showCommentInput(item)"
               v-if="
-                !cid || (item.fromRole != 'root' && item.fromUid != contest.uid)
+                !cid || (cid && (item.fromUid == userInfo.uid || isContestAdmin || (item.fromRole != 'root' && item.fromUid != contest.uid)))
               "
             >
               <i class="iconfont el-icon-chat-square"></i>

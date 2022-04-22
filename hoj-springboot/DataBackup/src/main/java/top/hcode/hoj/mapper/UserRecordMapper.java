@@ -28,8 +28,13 @@ public interface UserRecordMapper extends BaseMapper<UserRecord> {
 
     List<ACMRankVo> getRecent7ACRank();
 
-    IPage<OIRankVo> getOIRankList(Page<OIRankVo> page,@Param("uidList") List<String> uidList);
+    IPage<OIRankVo> getOIRankList(Page<OIRankVo> page, @Param("uidList") List<String> uidList);
 
     UserHomeVo getUserHomeInfo(@Param("uid") String uid, @Param("username") String username);
+
+    IPage<OIRankVo> getGroupRankList(Page<OIRankVo> page,
+                                     @Param("gid") Long gid,
+                                     @Param("uidList") List<String> uidList,
+                                     @Param("rankType") String rankType);
 
 }

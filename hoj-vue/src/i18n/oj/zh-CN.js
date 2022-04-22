@@ -577,6 +577,7 @@ export const m = {
   Group_Discussion: '讨论',
   Group_Setting: '设置',
   Group_Announcement: '公告',
+  Group_Rank:'排名',
   Group_Member: '成员',
   Apply_Reason: '申请理由',
   Apply_Reason_Check_Required: '申请理由不能为空',
@@ -616,6 +617,10 @@ export const m = {
   // /views/oj/group/GroupSetting.vue
   Group_Visible: '在团队列表显示',
   Group_Not_Visible: '在团队列表隐藏',
+
+  // /views/oj/group/GroupRank.vue
+  Group_ACM_Rank_Type: 'ACM排序',
+  Group_OI_Rank_Type: 'OI排序',
 
   // GroupAdminProblemList.vue
   Group_Problem_Apply_Public:'申请加入公开题库',
