@@ -2,26 +2,26 @@ package top.hcode.hoj.manager.oj;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.extra.emoji.EmojiUtil;
-import org.springframework.beans.factory.annotation.Value;
-import top.hcode.hoj.dao.contest.ContestEntityService;
-import top.hcode.hoj.dao.contest.ContestRegisterEntityService;
-import top.hcode.hoj.pojo.entity.contest.Contest;
-import top.hcode.hoj.pojo.entity.contest.ContestRegister;
-import top.hcode.hoj.pojo.vo.ReplyVo;
-import top.hcode.hoj.validator.ContestValidator;
-import top.hcode.hoj.validator.GroupValidator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
+import top.hcode.hoj.dao.contest.ContestEntityService;
+import top.hcode.hoj.dao.discussion.CommentEntityService;
+import top.hcode.hoj.dao.discussion.CommentLikeEntityService;
+import top.hcode.hoj.dao.discussion.DiscussionEntityService;
+import top.hcode.hoj.dao.discussion.ReplyEntityService;
+import top.hcode.hoj.dao.user.UserAcproblemEntityService;
 import top.hcode.hoj.pojo.dto.ReplyDto;
+import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.discussion.Comment;
 import top.hcode.hoj.pojo.entity.discussion.CommentLike;
 import top.hcode.hoj.pojo.entity.discussion.Discussion;
@@ -29,12 +29,10 @@ import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.pojo.entity.user.UserAcproblem;
 import top.hcode.hoj.pojo.vo.CommentListVo;
 import top.hcode.hoj.pojo.vo.CommentVo;
+import top.hcode.hoj.pojo.vo.ReplyVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.dao.discussion.CommentEntityService;
-import top.hcode.hoj.dao.discussion.CommentLikeEntityService;
-import top.hcode.hoj.dao.discussion.DiscussionEntityService;
-import top.hcode.hoj.dao.discussion.ReplyEntityService;
-import top.hcode.hoj.dao.user.UserAcproblemEntityService;
+import top.hcode.hoj.validator.ContestValidator;
+import top.hcode.hoj.validator.GroupValidator;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -333,25 +331,29 @@ public class CommentManager {
 
     }
 
-    public List<ReplyVo> getAllReply(Integer commentId, Long cid) throws StatusForbiddenException {
+    public List<ReplyVo> getAllReply(Integer commentId, Long cid) throws StatusForbiddenException, StatusFailException {
 
         // 如果有登录，则获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
-        Comment comment = commentEntityService.getById(commentId);
-
-        QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
-        discussionQueryWrapper.select("id", "gid").eq("id", comment.getDid());
-
-        Discussion discussion = discussionEntityService.getOne(discussionQueryWrapper);
-        Long gid = discussion.getGid();
-        if (gid != null) {
-            if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), gid)) {
-                throw new StatusForbiddenException("对不起，您无权限操作！");
+        if (cid == null) {
+            Comment comment = commentEntityService.getById(commentId);
+            QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
+            discussionQueryWrapper.select("id", "gid").eq("id", comment.getDid());
+            Discussion discussion = discussionEntityService.getOne(discussionQueryWrapper);
+            Long gid = discussion.getGid();
+            if (gid != null) {
+                if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), gid)) {
+                    throw new StatusForbiddenException("对不起，您无权限操作！");
+                }
             }
+        } else {
+            Contest contest = contestEntityService.getById(cid);
+            contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
         }
+
         return replyEntityService.getAllReplyByCommentId(cid,
                 userRolesVo != null ? userRolesVo.getUid() : null,
                 isRoot,
