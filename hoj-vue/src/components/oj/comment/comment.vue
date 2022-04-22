@@ -254,7 +254,7 @@
               <span>{{ $t('m.Reply') }}</span>
             </span>
             <span
-              v-if="item.fromUid == userInfo.uid || isAdminRole"
+              v-if="item.fromUid == userInfo.uid || (!cid && isAdminRole) || (cid && isContestAdmin)"
               class="comment-opt comment-delete"
               @click="deleteComment(item, commentIndex)"
             >
@@ -344,7 +344,7 @@
                 </span>
                 <span
                   class="reply-opt reply-delete"
-                  v-if="reply.fromUid == userInfo.uid || isAdminRole"
+                  v-if="reply.fromUid == userInfo.uid || (!cid && isAdminRole) || (cid && isContestAdmin)"
                   @click="deleteReply(reply, commentIndex, replyIndex)"
                 >
                   <i class="iconfont el-icon-delete"></i>
@@ -781,6 +781,7 @@ export default {
             id: comment.id,
             fromUid: comment.fromUid,
             did: this.did,
+            cid: this.cid
           };
           api.deleteComment(commentDeleteData).then((res) => {
             this.totalComment--;
@@ -953,7 +954,7 @@ export default {
     ...mapState({
       contest: (state) => state.contest.contest,
     }),
-    ...mapGetters(['isAuthenticated', 'userInfo', 'isAdminRole']),
+    ...mapGetters(['isAuthenticated', 'userInfo', 'isAdminRole','isContestAdmin']),
     showloading() {
       if (this.query.currentPage * this.query.limit >= this.total) {
         return false;

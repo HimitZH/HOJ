@@ -1,6 +1,5 @@
 package top.hcode.hoj.service.oj.impl;
 
-import top.hcode.hoj.pojo.vo.ReplyVo;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
@@ -9,9 +8,9 @@ import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.oj.CommentManager;
 import top.hcode.hoj.pojo.dto.ReplyDto;
 import top.hcode.hoj.pojo.entity.discussion.Comment;
-import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.pojo.vo.CommentListVo;
 import top.hcode.hoj.pojo.vo.CommentVo;
+import top.hcode.hoj.pojo.vo.ReplyVo;
 import top.hcode.hoj.service.oj.CommentService;
 
 import javax.annotation.Resource;
@@ -76,6 +75,8 @@ public class CommentServiceImpl implements CommentService {
             return CommonResult.successResponse(commentManager.getAllReply(commentId, cid));
         } catch (StatusForbiddenException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
+        } catch (StatusFailException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FAIL);
         }
     }
 
