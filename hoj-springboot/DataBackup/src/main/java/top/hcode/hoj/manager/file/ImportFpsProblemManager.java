@@ -5,14 +5,17 @@ import cn.hutool.core.io.file.FileWriter;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.XmlUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.problem.CodeTemplate;
@@ -25,6 +28,9 @@ import top.hcode.hoj.dao.problem.ProblemEntityService;
 import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +43,7 @@ import java.util.*;
  */
 
 @Component
+@Slf4j
 public class ImportFpsProblemManager {
 
     private final static List<String> timeUnits = Arrays.asList("ms", "s");
@@ -82,8 +89,25 @@ public class ImportFpsProblemManager {
 
     }
 
-    private List<ProblemDto> parseFps(InputStream inputStream, String username){
-        Document document = XmlUtil.readXML(inputStream);
+    private List<ProblemDto> parseFps(InputStream inputStream, String username) throws StatusFailException {
+
+        Document document = null;
+        try {
+            DocumentBuilderFactory documentBuilderFactory = XmlUtil.createDocumentBuilderFactory();
+            documentBuilderFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            document = documentBuilder.parse(inputStream);
+        } catch (ParserConfigurationException e) {
+            log.error("build  DocumentBuilder error:", e);
+        } catch (IOException e) {
+            log.error("read xml file error:", e);
+        } catch (SAXException e) {
+            log.error("parse xml file error:", e);
+        }
+        if (document == null) {
+            throw new StatusFailException("读取xml失败，请检查FPS文件格式是否准确！");
+        }
+
         Element rootElement = XmlUtil.getRootElement(document);
         String version = rootElement.getAttribute("version");
 
@@ -228,6 +252,9 @@ public class ImportFpsProblemManager {
             // 题目评测数据
             List<Element> testInputs = XmlUtil.getElements(item, "test_input");
             List<Element> testOutputs = XmlUtil.getElements(item, "test_output");
+
+            boolean isNotOutputTestCase = CollectionUtils.isEmpty(testOutputs);
+
             List<ProblemCase> problemSamples = new LinkedList<>();
             String problemTestCaseDir = fileDir + File.separator + index;
             for (int i = 0; i < testInputs.size(); i++) {
@@ -236,9 +263,12 @@ public class ImportFpsProblemManager {
                 FileWriter infileWriter = new FileWriter(problemTestCaseDir + File.separator + infileName);
                 FileWriter outfileWriter = new FileWriter(problemTestCaseDir + File.separator + outfileName);
                 infileWriter.write(testInputs.get(i).getTextContent());
-                outfileWriter.write(testOutputs.get(i).getTextContent());
+                outfileWriter.write(isNotOutputTestCase ? "" : testOutputs.get(i).getTextContent());
                 problemSamples.add(new ProblemCase()
                         .setInput(infileName).setOutput(outfileName));
+            }
+            if (CollectionUtils.isEmpty(problemSamples)) {
+                throw new StatusFailException("题目的评测数据不能为空，请检查FPS文件内是否有test_input和test_output!");
             }
             String mode = Constants.JudgeMode.DEFAULT.getMode();
             if (problem.getSpjLanguage() != null) {
