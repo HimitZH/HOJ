@@ -79,7 +79,7 @@ public class RankManager {
         } else if (type.intValue() == Constants.Contest.TYPE_OI.getCode()) {
             rankList = getOIRankList(limit, currentPage, uidList);
         } else {
-            throw new StatusFailException("比赛类型代码不正确！");
+            throw new StatusFailException("排行榜类型代码不正确，请使用0(ACM),1(OI)！");
         }
         return rankList;
     }

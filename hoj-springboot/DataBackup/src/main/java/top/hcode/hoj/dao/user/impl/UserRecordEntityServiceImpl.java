@@ -57,14 +57,18 @@ public class UserRecordEntityServiceImpl extends ServiceImpl<UserRecordMapper, U
     }
 
     @Override
-    public IPage<OIRankVo> getGroupRankList(Page<OIRankVo> page, Long gid, List<String> uidList, String rankType) {
-        IPage<OIRankVo> data = null;
-        String key = Constants.Account.GROUP_RANK_CACHE.getCode() + "_" + gid + "_" + rankType + "_" + page.getCurrent() + "_" + page.getSize();
-        data = (IPage<OIRankVo>) redisUtils.get(key);
-        if (data == null) {
-            data = userRecordMapper.getGroupRankList(page, gid, uidList, rankType);
-            redisUtils.set(key, data, cacheRankSecond);
+    public IPage<OIRankVo> getGroupRankList(Page<OIRankVo> page, Long gid, List<String> uidList, String rankType, Boolean useCache) {
+        if (useCache) {
+            IPage<OIRankVo> data = null;
+            String key = Constants.Account.GROUP_RANK_CACHE.getCode() + "_" + gid + "_" + rankType + "_" + page.getCurrent() + "_" + page.getSize();
+            data = (IPage<OIRankVo>) redisUtils.get(key);
+            if (data == null) {
+                data = userRecordMapper.getGroupRankList(page, gid, uidList, rankType);
+                redisUtils.set(key, data, cacheRankSecond);
+            }
+            return data;
+        } else {
+            return userRecordMapper.getGroupRankList(page, gid, uidList, rankType);
         }
-        return data;
     }
 }
