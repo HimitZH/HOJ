@@ -46,6 +46,16 @@ public class GroupRankManager {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 30;
 
+        // 根据type查询不同 进行不同排序方式
+        String rankType;
+        if (type.intValue() == Constants.Contest.TYPE_ACM.getCode()) {
+            rankType = Constants.Contest.TYPE_ACM.getName();
+        } else if (type.intValue() == Constants.Contest.TYPE_OI.getCode()) {
+            rankType = Constants.Contest.TYPE_OI.getName();
+        } else {
+            throw new StatusFailException("排行榜类型代码不正确，请使用0(ACM),1(OI)！");
+        }
+
         QueryWrapper<GroupMember> groupMemberQueryWrapper = new QueryWrapper<>();
         groupMemberQueryWrapper.select("uid")
                 .eq("gid", gid).in("auth", 3, 4, 5);
@@ -59,21 +69,11 @@ public class GroupRankManager {
             return new Page<>(currentPage, limit);
         }
 
-        IPage<OIRankVo> groupRankList;
-        Page<OIRankVo> page = new Page<>(currentPage, limit);
-        // 根据type查询不同 进行不同排序方式
-        if (type.intValue() == Constants.Contest.TYPE_ACM.getCode()) {
-            groupRankList = userRecordEntityService.getGroupRankList(page, gid, groupMemberUidList, Constants.Contest.TYPE_ACM.getName());
-        } else if (type.intValue() == Constants.Contest.TYPE_OI.getCode()) {
-            groupRankList = userRecordEntityService.getGroupRankList(page, gid, groupMemberUidList, Constants.Contest.TYPE_OI.getName());
-        } else {
-            throw new StatusFailException("比赛类型代码不正确！");
-        }
-
         if (!StringUtils.isEmpty(searchUser)) {
             QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
             userInfoQueryWrapper.select("uuid")
                     .eq("status", 0)
+                    .in("uuid", groupMemberUidList)
                     .and(wrapper -> wrapper
                             .like("username", searchUser)
                             .or()
@@ -87,18 +87,13 @@ public class GroupRankManager {
                     .collect(Collectors.toList());
 
             if (CollectionUtils.isEmpty(uidList)) {
-                return groupRankList;
+                return new Page<>(currentPage, limit);
             }
-            List<OIRankVo> records = groupRankList.getRecords()
-                    .stream()
-                    .filter(OIRankVo -> uidList.contains(OIRankVo.getUid()))
-                    .collect(Collectors.toList());
-
-            groupRankList.setRecords(records)
-                    .setTotal(records.size());
-            return groupRankList;
+            Page<OIRankVo> page = new Page<>(currentPage, limit);
+            return userRecordEntityService.getGroupRankList(page, gid, uidList, rankType, false);
         } else {
-            return groupRankList;
+            Page<OIRankVo> page = new Page<>(currentPage, limit);
+            return userRecordEntityService.getGroupRankList(page, gid, groupMemberUidList, rankType, true);
         }
 
     }
