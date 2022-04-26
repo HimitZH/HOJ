@@ -42,6 +42,7 @@ public class ChooseUtils {
     @Autowired
     private RemoteJudgeAccountMapper remoteJudgeAccountMapper;
 
+    public static final boolean openCodeforcesFixServer = false;
 
     /**
      * @param

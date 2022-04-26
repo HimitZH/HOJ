@@ -76,7 +76,9 @@ public class Dispatcher {
         }
 
         // 如果是vj判題，同时不是已有提交id的获取结果操作，归属于CF的判題，需要控制判题机的权限，一机一题
-        boolean isCFFirstSubmit = isRemote && !data.getIsHasSubmitIdRemoteReJudge()
+        boolean isCFFixServerJudge = isRemote
+                && ChooseUtils.openCodeforcesFixServer
+                && !data.getIsHasSubmitIdRemoteReJudge()
                 && Constants.RemoteOJ.CODEFORCES.getName().equals(oj);
 
         // 尝试600s
@@ -102,7 +104,7 @@ public class Dispatcher {
                 }
                 count.getAndIncrement();
                 JudgeServer judgeServer = null;
-                if (!isCFFirstSubmit) {
+                if (!isCFFixServerJudge) {
                     judgeServer = chooseUtils.chooseServer(isRemote);
                 } else {
                     judgeServer = chooseUtils.chooseFixedServer(true, "cf_submittable", data.getIndex(), data.getSize());
@@ -121,7 +123,7 @@ public class Dispatcher {
                         }
                     } finally {
                         checkResult(result, submitId);
-                        if (!isCFFirstSubmit) {
+                        if (!isCFFixServerJudge) {
                             // 无论成功与否，都要将对应的当前判题机当前判题数减1
                             reduceCurrentTaskNum(judgeServer.getId());
                         }
@@ -211,10 +213,12 @@ public class Dispatcher {
 
     public void changeRemoteJudgeStatus(String oj, String username, JudgeServer judgeServer) {
         changeAccountStatus(oj, username);
-        if (oj.equals(Constants.RemoteOJ.CODEFORCES.getName())
-                || oj.equals(Constants.RemoteOJ.GYM.getName())) {
-            if (judgeServer != null) {
-                changeServerSubmitCFStatus(judgeServer.getIp(), judgeServer.getPort());
+        if (ChooseUtils.openCodeforcesFixServer) {
+            if (oj.equals(Constants.RemoteOJ.CODEFORCES.getName())
+                    || oj.equals(Constants.RemoteOJ.GYM.getName())) {
+                if (judgeServer != null) {
+                    changeServerSubmitCFStatus(judgeServer.getIp(), judgeServer.getPort());
+                }
             }
         }
     }

@@ -12,5 +12,5 @@ import top.hcode.hoj.pojo.entity.contest.ContestRecord;
  * @since 2020-10-23
  */
 public interface ContestRecordEntityService extends IService<ContestRecord> {
-    void UpdateContestRecord(String uid, Integer score, Integer status, Long submitId, Long cid, Integer useTime);
+    void UpdateContestRecord(Integer score, Integer status, Long submitId, Integer useTime);
 }

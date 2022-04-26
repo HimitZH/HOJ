@@ -8,7 +8,7 @@
     "@vuepress/plugin-active-header-links": "^1.5.2",
     "@vuepress/plugin-back-to-top": "^1.5.2",
     "@vuepress/plugin-register-components": "^1.5.2",
-    "vuepress": "^1.5.2",
+    "vuepress": "^1.9.7",
     "vuepress-plugin-nprogress": "^1.1.8",
     "vuepress-plugin-smooth-scroll": "^0.0.10",
     "vuepress-plugin-zooming": "^1.1.8",
@@ -17,6 +17,5 @@
   "scripts": {
     "dev": "vuepress dev docs",
     "build": "vuepress build docs"
-  },
-  "dependencies": {}
+  }
 }

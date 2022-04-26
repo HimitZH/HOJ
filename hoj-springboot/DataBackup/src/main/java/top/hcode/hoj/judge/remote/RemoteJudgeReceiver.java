@@ -89,9 +89,14 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
                 .setToken(token)
                 .setRemoteJudgeProblem(remoteJudgeProblem);
 
+
         if (remoteOJName.equals(Constants.RemoteOJ.CODEFORCES.getName())
-                || remoteOJName.equals(Constants.RemoteOJ.GYM.getName())) { // GYM与CF共用账号
-            cfJudge(isHasSubmitIdRemoteReJudge, toJudge, judge);
+                || remoteOJName.equals(Constants.RemoteOJ.GYM.getName())) {
+            if (ChooseUtils.openCodeforcesFixServer) {
+                fixServerCFJudge(isHasSubmitIdRemoteReJudge, toJudge, judge);
+            } else {
+                commonJudge(Constants.RemoteOJ.CODEFORCES.getName(), isHasSubmitIdRemoteReJudge, toJudge, judge);
+            }
         } else if (remoteOJName.equals(Constants.RemoteOJ.POJ.getName())) {
             pojJudge(isHasSubmitIdRemoteReJudge, toJudge, judge);
         } else {
@@ -216,7 +221,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
         futureTaskMap.put(key, scheduledFuture);
     }
 
-    private void cfJudge(Boolean isHasSubmitIdRemoteReJudge, ToJudge toJudge, Judge judge) {
+    private void fixServerCFJudge(Boolean isHasSubmitIdRemoteReJudge, ToJudge toJudge, Judge judge) {
 
         if (isHasSubmitIdRemoteReJudge) {
             toJudge.setIsHasSubmitIdRemoteReJudge(true);

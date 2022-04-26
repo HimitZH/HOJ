@@ -34,6 +34,8 @@ public class RemoteJudgeContext {
     @Resource
     private JudgeEntityService judgeEntityService;
 
+    public static final boolean openCodeforcesFixServer = false;
+
     @Async
     public void judge(ToJudge toJudge) {
         String[] source = toJudge.getRemoteJudgeProblem().split("-");
