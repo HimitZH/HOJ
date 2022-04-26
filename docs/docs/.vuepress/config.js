@@ -93,11 +93,13 @@ module.exports = context => config({
 					'use/testcase',
 					'use/training',
 					'use/contest',
+					'use/group',
 					'use/import-user',
 					'use/admin-user',
 					'use/notice-announcement',
 					'use/discussion-admin',
 					'use/update-fe',
+					'use/custom-difficulty',
 					'use/close-free-cdn'
                 ]
             },

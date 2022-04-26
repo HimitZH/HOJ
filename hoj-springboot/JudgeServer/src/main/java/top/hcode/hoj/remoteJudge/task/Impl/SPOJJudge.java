@@ -144,6 +144,9 @@ public class SPOJJudge extends RemoteJudgeStrategy {
 
     @Override
     public void login() {
+        // 清除当前线程的cookies缓存
+        HttpRequest.getCookieManager().getCookieStore().removeAll();
+
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
         HttpRequest request = HttpUtil.createPost(HOST + LOGIN_URL);
         HttpResponse response = request.form(MapUtil.builder(new HashMap<String, Object>())

@@ -2,7 +2,6 @@ package top.hcode.hoj.remoteJudge.task.Impl;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
@@ -12,17 +11,16 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
-import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.HttpClientErrorException;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeRes;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.util.Constants;
 
-import java.net.HttpCookie;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j(topic = "hoj")
@@ -122,7 +120,7 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
         int retryNum = 0;
         // 防止cf的nginx限制访问频率，重试5次
         while (retryNum != 10) {
-            HttpResponse httpResponse = getSubmissionResult(remoteJudgeDTO.getUsername(), 10);
+            HttpResponse httpResponse = getMaxIdForSubmissionResult(remoteJudgeDTO.getUsername(), 30);
             if (httpResponse.getStatus() == 200) {
                 try {
                     Map<String, Object> json = JSONUtil.parseObj(httpResponse.body());
@@ -145,28 +143,38 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
                     return -1L;
                 }
             }
-            try {
-                TimeUnit.MILLISECONDS.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             retryNum++;
         }
         return -1L;
     }
 
+
     // CF的这个接口有每两秒的访问限制，所以需要加锁，保证只有一次查询
+    public static synchronized HttpResponse getMaxIdForSubmissionResult(String username, Integer count) {
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        String url = HOST + String.format(SUBMISSION_RESULT_URL, username, count);
+        return HttpUtil.createGet(url)
+                .timeout(30000)
+                .execute();
+    }
+
+
     public static synchronized HttpResponse getSubmissionResult(String username, Integer count) {
         String url = HOST + String.format(SUBMISSION_RESULT_URL, username, count);
         return HttpUtil.createGet(url)
-                .timeout(60000)
+                .timeout(30000)
                 .execute();
     }
 
     @Override
     public RemoteJudgeRes result() {
-
-        String resJson = getSubmissionResult(getRemoteJudgeDTO().getUsername(), 1000).body();
+        // 清除当前线程的cookies缓存
+        HttpRequest.getCookieManager().getCookieStore().removeAll();
+        String resJson = getSubmissionResult(getRemoteJudgeDTO().getUsername(), 50).body();
 
         JSONObject jsonObject = JSONUtil.parseObj(resJson);
 
@@ -175,35 +183,32 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
                 .build();
 
         JSONArray results = (JSONArray) jsonObject.get("result");
-
+        Long submitId = getRemoteJudgeDTO().getSubmitId();
         for (Object tmp : results) {
             JSONObject result = (JSONObject) tmp;
             long runId = Long.parseLong(result.get("id").toString());
-            if (runId == getRemoteJudgeDTO().getSubmitId()) {
+            if (runId == submitId) {
                 String verdict = (String) result.get("verdict");
                 Constants.Judge resultStatus = statusMap.get(verdict);
-                if (resultStatus == Constants.Judge.STATUS_JUDGING) {
+                if (resultStatus == Constants.Judge.STATUS_JUDGING || resultStatus == null) {
                     return RemoteJudgeRes.builder()
-                            .status(resultStatus.getStatus())
-                            .build();
-                } else if (resultStatus == null) {
-                    return RemoteJudgeRes.builder()
-                            .status(Constants.Judge.STATUS_PENDING.getStatus())
+                            .status(Constants.Judge.STATUS_JUDGING.getStatus())
                             .build();
                 }
                 remoteJudgeRes.setTime((Integer) result.get("timeConsumedMillis"));
                 remoteJudgeRes.setMemory((int) result.get("memoryConsumedBytes") / 1024);
                 if (resultStatus == Constants.Judge.STATUS_COMPILE_ERROR) {
 
-                    String csrfToken = getCsrfToken(HOST);
-
+                    HttpRequest homeRequest = HttpUtil.createGet(HOST);
+                    HttpResponse homeResponse = homeRequest.execute();
+                    String csrfToken = ReUtil.get("data-csrf='(\\w+)'", homeResponse.body(), 1);
                     HttpRequest httpRequest = HttpUtil.createPost(HOST + CE_INFO_URL)
                             .timeout(30000);
 
                     httpRequest.form(MapUtil
                             .builder(new HashMap<String, Object>())
                             .put("csrf_token", csrfToken)
-                            .put("submissionId", getRemoteJudgeDTO().getSubmitId().toString()).map());
+                            .put("submissionId", submitId).map());
 
                     HttpResponse response = httpRequest.execute();
                     if (response.getStatus() == 200) {
@@ -223,6 +228,31 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
         return remoteJudgeRes;
     }
 
+    public static void main(String[] args) {
+
+        HttpRequest request = HttpUtil.createGet("https://codeforces.com");
+        HttpResponse response1 = request.execute();
+        String body = response1.body();
+        String csrfToken = ReUtil.get("data-csrf='(\\w+)'", body, 1);
+        HttpRequest httpRequest = HttpUtil.createPost(HOST + CE_INFO_URL)
+                .timeout(30000);
+
+        httpRequest.form(MapUtil
+                .builder(new HashMap<String, Object>())
+                .put("csrf_token", csrfToken)
+                .put("submissionId", 155013934).map());
+
+        HttpResponse response = httpRequest.execute();
+        if (response.getStatus() == 200) {
+            JSONObject CEInfoJson = JSONUtil.parseObj(response.body());
+            String CEInfo = CEInfoJson.getStr("checkerStdoutAndStderr#1");
+            System.out.println(CEInfo);
+        } else {
+            // 非200则说明cf没有提供编译失败的详情
+            System.out.println(response.getStatus());
+        }
+    }
+
     public String getCsrfToken(String url) {
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
         HttpRequest request = HttpUtil.createGet(url);
@@ -235,6 +265,9 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
 
     @Override
     public void login() {
+        // 清除当前线程的cookies缓存
+        HttpRequest.getCookieManager().getCookieStore().removeAll();
+
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
         String csrf_token = getCsrfToken(IMAGE_HOST + LOGIN_URL);
         HttpRequest httpRequest = new HttpRequest(IMAGE_HOST + LOGIN_URL);
@@ -301,6 +334,8 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
             return "43";
         } else if (language.startsWith("Clang++17 Diagnostics")) {
             return "52";
+        } else if (language.startsWith("GNU G++11")) {
+            return "50";
         } else if (language.startsWith("GNU G++14")) {
             return "50";
         } else if (language.startsWith("GNU G++17")) {

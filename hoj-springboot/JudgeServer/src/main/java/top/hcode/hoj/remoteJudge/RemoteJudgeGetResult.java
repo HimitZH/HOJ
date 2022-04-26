@@ -179,11 +179,13 @@ public class RemoteJudgeGetResult {
                 remoteJudge, resultSubmitId);
         // 将账号变为可用
         remoteJudgeService.changeAccountStatus(remoteJudge, username);
-        if (remoteJudge.equals(Constants.RemoteJudge.GYM_JUDGE.getName())
-                || remoteJudge.equals(Constants.RemoteJudge.CF_JUDGE.getName())) {
-            log.info("After Get Result,remote_judge:[{}],submit_id: [{}] !Begin to return the Server Status to other task!",
-                    remoteJudge, resultSubmitId);
-            remoteJudgeService.changeServerSubmitCFStatus(ip, port);
+        if (RemoteJudgeContext.openCodeforcesFixServer) {
+            if (remoteJudge.equals(Constants.RemoteJudge.GYM_JUDGE.getName())
+                    || remoteJudge.equals(Constants.RemoteJudge.CF_JUDGE.getName())) {
+                log.info("After Get Result,remote_judge:[{}],submit_id: [{}] !Begin to return the Server Status to other task!",
+                        remoteJudge, resultSubmitId);
+                remoteJudgeService.changeServerSubmitCFStatus(ip, port);
+            }
         }
     }
 

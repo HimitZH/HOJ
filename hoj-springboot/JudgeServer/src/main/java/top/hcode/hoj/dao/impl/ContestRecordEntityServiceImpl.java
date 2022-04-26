@@ -36,7 +36,7 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
 
 
     @Override
-    public void UpdateContestRecord(String uid, Integer score, Integer status, Long submitId, Long cid, Integer useTime) {
+    public void UpdateContestRecord(Integer score, Integer status, Long submitId, Integer useTime) {
         UpdateWrapper<ContestRecord> updateWrapper = new UpdateWrapper<>();
         // 如果是AC
         if (status.intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
@@ -58,9 +58,7 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
 
         updateWrapper.set("use_time", useTime);
 
-        updateWrapper.eq("submit_id", submitId) // submit_id一定只有一个
-                .eq("cid", cid)
-                .eq("uid", uid);
+        updateWrapper.eq("submit_id", submitId); // submit_id一定只有一个
         boolean result = contestRecordMapper.update(null, updateWrapper) > 0;
         if (!result) {
             tryAgainUpdate(updateWrapper);
@@ -82,7 +80,7 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
                     break;
                 }
                 try {
-                    Thread.sleep(300);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     log.error(e.getMessage());
                 }

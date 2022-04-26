@@ -52,11 +52,14 @@ public class RemoteJudgeToSubmit {
             log.error("[{}] Submit Failed! Begin to return the account to other task!", remoteJudgeDTO.getOj());
             remoteJudgeService.changeAccountStatus(remoteJudgeDTO.getOj(),
                     remoteJudgeDTO.getUsername());
-            if (remoteJudgeDTO.getOj().equals(Constants.RemoteJudge.GYM_JUDGE.getName())
-                    || remoteJudgeDTO.getOj().equals(Constants.RemoteJudge.CF_JUDGE.getName())) {
-                // 对CF特殊，归还账号及判题机权限
-                log.error("[{}] Submit Failed! Begin to return the Server Status to other task!", remoteJudgeDTO.getOj());
-                remoteJudgeService.changeServerSubmitCFStatus(remoteJudgeDTO.getServerIp(), remoteJudgeDTO.getServerPort());
+
+            if (RemoteJudgeContext.openCodeforcesFixServer) {
+                if (remoteJudgeDTO.getOj().equals(Constants.RemoteJudge.GYM_JUDGE.getName())
+                        || remoteJudgeDTO.getOj().equals(Constants.RemoteJudge.CF_JUDGE.getName())) {
+                    // 对CF特殊，归还判题机权限
+                    log.error("[{}] Submit Failed! Begin to return the Server Status to other task!", remoteJudgeDTO.getOj());
+                    remoteJudgeService.changeServerSubmitCFStatus(remoteJudgeDTO.getServerIp(), remoteJudgeDTO.getServerPort());
+                }
             }
 
             // 更新此次提交状态为提交失败！
@@ -77,7 +80,7 @@ public class RemoteJudgeToSubmit {
             return false;
         }
 
-        // 提交成功顺便更新状态为-->STATUS_PENDING 判题中...
+        // 提交成功顺便更新状态为-->STATUS_PENDING 等待判题中...
         judgeEntityService.updateById(new Judge()
                 .setSubmitId(remoteJudgeDTO.getJudgeId())
                 .setStatus(Constants.Judge.STATUS_PENDING.getStatus())

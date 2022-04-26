@@ -6,20 +6,16 @@ import cn.hutool.http.HtmlUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
-import cn.hutool.http.cookie.ThreadLocalCookieStore;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.jsqlparser.statement.select.Wait;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeRes;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.util.Constants;
 
-import java.net.CookieStore;
 import java.net.HttpCookie;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -151,9 +147,10 @@ public class AtCoderJudge extends RemoteJudgeStrategy {
 
     @Override
     public void login() {
-        RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
         // 清除当前线程的cookies缓存
         HttpRequest.getCookieManager().getCookieStore().removeAll();
+
+        RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
 
         String csrfToken = getCsrfToken(HOST + LOGIN_URL);
         HttpRequest request = HttpUtil.createPost(HOST + LOGIN_URL);

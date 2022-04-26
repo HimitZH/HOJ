@@ -86,7 +86,6 @@ public class HduJudge extends RemoteJudgeStrategy {
     @Override
     public RemoteJudgeRes result() {
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
-
         String url = HOST + String.format(QUERY_URL, remoteJudgeDTO.getSubmitId());
         HttpRequest request = HttpUtil.createGet(url)
                 .cookie(remoteJudgeDTO.getCookies())
@@ -129,6 +128,9 @@ public class HduJudge extends RemoteJudgeStrategy {
 
     @Override
     public void login() {
+        // 清除当前线程的cookies缓存
+        HttpRequest.getCookieManager().getCookieStore().removeAll();
+
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
         HttpRequest homeRequest = HttpUtil.createGet(HOST);
         HttpResponse homeResponse = homeRequest.execute();
