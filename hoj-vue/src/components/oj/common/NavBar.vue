@@ -202,7 +202,7 @@
           >
           <span @click="changeWebLanguage">
           {{
-            websiteConfig.shortName ? websiteConfig.shortName.toUpperCase() : 'OJ'
+            websiteConfig.shortName ? websiteConfig.shortName : 'OJ'
           }}
           </span>
         </el-tooltip>
@@ -710,7 +710,7 @@ export default {
     title: {
       get() {
         let ojName = this.websiteConfig.shortName
-          ? this.websiteConfig.shortName.toUpperCase()
+          ? this.websiteConfig.shortName
           : 'OJ';
         if (this.modalStatus.mode == 'ResetPwd') {
           return this.$i18n.t('m.Dialog_Reset_Password') + ' - ' + ojName;

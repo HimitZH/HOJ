@@ -159,7 +159,7 @@
         </mu-button>
         {{
           websiteConfig.shortName
-            ? websiteConfig.shortName.toUpperCase() + ' ADMIN'
+            ? websiteConfig.shortName + ' ADMIN'
             : 'ADMIN'
         }}
         <mu-menu slot="right" v-show="isAuthenticated">
