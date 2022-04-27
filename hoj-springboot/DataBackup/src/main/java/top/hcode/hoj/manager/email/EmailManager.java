@@ -121,7 +121,7 @@ public class EmailManager {
             // 设置渲染到html页面对应的值
             Context context = new Context();
             context.setVariable(Constants.Email.OJ_NAME.name(), UnicodeUtil.toString(ojName));
-            context.setVariable(Constants.Email.OJ_SHORT_NAME.name(), UnicodeUtil.toString(ojShortName).toUpperCase());
+            context.setVariable(Constants.Email.OJ_SHORT_NAME.name(), UnicodeUtil.toString(ojShortName));
             context.setVariable(Constants.Email.OJ_URL.name(), ojAddr);
             context.setVariable(Constants.Email.EMAIL_BACKGROUND_IMG.name(), ojEmailBg);
             context.setVariable("CODE", code);
@@ -131,7 +131,7 @@ public class EmailManager {
             String emailContent = templateEngine.process("emailTemplate_registerCode", context);
 
             // 设置邮件标题
-            mimeMessageHelper.setSubject(UnicodeUtil.toString(ojShortName).toUpperCase() + "的注册邮件");
+            mimeMessageHelper.setSubject(UnicodeUtil.toString(ojShortName)+ "的注册邮件");
             mimeMessageHelper.setText(emailContent, true);
             // 收件人
             mimeMessageHelper.setTo(email);
@@ -165,7 +165,7 @@ public class EmailManager {
             // 设置渲染到html页面对应的值
             Context context = new Context();
             context.setVariable(Constants.Email.OJ_NAME.name(), UnicodeUtil.toString(ojName));
-            context.setVariable(Constants.Email.OJ_SHORT_NAME.name(), UnicodeUtil.toString(ojShortName).toUpperCase());
+            context.setVariable(Constants.Email.OJ_SHORT_NAME.name(), UnicodeUtil.toString(ojShortName));
             context.setVariable(Constants.Email.OJ_URL.name(), ojAddr);
             context.setVariable(Constants.Email.EMAIL_BACKGROUND_IMG.name(), ojEmailBg);
 
@@ -183,7 +183,7 @@ public class EmailManager {
             //利用模板引擎加载html文件进行渲染并生成对应的字符串
             String emailContent = templateEngine.process("emailTemplate_resetPassword", context);
 
-            mimeMessageHelper.setSubject(UnicodeUtil.toString(ojShortName).toUpperCase() + "的重置密码邮件");
+            mimeMessageHelper.setSubject(UnicodeUtil.toString(ojShortName)+ "的重置密码邮件");
 
             mimeMessageHelper.setText(emailContent, true);
             // 收件人
@@ -214,13 +214,13 @@ public class EmailManager {
             // 设置渲染到html页面对应的值
             Context context = new Context();
             context.setVariable(Constants.Email.OJ_NAME.name(), UnicodeUtil.toString(ojName));
-            context.setVariable(Constants.Email.OJ_SHORT_NAME.name(), UnicodeUtil.toString(ojShortName).toUpperCase());
+            context.setVariable(Constants.Email.OJ_SHORT_NAME.name(), UnicodeUtil.toString(ojShortName));
             context.setVariable(Constants.Email.OJ_URL.name(), ojAddr);
             context.setVariable(Constants.Email.EMAIL_BACKGROUND_IMG.name(), ojEmailBg);
             //利用模板引擎加载html文件进行渲染并生成对应的字符串
             String emailContent = templateEngine.process("emailTemplate_testEmail", context);
 
-            mimeMessageHelper.setSubject(UnicodeUtil.toString(ojShortName).toUpperCase() + "的测试邮件");
+            mimeMessageHelper.setSubject(UnicodeUtil.toString(ojShortName) + "的测试邮件");
 
             mimeMessageHelper.setText(emailContent, true);
             // 收件人
