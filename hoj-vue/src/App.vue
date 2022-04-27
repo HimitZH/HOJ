@@ -12,7 +12,7 @@
         <div class="mundb-footer">
           <el-row>
             <el-col :md="6" :xs="24">
-              <h1>{{ toUpper(websiteConfig.shortName) }}</h1>
+              <h1>{{ websiteConfig.name }}</h1>
               <span
                 style="line-height:25px"
                 v-html="websiteConfig.description"
@@ -121,11 +121,6 @@ export default {
       this.$router.push({
         path: path,
       });
-    },
-    toUpper(str) {
-      if (str) {
-        return str.toUpperCase();
-      }
     },
     changeWebLanguage(language) {
       this.$store.commit('changeWebLanguage', { language: language });

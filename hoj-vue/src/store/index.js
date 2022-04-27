@@ -106,10 +106,11 @@ const rootActions = {
     commit('startTimeOut', payload)
   },
   changeDomTitle ({commit, state}, payload) {
+    let ojName = state.websiteConfig.shortName?state.websiteConfig.shortName:'OJ'
     if (payload && payload.title) {
-      window.document.title = payload.title + ' - ' + (state.websiteConfig.shortName+'').toUpperCase()
+      window.document.title = payload.title + ' - ' + ojName
     } else {
-      window.document.title = state.route.meta.title + ' - '+(state.websiteConfig.shortName+'').toUpperCase()
+      window.document.title = state.route.meta.title + ' - '+ ojName
     }
   },
   getWebsiteConfig ({commit}) {
