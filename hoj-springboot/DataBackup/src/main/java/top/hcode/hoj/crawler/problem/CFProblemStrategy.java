@@ -2,6 +2,7 @@ package top.hcode.hoj.crawler.problem;
 
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.ReUtil;
+import cn.hutool.http.HtmlUtil;
 import cn.hutool.http.HttpUtil;
 
 import org.springframework.util.StringUtils;
@@ -138,13 +139,13 @@ public class CFProblemStrategy extends ProblemStrategy {
                     .replaceAll("<br>", "\n")
                     .replaceAll("<br />", "\n")
                     .trim();
-            sb.append(input).append("</input>");
+            sb.append(HtmlUtil.unescape(input)).append("</input>");
             sb.append("<output>");
             String output = outputExampleList.get(i)
                     .replaceAll("<br>", "\n")
                     .replaceAll("<br />", "\n")
                     .trim();
-            sb.append(output).append("</output>");
+            sb.append(HtmlUtil.unescape(output)).append("</output>");
         }
 
         info.setExamples(sb.toString());
