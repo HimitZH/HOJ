@@ -32,7 +32,7 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
     public static final String SUBMISSION_RESULT_URL = "/api/user.status?handle=%s&from=1&count=%s";
     public static final String CE_INFO_URL = "/data/submitSource";
 
-    private static final Map<String, Constants.Judge> statusMap = new HashMap<String, Constants.Judge>() {{
+    protected static final Map<String, Constants.Judge> statusMap = new HashMap<String, Constants.Judge>() {{
         put("FAILED", Constants.Judge.STATUS_SUBMITTED_FAILED);
         put("OK", Constants.Judge.STATUS_ACCEPTED);
         put("PARTIAL", Constants.Judge.STATUS_PARTIAL_ACCEPTED);
@@ -240,13 +240,13 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
         httpRequest.form(MapUtil
                 .builder(new HashMap<String, Object>())
                 .put("csrf_token", csrfToken)
-                .put("submissionId", 155013934).map());
+                .put("submissionId", 155183785).map());
 
         HttpResponse response = httpRequest.execute();
         if (response.getStatus() == 200) {
             JSONObject CEInfoJson = JSONUtil.parseObj(response.body());
-            String CEInfo = CEInfoJson.getStr("checkerStdoutAndStderr#1");
-            System.out.println(CEInfo);
+//            String CEInfo = CEInfoJson.getStr("checkerStdoutAndStderr#1");
+            System.out.println(CEInfoJson);
         } else {
             // 非200则说明cf没有提供编译失败的详情
             System.out.println(response.getStatus());

@@ -3,7 +3,6 @@ package top.hcode.hoj.judge;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.io.file.FileWriter;
-import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,10 @@ import top.hcode.hoj.util.JudgeUtils;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 @Slf4j(topic = "hoj")
 @Component
@@ -66,8 +68,6 @@ public class JudgeStrategy {
             // 从文件中加载测试数据json
             JSONObject testCasesInfo = problemTestCaseUtils.loadTestCaseInfo(problem.getId(), testCasesDir, problem.getCaseVersion(),
                     problem.getJudgeMode());
-            JSONArray testcaseList = (JSONArray) testCasesInfo.get("testCases");
-            String version = testCasesInfo.getStr("version");
 
             // 检查是否为spj或者interactive，同时是否有对应编译完成的文件，若不存在，就先编译生成该文件，同时也要检查版本
             boolean isOk = checkOrCompileExtraProgram(problem);
