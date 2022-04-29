@@ -1,4 +1,11 @@
 export const m = {
+
+  // /src/common/api.js
+  Query_error_unable_to_find_the_resource_to_request: 'Query error! Unable to find the resource to request!',
+  Server_error_please_refresh_again: 'Server error! Please refresh again!',
+  Request_timed_out_please_try_again_later: 'Request timed out! Please try again later!',
+  Network_error_abnormal_link_with_server_please_try_again_later: 'Network error! Abnormal link with server, Please try again later!',
+
   //  /components/oj/common/NavBar.vue 导航栏
   NavBar_Home: 'Home',
   NavBar_Problem: 'Problem',

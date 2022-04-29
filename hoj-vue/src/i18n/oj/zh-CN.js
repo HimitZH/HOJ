@@ -1,4 +1,11 @@
 export const m = {
+
+  // /src/common/api.js
+  Query_error_unable_to_find_the_resource_to_request: '查询错误，找不到要请求的资源！',
+  Server_error_please_refresh_again: '服务器错误，请重新刷新！',
+  Request_timed_out_please_try_again_later: '请求超时，请稍后再尝试！',
+  Network_error_abnormal_link_with_server_please_try_again_later: '网络错误，与服务器链接出现异常，请稍后再尝试！',
+  
   // /components/oj/common/NavBar.vue 导航栏
   NavBar_Home: '首页',
   NavBar_Problem: '题目',

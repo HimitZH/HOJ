@@ -60,7 +60,7 @@ function breakLongWords (value, length = 16) {
 
 function downloadFile (url) {
   return new Promise((resolve, reject) => {
-    Vue.prototype.$axios.get(url, {responseType: 'blob'}).then(resp => {
+    Vue.prototype.$axios.get(url, {responseType: 'blob',timeout: 5 * 60 * 1000}).then(resp => {
       let headers = resp.headers
       if (headers['content-type'].indexOf('json') !== -1) {
         let fr = new window.FileReader()

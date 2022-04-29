@@ -4,6 +4,7 @@ import mMessage from '@/common/message'
 import router from '@/router'
 import store from "@/store"
 import utils from '@/common/utils'
+import i18n from '@/i18n'
 // import NProgress from 'nprogress' // nprogress插件
 // import 'nprogress/nprogress.css' // nprogress样式
 
@@ -89,7 +90,7 @@ axios.interceptors.response.use(
           break;
         // 404请求不存在
         case 404:
-          mMessage.error('查询错误，找不到要请求的资源！');
+          mMessage.error(i18n.t('m.Query_error_unable_to_find_the_resource_to_request'));
           break;
         // 其他错误，直接抛出错误提示
         default:
@@ -97,14 +98,18 @@ axios.interceptors.response.use(
             if(error.response.data.msg){
               mMessage.error(error.response.data.msg);
             }else{
-              mMessage.error("服务器错误，请重新刷新！");
+              mMessage.error(i18n.t('m.Server_error_please_refresh_again'));
             }
           }
           break;
       }
       return Promise.reject(error);
-    } else { //处理断网，请求没响应
-      mMessage.error( '与服务器链接出现异常，请稍后再尝试！');
+    } else { //处理断网或请求超时，请求没响应
+      if(error.code == 'ECONNABORTED' || error.message.includes('timeout')){
+        mMessage.error(i18n.t('m.Request_timed_out_please_try_again_later'));
+      }else{
+        mMessage.error(i18n.t('m.Network_error_abnormal_link_with_server_please_try_again_later'));
+      }
       return Promise.reject(error);
     }
   }
