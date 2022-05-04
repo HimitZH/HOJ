@@ -4,19 +4,20 @@ import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
+import top.hcode.hoj.dao.JudgeCaseEntityService;
 import top.hcode.hoj.dao.JudgeEntityService;
-import top.hcode.hoj.service.RemoteJudgeService;
 import top.hcode.hoj.judge.JudgeContext;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeRes;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
-
+import top.hcode.hoj.service.RemoteJudgeService;
 import top.hcode.hoj.util.Constants;
 
+import javax.annotation.Resource;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,6 +35,9 @@ public class RemoteJudgeGetResult {
 
     @Autowired
     private RemoteJudgeService remoteJudgeService;
+
+    @Resource
+    private JudgeCaseEntityService judgeCaseEntityService;
 
     @Value("${hoj-judge-server.name}")
     private String name;
@@ -86,6 +90,11 @@ public class RemoteJudgeGetResult {
                         log.error("The Error of getting the `remote judge` result:", e);
                     }
                     return;
+                }
+
+                // 保留各个测试点的结果数据
+                if (!CollectionUtils.isEmpty(remoteJudgeRes.getJudgeCaseList())) {
+                    judgeCaseEntityService.saveBatch(remoteJudgeRes.getJudgeCaseList());
                 }
 
                 Integer status = remoteJudgeRes.getStatus();
@@ -165,7 +174,6 @@ public class RemoteJudgeGetResult {
                     // 写回数据库
                     judgeEntityService.updateById(judge);
                 }
-
             }
         };
         ScheduledFuture<?> beeperHandle = scheduler.scheduleWithFixedDelay(

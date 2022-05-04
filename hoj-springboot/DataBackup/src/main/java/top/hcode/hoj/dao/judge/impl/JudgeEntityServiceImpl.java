@@ -1,24 +1,29 @@
 package top.hcode.hoj.dao.judge.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import top.hcode.hoj.pojo.entity.contest.ContestRecord;
-import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.mapper.JudgeMapper;
-import top.hcode.hoj.pojo.vo.JudgeVo;
-import top.hcode.hoj.pojo.vo.ProblemCountVo;
+import org.springframework.util.CollectionUtils;
 import top.hcode.hoj.dao.contest.ContestRecordEntityService;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import top.hcode.hoj.mapper.JudgeMapper;
+import top.hcode.hoj.mapper.ProblemMapper;
+import top.hcode.hoj.pojo.entity.contest.ContestRecord;
+import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.pojo.vo.JudgeVo;
+import top.hcode.hoj.pojo.vo.ProblemCountVo;
 import top.hcode.hoj.utils.Constants;
 
-
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -39,6 +44,9 @@ public class JudgeEntityServiceImpl extends ServiceImpl<JudgeMapper, Judge> impl
     @Autowired
     private ContestRecordEntityService contestRecordEntityService;
 
+    @Autowired
+    private ProblemMapper problemMapper;
+
 
     @Override
     public IPage<JudgeVo> getCommonJudgeList(Integer limit,
@@ -52,7 +60,34 @@ public class JudgeEntityServiceImpl extends ServiceImpl<JudgeMapper, Judge> impl
         //新建分页
         Page<JudgeVo> page = new Page<>(currentPage, limit);
 
-        return judgeMapper.getCommonJudgeList(page, searchPid, status, username, uid, completeProblemID, gid);
+        IPage<JudgeVo> commonJudgeList = judgeMapper.getCommonJudgeList(page, searchPid, status, username, uid, completeProblemID, gid);
+        List<JudgeVo> records = commonJudgeList.getRecords();
+        if (!CollectionUtils.isEmpty(records)) {
+            List<Long> pidList = records.stream().map(JudgeVo::getPid).collect(Collectors.toList());
+            QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
+            problemQueryWrapper.select("id", "title")
+                    .in("id", pidList);
+            List<Problem> problemList = problemMapper.selectList(problemQueryWrapper);
+            HashMap<Long, String> storeMap = new HashMap<>(limit);
+            for (JudgeVo judgeVo : records) {
+                judgeVo.setTitle(getProblemTitleByPid(judgeVo.getPid(), problemList, storeMap));
+            }
+        }
+        return commonJudgeList;
+    }
+
+    private String getProblemTitleByPid(Long pid, List<Problem> problemList, HashMap<Long, String> storeMap) {
+        String title = storeMap.get(pid);
+        if (title != null) {
+            return title;
+        }
+        for (Problem problem : problemList) {
+            if (problem.getId().equals(pid)) {
+                storeMap.put(pid, problem.getTitle());
+                return problem.getTitle();
+            }
+        }
+        return "";
     }
 
     @Override

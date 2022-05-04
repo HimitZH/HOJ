@@ -2,8 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.mapper.JudgeMapper">
     <select id="getCommonJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="true">
-        select j1.*,p.problem_id AS display_pid,p.title from (
-            select j.submit_id,j.submit_time,j.username,j.uid,j.pid,j.status,j.share,
+        select j.submit_id,j.submit_time,j.display_pid,j.username,j.uid,j.pid,j.status,j.share,
             j.time,j.memory,j.score,j.oi_rank_score,j.length,j.language,j.cid,j.cpid,j.judger
             from judge j
             <where>
@@ -23,25 +22,16 @@
                 <if test="gid!=null">
                     AND j.gid = #{gid}
                 </if>
+                <if test="searchPid!=null">
+                    <if test="completeProblemID != true">
+                        AND j.display_pid like concat('%',#{searchPid},'%')
+                    </if>
+                    <if test="completeProblemID">
+                        AND j.display_pid = #{searchPid}
+                    </if>
+                </if>
             </where>
-        ) j1
-        left join problem p
-        on j1.pid = p.id
-        <where>
-            p.auth = 1
-            <if test="searchPid!=null">
-                <if test="completeProblemID != true">
-                    AND p.problem_id like concat('%',#{searchPid},'%')
-                </if>
-                <if test="completeProblemID">
-                    AND p.problem_id = #{searchPid}
-                </if>
-            </if>
-            <if test="gid==null">
-                AND p.is_group = false
-            </if>
-        </where>
-        order by submit_time DESC,submit_id DESC
+        order by j.submit_time DESC,j.submit_id DESC
     </select>
 
 

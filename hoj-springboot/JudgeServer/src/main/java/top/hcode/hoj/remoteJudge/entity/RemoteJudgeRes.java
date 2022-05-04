@@ -4,8 +4,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import top.hcode.hoj.pojo.entity.judge.JudgeCase;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @Author: Himit_ZH
@@ -26,4 +28,6 @@ public class RemoteJudgeRes implements Serializable {
     private Integer memory;
 
     private String errorInfo;
+
+    private List<JudgeCase> judgeCaseList;
 }

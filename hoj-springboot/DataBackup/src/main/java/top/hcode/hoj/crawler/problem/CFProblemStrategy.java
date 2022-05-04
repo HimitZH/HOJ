@@ -162,7 +162,7 @@ public class CFProblemStrategy extends ProblemStrategy {
         info.setType(0)
                 .setAuth(1)
                 .setAuthor(author)
-                .setOpenCaseResult(false)
+                .setOpenCaseResult(true)
                 .setIsRemoveEndBlank(false)
                 .setIsGroup(false)
                 .setDifficulty(1); // 默认为中等

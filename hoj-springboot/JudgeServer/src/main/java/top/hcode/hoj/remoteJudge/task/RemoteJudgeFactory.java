@@ -3,7 +3,6 @@ package top.hcode.hoj.remoteJudge.task;
 import top.hcode.hoj.remoteJudge.task.Impl.*;
 import top.hcode.hoj.util.Constants;
 
-
 public class RemoteJudgeFactory {
 
     public static RemoteJudgeStrategy selectJudge(String judgeName) {
