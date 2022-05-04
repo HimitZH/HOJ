@@ -11,7 +11,6 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.sql.Blob;
 import java.util.Date;
 
 /**
@@ -63,7 +62,7 @@ public class JudgeCase implements Serializable {
     @ApiModelProperty(value = "样例输出，输出文件名")
     private String outputData;
 
-    @ApiModelProperty(value = "用户样例输出，暂不使用，当前用于记录spj对单个测试点的输出")
+    @ApiModelProperty(value = "用户样例输出，暂不使用，当前用于记录对单个测试点的输出或信息提示")
     private String userOutput;
 
     @TableField(fill = FieldFill.INSERT)

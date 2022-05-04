@@ -602,7 +602,6 @@
           </el-form-item>
           <el-form-item
             :label="$t('m.Publish_the_Judging_Result_of_Test_Data')"
-            v-if="!problem.isRemote"
           >
             <el-switch
               v-model="problem.openCaseResult"

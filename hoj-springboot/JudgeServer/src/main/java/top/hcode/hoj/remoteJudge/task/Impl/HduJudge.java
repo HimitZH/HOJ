@@ -4,9 +4,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.http.*;
 import lombok.extern.slf4j.Slf4j;
-
 import org.jsoup.helper.Validate;
-
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeRes;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;

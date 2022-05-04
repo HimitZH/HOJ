@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
-import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 
 import java.io.Serializable;
 import java.net.HttpCookie;
@@ -103,6 +102,21 @@ public class RemoteJudgeDTO implements Serializable {
      * 远程测评的提交id（远程oj的提交id）
      */
     private Long submitId;
+
+    /**
+     * 远程测评的测试数据的序号(codeforces)
+     */
+    private Integer testcaseNum;
+
+    /**
+     * 远程测评的当前已获得测试数据点最大运行时间ms
+     */
+    private Integer maxTime;
+
+    /**
+     * 远程测评的当前已获得测试数据点最大运行空间kb
+     */
+    private Integer maxMemory;
 
     /**
      * 远程测评的登录状态码
