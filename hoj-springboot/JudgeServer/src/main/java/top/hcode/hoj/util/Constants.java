@@ -189,7 +189,7 @@ public class Constants {
 
         CPPWithO2("C++ With O2", "main.cpp", "main", 10000L, 20000L, 512 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {1} -lm -o {2}", defaultEnv),
 
-        JAVA("Java", "Main.java", "Main.jar", 10000L, 20000L, 512 * 1024 * 1024L, "/bin/bash -c \"javac -encoding utf8 {1} && jar -cvf {2} *.class\"", defaultEnv),
+        JAVA("Java", "Main.java", "Main.jar", 10000L, 20000L, 512 * 1024 * 1024L, "/bin/bash -c \"javac -encoding utf-8 {1} && jar -cvf {2} *.class\"", defaultEnv),
 
         PYTHON2("Python2", "main.py", "main.pyc", 3000L, 10000L, 128 * 1024 * 1024L, "/usr/bin/python -m py_compile ./{1}", defaultEnv),
 
@@ -291,7 +291,7 @@ public class Constants {
 
         CPPWithO2("C++ With O2", "{0}/{1}", "main", defaultEnv),
 
-        JAVA("Java", "/usr/bin/java -cp {0}/{1} Main", "Main.jar", defaultEnv),
+        JAVA("Java", "/usr/bin/java -Dfile.encoding=UTF-8 -cp {0}/{1} Main", "Main.jar", defaultEnv),
 
         PYTHON2("Python2", "/usr/bin/python {1}", "main", defaultEnv),
 
