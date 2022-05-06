@@ -72,7 +72,7 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
         if (!homePage.contains("/logout\">") || !homePage.contains("<a href=\"/profile/" + remoteJudgeDTO.getUsername() + "\"")) {
             login();
             if (remoteJudgeDTO.getLoginStatus() != HttpStatus.SC_MOVED_TEMPORARILY) {
-                log.error("进行题目提交时发生错误：登录失败，可能原因账号或密码错误，登录失败！" + CodeForcesJudge.class.getName() + "，题号:" + remoteJudgeDTO.getProblemNum());
+                log.error("进行题目提交时发生错误：登录失败，可能原因账号或密码错误，登录失败！" + CodeForcesJudge.class.getName() + "，题号:" + remoteJudgeDTO.getCompleteProblemId());
                 return;
             }
         } else {
@@ -89,12 +89,12 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
             remoteJudgeDTO.setCookies(null);
             login();
             if (remoteJudgeDTO.getLoginStatus() != HttpStatus.SC_MOVED_TEMPORARILY) {
-                log.error("CF进行题目提交时发生错误：登录失败，可能原因账号或密码错误，登录失败！" + CodeForcesJudge.class.getName() + "，题号:" + remoteJudgeDTO.getProblemNum());
+                log.error("CF进行题目提交时发生错误：登录失败，可能原因账号或密码错误，登录失败！" + CodeForcesJudge.class.getName() + "，题号:" + remoteJudgeDTO.getCompleteProblemId());
                 return;
             }
             submitCode(remoteJudgeDTO);
             if (remoteJudgeDTO.getSubmitStatus() == 403) {
-                String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `403 Forbidden`", remoteJudgeDTO.getContestId(), remoteJudgeDTO.getProblemNum());
+                String log = String.format("Codeforces[%s] [%s]:Failed to submit code, caused by `403 Forbidden`", remoteJudgeDTO.getContestId(), remoteJudgeDTO.getCompleteProblemId());
                 throw new RuntimeException(log);
             }
         }

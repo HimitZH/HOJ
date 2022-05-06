@@ -67,7 +67,7 @@
         </el-alert>
       </el-popover>
       <el-link
-        v-if="allow_register"
+        v-if="websiteConfig.register"
         type="primary"
         @click="switchMode('Register')"
         >{{ $t('m.Login_No_Account') }}</el-link
@@ -88,7 +88,6 @@ import mMessage from '@/common/message';
 export default {
   data() {
     return {
-      allow_register: true, //是否允许注册
       btnLoginLoading: false,
       verify: {
         loginSuccess: false,
@@ -179,7 +178,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['modalStatus', 'loginFailNum']),
+    ...mapGetters(['modalStatus', 'loginFailNum','websiteConfig']),
     visible: {
       get() {
         return this.modalStatus.visible;
