@@ -19,9 +19,6 @@ import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.util.CodeForcesUtils;
 import top.hcode.hoj.util.Constants;
 
-import javax.script.ScriptException;
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -59,7 +56,7 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
     }};
 
     @Override
-    public void submit() throws ScriptException, FileNotFoundException, NoSuchMethodException, UnsupportedEncodingException {
+    public void submit() {
 
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
 
@@ -71,17 +68,19 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
         httpRequest.setConnectionTimeout(60000);
         httpRequest.setReadTimeout(60000);
         httpRequest.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36 Edg/91.0.864.48");
-        httpRequest.header("cookie","RCPC="+ CodeForcesUtils.getRCPC());
+        httpRequest.header("cookie", "RCPC=" + CodeForcesUtils.getRCPC());
         HttpResponse httpResponse = httpRequest.execute();
         String homePage = httpResponse.body();
-        if(homePage.contains("Redirecting... Please, wait.")) {
+
+        if (homePage.contains("Redirecting... Please, wait.")) {
             List<String> list = ReUtil.findAll("[a-z0-9]+[a-z0-9]{31}", homePage, 0, new ArrayList<>());
             CodeForcesUtils.updateRCPC(list);
             httpRequest.removeHeader("cookie");
-            httpRequest.header("cookie","RCPC="+CodeForcesUtils.getRCPC());
+            httpRequest.header("cookie", "RCPC=" + CodeForcesUtils.getRCPC());
             httpResponse = httpRequest.execute();
             homePage = httpResponse.body();
         }
+
         if (!homePage.contains("/logout\">") || !homePage.contains("<a href=\"/profile/" + remoteJudgeDTO.getUsername() + "\"")) {
             login();
             if (remoteJudgeDTO.getLoginStatus() != HttpStatus.SC_MOVED_TEMPORARILY) {
@@ -93,10 +92,7 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
         }
 
         long nowTime = DateUtil.currentSeconds();
-
-
         submitCode(remoteJudgeDTO);
-
         if (remoteJudgeDTO.getSubmitStatus() == 403) {
             // 如果提交出现403可能是cookie失效了，再执行登录，重新提交
             remoteJudgeDTO.setCookies(null);
@@ -182,6 +178,10 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
         HttpRequest.getCookieManager().getCookieStore().removeAll();
 
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
+        if (remoteJudgeDTO.getCookies() == null) {
+            login();
+        }
+
         HttpRequest homeRequest = HttpUtil.createGet(HOST + MY_SUBMISSION);
         homeRequest.cookie(remoteJudgeDTO.getCookies());
         HttpResponse homeResponse = homeRequest.execute();
@@ -211,9 +211,9 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
                         .setTime(0)
                         .setStatus(Constants.Judge.STATUS_COMPILE_ERROR.getStatus());
                 String CEMsg = submissionInfoJson.getStr("checkerStdoutAndStderr#1");
-                if (StringUtils.isEmpty(CEMsg)){
+                if (StringUtils.isEmpty(CEMsg)) {
                     remoteJudgeRes.setErrorInfo("Oops! Because Codeforces does not provide compilation details, it is unable to provide the reason for compilation failure!");
-                }else {
+                } else {
                     remoteJudgeRes.setErrorInfo(CEMsg);
                 }
                 return remoteJudgeRes;
@@ -227,9 +227,13 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
                 maxMemory = 0;
             }
             List<JudgeCase> judgeCaseList = new ArrayList<>();
-            int testCount = Integer.parseInt(submissionInfoJson.getStr("testCount"));
+            String testCountStr = submissionInfoJson.getStr("testCount");
+            int testCount = Integer.parseInt(testCountStr);
             for (; testcaseNum <= testCount; testcaseNum++) {
                 String verdict = submissionInfoJson.getStr("verdict#" + testcaseNum);
+                if (StringUtils.isEmpty(verdict)){
+                    continue;
+                }
                 Constants.Judge judgeRes = statusMap.get(verdict);
                 Integer time = Integer.parseInt(submissionInfoJson.getStr("timeConsumed#" + testcaseNum));
                 Integer memory = Integer.parseInt(submissionInfoJson.getStr("memoryConsumed#" + testcaseNum)) / 1024;
@@ -275,15 +279,24 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
         HttpRequest request = HttpUtil.createGet(url);
         if (remoteJudgeDTO.getCookies() == null) {
-            request.header("cookie", "RCPC="+CodeForcesUtils.getRCPC());
+            request.header("cookie", "RCPC=" + CodeForcesUtils.getRCPC());
         } else {
             request.cookie(remoteJudgeDTO.getCookies());
         }
 
         HttpResponse response = request.execute();
+        String body = response.body();
+        if (body.contains("Redirecting... Please, wait.")) {
+            List<String> list = ReUtil.findAll("[a-z0-9]+[a-z0-9]{31}", body, 0, new ArrayList<>());
+            CodeForcesUtils.updateRCPC(list);
+            request.removeHeader("cookie");
+            request.header("cookie", "RCPC=" + CodeForcesUtils.getRCPC());
+            response = request.execute();
+            body = response.body();
+        }
+
         remoteJudgeDTO.setCookies(response.getCookies());
         HashMap<String, Object> res = new HashMap<>();
-        String body = response.body();
         String ftaa = response.getCookieValue("70a7c28f3de");
         res.put("ftaa", ftaa);
 

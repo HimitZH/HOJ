@@ -8,9 +8,7 @@ import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.utils.CodeForcesUtils;
 import top.hcode.hoj.utils.Constants;
 
-import javax.script.ScriptException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -24,7 +22,7 @@ import java.util.regex.Pattern;
 
 public class GYMProblemStrategy extends CFProblemStrategy {
 
-    public static final String IMAGE_HOST = "https://codeforces.ml";
+    public static final String IMAGE_HOST = "https://codeforces.com";
 
     @Override
     public String getJudgeName() {
@@ -47,7 +45,7 @@ public class GYMProblemStrategy extends CFProblemStrategy {
     }
 
     @Override
-    public RemoteProblemInfo getProblemInfo(String problemId, String author) throws ScriptException, FileNotFoundException, NoSuchMethodException {
+    public RemoteProblemInfo getProblemInfo(String problemId, String author) {
         try {
             return super.getProblemInfo(problemId, author);
         } catch (Exception ignored) {
@@ -57,29 +55,30 @@ public class GYMProblemStrategy extends CFProblemStrategy {
         }
     }
 
-    private RemoteProblemInfo getPDFHtml(String problemId, String contestNum, String problemNum, String author) throws ScriptException, NoSuchMethodException {
+    private RemoteProblemInfo getPDFHtml(String problemId, String contestNum, String problemNum, String author) {
 
         Problem problem = new Problem();
 
         String url = HOST + "/gym/" + contestNum;
         String html = HttpRequest.get(url)
-                .header("cookie","RCPC="+CodeForcesUtils.getRCPC())
+                .header("cookie", "RCPC=" + CodeForcesUtils.getRCPC())
                 .timeout(20000)
                 .execute()
                 .body();
-        String regex = "<a href=\"\\/gym\\/" + contestNum + "\\/problem\\/" + problemNum
-                + "\"><!--\\s*-->([^<]+)(?:(?:.|\\s)*?<div){2}[^>]*>\\s*([^<]+)<\\/div>\\s*([\\d.]+)\\D*(\\d+)";
 
         // 重定向失效，更新RCPC
-        if(html.contains("Redirecting... Please, wait.")) {
+        if (html.contains("Redirecting... Please, wait.")) {
             List<String> list = ReUtil.findAll("[a-z0-9]+[a-z0-9]{31}", html, 0, new ArrayList<>());
             CodeForcesUtils.updateRCPC(list);
             html = HttpRequest.get(url)
-                    .header("cookie","RCPC="+CodeForcesUtils.getRCPC())
+                    .header("cookie", "RCPC=" + CodeForcesUtils.getRCPC())
                     .timeout(20000)
                     .execute()
                     .body();
         }
+
+        String regex = "<a href=\"\\/gym\\/" + contestNum + "\\/problem\\/" + problemNum
+                + "\"><!--\\s*-->([^<]+)(?:(?:.|\\s)*?<div){2}[^>]*>\\s*([^<]+)<\\/div>\\s*([\\d.]+)\\D*(\\d+)";
 
         Matcher matcher = Pattern.compile(regex).matcher(html);
         matcher.find();
