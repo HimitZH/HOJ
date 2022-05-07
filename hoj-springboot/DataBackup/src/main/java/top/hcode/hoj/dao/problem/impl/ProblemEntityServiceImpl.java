@@ -443,21 +443,18 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
         } else {
             // oi题目需要求取平均值，给每个测试点初始oi的score值，默认总分100分
             if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
-                int size = problemDto.getSamples().size();
-                final int averScore = 100 / size;
-                final int mod = 100 % size;
-                for (int i = 0; i < size; i++) {
-                    // 设置好新题目的pid及分数
-                    if (i < size - 1) {
-                        problemDto.getSamples().get(i).setScore(averScore).setPid(pid);
-                    } else {
-                        problemDto.getSamples().get(i).setScore(averScore + mod).setPid(pid);
+                int sumScore = 0;
+                for (ProblemCase problemCase : problemDto.getSamples()) {
+                    // 设置好新题目的pid和累加总分数
+                    problemCase.setPid(pid);
+                    if (problemCase.getScore() != null) {
+                        sumScore += problemCase.getScore();
                     }
                 }
                 addCasesToProblemResult = problemCaseEntityService.saveOrUpdateBatch(problemDto.getSamples());
                 UpdateWrapper<Problem> problemUpdateWrapper = new UpdateWrapper<>();
                 problemUpdateWrapper.eq("id", pid)
-                        .set("io_score", 100);
+                        .set("io_score", sumScore);
                 problemMapper.update(null, problemUpdateWrapper);
             } else {
                 problemDto.getSamples().forEach(problemCase -> problemCase.setPid(pid)); // 设置好新题目的pid
