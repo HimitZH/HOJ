@@ -509,17 +509,18 @@ public class JudgeManager {
             }
         }
 
-
         QueryWrapper<JudgeCase> wrapper = new QueryWrapper<>();
-
 
         if (userRolesVo == null || (!isRoot
                 && !SecurityUtils.getSubject().hasRole("admin")
                 && !SecurityUtils.getSubject().hasRole("problem_admin"))) {
             wrapper.select("time", "memory", "score", "status", "user_output");
         }
-        wrapper.eq("submit_id", submitId)
-                .last("order by length(input_data) asc,input_data asc");
+
+        wrapper.eq("submit_id", submitId);
+        if (!problem.getIsRemote()) {
+            wrapper.last("order by length(input_data) asc,input_data asc");
+        }
 
         // 当前所有测试点只支持 空间 时间 状态码 IO得分 和错误信息提示查看而已
         return judgeCaseEntityService.list(wrapper);
