@@ -16,8 +16,12 @@ import top.hcode.hoj.pojo.entity.judge.JudgeCase;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeRes;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
+import top.hcode.hoj.util.CodeForcesUtils;
 import top.hcode.hoj.util.Constants;
 
+import javax.script.ScriptException;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -55,7 +59,7 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
     }};
 
     @Override
-    public void submit() {
+    public void submit() throws ScriptException, FileNotFoundException, NoSuchMethodException, UnsupportedEncodingException {
 
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
 
@@ -67,8 +71,17 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
         httpRequest.setConnectionTimeout(60000);
         httpRequest.setReadTimeout(60000);
         httpRequest.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36 Edg/91.0.864.48");
+        httpRequest.header("cookie","RCPC="+ CodeForcesUtils.getRCPC());
         HttpResponse httpResponse = httpRequest.execute();
         String homePage = httpResponse.body();
+        if(homePage.contains("Redirecting... Please, wait.")) {
+            List<String> list = ReUtil.findAll("[a-z0-9]+[a-z0-9]{31}", homePage, 0, new ArrayList<>());
+            CodeForcesUtils.updateRCPC(list);
+            httpRequest.removeHeader("cookie");
+            httpRequest.header("cookie","RCPC="+CodeForcesUtils.getRCPC());
+            httpResponse = httpRequest.execute();
+            homePage = httpResponse.body();
+        }
         if (!homePage.contains("/logout\">") || !homePage.contains("<a href=\"/profile/" + remoteJudgeDTO.getUsername() + "\"")) {
             login();
             if (remoteJudgeDTO.getLoginStatus() != HttpStatus.SC_MOVED_TEMPORARILY) {
@@ -261,10 +274,14 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
     public HashMap<String, Object> getCsrfToken(String url, boolean needTTA) {
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
         HttpRequest request = HttpUtil.createGet(url);
-        request.cookie(remoteJudgeDTO.getCookies());
+        if (remoteJudgeDTO.getCookies() == null) {
+            request.header("cookie", "RCPC="+CodeForcesUtils.getRCPC());
+        } else {
+            request.cookie(remoteJudgeDTO.getCookies());
+        }
+
         HttpResponse response = request.execute();
         remoteJudgeDTO.setCookies(response.getCookies());
-
         HashMap<String, Object> res = new HashMap<>();
         String body = response.body();
         String ftaa = response.getCookieValue("70a7c28f3de");
