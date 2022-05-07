@@ -9,27 +9,27 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
+import top.hcode.hoj.dao.judge.JudgeEntityService;
+import top.hcode.hoj.dao.problem.*;
 import top.hcode.hoj.mapper.ProblemMapper;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.problem.*;
 import top.hcode.hoj.pojo.vo.ImportProblemVo;
 import top.hcode.hoj.pojo.vo.ProblemCountVo;
 import top.hcode.hoj.pojo.vo.ProblemVo;
-import top.hcode.hoj.dao.judge.JudgeEntityService;
-import top.hcode.hoj.dao.problem.*;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 import top.hcode.hoj.utils.Constants;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -431,7 +431,10 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
             }
             // 设置oi总分数，根据每个测试点的加和
             if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
-                problem.setIoScore(sumScore);
+                UpdateWrapper<Problem> problemUpdateWrapper = new UpdateWrapper<>();
+                problemUpdateWrapper.eq("id", pid)
+                        .set("io_score", sumScore);
+                problemMapper.update(null, problemUpdateWrapper);
             }
             addCasesToProblemResult = problemCaseEntityService.saveOrUpdateBatch(problemCases);
             // 获取代理bean对象执行异步方法===》根据测试文件初始info
@@ -440,10 +443,22 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
         } else {
             // oi题目需要求取平均值，给每个测试点初始oi的score值，默认总分100分
             if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
-                problem.setIoScore(100);
-                final int averScore = 100 / problemDto.getSamples().size();
-                problemDto.getSamples().forEach(problemCase -> problemCase.setPid(pid).setScore(averScore)); // 设置好新题目的pid及分数
+                int size = problemDto.getSamples().size();
+                final int averScore = 100 / size;
+                final int mod = 100 % size;
+                for (int i = 0; i < size; i++) {
+                    // 设置好新题目的pid及分数
+                    if (i < size - 1) {
+                        problemDto.getSamples().get(i).setScore(averScore).setPid(pid);
+                    } else {
+                        problemDto.getSamples().get(i).setScore(averScore + mod).setPid(pid);
+                    }
+                }
                 addCasesToProblemResult = problemCaseEntityService.saveOrUpdateBatch(problemDto.getSamples());
+                UpdateWrapper<Problem> problemUpdateWrapper = new UpdateWrapper<>();
+                problemUpdateWrapper.eq("id", pid)
+                        .set("io_score", 100);
+                problemMapper.update(null, problemUpdateWrapper);
             } else {
                 problemDto.getSamples().forEach(problemCase -> problemCase.setPid(pid)); // 设置好新题目的pid
                 addCasesToProblemResult = problemCaseEntityService.saveOrUpdateBatch(problemDto.getSamples());
