@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
+import top.hcode.hoj.util.CodeForcesUtils;
 
 import java.io.Serializable;
 import java.net.HttpCookie;
@@ -42,6 +43,16 @@ public class RemoteJudgeDTO implements Serializable {
      * 远程评测的cookies
      */
     private List<HttpCookie> cookies;
+
+    public RemoteJudgeDTO setCookies(List<HttpCookie> cookies) {
+        if(cookies != null) {
+            HttpCookie rcpc = new HttpCookie("RCPC", CodeForcesUtils.getRCPC());
+            rcpc.setVersion(0);
+            cookies.add(rcpc);
+        }
+        this.cookies = cookies;
+        return this;
+    }
 
     /**
      * 远程测评的csrfToken
