@@ -1373,7 +1373,7 @@ export default {
       });
     },
     calcOIRankScore(score, difficulty) {
-      return 0.1 * score + 2 * difficulty;
+      return Math.round(0.1 * score + 2 * difficulty);
     },
 
     onCopy(event) {
