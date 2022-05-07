@@ -60,17 +60,17 @@ public class CFProblemStrategy extends ProblemStrategy {
         }
 
         String html = HttpRequest.get(getProblemUrl(contestId, problemNum))
-                .header("cookie", "RCPC="+CodeForcesUtils.getRCPC())
+                .header("cookie", "RCPC=" + CodeForcesUtils.getRCPC())
                 .timeout(20000)
                 .execute()
                 .body();
 
         // 重定向失效，更新RCPC
-        if(html.contains("Redirecting... Please, wait.")) {
+        if (html.contains("Redirecting... Please, wait.")) {
             List<String> list = ReUtil.findAll("[a-z0-9]+[a-z0-9]{31}", html, 0, new ArrayList<>());
             CodeForcesUtils.updateRCPC(list);
             html = HttpRequest.get(getProblemUrl(contestId, problemNum))
-                    .header("cookie","RCPC="+CodeForcesUtils.getRCPC())
+                    .header("cookie", "RCPC=" + CodeForcesUtils.getRCPC())
                     .timeout(20000)
                     .execute()
                     .body();

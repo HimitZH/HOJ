@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import top.hcode.hoj.util.CodeForcesUtils;
+import top.hcode.hoj.util.Constants;
 
 import java.io.Serializable;
 import java.net.HttpCookie;
@@ -45,7 +46,9 @@ public class RemoteJudgeDTO implements Serializable {
     private List<HttpCookie> cookies;
 
     public RemoteJudgeDTO setCookies(List<HttpCookie> cookies) {
-        if(cookies != null) {
+        if (cookies != null
+                && (Constants.RemoteJudge.CF_JUDGE.getName().equals(this.oj)
+                || Constants.RemoteJudge.GYM_JUDGE.getName().equals(this.oj))) {
             HttpCookie rcpc = new HttpCookie("RCPC", CodeForcesUtils.getRCPC());
             rcpc.setVersion(0);
             cookies.add(rcpc);
