@@ -468,12 +468,13 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
         if (problemDto.getTags() != null) {
             for (Tag tag : problemDto.getTags()) {
                 if (tag.getId() == null) { //id为空 表示为原tag表中不存在的 插入后可以获取到对应的tagId
-                    tag.setOj("ME");
-                    try {
+                    Tag existedTag = tagEntityService.getOne(new QueryWrapper<Tag>().eq("name", tag.getName())
+                            .eq("oj", "ME"), false);
+                    if (existedTag == null) {
+                        tag.setOj("ME");
                         tagEntityService.save(tag);
-                    } catch (Exception ignored) {
-                        tag = tagEntityService.getOne(new QueryWrapper<Tag>().eq("name", tag.getName())
-                                .eq("oj", "ME"), false);
+                    } else {
+                        tag = existedTag;
                     }
                 }
                 problemTagList.add(new ProblemTag().setTid(tag.getId()).setPid(pid));
