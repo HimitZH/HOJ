@@ -489,32 +489,44 @@ public class JudgeManager {
 
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-        boolean isRoot = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
-
-        if (judge.getCid() != 0 && userRolesVo != null && !isRoot) {
-            Contest contest = contestEntityService.getById(judge.getCid());
-            // 如果不是比赛管理员 比赛封榜不能看
-            if (!contest.getUid().equals(userRolesVo.getUid()) ||
-                    (contest.getIsGroup() && !groupValidator.isGroupRoot(userRolesVo.getUid(), contest.getGid()))) {
-                // 当前是比赛期间 同时处于封榜时间
-                if (contest.getSealRank() && contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()
-                        && contest.getSealRankTime().before(new Date())) {
-                    throw new StatusForbiddenException("对不起，该题测试样例详情不能查看！");
-                }
-
-                // 若是比赛题目，只支持OI查看测试点情况，ACM强制禁止查看,比赛管理员除外
-                if (problem.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) {
-                    throw new StatusForbiddenException("对不起，该题测试样例详情不能查看！");
-                }
-            }
-        }
 
         QueryWrapper<JudgeCase> wrapper = new QueryWrapper<>();
-
-        if (userRolesVo == null || (!isRoot
-                && !SecurityUtils.getSubject().hasRole("admin")
-                && !SecurityUtils.getSubject().hasRole("problem_admin"))) {
-            wrapper.select("time", "memory", "score", "status", "user_output");
+        if (judge.getCid() == 0) { // 非比赛提交
+            if (userRolesVo == null) { // 没有登录
+                wrapper.select("time", "memory", "score", "status", "user_output");
+            } else {
+                boolean isRoot = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
+                if (!isRoot
+                        && !SecurityUtils.getSubject().hasRole("admin")
+                        && !SecurityUtils.getSubject().hasRole("problem_admin")) { // 不是管理员
+                    wrapper.select("time", "memory", "score", "status", "user_output");
+                }
+            }
+        } else { // 比赛提交
+            if (userRolesVo == null) {
+                throw new StatusForbiddenException("您还未登录！不可查看比赛提交的测试点详情！");
+            }
+            boolean isRoot = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
+            if (!isRoot) {
+                Contest contest = contestEntityService.getById(judge.getCid());
+                // 如果不是比赛管理员 需要受到规则限制
+                if (!contest.getUid().equals(userRolesVo.getUid()) ||
+                        (contest.getIsGroup() && !groupValidator.isGroupRoot(userRolesVo.getUid(), contest.getGid()))) {
+                    // ACM比赛期间强制禁止查看,比赛管理员除外（赛后恢复正常）
+                    if (contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) {
+                        if (contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()) {
+                            return null;
+                        }
+                    } else {
+                        // 当前是oi比赛期间 同时处于封榜时间
+                        if (contest.getSealRank() && contest.getStatus().intValue() == Constants.Contest.STATUS_RUNNING.getCode()
+                                && contest.getSealRankTime().before(new Date())) {
+                            return null;
+                        }
+                    }
+                    wrapper.select("time", "memory", "score", "status", "user_output");
+                }
+            }
         }
 
         wrapper.eq("submit_id", submitId);
