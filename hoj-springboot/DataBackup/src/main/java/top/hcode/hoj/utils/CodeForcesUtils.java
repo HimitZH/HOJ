@@ -42,4 +42,41 @@ public class CodeForcesUtils {
             log.error("CodeForcesUtils.updateRCPC throw NoSuchMethodException ->", e);
         }
     }
+
+    public static void downloadPDF(String urlStr, String savePath) {
+        try {
+            int byteread;
+            URL url = new URL(urlStr);
+            URLConnection conn = url.openConnection();
+            conn.setConnectTimeout(30000);
+            conn.setReadTimeout(30000);
+            conn.setRequestProperty("User-Agent",
+                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36");
+            conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+            conn.setRequestProperty("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8");
+            conn.setRequestProperty("Accept-Encoding", "gzip, deflate, br");//注意编码，gzip可能会乱码
+            conn.setRequestProperty("Content-Encoding", "utf8");
+            conn.setRequestProperty("Connection", "keep-alive");
+            conn.setRequestProperty("Upgrade-Insecure-Requests", "1");
+            conn.setRequestProperty("cookie", "RCPC=" + getRCPC());
+            conn.setRequestProperty("Cache-Control", "max-age=0");
+            conn.setRequestProperty("Content-Type", "application/pdf");
+
+            InputStream inStream = conn.getInputStream();
+            FileOutputStream fs = new FileOutputStream(savePath);
+
+            byte[] buffer = new byte[1024];
+            while ((byteread = inStream.read(buffer)) != -1) {
+                fs.write(buffer, 0, byteread);
+            }
+            inStream.close();
+            fs.close();
+        } catch (FileNotFoundException e1) {
+            log.error("CodeForcesUtils.downloadPDF throw FileNotFoundException ->", e1);
+        } catch (MalformedURLException e2) {
+            log.error("CodeForcesUtils.downloadPDF throw MalformedURLException ->", e2);
+        } catch (IOException e3) {
+            log.error("CodeForcesUtils.downloadPDF throw IOException ->", e3);
+        }
+    }
 }
