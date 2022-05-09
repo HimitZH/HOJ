@@ -107,7 +107,14 @@ public class GYMProblemStrategy extends CFProblemStrategy {
             HttpUtil.downloadFile(IMAGE_HOST + matcher.group(0), filePath);
             pdfURI = Constants.File.FILE_API.getPath() + fileName;
         } catch (Exception e1) {
-            pdfURI = HOST + matcher.group(0);
+            try {
+                pdfURI = HOST + matcher.group(0);
+            } catch (Exception e2) {
+                String fileName = IdUtil.fastSimpleUUID() + ".pdf";
+                String filePath = Constants.File.PROBLEM_FILE_FOLDER.getPath() + File.separator + fileName;
+                CodeForcesUtils.downloadPDF(HOST + "/gym/" + contestNum + "/problem/" + problemNum, filePath);
+                pdfURI = Constants.File.FILE_API.getPath() + fileName;
+            }
         }
         String description = "<p><a style='color:#3091f2' href=\"" + pdfURI + "\">Click here to download the PDF file.</a></p>";
         problem.setDescription(description);

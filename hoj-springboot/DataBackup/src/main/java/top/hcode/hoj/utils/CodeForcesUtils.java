@@ -4,6 +4,13 @@ import cn.hutool.core.io.resource.ResourceUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.script.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 
 @Slf4j(topic = "hoj")
@@ -30,9 +37,9 @@ public class CodeForcesUtils {
                 RCPC = (String) in.invokeFunction("getRCPC", list.get(0), list.get(1), list.get(2));
             }
         } catch (ScriptException e) {
-            log.error("CodeForcesUtils.updateRCPC throw ScriptException", e);
+            log.error("CodeForcesUtils.updateRCPC throw ScriptException ->", e);
         } catch (NoSuchMethodException e) {
-            log.error("CodeForcesUtils.updateRCPC throw NoSuchMethodException", e);
+            log.error("CodeForcesUtils.updateRCPC throw NoSuchMethodException ->", e);
         }
     }
 }
