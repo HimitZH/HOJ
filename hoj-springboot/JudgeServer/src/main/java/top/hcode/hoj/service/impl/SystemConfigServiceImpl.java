@@ -18,7 +18,6 @@ public class SystemConfigServiceImpl implements SystemConfigService {
     public HashMap<String, Object> getSystemConfig() {
         HashMap<String, Object> result = new HashMap<String, Object>();
         int cpuCores = Runtime.getRuntime().availableProcessors(); // cpu核数
-
         double cpuLoad = 100 - OshiUtil.getCpuInfo().getFree();
         String percentCpuLoad = String.format("%.2f", cpuLoad) + "%"; // cpu使用率
 
