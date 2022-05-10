@@ -447,7 +447,7 @@
               <mu-icon
                 class="toggle-icon"
                 size="24"
-                value="keyboard_arrow_down"
+                value=":el-icon-arrow-down"
               ></mu-icon>
             </mu-list-item-action>
             <mu-list-item
@@ -518,7 +518,7 @@
               <mu-icon
                 class="toggle-icon"
                 size="24"
-                value="keyboard_arrow_down"
+                value=":el-icon-arrow-down"
               ></mu-icon>
             </mu-list-item-action>
             <mu-list-item
