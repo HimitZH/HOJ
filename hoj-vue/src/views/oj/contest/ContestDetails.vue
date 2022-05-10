@@ -202,7 +202,11 @@
           </transition>
         </el-tab-pane>
 
-        <el-tab-pane name="ContestComment" lazy :disabled="contestMenuDisabled">
+        <el-tab-pane 
+          name="ContestComment" 
+          lazy 
+          :disabled="contestMenuDisabled"
+          v-if="websiteConfig.openContestComment">
           <span slot="label"
             ><i class="fa fa-commenting" aria-hidden="true"></i>&nbsp;{{
               $t('m.Comment')
@@ -426,6 +430,7 @@ export default {
       'ContestRealTimePermission',
       'passwordFormVisible',
       'userInfo',
+      'websiteConfig',
     ]),
     progressValue: {
       get: function() {

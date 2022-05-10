@@ -5,10 +5,7 @@ import org.springframework.stereotype.Service;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.manager.admin.system.ConfigManager;
-import top.hcode.hoj.pojo.dto.DBAndRedisConfigDto;
-import top.hcode.hoj.pojo.dto.EmailConfigDto;
-import top.hcode.hoj.pojo.dto.TestEmailDto;
-import top.hcode.hoj.pojo.dto.WebConfigDto;
+import top.hcode.hoj.pojo.dto.*;
 import top.hcode.hoj.service.admin.system.ConfigService;
 
 import javax.annotation.Resource;
@@ -94,6 +91,21 @@ public class ConfigServiceImpl implements ConfigService {
     public CommonResult<Void> setDBAndRedisConfig(DBAndRedisConfigDto config) {
         try {
             configManager.setDBAndRedisConfig(config);
+            return CommonResult.successResponse();
+        } catch (StatusFailException e) {
+            return CommonResult.errorResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public CommonResult<SwitchConfigDto> getSwitchConfig() {
+        return CommonResult.successResponse(configManager.getSwitchConfig());
+    }
+
+    @Override
+    public CommonResult<Void> setSwitchConfig(SwitchConfigDto config) {
+        try {
+            configManager.setSwitchConfig(config);
             return CommonResult.successResponse();
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());

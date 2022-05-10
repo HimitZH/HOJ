@@ -8,6 +8,7 @@ import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
+import top.hcode.hoj.exception.AccessException;
 import top.hcode.hoj.manager.oj.JudgeManager;
 import top.hcode.hoj.pojo.dto.SubmitIdListDto;
 import top.hcode.hoj.pojo.dto.ToJudgeDto;
@@ -36,7 +37,7 @@ public class JudgeServiceImpl implements JudgeService {
     public CommonResult<Judge> submitProblemJudge(ToJudgeDto judgeDto) {
         try {
             return CommonResult.successResponse(judgeManager.submitProblemJudge(judgeDto));
-        } catch (StatusForbiddenException e) {
+        } catch (StatusForbiddenException | AccessException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
         } catch (StatusNotFoundException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.NOT_FOUND);

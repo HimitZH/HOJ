@@ -8,10 +8,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import top.hcode.hoj.annotation.HOJAccessEnum;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.dao.contest.ContestEntityService;
@@ -20,6 +20,7 @@ import top.hcode.hoj.dao.discussion.CommentLikeEntityService;
 import top.hcode.hoj.dao.discussion.DiscussionEntityService;
 import top.hcode.hoj.dao.discussion.ReplyEntityService;
 import top.hcode.hoj.dao.user.UserAcproblemEntityService;
+import top.hcode.hoj.exception.AccessException;
 import top.hcode.hoj.pojo.dto.ReplyDto;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.discussion.Comment;
@@ -27,10 +28,8 @@ import top.hcode.hoj.pojo.entity.discussion.CommentLike;
 import top.hcode.hoj.pojo.entity.discussion.Discussion;
 import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.pojo.entity.user.UserAcproblem;
-import top.hcode.hoj.pojo.vo.CommentListVo;
-import top.hcode.hoj.pojo.vo.CommentVo;
-import top.hcode.hoj.pojo.vo.ReplyVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.*;
+import top.hcode.hoj.validator.AccessValidator;
 import top.hcode.hoj.validator.ContestValidator;
 import top.hcode.hoj.validator.GroupValidator;
 
@@ -70,10 +69,13 @@ public class CommentManager {
     @Autowired
     private ContestValidator contestValidator;
 
-    @Value("${hoj.web-config.default-user-limit.comment.ac-initial-value}")
-    private Integer defaultCreateCommentACInitValue;
+    @Autowired
+    private AccessValidator accessValidator;
 
-    public CommentListVo getComments(Long cid, Integer did, Integer limit, Integer currentPage) throws StatusForbiddenException {
+    @Autowired
+    private ConfigVo configVo;
+
+    public CommentListVo getComments(Long cid, Integer did, Integer limit, Integer currentPage) throws StatusForbiddenException, AccessException {
 
         // 如果有登录，则获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
@@ -85,13 +87,16 @@ public class CommentManager {
             QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
             discussionQueryWrapper.select("id", "gid").eq("id", did);
             Discussion discussion = discussionEntityService.getOne(discussionQueryWrapper);
-            if (discussion != null) {
-                if (discussion.getGid() != null
-                        && !isRoot
-                        && !groupValidator.isGroupMember(userRolesVo.getUid(), discussion.getGid())) {
+            if (discussion != null && discussion.getGid() != null) {
+                accessValidator.validateAccess(HOJAccessEnum.GROUP_DISCUSSION);
+                if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), discussion.getGid())) {
                     throw new StatusForbiddenException("对不起，您无权限操作！");
                 }
+            } else {
+                accessValidator.validateAccess(HOJAccessEnum.PUBLIC_DISCUSSION);
             }
+        } else {
+            accessValidator.validateAccess(HOJAccessEnum.CONTEST_COMMENT);
         }
 
         IPage<CommentVo> commentList = commentEntityService.getCommentList(limit, currentPage, cid, did, isRoot,
@@ -129,7 +134,7 @@ public class CommentManager {
 
 
     @Transactional
-    public CommentVo addComment(Comment comment) throws StatusFailException, StatusForbiddenException {
+    public CommentVo addComment(Comment comment) throws StatusFailException, StatusForbiddenException, AccessException {
 
         if (StringUtils.isEmpty(comment.getContent().trim())) {
             throw new StatusFailException("评论内容不能为空！");
@@ -147,16 +152,6 @@ public class CommentManager {
 
         // 比赛外的评论 除管理员外 只有AC 10道以上才可评论
         if (cid == null) {
-            if (!isRoot && !isProblemAdmin && !isAdmin) {
-                QueryWrapper<UserAcproblem> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
-                int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
-
-                if (userAcProblemCount < defaultCreateCommentACInitValue) {
-                    throw new StatusForbiddenException("对不起，您暂时不能评论！请先去提交题目通过"
-                            + defaultCreateCommentACInitValue + "道以上!");
-                }
-            }
 
             QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
             discussionQueryWrapper.select("id", "gid").eq("id", comment.getDid());
@@ -164,11 +159,27 @@ public class CommentManager {
 
             Long gid = discussion.getGid();
             if (gid != null) {
+                accessValidator.validateAccess(HOJAccessEnum.GROUP_DISCUSSION);
                 if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), gid)) {
                     throw new StatusForbiddenException("对不起，您无权限操作！");
                 }
+            } else {
+                accessValidator.validateAccess(HOJAccessEnum.PUBLIC_DISCUSSION);
             }
+
+            if (!isRoot && !isProblemAdmin && !isAdmin) {
+                QueryWrapper<UserAcproblem> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
+                int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
+
+                if (userAcProblemCount < configVo.getDefaultCreateCommentACInitValue()) {
+                    throw new StatusForbiddenException("对不起，您暂时不能评论！请先去提交题目通过"
+                            + configVo.getDefaultCreateCommentACInitValue() + "道以上!");
+                }
+            }
+
         } else {
+            accessValidator.validateAccess(HOJAccessEnum.CONTEST_COMMENT);
             Contest contest = contestEntityService.getById(cid);
             contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
         }
@@ -224,7 +235,7 @@ public class CommentManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void deleteComment(Comment comment) throws StatusForbiddenException, StatusFailException {
+    public void deleteComment(Comment comment) throws StatusForbiddenException, StatusFailException, AccessException {
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
@@ -237,17 +248,17 @@ public class CommentManager {
         Long cid = comment.getCid();
 
         if (cid == null) {
-
             QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
             discussionQueryWrapper.select("id", "gid").eq("id", comment.getDid());
             Discussion discussion = discussionEntityService.getOne(discussionQueryWrapper);
-
             Long gid = discussion.getGid();
             if (gid == null) {
+                accessValidator.validateAccess(HOJAccessEnum.PUBLIC_DISCUSSION);
                 if (!comment.getFromUid().equals(userRolesVo.getUid()) && !isRoot && !isProblemAdmin && !isAdmin) {
                     throw new StatusForbiddenException("无权删除该评论");
                 }
             } else {
+                accessValidator.validateAccess(HOJAccessEnum.GROUP_DISCUSSION);
                 if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)
                         && !comment.getFromUid().equals(userRolesVo.getUid())
                         && !isRoot) {
@@ -255,6 +266,7 @@ public class CommentManager {
                 }
             }
         } else {
+            accessValidator.validateAccess(HOJAccessEnum.CONTEST_COMMENT);
             Contest contest = contestEntityService.getById(cid);
             Long gid = contest.getGid();
             if (!comment.getFromUid().equals(userRolesVo.getUid())
@@ -332,7 +344,7 @@ public class CommentManager {
 
     }
 
-    public List<ReplyVo> getAllReply(Integer commentId, Long cid) throws StatusForbiddenException, StatusFailException {
+    public List<ReplyVo> getAllReply(Integer commentId, Long cid) throws StatusForbiddenException, StatusFailException, AccessException {
 
         // 如果有登录，则获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
@@ -346,11 +358,15 @@ public class CommentManager {
             Discussion discussion = discussionEntityService.getOne(discussionQueryWrapper);
             Long gid = discussion.getGid();
             if (gid != null) {
+                accessValidator.validateAccess(HOJAccessEnum.GROUP_DISCUSSION);
                 if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), gid)) {
                     throw new StatusForbiddenException("对不起，您无权限操作！");
                 }
+            } else {
+                accessValidator.validateAccess(HOJAccessEnum.PUBLIC_DISCUSSION);
             }
         } else {
+            accessValidator.validateAccess(HOJAccessEnum.CONTEST_COMMENT);
             Contest contest = contestEntityService.getById(cid);
             contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
         }
@@ -362,7 +378,7 @@ public class CommentManager {
     }
 
 
-    public ReplyVo addReply(ReplyDto replyDto) throws StatusFailException, StatusForbiddenException {
+    public ReplyVo addReply(ReplyDto replyDto) throws StatusFailException, StatusForbiddenException, AccessException {
 
         if (StringUtils.isEmpty(replyDto.getReply().getContent().trim())) {
             throw new StatusFailException("回复内容不能为空！");
@@ -381,27 +397,33 @@ public class CommentManager {
         Comment comment = commentEntityService.getById(reply.getCommentId());
         Long cid = comment.getCid();
         if (cid == null) {
-            if (!isRoot && !isProblemAdmin && !isAdmin) {
-                QueryWrapper<UserAcproblem> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
-                int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
 
-                if (userAcProblemCount < defaultCreateCommentACInitValue) {
-                    throw new StatusForbiddenException("对不起，您暂时不能回复！请先去提交题目通过" +
-                            defaultCreateCommentACInitValue + "道以上!");
-                }
-            }
             QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
             discussionQueryWrapper.select("id", "gid").eq("id", comment.getDid());
             Discussion discussion = discussionEntityService.getOne(discussionQueryWrapper);
 
             Long gid = discussion.getGid();
             if (gid != null) {
+                accessValidator.validateAccess(HOJAccessEnum.GROUP_DISCUSSION);
                 if (!groupValidator.isGroupMember(userRolesVo.getUid(), gid) && !isRoot) {
                     throw new StatusForbiddenException("对不起，您无权限回复！");
                 }
+            } else {
+                accessValidator.validateAccess(HOJAccessEnum.PUBLIC_DISCUSSION);
+            }
+
+            if (!isRoot && !isProblemAdmin && !isAdmin) {
+                QueryWrapper<UserAcproblem> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
+                int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
+
+                if (userAcProblemCount < configVo.getDefaultCreateCommentACInitValue()) {
+                    throw new StatusForbiddenException("对不起，您暂时不能回复！请先去提交题目通过" +
+                            configVo.getDefaultCreateCommentACInitValue() + "道以上!");
+                }
             }
         } else {
+            accessValidator.validateAccess(HOJAccessEnum.CONTEST_COMMENT);
             Contest contest = contestEntityService.getById(cid);
             Long gid = contest.getGid();
             if (!comment.getFromUid().equals(userRolesVo.getUid())
@@ -455,7 +477,7 @@ public class CommentManager {
         }
     }
 
-    public void deleteReply(ReplyDto replyDto) throws StatusForbiddenException, StatusFailException {
+    public void deleteReply(ReplyDto replyDto) throws StatusForbiddenException, StatusFailException, AccessException {
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
@@ -472,9 +494,9 @@ public class CommentManager {
 
         if (cid == null) {
             Discussion discussion = discussionEntityService.getById(comment.getDid());
-
             Long gid = discussion.getGid();
             if (gid == null) {
+                accessValidator.validateAccess(HOJAccessEnum.PUBLIC_DISCUSSION);
                 if (!reply.getFromUid().equals(userRolesVo.getUid())
                         && !isRoot
                         && !isProblemAdmin
@@ -482,6 +504,7 @@ public class CommentManager {
                     throw new StatusForbiddenException("无权删除该回复");
                 }
             } else {
+                accessValidator.validateAccess(HOJAccessEnum.GROUP_DISCUSSION);
                 if (!reply.getFromUid().equals(userRolesVo.getUid())
                         && !isRoot
                         && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
@@ -489,6 +512,7 @@ public class CommentManager {
                 }
             }
         } else {
+            accessValidator.validateAccess(HOJAccessEnum.CONTEST_COMMENT);
             Contest contest = contestEntityService.getById(cid);
             if (!reply.getFromUid().equals(userRolesVo.getUid())
                     && !isRoot

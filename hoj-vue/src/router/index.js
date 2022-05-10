@@ -37,8 +37,6 @@ const router = new VueRouter({
 
 // 路由判断登录 根据路由配置文件的参数(全局身份验证token)
 router.beforeEach((to, from, next) => {
-
-  
   NProgress.start()
   if (to.matched.some(record => record.meta.requireAuth)) { // 判断该路由是否需要登录权限
     const token = localStorage.getItem('token') || ''
@@ -100,7 +98,36 @@ router.beforeEach((to, from, next) => {
       store.commit("clearUserInfoAndToken");
       mMessage.error('Please Login First!')
     }
-  } else { // 不需要认证的页面
+  } else { // 不需要登录认证的页面
+    if(to.meta.access){ // 单级路由有access控制
+      const webConfig = store.getters.websiteConfig;
+      switch(to.meta.access){
+        case 'discussion':
+          if(!webConfig.openPublicDiscussion){
+            next({
+              path: '/home' 
+            })
+            mMessage.error('No Access: There is no open discussion area on the website!')
+          }
+          break;
+        case 'groupDiscussion':
+          if(!webConfig.openGroupDiscussion){
+            next({
+              path: '/home' 
+            })
+            mMessage.error('No Access: There is no open group discussion area on the website!')
+          }
+          break;
+        case 'contestComment':
+          if(!webConfig.openContestComment){
+            next({
+              path: '/home' 
+            })
+            mMessage.error('No Access: There is no open contest comment area on the website!')
+          }
+          break;
+      }
+    }
     next()
   }
   

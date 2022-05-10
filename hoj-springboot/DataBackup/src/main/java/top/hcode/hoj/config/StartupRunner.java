@@ -132,6 +132,9 @@ public class StartupRunner implements CommandLineRunner {
     @Value("${SPOJ_ACCOUNT_PASSWORD_LIST:}")
     private List<String> spojPasswordList;
 
+    @Value("${FORCED_UPDATE_REMOTE_JUDGE_ACCOUNT:false}")
+    private Boolean forcedUpdateRemoteJudgeAccount;
+
     @Value("${spring.profiles.active}")
     private String profile;
 
@@ -182,20 +185,65 @@ public class StartupRunner implements CommandLineRunner {
             configVo.setEmailPassword(emailPassword);
         }
 
-        configVo.setHduUsernameList(hduUsernameList);
-        configVo.setHduPasswordList(hduPasswordList);
+        if (CollectionUtils.isEmpty(configVo.getHduUsernameList()) || forcedUpdateRemoteJudgeAccount) {
+            configVo.setHduUsernameList(hduUsernameList);
+        }else {
+            hduUsernameList = configVo.getHduUsernameList();
+        }
 
-        configVo.setCfUsernameList(cfUsernameList);
-        configVo.setCfPasswordList(cfPasswordList);
+        if (CollectionUtils.isEmpty(configVo.getHduPasswordList()) || forcedUpdateRemoteJudgeAccount) {
+            configVo.setHduPasswordList(hduPasswordList);
+        }else {
+            hduPasswordList = configVo.getHduUsernameList();
+        }
 
-        configVo.setPojUsernameList(pojUsernameList);
-        configVo.setPojPasswordList(pojPasswordList);
+        if (CollectionUtils.isEmpty(configVo.getCfUsernameList()) || forcedUpdateRemoteJudgeAccount) {
+            configVo.setCfUsernameList(cfUsernameList);
+        }else {
+            cfUsernameList = configVo.getCfUsernameList();
+        }
 
-        configVo.setAtcoderUsernameList(atcoderUsernameList);
-        configVo.setAtcoderPasswordList(atcoderUsernameList);
+        if (CollectionUtils.isEmpty(configVo.getCfPasswordList()) || forcedUpdateRemoteJudgeAccount) {
+            configVo.setCfUsernameList(cfPasswordList);
+        }else {
+            cfPasswordList = configVo.getCfPasswordList();
+        }
 
-        configVo.setSpojUsernameList(spojUsernameList);
-        configVo.setSpojPasswordList(spojPasswordList);
+        if (CollectionUtils.isEmpty(configVo.getPojUsernameList()) || forcedUpdateRemoteJudgeAccount) {
+            configVo.setPojUsernameList(pojUsernameList);
+        }else {
+            pojUsernameList = configVo.getPojUsernameList();
+        }
+
+        if (CollectionUtils.isEmpty(configVo.getPojPasswordList()) || forcedUpdateRemoteJudgeAccount) {
+            configVo.setPojPasswordList(pojPasswordList);
+        }else {
+            pojPasswordList = configVo.getPojPasswordList();
+        }
+
+        if (CollectionUtils.isEmpty(configVo.getAtcoderUsernameList()) || forcedUpdateRemoteJudgeAccount) {
+            configVo.setAtcoderUsernameList(atcoderUsernameList);
+        }else {
+            atcoderUsernameList = configVo.getAtcoderUsernameList();
+        }
+
+        if (CollectionUtils.isEmpty(configVo.getAtcoderPasswordList()) || forcedUpdateRemoteJudgeAccount) {
+            configVo.setAtcoderPasswordList(atcoderPasswordList);
+        }else {
+            atcoderPasswordList = configVo.getAtcoderPasswordList();
+        }
+
+        if (CollectionUtils.isEmpty(configVo.getSpojUsernameList()) || forcedUpdateRemoteJudgeAccount) {
+            configVo.setSpojUsernameList(spojUsernameList);
+        }else {
+            spojUsernameList = configVo.getSpojUsernameList();
+        }
+
+        if (CollectionUtils.isEmpty(configVo.getSpojPasswordList()) || forcedUpdateRemoteJudgeAccount) {
+            configVo.setSpojPasswordList(spojPasswordList);
+        }else {
+            spojPasswordList = configVo.getSpojPasswordList();
+        }
 
         configManager.sendNewConfigToNacos();
 
@@ -230,7 +278,7 @@ public class StartupRunner implements CommandLineRunner {
 
 
         if (CollectionUtils.isEmpty(usernameList) || CollectionUtils.isEmpty(passwordList) || usernameList.size() != passwordList.size()) {
-            log.error("[{}]: There is no account or password configured for remote judge, " +
+            log.error("[Init System Config] [{}]: There is no account or password configured for remote judge, " +
                             "username list:{}, password list:{}", oj, Arrays.toString(usernameList.toArray()),
                     Arrays.toString(passwordList.toArray()));
         }
@@ -250,7 +298,7 @@ public class StartupRunner implements CommandLineRunner {
         if (remoteAccountList.size() > 0) {
             boolean addOk = remoteJudgeAccountEntityService.saveOrUpdateBatch(remoteAccountList);
             if (!addOk) {
-                log.error("Remote judge initialization failed. Failed to add account for: [{}]. Please check the configuration file and restart!", oj);
+                log.error("[Init System Config] Remote judge initialization failed. Failed to add account for: [{}]. Please check the configuration file and restart!", oj);
             }
         }
     }
@@ -269,7 +317,7 @@ public class StartupRunner implements CommandLineRunner {
                 Language newLanguage = buildHOJLanguage(language);
                 boolean isOk = languageEntityService.save(newLanguage);
                 if (!isOk) {
-                    log.error("[HOJ] Failed to add new language [{}]! Please check whether the language table corresponding to the database has the language!", language);
+                    log.error("[Init System Config] [HOJ] Failed to add new language [{}]! Please check whether the language table corresponding to the database has the language!", language);
                 }
             }
         }
@@ -304,7 +352,7 @@ public class StartupRunner implements CommandLineRunner {
                 List<Language> languageList = new LanguageContext(remoteOJ).buildLanguageList();
                 boolean isOk = languageEntityService.saveBatch(languageList);
                 if (!isOk) {
-                    log.error("[{}] Failed to initialize language list! Please check whether the language table corresponding to the database has the OJ language!", remoteOJ.getName());
+                    log.error("[Init System Config] [{}] Failed to initialize language list! Please check whether the language table corresponding to the database has the OJ language!", remoteOJ.getName());
                 }
             }
         }

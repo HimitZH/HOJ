@@ -54,6 +54,7 @@
         </el-submenu>
 
         <el-menu-item index="/discussion"
+          v-if="websiteConfig.openPublicDiscussion"
           ><i class="el-icon-s-comment"></i
           >{{ $t('m.NavBar_Discussion') }}</el-menu-item
         >
@@ -476,6 +477,7 @@
           </mu-list-item>
 
           <mu-list-item
+            v-if="websiteConfig.openPublicDiscussion"
             button
             to="/discussion"
             @click="opendrawer = !opendrawer"

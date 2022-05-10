@@ -1,9 +1,5 @@
 package top.hcode.hoj.manager.oj;
 
-import org.springframework.beans.factory.annotation.Value;
-import top.hcode.hoj.dao.problem.ProblemEntityService;
-import top.hcode.hoj.pojo.entity.problem.Problem;
-import top.hcode.hoj.validator.GroupValidator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -14,23 +10,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import top.hcode.hoj.annotation.HOJAccessEnum;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
-import top.hcode.hoj.pojo.entity.discussion.Discussion;
-import top.hcode.hoj.pojo.entity.discussion.DiscussionLike;
-import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
-import top.hcode.hoj.pojo.entity.problem.Category;
-import top.hcode.hoj.pojo.entity.user.UserAcproblem;
-import top.hcode.hoj.pojo.vo.DiscussionVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.dao.discussion.DiscussionEntityService;
 import top.hcode.hoj.dao.discussion.DiscussionLikeEntityService;
 import top.hcode.hoj.dao.discussion.DiscussionReportEntityService;
 import top.hcode.hoj.dao.problem.CategoryEntityService;
+import top.hcode.hoj.dao.problem.ProblemEntityService;
 import top.hcode.hoj.dao.user.UserAcproblemEntityService;
+import top.hcode.hoj.exception.AccessException;
+import top.hcode.hoj.pojo.entity.discussion.Discussion;
+import top.hcode.hoj.pojo.entity.discussion.DiscussionLike;
+import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
+import top.hcode.hoj.pojo.entity.problem.Category;
+import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.pojo.entity.user.UserAcproblem;
+import top.hcode.hoj.pojo.vo.ConfigVo;
+import top.hcode.hoj.pojo.vo.DiscussionVo;
+import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
+import top.hcode.hoj.validator.AccessValidator;
+import top.hcode.hoj.validator.GroupValidator;
 
 import java.util.List;
 
@@ -65,11 +68,11 @@ public class DiscussionManager {
     @Autowired
     private GroupValidator groupValidator;
 
-    @Value("${hoj.web-config.default-user-limit.discussion.daily}")
-    private Integer defaultCreateDiscussionDailyLimit;
+    @Autowired
+    private AccessValidator accessValidator;
 
-    @Value("${hoj.web-config.default-user-limit.discussion.ac-initial-value}")
-    private Integer defaultCreateDiscussionACInitValue;
+    @Autowired
+    private ConfigVo configVo;
 
     public IPage<Discussion> getDiscussionList(Integer limit,
                                                Integer currentPage,
@@ -125,7 +128,7 @@ public class DiscussionManager {
         return discussionEntityService.page(iPage, discussionQueryWrapper);
     }
 
-    public DiscussionVo getDiscussion(Integer did) throws StatusNotFoundException, StatusForbiddenException {
+    public DiscussionVo getDiscussion(Integer did) throws StatusNotFoundException, StatusForbiddenException, AccessException {
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
@@ -136,9 +139,12 @@ public class DiscussionManager {
         Discussion discussion = discussionEntityService.getById(did);
 
         if (discussion.getGid() != null) {
+            accessValidator.validateAccess(HOJAccessEnum.GROUP_DISCUSSION);
             if (!isRoot && !discussion.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupMember(userRolesVo.getUid(), discussion.getGid())) {
                 throw new StatusForbiddenException("对不起，您无权限操作！");
             }
+        } else {
+            accessValidator.validateAccess(HOJAccessEnum.PUBLIC_DISCUSSION);
         }
 
         String uid = null;
@@ -198,16 +204,16 @@ public class DiscussionManager {
             queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
             int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
 
-            if (userAcProblemCount < defaultCreateDiscussionACInitValue) {
-                throw new StatusForbiddenException("对不起，您暂时不能评论！请先去提交题目通过" + defaultCreateDiscussionACInitValue + "道以上!");
+            if (userAcProblemCount < configVo.getDefaultCreateDiscussionACInitValue()) {
+                throw new StatusForbiddenException("对不起，您暂时不能评论！请先去提交题目通过" + configVo.getDefaultCreateDiscussionACInitValue() + "道以上!");
             }
 
             String lockKey = Constants.Account.DISCUSSION_ADD_NUM_LOCK.getCode() + userRolesVo.getUid();
             Integer num = (Integer) redisUtils.get(lockKey);
             if (num == null) {
                 redisUtils.set(lockKey, 1, 3600 * 24);
-            } else if (num >= defaultCreateDiscussionDailyLimit) {
-                throw new StatusForbiddenException("对不起，您今天发帖次数已超过" + defaultCreateDiscussionDailyLimit + "次，已被限制！");
+            } else if (num >= configVo.getDefaultCreateDiscussionDailyLimit()) {
+                throw new StatusForbiddenException("对不起，您今天发帖次数已超过" + configVo.getDefaultCreateDiscussionDailyLimit() + "次，已被限制！");
             } else {
                 redisUtils.incr(lockKey, 1);
             }

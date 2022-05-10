@@ -1,29 +1,29 @@
 package top.hcode.hoj.manager.group;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.transaction.annotation.Transactional;
-import top.hcode.hoj.common.exception.StatusFailException;
-import top.hcode.hoj.common.exception.StatusForbiddenException;
-import top.hcode.hoj.common.exception.StatusNotFoundException;
-import top.hcode.hoj.dao.group.GroupEntityService;
-import top.hcode.hoj.dao.group.GroupMemberEntityService;
-import top.hcode.hoj.dao.user.UserAcproblemEntityService;
-import top.hcode.hoj.pojo.entity.group.GroupMember;
-import top.hcode.hoj.pojo.entity.group.Group;
-import top.hcode.hoj.pojo.entity.user.UserAcproblem;
-import top.hcode.hoj.pojo.vo.AccessVo;
-import top.hcode.hoj.pojo.vo.GroupVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.utils.Constants;
-import top.hcode.hoj.utils.RedisUtils;
-import top.hcode.hoj.validator.GroupValidator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import top.hcode.hoj.common.exception.StatusFailException;
+import top.hcode.hoj.common.exception.StatusForbiddenException;
+import top.hcode.hoj.common.exception.StatusNotFoundException;
+import top.hcode.hoj.dao.group.GroupEntityService;
+import top.hcode.hoj.dao.group.GroupMemberEntityService;
+import top.hcode.hoj.dao.user.UserAcproblemEntityService;
+import top.hcode.hoj.pojo.entity.group.Group;
+import top.hcode.hoj.pojo.entity.group.GroupMember;
+import top.hcode.hoj.pojo.entity.user.UserAcproblem;
+import top.hcode.hoj.pojo.vo.AccessVo;
+import top.hcode.hoj.pojo.vo.ConfigVo;
+import top.hcode.hoj.pojo.vo.GroupVo;
+import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.utils.RedisUtils;
+import top.hcode.hoj.validator.GroupValidator;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,14 +51,8 @@ public class GroupManager {
     @Autowired
     private GroupValidator groupValidator;
 
-    @Value("${hoj.web-config.default-user-limit.group.daily}")
-    private Integer defaultCreateGroupDailyLimit;
-
-    @Value("${hoj.web-config.default-user-limit.group.total}")
-    private Integer defaultCreateGroupLimit;
-
-    @Value("${hoj.web-config.default-user-limit.group.ac-initial-value}")
-    private Integer defaultCreateGroupACInitValue;
+    @Autowired
+    private ConfigVo configVo;
 
     public IPage<GroupVo> getGroupList(Integer limit, Integer currentPage, String keyword, Integer auth, boolean onlyMine) {
         Session session = SecurityUtils.getSubject().getSession();
@@ -157,17 +151,17 @@ public class GroupManager {
             queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
             int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
 
-            if (userAcProblemCount < defaultCreateGroupACInitValue) {
+            if (userAcProblemCount < configVo.getDefaultCreateGroupACInitValue()) {
                 throw new StatusForbiddenException("对不起，您暂时无权限创建团队！请先去提交题目通过" +
-                        defaultCreateGroupACInitValue + "道以上!");
+                        configVo.getDefaultCreateGroupACInitValue() + "道以上!");
             }
 
             String lockKey = Constants.Account.GROUP_ADD_NUM_LOCK.getCode() + userRolesVo.getUid();
             Integer num = (Integer) redisUtils.get(lockKey);
             if (num == null) {
                 redisUtils.set(lockKey, 1, 3600 * 24);
-            } else if (num >= defaultCreateGroupDailyLimit) {
-                throw new StatusForbiddenException("对不起，您今天创建团队次数已超过" + defaultCreateGroupDailyLimit + "次，已被限制！");
+            } else if (num >= configVo.getDefaultCreateGroupDailyLimit()) {
+                throw new StatusForbiddenException("对不起，您今天创建团队次数已超过" + configVo.getDefaultCreateGroupDailyLimit() + "次，已被限制！");
             } else {
                 redisUtils.incr(lockKey, 1);
             }
@@ -176,8 +170,8 @@ public class GroupManager {
             existedGroupQueryWrapper.eq("owner", userRolesVo.getUsername());
             int existedGroupNum = groupEntityService.count(existedGroupQueryWrapper);
 
-            if (existedGroupNum >= defaultCreateGroupLimit) {
-                throw new StatusForbiddenException("对不起，您总共已创建了" + defaultCreateGroupLimit + "个团队，不可再创建，已被限制！");
+            if (existedGroupNum >= configVo.getDefaultCreateGroupLimit()) {
+                throw new StatusForbiddenException("对不起，您总共已创建了" + configVo.getDefaultCreateGroupLimit() + "个团队，不可再创建，已被限制！");
             }
 
         }

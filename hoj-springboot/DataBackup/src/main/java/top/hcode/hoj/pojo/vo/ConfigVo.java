@@ -137,4 +137,81 @@ public class ConfigVo {
     @Value("${hoj.spoj.account.password:}")
     private List<String> spojPasswordList;
 
+    /**
+     * 是否开启公开评论区
+     */
+    @Value("${hoj.switch.discussion.public:true}")
+    private Boolean openPublicDiscussion;
+
+    /**
+     * 是否开启团队评论区
+     */
+    @Value("${hoj.switch.discussion.group:true}")
+    private Boolean openGroupDiscussion;
+
+    /**
+     * 是否开启比赛讨论区
+     */
+    @Value("${hoj.switch.comment.contest:true}")
+    private Boolean openContestComment;
+
+    /**
+     * 是否开启公开评测
+     */
+    @Value("${hoj.switch.judge.public:true}")
+    private Boolean openPublicJudge;
+
+    /**
+     * 是否开启团队评测
+     */
+    @Value("${hoj.switch.judge.group:true}")
+    private Boolean openGroupJudge;
+
+    /**
+     * 是否开启比赛评测
+     */
+    @Value("${hoj.switch.judge.contest:true}")
+    private Boolean openContestJudge;
+
+    /**
+     * 非比赛的提交间隔秒数
+     */
+    @Value("${hoj.switch.judge.submit-interval:8}")
+    private Integer defaultSubmitInterval;
+
+    /**
+     * 每天可以创建的团队数量
+     */
+    @Value("${hoj.switch.group.create-daily:2}")
+    private Integer defaultCreateGroupDailyLimit;
+
+    /**
+     * 总共可以拥有的团队数量
+     */
+    @Value("${hoj.switch.group.create-total:5}")
+    private Integer defaultCreateGroupLimit;
+
+    /**
+     * 创建团队的前提：20道题目通过
+     */
+    @Value("${hoj.switch.group.ac-initial-value:20}")
+    private Integer defaultCreateGroupACInitValue;
+
+    /**
+     * 每天可以创建的帖子数量
+     */
+    @Value("${hoj.switch.discussion.create-daily:5}")
+    private Integer defaultCreateDiscussionDailyLimit;
+
+    /**
+     * 创建讨论帖子的前提：10道题目通过
+     */
+    @Value("${hoj.switch.discussion.ac-initial-value:10}")
+    private Integer defaultCreateDiscussionACInitValue;
+
+    /**
+     * 评论和回复的前提：10道题目通过
+     */
+    @Value("${hoj.switch.comment.ac-initial-value:10}")
+    private Integer defaultCreateCommentACInitValue;
 }

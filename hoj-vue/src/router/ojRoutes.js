@@ -177,7 +177,7 @@ const ojRoutes = [
         name: 'ContestComment',
         path:'comment',
         component: ContestComment,
-        meta: { title: 'Contest Comment'}
+        meta: { title: 'Contest Comment', access:'contestComment'}
       },
       {
         name: 'ContestPrint',
@@ -244,19 +244,19 @@ const ojRoutes = [
   {
     path: '/discussion',
     name: 'AllDiscussion',
-    meta: {title: 'Discussion'},
+    meta: {title: 'Discussion', access:'discussion'},
     component:DiscussionList
   },
   {
     path: '/discussion/:problemID',
     name: 'ProblemDiscussion',
-    meta: {title: 'Discussion'},
+    meta: {title: 'Discussion', access:'discussion'},
     component:DiscussionList
   },
   {
     path: '/discussion-detail/:discussionID',
     name:'DiscussionDetails',
-    meta: {title: 'Discussion Details'},
+    meta: {title: 'Discussion Details', access:'discussion'},
     component: Discussion
   },
   {
@@ -343,18 +343,18 @@ const ojRoutes = [
         path: 'discussion',
         name: 'GroupDiscussionList',
         component: GroupDiscussionList,
-        meta: { title: 'Group Discussion' }
+        meta: { title: 'Group Discussion', access:'groupDiscussion' }
       },
       {
         path: 'discussion/:problemID',
         name: 'GroupProblemDiscussion',
-        meta: {title: 'Group Discussion'},
+        meta: {title: 'Group Discussion', access:'groupDiscussion'},
         component:GroupDiscussionList
       },
       {
         path: 'discussion-detail/:discussionID',
         name:'GroupDiscussionDetails',
-        meta: {title: 'Group Discussion Details'},
+        meta: {title: 'Group Discussion Details', access:'groupDiscussion'},
         component: Discussion
       },
       {
