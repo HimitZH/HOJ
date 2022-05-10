@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.dao.judge.RemoteJudgeAccountEntityService;
@@ -16,6 +17,7 @@ import top.hcode.hoj.judge.Dispatcher;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
 import top.hcode.hoj.pojo.entity.judge.ToJudge;
+import top.hcode.hoj.pojo.vo.ConfigVo;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
@@ -39,6 +41,9 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
 
     @Resource
     private ChooseUtils chooseUtils;
+
+    @Autowired
+    private ConfigVo configVo;
 
     @Autowired
     private RemoteJudgeAccountEntityService remoteJudgeAccountEntityService;
@@ -88,19 +93,25 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
         toJudge.setJudge(judge)
                 .setToken(token)
                 .setRemoteJudgeProblem(remoteJudgeProblem);
-
-
-        if (remoteOJName.equals(Constants.RemoteOJ.CODEFORCES.getName())
-                || remoteOJName.equals(Constants.RemoteOJ.GYM.getName())) {
-            if (ChooseUtils.openCodeforcesFixServer) {
-                fixServerCFJudge(isHasSubmitIdRemoteReJudge, toJudge, judge);
-            } else {
-                commonJudge(Constants.RemoteOJ.CODEFORCES.getName(), isHasSubmitIdRemoteReJudge, toJudge, judge);
-            }
-        } else if (remoteOJName.equals(Constants.RemoteOJ.POJ.getName())) {
-            pojJudge(isHasSubmitIdRemoteReJudge, toJudge, judge);
+        Constants.RemoteOJ remoteOJ = Constants.RemoteOJ.getRemoteOJ(remoteOJName);
+        if (!checkExistedAccountByOJ(remoteOJ)) {
+            judge.setStatus(Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
+            judge.setErrorMessage("System Error! Cause: The System does not have [" + remoteOJ + "] account configured. " +
+                    "Please report the matter to the administrator!");
+            judgeEntityService.updateById(judge);
         } else {
-            commonJudge(remoteOJName, isHasSubmitIdRemoteReJudge, toJudge, judge);
+            if (remoteOJName.equals(Constants.RemoteOJ.CODEFORCES.getName())
+                    || remoteOJName.equals(Constants.RemoteOJ.GYM.getName())) {
+                if (ChooseUtils.openCodeforcesFixServer) {
+                    fixServerCFJudge(isHasSubmitIdRemoteReJudge, toJudge, judge);
+                } else {
+                    commonJudge(Constants.RemoteOJ.CODEFORCES.getName(), isHasSubmitIdRemoteReJudge, toJudge, judge);
+                }
+            } else if (remoteOJName.equals(Constants.RemoteOJ.POJ.getName())) {
+                pojJudge(isHasSubmitIdRemoteReJudge, toJudge, judge);
+            } else {
+                commonJudge(remoteOJName, isHasSubmitIdRemoteReJudge, toJudge, judge);
+            }
         }
         // 如果队列中还有任务，则继续处理
         processWaitingTask();
@@ -128,7 +139,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
                     // 获取调用多次失败可能为系统忙碌，判为提交失败
                     judge.setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
                     judge.setErrorMessage("Submission failed! Please resubmit this submission again!" +
-                            "Cause: Waiting for account scheduling timeout");
+                            "Cause: Waiting for account scheduling timeout.");
                     judgeEntityService.updateById(judge);
                     Future future = futureTaskMap.get(key);
                     if (future != null) {
@@ -276,5 +287,24 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
         };
         ScheduledFuture<?> scheduledFuture = scheduler.scheduleWithFixedDelay(getResultTask, 0, 3, TimeUnit.SECONDS);
         futureTaskMap.put(key, scheduledFuture);
+    }
+
+    private boolean checkExistedAccountByOJ(Constants.RemoteOJ remoteOJ) {
+        if (remoteOJ == null) {
+            return false;
+        }
+        switch (remoteOJ) {
+            case CODEFORCES:
+                return !CollectionUtils.isEmpty(configVo.getCfUsernameList());
+            case POJ:
+                return !CollectionUtils.isEmpty(configVo.getPojUsernameList());
+            case HDU:
+                return !CollectionUtils.isEmpty(configVo.getHduUsernameList());
+            case SPOJ:
+                return !CollectionUtils.isEmpty(configVo.getSpojUsernameList());
+            case ATCODER:
+                return !CollectionUtils.isEmpty(configVo.getAtcoderUsernameList());
+        }
+        return false;
     }
 }

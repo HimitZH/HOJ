@@ -45,7 +45,7 @@ public class CodeForcesUtils {
 
     public static void downloadPDF(String urlStr, String savePath) {
         try {
-            int byteread;
+            int byteRead;
             URL url = new URL(urlStr);
             URLConnection conn = url.openConnection();
             conn.setConnectTimeout(30000);
@@ -66,8 +66,8 @@ public class CodeForcesUtils {
             FileOutputStream fs = new FileOutputStream(savePath);
 
             byte[] buffer = new byte[1024];
-            while ((byteread = inStream.read(buffer)) != -1) {
-                fs.write(buffer, 0, byteread);
+            while ((byteRead = inStream.read(buffer)) != -1) {
+                fs.write(buffer, 0, byteRead);
             }
             inStream.close();
             fs.close();

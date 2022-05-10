@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import top.hcode.hoj.common.exception.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
+import top.hcode.hoj.exception.AccessException;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -109,6 +110,14 @@ public class GlobalExceptionAdvice {
         return CommonResult.errorResponse("对不起，您无权限进行此操作，请先登录进行授权认证", ResultStatus.FORBIDDEN);
     }
 
+    /**
+     * 403 -FORBIDDEN 处理访问api能力被禁止的异常
+     */
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(value = AccessException.class)
+    public CommonResult<Void> handleAccessException(AccessException e) {
+        return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
+    }
 
     /**
      * 400 - Bad Request 处理Assert的异常 断言的异常！

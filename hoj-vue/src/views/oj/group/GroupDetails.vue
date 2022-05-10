@@ -54,6 +54,7 @@
               lazy
               name="GroupDiscussionList"
               :disabled="groupMenuDisabled"
+              v-if="websiteConfig.openGroupDiscussion"
             >
               <span slot="label">
                 <i class="el-icon-share"></i>&nbsp;{{
@@ -511,6 +512,7 @@ export default {
       'isGroupOwner',
       'userAuth',
       'isSuperAdmin',
+      'websiteConfig'
     ]),
     descriptionHtml() {
       if (this.group.description) {

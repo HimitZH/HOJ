@@ -7,6 +7,7 @@ const User= ()=>import('@/views/admin/general/User')
 const Announcement= ()=>import('@/views/admin/general/Announcement')
 const SysNotice= ()=>import('@/views/admin/general/SysNotice')
 const SystemConfig= ()=>import('@/views/admin/general/SystemConfig')
+const SysSwitch= ()=>import('@/views/admin/general/SysSwitch')
 const ProblemList= ()=>import('@/views/admin/problem/ProblemList')
 const AdminGroupProblemList= ()=>import('@/views/admin/problem/GroupProblemList')
 const Problem= ()=>import('@/views/admin/problem/Problem')
@@ -66,6 +67,12 @@ const adminRoutes= [
           name: 'admin-conf',
           component: SystemConfig,
           meta: { requireSuperAdmin: true,title:'System Config'},
+        },
+        {
+          path: 'switch',
+          name: 'admin-switch',
+          component: SysSwitch,
+          meta: { requireSuperAdmin: true,title:'System Switch'},
         },
         {
           path: 'problems',

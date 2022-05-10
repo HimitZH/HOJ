@@ -1,8 +1,10 @@
 package top.hcode.hoj.utils;
 
 import cn.hutool.core.text.UnicodeUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import top.hcode.hoj.pojo.vo.ConfigVo;
 
 import java.util.List;
@@ -13,13 +15,13 @@ import java.util.List;
  * @Description:
  */
 @Component
+@Slf4j(topic = "hoj")
 public class ConfigUtils {
 
     @Autowired
     private ConfigVo configVo;
 
     public String getConfigContent() {
-
         return buildYamlStr(configVo);
     }
 
@@ -85,10 +87,31 @@ public class ConfigUtils {
                 "  spoj:\n" +
                 "    account:\n" +
                 "      username: " + listToStr(configVo.getSpojUsernameList()) + "\n" +
-                "      password: " + listToStr(configVo.getSpojPasswordList());
+                "      password: " + listToStr(configVo.getSpojPasswordList()) + "\n" +
+                "  switch:\n" +
+                "    judge:\n" +
+                "      public: " + configVo.getOpenPublicJudge() + "\n" +
+                "      group: " + configVo.getOpenGroupJudge() + "\n" +
+                "      contest: " + configVo.getOpenContestJudge() + "\n" +
+                "      submit-interval: " + configVo.getDefaultSubmitInterval() + "\n" +
+                "    discussion:\n" +
+                "      public: " + configVo.getOpenPublicDiscussion() + "\n" +
+                "      group: " + configVo.getOpenGroupDiscussion() + "\n" +
+                "      ac-initial-value: " + configVo.getDefaultCreateDiscussionACInitValue() + "\n" +
+                "      create-daily: " + configVo.getDefaultCreateDiscussionDailyLimit() + "\n" +
+                "    comment:\n" +
+                "      contest: " + configVo.getOpenContestComment() + "\n" +
+                "      ac-initial-value: " + configVo.getDefaultCreateCommentACInitValue() + "\n" +
+                "    group:\n" +
+                "      ac-initial-value: " + configVo.getDefaultCreateGroupACInitValue() + "\n" +
+                "      create-daily: " + configVo.getDefaultCreateGroupDailyLimit() + "\n" +
+                "      create-total: " + configVo.getDefaultCreateGroupLimit();
     }
 
     private String listToStr(List<String> list) {
+        if (CollectionUtils.isEmpty(list)) {
+            return "";
+        }
         StringBuilder listStr = new StringBuilder();
         for (int i = 0; i < list.size(); i++) {
             if (i != list.size() - 1) {

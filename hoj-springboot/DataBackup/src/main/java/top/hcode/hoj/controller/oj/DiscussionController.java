@@ -5,6 +5,8 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import top.hcode.hoj.annotation.HOJAccess;
+import top.hcode.hoj.annotation.HOJAccessEnum;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.problem.Category;
 import top.hcode.hoj.pojo.entity.discussion.Discussion;
@@ -28,6 +30,7 @@ public class DiscussionController {
 
 
     @GetMapping("/get-discussion-list")
+    @HOJAccess({HOJAccessEnum.PUBLIC_DISCUSSION})
     public CommonResult<IPage<Discussion>> getDiscussionList(@RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
                                                              @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage,
                                                              @RequestParam(value = "cid", required = false) Integer categoryId,
@@ -48,6 +51,7 @@ public class DiscussionController {
     @PostMapping("/discussion")
     @RequiresPermissions("discussion_add")
     @RequiresAuthentication
+    @HOJAccess({HOJAccessEnum.PUBLIC_DISCUSSION})
     public CommonResult<Void> addDiscussion(@RequestBody Discussion discussion) {
         return discussionService.addDiscussion(discussion);
     }
@@ -55,6 +59,7 @@ public class DiscussionController {
     @PutMapping("/discussion")
     @RequiresPermissions("discussion_edit")
     @RequiresAuthentication
+    @HOJAccess({HOJAccessEnum.PUBLIC_DISCUSSION})
     public CommonResult<Void> updateDiscussion(@RequestBody Discussion discussion) {
         return discussionService.updateDiscussion(discussion);
     }
@@ -62,6 +67,7 @@ public class DiscussionController {
     @DeleteMapping("/discussion")
     @RequiresPermissions("discussion_del")
     @RequiresAuthentication
+    @HOJAccess({HOJAccessEnum.PUBLIC_DISCUSSION})
     public CommonResult<Void> removeDiscussion(@RequestParam("did") Integer did) {
         return discussionService.removeDiscussion(did);
     }

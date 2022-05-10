@@ -138,6 +138,10 @@ public class HomeManager {
                 .put("description", UnicodeUtil.toString(configVo.getDescription()))
                 .put("email", UnicodeUtil.toString(configVo.getEmailUsername()))
                 .put("projectName", UnicodeUtil.toString(configVo.getProjectName()))
-                .put("projectUrl", UnicodeUtil.toString(configVo.getProjectUrl())).map();
+                .put("projectUrl", UnicodeUtil.toString(configVo.getProjectUrl()))
+                .put("openPublicDiscussion", configVo.getOpenPublicDiscussion())
+                .put("openGroupDiscussion", configVo.getOpenGroupDiscussion())
+                .put("openContestComment", configVo.getOpenContestComment())
+                .map();
     }
 }

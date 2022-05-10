@@ -1353,6 +1353,17 @@ const adminApi = {
     })
   },
 
+  // 系统开关
+  admin_getSwitchConfig () {
+    return ajax('/api/admin/switch/info', 'get')
+  },
+
+  admin_saveSwitchConfig (data) {
+    return ajax('/api/admin/switch/update', 'put', {
+      data
+    })
+  },
+
   getLanguages (pid,all) {
     return ajax('/api/languages', 'get',{
       params:{

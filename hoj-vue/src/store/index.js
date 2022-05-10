@@ -15,11 +15,14 @@ const rootState = {
     visible: false
   },
   websiteConfig:{
-    recordName:'© 2020-2021',
+    recordName:'© 2020-2022',
     projectName:'HOJ',
     shortName:'OJ',
     recordUrl:'#',
-    projectUrl:'#'
+    projectUrl:'#',
+    openPublicDiscussion: true,
+    openGroupDiscussion: true,
+    openContestComment: true
   },
   registerTimeOut: 60,
   resetTimeOut: 90,

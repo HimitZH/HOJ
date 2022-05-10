@@ -61,7 +61,7 @@
                     }}</el-tag>
                   </div>
                   <div class="problem-menu">
-                    <span v-if="!contestID">
+                    <span v-if="isShowProblemDiscussion">
                       <el-link
                         type="primary"
                         :underline="false"
@@ -1391,6 +1391,7 @@ export default {
       'contestStatus',
       'isAuthenticated',
       'canSubmit',
+      'websiteConfig'
     ]),
     contest() {
       return this.$store.state.contest.contest;
@@ -1437,6 +1438,20 @@ export default {
         return false;
       }
     },
+    isShowProblemDiscussion(){
+      if(!this.contestID){
+        if(this.groupID){
+          if(this.websiteConfig.openGroupDiscussion){
+            return true;
+          }
+        }else{
+          if(this.websiteConfig.openPublicDiscussion){
+            return true;
+          }
+        }
+      }
+      return false;
+    }
   },
   beforeRouteLeave(to, from, next) {
     // 防止切换组件后仍然不断请求
