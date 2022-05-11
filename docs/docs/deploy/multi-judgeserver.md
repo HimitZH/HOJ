@@ -42,6 +42,7 @@
    MYSQL_HOST=172.20.0.3
    # 请提供当前mysql所在服务器的公网ip
    MYSQL_PUBLIC_HOST=***
+   MYSQL_PUBLIC_PORT=3306
    MYSQL_PORT=3306
    MYSQL_ROOT_PASSWORD=hoj123456
    ```
