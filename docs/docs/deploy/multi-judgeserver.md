@@ -45,12 +45,14 @@
    MYSQL_PORT=3306
    MYSQL_ROOT_PASSWORD=hoj123456
    ```
-
+   修改完保存，然后重启docker即可生效
+   ```shell
+   docker-compose restart
+   ```
 2. 在其它服务器（判题机服务器）中使用docker-compose运行judgeserver服务，具体操作如下：
 
    **（注意：如果云服务器有防火墙请开启8088端口号，需要将判题服务暴露出去）**
 
-   
 
    1. 下载文件,进入到指定文件夹
 
@@ -70,7 +72,7 @@
       NACOS_USERNAME=root
       # 修改为nacos的管理员密码
       NACOS_PASSWORD=hoj123456
-      
+
       # judgeserver的配置
       #修改为当前服务器公网ip
       JUDGE_SERVER_IP=172.20.0.7
@@ -84,25 +86,25 @@
       REMOTE_JUDGE_MAX_TASK_NUM=-1
       # 默认沙盒并行判题程序数为cpu核心数
       PARALLEL_TASK=default
-      
+
       # rsync评测数据同步的配置
       # 写入主服务器ip
       RSYNC_MASTER_ADDR=127.0.0.1
       # 与主服务器的rsync密码一致
       RSYNC_PASSWORD=hoj123456
       ```
-    
+
    3. 启动即可
-   
+
       ```shell
       docker-compose up -d
       ```
-   
+
    4. 验证：
-   
+
       ```
       访问 http://ip:8088/version
-   	  如果返回信息正常即启动成功！
+      	  如果返回信息正常即启动成功！
       ```
 
 
@@ -127,7 +129,7 @@
    NACOS_USERNAME=root
    # 修改为nacos的管理员密码
    NACOS_PASSWORD=hoj123456
-   
+
    # judgeserver的配置
    #修改为当前服务器公网ip
    JUDGE_SERVER_IP=172.20.0.7
@@ -141,14 +143,14 @@
    REMOTE_JUDGE_MAX_TASK_NUM=-1
    # 默认沙盒并行判题程序数为cpu核心数
    PARALLEL_TASK=default
-   
+
    # rsync评测数据同步的配置
    # 写入主服务器ip
    RSYNC_MASTER_ADDR=127.0.0.1
    # 与主服务器的rsync密码一致
    RSYNC_PASSWORD=hoj123456
    ```
-   
+
 3. 修改完保存，启动即可。
 
    ```shell

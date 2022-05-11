@@ -76,6 +76,9 @@ public class StartupRunner implements CommandLineRunner {
     @Value("${MYSQL_PORT:3306}")
     private Integer mysqlPort;
 
+    @Value("${MYSQL_PUBLIC_PORT:3306}")
+    private Integer mysqlPublicPort;
+
     // 缓存配置
     @Value("${REDIS_HOST:172.20.0.2}")
     private String redisHost;
@@ -166,6 +169,7 @@ public class StartupRunner implements CommandLineRunner {
         configVo.setMysqlHost(mysqlHost);
         configVo.setMysqlPublicHost(mysqlPublicHost);
         configVo.setMysqlPort(mysqlPort);
+        configVo.setMysqlPublicPort(mysqlPublicPort);
         configVo.setMysqlDBName(mysqlDBName);
 
         configVo.setRedisHost(redisHost);
