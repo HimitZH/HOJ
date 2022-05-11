@@ -187,6 +187,7 @@ export const m = {
   Open_Public_Discussion:'Open Public Discussion',
   Open_Group_Discussion:'Open Group Discussion',
   Open_Contest_Comment:'Open Contest Comment',
+  Hide_Non_Contest_Submission_Code:'Hide Non Master Station Contest Submission Code',
   Number_of_AC_required_for_ordinary_users_to_post:'Users can create discussion (Required AC)',
   Number_of_posts_that_users_can_create_per_day:'Number of Users can create discussion per day',
   Number_of_AC_required_for_Comment_of_ordinary_users:'Users can comment (Required AC)',

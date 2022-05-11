@@ -187,6 +187,7 @@ export const m = {
   Open_Public_Discussion:'是否开启公开评论区',
   Open_Group_Discussion:'是否开启团队评论区',
   Open_Contest_Comment:'是否开启比赛讨论区',
+  Hide_Non_Contest_Submission_Code:'隐藏非公共比赛提交详情的代码',
   Number_of_AC_required_for_ordinary_users_to_post:'普通用户发布帖子需要的AC题目数',
   Number_of_posts_that_users_can_create_per_day:'普通用户每天可以创建的帖子数',
   Number_of_AC_required_for_Comment_of_ordinary_users:'普通用户评论和回复需要的AC题目数',

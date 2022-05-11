@@ -12,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import top.hcode.hoj.annotation.HOJAccessEnum;
 import top.hcode.hoj.common.exception.StatusAccessDeniedException;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
@@ -40,6 +41,7 @@ import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.RedisUtils;
+import top.hcode.hoj.validator.AccessValidator;
 import top.hcode.hoj.validator.ContestValidator;
 import top.hcode.hoj.validator.GroupValidator;
 import top.hcode.hoj.validator.JudgeValidator;
@@ -95,6 +97,9 @@ public class JudgeManager {
 
     @Autowired
     private GroupValidator groupValidator;
+
+    @Autowired
+    private AccessValidator accessValidator;
 
     @Autowired
     private ConfigVo configVo;
@@ -284,10 +289,25 @@ public class JudgeManager {
                     }
                 }
             }
+
+            // 团队比赛的提交代码 如果不是超管，需要检查网站是否开启隐藏代码功能
+            if (!isRoot && contest.getIsGroup() && judge.getCode() != null) {
+                try {
+                    accessValidator.validateAccess(HOJAccessEnum.HIDE_NON_CONTEST_SUBMISSION_CODE);
+                } catch (AccessException e) {
+                    judge.setCode("Because the super administrator has enabled " +
+                            "the function of not viewing the submitted code outside the contest of master station, \n" +
+                            "the code of this submission details has been hidden.");
+                }
+            }
+
         } else {
             boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");// 是否为题目管理员
-            if (!judge.getShare() && !isRoot && !isProblemAdmin
-                    && !(judge.getGid() != null && groupValidator.isGroupRoot(userRolesVo.getUid(), judge.getGid()))) {
+            if (!judge.getShare()
+                    && !isRoot
+                    && !isProblemAdmin
+                    && !(judge.getGid() != null
+                    && groupValidator.isGroupRoot(userRolesVo.getUid(), judge.getGid()))) {
                 if (userRolesVo != null) { // 当前是登陆状态
                     // 需要判断是否为当前登陆用户自己的提交代码
                     if (!judge.getUid().equals(userRolesVo.getUid())) {
@@ -295,6 +315,16 @@ public class JudgeManager {
                     }
                 } else { // 不是登陆状态，就直接无权限查看代码
                     judge.setCode(null);
+                }
+            }
+            // 比赛外的提交代码 如果不是超管或题目管理员，需要检查网站是否开启隐藏代码功能
+            if (!isRoot && !isProblemAdmin && judge.getCode() != null) {
+                try {
+                    accessValidator.validateAccess(HOJAccessEnum.HIDE_NON_CONTEST_SUBMISSION_CODE);
+                } catch (AccessException e) {
+                    judge.setCode("Because the super administrator has enabled " +
+                            "the function of not viewing the submitted code outside the contest of master station, \n" +
+                            "the code of this submission details has been hidden.");
                 }
             }
         }

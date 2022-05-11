@@ -40,6 +40,14 @@
                         >
                         </el-switch>
                     </el-form-item>
+                    <el-form-item :label="$t('m.Hide_Non_Contest_Submission_Code')" label-width="320px">
+                        <el-switch
+                            v-model="switchConfig.hideNonContestSubmissionCode"
+                            active-color="#13ce66"
+                            inactive-color="#ff4949"
+                        >
+                        </el-switch>
+                    </el-form-item>
                     <el-form-item :label="$t('m.Non_Contest_Submission_Frequency')" label-width="320px">
                         <el-input-number
                          v-model="switchConfig.defaultSubmitInterval" 
