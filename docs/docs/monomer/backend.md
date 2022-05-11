@@ -46,7 +46,8 @@ services:
       - JUDGE_TOKEN=default # 调用判题服务器的token 默认则生成32位随机密钥
       - MYSQL_HOST=172.20.0.3 # hoj-mysql的host
       - MYSQL_PUBLIC_HOST=172.20.0.3 # 如果判题服务是分布式，请提供当前mysql所在服务器的公网ip
-      - MYSQL_PORT=3306 # hoj-mysql端口号
+      - MYSQL_PUBLIC_PORT=3306 # mysql主机端口号
+      - MYSQL_PORT=3306 # mysql容器内端口号
       - MYSQL_DATABASE_NAME=hoj # 改动需要修改hoj-mysql镜像,默认为hoj
       - MYSQL_USERNAME=root 
       - MYSQL_ROOT_PASSWORD=hoj123456 # hoj-mysql的root账号密码
