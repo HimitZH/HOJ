@@ -43,12 +43,12 @@
    # 请提供当前mysql所在服务器的公网ip
    MYSQL_PUBLIC_HOST=***
    MYSQL_PUBLIC_PORT=3306
-   MYSQL_PORT=3306
    MYSQL_ROOT_PASSWORD=hoj123456
    ```
    修改完保存，然后重启docker即可生效
    ```shell
-   docker-compose restart
+   docker-compose down
+   docker-compose up -d
    ```
 2. 在其它服务器（判题机服务器）中使用docker-compose运行judgeserver服务，具体操作如下：
 
