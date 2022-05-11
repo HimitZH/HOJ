@@ -48,6 +48,10 @@ public class AccessValidator {
                     throw new AccessException("网站当前未开启比赛题目评测的功能，禁止提交！");
                 }
                 break;
+            case HIDE_NON_CONTEST_SUBMISSION_CODE:
+                if (configVo.getHideNonContestSubmissionCode()) {
+                    throw new AccessException("网站当前开启了隐藏非比赛提交代码不显示的功能！");
+                }
         }
     }
 }

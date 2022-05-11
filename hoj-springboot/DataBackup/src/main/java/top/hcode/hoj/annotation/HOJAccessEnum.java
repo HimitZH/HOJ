@@ -33,5 +33,10 @@ public enum HOJAccessEnum {
     /**
      * 比赛评测
      */
-    CONTEST_JUDGE
+    CONTEST_JUDGE,
+
+    /**
+     * 隐藏非比赛提交详情的代码
+     */
+    HIDE_NON_CONTEST_SUBMISSION_CODE
 }

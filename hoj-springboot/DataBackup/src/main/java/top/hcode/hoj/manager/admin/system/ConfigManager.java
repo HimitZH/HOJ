@@ -322,6 +322,7 @@ public class ConfigManager {
                 .openPublicJudge(configVo.getOpenPublicJudge())
                 .openContestJudge(configVo.getOpenContestJudge())
                 .openGroupJudge(configVo.getOpenGroupJudge())
+                .hideNonContestSubmissionCode(configVo.getHideNonContestSubmissionCode())
                 .defaultCreateCommentACInitValue(configVo.getDefaultCreateCommentACInitValue())
                 .defaultCreateDiscussionACInitValue(configVo.getDefaultCreateDiscussionACInitValue())
                 .defaultCreateDiscussionDailyLimit(configVo.getDefaultCreateDiscussionDailyLimit())
@@ -361,6 +362,10 @@ public class ConfigManager {
         }
         if (config.getOpenContestJudge() != null) {
             configVo.setOpenContestJudge(config.getOpenContestJudge());
+        }
+
+        if (config.getHideNonContestSubmissionCode() != null) {
+            configVo.setHideNonContestSubmissionCode(config.getHideNonContestSubmissionCode());
         }
 
         if (config.getDefaultCreateDiscussionACInitValue() != null) {

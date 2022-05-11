@@ -93,6 +93,7 @@ public class ConfigUtils {
                 "      public: " + configVo.getOpenPublicJudge() + "\n" +
                 "      group: " + configVo.getOpenGroupJudge() + "\n" +
                 "      contest: " + configVo.getOpenContestJudge() + "\n" +
+                "      hide-non-contest-code: " + configVo.getHideNonContestSubmissionCode() + "\n" +
                 "      submit-interval: " + configVo.getDefaultSubmitInterval() + "\n" +
                 "    discussion:\n" +
                 "      public: " + configVo.getOpenPublicDiscussion() + "\n" +
