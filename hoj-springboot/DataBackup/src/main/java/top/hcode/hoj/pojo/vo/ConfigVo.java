@@ -36,6 +36,9 @@ public class ConfigVo {
     @Value("${hoj.db.port}")
     private Integer mysqlPort;
 
+    @Value("${hoj.db.public-port}")
+    private Integer mysqlPublicPort;
+
     // 判题服务token
     @Value("${hoj.judge.token}")
     private String judgeToken;

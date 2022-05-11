@@ -39,8 +39,9 @@ public class ConfigUtils {
                 "    token: " + configVo.getJudgeToken() + "\n" +
                 "  db:\n" +
                 "    host: " + configVo.getMysqlHost() + "\n" +
-                "    public-host: " + configVo.getMysqlPublicHost() + "\n" +
                 "    port: " + configVo.getMysqlPort() + "\n" +
+                "    public-host: " + configVo.getMysqlPublicHost() + "\n" +
+                "    public-port: " + configVo.getMysqlPublicPort() + "\n" +
                 "    name: " + configVo.getMysqlDBName() + "\n" +
                 "    username: " + configVo.getMysqlUsername() + "\n" +
                 "    password: " + configVo.getMysqlPassword() + "\n" +
