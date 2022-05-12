@@ -268,7 +268,7 @@ public class ImportFpsProblemManager {
                         .setInput(infileName).setOutput(outfileName));
             }
             if (CollectionUtils.isEmpty(problemSamples)) {
-                throw new StatusFailException("题目的评测数据不能为空，请检查FPS文件内是否有test_input和test_output!");
+                throw new StatusFailException("[" + problem.getTitle() + "] 题目的评测数据不能为空，请检查FPS文件内该题目是否有test_input和test_output!");
             }
             String mode = Constants.JudgeMode.DEFAULT.getMode();
             if (problem.getSpjLanguage() != null) {
