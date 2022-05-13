@@ -359,7 +359,7 @@ export default {
         did: this.discussionID,
       };
       api.toReportDiscussion(discussionReport).then((res) => {
-        myMessage.success(this.$i18n.t('m.Post_successfully'));
+        myMessage.success(this.$i18n.t('m.Send_successfully'));
         this.showReportDialog = false;
       });
     },

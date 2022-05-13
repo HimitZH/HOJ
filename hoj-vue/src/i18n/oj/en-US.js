@@ -106,7 +106,7 @@ export const m = {
   Change_Mobile_Captcha: 'Please enter the captcha from the mobile',
   Change_Send_Email_Msg: 'Verification code has been sent to the designated mailbox! If you haven\'t received the email for a long time, please check whether your email is accurate!',
   Change_Send_Mobile_Msg: 'Verification code has been sent to the designated mobile! If you haven\'t received the message for a long time, please check whether your mobile is accurate!',
-  Update_Successfully: 'Update successfully',
+  Update_Successfully: 'Update Successfully',
   Update_Failed: 'Update Failed',
   Guess_robot: 'Speed too fast, may be machine operation! Please verify again!',
 
@@ -314,8 +314,9 @@ export const m = {
   Create_Discussion: 'Create Discussion',
   Edit_Discussion: 'Edit Discussion',
   Delete_Discussion_Tips: 'This operation will delete the discussion, including the associated comments and replies. Do you want to continue?',
-  Delete_successfully: 'Delete successfully',
-  Post_successfully: 'Post successfully',
+  Delete_successfully: 'Delete Successfully',
+  Post_successfully: 'Post Successfully',
+  Send_successfully:'Send Successfully',
 
   // /views/oj/discussion/discussion.vue
   Report: 'Report',

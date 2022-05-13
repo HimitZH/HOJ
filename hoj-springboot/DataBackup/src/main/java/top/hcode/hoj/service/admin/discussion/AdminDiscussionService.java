@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.discussion.Discussion;
 import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
+import top.hcode.hoj.pojo.vo.DiscussionReportVo;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface AdminDiscussionService {
 
     public CommonResult<Void> removeDiscussion(List<Integer> didList);
 
-    public CommonResult<IPage<DiscussionReport>> getDiscussionReport(Integer limit, Integer currentPage);
+    public CommonResult<IPage<DiscussionReportVo>> getDiscussionReport(Integer limit, Integer currentPage);
 
     public CommonResult<Void> updateDiscussionReport(DiscussionReport discussionReport);
 }

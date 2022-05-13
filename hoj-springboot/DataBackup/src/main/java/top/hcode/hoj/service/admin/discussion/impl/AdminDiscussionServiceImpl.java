@@ -8,6 +8,7 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.manager.admin.discussion.AdminDiscussionManager;
 import top.hcode.hoj.pojo.entity.discussion.Discussion;
 import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
+import top.hcode.hoj.pojo.vo.DiscussionReportVo;
 import top.hcode.hoj.service.admin.discussion.AdminDiscussionService;
 
 import java.util.List;
@@ -45,8 +46,8 @@ public class AdminDiscussionServiceImpl implements AdminDiscussionService {
     }
 
     @Override
-    public CommonResult<IPage<DiscussionReport>> getDiscussionReport(Integer limit, Integer currentPage) {
-        IPage<DiscussionReport> discussionReportIPage = adminDiscussionManager.getDiscussionReport(limit, currentPage);
+    public CommonResult<IPage<DiscussionReportVo>> getDiscussionReport(Integer limit, Integer currentPage) {
+        IPage<DiscussionReportVo> discussionReportIPage = adminDiscussionManager.getDiscussionReport(limit, currentPage);
         return CommonResult.successResponse(discussionReportIPage);
     }
 

@@ -1,10 +1,15 @@
 package top.hcode.hoj.dao.discussion.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import top.hcode.hoj.dao.discussion.DiscussionReportEntityService;
 import top.hcode.hoj.mapper.DiscussionReportMapper;
 import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
-import top.hcode.hoj.dao.discussion.DiscussionReportEntityService;
+import top.hcode.hoj.pojo.vo.DiscussionReportVo;
+
+import javax.annotation.Resource;
 
 /**
  * @Author: Himit_ZH
@@ -13,4 +18,13 @@ import top.hcode.hoj.dao.discussion.DiscussionReportEntityService;
  */
 @Service
 public class DiscussionReportEntityServiceImpl extends ServiceImpl<DiscussionReportMapper, DiscussionReport> implements DiscussionReportEntityService {
+
+    @Resource
+    private DiscussionReportMapper discussionReportMapper;
+
+    @Override
+    public IPage<DiscussionReportVo> getDiscussionReportList(Integer limit, Integer currentPage) {
+        Page<DiscussionReportVo> page = new Page<>(currentPage, limit);
+        return discussionReportMapper.getDiscussionReportList(page);
+    }
 }
