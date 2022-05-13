@@ -127,7 +127,7 @@
               <el-button
                 icon="el-icon-search"
                 size="mini"
-                @click.native="toDiscussion(row.id)"
+                @click.native="toDiscussion(row.id, row.gid)"
                 type="primary"
               >
               </el-button>
@@ -163,11 +163,23 @@
         <vxe-table-column min-width="60" field="id" title="ID">
         </vxe-table-column>
         <vxe-table-column
-          min-width="150"
+          min-width="100"
           field="did"
           :title="$t('m.Discussion_ID')"
         >
         </vxe-table-column>
+         <vxe-table-column
+          field="discussionTitle"
+          :title="$t('m.Title')"
+          show-overflow
+          min-width="150"
+        ></vxe-table-column>
+        <vxe-table-column
+          field="discussionAuthor"
+          :title="$t('m.Author')"
+          min-width="150"
+          show-overflow
+        ></vxe-table-column>
         <vxe-table-column
           min-width="150"
           field="reporter"
@@ -224,7 +236,7 @@
               <el-button
                 icon="el-icon-search"
                 size="mini"
-                @click.native="toDiscussion(row.did)"
+                @click.native="toDiscussion(row.did, row.gid)"
                 type="primary"
               >
               </el-button>
@@ -364,8 +376,12 @@ export default {
       });
     },
 
-    toDiscussion(did) {
-      window.open('/discussion-detail/' + did);
+    toDiscussion(did, gid) {
+      if(gid != null){
+        window.open('/group/'+ gid +'/discussion-detail/' + did);
+      }else{
+        window.open('/discussion-detail/' + did);
+      }
     },
 
     deleteDiscussion(didList) {

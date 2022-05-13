@@ -318,6 +318,7 @@ export const m = {
   Delete_Discussion_Tips: '此操作将删除讨论，包括相关的评论和回复。你要继续吗？',
   Delete_successfully: '删除成功',
   Post_successfully: '发布成功',
+  Send_successfully: '发送成功',
 
   // /views/oj/discussion/discussionList.vue
   Report: '举报',

@@ -434,7 +434,7 @@ export default {
           this.loadingBtnTest = true;
           api.admin_testSMTPConfig(value).then(
             (res) => {
-              myMessage.success(this.$i18n.t('m.Post_successfully'));
+              myMessage.success(this.$i18n.t('m.Send_successfully'));
               this.loadingBtnTest = false;
             },
             () => {

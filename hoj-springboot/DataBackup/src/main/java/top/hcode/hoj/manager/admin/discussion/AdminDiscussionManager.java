@@ -1,15 +1,14 @@
 package top.hcode.hoj.manager.admin.discussion;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.common.exception.StatusFailException;
+import top.hcode.hoj.dao.discussion.DiscussionEntityService;
+import top.hcode.hoj.dao.discussion.DiscussionReportEntityService;
 import top.hcode.hoj.pojo.entity.discussion.Discussion;
 import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
-import top.hcode.hoj.dao.discussion.DiscussionReportEntityService;
-import top.hcode.hoj.dao.discussion.DiscussionEntityService;
+import top.hcode.hoj.pojo.vo.DiscussionReportVo;
 
 import java.util.List;
 
@@ -41,11 +40,8 @@ public class AdminDiscussionManager {
         }
     }
 
-    public IPage<DiscussionReport> getDiscussionReport(Integer limit, Integer currentPage) {
-        QueryWrapper<DiscussionReport> discussionReportQueryWrapper = new QueryWrapper<>();
-        discussionReportQueryWrapper.orderByAsc("status");
-        IPage<DiscussionReport> iPage = new Page<>(currentPage, limit);
-        return discussionReportEntityService.page(iPage, discussionReportQueryWrapper);
+    public IPage<DiscussionReportVo> getDiscussionReport(Integer limit, Integer currentPage) {
+        return discussionReportEntityService.getDiscussionReportList(limit,currentPage);
     }
 
     public void updateDiscussionReport(DiscussionReport discussionReport) throws StatusFailException {
