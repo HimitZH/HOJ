@@ -373,7 +373,7 @@
             active-class="mobile-menu-active"
           >
             <mu-list-item-action>
-              <mu-icon value="home" size="24"></mu-icon>
+              <mu-icon value=":el-icon-s-home" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>{{ $t('m.NavBar_Home') }}</mu-list-item-title>
           </mu-list-item>
