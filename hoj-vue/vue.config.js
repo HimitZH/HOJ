@@ -31,7 +31,7 @@ const cdn = {
   ],
   // cdn的js链接
   js: [
-      "https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.1/vue.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js",
       "https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.2.0/vue-router.min.js",
       "https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.min.js",
       "https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.15.3/index.min.js",

@@ -199,7 +199,7 @@
             active-class="mobile-menu-active"
           >
             <mu-list-item-action>
-              <mu-icon value="dashboard" size="24"></mu-icon>
+              <mu-icon value=":fa fa-tachometer" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>{{ $t('m.Dashboard') }}</mu-list-item-title>
           </mu-list-item>
@@ -213,14 +213,14 @@
             @toggle-nested="openSideMenu = arguments[0] ? 'general' : ''"
           >
             <mu-list-item-action>
-              <mu-icon value="view_list"></mu-icon>
+              <mu-icon value=":el-icon-menu" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>{{ $t('m.General') }}</mu-list-item-title>
             <mu-list-item-action>
               <mu-icon
                 class="toggle-icon"
                 size="24"
-                value="keyboard_arrow_down"
+                value=":el-icon-arrow-down"
               ></mu-icon>
             </mu-list-item-action>
             <mu-list-item
@@ -242,7 +242,7 @@
               active-class="mobile-menu-active"
             >
               <mu-list-item-title>{{
-                $t('m.Announcement')
+                $t('m.Announcement_Admin')
               }}</mu-list-item-title>
             </mu-list-item>
             <mu-list-item
@@ -289,14 +289,14 @@
             @toggle-nested="openSideMenu = arguments[0] ? 'problem' : ''"
           >
             <mu-list-item-action>
-              <mu-icon value="menu"></mu-icon>
+              <mu-icon value=":fa fa-bars" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>{{ $t('m.Problem_Admin') }}</mu-list-item-title>
             <mu-list-item-action>
               <mu-icon
                 class="toggle-icon"
                 size="24"
-                value="keyboard_arrow_down"
+                value=":el-icon-arrow-down"
               ></mu-icon>
             </mu-list-item-action>
             <mu-list-item
@@ -370,7 +370,7 @@
             @toggle-nested="openSideMenu = arguments[0] ? 'training' : ''"
           >
             <mu-list-item-action>
-              <mu-icon value=":el-icon-s-claim fa-size"></mu-icon>
+              <mu-icon value=":el-icon-s-claim fa-size" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>{{
               $t('m.Training_Admin')
@@ -379,7 +379,7 @@
               <mu-icon
                 class="toggle-icon"
                 size="24"
-                value="keyboard_arrow_down"
+                value=":el-icon-arrow-down"
               ></mu-icon>
             </mu-list-item-action>
             <mu-list-item
@@ -429,14 +429,14 @@
             @toggle-nested="openSideMenu = arguments[0] ? 'contest' : ''"
           >
             <mu-list-item-action>
-              <mu-icon value=":fa fa-trophy fa-size"></mu-icon>
+              <mu-icon value=":fa fa-trophy fa-size" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>{{ $t('m.Contest_Admin') }}</mu-list-item-title>
             <mu-list-item-action>
               <mu-icon
                 class="toggle-icon"
                 size="24"
-                value="keyboard_arrow_down"
+                value=":el-icon-arrow-down"
               ></mu-icon>
             </mu-list-item-action>
             <mu-list-item
@@ -473,14 +473,14 @@
             @toggle-nested="openSideMenu = arguments[0] ? 'discussion' : ''"
           >
             <mu-list-item-action>
-              <mu-icon value=":fa fa-comments fa-size"></mu-icon>
+              <mu-icon value=":fa fa-comments fa-size" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>{{ $t('m.Discussion') }}</mu-list-item-title>
             <mu-list-item-action>
               <mu-icon
                 class="toggle-icon"
                 size="24"
-                value="keyboard_arrow_down"
+                value=":el-icon-arrow-down"
               ></mu-icon>
             </mu-list-item-action>
             <mu-list-item
