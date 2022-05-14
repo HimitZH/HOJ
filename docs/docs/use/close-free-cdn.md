@@ -29,10 +29,10 @@ hoj-frontend(前端vue项目)如果不挂载任何CDN，最终打包生成的文
      ```js
      // 该变量改成false
      const isProduction = false;
-     
+
      // 本地环境是否需要使用cdn，该变量改成false
      const devNeedCdn = false;
-     
+
      // 找到下面对应的cdn的js链接和css链接，全部注释掉
        css: [
            // 'https://cdn.jsdelivr.net/npm/element-ui@2.14.0/lib/theme-chalk/index.css',
@@ -65,28 +65,28 @@ hoj-frontend(前端vue项目)如果不挂载任何CDN，最终打包生成的文
      import store from './store'
      import Element from 'element-ui'
      import i18n from '@/i18n'
-     
+
      import "element-ui/lib/theme-chalk/index.css"
      import 'font-awesome/css/font-awesome.min.css'
      import Message from 'vue-m-message'
      import 'vue-m-message/dist/index.css'
      import axios from 'axios'
-     
+
      import Md_Katex from '@iktakahiro/markdown-it-katex'
-     
+
      import 'xe-utils' 
      import VXETable from 'vxe-table'
      import 'vxe-table/lib/style.css'
-     
+
      import Katex from '@/common/katex'
-     
+
      import VueClipboard from 'vue-clipboard2'
-     
+
      import highlight from '@/common/highlight'
-     
+
      import filters from '@/common/filters.js'
      import VueCropper from 'vue-cropper'
-     
+
      import ECharts from 'vue-echarts/components/ECharts.vue'
      import 'echarts/lib/chart/bar'
      import 'echarts/lib/chart/line'
@@ -99,22 +99,23 @@ hoj-frontend(前端vue项目)如果不挂载任何CDN，最终打包生成的文
      import 'echarts/lib/component/toolbox'
      import 'echarts/lib/component/markPoint'
      Vue.component('ECharts', ECharts)
-     
+
      import VueECharts from 'vue-echarts';
      Vue.component('ECharts', VueECharts)
-     
-     
      import VueParticles from 'vue-particles'
      import SlideVerify from 'vue-monoplasty-slide-verify'
-     
+
      //  markdown编辑器
      import mavonEditor from 'mavon-editor'  //引入markdown编辑器
      import 'mavon-editor/dist/css/index.css';
      Vue.use(mavonEditor)
-     
+
      import {Drawer,List,Menu,Icon,AppBar,Button,Divider} from 'muse-ui';
      import 'muse-ui/dist/muse-ui.css';
-     
+
+     import VueDOMPurifyHTML from 'vue-dompurify-html'
+     Vue.use(VueDOMPurifyHTML)
+
      import router from './router'
      Vue.use(Drawer)
      Vue.use(List)
@@ -123,13 +124,13 @@ hoj-frontend(前端vue项目)如果不挂载任何CDN，最终打包生成的文
      Vue.use(AppBar)
      Vue.use(Button)
      Vue.use(Divider)
-     
+
      Object.keys(filters).forEach(key => {   // 注册全局过滤器
        Vue.filter(key, filters[key])
      })
      Vue.use(VueParticles) // 粒子特效背景
      Vue.use(Katex)  // 数学公式渲染
-     
+
      VXETable.setup({
        // 对组件内置的提示语进行国际化翻译
        i18n: (key, value) => i18n.t(key, value)
@@ -140,28 +141,28 @@ hoj-frontend(前端vue项目)如果不挂载任何CDN，最终打包生成的文
      Vue.use(Element,{
        i18n: (key, value) => i18n.t(key, value)
      })
-     
+
      Vue.use(VueCropper) // 图像剪切
      Vue.use(Message, { name: 'msg' }) // `Vue.prototype.$msg` 全局消息提示
-     
+
      Vue.use(SlideVerify) // 滑动验证码组件
-     
+
      Vue.prototype.$axios = axios
-     
-     Vue.prototype.$markDown = mavonEditor.markdownIt.use(Md_Katex) // 挂载到vue
-     
+
+     Vue.prototype.$markDown = mavonEditor.mavonEditor.getMarkdownIt().use(Md_Katex)  // 挂载到vue
+
      Vue.config.productionTip = false
      new Vue({
        router,
        store,
-     i18n,
+       i18n,
        render: h => h(App)
-   	 }).$mount('#app')
-     
+     }).$mount('#app')
      ```
-  
+
+
   4. 然后使用在`hoj-vue`目录下，使用`npm run build`，npm请自行百度下载安装，之后会生成一个dist文件夹，结构如下：
-  
+
      ```
      dist
      ├── index.html
@@ -175,11 +176,11 @@ hoj-frontend(前端vue项目)如果不挂载任何CDN，最终打包生成的文
          │   ├── ....
          ├── js
        │   ├── ....
-     
+
      ....
      ....
      ```
-  
+
      将 `dist` 文件夹复制到服务器上某个目录下，比如 `/hoj/www/html/dist`，然后修改 `docker-compose.yml`，在 `hoj-frontend` 模块中的 `volumes` 中增加一行 `- /hoj/www/html/dist:/usr/share/nginx/html` （冒号前面的请修改为实际的路径），然后 `docker-compose up -d` 即可。
 
 
@@ -190,18 +191,18 @@ hoj-frontend(前端vue项目)如果不挂载任何CDN，最终打包生成的文
   **(建议：有弄过CDN的可以这样搞)**
 
   添加css等文件的导入
-  
+
   ```html
   <link href="cdn服务器的地址/assets/css/文件名称.css" rel="prefetch">
   ```
 
   添加js等文件的导入
-  
+
   ```html
   <script src="cdn服务器的地址/assets/js/文件名称.js">
   ```
-  
-  
+
+
     ..............................
-  
+
    将 `dist` 文件夹复制到服务器上某个目录下，比如 `/hoj/www/html/dist`，然后修改 `docker-compose.yml`，在 `hoj-frontend` 模块中的 `volumes` 中增加一行 `- /hoj/www/html/dist:/usr/share/nginx/html` （冒号前面的请修改为实际的路径），然后 `docker-compose up -d` 即可。
