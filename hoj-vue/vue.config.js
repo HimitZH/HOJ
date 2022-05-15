@@ -25,25 +25,25 @@ const cdn = {
   },
   // cdn的css链接
   css: [
-      'https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.14.0/theme-chalk/index.min.css',
-      "https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css",
-      "https://cdn.jsdelivr.net/npm/vxe-table@2.9.26/lib/style.min.css",
+      "https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/element-ui/2.14.0/theme-chalk/index.min.css",
+      "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/github-markdown-css/4.0.0/github-markdown.min.css",
+      "https://unpkg.com/vxe-table@2.9.26/lib/style.min.css",
   ],
   // cdn的js链接
   js: [
-      "https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js",
-      "https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.2.0/vue-router.min.js",
-      "https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.min.js",
-      "https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.15.3/index.min.js",
-      "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.3.2/highlight.min.js",
-      "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js",
-      "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/zh-cn.min.js",
-      "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/en-gb.min.js",
-      "https://cdnjs.cloudflare.com/ajax/libs/echarts/4.9.0-rc.1/echarts.min.js",
-      "https://cdnjs.cloudflare.com/ajax/libs/vue-echarts/5.0.0-beta.0/vue-echarts.min.js",
-      "https://cdn.jsdelivr.net/npm/vuex@3.5.1/dist/vuex.min.js",
-      "https://cdn.jsdelivr.net/npm/xe-utils@3.4.3/dist/xe-utils.umd.min.js",
-      "https://cdn.jsdelivr.net/npm/vxe-table@2.9.26/lib/index.umd.min.js",
+      "https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.6.11/vue.min.js",
+      "https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue-router/3.2.0/vue-router.min.js",
+      "https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/axios/0.26.0/axios.min.js",
+      "https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/element-ui/2.15.3/index.min.js",
+      "https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/highlight.js/10.3.2/highlight.min.js",
+      "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/moment.js/2.29.1/moment.min.js",
+      "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/moment.js/2.29.1/locale/zh-cn.min.js",
+      "https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/moment.js/2.29.1/locale/en-gb.min.js",
+      "https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/echarts/4.9.0-rc.1/echarts.min.js",
+      "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue-echarts/5.0.0-beta.0/vue-echarts.min.js",
+      "https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/vuex/3.5.1/vuex.min.js",
+      "https://unpkg.com/xe-utils@3.4.3/dist/xe-utils.umd.min.js",
+      "https://unpkg.com/vxe-table@2.9.26/lib/index.umd.min.js",
       // "https://unpkg.com/mavon-editor@2.9.1/dist/mavon-editor.js"
   ]
 }
