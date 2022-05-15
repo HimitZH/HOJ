@@ -294,6 +294,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
             return false;
         }
         switch (remoteOJ) {
+            case GYM:
             case CODEFORCES:
                 return !CollectionUtils.isEmpty(configVo.getCfUsernameList());
             case POJ:
