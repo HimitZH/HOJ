@@ -135,7 +135,7 @@ public class HDUJudge extends RemoteJudgeStrategy {
                         .put("userpass", remoteJudgeDTO.getPassword()).map())
                 .execute();
         if (response.getStatus() != 302) {
-            throw new RuntimeException("Failed to submit to HDU! The possible cause is connection failure, and the returned status code is " + response.getStatus());
+            throw new RuntimeException("Failed to login to HDU! The possible cause is connection failure, and the returned status code is " + response.getStatus());
         }
         remoteJudgeDTO.setLoginStatus(response.getStatus());
         remoteJudgeDTO.setCookies(response.getCookies());
