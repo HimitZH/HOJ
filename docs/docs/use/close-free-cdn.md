@@ -3,13 +3,15 @@
 由于有的机房的网络不支持一些域名的访问，有防火墙挡住，所以可能前端页面的js和css的CDN访问不了，导致页面打不开。
 
 :::info
-hoj挂载了一些前端库的免费CDN，全部都是该域名`cdn.jsdelivr.net`下的免费CDN
+hoj挂载了一些前端静态资源库的免费CDN，全部都是域名`unpkg.com`和`bytecdntp.com`下的免费CDN
 :::
 
 可以在对应的电脑浏览器上打开以下链接，如果能正常访问则没有问题。
 
 ```html
-https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.min.js
+https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.6.11/vue.min.js
+或
+https://unpkg.com/vxe-table@2.9.26/lib/style.min.css
 ```
 
 :::warning

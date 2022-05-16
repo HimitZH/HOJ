@@ -198,7 +198,7 @@ public class StartupRunner implements CommandLineRunner {
         if (CollectionUtils.isEmpty(configVo.getHduPasswordList()) || forcedUpdateRemoteJudgeAccount) {
             configVo.setHduPasswordList(hduPasswordList);
         }else {
-            hduPasswordList = configVo.getHduUsernameList();
+            hduPasswordList = configVo.getHduPasswordList();
         }
 
         if (CollectionUtils.isEmpty(configVo.getCfUsernameList()) || forcedUpdateRemoteJudgeAccount) {

@@ -20,7 +20,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j(topic = "hoj")
-public class HduJudge extends RemoteJudgeStrategy {
+public class HDUJudge extends RemoteJudgeStrategy {
     public static final String HOST = "http://acm.hdu.edu.cn";
     public static final String LOGIN_URL = "/userloginex.php?action=login";
     public static final String SUBMIT_URL = "/submit.php?action=submit";
@@ -53,29 +53,27 @@ public class HduJudge extends RemoteJudgeStrategy {
                 .cookie(cookies);
 
         HttpResponse response = request.form(MapUtil
-                .builder(new HashMap<String, Object>())
-                .put("check", "0")
-                .put("language", getLanguage(remoteJudgeDTO.getLanguage()))
-                .put("problemid", remoteJudgeDTO.getCompleteProblemId())
-                .put("usercode", remoteJudgeDTO.getUserCode() + getRandomBlankString())
-                .map())
+                        .builder(new HashMap<String, Object>())
+                        .put("check", "0")
+                        .put("language", getLanguage(remoteJudgeDTO.getLanguage()))
+                        .put("problemid", remoteJudgeDTO.getCompleteProblemId())
+                        .put("usercode", remoteJudgeDTO.getUserCode() + getRandomBlankString())
+                        .map())
                 .execute();
         remoteJudgeDTO.setSubmitStatus(response.getStatus());
-        if (response.getStatus() != 200 && response.getStatus() != 302) {
-            log.error("进行题目提交时发生错误：提交题目失败，" + HduJudge.class.getName() + "，题号:" + remoteJudgeDTO.getCompleteProblemId());
+        if (response.getStatus() != 302) {
+            log.error("进行题目提交时发生错误：提交题目失败，" + HDUJudge.class.getName() + "，题号:" + remoteJudgeDTO.getCompleteProblemId());
             return;
         }
-        // 下面的请求都是GET
-        request.setMethod(Method.GET);
         // 获取提交的题目id
-        Long maxRunId = getMaxRunId(request, remoteJudgeDTO.getUsername(), remoteJudgeDTO.getCompleteProblemId());
+        Long maxRunId = getMaxRunId(remoteJudgeDTO.getUsername(), remoteJudgeDTO.getCompleteProblemId());
         if (maxRunId == -1L) { // 等待2s再次查询，如果还是失败，则表明提交失败了
             try {
                 TimeUnit.SECONDS.sleep(2);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            maxRunId = getMaxRunId(request, remoteJudgeDTO.getUsername(), remoteJudgeDTO.getCompleteProblemId());
+            maxRunId = getMaxRunId(remoteJudgeDTO.getUsername(), remoteJudgeDTO.getCompleteProblemId());
         }
         remoteJudgeDTO.setCookies(cookies)
                 .setSubmitId(maxRunId);
@@ -128,30 +126,21 @@ public class HduJudge extends RemoteJudgeStrategy {
     public void login() {
         // 清除当前线程的cookies缓存
         HttpRequest.getCookieManager().getCookieStore().removeAll();
-
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
-        HttpRequest homeRequest = HttpUtil.createGet(HOST);
-        HttpResponse homeResponse = homeRequest.execute();
-        if (homeResponse.getStatus() != 200) {
-            throw new RuntimeException("Failed to submit to HDU!!! The possible cause is connection failure, and the returned status code is " + homeResponse.getStatus());
-        }
-        String homePage = homeResponse.body();
-
-        if (homePage.contains("href=\"/userloginex.php?action=logout\"")) {
-            remoteJudgeDTO.setCookies(homeResponse.getCookies());
-            return;
-        }
-
         HttpRequest request = HttpUtil.createPost(HOST + LOGIN_URL).addHeaders(headers);
         HttpResponse response = request.form(MapUtil
-                .builder(new HashMap<String, Object>())
-                .put("username", remoteJudgeDTO.getUsername())
-                .put("login", "Sign In")
-                .put("userpass", remoteJudgeDTO.getPassword()).map())
+                        .builder(new HashMap<String, Object>())
+                        .put("username", remoteJudgeDTO.getUsername())
+                        .put("login", "Sign In")
+                        .put("userpass", remoteJudgeDTO.getPassword()).map())
                 .execute();
+        if (response.getStatus() != 302) {
+            throw new RuntimeException("Failed to submit to HDU! The possible cause is connection failure, and the returned status code is " + response.getStatus());
+        }
         remoteJudgeDTO.setLoginStatus(response.getStatus());
         remoteJudgeDTO.setCookies(response.getCookies());
     }
+
 
     @Override
     public String getLanguage(String language) {
@@ -177,7 +166,7 @@ public class HduJudge extends RemoteJudgeStrategy {
     }
 
 
-    public Long getMaxRunId(HttpRequest request, String userName, String problemId) {
+    public Long getMaxRunId(String userName, String problemId) {
         String url = HOST + String.format(STATUS_URL, userName, problemId);
         HttpResponse response = HttpUtil.createGet(url).addHeaders(headers).execute();
         String maxRunId = ReUtil.get("<td height=22px>(\\d+)", response.body(), 1);
