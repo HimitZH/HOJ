@@ -9,7 +9,7 @@ public class RemoteJudgeFactory {
         Constants.RemoteJudge remoteJudge = Constants.RemoteJudge.getTypeByName(judgeName);
         switch (remoteJudge) {
             case HDU_JUDGE:
-                return new HduJudge();
+                return new HDUJudge();
             case CF_JUDGE:
                 return new CodeForcesJudge();
             case POJ_JUDGE:
