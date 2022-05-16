@@ -50,16 +50,16 @@ public class HDUJudge extends RemoteJudgeStrategy {
 
         HttpRequest request = HttpUtil.createPost(HOST + SUBMIT_URL)
                 .addHeaders(headers)
-                .cookie(cookies);
-
-        HttpResponse response = request.form(MapUtil
+                .form(MapUtil
                         .builder(new HashMap<String, Object>())
                         .put("check", "0")
                         .put("language", getLanguage(remoteJudgeDTO.getLanguage()))
                         .put("problemid", remoteJudgeDTO.getCompleteProblemId())
                         .put("usercode", remoteJudgeDTO.getUserCode() + getRandomBlankString())
                         .map())
-                .execute();
+                .cookie(cookies);
+
+        HttpResponse response = request.execute();
         remoteJudgeDTO.setSubmitStatus(response.getStatus());
         if (response.getStatus() != 302) {
             log.error("进行题目提交时发生错误：提交题目失败，" + HDUJudge.class.getName() + "，题号:" + remoteJudgeDTO.getCompleteProblemId());
