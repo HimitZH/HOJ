@@ -208,7 +208,7 @@ public class StartupRunner implements CommandLineRunner {
         }
 
         if (CollectionUtils.isEmpty(configVo.getCfPasswordList()) || forcedUpdateRemoteJudgeAccount) {
-            configVo.setCfUsernameList(cfPasswordList);
+            configVo.setCfPasswordList(cfPasswordList);
         }else {
             cfPasswordList = configVo.getCfPasswordList();
         }
