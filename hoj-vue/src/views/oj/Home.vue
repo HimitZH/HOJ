@@ -329,10 +329,10 @@ export default {
       },
       carouselImgList: [
         {
-          url: 'https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/home1.jfif',
+          url: 'https://s1.ax1x.com/2022/05/15/ORSjyT.jpg',
         },
         {
-          url: 'https://cdn.jsdelivr.net/gh/HimitZH/CDN/images/home2.jpeg',
+          url: 'https://s1.ax1x.com/2022/05/15/ORp86f.jpg',
         },
       ],
       srcHight: '440px',

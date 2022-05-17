@@ -26,32 +26,32 @@
    ├── .env
    ```
 
-   主要配置请修改`.env`文件，内容如下：
+   主要配置请修改`.env`文件，一般请修改Redis、MySQL、Nacos的默认密码即可，内容如下：
 
    > 注意：各服务ip最好不改动，保持处于172.20.0.0/16网段的docker network
 
    ```properties
    # hoj全部数据存储的文件夹位置（默认当前路径生成hoj文件夹）
    HOJ_DATA_DIRECTORY=./hoj
-   
+
    # redis的配置
    REDIS_HOST=172.20.0.2
    REDIS_PORT=6379
    REDIS_PASSWORD=hoj123456
-   
+
    # mysql的配置
    MYSQL_HOST=172.20.0.3
    # 如果判题服务是分布式，请提供当前mysql所在服务器的公网ip
    MYSQL_PUBLIC_HOST=172.20.0.3
-   MYSQL_PORT=3306
+   MYSQL_PUBLIC_PORT=3306
    MYSQL_ROOT_PASSWORD=hoj123456
-   
+
    # nacos的配置
    NACOS_HOST=172.20.0.4
    NACOS_PORT=8848
    NACOS_USERNAME=root
    NACOS_PASSWORD=hoj123456
-   
+
    # backend后端服务的配置
    BACKEND_HOST=172.20.0.5
    BACKEND_PORT=6688
@@ -81,7 +81,9 @@
    ATCODER_ACCOUNT_PASSWORD_LIST=
    SPOJ_ACCOUNT_USERNAME_LIST=
    SPOJ_ACCOUNT_PASSWORD_LIST=
-   
+   # 是否强制使用上面配置的账号覆盖系统原有的账号列表
+   FORCED_UPDATE_REMOTE_JUDGE_ACCOUNT=false
+
    # judgeserver的配置
    JUDGE_SERVER_IP=172.20.0.7
    JUDGE_SERVER_PORT=8088
@@ -94,11 +96,10 @@
    REMOTE_JUDGE_MAX_TASK_NUM=-1
    # 默认沙盒并行判题程序数为cpu核心数
    PARALLEL_TASK=default
-   
+
    # docker network的配置
    SUBNET=172.20.0.0/16
    ```
-   
 
 
 :::tip   
@@ -156,7 +157,7 @@ docker ps -a
    - 默认开启vj判题，需要手动修改添加账号与密码，如果不添加不能vj判题！
 
    - vj判题并发数默认：cpu核心数*2+1
-     
+
 
    :::
 
@@ -216,7 +217,7 @@ Password: 开启SMTP服务后生成的随机授权码
    ├── .env
    ```
 
-   修改`.env`文件中的配置
+   修改`.env`文件中的配置，一般请修改Redis、MySQL、Nacos的默认密码和`RSYNC_PASSWORD`即可。
 
    ```shell
    vim .env
@@ -227,25 +228,25 @@ Password: 开启SMTP服务后生成的随机授权码
    ```properties
    # hoj全部数据存储的文件夹位置（默认当前路径生成hoj文件夹）
    HOJ_DATA_DIRECTORY=./hoj
-   
+
    # redis的配置
    REDIS_HOST=172.20.0.2
    REDIS_PORT=6379
    REDIS_PASSWORD=hoj123456
-   
+
    # mysql的配置
    MYSQL_HOST=172.20.0.3
    # 请提供当前mysql所在服务器的公网ip
    MYSQL_PUBLIC_HOST=172.20.0.3
-   MYSQL_PORT=3306
+   MYSQL_PUBLIC_PORT=3306
    MYSQL_ROOT_PASSWORD=hoj123456
-   
+
    # nacos的配置
    NACOS_HOST=172.20.0.4
    NACOS_PORT=8848
    NACOS_USERNAME=root
    NACOS_PASSWORD=hoj123456
-   
+
    # backend后端服务的配置
    BACKEND_HOST=172.20.0.5
    BACKEND_PORT=6688
@@ -275,39 +276,41 @@ Password: 开启SMTP服务后生成的随机授权码
    ATCODER_ACCOUNT_PASSWORD_LIST=
    SPOJ_ACCOUNT_USERNAME_LIST=
    SPOJ_ACCOUNT_PASSWORD_LIST=
-   
+   # 是否强制使用上面配置的账号覆盖系统原有的账号列表
+   FORCED_UPDATE_REMOTE_JUDGE_ACCOUNT=false
+
    # 评测数据同步的配置
    # 请修改数据同步密码
    RSYNC_PASSWORD=hoj123456
-   
+
    # docker network的配置
    SUBNET=172.20.0.0/16
    ```
-   
+
    配置修改保存后，当前路径下启动该服务
-   
+
    ```shell
    docker-compose up -d
    ```
-   
+
    根据网速情况，大约十分钟即可安装完毕，全程无需人工干预。
-   
+
    等待命令执行完毕后，查看容器状态
-   
+
    ```shell
    docker ps -a
    ```
-   
+
    当看到所有的容器的状态status都为`UP`或`healthy`就代表 OJ 已经启动成功。
-   
-   
-   
-4. 接着，在另一台服务器上，依旧git clone该文件夹下来，然后进入`judgeserver`文件夹，修改`.env`的配置
+
+   ​
+
+4. 接着，在另一台服务器上，依旧git clone该文件夹下来，然后进入`judgeserver`文件夹，修改`.env`的配置，将`NACOS_HOST`、`NACOS_PORT`、`NACOS_USERNAME`、`NACOS_PASSWORD`、`RSYNC_MASTER_ADDR`、`RSYNC_PASSWORD`按照提示修改，然后`JUDGE_SERVER_IP`改成当前判题机器的公网ip。
 
    ```properties
    # hoj全部数据存储的文件夹位置（默认当前路径生成judge文件夹）
    HOJ_JUDGESERVER_DATA_DIRECTORY=./judge
-   
+
    # nacos的配置
    # 修改为nacos所在服务的ip
    NACOS_HOST=NACOS_HOST
@@ -317,7 +320,7 @@ Password: 开启SMTP服务后生成的随机授权码
    NACOS_USERNAME=root
    # 修改为nacos的管理员密码
    NACOS_PASSWORD=hoj123456
-   
+
    # judgeserver的配置
    #修改服务器公网ip
    JUDGE_SERVER_IP=172.20.0.7
@@ -331,12 +334,12 @@ Password: 开启SMTP服务后生成的随机授权码
    REMOTE_JUDGE_MAX_TASK_NUM=-1
    # 默认沙盒并行判题程序数为cpu核心数
    PARALLEL_TASK=default
-   
+
    # rsync评测数据同步的配置
    # 写入主服务器ip
    RSYNC_MASTER_ADDR=127.0.0.1
    # 与主服务器的rsync密码一致
-   RSYNC_PASSWORD=hoj123456 
+   RSYNC_PASSWORD=hoj123456
    ```
 
    配置修改保存后，当前路径下启动该服务
