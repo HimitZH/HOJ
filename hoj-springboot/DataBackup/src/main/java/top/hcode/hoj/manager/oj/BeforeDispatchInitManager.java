@@ -121,18 +121,18 @@ public class BeforeDispatchInitManager {
 
         // 是否为超级管理员或者该比赛的创建者，则为比赛管理者
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-        if (!isRoot && !contest.getUid().equals(userRolesVo.getUid())) {
+        if (!isRoot && !contest.getUid().equals(userRolesVo.getUid())
+                && !(contest.getIsGroup() && groupValidator.isGroupRoot(userRolesVo.getUid(), contest.getGid()))) {
             if (contest.getStatus().intValue() == Constants.Contest.STATUS_SCHEDULED.getCode()) {
                 throw new StatusForbiddenException("比赛未开始，不可提交！");
             }
             // 需要检查是否有权限在当前比赛进行提交
             contestValidator.validateJudgeAuth(contest, userRolesVo.getUid());
 
-            // 需要校验当前比赛是否为保护比赛，同时是否开启账号规则限制，如果有，需要对当前用户的用户名进行验证
-            if (contest.getAuth().equals(Constants.Contest.AUTH_PROTECT.getCode())
-                    && contest.getOpenAccountLimit()
+            // 需要校验当前比赛是否为保护或私有比赛，同时是否开启账号规则限制，如果有，需要对当前用户的用户名进行验证
+            if (contest.getOpenAccountLimit()
                     && !contestValidator.validateAccountRule(contest.getAccountLimitRule(), userRolesVo.getUsername())) {
-                throw new StatusForbiddenException("对不起！本次比赛只允许特定账号规则的用户参赛！");
+                throw new StatusForbiddenException("对不起！本次比赛只允许符合特定账号规则的用户参赛！");
             }
         }
 
@@ -146,17 +146,10 @@ public class BeforeDispatchInitManager {
 
         Problem problem = problemEntityService.getById(contestProblem.getPid());
         if (problem.getAuth() == 2) {
-            throw new StatusForbiddenException("错误！当前题目不可提交！");
-        }
-
-        if (problem.getIsGroup()) {
-            if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid())) {
-                throw new StatusForbiddenException("对不起，您并非该题目所属团队内的成员，无权提交！");
-            }
+            throw new StatusForbiddenException("错误！当前题目已被隐藏，不可提交！");
         }
 
         judge.setDisplayPid(problem.getProblemId());
-
         // 将新提交数据插入数据库
         judgeEntityService.save(judge);
 
