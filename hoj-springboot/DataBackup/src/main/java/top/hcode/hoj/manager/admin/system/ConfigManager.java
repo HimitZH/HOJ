@@ -455,8 +455,6 @@ public class ConfigManager {
         if (list1.size() != list2.size()) {
             return true;
         }
-        list1.sort(Comparator.comparing(String::hashCode));
-        list2.sort(Comparator.comparing(String::hashCode));
         return !list1.toString().equals(list2.toString());
     }
 
