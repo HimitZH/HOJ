@@ -108,8 +108,9 @@ public class ContestAdminManager {
         // 超级管理员或者该比赛的创建者，则为比赛管理者
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
-        Long gid = contest.getGid();
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !isRoot && !contest.getUid().equals(userRolesVo.getUid())) {
+        if (!isRoot
+                && !contest.getUid().equals(userRolesVo.getUid())
+                && !(contest.getIsGroup() && groupValidator.isGroupRoot(userRolesVo.getUid(), contest.getGid()))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 

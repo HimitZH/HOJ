@@ -251,7 +251,7 @@
           name="ContestAdminPrint"
           lazy
           :disabled="contestMenuDisabled"
-          v-if="isSuperAdmin && contest.openPrint"
+          v-if="isContestAdmin && contest.openPrint"
         >
           <span slot="label"
             ><i class="el-icon-printer"></i>&nbsp;{{
