@@ -89,6 +89,10 @@ public class ImportFpsProblemManager {
 
     }
 
+    public static void main(String[] args) {
+        System.out.println(System.currentTimeMillis());
+    }
+
     private List<ProblemDto> parseFps(InputStream inputStream, String username) throws StatusFailException {
 
         Document document = null;
@@ -115,7 +119,7 @@ public class ImportFpsProblemManager {
 
         String fileDirId = IdUtil.simpleUUID();
         String fileDir = Constants.File.TESTCASE_TMP_FOLDER.getPath() + File.separator + fileDirId;
-        long time = System.currentTimeMillis() / 1000;
+        long time = System.currentTimeMillis();
         int index = 1;
         for (Element item : XmlUtil.getElements(rootElement, "item")) {
 
