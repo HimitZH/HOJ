@@ -115,7 +115,7 @@ public class ImportFpsProblemManager {
 
         String fileDirId = IdUtil.simpleUUID();
         String fileDir = Constants.File.TESTCASE_TMP_FOLDER.getPath() + File.separator + fileDirId;
-
+        long time = System.currentTimeMillis() / 1000;
         int index = 1;
         for (Element item : XmlUtil.getElements(rootElement, "item")) {
 
@@ -131,7 +131,7 @@ public class ImportFpsProblemManager {
                     .setIsRemote(false)
                     .setAuth(1)
                     .setIsGroup(false)
-                    .setProblemId(String.valueOf(System.currentTimeMillis()));
+                    .setProblemId(String.valueOf(time + index));
 
             Element title = XmlUtil.getElement(item, "title");
             // 标题
