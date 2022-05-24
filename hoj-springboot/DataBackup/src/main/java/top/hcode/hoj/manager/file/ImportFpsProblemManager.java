@@ -88,11 +88,7 @@ public class ImportFpsProblemManager {
         }
 
     }
-
-    public static void main(String[] args) {
-        System.out.println(System.currentTimeMillis());
-    }
-
+    
     private List<ProblemDto> parseFps(InputStream inputStream, String username) throws StatusFailException {
 
         Document document = null;
