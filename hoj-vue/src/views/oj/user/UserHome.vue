@@ -9,7 +9,7 @@
         :src="profile.avatar"
       ></avatar>
     </div>
-    <el-card class="box-card">
+    <el-card>
       <div class="recent-login">
         <el-tooltip
           :content="profile.recentLoginTime | localtime"
@@ -120,6 +120,21 @@
             </el-card>
           </el-col>
         </el-row>
+        <el-card style="margin-top:1rem;" v-if="loadingCalendarHeatmap">
+          <div class="calendar-title">
+            <i class="el-icon-data-analysis" style="color:#409eff">
+            </i>
+            {{ $t('m.Thermal_energy_table_submitted_in_the_last_year') }}
+          </div>
+          <calendar-heatmap 
+            :values="calendarHeatmapValue" 
+            :end-date="calendarHeatmapEndDate"
+            :tooltipUnit="$t('m.Calendar_Tooltip_Uint')"
+            :locale="calendarHeatLocale"
+            :range-color="['rgb(218, 226, 239)', '#9be9a8', '#40c463', '#30a14e', '#216e39']"
+          >
+          </calendar-heatmap>
+        </el-card>
         <el-tabs type="card" style="margin-top:1rem;">
           <el-tab-pane :label="$t('m.Personal_Profile')">
             <div class="signature-body">
@@ -171,9 +186,12 @@ import api from '@/common/api';
 import myMessage from '@/common/message';
 import { addCodeBtn } from '@/common/codeblock';
 import Avatar from 'vue-avatar';
+import 'vue-calendar-heatmap/dist/vue-calendar-heatmap.css'
+import { CalendarHeatmap } from 'vue-calendar-heatmap'
 export default {
   components: {
     Avatar,
+    CalendarHeatmap
   },
   data() {
     return {
@@ -188,17 +206,58 @@ export default {
         rating: 0,
         score: 0,
         solvedList: [],
+        calendarHeatLocale:null,
+        calendarHeatmapValue:[],
+        calendarHeatmapEndDate:'',
+        loadingCalendarHeatmap:false
       },
     };
   },
+  created(){
+    const uid = this.$route.query.uid;
+    const username = this.$route.query.username;
+    api.getUserCalendarHeatmap(uid, username).then((res) => {
+      this.calendarHeatmapValue = res.data.data.dataList;
+      this.calendarHeatmapEndDate = res.data.data.endDate;
+      this.loadingCalendarHeatmap = true
+    });
+  },
   mounted() {
+    this.calendarHeatLocale = {
+          months: [
+            this.$i18n.t('m.Jan'),
+            this.$i18n.t('m.Feb'), 
+            this.$i18n.t('m.Mar'),
+            this.$i18n.t('m.Apr'),
+            this.$i18n.t('m.May'),
+            this.$i18n.t('m.Jun'),
+            this.$i18n.t('m.Jul'),
+            this.$i18n.t('m.Aug'),
+            this.$i18n.t('m.Sep'),
+            this.$i18n.t('m.Oct'),
+            this.$i18n.t('m.Nov'),
+            this.$i18n.t('m.Dec')
+          ],
+          days: [
+            this.$i18n.t('m.Sun'),
+            this.$i18n.t('m.Mon'),
+            this.$i18n.t('m.Tue'),
+            this.$i18n.t('m.Wed'),
+            this.$i18n.t('m.Thu'),
+            this.$i18n.t('m.Fri'),
+            this.$i18n.t('m.Sat')
+          ],
+          on: this.$i18n.t('m.on'),
+          less: this.$i18n.t('m.Less'),
+          more: this.$i18n.t('m.More')
+    }
     this.init();
   },
   methods: {
     ...mapActions(['changeDomTitle']),
     init() {
-      let uid = this.$route.query.uid;
-      let username = this.$route.query.username;
+      const uid = this.$route.query.uid;
+      const username = this.$route.query.username;
       api.getUserInfo(uid, username).then((res) => {
         this.changeDomTitle({ title: res.data.username });
         this.profile = res.data.data;
@@ -206,6 +265,7 @@ export default {
           addCodeBtn();
         });
       });
+
     },
     goProblem(problemID) {
       this.$router.push({
@@ -238,6 +298,37 @@ export default {
         this.init();
       }
     },
+    "$store.state.language"(newVal,oldVal){
+      console.log(newVal,oldVal)
+      this.calendarHeatLocale = {
+          months: [
+            this.$i18n.t('m.Jan'),
+            this.$i18n.t('m.Feb'), 
+            this.$i18n.t('m.Mar'),
+            this.$i18n.t('m.Apr'),
+            this.$i18n.t('m.May'),
+            this.$i18n.t('m.Jun'),
+            this.$i18n.t('m.Jul'),
+            this.$i18n.t('m.Aug'),
+            this.$i18n.t('m.Sep'),
+            this.$i18n.t('m.Oct'),
+            this.$i18n.t('m.Nov'),
+            this.$i18n.t('m.Dec')
+          ],
+          days: [
+            this.$i18n.t('m.Sun'),
+            this.$i18n.t('m.Mon'),
+            this.$i18n.t('m.Tue'),
+            this.$i18n.t('m.Wed'),
+            this.$i18n.t('m.Thu'),
+            this.$i18n.t('m.Fri'),
+            this.$i18n.t('m.Sat')
+          ],
+          on: this.$i18n.t('m.on'),
+          less: this.$i18n.t('m.Less'),
+          more: this.$i18n.t('m.More')
+      }
+    }
   },
   computed: {
     contentHtml() {
@@ -380,5 +471,36 @@ export default {
 }
 .female {
   background-color: pink;
+}
+.calendar-title{
+  font-size: 1.2rem;
+  font-weight: 500;
+  align-items: center;
+  text-align: left;
+  margin-bottom: 10px;
+}
+/deep/.vch__day__square {
+  cursor: pointer!important;
+  transition: all .2s ease-in-out!important;
+}
+/deep/.vch__day__square:hover{
+  height: 11px !important;
+  width: 11px !important;
+}
+
+/deep/svg.vch__wrapper rect.vch__day__square:hover {
+  stroke: rgb(115, 179, 243) !important;
+}
+
+/deep/svg.vch__wrapper .vch__months__labels__wrapper text.vch__month__label,
+/deep/svg.vch__wrapper .vch__days__labels__wrapper text.vch__day__label,
+/deep/svg.vch__wrapper .vch__legend__wrapper text{
+  font-size: 0.5rem !important;
+  font-weight: 600 !important;
+}
+
+/deep/rect{
+  rx: 2;
+  ry: 2;
 }
 </style>

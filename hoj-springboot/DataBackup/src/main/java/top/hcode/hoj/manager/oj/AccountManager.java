@@ -1,6 +1,7 @@
 package top.hcode.hoj.manager.oj;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -8,12 +9,14 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusSystemErrorException;
 import top.hcode.hoj.pojo.dto.ChangeEmailDto;
 import top.hcode.hoj.pojo.dto.ChangePasswordDto;
 import top.hcode.hoj.pojo.dto.CheckUsernameOrEmailDto;
+import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.user.*;
 import top.hcode.hoj.pojo.vo.*;
@@ -110,7 +113,6 @@ public class AccountManager {
      * @param uid
      * @MethodName getUserHomeInfo
      * @Description 前端userHome用户个人主页的数据请求，主要是返回解决题目数，AC的题目列表，提交总数，AC总数，Rating分，
-     * @Return CommonResult
      * @Since 2021/01/07
      */
     public UserHomeVo getUserHomeInfo(String uid, String username) throws StatusFailException {
@@ -122,7 +124,7 @@ public class AccountManager {
             if (userRolesVo != null) {
                 uid = userRolesVo.getUid();
             } else {
-                throw new StatusFailException("错误：uid和username不能都为空！");
+                throw new StatusFailException("请求参数错误：uid和username不能都为空！");
             }
         }
 
@@ -160,6 +162,46 @@ public class AccountManager {
             userHomeInfo.setRecentLoginTime(recentSession.getGmtCreate());
         }
         return userHomeInfo;
+    }
+
+    /**
+     * @param uid
+     * @param username
+     * @return
+     * @Description 获取用户最近一年的提交热力图数据
+     */
+    public UserCalendarHeatmapVo getUserCalendarHeatmap(String uid, String username) throws StatusFailException {
+        org.apache.shiro.session.Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        if (StringUtils.isEmpty(uid) && StringUtils.isEmpty(username)) {
+            if (userRolesVo != null) {
+                uid = userRolesVo.getUid();
+            } else {
+                throw new StatusFailException("请求参数错误：uid和username不能都为空！");
+            }
+        }
+        UserCalendarHeatmapVo userCalendarHeatmapVo = new UserCalendarHeatmapVo();
+        userCalendarHeatmapVo.setEndDate(DateUtil.format(new Date(), "yyyy-MM-dd"));
+        List<Judge> lastYearUserJudgeList = userRecordEntityService.getLastYearUserJudgeList(uid, username);
+        if (CollectionUtils.isEmpty(lastYearUserJudgeList)) {
+            userCalendarHeatmapVo.setDataList(new ArrayList<>());
+            return userCalendarHeatmapVo;
+        }
+        HashMap<String, Integer> tmpRecordMap = new HashMap<>();
+        for (Judge judge : lastYearUserJudgeList) {
+            Date submitTime = judge.getSubmitTime();
+            String dateStr = DateUtil.format(submitTime, "yyyy-MM-dd");
+            tmpRecordMap.merge(dateStr, 1, Integer::sum);
+        }
+        List<HashMap<String, Object>> dataList = new ArrayList<>();
+        for (Map.Entry<String, Integer> record : tmpRecordMap.entrySet()) {
+            HashMap<String, Object> tmp = new HashMap<>(2);
+            tmp.put("date", record.getKey());
+            tmp.put("count", record.getValue());
+            dataList.add(tmp);
+        }
+        userCalendarHeatmapVo.setDataList(dataList);
+        return userCalendarHeatmapVo;
     }
 
 

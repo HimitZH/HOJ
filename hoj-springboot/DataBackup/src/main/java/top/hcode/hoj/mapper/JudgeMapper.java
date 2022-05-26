@@ -58,4 +58,6 @@ public interface JudgeMapper extends BaseMapper<Judge> {
     ProblemCountVo getProblemCount(@Param("pid") Long pid, @Param("gid") Long gid);
 
     List<ProblemCountVo> getProblemListCount(@Param("pidList") List<Long> pidList);
+
+    List<Judge> getLastYearUserJudgeList(@Param("uid")String uid, @Param("username")String username);
 }

@@ -3,6 +3,8 @@ package top.hcode.hoj.dao.user.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import top.hcode.hoj.mapper.JudgeMapper;
+import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.vo.ACMRankVo;
 import top.hcode.hoj.pojo.entity.user.UserRecord;
 import top.hcode.hoj.mapper.UserRecordMapper;
@@ -31,6 +33,9 @@ public class UserRecordEntityServiceImpl extends ServiceImpl<UserRecordMapper, U
     private UserRecordMapper userRecordMapper;
 
     @Autowired
+    private JudgeMapper judgeMapper;
+
+    @Autowired
     private RedisUtils redisUtils;
 
     // 排行榜缓存时间 10s
@@ -44,6 +49,11 @@ public class UserRecordEntityServiceImpl extends ServiceImpl<UserRecordMapper, U
     @Override
     public UserHomeVo getUserHomeInfo(String uid, String username) {
         return userRecordMapper.getUserHomeInfo(uid, username);
+    }
+
+    @Override
+    public List<Judge> getLastYearUserJudgeList(String uid, String username) {
+        return judgeMapper.getLastYearUserJudgeList(uid, username);
     }
 
     @Override

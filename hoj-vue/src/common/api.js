@@ -551,6 +551,13 @@ const ojApi = {
       params:{uid,username}
     })
   },
+
+  getUserCalendarHeatmap(uid,username){
+    return ajax("/api/get-user-calendar-heatmap",'get',{
+      params:{uid,username}
+    })
+  },
+
   // setting页的请求
   changePassword(data){
     return ajax("/api/change-password",'post',{

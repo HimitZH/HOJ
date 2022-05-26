@@ -2,6 +2,7 @@ package top.hcode.hoj.dao.user;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.vo.ACMRankVo;
 import top.hcode.hoj.pojo.entity.user.UserRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -23,6 +24,8 @@ public interface UserRecordEntityService extends IService<UserRecord> {
     List<ACMRankVo> getRecent7ACRank();
 
     UserHomeVo getUserHomeInfo(String uid, String username);
+
+    List<Judge> getLastYearUserJudgeList(String uid, String username);
 
     IPage<OIRankVo> getOIRankList(Page<OIRankVo> page, List<String> uidList);
 
