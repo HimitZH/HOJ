@@ -47,6 +47,19 @@ public class AccountController {
 
 
     /**
+     * @param uid
+     * @param username
+     * @return
+     * @Description 获取用户最近一年的提交热力图数据
+     */
+    @GetMapping("/get-user-calendar-heatmap")
+    public CommonResult<UserCalendarHeatmapVo> getUserCalendarHeatmap(@RequestParam(value = "uid", required = false) String uid,
+                                                           @RequestParam(value = "username", required = false) String username) {
+        return accountService.getUserCalendarHeatmap(uid, username);
+    }
+
+
+    /**
      * @MethodName changePassword
      * @Params * @param null
      * @Description 修改密码的操作，连续半小时内修改密码错误5次，则需要半个小时后才可以再次尝试修改密码

@@ -164,4 +164,17 @@
         </where>
         GROUP BY pid
     </select>
+
+    <select id="getLastYearUserJudgeList" resultType="top.hcode.hoj.pojo.entity.judge.Judge">
+        select submit_time from judge
+        <where>
+            cid = 0 AND gmt_create >= DATE_SUB(CURDATE(), INTERVAL 1 YEAR)
+            <if test="uid!=null">
+                AND uid = #{uid}
+            </if>
+            <if test="username!=null">
+                AND username = #{username}
+            </if>
+        </where>
+    </select>
 </mapper>

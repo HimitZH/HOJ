@@ -9,10 +9,7 @@ import top.hcode.hoj.manager.oj.AccountManager;
 import top.hcode.hoj.pojo.dto.ChangeEmailDto;
 import top.hcode.hoj.pojo.dto.ChangePasswordDto;
 import top.hcode.hoj.pojo.dto.CheckUsernameOrEmailDto;
-import top.hcode.hoj.pojo.vo.ChangeAccountVo;
-import top.hcode.hoj.pojo.vo.CheckUsernameOrEmailVo;
-import top.hcode.hoj.pojo.vo.UserHomeVo;
-import top.hcode.hoj.pojo.vo.UserInfoVo;
+import top.hcode.hoj.pojo.vo.*;
 import top.hcode.hoj.service.oj.AccountService;
 
 import javax.annotation.Resource;
@@ -37,6 +34,15 @@ public class AccountServiceImpl implements AccountService {
     public CommonResult<UserHomeVo> getUserHomeInfo(String uid, String username) {
         try {
             return CommonResult.successResponse(accountManager.getUserHomeInfo(uid, username));
+        } catch (StatusFailException e) {
+            return CommonResult.errorResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public CommonResult<UserCalendarHeatmapVo> getUserCalendarHeatmap(String uid, String username) {
+        try {
+            return CommonResult.successResponse(accountManager.getUserCalendarHeatmap(uid, username));
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
         }
