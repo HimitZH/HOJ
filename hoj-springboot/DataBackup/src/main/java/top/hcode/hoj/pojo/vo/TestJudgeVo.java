@@ -43,4 +43,9 @@ public class TestJudgeVo {
      * 错误信息
      */
     private String stderr;
+
+    /**
+     * 原题的评测模式：default、spj、interactive
+     */
+    private String problemJudgeMode;
 }

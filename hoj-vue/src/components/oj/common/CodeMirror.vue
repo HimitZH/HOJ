@@ -128,7 +128,7 @@
                   :closable="false"
                   show-icon>
                   <template slot="title">
-                    <span >{{ status.statusName }} 
+                    <span class="status-title">{{ status.statusName }} 
                       <template v-if="equalsExpectedOuput != null">
                         {{ "("+ $t('m.Pass_Test_Case')+ " "+equalsExpectedOuput+")" }}
                       </template>
@@ -156,6 +156,11 @@
                     </div>
                     <div v-if="testJudgeRes.stderr">
                       {{ testJudgeRes.stderr }}
+                    </div>
+                    <div v-if="testJudgeRes.problemJudgeMode == 'spj' 
+                          && (testJudgeRes.status == 0 || testJudgeRes.status == -1)"
+                        style="font-weight: 700;">
+                        {{ $t('m.Problem_Uncertain_Answer') }}
                     </div>
                   </template>
                 </el-alert>
@@ -322,7 +327,7 @@ export default {
     },
     problemTestCase:{
       type: Array,
-    }
+    },
   },
   data() {
     return {
@@ -365,7 +370,8 @@ export default {
       userInput:'',
       expectedOutput: null,
       testJudgeRes: {
-        status: -10
+        status: -10,
+        problemJudgeMode:'default'
       },
       testJudgeKey: null,
       testJudgeLoding: false,
@@ -634,6 +640,10 @@ export default {
   color: rgb(255, 153, 0);
   font-size: 15px;
   font-weight: 600;
+}
+.status-title{
+  font-size: 15px;
+  font-weight: 700;
 }
 </style>
 

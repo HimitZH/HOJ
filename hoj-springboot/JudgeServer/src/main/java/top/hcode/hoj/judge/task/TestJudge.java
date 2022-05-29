@@ -12,6 +12,8 @@ import top.hcode.hoj.judge.entity.JudgeGlobalDTO;
 import top.hcode.hoj.judge.entity.SandBoxRes;
 import top.hcode.hoj.util.Constants;
 
+import java.util.Objects;
+
 /**
  * @Author Himit_ZH
  * @Date 2022/5/26
@@ -50,10 +52,20 @@ public class TestJudge extends AbstractJudge {
                 result.set("status", Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED.getStatus());
             } else {
                 if (judgeDTO.getTestCaseOutputContent() != null) {
-                    if (judgeDTO.getTestCaseOutputContent().equals(sandBoxRes.getStdout())) {
-                        result.set("status", Constants.Judge.STATUS_ACCEPTED.getStatus());
+                    if (judgeGlobalDTO.getRemoveEOLBlank() != null && judgeGlobalDTO.getRemoveEOLBlank()) {
+                        String stdOut = rtrim(sandBoxRes.getStdout());
+                        String testCaseOutput = rtrim(judgeDTO.getTestCaseOutputContent());
+                        if (Objects.equals(stdOut, testCaseOutput)) {
+                            result.set("status", Constants.Judge.STATUS_ACCEPTED.getStatus());
+                        } else {
+                            result.set("status", Constants.Judge.STATUS_WRONG_ANSWER.getStatus());
+                        }
                     } else {
-                        result.set("status", Constants.Judge.STATUS_WRONG_ANSWER.getStatus());
+                        if (Objects.equals(sandBoxRes.getStdout(), judgeDTO.getTestCaseOutputContent())) {
+                            result.set("status", Constants.Judge.STATUS_ACCEPTED.getStatus());
+                        } else {
+                            result.set("status", Constants.Judge.STATUS_WRONG_ANSWER.getStatus());
+                        }
                     }
                 } else {
                     result.set("status", Constants.Judge.STATUS_ACCEPTED.getStatus());

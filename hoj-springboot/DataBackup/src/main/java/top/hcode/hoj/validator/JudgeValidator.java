@@ -99,5 +99,6 @@ public class JudgeValidator {
         if (testJudgeDto.getCode().length() > 65535) {
             throw new StatusFailException("提交的代码是无效的，代码字符长度请不要超过65535！");
         }
+
     }
 }

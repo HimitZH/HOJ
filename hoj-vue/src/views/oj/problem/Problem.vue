@@ -642,6 +642,7 @@
                   <span v-else>{{ $t('m.Submit') }}</span>
                 </el-button>
                 <el-tag
+                  v-if="!problemData.problem.isRemote"
                   type="success"
                   :class="openTestCaseDrawer?'tj-btn active':'tj-btn non-active'"
                   @click.native="openTestCaseDrawer = !openTestCaseDrawer"

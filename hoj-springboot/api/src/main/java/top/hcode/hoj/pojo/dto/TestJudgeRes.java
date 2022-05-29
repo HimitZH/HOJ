@@ -53,4 +53,9 @@ public class TestJudgeRes implements Serializable {
      * 运行错误输出
      */
     private String stderr;
+
+    /**
+     * 原题的评测模式：default、spj、interactive
+     */
+    private String problemJudgeMode;
 }
