@@ -3,7 +3,6 @@ package top.hcode.hoj.judge;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.judge.entity.JudgeDTO;
@@ -39,6 +38,7 @@ public abstract class AbstractJudge {
 
         switch (judgeGlobalDTO.getJudgeMode()) {
             case SPJ:
+            case TEST:
             case DEFAULT:
                 return process(judgeDTO, judgeGlobalDTO, judgeResultList);
             case INTERACTIVE:
@@ -94,7 +94,7 @@ public abstract class AbstractJudge {
 
     public abstract JSONObject checkMultipleResult(SandBoxRes userSandBoxRes, SandBoxRes interactiveSandBoxRes, JudgeDTO judgeDTO, JudgeGlobalDTO judgeGlobalDTO);
 
-    protected List<String> parseRunCommand(String command,
+    protected static List<String> parseRunCommand(String command,
                                            Constants.RunConfig runConfig,
                                            String testCaseInputName,
                                            String userOutputName,

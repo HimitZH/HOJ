@@ -1,5 +1,5 @@
 <template>
-  <div style="margin: 0px 0px 15px 0px;font-size: 14px;">
+  <div style="margin: 0px 0px 15px 0px;font-size: 14px;position: relative">
     <el-row class="header">
       <el-col :xs="24" :sm="15" :md="15" :lg="15">
         <div class="select-row">
@@ -71,11 +71,172 @@
       ref="myEditor"
     >
     </codemirror>
+    <el-drawer
+      :visible.sync="openTestCaseDrawer"
+      style="position: absolute;"
+      :modal="false"
+      size="40%"
+      :with-header="false"
+      @close="closeDrawer"
+      direction="btt">
+      <el-tabs v-model="testJudgeActiveTab" 
+        type="border-card" 
+        style="height: 100%;"
+        @tab-click="handleClick">
+        <el-tab-pane :label="$t('m.Test_Case')" name="input" 
+          style="margin-right: 15px;margin-top: 8px;">
+          <div class="mt-10">
+            <el-tag
+              type="primary"
+              class="tj-test-tag"
+              size="samll"
+              v-for="(example, index) of problemTestCase"
+              :key="index"
+              @click="addTestCaseToTestJudge(example.input, example.output, index)"
+              :effect="example.active?'dark':'plain'">
+              {{ $t('m.Fill_Case') }} {{ index+1 }}
+            </el-tag>
+          </div>
+          <el-input
+            type="textarea"
+            class="mt-10"
+            :rows="7"
+            show-word-limit
+            resize="none"
+            maxlength="1000"
+            v-model="userInput">
+          </el-input>
+        </el-tab-pane>
+        <el-tab-pane :label="$t('m.Test_Result')" name="result">
+          <div v-loading="testJudgeLoding">
+            <template v-if="testJudgeRes.status == -10">
+              <div class="tj-res-tab mt-10">
+                <el-alert
+                  :title="$t('m.Non_Test_Judge_Tips')"
+                  type="info"
+                  center
+                  :closable="false"
+                  show-icon>
+                </el-alert>
+              </div>
+            </template>
+            <template v-else-if="testJudgeRes.status != -2">
+              <div class="tj-res-tab">
+                <el-alert
+                  class="mt-10"
+                  :type="status.type"
+                  :closable="false"
+                  show-icon>
+                  <template slot="title">
+                    <span >{{ status.statusName }} 
+                      <template v-if="equalsExpectedOuput != null">
+                        {{ "("+ $t('m.Pass_Test_Case')+ " "+equalsExpectedOuput+")" }}
+                      </template>
+                    </span>
+                  </template>
+                  <template slot>
+                    <div style="display:flex">
+                      <div style="margin-right:15px">
+                        <span class="color-gray mr-5"><i class="el-icon-time"></i></span>
+                        <span class="color-gray mr-5">{{ $t('m.Time' )}}</span>
+                        <span v-if="testJudgeRes.time!=null">{{testJudgeRes.time}}ms</span>
+                        <span v-else>--ms</span>
+                      </div>
+                      <div>
+                        <span style="vertical-align: sub;" class="color-gray mr-5">
+                          <svg data-v-79a9c93e="" focusable="false" viewBox="0 0 1025 1024" fill="currentColor" width="1.2em" height="1.2em" aria-hidden="true">
+                            <path d="M448.98 92.52V92.67l.37 40.46v62.75h125.5V92.52h81.22v103.36h33.12c76.08 0 137.9 61.05 139.12 136.84l.02 2.3v33.12h103.36v80.84l-40.6.37h-62.76v91.05h103.36v81.21H828.33v67.58c0 76.08-61.06 137.9-136.84 139.12l-2.3.02h-33.12v103.36h-80.84l-.37-40.6v-62.76H449.25l-.27 103.36h-80.84V828.33h-33.12c-76.08 0-137.9-61.06-139.12-136.84l-.02-2.3v-67.58H92.52v-80.83l40.6-.38h62.76v-91.15l-103.36-.27v-80.47l40.6-.37h62.76v-33.12c0-76.08 61.05-137.9 136.84-139.12l2.3-.02h33.12V92.52h80.84zM689.2 277.1H335.02c-32 0-57.93 25.93-57.93 57.93v354.17c0 32 25.93 57.93 57.93 57.93h354.17c32 0 57.93-25.94 57.93-57.93V335.02c0-32-25.94-57.93-57.93-57.93zm-73.73 91.05a40.6 40.6 0 0 1 40.6 40.6v206.72a40.6 40.6 0 0 1-40.6 40.6H408.75a40.6 40.6 0 0 1-40.6-40.6V408.75a40.6 40.6 0 0 1 40.6-40.6zm-40.6 81.16H449.3v125.55h125.55V449.3z" transform="translate(1)">
+                            </path>
+                          </svg>
+                        </span>
+                        <span class="color-gray mr-5">{{ $t('m.Memory' )}}</span>
+                        <span v-if="testJudgeRes.memory!=null">{{testJudgeRes.memory}}KB</span>
+                        <span v-else>--KB</span>
+                      </div>
+                    </div>
+                    <div v-if="testJudgeRes.stderr">
+                      {{ testJudgeRes.stderr }}
+                    </div>
+                  </template>
+                </el-alert>
+              </div>
+              <div class="tj-res-tab">
+                <div class="tj-res-item">
+                  <span class="name">{{ $t('m.Test_Input') }}</span>
+                  <span class="value">
+                    <el-input
+                    type="textarea"
+                    class="textarea"
+                    :readonly="true"
+                    resize="none"
+                    :autosize="{ minRows: 1, maxRows: 4}"
+                    v-model="testJudgeRes.userInput">
+                    </el-input>
+                  </span>
+                </div>
+                <div class="tj-res-item" v-if="testJudgeRes.expectedOutput!=null">
+                  <span class="name">{{ $t('m.Expected_Output') }}</span>
+                  <span class="value">
+                    <el-input
+                    type="textarea"
+                    :readonly="true"
+                    resize="none"
+                    :autosize="{ minRows: 1, maxRows: 4}"
+                    class="textarea"
+                    v-model="testJudgeRes.expectedOutput">
+                    </el-input>
+                  </span>
+                </div>
+                <div class="tj-res-item">
+                  <span class="name">{{ $t('m.Real_Output') }}</span>
+                  <span class="value">
+                    <el-input
+                    type="textarea"
+                    class="textarea"
+                    :readonly="true"
+                    resize="none"
+                    :autosize="{ minRows: 1, maxRows: 4}"
+                    v-model="testJudgeRes.userOutput">
+                    </el-input>
+                  </span>
+                </div>
+              </div>
+            </template>
+            <template v-else>
+              <div class="tj-res-tab mt-10">
+                <el-card>
+                  <div slot="header">
+                    <span class="ce-title">{{ $t('m.Compilation_Failed') }}</span>
+                  </div>
+                  <div style="color: #f90;font-weight: 600;">
+                    <pre>{{ testJudgeRes.stderr }}</pre>
+                  </div>
+                </el-card>
+              </div>
+            </template>
+          </div>
+        </el-tab-pane>
+        <el-tab-pane>
+          <span slot="label">
+            <el-tag
+              type="success"
+              class="tj-btn"
+              @click="submitTestJudge"
+              effect="plain">
+              <i class="el-icon-video-play"> {{ $t('m.Running_Test') }}</i>
+            </el-tag>
+          </span>
+        </el-tab-pane>
+      </el-tabs>
+    </el-drawer>
   </div>
 </template>
 <script>
 import utils from '@/common/utils';
+import api from '@/common/api';
+import myMessage from '@/common/message';
 import { codemirror, CodeMirror } from 'vue-codemirror-lite';
+import { JUDGE_STATUS,JUDGE_STATUS_RESERVE } from '@/common/constants';
 
 // 风格对应的样式
 import 'codemirror/theme/monokai.css';
@@ -148,6 +309,20 @@ export default {
       type: String,
       default: 'solarized',
     },
+    openTestCaseDrawer:{
+      type: Boolean,
+      default: false
+    },
+    pid:{
+      type: Number,
+    },
+    type:{
+      type: String,
+      default: 'public'
+    },
+    problemTestCase:{
+      type: Array,
+    }
   },
   data() {
     return {
@@ -186,6 +361,16 @@ export default {
         { label: 'solarized', value: 'solarized' },
         { label: 'material', value: 'material' },
       ],
+      testJudgeActiveTab:'input',
+      userInput:'',
+      expectedOutput: null,
+      testJudgeRes: {
+        status: -10
+      },
+      testJudgeKey: null,
+      testJudgeLoding: false,
+      refreshStatus: null,
+      equalsExpectedOuput:null
     };
   },
   mounted() {
@@ -236,6 +421,80 @@ export default {
       };
       fileReader.readAsText(f, 'UTF-8');
     },
+    addTestCaseToTestJudge(input, output, index){
+      this.userInput = input;
+      this.expectedOutput = output;
+      this.problemTestCase[index]['active'] = true;
+    },
+
+    submitTestJudge(){
+      if (this.value.trim() === '') {
+        myMessage.error(this.$i18n.t('m.Code_can_not_be_empty'));
+        return;
+      }
+
+      if (this.value.length > 65535) {
+        myMessage.error(this.$i18n.t('m.Code_Length_can_not_exceed_65535'));
+        return;
+      }
+      let data = {
+        pid: this.pid, // 如果是比赛题目就为display_id
+        language: this.language,
+        code: this.value,
+        type: this.type,
+        userInput: this.userInput,
+        expectedOutput: this.expectedOutput,
+      };
+      api.submitTestJudge(data).then((res)=>{
+        this.testJudgeKey = res.data.data;
+        this.testJudgeActiveTab = 'result';
+        this.testJudgeLoding = true;
+        this.checkTestJudgeStatus();
+      },(err)=>{
+        this.testJudgeActiveTab = 'input';
+      })
+    },
+    checkTestJudgeStatus() {
+      // 使用setTimeout避免一些问题
+      if (this.refreshStatus) {
+        // 如果之前的提交状态检查还没有停止,则停止,否则将会失去timeout的引用造成无限请求
+        clearTimeout(this.refreshStatus);
+      }
+      const checkStatus = () => {
+        api.getTestJudgeResult(this.testJudgeKey).then(
+          (res) => {
+            let resData = res.data.data;
+            if (resData.status != JUDGE_STATUS_RESERVE['Pending']) {
+                // status不为pending
+                this.testJudgeRes = resData;
+                if(resData.status == JUDGE_STATUS_RESERVE['ac']){
+                  let size = this.problemTestCase.length;
+                  for(let i=0;i<size;i++){
+                    let example = this.problemTestCase[i];
+                    if(example.input == this.testJudgeRes.userInput 
+                      && example.output == this.testJudgeRes.expectedOutput){
+                        this.equalsExpectedOuput = i+1
+                    }
+                  }
+                }
+                this.testJudgeLoding = false;
+                clearTimeout(this.refreshStatus);
+            } else {
+              this.refreshStatus = setTimeout(checkStatus, 1000);
+            }
+          },
+          (res) => {
+            this.testJudgeLoding = false;
+            clearTimeout(this.refreshStatus);
+          }
+        );
+      };
+      // 设置每1秒检查一下该题的提交结果
+      this.refreshStatus = setTimeout(checkStatus, 1000);
+    },
+    closeDrawer(){
+      this.$emit('update:openTestCaseDrawer', false);
+    }
   },
   computed: {
     editor() {
@@ -245,12 +504,34 @@ export default {
     currentLanguage() {
       return this.language;
     },
+    status() {
+      return {
+        type: JUDGE_STATUS[this.testJudgeRes.status].type,
+        statusName: JUDGE_STATUS[this.testJudgeRes.status].name,
+        color: JUDGE_STATUS[this.testJudgeRes.status].rgb,
+      };
+    },
   },
   watch: {
     theme(newVal, oldVal) {
       this.editor.setOption('theme', newVal);
     },
+    userInput(newVal, oldVal){
+      this.expectedOutput = null;
+      for(let example of this.problemTestCase){
+        if(example.input == newVal){
+          example['active'] = true;
+          this.expectedOutput = example.output;
+        }else{
+          example['active'] = false;
+        }
+      }
+    }
   },
+  beforeDestroy() {
+    // 防止切换组件后仍然不断请求
+    clearInterval(this.refreshStatus);
+  }
 };
 </script>
 
@@ -272,9 +553,61 @@ export default {
 .select-row {
   margin-top: 4px;
 }
+/deep/.el-drawer__body{
+  border: 1px solid rgb(240,240,240);
+}
+.tj-btn{
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #32ca99;
+}
+.tj-btn:hover{
+  background-color: #d5f1eb;
+}
+.tj-test-tag{
+  margin-right:15px;
+  cursor: pointer;
+}
+.tj-test-tag:hover{
+  font-weight: 600;
+}
+.tj-res-tab{
+  padding-right: 15px;
+}
+.tj-res-item{
+  display: flex;
+  margin-top: 10px;
+}
+.tj-res-item .name{
+  flex: 2;
+  text-align: center;
+  line-height: 34px;
+  font-size: 12px;
+}
+.tj-res-item .value{
+  flex: 10;
+}
+/deep/.el-textarea__inner[readonly]{
+  background-color: #f7f8f9 !important;
+}
+.color-gray{
+  color: #999;
+}
+.mr-5{
+  margin-right: 5px;
+}
+.mt-10{
+  margin-top: 10px;
+}
 @media screen and (max-width: 768px) {
   .select-row span {
     margin-right: 2px;
+  }
+  .tj-res-item .name{
+    flex: 2;
+  }
+  .tj-res-item .value{
+    flex: 5;
   }
 }
 @media screen and (min-width: 768px) {
@@ -285,11 +618,28 @@ export default {
     float: right;
   }
 }
+/deep/.el-tabs__content{ 
+  position: absolute;
+  top: 40px;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  overflow-y: auto;
+}
+/deep/.el-card__header {
+  padding: 10px 25px;
+  background-color: antiquewhite;
+}
+.ce-title{
+  color: rgb(255, 153, 0);
+  font-size: 15px;
+  font-weight: 600;
+}
 </style>
 
 <style>
 .CodeMirror {
-  height: 600px !important;
+  height: 630px !important;
 }
 .CodeMirror-scroll {
   min-height: 549px;

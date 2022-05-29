@@ -8,8 +8,10 @@ import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.dao.JudgeEntityService;
 import top.hcode.hoj.dao.ProblemEntityService;
 import top.hcode.hoj.judge.JudgeContext;
+import top.hcode.hoj.pojo.dto.TestJudgeReq;
+import top.hcode.hoj.pojo.dto.TestJudgeRes;
 import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.entity.judge.ToJudge;
+import top.hcode.hoj.pojo.dto.ToJudgeDTO;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.remoteJudge.RemoteJudgeContext;
 import top.hcode.hoj.service.JudgeService;
@@ -69,8 +71,14 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public void remoteJudge(ToJudge toJudge) {
-        remoteJudgeContext.judge(toJudge);
+    public TestJudgeRes testJudge(TestJudgeReq testJudgeReq) {
+        return judgeContext.testJudge(testJudgeReq);
+    }
+
+
+    @Override
+    public void remoteJudge(ToJudgeDTO toJudgeDTO) {
+        remoteJudgeContext.judge(toJudgeDTO);
     }
 
     @Override

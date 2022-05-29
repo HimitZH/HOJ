@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.dao.ContestRecordEntityService;
 import top.hcode.hoj.dao.UserAcproblemEntityService;
+import top.hcode.hoj.pojo.dto.TestJudgeReq;
+import top.hcode.hoj.pojo.dto.TestJudgeRes;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.user.UserAcproblem;
@@ -32,8 +34,10 @@ public class JudgeContext {
     public Judge Judge(Problem problem, Judge judge) {
 
         // c和c++为一倍时间和空间，其它语言为2倍时间和空间
-        if (!judge.getLanguage().equals("C++") && !judge.getLanguage().equals("C") &&
-                !judge.getLanguage().equals("C++ With O2") && !judge.getLanguage().equals("C With O2")) {
+        if (!judge.getLanguage().equals("C++")
+                && !judge.getLanguage().equals("C")
+                && !judge.getLanguage().equals("C++ With O2")
+                && !judge.getLanguage().equals("C With O2")) {
             problem.setTimeLimit(problem.getTimeLimit() * 2);
             problem.setMemoryLimit(problem.getMemoryLimit() * 2);
         }
@@ -62,6 +66,18 @@ public class JudgeContext {
         judge.setOiRankScore((Integer) judgeResult.getOrDefault("oiRankScore", null));
 
         return judge;
+    }
+
+    public TestJudgeRes testJudge(TestJudgeReq testJudgeReq) {
+        // c和c++为一倍时间和空间，其它语言为2倍时间和空间
+        if (!testJudgeReq.getLanguage().equals("C++")
+                && !testJudgeReq.getLanguage().equals("C")
+                && !testJudgeReq.getLanguage().equals("C++ With O2")
+                && !testJudgeReq.getLanguage().equals("C With O2")) {
+            testJudgeReq.setTimeLimit(testJudgeReq.getTimeLimit() * 2);
+            testJudgeReq.setMemoryLimit(testJudgeReq.getMemoryLimit() * 2);
+        }
+        return judgeStrategy.testJudge(testJudgeReq);
     }
 
     public Boolean compileSpj(String code, Long pid, String spjLanguage, HashMap<String, String> extraFiles) throws SystemError {

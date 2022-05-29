@@ -113,6 +113,7 @@ public class Constants {
 
 
     public enum JudgeMode {
+        TEST("test"),
         DEFAULT("default"),
         SPJ("spj"),
         INTERACTIVE("interactive");
@@ -127,7 +128,7 @@ public class Constants {
             return mode;
         }
 
-        public static JudgeMode getJudgeMode(String mode){
+        public static JudgeMode getJudgeMode(String mode) {
             for (JudgeMode judgeMode : JudgeMode.values()) {
                 if (judgeMode.getMode().equals(mode)) {
                     return judgeMode;
@@ -181,13 +182,13 @@ public class Constants {
             {2} --> exeName
      */
     public enum CompileConfig {
-        C("C", "main.c", "main", 3000L, 10000L, 256 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -w -fmax-errors=3 -std=c11 {1} -lm -o {2}", defaultEnv),
+        C("C", "main.c", "main", 3000L, 10000L, 256 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -w -fmax-errors=1 -std=c11 {1} -lm -o {2}", defaultEnv),
 
-        CWithO2("C With O2", "main.c", "main", 3000L, 10000L, 256 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {1} -lm -o {2}", defaultEnv),
+        CWithO2("C With O2", "main.c", "main", 3000L, 10000L, 256 * 1024 * 1024L, "/usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c11 {1} -lm -o {2}", defaultEnv),
 
-        CPP("C++", "main.cpp", "main", 10000L, 20000L, 512 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -w -fmax-errors=3 -std=c++14 {1} -lm -o {2}", defaultEnv),
+        CPP("C++", "main.cpp", "main", 10000L, 20000L, 512 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -w -fmax-errors=1 -std=c++14 {1} -lm -o {2}", defaultEnv),
 
-        CPPWithO2("C++ With O2", "main.cpp", "main", 10000L, 20000L, 512 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {1} -lm -o {2}", defaultEnv),
+        CPPWithO2("C++ With O2", "main.cpp", "main", 10000L, 20000L, 512 * 1024 * 1024L, "/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c++14 {1} -lm -o {2}", defaultEnv),
 
         JAVA("Java", "Main.java", "Main.jar", 10000L, 20000L, 512 * 1024 * 1024L, "/bin/bash -c \"javac -encoding utf-8 {1} && jar -cvf {2} *.class\"", defaultEnv),
 
@@ -305,11 +306,11 @@ public class Constants {
 
         PyPy3("PyPy3", "/usr/bin/pypy3 {1}", "main.pyc", python3Env),
 
-        PHP("PHP","/usr/bin/php {1}","main.php",defaultEnv),
+        PHP("PHP", "/usr/bin/php {1}", "main.php", defaultEnv),
 
-        JS_NODE("JavaScript Node","/usr/bin/node {1}","main.js",defaultEnv),
+        JS_NODE("JavaScript Node", "/usr/bin/node {1}", "main.js", defaultEnv),
 
-        JS_V8("JavaScript V8","/usr/bin/jsv8/d8 {1}","main.js",defaultEnv),
+        JS_V8("JavaScript V8", "/usr/bin/jsv8/d8 {1}", "main.js", defaultEnv),
 
         SPJ_C("SPJ-C", "{0}/{1} {2} {3} {4}", "spj", defaultEnv),
 

@@ -19,7 +19,7 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.crawler.problem.ProblemStrategy;
 import top.hcode.hoj.judge.Dispatcher;
 import top.hcode.hoj.pojo.dto.ProblemDto;
-import top.hcode.hoj.pojo.entity.judge.CompileDTO;
+import top.hcode.hoj.pojo.dto.CompileDTO;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.*;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
@@ -197,7 +197,7 @@ public class AdminProblemManager {
         }
 
         compileDTO.setToken(judgeToken);
-        return dispatcher.dispatcher("compile", "/compile-spj", compileDTO);
+        return dispatcher.dispatcherJudge("compile", "/compile-spj", compileDTO);
     }
 
     public CommonResult compileInteractive(CompileDTO compileDTO){
@@ -207,7 +207,7 @@ public class AdminProblemManager {
         }
 
         compileDTO.setToken(judgeToken);
-        return dispatcher.dispatcher("compile", "/compile-interactive", compileDTO);
+        return dispatcher.dispatcherJudge("compile", "/compile-interactive", compileDTO);
     }
 
     @Transactional(rollbackFor = Exception.class)

@@ -8,14 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.SubmitIdListDto;
+import top.hcode.hoj.pojo.dto.TestJudgeDto;
 import top.hcode.hoj.pojo.dto.ToJudgeDto;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.JudgeCase;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.SubmissionInfoVo;
+import top.hcode.hoj.pojo.vo.TestJudgeVo;
 import top.hcode.hoj.service.oj.JudgeService;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @Author: Himit_ZH
@@ -78,6 +81,20 @@ public class JudgeController {
     @RequestMapping(value = "/submit-problem-judge", method = RequestMethod.POST)
     public CommonResult<Judge> submitProblemJudge(@RequestBody ToJudgeDto judgeDto) {
         return judgeService.submitProblemJudge(judgeDto);
+    }
+
+    @RequiresAuthentication
+    @RequiresPermissions("submit")
+    @RequestMapping(value = "/submit-problem-test-judge", method = RequestMethod.POST)
+    public CommonResult<String> submitProblemTestJudge(@RequestBody TestJudgeDto testJudgeDto) {
+        return judgeService.submitProblemTestJudge(testJudgeDto);
+    }
+
+
+    @RequiresAuthentication
+    @GetMapping("/get-test-judge-result")
+    public CommonResult<TestJudgeVo> getTestJudgeResult(@RequestParam("testJudgeKey") String testJudgeKey) {
+        return judgeService.getTestJudgeResult(testJudgeKey);
     }
 
     /**

@@ -12,6 +12,8 @@ import top.hcode.hoj.common.exception.SubmitError;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.dao.JudgeCaseEntityService;
 import top.hcode.hoj.dao.JudgeEntityService;
+import top.hcode.hoj.pojo.dto.TestJudgeReq;
+import top.hcode.hoj.pojo.dto.TestJudgeRes;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.JudgeCase;
 import top.hcode.hoj.pojo.entity.problem.Problem;
@@ -20,10 +22,7 @@ import top.hcode.hoj.util.JudgeUtils;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Slf4j(topic = "hoj")
 @Component
@@ -46,22 +45,15 @@ public class JudgeStrategy {
         HashMap<String, Object> result = new HashMap<>();
         // 编译好的临时代码文件id
         String userFileId = null;
-        String userFileSrc = null;
         try {
             // 对用户源代码进行编译 获取tmpfs中的fileId
             Constants.CompileConfig compileConfig = Constants.CompileConfig.getCompilerByLanguage(judge.getLanguage());
-            // 有的语言可能不支持编译
+            // 有的语言可能不支持编译, 目前有js、php不支持编译
             if (compileConfig != null) {
                 userFileId = Compiler.compile(compileConfig,
                         judge.getCode(),
                         judge.getLanguage(),
                         JudgeUtils.getProblemExtraFileMap(problem, "user"));
-            } else {
-                // 目前只有js、php不支持编译，需要提供源代码文件的绝对路径
-                userFileSrc = Constants.JudgeDir.RUN_WORKPLACE_DIR.getContent() + File.separator + problem.getId()
-                        + File.separator + getUserFileName(judge.getLanguage());
-                FileWriter fileWriter = new FileWriter(userFileSrc);
-                fileWriter.write(judge.getCode());
             }
             // 测试数据文件所在文件夹
             String testCasesDir = Constants.JudgeDir.TEST_CASE_DIR.getContent() + File.separator + "problem_" + problem.getId();
@@ -89,25 +81,29 @@ public class JudgeStrategy {
                     testCasesDir,
                     testCasesInfo,
                     userFileId,
-                    userFileSrc,
+                    judge.getCode(),
                     false);
 
             // 对全部测试点结果进行评判,获取最终评判结果
-            HashMap<String, Object> judgeInfo = getJudgeInfo(allCaseResultList, problem, judge);
-            return judgeInfo;
+            return getJudgeInfo(allCaseResultList, problem, judge);
         } catch (SystemError systemError) {
             result.put("code", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
             result.put("errMsg", "Oops, something has gone wrong with the judgeServer. Please report this to administrator.");
             result.put("time", 0);
             result.put("memory", 0);
-            log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生系统性的异常------------------->{}",
-                    systemError);
+            log.error("[Judge] [System Error] Submit Id:[{}] Problem Id:[{}], Error:[{}]",
+                    judge.getSubmitId(),
+                    problem.getId(),
+                    systemError.toString());
         } catch (SubmitError submitError) {
             result.put("code", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
             result.put("errMsg", mergeNonEmptyStrings(submitError.getMessage(), submitError.getStdout(), submitError.getStderr()));
             result.put("time", 0);
             result.put("memory", 0);
-            log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生提交的异常-------------------->{}", submitError);
+            log.error("[Judge] [Submit Error] Submit Id:[{}] Problem Id:[{}], Error:[{}]",
+                    judge.getSubmitId(),
+                    problem.getId(),
+                    submitError.toString());
         } catch (CompileError compileError) {
             result.put("code", Constants.Judge.STATUS_COMPILE_ERROR.getStatus());
             result.put("errMsg", mergeNonEmptyStrings(compileError.getStdout(), compileError.getStderr()));
@@ -118,7 +114,10 @@ public class JudgeStrategy {
             result.put("errMsg", "Oops, something has gone wrong with the judgeServer. Please report this to administrator.");
             result.put("time", 0);
             result.put("memory", 0);
-            log.error("题号为：" + problem.getId() + "的题目，提交id为" + judge.getSubmitId() + "在评测过程中发生系统性的异常-------------------->{}", e);
+            log.error("[Judge] [Submit Error] Submit Id:[{}] Problem Id:[{}], Error:[{}]",
+                    judge.getSubmitId(),
+                    problem.getId(),
+                    e.toString());
         } finally {
 
             // 删除tmpfs内存中的用户代码可执行文件
@@ -127,6 +126,59 @@ public class JudgeStrategy {
             }
         }
         return result;
+    }
+
+    public TestJudgeRes testJudge(TestJudgeReq testJudgeReq) {
+        // 编译好的临时代码文件id
+        String userFileId = null;
+        try {
+            // 对源代码进行编译 获取tmpfs中的fileId
+            Constants.CompileConfig compileConfig = Constants.CompileConfig.getCompilerByLanguage(testJudgeReq.getLanguage());
+            // 有的语言可能不支持编译,目前有js、php不支持编译，需要提供源代码
+            if (compileConfig != null) {
+                userFileId = Compiler.compile(compileConfig,
+                        testJudgeReq.getCode(),
+                        testJudgeReq.getLanguage(),
+                        testJudgeReq.getExtraFile());
+            }
+            return judgeRun.testJudgeCase(userFileId, testJudgeReq);
+        } catch (SystemError systemError) {
+            log.error("[Test Judge] [System Error] [{}]", systemError.toString());
+            return TestJudgeRes.builder()
+                    .memory(0L)
+                    .time(0L)
+                    .status(Constants.Judge.STATUS_COMPILE_ERROR.getStatus())
+                    .stderr("Oops, something has gone wrong with the judgeServer. Please report this to administrator.")
+                    .build();
+        } catch (SubmitError submitError) {
+            log.error("[Test Judge] [Submit Error] [{}]", submitError.toString());
+            return TestJudgeRes.builder()
+                    .memory(0L)
+                    .time(0L)
+                    .status(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
+                    .stderr(mergeNonEmptyStrings(submitError.getMessage(), submitError.getStdout(), submitError.getStderr()))
+                    .build();
+        } catch (CompileError compileError) {
+            return TestJudgeRes.builder()
+                    .memory(0L)
+                    .time(0L)
+                    .status(Constants.Judge.STATUS_COMPILE_ERROR.getStatus())
+                    .stderr(mergeNonEmptyStrings(compileError.getStdout(), compileError.getStderr()))
+                    .build();
+        } catch (Exception e) {
+            log.error("[Test Judge] [Error] [{}]", e.toString());
+            return TestJudgeRes.builder()
+                    .memory(0L)
+                    .time(0L)
+                    .status(Constants.Judge.STATUS_COMPILE_ERROR.getStatus())
+                    .stderr("Oops, something has gone wrong with the judgeServer. Please report this to administrator.")
+                    .build();
+        } finally {
+            // 删除tmpfs内存中的用户代码可执行文件
+            if (!StringUtils.isEmpty(userFileId)) {
+                SandboxRun.delFile(userFileId);
+            }
+        }
     }
 
     private Boolean checkOrCompileExtraProgram(Problem problem) throws CompileError, SystemError {
@@ -257,7 +309,7 @@ public class JudgeStrategy {
         List<JudgeCase> allCaseResList = new LinkedList<>();
 
         // 记录所有测试点的结果
-        testCaseResultList.stream().forEach(jsonObject -> {
+        testCaseResultList.forEach(jsonObject -> {
             Integer time = jsonObject.getLong("time").intValue();
             Integer memory = jsonObject.getLong("memory").intValue();
             Integer status = jsonObject.getInt("status");
@@ -285,8 +337,8 @@ public class JudgeStrategy {
                     errorTestCaseList.add(jsonObject);
                 }
             } else {
-                int oiScore = jsonObject.getInt("score").intValue();
-                if (status == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+                int oiScore = jsonObject.getInt("score");
+                if (Objects.equals(status, Constants.Judge.STATUS_ACCEPTED.getStatus())) {
                     judgeCase.setScore(oiScore);
                 } else if (status == Constants.Judge.STATUS_PARTIAL_ACCEPTED.getStatus()) {
                     errorTestCaseList.add(jsonObject);

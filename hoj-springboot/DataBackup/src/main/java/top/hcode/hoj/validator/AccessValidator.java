@@ -35,17 +35,17 @@ public class AccessValidator {
                 break;
             case PUBLIC_JUDGE:
                 if (!configVo.getOpenPublicJudge()) {
-                    throw new AccessException("网站当前未开启题目评测的功能，禁止提交！");
+                    throw new AccessException("网站当前未开启题目评测的功能，禁止提交或调试！");
                 }
                 break;
             case GROUP_JUDGE:
                 if (!configVo.getOpenGroupJudge()) {
-                    throw new AccessException("网站当前未开启团队内题目评测的功能，禁止提交！");
+                    throw new AccessException("网站当前未开启团队内题目评测的功能，禁止提交或调试！");
                 }
                 break;
             case CONTEST_JUDGE:
                 if (!configVo.getOpenContestJudge()) {
-                    throw new AccessException("网站当前未开启比赛题目评测的功能，禁止提交！");
+                    throw new AccessException("网站当前未开启比赛题目评测的功能，禁止提交或调试！");
                 }
                 break;
             case HIDE_NON_CONTEST_SUBMISSION_CODE:

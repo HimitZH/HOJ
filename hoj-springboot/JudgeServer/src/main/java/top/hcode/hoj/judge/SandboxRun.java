@@ -285,15 +285,16 @@ public class SandboxRun {
 
 
     /**
-     * @param args          普通评测运行cmd的命令参数
-     * @param envs          普通评测运行的环境变量
-     * @param testCasePath  题目数据的输入文件路径
-     * @param maxTime       评测的最大限制时间 ms
-     * @param maxOutputSize 评测的最大输出大小 kb
-     * @param maxStack      评测的最大限制栈空间 mb
-     * @param exeName       评测的用户程序名称
-     * @param fileId        评测的用户程序文件id
-     * @param fileSrc       评测的用户程序文件绝对路径，如果userFileId存在则为null
+     * @param args            普通评测运行cmd的命令参数
+     * @param envs            普通评测运行的环境变量
+     * @param testCasePath    题目数据的输入文件路径
+     * @param testCaseContent 题目数据的输入数据（与testCasePath二者选一）
+     * @param maxTime         评测的最大限制时间 ms
+     * @param maxOutputSize   评测的最大输出大小 kb
+     * @param maxStack        评测的最大限制栈空间 mb
+     * @param exeName         评测的用户程序名称
+     * @param fileId          评测的用户程序文件id
+     * @param fileContent     评测的用户程序文件内容，如果userFileId存在则为null
      * @MethodName testCase
      * @Description 普通评测
      * @Return JSONArray
@@ -302,13 +303,14 @@ public class SandboxRun {
     public static JSONArray testCase(List<String> args,
                                      List<String> envs,
                                      String testCasePath,
+                                     String testCaseContent,
                                      Long maxTime,
                                      Long maxMemory,
                                      Long maxOutputSize,
                                      Integer maxStack,
                                      String exeName,
                                      String fileId,
-                                     String fileSrc) throws SystemError {
+                                     String fileContent) throws SystemError {
 
         JSONObject cmd = new JSONObject();
         cmd.set("args", args);
@@ -316,7 +318,11 @@ public class SandboxRun {
 
         JSONArray files = new JSONArray();
         JSONObject content = new JSONObject();
-        content.set("src", testCasePath);
+        if (StringUtils.isEmpty(testCasePath)) {
+            content.set("content", testCaseContent);
+        } else {
+            content.set("src", testCasePath);
+        }
 
         JSONObject stdout = new JSONObject();
         stdout.set("name", "stdout");
@@ -347,7 +353,7 @@ public class SandboxRun {
         if (!StringUtils.isEmpty(fileId)) {
             exeFile.set("fileId", fileId);
         } else {
-            exeFile.set("src", fileSrc);
+            exeFile.set("content", fileContent);
         }
         JSONObject copyIn = new JSONObject();
         copyIn.set(exeName, exeFile);
@@ -466,7 +472,7 @@ public class SandboxRun {
      * @param envs                   测评的环境变量
      * @param userExeName            用户程序的名字
      * @param userFileId             用户程序在编译后返回的id，主要是对应内存中已编译后的文件
-     * @param userFileSrc            用户程序文件的绝对路径，如果userFileId存在则为null
+     * @param userFileContent        用户程序文件的内容，如果userFileId存在则为null
      * @param userMaxTime            用户程序的最大测评时间 ms
      * @param userMaxStack           用户程序的最大测评栈空间 mb
      * @param testCaseInputPath      题目数据的输入文件路径
@@ -487,7 +493,7 @@ public class SandboxRun {
                                              List<String> envs,
                                              String userExeName,
                                              String userFileId,
-                                             String userFileSrc,
+                                             String userFileContent,
                                              Long userMaxTime,
                                              Long userMaxMemory,
                                              Integer userMaxStack,
@@ -536,7 +542,7 @@ public class SandboxRun {
         if (!StringUtils.isEmpty(userFileId)) {
             exeFile.set("fileId", userFileId);
         } else {
-            exeFile.set("src", userFileSrc);
+            exeFile.set("content", userFileContent);
         }
         JSONObject copyIn = new JSONObject();
         copyIn.set(userExeName, exeFile);

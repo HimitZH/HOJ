@@ -8,8 +8,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.judge.AbstractReceiver;
 import top.hcode.hoj.judge.Dispatcher;
+import top.hcode.hoj.pojo.dto.TestJudgeReq;
 import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.entity.judge.ToJudge;
+import top.hcode.hoj.pojo.dto.ToJudgeDTO;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
@@ -30,10 +31,12 @@ public class JudgeReceiver extends AbstractReceiver {
 
     @Async("judgeTaskAsyncPool")
     public void processWaitingTask() {
-        // 优先处理比赛的提交
-        // 其次处理普通提交的提交
+        // 优先处理比赛的提交任务
+        // 其次处理普通提交的提交任务
+        // 最后处理在线调试的任务
         handleWaitingTask(Constants.Queue.CONTEST_JUDGE_WAITING.getName(),
-                Constants.Queue.GENERAL_JUDGE_WAITING.getName());
+                Constants.Queue.GENERAL_JUDGE_WAITING.getName(),
+                Constants.Queue.TEST_JUDGE_WAITING.getName());
     }
 
 
@@ -48,15 +51,20 @@ public class JudgeReceiver extends AbstractReceiver {
     }
 
     @Override
-    public void handleJudgeMsg(String taskJsonStr) {
-        JSONObject task = JSONUtil.parseObj(taskJsonStr);
-        Judge judge = task.get("judge", Judge.class);
-        String token = task.getStr("token");
-        // 调用判题服务
-        dispatcher.dispatcher("judge", "/judge", new ToJudge()
-                .setJudge(judge)
-                .setToken(token)
-                .setRemoteJudgeProblem(null));
+    public void handleJudgeMsg(String taskStr, String queueName) {
+        if (Constants.Queue.TEST_JUDGE_WAITING.getName().equals(queueName)){
+            TestJudgeReq testJudgeReq = JSONUtil.toBean(taskStr, TestJudgeReq.class);
+            dispatcher.dispatcherTestJudge(testJudgeReq,"/test-judge");
+        }else {
+            JSONObject task = JSONUtil.parseObj(taskStr);
+            Judge judge = task.get("judge", Judge.class);
+            String token = task.getStr("token");
+            // 调用判题服务
+            dispatcher.dispatcherJudge("judge", "/judge", new ToJudgeDTO()
+                    .setJudge(judge)
+                    .setToken(token)
+                    .setRemoteJudgeProblem(null));
+        }
         // 接着处理任务
         processWaitingTask();
     }

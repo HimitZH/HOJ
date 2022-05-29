@@ -756,7 +756,7 @@ export default {
   position: fixed;
   left: 0px;
   top: 0px;
-  z-index: 1800;
+  z-index: 2500;
   height: auto;
   width: 100%;
 }

@@ -9,6 +9,9 @@ import top.hcode.hoj.judge.entity.JudgeGlobalDTO;
 import top.hcode.hoj.judge.task.DefaultJudge;
 import top.hcode.hoj.judge.task.InteractiveJudge;
 import top.hcode.hoj.judge.task.SpecialJudge;
+import top.hcode.hoj.judge.task.TestJudge;
+import top.hcode.hoj.pojo.dto.TestJudgeReq;
+import top.hcode.hoj.pojo.dto.TestJudgeRes;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.JudgeUtils;
@@ -36,13 +39,16 @@ public class JudgeRun {
     @Resource
     private InteractiveJudge interactiveJudge;
 
+    @Resource
+    private TestJudge testJudge;
+
     public List<JSONObject> judgeAllCase(Long submitId,
                                          Problem problem,
                                          String judgeLanguage,
                                          String testCasesDir,
                                          JSONObject testCasesInfo,
                                          String userFileId,
-                                         String userFileSrc,
+                                         String userFileContent,
                                          Boolean getUserOutput)
             throws SystemError, ExecutionException, InterruptedException {
 
@@ -73,7 +79,7 @@ public class JudgeRun {
                 .problemId(problem.getId())
                 .judgeMode(judgeMode)
                 .userFileId(userFileId)
-                .userFileSrc(userFileSrc)
+                .userFileContent(userFileContent)
                 .runDir(runDir)
                 .testTime(testTime)
                 .maxMemory((long) problem.getMemoryLimit())
@@ -159,6 +165,53 @@ public class JudgeRun {
             }
         }
         return result;
+    }
+
+    public TestJudgeRes testJudgeCase(String userFileId, TestJudgeReq testJudgeReq) throws ExecutionException, InterruptedException {
+
+        // 默认给限制时间+200ms用来测评
+        Long testTime = testJudgeReq.getTimeLimit() + 200L;
+
+        Constants.RunConfig runConfig = Constants.RunConfig.getRunnerByLanguage(testJudgeReq.getLanguage());
+
+        JudgeGlobalDTO judgeGlobalDTO = JudgeGlobalDTO.builder()
+                .judgeMode(Constants.JudgeMode.TEST)
+                .userFileId(userFileId)
+                .userFileContent(testJudgeReq.getCode())
+                .testTime(testTime)
+                .maxMemory((long) testJudgeReq.getMemoryLimit())
+                .maxTime((long) testJudgeReq.getTimeLimit())
+                .maxStack(testJudgeReq.getStackLimit())
+                .runConfig(runConfig)
+                .build();
+
+        Long maxOutputSize = Math.max(testJudgeReq.getTestCaseInput().length() * 2L, 16 * 1024 * 1024L);
+
+        JudgeDTO judgeDTO = JudgeDTO.builder()
+                .testCaseInputContent(testJudgeReq.getTestCaseInput())
+                .maxOutputSize(maxOutputSize)
+                .testCaseOutputContent(testJudgeReq.getExpectedOutput())
+                .build();
+
+        FutureTask<JSONObject> testJudgeFutureTask = new FutureTask<>(() -> testJudge.judge(judgeDTO, judgeGlobalDTO));
+
+        ThreadPoolUtils.getInstance()
+                .getThreadPool()
+                .submit(testJudgeFutureTask);
+
+        while (true) {
+            if (testJudgeFutureTask.isDone() && !testJudgeFutureTask.isCancelled()) {
+                JSONObject judgeRes = testJudgeFutureTask.get();
+                return TestJudgeRes.builder()
+                        .status(judgeRes.getInt("status"))
+                        .memory(judgeRes.getLong("memory"))
+                        .time(judgeRes.getLong("time"))
+                        .stdout(judgeRes.getStr("output"))
+                        .stderr(judgeRes.getStr("errMsg"))
+                        .build();
+            }
+            Thread.sleep(100); // 避免CPU高速运转，这里休息100毫秒
+        }
     }
 
 }

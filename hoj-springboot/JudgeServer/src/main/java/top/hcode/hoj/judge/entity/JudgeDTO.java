@@ -31,9 +31,19 @@ public class JudgeDTO implements Serializable {
     private String testCaseInputPath;
 
     /**
+     * 当前题目评测点的输入内容
+     */
+    private String testCaseInputContent;
+
+    /**
      * 当前题目评测点的输出文件的绝对路径
      */
     private String testCaseOutputPath;
+
+    /**
+     * 当前题目评测点的标准输出内容(目前只用于testJudge)
+     */
+    private String testCaseOutputContent;
 
     /**
      * 当前题目评测点的输出字符大小限制 kb
