@@ -186,7 +186,9 @@ public class JudgeManager {
                 .setLanguage(testJudgeDto.getLanguage())
                 .setUniqueKey(uniqueKey)
                 .setExpectedOutput(testJudgeDto.getExpectedOutput())
-                .setTestCaseInput(testJudgeDto.getUserInput());
+                .setTestCaseInput(testJudgeDto.getUserInput())
+                .setProblemJudgeMode(problem.getJudgeMode())
+                .setIsRemoveEndBlank(problem.getIsRemoveEndBlank());
         String userExtraFile = problem.getUserExtraFile();
         if (!StringUtils.isEmpty(userExtraFile)) {
             testJudgeReq.setExtraFile((HashMap<String, String>) JSONUtil.toBean(userExtraFile, Map.class));
@@ -215,6 +217,7 @@ public class JudgeManager {
         testJudgeVo.setMemory(testJudgeRes.getMemory());
         testJudgeVo.setTime(testJudgeRes.getTime());
         testJudgeVo.setStderr(testJudgeRes.getStderr());
+        testJudgeVo.setProblemJudgeMode(testJudgeRes.getProblemJudgeMode());
         redisUtils.del(testJudgeKey);
         return testJudgeVo;
     }

@@ -490,6 +490,7 @@ export const m = {
   Test_Result: 'Test Result',
   Running_Test: 'Running Test',
   Non_Test_Judge_Tips:'After entering the test case, click Running test, and the running results will be displayed here.',
+  Problem_Uncertain_Answer: 'Note: there may be multiple outputs that meet the requirements of this problem. Please judge whether the program output passes.',
   Fill_Case: 'Fill Case',
   Compilation_Failed: 'Compilation Failed',
   Test_Input: 'Test Input',

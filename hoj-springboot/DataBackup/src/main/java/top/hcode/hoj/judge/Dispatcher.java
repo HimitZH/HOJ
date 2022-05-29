@@ -99,6 +99,7 @@ public class Dispatcher {
                             TestJudgeRes testJudgeRes = resultJson.getBean("data", TestJudgeRes.class);
                             testJudgeRes.setInput(testJudgeReq.getTestCaseInput());
                             testJudgeRes.setExpectedOutput(testJudgeReq.getExpectedOutput());
+                            testJudgeRes.setProblemJudgeMode(testJudgeReq.getProblemJudgeMode());
                             redisUtils.set(testJudgeReq.getUniqueKey(), testJudgeRes, 60);
                         } else {
                             TestJudgeRes testJudgeRes = TestJudgeRes.builder()

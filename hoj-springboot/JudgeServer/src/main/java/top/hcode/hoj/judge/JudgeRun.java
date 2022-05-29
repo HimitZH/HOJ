@@ -182,6 +182,7 @@ public class JudgeRun {
                 .maxMemory((long) testJudgeReq.getMemoryLimit())
                 .maxTime((long) testJudgeReq.getTimeLimit())
                 .maxStack(testJudgeReq.getStackLimit())
+                .removeEOLBlank(testJudgeReq.getIsRemoveEndBlank())
                 .runConfig(runConfig)
                 .build();
 

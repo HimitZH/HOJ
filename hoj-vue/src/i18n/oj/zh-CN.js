@@ -492,6 +492,7 @@ export const m = {
   Test_Result: '运行结果',
   Running_Test: '运行自测',
   Non_Test_Judge_Tips: '输入测试用例后，点击运行自测，这里将会显示运行结果',
+  Problem_Uncertain_Answer:'注意：本题可能存在多个符合题目要求的输出，请自行判断程序输出是否通过。',
   Fill_Case: '填充用例',
   Compilation_Failed: '编译失败',
   Test_Input: '自测输入',

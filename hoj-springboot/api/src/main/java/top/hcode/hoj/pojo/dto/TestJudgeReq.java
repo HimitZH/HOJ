@@ -69,4 +69,14 @@ public class TestJudgeReq implements Serializable {
      */
     private String expectedOutput;
 
+    /**
+     * 是否在对比testcaseOutput和expectedOutput去除每行末尾空白符
+     */
+    private Boolean isRemoveEndBlank;
+
+    /**
+     * 原题的评测模式：default、spj、interactive
+     */
+    private String problemJudgeMode;
+
 }
