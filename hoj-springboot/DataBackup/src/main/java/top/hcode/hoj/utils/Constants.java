@@ -62,6 +62,7 @@ public class Constants {
     public enum Queue{
         CONTEST_JUDGE_WAITING("Contest_Waiting_Handle_Queue"),
         GENERAL_JUDGE_WAITING("General_Waiting_Handle_Queue"),
+        TEST_JUDGE_WAITING("Test_Judge_Waiting_Handle_Queue"),
         CONTEST_REMOTE_JUDGE_WAITING_HANDLE("Contest_Remote_Waiting_Handle_Queue"),
         GENERAL_REMOTE_JUDGE_WAITING_HANDLE("General_Remote_Waiting_Handle_Queue");
 
@@ -178,6 +179,7 @@ public class Constants {
         SUPER_ADMIN_UID_LIST_CACHE("super_admin_uid_list_case"),
 
         SUBMIT_NON_CONTEST_LOCK("submit_non_contest_lock:"),
+        TEST_JUDGE_LOCK("test_judge_lock:"),
         SUBMIT_CONTEST_LOCK("submit_contest_lock:"),
         DISCUSSION_ADD_NUM_LOCK("discussion_add_num_lock:"),
         GROUP_ADD_NUM_LOCK("group_add_num_lock"),

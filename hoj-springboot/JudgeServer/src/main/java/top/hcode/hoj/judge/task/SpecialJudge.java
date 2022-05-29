@@ -32,13 +32,14 @@ public class SpecialJudge extends AbstractJudge {
                 parseRunCommand(runConfig.getCommand(), runConfig, null, null, null),
                 runConfig.getEnvs(),
                 judgeDTO.getTestCaseInputPath(),
+                null,
                 judgeGlobalDTO.getTestTime(),
                 judgeGlobalDTO.getMaxMemory(),
                 judgeDTO.getMaxOutputSize(),
                 judgeGlobalDTO.getMaxStack(),
                 runConfig.getExeName(),
                 judgeGlobalDTO.getUserFileId(),
-                judgeGlobalDTO.getUserFileSrc());
+                judgeGlobalDTO.getUserFileContent());
     }
 
 

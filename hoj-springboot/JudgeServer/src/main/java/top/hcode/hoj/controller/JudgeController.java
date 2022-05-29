@@ -4,14 +4,17 @@ package top.hcode.hoj.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.CommonResult;
 import top.hcode.hoj.common.ResultStatus;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.dao.JudgeServerEntityService;
-import top.hcode.hoj.pojo.entity.judge.CompileDTO;
+import top.hcode.hoj.pojo.dto.CompileDTO;
+import top.hcode.hoj.pojo.dto.TestJudgeReq;
+import top.hcode.hoj.pojo.dto.TestJudgeRes;
 import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.entity.judge.ToJudge;
+import top.hcode.hoj.pojo.dto.ToJudgeDTO;
 import top.hcode.hoj.service.JudgeService;
 
 import java.util.HashMap;
@@ -44,13 +47,13 @@ public class JudgeController {
     }
 
     @PostMapping(value = "/judge")
-    public CommonResult<Void> submitProblemJudge(@RequestBody ToJudge toJudge) {
+    public CommonResult<Void> submitProblemJudge(@RequestBody ToJudgeDTO toJudgeDTO) {
 
-        if (!toJudge.getToken().equals(judgeToken)) {
+        if (!toJudgeDTO.getToken().equals(judgeToken)) {
             return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", ResultStatus.ACCESS_DENIED);
         }
 
-        Judge judge = toJudge.getJudge();
+        Judge judge = toJudgeDTO.getJudge();
 
         if (judge == null || judge.getSubmitId() == null || judge.getUid() == null || judge.getPid() == null) {
             return CommonResult.errorResponse("调用参数错误！请检查您的调用参数！");
@@ -62,11 +65,31 @@ public class JudgeController {
     }
 
 
+    @PostMapping(value = "/test-judge")
+    public CommonResult<TestJudgeRes> submitProblemTestJudge(@RequestBody TestJudgeReq testJudgeReq) {
+
+        if (testJudgeReq == null
+                || StringUtils.isEmpty(testJudgeReq.getCode())
+                || StringUtils.isEmpty(testJudgeReq.getLanguage())
+                || StringUtils.isEmpty(testJudgeReq.getUniqueKey())
+                || testJudgeReq.getTimeLimit() == null
+                || testJudgeReq.getMemoryLimit() == null
+                || testJudgeReq.getStackLimit() == null) {
+            return CommonResult.errorResponse("调用参数错误！请检查您的调用参数！");
+        }
+
+        if (!testJudgeReq.getToken().equals(judgeToken)) {
+            return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", ResultStatus.ACCESS_DENIED);
+        }
+        return CommonResult.successResponse(judgeService.testJudge(testJudgeReq));
+    }
+
+
     @PostMapping(value = "/compile-spj")
     public CommonResult<Void> compileSpj(@RequestBody CompileDTO compileDTO) {
 
         if (!compileDTO.getToken().equals(judgeToken)) {
-            return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！",ResultStatus.ACCESS_DENIED);
+            return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", ResultStatus.ACCESS_DENIED);
         }
 
         try {
@@ -93,22 +116,22 @@ public class JudgeController {
     }
 
     @PostMapping(value = "/remote-judge")
-    public CommonResult<Void> remoteJudge(@RequestBody ToJudge toJudge) {
+    public CommonResult<Void> remoteJudge(@RequestBody ToJudgeDTO toJudgeDTO) {
 
         if (!openRemoteJudge) {
             return CommonResult.errorResponse("对不起！该判题服务器未开启远程虚拟判题功能！", ResultStatus.ACCESS_DENIED);
         }
 
-        if (!toJudge.getToken().equals(judgeToken)) {
+        if (!toJudgeDTO.getToken().equals(judgeToken)) {
             return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", ResultStatus.ACCESS_DENIED);
         }
 
 
-        if (toJudge.getJudge() == null) {
+        if (toJudgeDTO.getJudge() == null) {
             return CommonResult.errorResponse("请求参数不能为空！");
         }
 
-        judgeService.remoteJudge(toJudge);
+        judgeService.remoteJudge(toJudgeDTO);
 
         return CommonResult.successResponse("提交成功");
     }

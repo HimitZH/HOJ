@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.dao.JudgeEntityService;
 import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.entity.judge.ToJudge;
+import top.hcode.hoj.pojo.dto.ToJudgeDTO;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeFactory;
 import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
@@ -37,31 +37,31 @@ public class RemoteJudgeContext {
     public static final boolean openCodeforcesFixServer = false;
 
     @Async
-    public void judge(ToJudge toJudge) {
-        String[] source = toJudge.getRemoteJudgeProblem().split("-");
+    public void judge(ToJudgeDTO toJudgeDTO) {
+        String[] source = toJudgeDTO.getRemoteJudgeProblem().split("-");
         String remoteOj = source[0];
         String remoteProblemId = source[1];
 
         RemoteJudgeDTO remoteJudgeDTO = RemoteJudgeDTO.builder()
-                .judgeId(toJudge.getJudge().getSubmitId())
-                .uid(toJudge.getJudge().getUid())
-                .cid(toJudge.getJudge().getCid())
-                .pid(toJudge.getJudge().getPid())
-                .gid(toJudge.getJudge().getGid())
-                .username(toJudge.getUsername())
-                .password(toJudge.getPassword())
+                .judgeId(toJudgeDTO.getJudge().getSubmitId())
+                .uid(toJudgeDTO.getJudge().getUid())
+                .cid(toJudgeDTO.getJudge().getCid())
+                .pid(toJudgeDTO.getJudge().getPid())
+                .gid(toJudgeDTO.getJudge().getGid())
+                .username(toJudgeDTO.getUsername())
+                .password(toJudgeDTO.getPassword())
                 .oj(remoteOj)
                 .completeProblemId(remoteProblemId)
-                .userCode(toJudge.getJudge().getCode())
-                .language(toJudge.getJudge().getLanguage())
-                .serverIp(toJudge.getJudgeServerIp())
-                .serverPort(toJudge.getJudgeServerPort())
-                .submitId(toJudge.getJudge().getVjudgeSubmitId())
+                .userCode(toJudgeDTO.getJudge().getCode())
+                .language(toJudgeDTO.getJudge().getLanguage())
+                .serverIp(toJudgeDTO.getJudgeServerIp())
+                .serverPort(toJudgeDTO.getJudgeServerPort())
+                .submitId(toJudgeDTO.getJudge().getVjudgeSubmitId())
                 .build();
 
         initProblemId(remoteJudgeDTO);
 
-        Boolean isHasSubmitIdRemoteReJudge = toJudge.getIsHasSubmitIdRemoteReJudge();
+        Boolean isHasSubmitIdRemoteReJudge = toJudgeDTO.getIsHasSubmitIdRemoteReJudge();
 
         RemoteJudgeStrategy remoteJudgeStrategy = buildJudgeStrategy(remoteJudgeDTO);
         if (remoteJudgeStrategy != null) {

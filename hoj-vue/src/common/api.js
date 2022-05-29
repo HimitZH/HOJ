@@ -268,7 +268,20 @@ const ojApi = {
       }
     })
   },
-
+  // 在线调试
+  submitTestJudge(data){
+    return ajax('/api/submit-problem-test-judge', 'post', {
+      data
+    })
+  },
+  // 获取调试结果
+  getTestJudgeResult(testJudgeKey){
+    return ajax('/api/get-test-judge-result', 'get', {
+      params: {
+        testJudgeKey
+      }
+    })
+  },
   // 获取单个提交的全部测试点详情
   getAllCaseResult (submitId) {
     return ajax('/api/get-all-case-result', 'get', {

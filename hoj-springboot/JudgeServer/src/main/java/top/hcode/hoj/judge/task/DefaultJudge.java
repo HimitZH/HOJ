@@ -30,13 +30,14 @@ public class DefaultJudge extends AbstractJudge {
                 parseRunCommand(runConfig.getCommand(), runConfig, null, null, null),
                 runConfig.getEnvs(),
                 judgeDTO.getTestCaseInputPath(),
+                judgeDTO.getTestCaseInputContent(),
                 judgeGlobalDTO.getTestTime(),
                 judgeGlobalDTO.getMaxMemory(),
                 judgeDTO.getMaxOutputSize(),
                 judgeGlobalDTO.getMaxStack(),
                 runConfig.getExeName(),
                 judgeGlobalDTO.getUserFileId(),
-                judgeGlobalDTO.getUserFileSrc());
+                judgeGlobalDTO.getUserFileContent());
     }
 
     @Override

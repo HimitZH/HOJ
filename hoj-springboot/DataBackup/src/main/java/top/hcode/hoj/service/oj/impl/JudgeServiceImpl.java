@@ -2,20 +2,19 @@ package top.hcode.hoj.service.oj.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.stereotype.Service;
-import top.hcode.hoj.common.exception.StatusAccessDeniedException;
-import top.hcode.hoj.common.exception.StatusFailException;
-import top.hcode.hoj.common.exception.StatusForbiddenException;
-import top.hcode.hoj.common.exception.StatusNotFoundException;
+import top.hcode.hoj.common.exception.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.exception.AccessException;
 import top.hcode.hoj.manager.oj.JudgeManager;
 import top.hcode.hoj.pojo.dto.SubmitIdListDto;
+import top.hcode.hoj.pojo.dto.TestJudgeDto;
 import top.hcode.hoj.pojo.dto.ToJudgeDto;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.JudgeCase;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.SubmissionInfoVo;
+import top.hcode.hoj.pojo.vo.TestJudgeVo;
 import top.hcode.hoj.service.oj.JudgeService;
 
 import javax.annotation.Resource;
@@ -49,6 +48,19 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
+    public CommonResult<String> submitProblemTestJudge(TestJudgeDto testJudgeDto) {
+        try {
+            return CommonResult.successResponse(judgeManager.submitProblemTestJudge(testJudgeDto), "success");
+        } catch (StatusForbiddenException | AccessException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
+        } catch (StatusFailException e) {
+            return CommonResult.errorResponse(e.getMessage());
+        } catch (StatusSystemErrorException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.SYSTEM_ERROR);
+        }
+    }
+
+    @Override
     public CommonResult<Judge> resubmit(Long submitId) {
         try {
             return CommonResult.successResponse(judgeManager.resubmit(submitId));
@@ -65,6 +77,15 @@ public class JudgeServiceImpl implements JudgeService {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.NOT_FOUND);
         } catch (StatusAccessDeniedException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.ACCESS_DENIED);
+        }
+    }
+
+    @Override
+    public CommonResult<TestJudgeVo> getTestJudgeResult(String testJudgeKey) {
+        try {
+            return CommonResult.successResponse(judgeManager.getTestJudgeResult(testJudgeKey));
+        } catch (StatusFailException e) {
+            return CommonResult.errorResponse(e.getMessage());
         }
     }
 

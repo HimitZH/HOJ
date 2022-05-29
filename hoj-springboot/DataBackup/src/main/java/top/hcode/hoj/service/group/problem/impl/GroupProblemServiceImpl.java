@@ -7,7 +7,7 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.group.problem.GroupProblemManager;
 import top.hcode.hoj.pojo.dto.ProblemDto;
-import top.hcode.hoj.pojo.entity.judge.CompileDTO;
+import top.hcode.hoj.pojo.dto.CompileDTO;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.ProblemCase;
 import top.hcode.hoj.pojo.entity.problem.Tag;

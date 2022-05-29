@@ -22,7 +22,7 @@ import top.hcode.hoj.dao.problem.TagEntityService;
 import top.hcode.hoj.judge.Dispatcher;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.group.Group;
-import top.hcode.hoj.pojo.entity.judge.CompileDTO;
+import top.hcode.hoj.pojo.dto.CompileDTO;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.ProblemCase;
@@ -375,7 +375,7 @@ public class GroupProblemManager {
         }
 
         compileDTO.setToken(judgeToken);
-        dispatcher.dispatcher("compile", "/compile-spj", compileDTO);
+        dispatcher.dispatcherJudge("compile", "/compile-spj", compileDTO);
     }
 
     public void compileInteractive(CompileDTO compileDTO, Long gid) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
@@ -400,7 +400,7 @@ public class GroupProblemManager {
         }
 
         compileDTO.setToken(judgeToken);
-        dispatcher.dispatcher("compile", "/compile-interactive", compileDTO);
+        dispatcher.dispatcherJudge("compile", "/compile-interactive", compileDTO);
     }
 
     public void changeProblemAuth(Long pid, Integer auth) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {

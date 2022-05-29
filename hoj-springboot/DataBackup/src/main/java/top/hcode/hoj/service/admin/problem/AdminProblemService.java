@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ProblemDto;
-import top.hcode.hoj.pojo.entity.judge.CompileDTO;
+import top.hcode.hoj.pojo.dto.CompileDTO;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.ProblemCase;
 import java.util.List;

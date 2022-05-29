@@ -49,7 +49,7 @@ public class RemoteJudgeDispatcher {
                 judgeEntityService.updateById(new Judge()
                         .setSubmitId(judge.getSubmitId())
                         .setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
-                        .setErrorMessage("Please try to submit again!")
+                        .setErrorMessage("Call Redis to push task error. Please try to submit again!")
                 );
             }
             remoteJudgeReceiver.processWaitingTask();

@@ -31,7 +31,7 @@ export const JUDGE_STATUS = {
     name: 'Wrong Answer',
     short: 'WA',
     color: 'red',
-    type: 'danger',
+    type: 'error',
     rgb:'#ed3f14'
   },
   '0': {
@@ -45,21 +45,21 @@ export const JUDGE_STATUS = {
     name: 'Time Limit Exceeded',
     short: 'TLE',
     color: 'red',
-    type: 'danger',
+    type: 'error',
     rgb:'#ed3f14'
   },
   '2': {
     name: 'Memory Limit Exceeded',
     short: 'MLE',
     color: 'red',
-    type: 'danger',
+    type: 'error',
     rgb:'#ed3f14'
   },
   '3': {
     name: 'Runtime Error',
     short: 'RE',
     color: 'red',
-    type: 'danger',
+    type: 'error',
     rgb:'#ed3f14'
   },
   '4': {
@@ -111,6 +111,7 @@ export const JUDGE_STATUS = {
 }
 
 export const JUDGE_STATUS_RESERVE={
+  'ns':-10,
   'snr':-5,
   'pe':-3,
   'ce':-2,
@@ -120,8 +121,8 @@ export const JUDGE_STATUS_RESERVE={
   'mle':2,
   're':3,
   'se':4,
-  'Compiling':5,
-  'Pending':6,
+  'Pending':5,
+  'Compiling':6,
   'Judging':7,
   'pa':8,
   'sf':10,

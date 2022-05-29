@@ -16,7 +16,7 @@ import top.hcode.hoj.judge.ChooseUtils;
 import top.hcode.hoj.judge.Dispatcher;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
-import top.hcode.hoj.pojo.entity.judge.ToJudge;
+import top.hcode.hoj.pojo.dto.ToJudgeDTO;
 import top.hcode.hoj.pojo.vo.ConfigVo;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
@@ -70,8 +70,8 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
     }
 
     @Override
-    public void handleJudgeMsg(String taskJsonStr) {
-        JSONObject task = JSONUtil.parseObj(taskJsonStr);
+    public void handleJudgeMsg(String taskStr, String queueName) {
+        JSONObject task = JSONUtil.parseObj(taskStr);
 
         Judge judge = task.get("judge", Judge.class);
         String token = task.getStr("token");
@@ -89,8 +89,8 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
     private void dispatchRemoteJudge(Judge judge, String token, String remoteJudgeProblem,
                                      Boolean isHasSubmitIdRemoteReJudge, String remoteOJName) {
 
-        ToJudge toJudge = new ToJudge();
-        toJudge.setJudge(judge)
+        ToJudgeDTO toJudgeDTO = new ToJudgeDTO();
+        toJudgeDTO.setJudge(judge)
                 .setToken(token)
                 .setRemoteJudgeProblem(remoteJudgeProblem);
         Constants.RemoteOJ remoteOJ = Constants.RemoteOJ.getRemoteOJ(remoteOJName);
@@ -103,14 +103,14 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
             if (remoteOJName.equals(Constants.RemoteOJ.CODEFORCES.getName())
                     || remoteOJName.equals(Constants.RemoteOJ.GYM.getName())) {
                 if (ChooseUtils.openCodeforcesFixServer) {
-                    fixServerCFJudge(isHasSubmitIdRemoteReJudge, toJudge, judge);
+                    fixServerCFJudge(isHasSubmitIdRemoteReJudge, toJudgeDTO, judge);
                 } else {
-                    commonJudge(Constants.RemoteOJ.CODEFORCES.getName(), isHasSubmitIdRemoteReJudge, toJudge, judge);
+                    commonJudge(Constants.RemoteOJ.CODEFORCES.getName(), isHasSubmitIdRemoteReJudge, toJudgeDTO, judge);
                 }
             } else if (remoteOJName.equals(Constants.RemoteOJ.POJ.getName())) {
-                pojJudge(isHasSubmitIdRemoteReJudge, toJudge, judge);
+                pojJudge(isHasSubmitIdRemoteReJudge, toJudgeDTO, judge);
             } else {
-                commonJudge(remoteOJName, isHasSubmitIdRemoteReJudge, toJudge, judge);
+                commonJudge(remoteOJName, isHasSubmitIdRemoteReJudge, toJudgeDTO, judge);
             }
         }
         // 如果队列中还有任务，则继续处理
@@ -118,20 +118,20 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
     }
 
 
-    private void commonJudge(String OJName, Boolean isHasSubmitIdRemoteReJudge, ToJudge toJudge, Judge judge) {
+    private void commonJudge(String OJName, Boolean isHasSubmitIdRemoteReJudge, ToJudgeDTO toJudgeDTO, Judge judge) {
 
         if (isHasSubmitIdRemoteReJudge) {
-            toJudge.setIsHasSubmitIdRemoteReJudge(true);
-            toJudge.setUsername(judge.getVjudgeUsername());
-            toJudge.setPassword(judge.getVjudgePassword());
+            toJudgeDTO.setIsHasSubmitIdRemoteReJudge(true);
+            toJudgeDTO.setUsername(judge.getVjudgeUsername());
+            toJudgeDTO.setPassword(judge.getVjudgePassword());
             // 调用判题服务
-            dispatcher.dispatcher("judge", "/remote-judge", toJudge);
+            dispatcher.dispatcherJudge("judge", "/remote-judge", toJudgeDTO);
             return;
         }
 
         // 尝试600s
         AtomicInteger tryNum = new AtomicInteger(0);
-        String key = UUID.randomUUID().toString() + toJudge.getJudge().getSubmitId();
+        String key = UUID.randomUUID().toString() + toJudgeDTO.getJudge().getSubmitId();
         Runnable getResultTask = new Runnable() {
             @Override
             public void run() {
@@ -153,11 +153,11 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
                 tryNum.getAndIncrement();
                 RemoteJudgeAccount account = chooseUtils.chooseRemoteAccount(OJName, judge.getVjudgeUsername(), false);
                 if (account != null) {
-                    toJudge.setUsername(account.getUsername())
+                    toJudgeDTO.setUsername(account.getUsername())
                             .setPassword(account.getPassword());
-                    toJudge.setIsHasSubmitIdRemoteReJudge(false);
+                    toJudgeDTO.setIsHasSubmitIdRemoteReJudge(false);
                     // 调用判题服务
-                    dispatcher.dispatcher("judge", "/remote-judge", toJudge);
+                    dispatcher.dispatcherJudge("judge", "/remote-judge", toJudgeDTO);
                     Future future = futureTaskMap.get(key);
                     if (future != null) {
                         future.cancel(true);
@@ -171,7 +171,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
     }
 
 
-    private void pojJudge(Boolean isHasSubmitIdRemoteReJudge, ToJudge toJudge, Judge judge) {
+    private void pojJudge(Boolean isHasSubmitIdRemoteReJudge, ToJudgeDTO toJudgeDTO, Judge judge) {
 
 
         if (StringUtils.isEmpty(judge.getVjudgeUsername())) {
@@ -191,7 +191,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
 
         // 尝试600s
         AtomicInteger tryNum = new AtomicInteger(0);
-        String key = UUID.randomUUID().toString() + toJudge.getJudge().getSubmitId();
+        String key = UUID.randomUUID().toString() + toJudgeDTO.getJudge().getSubmitId();
         boolean finalIsHasSubmitIdRemoteReJudge = isHasSubmitIdRemoteReJudge;
         Runnable getResultTask = new Runnable() {
             @Override
@@ -215,11 +215,11 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
                 RemoteJudgeAccount account = chooseUtils.chooseRemoteAccount(Constants.RemoteOJ.POJ.getName()
                         , judge.getVjudgeUsername(), finalIsHasSubmitIdRemoteReJudge);
                 if (account != null) {
-                    toJudge.setUsername(account.getUsername())
+                    toJudgeDTO.setUsername(account.getUsername())
                             .setPassword(account.getPassword());
-                    toJudge.setIsHasSubmitIdRemoteReJudge(finalIsHasSubmitIdRemoteReJudge);
+                    toJudgeDTO.setIsHasSubmitIdRemoteReJudge(finalIsHasSubmitIdRemoteReJudge);
                     // 调用判题服务
-                    dispatcher.dispatcher("judge", "/remote-judge", toJudge);
+                    dispatcher.dispatcherJudge("judge", "/remote-judge", toJudgeDTO);
                     Future future = futureTaskMap.get(key);
                     if (future != null) {
                         future.cancel(true);
@@ -232,19 +232,19 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
         futureTaskMap.put(key, scheduledFuture);
     }
 
-    private void fixServerCFJudge(Boolean isHasSubmitIdRemoteReJudge, ToJudge toJudge, Judge judge) {
+    private void fixServerCFJudge(Boolean isHasSubmitIdRemoteReJudge, ToJudgeDTO toJudgeDTO, Judge judge) {
 
         if (isHasSubmitIdRemoteReJudge) {
-            toJudge.setIsHasSubmitIdRemoteReJudge(true);
-            toJudge.setUsername(judge.getVjudgeUsername());
-            toJudge.setPassword(judge.getVjudgePassword());
+            toJudgeDTO.setIsHasSubmitIdRemoteReJudge(true);
+            toJudgeDTO.setUsername(judge.getVjudgeUsername());
+            toJudgeDTO.setPassword(judge.getVjudgePassword());
             // 调用判题服务
-            dispatcher.dispatcher("judge", "/remote-judge", toJudge);
+            dispatcher.dispatcherJudge("judge", "/remote-judge", toJudgeDTO);
             return;
         }
 
         // 尝试600s
-        String key = UUID.randomUUID().toString() + toJudge.getJudge().getSubmitId();
+        String key = UUID.randomUUID().toString() + toJudgeDTO.getJudge().getSubmitId();
         AtomicInteger tryNum = new AtomicInteger(0);
         Runnable getResultTask = new Runnable() {
             @Override
@@ -270,13 +270,13 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
                     RemoteJudgeAccount account = (RemoteJudgeAccount) result.get("account");
                     int index = (int) result.get("index");
                     int size = (int) result.get("size");
-                    toJudge.setUsername(account.getUsername())
+                    toJudgeDTO.setUsername(account.getUsername())
                             .setPassword(account.getPassword());
-                    toJudge.setIsHasSubmitIdRemoteReJudge(false);
-                    toJudge.setIndex(index);
-                    toJudge.setSize(size);
+                    toJudgeDTO.setIsHasSubmitIdRemoteReJudge(false);
+                    toJudgeDTO.setIndex(index);
+                    toJudgeDTO.setSize(size);
                     // 调用判题服务
-                    dispatcher.dispatcher("judge", "/remote-judge", toJudge);
+                    dispatcher.dispatcherJudge("judge", "/remote-judge", toJudgeDTO);
                     Future future = futureTaskMap.get(key);
                     if (future != null) {
                         future.cancel(true);
