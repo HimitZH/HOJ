@@ -189,7 +189,7 @@ public class JudgeRun {
         Long maxOutputSize = Math.max(testJudgeReq.getTestCaseInput().length() * 2L, 16 * 1024 * 1024L);
 
         JudgeDTO judgeDTO = JudgeDTO.builder()
-                .testCaseInputContent(testJudgeReq.getTestCaseInput())
+                .testCaseInputContent(testJudgeReq.getTestCaseInput() + "\n")
                 .maxOutputSize(maxOutputSize)
                 .testCaseOutputContent(testJudgeReq.getExpectedOutput())
                 .build();
