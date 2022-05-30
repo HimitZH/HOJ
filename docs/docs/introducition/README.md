@@ -33,8 +33,9 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
     - 支持私有团队、公开团队、保护团队
     - 支持testlib的特殊判题
     - 支持交互判题
+    - 支持在线调试
   - 多样：支持自身题目数据评测，也支持其它知名OJ（HDU、Codeforces、GYM、POJ、AtCoder、SPOJ）题目的爬取与提交
-:::
+  :::
 
 
 ## 四、使用HOJ的学校
@@ -81,7 +82,7 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 > 题目详情页
 
-![题目详情页](https://img-blog.csdnimg.cn/655a9886cf7d4683812c923b9ce2aa2e.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![题目详情页](https://img-blog.csdnimg.cn/9f872dc1974f45c389e084f0e31a5217.png)
 
 ### 4. 训练
 
@@ -162,7 +163,7 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 > 个人首页
 
-![个人首页](https://img-blog.csdnimg.cn/3f9111cc0767466991ae3d99602b5865.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![个人首页](https://img-blog.csdnimg.cn/7d3e99dbc6fe4739a0720fcc019b2b6e.png)
 
 
 

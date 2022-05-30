@@ -226,11 +226,23 @@
             <el-tag
               type="success"
               class="tj-btn"
+              disabled
               @click="submitTestJudge"
               effect="plain">
               <i class="el-icon-video-play"> {{ $t('m.Running_Test') }}</i>
             </el-tag>
           </span>
+          <template v-if="!isAuthenticated">
+              <div class="tj-res-tab mt-10">
+                <el-alert
+                  :title="$t('m.Please_login_first')"
+                  type="warning"
+                  center
+                  :closable="false"
+                  show-icon>
+                </el-alert>
+              </div>
+          </template>
         </el-tab-pane>
       </el-tabs>
     </el-drawer>
@@ -328,6 +340,10 @@ export default {
     problemTestCase:{
       type: Array,
     },
+    isAuthenticated:{
+      type: Boolean,
+      default: false,
+    }
   },
   data() {
     return {
@@ -434,6 +450,12 @@ export default {
     },
 
     submitTestJudge(){
+      if (!this.isAuthenticated) {
+        myMessage.warning(this.$i18n.t('m.Please_login_first'));
+        this.$store.dispatch('changeModalStatus', { visible: true });
+        return;
+      }
+
       if (this.value.trim() === '') {
         myMessage.error(this.$i18n.t('m.Code_can_not_be_empty'));
         return;
@@ -444,7 +466,7 @@ export default {
         return;
       }
       let data = {
-        pid: this.pid, // 如果是比赛题目就为display_id
+        pid: this.pid,
         language: this.language,
         code: this.value,
         type: this.type,
