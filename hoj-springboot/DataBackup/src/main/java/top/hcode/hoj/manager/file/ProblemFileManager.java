@@ -223,15 +223,20 @@ public class ProblemFileManager {
                     .setSamples(problemCaseList);
 
             Constants.JudgeMode judgeMode = Constants.JudgeMode.getJudgeMode(importProblemVo.getJudgeMode());
-            if (judgeMode== null){
+            if (judgeMode == null) {
                 problemDto.setJudgeMode(Constants.JudgeMode.DEFAULT.getMode());
-            }else{
+            } else {
                 problemDto.setJudgeMode(judgeMode.getMode());
             }
             problemDtos.add(problemDto);
         }
-        for (ProblemDto problemDto : problemDtos) {
-            problemEntityService.adminAddProblem(problemDto);
+
+        if (problemDtos.size() == 0) {
+            throw new StatusFailException("警告：未成功导入一道以上的题目，请检查文件格式是否正确！");
+        } else {
+            for (ProblemDto problemDto : problemDtos) {
+                problemEntityService.adminAddProblem(problemDto);
+            }
         }
     }
 

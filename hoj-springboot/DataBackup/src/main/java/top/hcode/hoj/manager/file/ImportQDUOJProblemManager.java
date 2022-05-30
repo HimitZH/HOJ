@@ -197,8 +197,12 @@ public class ImportQDUOJProblemManager {
 
             problemDtos.add(problemDto);
         }
-        for (ProblemDto problemDto : problemDtos) {
-            problemEntityService.adminAddProblem(problemDto);
+        if (problemDtos.size() == 0) {
+            throw new StatusFailException("警告：未成功导入一道以上的题目，请检查文件格式是否正确！");
+        } else {
+            for (ProblemDto problemDto : problemDtos) {
+                problemEntityService.adminAddProblem(problemDto);
+            }
         }
     }
 
