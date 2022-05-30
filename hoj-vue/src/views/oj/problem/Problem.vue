@@ -495,6 +495,7 @@
               :problemTestCase="problemData.problem.examples"
               :pid="problemData.problem.id"
               :type="problemType"
+              :isAuthenticated="isAuthenticated"
             ></CodeMirror>
             <el-row>
               <el-col :sm="24" :md="10" :lg="10" style="margin-top:4px;">
@@ -1412,11 +1413,6 @@ export default {
       myMessage.success(this.$i18n.t('m.Copied_failed'));
     },
     openTestJudgeDrawer(){
-      if (!this.isAuthenticated) {
-        myMessage.warning(this.$i18n.t('m.Please_login_first'));
-        this.$store.dispatch('changeModalStatus', { visible: true });
-        return;
-      }
       this.openTestCaseDrawer = !this.openTestCaseDrawer;
     }
   },
