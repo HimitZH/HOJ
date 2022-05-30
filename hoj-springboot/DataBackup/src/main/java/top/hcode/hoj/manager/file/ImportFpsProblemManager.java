@@ -83,8 +83,12 @@ public class ImportFpsProblemManager {
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
         List<ProblemDto> problemDtoList = parseFps(file.getInputStream(), userRolesVo.getUsername());
-        for (ProblemDto problemDto : problemDtoList) {
-            problemEntityService.adminAddProblem(problemDto);
+        if (problemDtoList.size() == 0) {
+            throw new StatusFailException("警告：未成功导入一道以上的题目，请检查文件格式是否正确！");
+        } else {
+            for (ProblemDto problemDto : problemDtoList) {
+                problemEntityService.adminAddProblem(problemDto);
+            }
         }
 
     }

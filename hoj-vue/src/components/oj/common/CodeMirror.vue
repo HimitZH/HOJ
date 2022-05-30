@@ -226,7 +226,6 @@
             <el-tag
               type="success"
               class="tj-btn"
-              disabled
               @click="submitTestJudge"
               effect="plain">
               <i class="el-icon-video-play"> {{ $t('m.Running_Test') }}</i>
