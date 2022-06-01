@@ -32,4 +32,14 @@ public class TestJudgeDto {
      * 预期输出
      */
     private String expectedOutput;
+
+    /**
+     * 是否为原创OJ的题目
+     */
+    private Boolean isRemoteJudge;
+
+    /**
+     * text/x-csrc 用于鉴别语言
+     */
+    private String mode;
 }

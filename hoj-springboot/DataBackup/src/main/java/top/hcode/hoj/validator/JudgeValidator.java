@@ -9,7 +9,9 @@ import top.hcode.hoj.exception.AccessException;
 import top.hcode.hoj.pojo.dto.TestJudgeDto;
 import top.hcode.hoj.pojo.dto.ToJudgeDto;
 
+import javax.annotation.PostConstruct;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -26,6 +28,19 @@ public class JudgeValidator {
     private final static List<String> HOJ_LANGUAGE_LIST = Arrays.asList("C++", "C++ With O2",
             "C", "C With O2", "Python3", "Python2", "Java", "Golang", "C#", "PHP", "PyPy2", "PyPy3",
             "JavaScript Node", "JavaScript V8");
+
+    private static HashMap<String, String> MODE_MAP_LANGUAGE;
+
+    @PostConstruct
+    public void init() {
+        MODE_MAP_LANGUAGE = new HashMap<>();
+        MODE_MAP_LANGUAGE.put("text/x-c++src", "C++ With O2");
+        MODE_MAP_LANGUAGE.put("text/x-csrc", "C With O2");
+        MODE_MAP_LANGUAGE.put("text/x-java", "Java");
+        MODE_MAP_LANGUAGE.put("text/x-go", "Golang");
+        MODE_MAP_LANGUAGE.put("text/x-csharp", "C#");
+        MODE_MAP_LANGUAGE.put("text/x-php", "PHP");
+    }
 
     public void validateSubmissionInfo(ToJudgeDto toJudgeDto) throws StatusFailException, AccessException {
 
@@ -71,6 +86,33 @@ public class JudgeValidator {
 
         if (StringUtils.isEmpty(testJudgeDto.getCode())) {
             throw new StatusFailException("在线调试的代码不可为空！");
+        }
+
+        if (StringUtils.isEmpty(testJudgeDto.getLanguage())) {
+            throw new StatusFailException("在线调试的编程语言不可为空！");
+        }
+
+        // Remote Judge的编程语言需要转换成HOJ的编程语言才能进行自测
+        if (testJudgeDto.getIsRemoteJudge() != null && testJudgeDto.getIsRemoteJudge()) {
+            String language = MODE_MAP_LANGUAGE.get(testJudgeDto.getMode());
+            if (language != null) {
+                testJudgeDto.setLanguage(language);
+            } else {
+                String dtoLanguage = testJudgeDto.getLanguage();
+                if (dtoLanguage.contains("PyPy 3") || dtoLanguage.contains("PyPy3")) {
+                    testJudgeDto.setLanguage("PyPy3");
+                } else if (dtoLanguage.contains("PyPy")) {
+                    testJudgeDto.setLanguage("PyPy2");
+                } else if (dtoLanguage.contains("Python 3")) {
+                    testJudgeDto.setLanguage("Python3");
+                } else if (dtoLanguage.contains("Python")) {
+                    testJudgeDto.setLanguage("Python2");
+                }else if (dtoLanguage.contains("Node")){
+                    testJudgeDto.setLanguage("JavaScript Node");
+                }else if (dtoLanguage.contains("JavaScript")){
+                    testJudgeDto.setLanguage("JavaScript V8");
+                }
+            }
         }
 
         if (!HOJ_LANGUAGE_LIST.contains(testJudgeDto.getLanguage())) {

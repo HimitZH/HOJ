@@ -281,22 +281,22 @@ export const USER_TYPE = {
 
 export const STORAGE_KEY = {
   AUTHED: 'authed',
-  PROBLEM_CODE: 'hojProblemCode',
+  PROBLEM_CODE_AND_SETTING: 'hojProblemCodeAndSetting',
   languages: 'languages',
   CONTEST_ANNOUNCE:'hojContestAnnounce',
-  individualLanguageAndTheme:'hojIndividualLanguageAndTheme',
+  individualLanguageAndSetting:'hojIndividualLanguageAndSetting',
   CONTEST_RANK_CONCERNED:'hojContestRankConcerned'
 }
 
-export function buildIndividualLanguageAndThemeKey () {
-  return `${STORAGE_KEY.individualLanguageAndTheme}`
+export function buildIndividualLanguageAndSettingKey () {
+  return `${STORAGE_KEY.individualLanguageAndSetting}`
 }
 
-export function buildProblemCodeKey (problemID, contestID = null) {
+export function buildProblemCodeAndSettingKey (problemID, contestID = null) {
   if (contestID) {
-    return `${STORAGE_KEY.PROBLEM_CODE}_${contestID}_${problemID}`
+    return `${STORAGE_KEY.PROBLEM_CODE_AND_SETTING}_${contestID}_${problemID}`
   }
-  return `${STORAGE_KEY.PROBLEM_CODE}_NoContest_${problemID}`
+  return `${STORAGE_KEY.PROBLEM_CODE_AND_SETTING}_NoContest_${problemID}`
 }
 
 export function buildContestAnnounceKey (uid, contestID) {

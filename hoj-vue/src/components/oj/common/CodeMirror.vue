@@ -44,33 +44,105 @@
           </span>
         </div>
       </el-col>
-      <el-col :xs="24" :sm="9" :md="9" :lg="9">
+      <el-col :xs="2" :sm="9" :md="9" :lg="9">
         <div class="select-row fl-right">
-          <span>{{ $t('m.Theme') }}:</span>
-          <el-select
-            :value="this.theme"
-            @change="onThemeChange"
-            class="right-adjust"
-            size="small"
-          >
-            <el-option
-              v-for="item in themes"
-              :key="item.label"
-              :label="$t('m.' + item.label)"
-              :value="item.value"
-              >{{ $t('m.' + item.label) }}
-            </el-option>
-          </el-select>
+          <el-tooltip :content="$t('m.Code_Editor_Setting')" placement="top">
+           <el-popover
+            placement="bottom"
+            width="300"
+            trigger="click">
+            <el-button slot="reference" 
+              icon="el-icon-s-tools"
+              size="small">
+            </el-button>
+            <div class="setting-title">{{ $t('m.Setting') }}</div>
+            <div class="setting-item">
+              <span class="setting-item-name">
+                <i class="fa fa-tachometer"></i>
+                 {{ $t('m.Theme') }}
+              </span>
+              <el-select
+                :value="this.theme"
+                @change="onThemeChange"
+                class="setting-item-value"
+                size="small"
+              >
+                <el-option
+                  v-for="item in themes"
+                  :key="item.label"
+                  :label="$t('m.' + item.label)"
+                  :value="item.value"
+                  >{{ $t('m.' + item.label) }}
+                </el-option>
+              </el-select>
+            </div>
+            <div class="setting-item">
+              <span class="setting-item-name">
+                <i class="fa fa-font"></i> 
+                {{ $t('m.FontSize') }}
+              </span>
+              <el-select
+                :value="fontSize"
+                @change="onFontSizeChange"
+                class="setting-item-value"
+                size="small"
+              >
+                <el-option
+                  v-for="item in fontSizes"
+                  :key="item"
+                  :label="item"
+                  :value="item"
+                  >{{ item }}
+                </el-option>
+              </el-select>
+            </div>
+            <div class="setting-item">
+              <span class="setting-item-name">
+                <svg focusable="false" viewBox="0 0 1024 1024" fill="currentColor" 
+                  width="1.2em"
+                  height="1.2em" 
+                  style="vertical-align: text-bottom;"
+                  aria-hidden="true">
+                  <g transform="translate(101.57 355.48)">
+                    <rect width="812.53" height="152.35" x="0" y="0" rx="50.78"></rect> 
+                    <rect width="812.53" height="50.78" x="0" y="253.92" rx="25.39"></rect>
+                    <rect width="50.78" height="203.13" x="0" y="177.74" rx="25.39"></rect> 
+                    <rect width="50.78" height="203.13" x="761.75" y="177.74" rx="25.39"></rect>
+                    </g>
+                </svg> {{ $t('m.TabSize') }}
+              </span>
+              <el-select
+                :value="tabSize"
+                @change="onTabSizeChange"
+                class="setting-item-value"
+                size="small"
+              >
+                <el-option :label="$t('m.Two_Spaces') " :value="2">
+                  {{ $t('m.Two_Spaces') }}
+                </el-option>
+                <el-option :label="$t('m.Four_Spaces') " :value="4">
+                  {{ $t('m.Four_Spaces') }}
+                </el-option>
+                <el-option :label="$t('m.Eight_Spaces') " :value="8">
+                  {{ $t('m.Eight_Spaces') }}
+                </el-option>
+              </el-select>
+            </div>
+          
+          </el-popover>
+          </el-tooltip>
         </div>
       </el-col>
     </el-row>
-    <codemirror
-      :value="value"
-      :options="options"
-      @change="onEditorCodeChange"
-      ref="myEditor"
-    >
-    </codemirror>
+    <div :style="'line-height: 1.5;font-size:'+fontSize">
+      <codemirror
+        :value="value"
+        :options="options"
+        @change="onEditorCodeChange"
+        ref="myEditor"
+      >
+      </codemirror>
+    </div>
     <el-drawer
       :visible.sync="openTestCaseDrawer"
       style="position: absolute;"
@@ -258,6 +330,11 @@ import { JUDGE_STATUS,JUDGE_STATUS_RESERVE } from '@/common/constants';
 import 'codemirror/theme/monokai.css';
 import 'codemirror/theme/solarized.css';
 import 'codemirror/theme/material.css';
+import 'codemirror/theme/idea.css';
+import 'codemirror/theme/eclipse.css';
+import 'codemirror/theme/base16-dark.css';
+import 'codemirror/theme/cobalt.css';
+import 'codemirror/theme/dracula.css';
 
 // highlightSelectionMatches
 import 'codemirror/addon/scroll/annotatescrollbar.js';
@@ -325,6 +402,14 @@ export default {
       type: String,
       default: 'solarized',
     },
+    fontSize:{
+      type: String,
+      default: '14px',
+    },
+    tabSize:{
+      type: Number,
+      default: 4,
+    },
     openTestCaseDrawer:{
       type: Boolean,
       default: false
@@ -342,13 +427,17 @@ export default {
     isAuthenticated:{
       type: Boolean,
       default: false,
+    },
+    isRemoteJudge:{
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
       options: {
         // codemirror options
-        tabSize: 4,
+        tabSize: this.tabSize,
         mode: 'text/x-csrc',
         theme: 'solarized',
         // 显示行号
@@ -364,7 +453,7 @@ export default {
         highlightSelectionMatches: { showToken: /\w/, annotateScrollbar: true },
         // extraKeys: { Ctrl: 'autocomplete' }, //自定义快捷键
         matchBrackets: true, //括号匹配
-        indentUnit: 4, //一个块（编辑语言中的含义）应缩进多少个空格
+        indentUnit: this.tabSize, //一个块（编辑语言中的含义）应缩进多少个空格
         styleActiveLine: true,
         autoCloseBrackets: true,
         autoCloseTags: true,
@@ -380,7 +469,13 @@ export default {
         { label: 'monokai', value: 'monokai' },
         { label: 'solarized', value: 'solarized' },
         { label: 'material', value: 'material' },
+        { label: 'idea', value: 'idea' },
+        { label: 'eclipse', value: 'eclipse' },
+        { label: 'base16_dark', value: 'base16-dark' },
+        { label: 'cobalt', value: 'cobalt' },
+        { label: 'dracula', value: 'dracula' },
       ],
+      fontSizes:['12px','14px','16px','18px','20px'],
       testJudgeActiveTab:'input',
       userInput:'',
       expectedOutput: null,
@@ -403,6 +498,7 @@ export default {
       this.mode = mode;
       this.editor.setOption('mode', this.mode[this.language]);
     });
+    this.editor.setOption('theme', this.theme);
     this.editor.on('inputRead', (instance, changeObj) => {
       if (/\w|\./g.test(changeObj.text[0]) && changeObj.origin !== 'complete') {
         instance.showHint({
@@ -424,6 +520,16 @@ export default {
     onThemeChange(newTheme) {
       this.editor.setOption('theme', newTheme);
       this.$emit('changeTheme', newTheme);
+    },
+    onFontSizeChange(fontSize){
+      this.fontSize = fontSize;
+      this.$emit('update:fontSize', fontSize);
+    },
+    onTabSizeChange(tabSize){
+      this.tabSize = tabSize;
+      this.$emit('update:tabSize', tabSize);
+      this.editor.setOption('tabSize', tabSize);
+      this.editor.setOption('indentUnit', tabSize);
     },
     onResetClick() {
       this.$emit('resetCode');
@@ -471,6 +577,8 @@ export default {
         type: this.type,
         userInput: this.userInput,
         expectedOutput: this.expectedOutput,
+        mode: this.mode[this.language],
+        isRemoteJudge: this.isRemoteJudge
       };
       api.submitTestJudge(data).then((res)=>{
         this.testJudgeKey = res.data.data;
@@ -543,6 +651,9 @@ export default {
     theme(newVal, oldVal) {
       this.editor.setOption('theme', newVal);
     },
+    fontSize(newVal, oldVal) {
+      this.editor.refresh();
+    },
     userInput(newVal, oldVal){
       this.expectedOutput = null;
       for(let example of this.problemTestCase){
@@ -572,9 +683,27 @@ export default {
   width: 170px;
   margin-left: 5px;
 }
-.header .right-adjust {
+.setting-title{
+  border-bottom: 1px solid #f3f3f6;
+  color: #000;
+  font-weight: 700;   
+  padding: 10px 0;
+}
+.setting-item{
+  display:flex;
+  padding: 15px 0 0;
+}
+.setting-item-name {
+  flex: 2;
+  color: #333;
+  font-weight: 700;
+  font-size: 13px;
+  margin-top: 7px;
+}
+.setting-item-value {
   width: 140px;
-  margin-left: 5px;
+  margin-left: 15px;
+  flex: 5;
 }
 
 .select-row {
