@@ -188,7 +188,7 @@ public class JudgeManager {
                 .setExpectedOutput(testJudgeDto.getExpectedOutput())
                 .setTestCaseInput(testJudgeDto.getUserInput())
                 .setProblemJudgeMode(problem.getJudgeMode())
-                .setIsRemoveEndBlank(problem.getIsRemoveEndBlank());
+                .setIsRemoveEndBlank(problem.getIsRemoveEndBlank() || problem.getIsRemote());
         String userExtraFile = problem.getUserExtraFile();
         if (!StringUtils.isEmpty(userExtraFile)) {
             testJudgeReq.setExtraFile((HashMap<String, String>) JSONUtil.toBean(userExtraFile, Map.class));

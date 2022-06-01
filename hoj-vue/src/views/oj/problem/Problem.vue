@@ -488,6 +488,8 @@
               :languages="problemData.languages"
               :language.sync="language"
               :theme.sync="theme"
+              :fontSize.sync="fontSize"
+              :tabSize.sync="tabSize"
               @resetCode="onResetToTemplate"
               @changeTheme="onChangeTheme"
               @changeLang="onChangeLang"
@@ -496,6 +498,7 @@
               :pid="problemData.problem.id"
               :type="problemType"
               :isAuthenticated="isAuthenticated"
+              :isRemoteJudge="problemData.problem.isRemote"
             ></CodeMirror>
             <el-row>
               <el-col :sm="24" :md="10" :lg="10" style="margin-top:4px;">
@@ -643,7 +646,6 @@
                   <span v-else>{{ $t('m.Submit') }}</span>
                 </el-button>
                 <el-tag
-                  v-if="!problemData.problem.isRemote"
                   type="success"
                   :class="openTestCaseDrawer?'tj-btn active':'tj-btn non-active'"
                   @click.native="openTestJudgeDrawer"
@@ -706,8 +708,8 @@ import {
   JUDGE_STATUS,
   CONTEST_STATUS,
   JUDGE_STATUS_RESERVE,
-  buildProblemCodeKey,
-  buildIndividualLanguageAndThemeKey,
+  buildProblemCodeAndSettingKey,
+  buildIndividualLanguageAndSettingKey,
   RULE_TYPE,
   PROBLEM_LEVEL,
 } from '@/common/constants';
@@ -742,8 +744,9 @@ export default {
       code: '',
       language: '',
       isRemote: false,
-
       theme: 'solarized',
+      fontSize: '14px',
+      tabSize: 4,
       submissionId: '',
       submitted: false,
       submitPwdVisible: false,
@@ -787,32 +790,8 @@ export default {
       openTestCaseDrawer:false
     };
   },
-  // 获取缓存中的该题的做题代码，代码语言，代码风格
-  beforeRouteEnter(to, from, next) {
-    let problemCode = storage.get(
-      buildProblemCodeKey(to.params.problemID, to.params.contestID)
-    );
-    if (problemCode) {
-      next((vm) => {
-        vm.language = problemCode.language;
-        vm.code = problemCode.code;
-        vm.theme = problemCode.theme;
-      });
-    } else {
-      let individualLanguageAndTheme = storage.get(
-        buildIndividualLanguageAndThemeKey()
-      );
-      if (individualLanguageAndTheme) {
-        next((vm) => {
-          vm.language = individualLanguageAndTheme.language;
-          vm.theme = individualLanguageAndTheme.theme;
-        });
-      }
-      next();
-    }
-  },
-
   created() {
+    this.initProblemCodeAndSetting();
     this.JUDGE_STATUS_RESERVE = Object.assign({}, JUDGE_STATUS_RESERVE);
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
     this.PROBLEM_LEVEL = Object.assign({}, PROBLEM_LEVEL);
@@ -821,12 +800,36 @@ export default {
       this.bodyClass = 'problem-body';
     }
   },
+
   mounted() {
     this.init();
     this.dragControllerDiv();
   },
   methods: {
     ...mapActions(['changeDomTitle']),
+    initProblemCodeAndSetting(){
+      // 获取缓存中的该题的做题代码，代码语言，代码风格
+      let problemCodeAndSetting = storage.get(
+      buildProblemCodeAndSettingKey(this.$route.params.problemID, this.$route.params.contestID)
+      );
+      if (problemCodeAndSetting) {
+        this.language = problemCodeAndSetting.language;
+        this.code = problemCodeAndSetting.code;
+        this.theme = problemCodeAndSetting.theme;
+        this.fontSize = problemCodeAndSetting.fontSize;
+        this.tabSize = problemCodeAndSetting.tabSize;
+      } else {
+        let individualLanguageAndSetting = storage.get(
+          buildIndividualLanguageAndSettingKey()
+        );
+        if (individualLanguageAndSetting) {
+            this.language = individualLanguageAndSetting.language;
+            this.theme = individualLanguageAndSetting.theme;
+            this.fontSize = individualLanguageAndSetting.fontSize;
+            this.tabSize = individualLanguageAndSetting.tabSize;
+          }
+      }
+    },
     handleClickTab({ name }) {
       if (name == 'mySubmission' && this.isAuthenticated) {
         this.getMySubmission();
@@ -1498,15 +1501,19 @@ export default {
   beforeRouteLeave(to, from, next) {
     // 防止切换组件后仍然不断请求
     clearInterval(this.refreshStatus);
-    storage.set(buildProblemCodeKey(this.problemID, from.params.contestID), {
+    storage.set(buildProblemCodeAndSettingKey(this.problemID, from.params.contestID), {
       code: this.code,
       language: this.language,
       theme: this.theme,
+      fontSize: this.fontSize,
+      tabSize: this.tabSize
     });
 
-    storage.set(buildIndividualLanguageAndThemeKey(), {
+    storage.set(buildIndividualLanguageAndSettingKey(), {
       language: this.language,
       theme: this.theme,
+      fontSize: this.fontSize,
+      tabSize: this.tabSize
     });
 
     next();
