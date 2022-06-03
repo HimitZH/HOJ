@@ -1,5 +1,6 @@
 package top.hcode.hoj.manager.oj;
 
+import cn.hutool.core.collection.CollectionUtil;
 import top.hcode.hoj.validator.GroupValidator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -260,11 +261,12 @@ public class ProblemManager {
         problemLanguageQueryWrapper.eq("pid", problem.getId()).select("lid");
         List<Long> lidList = problemLanguageEntityService.list(problemLanguageQueryWrapper)
                 .stream().map(ProblemLanguage::getLid).collect(Collectors.toList());
-        languageEntityService.listByIds(lidList).forEach(language -> {
-            languagesStr.add(language.getName());
-            tmpMap.put(language.getId(), language.getName());
-        });
-
+        if (CollectionUtil.isNotEmpty(lidList)) {
+            languageEntityService.listByIds(lidList).forEach(language -> {
+                languagesStr.add(language.getName());
+                tmpMap.put(language.getId(), language.getName());
+            });
+        }
         // 获取题目的提交记录
         ProblemCountVo problemCount = judgeEntityService.getProblemCount(problem.getId(), gid);
 
@@ -273,7 +275,7 @@ public class ProblemManager {
         codeTemplateQueryWrapper.eq("pid", problem.getId()).eq("status", true);
         List<CodeTemplate> codeTemplates = codeTemplateEntityService.list(codeTemplateQueryWrapper);
         HashMap<String, String> LangNameAndCode = new HashMap<>();
-        if (codeTemplates.size() > 0) {
+        if (CollectionUtil.isNotEmpty(codeTemplates)) {
             for (CodeTemplate codeTemplate : codeTemplates) {
                 LangNameAndCode.put(tmpMap.get(codeTemplate.getLid()), codeTemplate.getCode());
             }
