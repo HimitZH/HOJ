@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.SubmitIdListDto;
 import top.hcode.hoj.pojo.dto.TestJudgeDto;
-import top.hcode.hoj.pojo.dto.ToJudgeDto;
+import top.hcode.hoj.pojo.dto.SubmitJudgeDto;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.JudgeCase;
 import top.hcode.hoj.pojo.vo.JudgeVo;
@@ -16,7 +16,7 @@ import java.util.List;
 
 public interface JudgeService {
 
-    public CommonResult<Judge> submitProblemJudge(ToJudgeDto judgeDto);
+    public CommonResult<Judge> submitProblemJudge(SubmitJudgeDto judgeDto);
 
     public CommonResult<String> submitProblemTestJudge(TestJudgeDto testJudgeDto);
 

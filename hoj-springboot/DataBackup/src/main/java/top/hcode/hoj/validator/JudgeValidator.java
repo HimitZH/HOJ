@@ -7,7 +7,7 @@ import top.hcode.hoj.annotation.HOJAccessEnum;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.exception.AccessException;
 import top.hcode.hoj.pojo.dto.TestJudgeDto;
-import top.hcode.hoj.pojo.dto.ToJudgeDto;
+import top.hcode.hoj.pojo.dto.SubmitJudgeDto;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
@@ -42,28 +42,28 @@ public class JudgeValidator {
         MODE_MAP_LANGUAGE.put("text/x-php", "PHP");
     }
 
-    public void validateSubmissionInfo(ToJudgeDto toJudgeDto) throws StatusFailException, AccessException {
+    public void validateSubmissionInfo(SubmitJudgeDto submitJudgeDto) throws StatusFailException, AccessException {
 
-        if (toJudgeDto.getGid() != null) { // 团队内的提交
+        if (submitJudgeDto.getGid() != null) { // 团队内的提交
             accessValidator.validateAccess(HOJAccessEnum.GROUP_JUDGE);
-        } else if (toJudgeDto.getCid() != null && toJudgeDto.getCid() != 0) {
+        } else if (submitJudgeDto.getCid() != null && submitJudgeDto.getCid() != 0) {
             accessValidator.validateAccess(HOJAccessEnum.CONTEST_JUDGE);
         } else {
             accessValidator.validateAccess(HOJAccessEnum.PUBLIC_JUDGE);
         }
 
-        if (!toJudgeDto.getIsRemote() && !HOJ_LANGUAGE_LIST.contains(toJudgeDto.getLanguage())) {
+        if (!submitJudgeDto.getIsRemote() && !HOJ_LANGUAGE_LIST.contains(submitJudgeDto.getLanguage())) {
             throw new StatusFailException("提交的代码的语言错误！请使用" + HOJ_LANGUAGE_LIST + "中之一的语言！");
         }
 
-        if (toJudgeDto.getCode().length() < 50
-                && !toJudgeDto.getLanguage().contains("Py")
-                && !toJudgeDto.getLanguage().contains("PHP")
-                && !toJudgeDto.getLanguage().contains("JavaScript")) {
+        if (submitJudgeDto.getCode().length() < 50
+                && !submitJudgeDto.getLanguage().contains("Py")
+                && !submitJudgeDto.getLanguage().contains("PHP")
+                && !submitJudgeDto.getLanguage().contains("JavaScript")) {
             throw new StatusFailException("提交的代码是无效的，代码字符长度请不要低于50！");
         }
 
-        if (toJudgeDto.getCode().length() > 65535) {
+        if (submitJudgeDto.getCode().length() > 65535) {
             throw new StatusFailException("提交的代码是无效的，代码字符长度请不要超过65535！");
         }
     }

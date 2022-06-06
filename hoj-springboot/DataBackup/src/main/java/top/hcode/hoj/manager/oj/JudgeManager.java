@@ -103,7 +103,7 @@ public class JudgeManager {
      * @Since 2020/10/30
      */
     @Transactional(rollbackFor = Exception.class)
-    public Judge submitProblemJudge(ToJudgeDto judgeDto) throws StatusForbiddenException, StatusFailException, StatusNotFoundException, StatusAccessDeniedException, AccessException {
+    public Judge submitProblemJudge(SubmitJudgeDto judgeDto) throws StatusForbiddenException, StatusFailException, StatusNotFoundException, StatusAccessDeniedException, AccessException {
 
         judgeValidator.validateSubmissionInfo(judgeDto);
 
