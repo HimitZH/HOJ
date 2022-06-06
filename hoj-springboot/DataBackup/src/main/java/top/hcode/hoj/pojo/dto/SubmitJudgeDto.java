@@ -12,7 +12,7 @@ import javax.validation.constraints.NotBlank;
  */
 @Data
 @Accessors(chain = true)
-public class ToJudgeDto {
+public class SubmitJudgeDto {
     @NotBlank(message = "题目id不能为空")
     private String pid;
 

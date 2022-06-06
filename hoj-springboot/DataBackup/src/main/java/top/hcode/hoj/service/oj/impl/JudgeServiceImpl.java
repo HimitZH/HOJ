@@ -9,7 +9,7 @@ import top.hcode.hoj.exception.AccessException;
 import top.hcode.hoj.manager.oj.JudgeManager;
 import top.hcode.hoj.pojo.dto.SubmitIdListDto;
 import top.hcode.hoj.pojo.dto.TestJudgeDto;
-import top.hcode.hoj.pojo.dto.ToJudgeDto;
+import top.hcode.hoj.pojo.dto.SubmitJudgeDto;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.JudgeCase;
 import top.hcode.hoj.pojo.vo.JudgeVo;
@@ -33,7 +33,7 @@ public class JudgeServiceImpl implements JudgeService {
     private JudgeManager judgeManager;
 
     @Override
-    public CommonResult<Judge> submitProblemJudge(ToJudgeDto judgeDto) {
+    public CommonResult<Judge> submitProblemJudge(SubmitJudgeDto judgeDto) {
         try {
             return CommonResult.successResponse(judgeManager.submitProblemJudge(judgeDto));
         } catch (StatusForbiddenException | AccessException e) {

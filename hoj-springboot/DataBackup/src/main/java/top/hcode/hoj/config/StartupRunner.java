@@ -93,16 +93,16 @@ public class StartupRunner implements CommandLineRunner {
     private String judgeToken;
 
     // 邮箱配置
-    @Value("${EMAIL_USERNAME}")
+    @Value("${EMAIL_USERNAME:your_email_username}")
     private String emailUsername;
 
-    @Value("${EMAIL_PASSWORD}")
+    @Value("${EMAIL_PASSWORD:your_email_password}")
     private String emailPassword;
 
-    @Value("${EMAIL_SERVER_HOST}")
+    @Value("${EMAIL_SERVER_HOST:smtp.qq.com}")
     private String emailHost;
 
-    @Value("${EMAIL_SERVER_PORT}")
+    @Value("${EMAIL_SERVER_PORT:465}")
     private Integer emailPort;
 
     @Value("${HDU_ACCOUNT_USERNAME_LIST:}")

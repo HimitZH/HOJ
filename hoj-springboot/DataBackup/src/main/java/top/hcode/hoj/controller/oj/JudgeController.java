@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.SubmitIdListDto;
 import top.hcode.hoj.pojo.dto.TestJudgeDto;
-import top.hcode.hoj.pojo.dto.ToJudgeDto;
+import top.hcode.hoj.pojo.dto.SubmitJudgeDto;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.JudgeCase;
 import top.hcode.hoj.pojo.vo.JudgeVo;
@@ -79,7 +79,7 @@ public class JudgeController {
     @RequiresAuthentication
     @RequiresPermissions("submit")
     @RequestMapping(value = "/submit-problem-judge", method = RequestMethod.POST)
-    public CommonResult<Judge> submitProblemJudge(@RequestBody ToJudgeDto judgeDto) {
+    public CommonResult<Judge> submitProblemJudge(@RequestBody SubmitJudgeDto judgeDto) {
         return judgeService.submitProblemJudge(judgeDto);
     }
 
