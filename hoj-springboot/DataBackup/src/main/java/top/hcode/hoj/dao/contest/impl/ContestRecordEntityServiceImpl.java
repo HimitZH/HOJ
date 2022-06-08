@@ -102,7 +102,7 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
 
         String oiRankScoreType = contest.getOiRankScoreType();
         Long cid = contest.getId();
-        String contestAuthor = contest.getAuthor();
+        String contestCreatorUid = contest.getUid();
         Date sealTime = contest.getSealRankTime();
         Date startTime = contest.getStartTime();
         Date endTime = contest.getEndTime();
@@ -112,14 +112,14 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
             // 获取每个用户每道题最近一次提交
             if (Objects.equals(Constants.Contest.OI_RANK_RECENT_SCORE.getName(), oiRankScoreType)) {
                 return contestRecordMapper.getOIContestRecordByRecentSubmission(cid,
-                        contestAuthor,
+                        contestCreatorUid,
                         false,
                         sealTime,
                         startTime,
                         endTime);
             } else {
                 return contestRecordMapper.getOIContestRecordByHighestSubmission(cid,
-                        contestAuthor,
+                        contestCreatorUid,
                         false,
                         sealTime,
                         startTime,
@@ -132,14 +132,14 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
             if (oiContestRecordList == null) {
                 if (Objects.equals(Constants.Contest.OI_RANK_RECENT_SCORE.getName(), oiRankScoreType)) {
                     oiContestRecordList = contestRecordMapper.getOIContestRecordByRecentSubmission(cid,
-                            contestAuthor,
+                            contestCreatorUid,
                             true,
                             sealTime,
                             startTime,
                             endTime);
                 } else {
                     oiContestRecordList = contestRecordMapper.getOIContestRecordByHighestSubmission(cid,
-                            contestAuthor,
+                            contestCreatorUid,
                             true,
                             sealTime,
                             startTime,
@@ -153,8 +153,8 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
     }
 
     @Override
-    public List<ContestRecordVo> getACMContestRecord(String username, Long cid) {
-        return contestRecordMapper.getACMContestRecord(username, cid);
+    public List<ContestRecordVo> getACMContestRecord(String contestCreatorUid, Long cid) {
+        return contestRecordMapper.getACMContestRecord(contestCreatorUid, cid);
     }
 
 }
