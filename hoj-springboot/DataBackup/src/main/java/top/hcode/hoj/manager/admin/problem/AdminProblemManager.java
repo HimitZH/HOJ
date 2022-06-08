@@ -66,7 +66,7 @@ public class AdminProblemManager {
         IPage<Problem> problemList;
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("is_group", false).orderByDesc("gmt_create")
+        queryWrapper.eq("is_group", false)
                 .orderByDesc("id");
 
         // 根据oj筛选过滤
@@ -181,7 +181,7 @@ public class AdminProblemManager {
         }
     }
 
-    public List<ProblemCase> getProblemCases(Long pid, Boolean isUpload){
+    public List<ProblemCase> getProblemCases(Long pid, Boolean isUpload) {
         QueryWrapper<ProblemCase> problemCaseQueryWrapper = new QueryWrapper<>();
         problemCaseQueryWrapper.eq("pid", pid).eq("status", 0);
         if (isUpload) {
@@ -190,7 +190,7 @@ public class AdminProblemManager {
         return problemCaseEntityService.list(problemCaseQueryWrapper);
     }
 
-    public CommonResult compileSpj(CompileDTO compileDTO){
+    public CommonResult compileSpj(CompileDTO compileDTO) {
         if (StringUtils.isEmpty(compileDTO.getCode()) ||
                 StringUtils.isEmpty(compileDTO.getLanguage())) {
             return CommonResult.errorResponse("参数不能为空！");
@@ -200,7 +200,7 @@ public class AdminProblemManager {
         return dispatcher.dispatcherJudge("compile", "/compile-spj", compileDTO);
     }
 
-    public CommonResult compileInteractive(CompileDTO compileDTO){
+    public CommonResult compileInteractive(CompileDTO compileDTO) {
         if (StringUtils.isEmpty(compileDTO.getCode()) ||
                 StringUtils.isEmpty(compileDTO.getLanguage())) {
             return CommonResult.errorResponse("参数不能为空！");
@@ -211,7 +211,7 @@ public class AdminProblemManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void importRemoteOJProblem(String name,String problemId) throws StatusFailException {
+    public void importRemoteOJProblem(String name, String problemId) throws StatusFailException {
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("problem_id", name.toUpperCase() + "-" + problemId);
         Problem problem = problemEntityService.getOne(queryWrapper);
