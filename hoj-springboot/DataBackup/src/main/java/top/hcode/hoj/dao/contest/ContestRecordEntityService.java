@@ -26,6 +26,6 @@ public interface ContestRecordEntityService extends IService<ContestRecord> {
 
     List<ContestRecordVo> getOIContestRecord(Contest contest, Boolean isOpenSealRank);
 
-    List<ContestRecordVo> getACMContestRecord(String username, Long cid);
+    List<ContestRecordVo> getACMContestRecord(String contestCreatorUid, Long cid);
 
 }
