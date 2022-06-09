@@ -880,7 +880,7 @@ export default {
     },
 
     'problem.spjLanguage'(newVal) {
-      if (this.allSpjLanguage.length) {
+      if (this.allSpjLanguage.length && this.problem.judgeMode != 'default') {
         this.spjMode = this.allSpjLanguage.find((item) => {
           return item.name == this.problem.spjLanguage && item.isSpj == true;
         })['contentType'];
@@ -910,7 +910,9 @@ export default {
           this.spjRecord.spjCode = data.spjCode;
           this.problem = data;
           this.problem['examples'] = utils.stringToExamples(data.examples);
-          this.problem['examples'][0]['isOpen'] = true;
+          if(this.problem['examples'].length > 0){
+            this.problem['examples'][0]['isOpen'] = true;
+          }
           this.testCaseUploaded = true;
           if (this.problem.userExtraFile) {
             this.addUserExtraFile = true;
