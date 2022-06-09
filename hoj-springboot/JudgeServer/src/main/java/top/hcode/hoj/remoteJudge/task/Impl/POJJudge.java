@@ -64,8 +64,8 @@ public class POJJudge extends RemoteJudgeStrategy {
                 .execute();
         remoteJudgeDTO.setSubmitStatus(response.getStatus());
         if (response.getStatus() != 302 && response.getStatus() != 200) {
-            log.error("进行题目提交时发生错误：提交题目失败，" + POJJudge.class.getName() + "，题号:" + remoteJudgeDTO.getCompleteProblemId());
-            return;
+            String log = String.format("[POJ] [%s]: Failed to submit code, the http response status is [%s].", remoteJudgeDTO.getCompleteProblemId(), response.getStatus());
+            throw new RuntimeException(log);
         }
         // 下面的请求都是GET
         request.setMethod(Method.GET);
@@ -155,7 +155,7 @@ public class POJJudge extends RemoteJudgeStrategy {
                 .put("password1", remoteJudgeDTO.getPassword()).map()).execute();
 
         if (response.getStatus() != 302) {
-            throw new RuntimeException("Failed to login to POJ! The possible cause is connection failure, and the returned status code is " + response.getStatus());
+            throw new RuntimeException("[POJ] Failed to login! The possible cause is connection failure, and the returned status code is " + response.getStatus());
         }
         remoteJudgeDTO.setCookies(response.getCookies())
                 .setLoginStatus(response.getStatus());

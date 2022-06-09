@@ -62,8 +62,8 @@ public class HDUJudge extends RemoteJudgeStrategy {
         HttpResponse response = request.execute();
         remoteJudgeDTO.setSubmitStatus(response.getStatus());
         if (response.getStatus() != 302) {
-            log.error("进行题目提交时发生错误：提交题目失败，" + HDUJudge.class.getName() + "，题号:" + remoteJudgeDTO.getCompleteProblemId());
-            return;
+            String log = String.format("[HDU] [%s]: Failed to submit code, the http response status is [%s].", remoteJudgeDTO.getCompleteProblemId(), response.getStatus());
+            throw new RuntimeException(log);
         }
         // 获取提交的题目id
         Long maxRunId = getMaxRunId(remoteJudgeDTO.getUsername(), remoteJudgeDTO.getCompleteProblemId());
@@ -135,7 +135,7 @@ public class HDUJudge extends RemoteJudgeStrategy {
                         .put("userpass", remoteJudgeDTO.getPassword()).map())
                 .execute();
         if (response.getStatus() != 302) {
-            throw new RuntimeException("Failed to login to HDU! The possible cause is connection failure, and the returned status code is " + response.getStatus());
+            throw new RuntimeException("[HDU] Failed to login! The possible cause is connection failure, and the returned status code is " + response.getStatus());
         }
         remoteJudgeDTO.setLoginStatus(response.getStatus());
         remoteJudgeDTO.setCookies(response.getCookies());

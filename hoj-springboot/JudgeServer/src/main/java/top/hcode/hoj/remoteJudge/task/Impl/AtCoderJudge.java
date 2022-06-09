@@ -60,7 +60,7 @@ public class AtCoderJudge extends RemoteJudgeStrategy {
         if (remoteJudgeDTO.getLoginStatus() != 302) {
             log.error("Login to AtCoder failed, the response status:{},username:{},password:{}",
                     remoteJudgeDTO.getLoginStatus(), remoteJudgeDTO.getUsername(), remoteJudgeDTO.getPassword());
-            throw new RuntimeException("Login to AtCoder failed, the response status:" + remoteJudgeDTO.getLoginStatus());
+            throw new RuntimeException("[AtCoder] Failed to Login, the response status:" + remoteJudgeDTO.getLoginStatus());
         }
 
         HttpResponse response = trySubmit();
@@ -80,7 +80,7 @@ public class AtCoderJudge extends RemoteJudgeStrategy {
 
         if (response.getStatus() != 302) {
             log.error("Submit to AtCoder failed, the response status:{}, It may be that the frequency of submission operation is too fast. Please try later", response.getStatus());
-            throw new RuntimeException("Submit to AtCoder failed, the response status:" + response.getStatus());
+            throw new RuntimeException("[AtCoder] Failed to Submit, the response status:" + response.getStatus());
         }
 
         // 停留3秒钟后再获取id，之后归还账号，避免提交频率过快
