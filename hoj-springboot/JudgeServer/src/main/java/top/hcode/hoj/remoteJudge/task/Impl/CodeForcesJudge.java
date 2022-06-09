@@ -112,7 +112,8 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
             }
         }
         // 获取提交的题目id
-        Long maxRunId = getMaxRunId(nowTime);
+//        Long maxRunId = getMaxRunId(nowTime);
+        Long maxRunId = getMaxIdByParseHtml();
         remoteJudgeDTO.setSubmitId(maxRunId);
     }
 
