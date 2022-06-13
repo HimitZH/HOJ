@@ -196,11 +196,13 @@
               <div class="tj-res-tab">
                 <el-alert
                   class="mt-10"
-                  :type="status.type"
+                  :type="getResultStausType(testJudgeRes.problemJudgeMode,testJudgeRes.status)"
                   :closable="false"
                   show-icon>
                   <template slot="title">
-                    <span class="status-title">{{ status.statusName }} 
+                    <span class="status-title">{{ getResultStatusName(testJudgeRes.problemJudgeMode,
+                      testJudgeRes.status,
+                      testJudgeRes.expectedOutput!=null) }} 
                       <template v-if="equalsExpectedOuput != null">
                         {{ "("+ $t('m.Pass_Test_Case')+ " "+equalsExpectedOuput+")" }}
                       </template>
@@ -552,6 +554,21 @@ export default {
       this.userInput = input;
       this.expectedOutput = output;
       this.problemTestCase[index]['active'] = true;
+    },
+    getResultStausType(problemJudgeMode,status){
+      if(problemJudgeMode == 'spj' && (status == 0 || status == -1)){
+        return 'success'
+      }
+      return this.status.type
+    },
+    getResultStatusName(problemJudgeMode,status,hasExpectedOutput){
+      if(problemJudgeMode == 'spj' && (status == 0 || status == -1)){
+        return 'Success'
+      }
+      if(status == 0 && !hasExpectedOutput){
+        return "Success"
+      }
+      return this.status.statusName
     },
 
     submitTestJudge(){
