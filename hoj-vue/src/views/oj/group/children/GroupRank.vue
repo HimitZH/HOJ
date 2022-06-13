@@ -200,8 +200,11 @@ export default {
     },
     goUserACStatus(username) {
       this.$router.push({
-        path: '/status',
-        query: { username, status: 0 },
+        name: 'GroupSubmissionList',
+        query: {
+          username,
+          status: 0
+        },
       });
     },
     getACRate(ac, total) {
