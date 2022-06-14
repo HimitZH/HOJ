@@ -39,7 +39,7 @@
             <el-col :md="6" :xs="24">
               <h1>{{ $t('m.Development') }}</h1>
               <p class="mb-1">
-                <a :href="websiteConfig.projectUrl" target="_blank">{{
+                <a href="https://gitee.com/himitzh0730/hoj" target="_blank">{{
                   $t('m.Open_Source')
                 }}</a>
               </p>
@@ -52,11 +52,11 @@
               <h1>{{ $t('m.Support') }}</h1>
               <p>
                 <i class="fa fa-info-circle" aria-hidden="true"></i
-                ><a @click="goRoute('/introduction')"> {{ $t('m.Help') }}</a>
+                ><a @click="goRoute('/introduction')"> {{ $t('m.NavBar_About') }}</a>
               </p>
               <p>
-                <i class="fa fa-qq" aria-hidden="true"></i>
-                {{ $t('m.Group') }} 598587305
+                <i class="el-icon-document"></i>
+                <a href="https://docs.hdoi.cn" target="_blank"> {{ $t('m.Help') }}</a>
               </p>
             </el-col>
           </el-row>
