@@ -1,7 +1,3 @@
-spring:
-  profiles:
-    active: prod
-
 mybatis-plus:
   mapper-locations: classpath*:top/hcode/hoj/mapper/xml/**Mapper.xml
   type-aliases-package: top.hcode.hoj.pojo.entity
