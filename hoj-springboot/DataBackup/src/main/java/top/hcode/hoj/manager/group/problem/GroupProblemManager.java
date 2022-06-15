@@ -8,6 +8,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
@@ -42,6 +43,7 @@ import java.util.List;
  * @Description:
  */
 @Component
+@RefreshScope
 public class GroupProblemManager {
 
     @Autowired
@@ -68,7 +70,7 @@ public class GroupProblemManager {
     @Autowired
     private Dispatcher dispatcher;
 
-    @Value("${hoj.judge.token:default}")
+    @Value("${hoj.judge.token}")
     private String judgeToken;
 
     public IPage<ProblemVo> getProblemList(Integer limit, Integer currentPage, Long gid) throws StatusNotFoundException, StatusForbiddenException {
