@@ -1,3 +1,59 @@
+# redis配置
+redis-host: 127.0.0.1
+redis-port: 6379
+redis-password: hoj123456
+
+# 本服务连接mysql的地址和端口号
+mysql-host: 127.0.0.1
+mysql-port: 3306
+# mysql的公网地址和端口号
+mysql-public-host: 127.0.0.1
+mysql-public-port: 3306
+mysql-username: root
+mysql-password: hoj123456
+mysql-name: hoj
+
+# token密钥，default表示随机生成
+jwt-token-secret: default
+# token过期时间 单位s
+jwt-token-expire: 86400
+# token可刷新的过期时间 单位s
+jwt-token-fresh-expire: 43200
+
+# 网站是否开启远程评测
+open-remote-judge: true
+# 调用评测服务的token, default表示随机生成
+judge-token: default
+
+# 邮箱服务地址
+email-host: smtp.qq.com
+# 邮箱服务端口号
+email-port: 465
+# 邮箱账号
+email-username: your_email_username
+# 邮箱授权码
+email-password: your_email_password
+
+# 以下为各个remote judge平台的账号配置
+hdu-username-list:
+hdu-password-list:
+poj-username-list:
+poj-password-list:
+cf-username-list:
+cf-password-list:
+atcoder-username-list:
+atcoder-password-list:
+spoj-username-list:
+spoj-password-list:
+# 是否强制用配置更新覆盖remote judge的账号
+forced-update-remote-judge-account: false
+
+server:
+  port: 6688
+  servlet:
+    encoding:
+      force: true
+
 spring:
   # 配置文件上传限制
   servlet:
@@ -6,8 +62,8 @@ spring:
       max-request-size: 512MB
 
   redis:
-    host: 127.0.0.1
-    port: 6379
+    host: ${redis-host}
+    port: ${redis-port}
     timeout: 60000
     jedis:
       pool:
@@ -15,11 +71,11 @@ spring:
         max-idle: 50 #连接池中的最大空闲连接
         max-active: 200 #连接池最大连接数（使用负值表示没有限制）
         max-wait: -1 #连接池最大阻塞等待时间（使用负值表示没有限制）
-    password: 123456
+    password: ${redis-password}
   datasource:
-    username: root
-    password: 123456
-    url: jdbc:mysql://127.0.0.1:3306/hoj?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&rewriteBatchedStatements=true
+    username: ${mysql-username}
+    password: ${mysql-password}
+    url: jdbc:mysql://${mysql-host}:${mysql-port}/${mysql-name}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&rewriteBatchedStatements=true&useSSL=false
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     initial-size: 10 # 初始化时建立物理连接的个数。初始化发生在显示调用init方法，或者第一次getConnection时
@@ -49,8 +105,8 @@ spring:
 shiro-redis:
   enabled: true
   redis-manager:
-    host: 127.0.0.1:6379
-    password: 123456
+    host: ${redis-host}:${redis-port}
+    password: ${redis-password}
 
 logging:
   level:

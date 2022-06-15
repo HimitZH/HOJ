@@ -1,3 +1,61 @@
+# 默认以下配置默认会读取环境变量的值
+
+# redis配置
+redis-host: ${REDIS_HOST:172.20.0.2}
+redis-port: ${REDIS_PORT:6379}
+redis-password: ${REDIS_PASSWORD:hoj123456}
+
+# 本服务连接mysql的地址和端口号
+mysql-host: ${MYSQL_HOST:172.20.0.3}
+mysql-port: ${MYSQL_PORT:3306}
+# mysql的公网地址和端口号
+mysql-public-host: ${MYSQL_PUBLIC_HOST:172.20.0.3}
+mysql-public-port: ${MYSQL_PUBLIC_PORT:3306}
+mysql-username: ${MYSQL_USERNAME:root}
+mysql-password: ${MYSQL_ROOT_PASSWORD:hoj123456}
+mysql-name: ${MYSQL_DATABASE_NAME:hoj}
+
+# token密钥，default表示随机生成
+jwt-token-secret: ${JWT_TOKEN_SECRET:default}
+# token过期时间 单位s
+jwt-token-expire: ${JWT_TOKEN_EXPIRE:86400}
+# token可刷新的过期时间 单位s
+jwt-token-fresh-expire: ${JWT_TOKEN_FRESH_EXPIRE:43200}
+
+# 网站是否开启远程评测
+open-remote-judge: ${OPEN_REMOTE_JUDGE:true}
+# 调用评测服务的token, default表示随机生成
+judge-token: ${JUDGE_TOKEN:default}
+
+# 邮箱服务地址
+email-host: ${EMAIL_SERVER_HOST:smtp.qq.com}
+# 邮箱服务端口号
+email-port: ${EMAIL_SERVER_PORT:465}
+# 邮箱账号
+email-username: ${EMAIL_USERNAME:your_email_username}
+# 邮箱授权码
+email-password: ${EMAIL_PASSWORD:your_email_password}
+
+# 以下为各个remote judge平台的账号配置
+hdu-username-list: ${HDU_ACCOUNT_USERNAME_LIST:}
+hdu-password-list: ${HDU_ACCOUNT_PASSWORD_LIST:}
+poj-username-list: ${POJ_ACCOUNT_USERNAME_LIST:}
+poj-password-list: ${POJ_ACCOUNT_PASSWORD_LIST:}
+cf-username-list: ${CF_ACCOUNT_USERNAME_LIST:}
+cf-password-list: ${CF_ACCOUNT_PASSWORD_LIST:}
+atcoder-username-list: ${ATCODER_ACCOUNT_USERNAME_LIST:}
+atcoder-password-list: ${ATCODER_ACCOUNT_PASSWORD_LIST:}
+spoj-username-list: ${SPOJ_ACCOUNT_USERNAME_LIST:}
+spoj-password-list: ${SPOJ_ACCOUNT_PASSWORD_LIST:}
+# 是否强制用配置更新覆盖remote judge的账号
+forced-update-remote-judge-account: ${FORCED_UPDATE_REMOTE_JUDGE_ACCOUNT:false}
+
+server:
+  port: ${BACKEND_SERVER_PORT:6688}
+  servlet:
+    encoding:
+      force: true
+
 spring:
   # 配置文件上传限制
   servlet:
@@ -6,8 +64,8 @@ spring:
       max-request-size: 512MB
 
   redis:
-    host: ${hoj.redis.host:${REDIS_HOST:172.20.0.2}}
-    port: ${hoj.redis.port:${REDIS_PORT:6379}}
+    host: ${redis-host}
+    port: ${redis-port}
     timeout: 60000
     jedis:
       pool:
@@ -15,11 +73,11 @@ spring:
         max-idle: 50 #连接池中的最大空闲连接
         max-active: 200 #连接池最大连接数（使用负值表示没有限制）
         max-wait: -1 #连接池最大阻塞等待时间（使用负值表示没有限制）
-    password: ${hoj.redis.password:${REDIS_PASSWORD:hoj123456}}
+    password: ${redis-password}
   datasource:
-    username: ${hoj.db.username:${MYSQL_USERNAME:root}}
-    password: ${hoj.db.password:${MYSQL_ROOT_PASSWORD:hoj123456}}
-    url: jdbc:mysql://${hoj.db.host:${MYSQL_HOST:172.20.0.3}}:${hoj.db.port:${MYSQL_PORT:3306}}/${hoj.db.name:${MYSQL_DATABASE_NAME:hoj}}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&rewriteBatchedStatements=true
+    username: ${mysql-username}
+    password: ${mysql-password}
+    url: jdbc:mysql://${mysql-host}:${mysql-port}/${mysql-name}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&rewriteBatchedStatements=true
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     initial-size: 10 # 初始化时建立物理连接的个数。初始化发生在显示调用init方法，或者第一次getConnection时
@@ -49,8 +107,8 @@ spring:
 shiro-redis:
   enabled: true
   redis-manager:
-    host: ${hoj.redis.host:${REDIS_HOST:172.20.0.2}}:${hoj.redis.port:${REDIS_PORT:6379}}
-    password: ${hoj.redis.password:${REDIS_PASSWORD:hoj123456}}
+    host: ${redis-host}:${redis-port}
+    password: ${redis-password}
 
 logging:
   level:

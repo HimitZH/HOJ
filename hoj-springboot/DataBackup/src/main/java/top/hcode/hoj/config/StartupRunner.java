@@ -44,98 +44,98 @@ public class StartupRunner implements CommandLineRunner {
     @Autowired
     private LanguageEntityService languageEntityService;
 
-    @Value("${OPEN_REMOTE_JUDGE:true}")
+    @Value("${open-remote-judge}")
     private String openRemoteJudge;
 
     // jwt配置
-    @Value("${JWT_TOKEN_SECRET:default}")
+    @Value("${jwt-token-secret}")
     private String tokenSecret;
 
-    @Value("${JWT_TOKEN_EXPIRE:86400}")
+    @Value("${jwt-token-expire}")
     private String tokenExpire;
 
-    @Value("${JWT_TOKEN_FRESH_EXPIRE:43200}")
+    @Value("${jwt-token-fresh-expire}")
     private String checkRefreshExpire;
 
     // 数据库配置
-    @Value("${MYSQL_USERNAME:root}")
+    @Value("${mysql-username}")
     private String mysqlUsername;
 
-    @Value("${MYSQL_ROOT_PASSWORD:hoj123456}")
+    @Value("${mysql-password}")
     private String mysqlPassword;
 
-    @Value("${MYSQL_DATABASE_NAME:hoj}")
+    @Value("${mysql-name}")
     private String mysqlDBName;
 
-    @Value("${MYSQL_HOST:172.20.0.3}")
+    @Value("${mysql-host}")
     private String mysqlHost;
 
-    @Value("${MYSQL_PUBLIC_HOST:172.20.0.3}")
+    @Value("${mysql-public-host}")
     private String mysqlPublicHost;
 
-    @Value("${MYSQL_PORT:3306}")
+    @Value("${mysql-port}")
     private Integer mysqlPort;
 
-    @Value("${MYSQL_PUBLIC_PORT:3306}")
+    @Value("${mysql-public-port}")
     private Integer mysqlPublicPort;
 
     // 缓存配置
-    @Value("${REDIS_HOST:172.20.0.2}")
+    @Value("${redis-host}")
     private String redisHost;
 
-    @Value("${REDIS_PORT:6379}")
+    @Value("${redis-port}")
     private Integer redisPort;
 
-    @Value("${REDIS_PASSWORD:hoj123456}")
+    @Value("${redis-password}")
     private String redisPassword;
     // 判题服务token
-    @Value("${JUDGE_TOKEN:default}")
+    @Value("${judge-token}")
     private String judgeToken;
 
     // 邮箱配置
-    @Value("${EMAIL_USERNAME:your_email_username}")
+    @Value("${email-username}")
     private String emailUsername;
 
-    @Value("${EMAIL_PASSWORD:your_email_password}")
+    @Value("${email-password}")
     private String emailPassword;
 
-    @Value("${EMAIL_SERVER_HOST:smtp.qq.com}")
+    @Value("${email-host}")
     private String emailHost;
 
-    @Value("${EMAIL_SERVER_PORT:465}")
+    @Value("${email-port}")
     private Integer emailPort;
 
-    @Value("${HDU_ACCOUNT_USERNAME_LIST:}")
+    @Value("${hdu-username-list}")
     private List<String> hduUsernameList;
 
-    @Value("${HDU_ACCOUNT_PASSWORD_LIST:}")
+    @Value("${hdu-password-list}")
     private List<String> hduPasswordList;
 
-    @Value("${CF_ACCOUNT_USERNAME_LIST:}")
+    @Value("${cf-username-list}")
     private List<String> cfUsernameList;
 
-    @Value("${CF_ACCOUNT_PASSWORD_LIST:}")
+    @Value("${cf-password-list}")
     private List<String> cfPasswordList;
 
-    @Value("${POJ_ACCOUNT_USERNAME_LIST:}")
+    @Value("${poj-username-list}")
     private List<String> pojUsernameList;
 
-    @Value("${POJ_ACCOUNT_PASSWORD_LIST:}")
+    @Value("${poj-password-list}")
     private List<String> pojPasswordList;
 
-    @Value("${ATCODER_ACCOUNT_USERNAME_LIST:}")
+    @Value("${atcoder-username-list}")
     private List<String> atcoderUsernameList;
 
-    @Value("${ATCODER_ACCOUNT_PASSWORD_LIST:}")
+    @Value("${atcoder-password-list}")
     private List<String> atcoderPasswordList;
 
-    @Value("${SPOJ_ACCOUNT_USERNAME_LIST:}")
+    @Value("${spoj-username-list}")
     private List<String> spojUsernameList;
 
-    @Value("${SPOJ_ACCOUNT_PASSWORD_LIST:}")
+    @Value("${spoj-password-list}")
     private List<String> spojPasswordList;
 
-    @Value("${FORCED_UPDATE_REMOTE_JUDGE_ACCOUNT:false}")
+    @Value("${forced-update-remote-judge-account}")
     private Boolean forcedUpdateRemoteJudgeAccount;
 
     @Value("${spring.profiles.active}")
@@ -144,10 +144,6 @@ public class StartupRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-
-        if (profile.equals("dev")) {
-            return;
-        }
 
         // 动态修改nacos上的配置文件
         if (judgeToken.equals("default")) {
