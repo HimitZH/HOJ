@@ -104,7 +104,7 @@ public class DruidConfigure {
         log.warn("[MySQL] [Config Change] name:[{}], host:[{}], port:[{}], username:[{}], password:[{}]", mysqlName, mysqlHost, mysqlPort, mysqlUsername, mysqlUserPassword);
 
         DruidDataSource datasource = new DruidDataSource();
-        String url = "jdbc:mysql://" + mysqlHost + ":" + mysqlPort + "/" + mysqlName + "?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&rewriteBatchedStatements=true&useSSL=false";
+        String url = "jdbc:mysql://" + mysqlHost + ":" + mysqlPort + "/" + mysqlName + "?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&rewriteBatchedStatements=true";
         datasource.setUrl(url);
         datasource.setUsername(mysqlUsername);
         datasource.setPassword(mysqlUserPassword);
