@@ -54,7 +54,7 @@ public class RejudgeManager {
     private RemoteJudgeDispatcher remoteJudgeDispatcher;
 
     @Transactional(rollbackFor = Exception.class)
-    public  Judge rejudge(Long submitId) throws StatusFailException {
+    public Judge rejudge(Long submitId) throws StatusFailException {
         Judge judge = judgeEntityService.getById(submitId);
 
         boolean isContestSubmission = judge.getCid() != 0;
@@ -98,12 +98,15 @@ public class RejudgeManager {
 
         if (result && resetContestRecordResult) {
             // 调用判题服务
-            Problem problem = problemEntityService.getById(judge.getPid());
+            QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
+            problemQueryWrapper.select("id", "is_remote", "problem_id")
+                    .eq("id", judge.getPid());
+            Problem problem = problemEntityService.getOne(problemQueryWrapper);
             if (problem.getIsRemote()) { // 如果是远程oj判题
-                remoteJudgeDispatcher.sendTask(judge, problem.getProblemId(),
+                remoteJudgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), problem.getProblemId(),
                         isContestSubmission, hasSubmitIdRemoteRejudge);
             } else {
-                judgeDispatcher.sendTask(judge, isContestSubmission);
+                judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), isContestSubmission);
             }
             return judge;
         } else {
@@ -147,19 +150,24 @@ public class RejudgeManager {
         boolean resetContestRecordResult = contestRecordEntityService.update(updateWrapper);
 
         if (resetContestRecordResult && resetJudgeResult) {
+            QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
+            problemQueryWrapper.select("id", "is_remote", "problem_id")
+                    .eq("id", pid);
+            Problem problem = problemEntityService.getOne(problemQueryWrapper);
             // 调用重判服务
-            Problem problem = problemEntityService.getById(pid);
             if (problem.getIsRemote()) { // 如果是远程oj判题
                 for (Judge judge : rejudgeList) {
                     // 进入重判队列，等待调用判题服务
-                    remoteJudgeDispatcher.sendTask(judge, problem.getProblemId(),
+                    remoteJudgeDispatcher.sendTask(judge.getSubmitId(),
+                            pid,
+                            problem.getProblemId(),
                             judge.getCid() != 0,
                             isHasSubmitIdRemoteRejudge(judge.getVjudgeSubmitId(), idMapStatus.get(judge.getSubmitId())));
                 }
             } else {
                 for (Judge judge : rejudgeList) {
                     // 进入重判队列，等待调用判题服务
-                    judgeDispatcher.sendTask(judge, judge.getCid() != 0);
+                    judgeDispatcher.sendTask(judge.getSubmitId(), judge.getPid(), judge.getCid() != 0);
                 }
             }
         } else {

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
+import top.hcode.hoj.common.exception.StatusSystemErrorException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.admin.contest.AdminContestManager;
@@ -58,6 +59,16 @@ public class AdminContestServiceImpl implements AdminContestService {
             return CommonResult.successResponse();
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public CommonResult<Void> cloneContest(Long cid) {
+        try {
+            adminContestManager.cloneContest(cid);
+            return CommonResult.successResponse();
+        }catch (StatusSystemErrorException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.SYSTEM_ERROR);
         }
     }
 

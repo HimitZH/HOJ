@@ -6,6 +6,7 @@ import top.hcode.hoj.pojo.entity.contest.ContestRecord;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.hcode.hoj.pojo.vo.ContestRecordVo;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,8 +25,8 @@ public interface ContestRecordEntityService extends IService<ContestRecord> {
                                    Long cid,
                                    String contestCreatorId);
 
-    List<ContestRecordVo> getOIContestRecord(Contest contest, Boolean isOpenSealRank);
+    List<ContestRecordVo> getOIContestRecord(Contest contest,List<Integer> externalCidList, Boolean isOpenSealRank);
 
-    List<ContestRecordVo> getACMContestRecord(String contestCreatorUid, Long cid);
+    List<ContestRecordVo> getACMContestRecord(String contestCreatorUid, Long cid, List<Integer> externalCidList, Date startTime);
 
 }

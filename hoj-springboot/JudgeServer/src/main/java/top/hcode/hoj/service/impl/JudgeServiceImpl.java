@@ -1,5 +1,7 @@
 package top.hcode.hoj.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -19,6 +21,7 @@ import top.hcode.hoj.util.Constants;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * @Author: Himit_ZH
@@ -46,27 +49,47 @@ public class JudgeServiceImpl implements JudgeService {
 
     @Override
     public void judge(Judge judge) {
-        judge.setStatus(Constants.Judge.STATUS_COMPILING.getStatus()); // 标志该判题过程进入编译阶段
+        // 标志该判题过程进入编译阶段
         // 写入当前判题服务的名字
-        judge.setJudger(name);
-        judgeEntityService.updateById(judge);
+        UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
+        judgeUpdateWrapper.set("status", Constants.Judge.STATUS_COMPILING.getStatus())
+                .set("judger", name)
+                .eq("submit_id", judge.getSubmitId());
+        judgeEntityService.update(judgeUpdateWrapper);
         // 进行判题操作
-        Problem problem = problemEntityService.getById(judge.getPid());
-        Judge finalJudge = judgeContext.Judge(problem, judge);
+        QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
+        problemQueryWrapper.select("id",
+                        "type",
+                        "io_score",
+                        "difficulty",
+                        "judge_mode",
+                        "time_limit",
+                        "memory_limit",
+                        "stack_limit",
+                        "user_extra_file",
+                        "judge_extra_file",
+                        "case_version",
+                        "spj_code",
+                        "spj_language",
+                        "problem_id",
+                        "is_remove_end_blank")
+                .eq("id", judge.getPid());
+        Problem problem = problemEntityService.getOne(problemQueryWrapper);
+        Judge finalJudgeRes = judgeContext.Judge(problem, judge);
 
         // 更新该次提交
-        judgeEntityService.updateById(finalJudge);
+        judgeEntityService.updateById(finalJudgeRes);
 
-        if (finalJudge.getStatus().intValue() != Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus()) {
+        if (!Objects.equals(finalJudgeRes.getStatus(), Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())) {
             // 更新其它表
-            judgeContext.updateOtherTable(finalJudge.getSubmitId(),
-                    finalJudge.getStatus(),
-                    finalJudge.getCid(),
-                    finalJudge.getUid(),
-                    finalJudge.getPid(),
-                    finalJudge.getGid(),
-                    finalJudge.getScore(),
-                    finalJudge.getTime());
+            judgeContext.updateOtherTable(finalJudgeRes.getSubmitId(),
+                    finalJudgeRes.getStatus(),
+                    judge.getCid(),
+                    judge.getUid(),
+                    judge.getPid(),
+                    judge.getGid(),
+                    finalJudgeRes.getScore(),
+                    finalJudgeRes.getTime());
         }
     }
 

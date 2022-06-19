@@ -125,6 +125,7 @@ public class ContestFileManager {
                     removeStar,
                     contest,
                     null,
+                    null,
                     null);
             EasyExcel.write(response.getOutputStream())
                     .head(fileEntityService.getContestRankExcelHead(contestProblemDisplayIDList, true))
@@ -135,6 +136,7 @@ public class ContestFileManager {
                     isOpenSealRank,
                     removeStar,
                     contest,
+                    null,
                     null,
                     null);
             EasyExcel.write(response.getOutputStream())

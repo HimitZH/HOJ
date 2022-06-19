@@ -72,18 +72,19 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
     @Override
     public void handleJudgeMsg(String taskStr, String queueName) {
         JSONObject task = JSONUtil.parseObj(taskStr);
-
-        Judge judge = task.get("judge", Judge.class);
         String token = task.getStr("token");
         String remoteJudgeProblem = task.getStr("remoteJudgeProblem");
         Boolean isHasSubmitIdRemoteReJudge = task.getBool("isHasSubmitIdRemoteReJudge");
         String remoteOJName = remoteJudgeProblem.split("-")[0].toUpperCase();
-
-        dispatchRemoteJudge(judge,
-                token,
-                remoteJudgeProblem,
-                isHasSubmitIdRemoteReJudge,
-                remoteOJName);
+        Long judgeId = task.getLong("judgeId");
+        Judge judge = judgeEntityService.getById(judgeId);
+        if (judge != null) {
+            dispatchRemoteJudge(judge,
+                    token,
+                    remoteJudgeProblem,
+                    isHasSubmitIdRemoteReJudge,
+                    remoteOJName);
+        }
     }
 
     private void dispatchRemoteJudge(Judge judge, String token, String remoteJudgeProblem,

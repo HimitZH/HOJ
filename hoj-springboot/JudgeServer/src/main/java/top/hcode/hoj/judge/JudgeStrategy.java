@@ -4,6 +4,7 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.io.file.FileWriter;
 import cn.hutool.json.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -72,8 +73,10 @@ public class JudgeStrategy {
             }
 
             // 更新状态为评测数据中
-            judge.setStatus(Constants.Judge.STATUS_JUDGING.getStatus());
-            judgeEntityService.updateById(judge);
+            UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
+            judgeUpdateWrapper.set("status", Constants.Judge.STATUS_JUDGING.getStatus())
+                    .eq("submit_id", judge.getSubmitId());
+            judgeEntityService.update(judgeUpdateWrapper);
             // 开始测试每个测试点
             List<JSONObject> allCaseResultList = judgeRun.judgeAllCase(judge.getSubmitId(),
                     problem,
@@ -302,7 +305,7 @@ public class JudgeStrategy {
     // 进行最终测试结果的判断（除编译失败外的评测状态码和时间，空间,OI题目的得分）
     public HashMap<String, Object> getJudgeInfo(List<JSONObject> testCaseResultList, Problem problem, Judge judge) {
 
-        boolean isACM = problem.getType() == Constants.Contest.TYPE_ACM.getCode();
+        boolean isACM = Objects.equals(problem.getType(), Constants.Contest.TYPE_ACM.getCode());
 
         List<JSONObject> errorTestCaseList = new LinkedList<>();
 
@@ -328,19 +331,19 @@ public class JudgeStrategy {
                     .setCaseId(caseId)
                     .setSubmitId(judge.getSubmitId());
 
-            if (!StringUtils.isEmpty(msg) && status != Constants.Judge.STATUS_COMPILE_ERROR.getStatus()) {
+            if (!StringUtils.isEmpty(msg) && !Objects.equals(status, Constants.Judge.STATUS_COMPILE_ERROR.getStatus())) {
                 judgeCase.setUserOutput(msg);
             }
 
             if (isACM) {
-                if (status != Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+                if (!Objects.equals(status, Constants.Judge.STATUS_ACCEPTED.getStatus())) {
                     errorTestCaseList.add(jsonObject);
                 }
             } else {
                 int oiScore = jsonObject.getInt("score");
                 if (Objects.equals(status, Constants.Judge.STATUS_ACCEPTED.getStatus())) {
                     judgeCase.setScore(oiScore);
-                } else if (status == Constants.Judge.STATUS_PARTIAL_ACCEPTED.getStatus()) {
+                } else if (Objects.equals(status, Constants.Judge.STATUS_PARTIAL_ACCEPTED.getStatus())) {
                     errorTestCaseList.add(jsonObject);
                     Double percentage = jsonObject.getDouble("percentage");
                     if (percentage != null) {

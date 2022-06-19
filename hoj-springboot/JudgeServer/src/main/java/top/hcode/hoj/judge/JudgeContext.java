@@ -44,28 +44,30 @@ public class JudgeContext {
 
         HashMap<String, Object> judgeResult = judgeStrategy.judge(problem, judge);
 
+        Judge finalJudgeRes = new Judge();
+        finalJudgeRes.setSubmitId(judge.getSubmitId());
         // 如果是编译失败、提交错误或者系统错误就有错误提醒
         if (judgeResult.get("code") == Constants.Judge.STATUS_COMPILE_ERROR.getStatus() ||
                 judgeResult.get("code") == Constants.Judge.STATUS_SYSTEM_ERROR.getStatus() ||
                 judgeResult.get("code") == Constants.Judge.STATUS_RUNTIME_ERROR.getStatus() ||
                 judgeResult.get("code") == Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus()) {
-            judge.setErrorMessage((String) judgeResult.getOrDefault("errMsg", ""));
+            finalJudgeRes.setErrorMessage((String) judgeResult.getOrDefault("errMsg", ""));
         }
         // 设置最终结果状态码
-        judge.setStatus((Integer) judgeResult.get("code"));
+        finalJudgeRes.setStatus((Integer) judgeResult.get("code"));
         // 设置最大时间和最大空间不超过题目限制时间和空间
         // kb
         Integer memory = (Integer) judgeResult.get("memory");
-        judge.setMemory(Math.min(memory, problem.getMemoryLimit() * 1024));
+        finalJudgeRes.setMemory(Math.min(memory, problem.getMemoryLimit() * 1024));
         // ms
         Integer time = (Integer) judgeResult.get("time");
-        judge.setTime(Math.min(time, problem.getTimeLimit()));
+        finalJudgeRes.setTime(Math.min(time, problem.getTimeLimit()));
         // score
-        judge.setScore((Integer) judgeResult.getOrDefault("score", null));
+        finalJudgeRes.setScore((Integer) judgeResult.getOrDefault("score", null));
         // oi_rank_score
-        judge.setOiRankScore((Integer) judgeResult.getOrDefault("oiRankScore", null));
+        finalJudgeRes.setOiRankScore((Integer) judgeResult.getOrDefault("oiRankScore", null));
 
-        return judge;
+        return finalJudgeRes;
     }
 
     public TestJudgeRes testJudge(TestJudgeReq testJudgeReq) {

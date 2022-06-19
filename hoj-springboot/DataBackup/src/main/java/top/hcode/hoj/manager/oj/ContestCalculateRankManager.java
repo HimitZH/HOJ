@@ -1,5 +1,6 @@
 package top.hcode.hoj.manager.oj;
 
+import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -47,12 +48,14 @@ public class ContestCalculateRankManager {
                                               boolean removeStar,
                                               Contest contest,
                                               String currentUserId,
-                                              List<String> concernedList) {
+                                              List<String> concernedList,
+                                              List<Integer> externalCidList) {
         return calcACMRank(isOpenSealRank,
                 removeStar,
                 contest,
                 currentUserId,
                 concernedList,
+                externalCidList,
                 false,
                 null);
     }
@@ -62,13 +65,15 @@ public class ContestCalculateRankManager {
                                             Boolean removeStar,
                                             Contest contest,
                                             String currentUserId,
-                                            List<String> concernedList) {
+                                            List<String> concernedList,
+                                            List<Integer> externalCidList) {
 
         return calcOIRank(isOpenSealRank,
                 removeStar,
                 contest,
                 currentUserId,
                 concernedList,
+                externalCidList,
                 false,
                 null);
     }
@@ -80,6 +85,7 @@ public class ContestCalculateRankManager {
      * @param contest        比赛实体信息
      * @param currentUserId  当前查看榜单的用户uuid,不为空则将该数据复制一份放置列表最前
      * @param concernedList  关注的用户（uuid）列表
+     * @param externalCidList 榜单额外显示的比赛列表
      * @param useCache       是否对初始排序计算的结果进行缓存
      * @param cacheTime      缓存的时间 单位秒
      * @MethodName calcACMRank
@@ -92,19 +98,29 @@ public class ContestCalculateRankManager {
                                               Contest contest,
                                               String currentUserId,
                                               List<String> concernedList,
+                                              List<Integer> externalCidList,
                                               boolean useCache,
                                               Long cacheTime) {
-
         List<ACMContestRankVo> orderResultList;
         if (useCache) {
             String key = Constants.Contest.CONTEST_RANK_CAL_RESULT_CACHE.getName() + "_" + contest.getId();
             orderResultList = (List<ACMContestRankVo>) redisUtils.get(key);
             if (orderResultList == null) {
-                orderResultList = getACMOrderRank(contest, isOpenSealRank);
+                if (isOpenSealRank) {
+                    long minSealRankTime = DateUtil.between(contest.getStartTime(), contest.getSealRankTime(), DateUnit.SECOND);
+                    orderResultList = getACMOrderRank(contest, true, minSealRankTime, contest.getDuration(), externalCidList);
+                } else {
+                    orderResultList = getACMOrderRank(contest, false, null, null, externalCidList);
+                }
                 redisUtils.set(key, orderResultList, cacheTime);
             }
         } else {
-            orderResultList = getACMOrderRank(contest, isOpenSealRank);
+            if (isOpenSealRank) {
+                long minSealRankTime = DateUtil.between(contest.getStartTime(), contest.getSealRankTime(), DateUnit.SECOND);
+                orderResultList = getACMOrderRank(contest, true, minSealRankTime, contest.getDuration(), externalCidList);
+            } else {
+                orderResultList = getACMOrderRank(contest, false, null, null, externalCidList);
+            }
         }
 
         // 需要打星的用户名列表
@@ -164,10 +180,17 @@ public class ContestCalculateRankManager {
     }
 
 
-    private List<ACMContestRankVo> getACMOrderRank(Contest contest, Boolean isOpenSealRank) {
+    private List<ACMContestRankVo> getACMOrderRank(Contest contest,
+                                                   Boolean isOpenSealRank,
+                                                   Long minSealRankTime,
+                                                   Long maxSealRankTime,
+                                                   List<Integer> externalCidList) {
 
 
-        List<ContestRecordVo> contestRecordList = contestRecordEntityService.getACMContestRecord(contest.getUid(), contest.getId());
+        List<ContestRecordVo> contestRecordList = contestRecordEntityService.getACMContestRecord(contest.getUid(),
+                contest.getId(),
+                externalCidList,
+                contest.getStartTime());
 
         List<String> superAdminUidList = getSuperAdminUidList(contest.getGid());
 
@@ -221,7 +244,7 @@ public class ContestCalculateRankManager {
             ACMContestRankVo.setTotal(ACMContestRankVo.getTotal() + 1);
 
             // 如果是当前是开启封榜的时段和同时该提交是处于封榜时段 尝试次数+1
-            if (isOpenSealRank && isInSealTimeSubmission(contest, contestRecord.getSubmitTime())) {
+            if (isOpenSealRank && isInSealTimeSubmission(minSealRankTime, maxSealRankTime, contestRecord.getTime())) {
 
                 int tryNum = (int) problemSubmissionInfo.getOrDefault("tryNum", 0);
                 problemSubmissionInfo.put("tryNum", tryNum + 1);
@@ -290,6 +313,7 @@ public class ContestCalculateRankManager {
      * @param contest        比赛实体信息
      * @param currentUserId  当前查看榜单的用户uuid,不为空则将该数据复制一份放置列表最前
      * @param concernedList  关注的用户（uuid）列表
+     * @param externalCidList 榜单额外显示比赛列表
      * @param useCache       是否对初始排序计算的结果进行缓存
      * @param cacheTime      缓存的时间 单位秒
      * @MethodName calcOIRank
@@ -302,6 +326,7 @@ public class ContestCalculateRankManager {
                                             Contest contest,
                                             String currentUserId,
                                             List<String> concernedList,
+                                            List<Integer> externalCidList,
                                             boolean useCache,
                                             Long cacheTime) {
 
@@ -310,11 +335,11 @@ public class ContestCalculateRankManager {
             String key = Constants.Contest.CONTEST_RANK_CAL_RESULT_CACHE.getName() + "_" + contest.getId();
             orderResultList = (List<OIContestRankVo>) redisUtils.get(key);
             if (orderResultList == null) {
-                orderResultList = getOIOrderRank(contest, isOpenSealRank);
+                orderResultList = getOIOrderRank(contest,externalCidList, isOpenSealRank);
                 redisUtils.set(key, orderResultList, cacheTime);
             }
         } else {
-            orderResultList = getOIOrderRank(contest, isOpenSealRank);
+            orderResultList = getOIOrderRank(contest,externalCidList, isOpenSealRank);
         }
 
         // 需要打星的用户名列表
@@ -374,9 +399,9 @@ public class ContestCalculateRankManager {
         return topOIRankVoList;
     }
 
-    private List<OIContestRankVo> getOIOrderRank(Contest contest, Boolean isOpenSealRank) {
+    private List<OIContestRankVo> getOIOrderRank(Contest contest,List<Integer> externalCidList, Boolean isOpenSealRank) {
 
-        List<ContestRecordVo> oiContestRecord = contestRecordEntityService.getOIContestRecord(contest, isOpenSealRank);
+        List<ContestRecordVo> oiContestRecord = contestRecordEntityService.getOIContestRecord(contest, externalCidList, isOpenSealRank);
 
         List<String> superAdminUidList = getSuperAdminUidList(contest.getGid());
 
@@ -499,8 +524,8 @@ public class ContestCalculateRankManager {
         return superAdminUidList;
     }
 
-    private boolean isInSealTimeSubmission(Contest contest, Date submissionDate) {
-        return DateUtil.isIn(submissionDate, contest.getSealRankTime(), contest.getEndTime());
+    private boolean isInSealTimeSubmission(Long minSealRankTime, Long maxSealRankTime, Long time) {
+        return time >= minSealRankTime && time <= maxSealRankTime;
     }
 
     private HashMap<String, Boolean> starAccountToMap(String starAccountStr) {

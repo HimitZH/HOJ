@@ -28,4 +28,6 @@ public class ContestRankDto {
     private Boolean removeStar;
 
     private List<String> concernedList;
+
+    private List<Integer> externalCidList;
 }
