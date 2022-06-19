@@ -19,6 +19,7 @@ import top.hcode.hoj.util.Constants;
 
 import javax.annotation.Resource;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -112,31 +113,31 @@ public class RemoteJudgeGetResult {
                     Integer time = remoteJudgeRes.getTime();
                     Integer memory = remoteJudgeRes.getMemory();
                     String errorInfo = remoteJudgeRes.getErrorInfo();
-                    Judge judge = new Judge();
+                    Judge finalJudgeRes = new Judge();
 
-                    judge.setSubmitId(remoteJudgeDTO.getJudgeId())
+                    finalJudgeRes.setSubmitId(remoteJudgeDTO.getJudgeId())
                             .setStatus(status)
                             .setTime(time)
                             .setMemory(memory)
                             .setJudger(name);
 
                     if (status.intValue() == Constants.Judge.STATUS_COMPILE_ERROR.getStatus()) {
-                        judge.setErrorMessage(errorInfo);
+                        finalJudgeRes.setErrorMessage(errorInfo);
                     } else if (status.intValue() == Constants.Judge.STATUS_SYSTEM_ERROR.getStatus()) {
-                        judge.setErrorMessage("There is something wrong with the " + remoteJudgeDTO.getOj() + ", please try again later");
+                        finalJudgeRes.setErrorMessage("There is something wrong with the " + remoteJudgeDTO.getOj() + ", please try again later");
                     }
 
                     // 如果是比赛题目，需要特别适配OI比赛的得分 除AC给100 其它结果给0分
                     if (remoteJudgeDTO.getCid() != 0) {
                         int score = 0;
 
-                        if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+                        if (Objects.equals(finalJudgeRes.getStatus(), Constants.Judge.STATUS_ACCEPTED.getStatus())) {
                             score = 100;
                         }
 
-                        judge.setScore(score);
+                        finalJudgeRes.setScore(score);
                         // 写回数据库
-                        judgeEntityService.updateById(judge);
+                        judgeEntityService.updateById(finalJudgeRes);
                         // 同步其它表
                         judgeContext.updateOtherTable(remoteJudgeDTO.getJudgeId(),
                                 status,
@@ -145,10 +146,10 @@ public class RemoteJudgeGetResult {
                                 remoteJudgeDTO.getPid(),
                                 remoteJudgeDTO.getGid(),
                                 score,
-                                judge.getTime());
+                                finalJudgeRes.getTime());
 
                     } else {
-                        judgeEntityService.updateById(judge);
+                        judgeEntityService.updateById(finalJudgeRes);
                         // 同步其它表
                         judgeContext.updateOtherTable(remoteJudgeDTO.getJudgeId(),
                                 status,

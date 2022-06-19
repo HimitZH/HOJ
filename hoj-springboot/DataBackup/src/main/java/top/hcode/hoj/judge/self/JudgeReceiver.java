@@ -6,11 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.judge.AbstractReceiver;
 import top.hcode.hoj.judge.Dispatcher;
 import top.hcode.hoj.pojo.dto.TestJudgeReq;
-import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.dto.ToJudgeDTO;
+import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
@@ -28,6 +29,9 @@ public class JudgeReceiver extends AbstractReceiver {
 
     @Autowired
     private RedisUtils redisUtils;
+
+    @Autowired
+    private JudgeEntityService judgeEntityService;
 
     @Async("judgeTaskAsyncPool")
     public void processWaitingTask() {
@@ -52,18 +56,22 @@ public class JudgeReceiver extends AbstractReceiver {
 
     @Override
     public void handleJudgeMsg(String taskStr, String queueName) {
-        if (Constants.Queue.TEST_JUDGE_WAITING.getName().equals(queueName)){
+        if (Constants.Queue.TEST_JUDGE_WAITING.getName().equals(queueName)) {
             TestJudgeReq testJudgeReq = JSONUtil.toBean(taskStr, TestJudgeReq.class);
-            dispatcher.dispatcherTestJudge(testJudgeReq,"/test-judge");
-        }else {
+            dispatcher.dispatcherTestJudge(testJudgeReq, "/test-judge");
+        } else {
             JSONObject task = JSONUtil.parseObj(taskStr);
-            Judge judge = task.get("judge", Judge.class);
-            String token = task.getStr("token");
-            // 调用判题服务
-            dispatcher.dispatcherJudge("judge", "/judge", new ToJudgeDTO()
-                    .setJudge(judge)
-                    .setToken(token)
-                    .setRemoteJudgeProblem(null));
+            Long judgeId = task.getLong("judgeId");
+            Judge judge = judgeEntityService.getById(judgeId);
+            if (judge != null) {
+                String token = task.getStr("token");
+                // 调用判题服务
+                dispatcher.dispatcherJudge("judge", "/judge", new ToJudgeDTO()
+                        .setJudge(judge)
+                        .setToken(token)
+                        .setRemoteJudgeProblem(null));
+            }
+
         }
         // 接着处理任务
         processWaitingTask();

@@ -1,4 +1,5 @@
 package top.hcode.hoj.service.admin.contest;
+
 ;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import top.hcode.hoj.common.result.CommonResult;
@@ -15,6 +16,8 @@ public interface AdminContestService {
     public CommonResult<Void> deleteContest(Long cid);
 
     public CommonResult<Void> addContest(AdminContestVo adminContestVo);
+
+    public CommonResult<Void> cloneContest(Long cid);
 
     public CommonResult<Void> updateContest(AdminContestVo adminContestVo);
 

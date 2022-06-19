@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
+import top.hcode.hoj.common.exception.StatusSystemErrorException;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestRegister;
 import top.hcode.hoj.pojo.vo.AdminContestVo;
@@ -108,6 +109,24 @@ public class AdminContestManager {
         if (!isOk) { // 删除成功
             throw new StatusFailException("添加失败");
         }
+    }
+
+    public void cloneContest(Long cid) throws StatusSystemErrorException {
+        Contest contest = contestEntityService.getById(cid);
+        if (contest == null){
+            throw new StatusSystemErrorException("该比赛不存在，无法克隆！");
+        }
+        // 获取当前登录的用户
+        UserRolesVo userRolesVo = (UserRolesVo) SecurityUtils.getSubject().getSession().getAttribute("userInfo");
+        contest.setUid(userRolesVo.getUid())
+                .setAuthor(userRolesVo.getUsername())
+                .setSource(cid.intValue())
+                .setId(null)
+                .setGmtCreate(null)
+                .setGmtModified(null);
+        contest.setTitle(contest.getTitle()+" [Cloned]");
+        boolean isOk = contestEntityService.save(contest);
+
     }
 
     public void updateContest(AdminContestVo adminContestVo) throws StatusForbiddenException, StatusFailException {

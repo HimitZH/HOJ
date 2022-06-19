@@ -32,16 +32,28 @@
         FROM
         (SELECT uid,pid,cpid,MAX(time) AS time FROM contest_record
         <where>
-            cid=#{cid} AND status IS NOT NULL
+            <if test="externalCidList == null or externalCidList.size() == 0">
+                cid=#{cid}
+            </if>
+            <if test="externalCidList != null and externalCidList.size() > 0">
+                (
+                    cr.cid = #{cid}
+                    OR cr.cid in
+                    <foreach collection="externalCidList" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                )
+            </if>
+            AND status IS NOT NULL
             <if test="contestCreatorUid!=null">
                 AND uid!=#{contestCreatorUid}
             </if>
             <choose>
                 <when test="isOpenSealRank">
-                    AND submit_time BETWEEN #{startTime} AND #{sealTime}
+                    AND `time` BETWEEN 0 AND #{sealTime}
                 </when>
                 <otherwise>
-                    AND submit_time BETWEEN #{startTime} AND #{endTime}
+                    AND `time` BETWEEN 0 AND #{endTime}
                 </otherwise>
             </choose>
         </where>
@@ -57,16 +69,28 @@
         FROM
         (SELECT uid,pid,cpid,MAX(score) AS score FROM contest_record
         <where>
-            cid=#{cid} AND status IS NOT NULL
+            <if test="externalCidList == null or externalCidList.size() == 0">
+                cid=#{cid}
+            </if>
+            <if test="externalCidList != null and externalCidList.size() > 0">
+                (
+                    cr.cid = #{cid}
+                    OR cr.cid in
+                    <foreach collection="externalCidList" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                )
+            </if>
+            AND status IS NOT NULL
             <if test="contestCreatorUid!=null">
                 AND uid!=#{contestCreatorUid}
             </if>
             <choose>
                 <when test="isOpenSealRank">
-                    AND submit_time BETWEEN #{startTime} AND #{sealTime}
+                    AND `time` BETWEEN 0 AND #{sealTime}
                 </when>
                 <otherwise>
-                    AND submit_time BETWEEN #{startTime} AND #{endTime}
+                    AND `time` BETWEEN 0 AND #{endTime}
                 </otherwise>
             </choose>
         </where>
@@ -81,10 +105,24 @@
         cr.time,cr.score,cr.use_time,cr.checked,cr.gmt_create,cr.gmt_modified,
         u.gender,u.realname as realname,u.avatar,u.school,u.nickname
         FROM contest_record cr,user_info u
-        WHERE cr.uid = u.uuid
-        AND cr.cid = #{cid}
-        AND cr.status IS NOT NULL
-        AND cr.uid != #{contestCreatorUid}
+        <where>
+            cr.uid = u.uuid
+            <if test="externalCidList == null">
+                AND cr.cid = #{cid}
+            </if>
+            <if test="externalCidList != null">
+                AND (
+                    cr.cid = #{cid}
+                    OR cr.cid in
+                    <foreach collection="externalCidList" item="id" open="(" separator="," close=")">
+                        #{id}
+                    </foreach>
+                )
+                AND #{time} >= cr.time
+            </if>
+            AND cr.status IS NOT NULL
+            AND cr.uid != #{contestCreatorUid}
+        </where>
         ORDER BY cr.time ASC
     </select>
 </mapper>

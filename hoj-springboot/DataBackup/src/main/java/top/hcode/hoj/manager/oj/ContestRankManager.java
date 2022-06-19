@@ -1,5 +1,6 @@
 package top.hcode.hoj.manager.oj;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,7 @@ public class ContestRankManager {
                                                          Boolean removeStar,
                                                          String currentUserId,
                                                          List<String> concernedList,
+                                                         List<Integer> externalCidList,
                                                          Contest contest,
                                                          int currentPage,
                                                          int limit){
@@ -46,7 +48,8 @@ public class ContestRankManager {
                 removeStar,
                 contest,
                 currentUserId,
-                concernedList);
+                concernedList,
+                externalCidList);
 
         // 计算好排行榜，然后进行分页
         Page<ACMContestRankVo> page = new Page<>(currentPage, limit);
@@ -80,6 +83,7 @@ public class ContestRankManager {
                                                        Boolean removeStar,
                                                        String currentUserId,
                                                        List<String> concernedList,
+                                                       List<Integer> externalCidList,
                                                        Contest contest,
                                                        int currentPage,
                                                        int limit) {
@@ -88,7 +92,8 @@ public class ContestRankManager {
                 removeStar,
                 contest,
                 currentUserId,
-                concernedList);
+                concernedList,
+                externalCidList);
 
         // 计算好排行榜，然后进行分页
         Page<OIContestRankVo> page = new Page<>(currentPage, limit);
@@ -113,6 +118,7 @@ public class ContestRankManager {
      * @param contest
      * @param currentUserId
      * @param concernedList
+     * @param externalCidList
      * @param useCache
      * @param cacheTime
      * @desc  获取ACM比赛排行榜外榜
@@ -122,14 +128,18 @@ public class ContestRankManager {
                                                           Contest contest,
                                                           String currentUserId,
                                                           List<String> concernedList,
+                                                          List<Integer> externalCidList,
                                                           Boolean useCache,
                                                           Long cacheTime) {
-
+        if (CollectionUtil.isNotEmpty(externalCidList)){
+            useCache = false;
+        }
         return contestCalculateRankManager.calcACMRank(isOpenSealRank,
                 removeStar,
                 contest,
                 currentUserId,
                 concernedList,
+                externalCidList,
                 useCache,
                 cacheTime);
     }
@@ -150,14 +160,19 @@ public class ContestRankManager {
                                                          Contest contest,
                                                          String currentUserId,
                                                          List<String> concernedList,
+                                                         List<Integer> externalCidList,
                                                          Boolean useCache,
                                                          Long cacheTime) {
 
+        if (CollectionUtil.isNotEmpty(externalCidList)){
+            useCache = false;
+        }
         return contestCalculateRankManager.calcOIRank(isOpenSealRank,
                 removeStar,
                 contest,
                 currentUserId,
                 concernedList,
+                externalCidList,
                 useCache,
                 cacheTime);
     }

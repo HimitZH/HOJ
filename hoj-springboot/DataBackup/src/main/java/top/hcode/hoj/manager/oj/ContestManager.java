@@ -1,8 +1,5 @@
 package top.hcode.hoj.manager.oj;
 
-import top.hcode.hoj.dao.group.GroupMemberEntityService;
-import top.hcode.hoj.pojo.entity.group.GroupMember;
-import top.hcode.hoj.validator.GroupValidator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.SecurityUtils;
@@ -13,6 +10,12 @@ import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
+import top.hcode.hoj.dao.common.AnnouncementEntityService;
+import top.hcode.hoj.dao.contest.*;
+import top.hcode.hoj.dao.group.GroupMemberEntityService;
+import top.hcode.hoj.dao.judge.JudgeEntityService;
+import top.hcode.hoj.dao.problem.*;
+import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.pojo.dto.ContestPrintDto;
 import top.hcode.hoj.pojo.dto.ContestRankDto;
 import top.hcode.hoj.pojo.dto.RegisterContestDto;
@@ -21,14 +24,10 @@ import top.hcode.hoj.pojo.entity.common.Announcement;
 import top.hcode.hoj.pojo.entity.contest.*;
 import top.hcode.hoj.pojo.entity.problem.*;
 import top.hcode.hoj.pojo.vo.*;
-import top.hcode.hoj.dao.common.AnnouncementEntityService;
-import top.hcode.hoj.dao.contest.*;
-import top.hcode.hoj.dao.judge.JudgeEntityService;
-import top.hcode.hoj.dao.problem.*;
-import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 import top.hcode.hoj.validator.ContestValidator;
+import top.hcode.hoj.validator.GroupValidator;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -482,6 +481,7 @@ public class ContestManager {
                     removeStar,
                     userRolesVo.getUid(),
                     concernedList,
+                    contestRankDto.getExternalCidList(),
                     contest,
                     currentPage,
                     limit);
@@ -492,6 +492,7 @@ public class ContestManager {
                     removeStar,
                     userRolesVo.getUid(),
                     concernedList,
+                    contestRankDto.getExternalCidList(),
                     contest,
                     currentPage,
                     limit);

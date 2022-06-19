@@ -37,9 +37,9 @@ public class JudgeDispatcher {
     @Value("${hoj.judge.token}")
     private String judgeToken;
 
-    public void sendTask(Judge judge, Boolean isContest) {
+    public void sendTask(Long judgeId, Long pid, Boolean isContest) {
         JSONObject task = new JSONObject();
-        task.set("judge", judge);
+        task.set("judgeId", judgeId);
         task.set("token", judgeToken);
         task.set("isContest", isContest);
         try {
@@ -51,7 +51,7 @@ public class JudgeDispatcher {
             }
             if (!isOk) {
                 judgeEntityService.updateById(new Judge()
-                        .setSubmitId(judge.getSubmitId())
+                        .setSubmitId(judgeId)
                         .setStatus(Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())
                         .setErrorMessage("Call Redis to push task error. Please try to submit again!")
                 );
@@ -60,7 +60,7 @@ public class JudgeDispatcher {
             judgeReceiver.processWaitingTask();
         } catch (Exception e) {
             log.error("调用redis将判题纳入判题等待队列异常--------------->{}", e.getMessage());
-            judgeEntityService.failToUseRedisPublishJudge(judge.getSubmitId(), judge.getPid(), isContest);
+            judgeEntityService.failToUseRedisPublishJudge(judgeId, pid, isContest);
         }
     }
 

@@ -102,7 +102,6 @@ public class JudgeManager {
      * @Description 核心方法 判题通过openfeign调用判题系统服务
      * @Since 2020/10/30
      */
-    @Transactional(rollbackFor = Exception.class)
     public Judge submitProblemJudge(SubmitJudgeDto judgeDto) throws StatusForbiddenException, StatusFailException, StatusNotFoundException, StatusAccessDeniedException, AccessException {
 
         judgeValidator.validateSubmissionInfo(judgeDto);
@@ -150,9 +149,15 @@ public class JudgeManager {
 
         // 将提交加入任务队列
         if (judgeDto.getIsRemote()) { // 如果是远程oj判题
-            remoteJudgeDispatcher.sendTask(judge, judge.getDisplayPid(), isContestSubmission, false);
+            remoteJudgeDispatcher.sendTask(judge.getSubmitId(),
+                    judge.getPid(),
+                    judge.getDisplayPid(),
+                    isContestSubmission,
+                    false);
         } else {
-            judgeDispatcher.sendTask(judge, isContestSubmission);
+            judgeDispatcher.sendTask(judge.getSubmitId(),
+                    judge.getPid(),
+                    isContestSubmission);
         }
 
         return judge;
@@ -236,7 +241,10 @@ public class JudgeManager {
             throw new StatusNotFoundException("此提交数据不存在！");
         }
 
-        Problem problem = problemEntityService.getById(judge.getPid());
+        QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
+        problemQueryWrapper.select("id", "is_remote", "problem_id")
+                .eq("id", judge.getPid());
+        Problem problem = problemEntityService.getOne(problemQueryWrapper);
 
         // 如果是非比赛题目
         if (judge.getCid() == 0) {
@@ -279,14 +287,17 @@ public class JudgeManager {
                 .setMemory(null);
         judgeEntityService.updateById(judge);
 
-
         // 将提交加入任务队列
         if (problem.getIsRemote()) { // 如果是远程oj判题
-
-            remoteJudgeDispatcher.sendTask(judge, problem.getProblemId(),
-                    judge.getCid() != 0, isHasSubmitIdRemoteRejudge);
+            remoteJudgeDispatcher.sendTask(judge.getSubmitId(),
+                    judge.getPid(),
+                    problem.getProblemId(),
+                    judge.getCid() != 0,
+                    isHasSubmitIdRemoteRejudge);
         } else {
-            judgeDispatcher.sendTask(judge, judge.getCid() != 0);
+            judgeDispatcher.sendTask(judge.getSubmitId(),
+                    judge.getPid(),
+                    judge.getCid() != 0);
         }
         return judge;
     }

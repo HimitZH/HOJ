@@ -124,12 +124,14 @@ public class ContestScoreboardManager {
 
         if (contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) {
 
+
             // 获取ACM比赛排行榜外榜
             return contestRankManager.getACMContestScoreboard(isOpenSealRank,
                     removeStar,
                     contest,
                     null,
                     concernedList,
+                    contestRankDto.getExternalCidList(),
                     !forceRefresh,
                     15L); // 默认15s缓存
 
@@ -140,6 +142,7 @@ public class ContestScoreboardManager {
                     contest,
                     null,
                     concernedList,
+                    contestRankDto.getExternalCidList(),
                     !forceRefresh,
                     15L); // 默认15s缓存
         }
