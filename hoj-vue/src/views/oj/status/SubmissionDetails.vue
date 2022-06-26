@@ -204,7 +204,7 @@
     <template
       v-if="
         (submission.code && submission.share && codeShare) ||
-          isMeSubmisson ||
+          isSubmissionOwner ||
           isAdminRole ||
           (submission.code && submission.cid!=0)
       "
@@ -226,7 +226,7 @@
             v-if="submission.code"
             >{{ $t('m.Copy') }}</el-button
           >
-          <template v-if="codeShare && isMeSubmisson">
+          <template v-if="codeShare && isSubmissionOwner">
             <el-button
               v-if="submission.share"
               type="warning"
@@ -460,7 +460,7 @@ export default {
     isAuthenticated() {
       return this.$store.getters.isAuthenticated;
     },
-    isMeSubmisson() {
+    isSubmissionOwner() {
       return this.$store.getters.userInfo.uid === this.submission.uid;
     }
   },
