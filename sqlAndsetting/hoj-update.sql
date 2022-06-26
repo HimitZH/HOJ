@@ -788,3 +788,64 @@ CALL problem_Add_apply_public_progress ;
 
 DROP PROCEDURE problem_Add_apply_public_progress;
 
+
+
+/*
+* 2022.06.26 给指定表的字段修改字符集为utf8mb4
+			 
+*/
+DROP PROCEDURE
+IF EXISTS table_Change_utf8mb4;
+DELIMITER $$
+ 
+CREATE PROCEDURE table_Change_utf8mb4 ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'problem'
+	AND column_name = 'input' AND CHARACTER_SET_NAME = 'utf8mb4'
+) THEN
+	ALTER TABLE hoj.admin_sys_notice MODIFY COLUMN `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.admin_sys_notice MODIFY COLUMN `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.contest MODIFY COLUMN `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.contest MODIFY COLUMN `description` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.contest_explanation MODIFY COLUMN `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.contest_problem MODIFY COLUMN `display_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.contest_print MODIFY COLUMN `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.discussion MODIFY COLUMN `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.discussion MODIFY COLUMN `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.discussion MODIFY COLUMN `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.discussion_report MODIFY COLUMN `content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.group MODIFY COLUMN `description` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.group_member MODIFY COLUMN `reason` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.language MODIFY COLUMN `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.msg_remind MODIFY COLUMN `source_content` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.problem MODIFY COLUMN `source` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.problem MODIFY COLUMN `input` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.problem MODIFY COLUMN `output` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.problem MODIFY COLUMN `description` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.problem MODIFY COLUMN `hint` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.problem MODIFY COLUMN `spj_code` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.problem MODIFY COLUMN `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.reply MODIFY COLUMN `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.training MODIFY COLUMN `description` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.training MODIFY COLUMN `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.user_info MODIFY COLUMN `signature` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.judge MODIFY COLUMN `code` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+	ALTER TABLE hoj.comment MODIFY COLUMN `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL table_Change_utf8mb4 ;
+
+DROP PROCEDURE table_Change_utf8mb4;
+
+
+
