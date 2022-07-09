@@ -47,7 +47,8 @@ module.exports = context => config({
                 title: '开始介绍',
                 collapsable: true,
                 children: [
-                    'introducition/'
+                    'introducition/',
+					'introducition/architecture'
                 ]
             },
 			{
@@ -81,6 +82,7 @@ module.exports = context => config({
                 collapsable: true,
                 children: [
                     'develop/db',
+					'develop/judge_dispatcher',
 					'develop/sandbox'
                 ]
             },

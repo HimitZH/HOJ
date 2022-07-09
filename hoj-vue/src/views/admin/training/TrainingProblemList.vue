@@ -187,7 +187,7 @@
       :title="$t('m.Add_Training_Problem')"
       width="90%"
       :visible.sync="addProblemDialogVisible"
-      @close-on-click-modal="false"
+      :close-on-click-modal="false"
     >
       <AddPublicProblem
         :trainingID="trainingId"
@@ -199,7 +199,7 @@
       :title="$t('m.Add_Rmote_OJ_Problem')"
       width="350px"
       :visible.sync="AddRemoteOJProblemDialogVisible"
-      @close-on-click-modal="false"
+      :close-on-click-modal="false"
     >
       <el-form>
         <el-form-item :label="$t('m.Remote_OJ')">
