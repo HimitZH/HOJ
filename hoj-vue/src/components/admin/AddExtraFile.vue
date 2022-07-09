@@ -22,7 +22,7 @@
     <el-dialog
       :width="dialogWith"
       :visible.sync="upsertFileDialogVisible"
-      @close-on-click-modal="false"
+      :close-on-click-modal="false"
     >
       <el-form>
         <el-form-item :label="$t('m.File_Name')" required>
