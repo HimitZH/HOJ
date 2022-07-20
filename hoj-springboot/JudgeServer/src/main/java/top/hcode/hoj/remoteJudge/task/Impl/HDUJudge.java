@@ -1,5 +1,6 @@
 package top.hcode.hoj.remoteJudge.task.Impl;
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.http.*;
@@ -11,6 +12,7 @@ import top.hcode.hoj.remoteJudge.task.RemoteJudgeStrategy;
 import top.hcode.hoj.util.Constants;
 
 import java.net.HttpCookie;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,13 +57,26 @@ public class HDUJudge extends RemoteJudgeStrategy {
                         .put("check", "0")
                         .put("language", getLanguage(remoteJudgeDTO.getLanguage()))
                         .put("problemid", remoteJudgeDTO.getCompleteProblemId())
-                        .put("usercode", remoteJudgeDTO.getUserCode() + getRandomBlankString())
+                        .put("_usercode", Base64.encode(URLEncoder.encode(remoteJudgeDTO.getUserCode() + getRandomBlankString())))
                         .map())
                 .cookie(cookies);
 
         HttpResponse response = request.execute();
         remoteJudgeDTO.setSubmitStatus(response.getStatus());
-        if (response.getStatus() != 302) {
+        // 提交频率限制了 等待5秒再次提交
+        if (response.getStatus() == 200 && response.body() != null && response.body().contains("Please don't re-submit")) {
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            response = request.execute();
+            remoteJudgeDTO.setSubmitStatus(response.getStatus());
+            if (response.getStatus() != 302) {
+                String log = String.format("[HDU] [%s]: Failed to submit code, the http response status is [%s].", remoteJudgeDTO.getCompleteProblemId(), response.getStatus());
+                throw new RuntimeException(log);
+            }
+        } else if (response.getStatus() != 302) {
             String log = String.format("[HDU] [%s]: Failed to submit code, the http response status is [%s].", remoteJudgeDTO.getCompleteProblemId(), response.getStatus());
             throw new RuntimeException(log);
         }
