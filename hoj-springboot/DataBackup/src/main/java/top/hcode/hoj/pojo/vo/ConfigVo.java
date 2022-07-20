@@ -30,7 +30,7 @@ public class ConfigVo {
     @Value("${hoj.db.host}")
     private String mysqlHost;
 
-    @Value("${hoj.db.public-host}")
+    @Value("${hoj.db.public-host:172.20.0.3}")
     private String mysqlPublicHost;
 
     @Value("${hoj.db.port}")
