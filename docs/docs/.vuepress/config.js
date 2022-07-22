@@ -60,7 +60,8 @@ module.exports = context => config({
 					'deploy/open-https',
 					'deploy/multi-judgeserver',
 					'deploy/update',
-					'deploy/how-to-backup'
+					'deploy/how-to-backup',
+					'deploy/faq'
                 ]
             },
 			{
