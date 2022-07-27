@@ -67,9 +67,11 @@ services:
       - CF_ACCOUNT_USERNAME_LIST=
       - CF_ACCOUNT_USERNAME_LIST=
       - ATCODER_ACCOUNT_USERNAME_LIST=
-	  - ATCODER_ACCOUNT_PASSWORD_LIST=
+      - ATCODER_ACCOUNT_PASSWORD_LIST=
       - SPOJ_ACCOUNT_USERNAME_LIST=
       - SPOJ_ACCOUNT_PASSWORD_LIST=
+      # 是否强制使用配置文件的remote judge账号覆盖原有系统的账号列表
+      - FORCED_UPDATE_REMOTE_JUDGE_ACCOUNT=false
     ports:
       - "6688:6688"
     networks:
