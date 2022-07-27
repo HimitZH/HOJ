@@ -36,6 +36,8 @@ import top.hcode.hoj.validator.GroupValidator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @Author: Himit_ZH
@@ -74,6 +76,8 @@ public class CommentManager {
 
     @Autowired
     private ConfigVo configVo;
+
+    private final static Pattern pattern = Pattern.compile("<.*?([a,A][u,U][t,T][o,O][p,P][l,L][a,A][y,Y]).*?>");
 
     public CommentListVo getComments(Long cid, Integer did, Integer limit, Integer currentPage) throws StatusForbiddenException, AccessException {
 
@@ -198,7 +202,7 @@ public class CommentManager {
         }
 
         // 带有表情的字符串转换为编码
-        comment.setContent(EmojiUtil.toHtml(comment.getContent()));
+        comment.setContent(EmojiUtil.toHtml(formatContentRemoveAutoPlay(comment.getContent())));
 
         boolean isOk = commentEntityService.saveOrUpdate(comment);
 
@@ -446,7 +450,7 @@ public class CommentManager {
             reply.setFromRole("user");
         }
         // 带有表情的字符串转换为编码
-        reply.setContent(EmojiUtil.toHtml(reply.getContent()));
+        reply.setContent(EmojiUtil.toHtml(formatContentRemoveAutoPlay(reply.getContent())));
 
         boolean isOk = replyEntityService.saveOrUpdate(reply);
 
@@ -535,4 +539,14 @@ public class CommentManager {
             throw new StatusFailException("删除失败，请重新尝试");
         }
     }
+
+    private String formatContentRemoveAutoPlay(String content) {
+        StringBuilder sb = new StringBuilder(content);
+        Matcher matcher = pattern.matcher(content);
+        while (matcher.find()) {
+            sb.replace(matcher.start(1), matcher.end(1), "controls");
+        }
+        return sb.toString();
+    }
+
 }
