@@ -389,6 +389,8 @@ export const m = {
   Admin_Helper: 'AC助手',
   Register_contest_successfully: '比赛报名成功',
   Please_check_the_contest_announcement_for_details: '具体内容请查看比赛公告',
+  Go_To_Group_Contest_List:'前往团队比赛列表',
+  Group_Contest_Tag:'团队比赛',
 
   // /views/oj/contest/children/ACMContestRank.vue
   Contest_Rank: '比赛排名',
