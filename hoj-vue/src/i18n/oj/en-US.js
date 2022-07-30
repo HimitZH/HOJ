@@ -387,6 +387,8 @@ export const m = {
   Admin_Helper: 'AC Info',
   Register_contest_successfully: 'Register contest successfully',
   Please_check_the_contest_announcement_for_details: 'Please check the contest announcement for details',
+  Go_To_Group_Contest_List:'Go to Group Contest List',
+  Group_Contest_Tag:'Group Contest',
 
   // /views/oj/contest/children/ACMContestRank.vue
   Contest_Rank: 'Contest Rank',

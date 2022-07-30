@@ -59,7 +59,7 @@ export const m = {
   Healthy_Status: '状态',
   Healthy: '健康',
   Unhealthy: '不健康',
-  Judge_Server: '判题服务器',
+  Judge_Server: '判题系统',
 
   // /views/admin/general/User.vue
   General_User: '用户管理',

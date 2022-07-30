@@ -99,7 +99,7 @@
             class="drop-menu"
             @command="handleRoute"
             placement="bottom"
-            trigger="click"
+            trigger="hover"
           >
             <span class="el-dropdown-link">
               {{ userInfo.username }}<i class="el-icon-caret-bottom"></i>

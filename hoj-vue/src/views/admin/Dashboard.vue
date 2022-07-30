@@ -5,25 +5,29 @@
         <el-card class="admin-info">
           <div slot="header">
             <el-row :gutter="10">
-              <el-col :span="10">
-                <el-image :src="userInfo.avatar" fit="fill" class="avatar">
-                  <div slot="error" class="image-slot">
-                    <i class="el-icon-picture-outline"></i>
-                  </div>
-                </el-image>
+              <el-col :span="8">
+              <avatar
+                  :username="userInfo.username"
+                  :inline="true"
+                  :size="100"
+                  color="#FFF"
+                  :src="userInfo.avatar"
+                ></avatar>
               </el-col>
-              <el-col :span="14">
+              <el-col :span="16">
                 <span class="panel-title admin-info-name">{{
                   userInfo.username
                 }}</span>
                 <p>
-                  {{
-                    isSuperAdmin == true
-                      ? $t('m.Super_Admin')
-                      : isProblemAdmin == true
-                      ? $t('m.All_Problem_Admin')
-                      : $t('m.Admin')
-                  }}
+                  <el-tag effect="dark" size="small" type="warning">
+                    {{
+                      isSuperAdmin == true
+                        ? $t('m.Super_Admin')
+                        : isProblemAdmin == true
+                        ? $t('m.All_Problem_Admin')
+                        : $t('m.Admin')
+                    }}
+                  </el-tag>
                 </p>
               </el-col>
             </el-row>
@@ -196,6 +200,12 @@
       <div slot="header">
         <span class="panel-title home-title">{{ $t('m.Judge_Server') }}</span>
       </div>
+      <div style="margin-bottom: 10px;font-size: 15px;">
+      {{ $t('m.Server_Number') }}：
+          <el-tag effect="dark" color="rgb(25, 190, 107)" size="mini">
+            {{ judgeInfo.length }}
+          </el-tag>
+      </div>
       <vxe-table stripe auto-resize :data="judgeInfo" align="center">
         <vxe-table-column type="seq" width="50"></vxe-table-column>
         <vxe-table-column :title="$t('m.Name')" min-width="150">
@@ -268,11 +278,12 @@ import { mapGetters } from 'vuex';
 import browserDetector from 'browser-detect';
 const InfoCard = () => import('@/components/admin/infoCard.vue');
 import api from '@/common/api';
-
+import Avatar from 'vue-avatar';
 export default {
   name: 'dashboard',
   components: {
     InfoCard,
+    Avatar
   },
   data() {
     return {
@@ -379,11 +390,6 @@ export default {
   font-weight: 700;
   margin-bottom: 10px;
   color: #409eff;
-}
-.admin-info .avatar {
-  max-width: 100%;
-  max-width: 100px;
-  max-height: 100px;
 }
 .admin-info .last-info-title {
   font-size: 16px;

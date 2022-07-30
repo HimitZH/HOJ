@@ -57,9 +57,11 @@
       <div class="panel-options">
         <el-pagination
           class="page"
-          layout="prev, pager, next"
+          layout="prev, pager, next, sizes"
           @current-change="getProblems"
           :page-size="limit"
+          :page-sizes="[10, 50, 100, 500]"
+           @size-change="handleSizeChange"
           :total="total"
         >
         </el-pagination>
@@ -223,6 +225,11 @@ export default {
     // 一键全部选中，改变选中的内容列表
     handlechangeAll() {
       this.selected_problems = this.$refs.xTable.getCheckboxRecords();
+    },
+
+    handleSizeChange(pageSize){
+      this.limit = pageSize;
+      this.getProblems();
     },
 
     getProblems(page = 1) {

@@ -89,7 +89,15 @@ export default {
       let key = buildContestRankConcernedKey(this.contestID);
       storage.set(key, this.concernedList);
       this.getContestOutsideScoreboard();
-    }
+    },
+    toGroupContestList(gid){
+      this.$router.push({
+        name: 'GroupContestList',
+        params: {
+          groupID: gid,
+        },
+      })
+    },
   },
   computed: {
     ...mapState({
