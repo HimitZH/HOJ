@@ -9,6 +9,7 @@ import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.annotation.HOJAccessEnum;
 import top.hcode.hoj.common.exception.StatusFailException;
@@ -121,11 +122,21 @@ public class DiscussionManager {
                 .orderByDesc("like_num")
                 .orderByDesc("view_num");
 
-        if (onlyMine) {
+        if (onlyMine && userRolesVo != null) {
             discussionQueryWrapper.eq("uid", userRolesVo.getUid());
         }
-
-        return discussionEntityService.page(iPage, discussionQueryWrapper);
+        IPage<Discussion> discussionIPage = discussionEntityService.page(iPage, discussionQueryWrapper);
+        List<Discussion> records = discussionIPage.getRecords();
+        if (!CollectionUtils.isEmpty(records)) {
+            for (Discussion discussion : records) {
+                if (userRolesVo == null) {
+                    discussion.setContent(null);
+                } else if (!userRolesVo.getUid().equals(discussion.getUid())) {
+                    discussion.setContent(null);
+                }
+            }
+        }
+        return discussionIPage;
     }
 
     public DiscussionVo getDiscussion(Integer did) throws StatusNotFoundException, StatusForbiddenException, AccessException {
