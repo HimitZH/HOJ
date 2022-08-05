@@ -690,6 +690,17 @@ CREATE TABLE `session` (
   CONSTRAINT `session_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `user_info` (`uuid`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `tag_classification`;
+CREATE TABLE `tag_classification`  (
+	`id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+	`name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '标签分类名称',
+	`oj` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '标签分类所属oj',
+	`gmt_create` datetime NULL DEFAULT NULL,
+	`gmt_modified` datetime NULL DEFAULT NULL,
+	`rank` int(10) UNSIGNED ZEROFILL NULL DEFAULT NULL COMMENT '标签分类优先级 越小越高',
+	 PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
 /*Table structure for table `tag` */
 
 DROP TABLE IF EXISTS `tag`;
@@ -700,12 +711,15 @@ CREATE TABLE `tag` (
   `color` varchar(10) DEFAULT NULL COMMENT '标签颜色',
   `oj` varchar(255) DEFAULT 'ME' COMMENT '标签所属oj',
   `gid` bigint(20) unsigned DEFAULT NULL,
+  `tcid` bigint(20) unsigned DEFAULT NULL,
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`,`oj`, `gid`),
-  CONSTRAINT `tag_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `tag_ibfk_1` FOREIGN KEY (`gid`) REFERENCES `group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `tag_ibfk_2` FOREIGN KEY (`tcid`) REFERENCES `tag_classification` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
 
 /*Table structure for table `user_acproblem` */
 

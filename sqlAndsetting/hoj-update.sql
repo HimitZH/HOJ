@@ -848,4 +848,46 @@ CALL table_Change_utf8mb4 ;
 DROP PROCEDURE table_Change_utf8mb4;
 
 
+/*
+* 2022.08.05 题目标签添加分类
+			 
+*/
+DROP PROCEDURE
+IF EXISTS problem_tag_Add_classification;
+DELIMITER $$
+ 
+CREATE PROCEDURE problem_tag_Add_classification ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'tag'
+	AND column_name = 'tcid'
+) THEN
+	CREATE TABLE `tag_classification`  (
+	  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+	  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '标签分类名称',
+	  `oj` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '标签分类所属oj',
+	  `gmt_create` datetime NULL DEFAULT NULL,
+	  `gmt_modified` datetime NULL DEFAULT NULL,
+	  `rank` int(10) UNSIGNED ZEROFILL NULL DEFAULT NULL COMMENT '标签分类优先级 越小越高',
+	  PRIMARY KEY (`id`) USING BTREE
+	) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+	
+	ALTER TABLE `hoj`.`tag`  ADD COLUMN `tcid` bigint(20) unsigned DEFAULT NULL;
+	ALTER TABLE `hoj`.`tag` ADD CONSTRAINT `tag_ibfk_2` FOREIGN KEY (`tcid`) REFERENCES `tag_classification` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+	
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL problem_tag_Add_classification ;
+
+DROP PROCEDURE problem_tag_Add_classification;
+
+
 
