@@ -6,7 +6,10 @@ import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.manager.admin.tag.AdminTagManager;
 import top.hcode.hoj.pojo.entity.problem.Tag;
+import top.hcode.hoj.pojo.entity.problem.TagClassification;
 import top.hcode.hoj.service.admin.tag.AdminTagService;
+
+import java.util.List;
 
 /**
  * @Author: Himit_ZH
@@ -21,9 +24,9 @@ public class AdminTagServiceImpl implements AdminTagService {
     private AdminTagManager adminTagManager;
 
     @Override
-    public CommonResult<Tag> addProblem(Tag tag) {
+    public CommonResult<Tag> addTag(Tag tag) {
         try {
-            return CommonResult.successResponse(adminTagManager.addProblem(tag));
+            return CommonResult.successResponse(adminTagManager.addTag(tag));
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
         }
@@ -43,6 +46,40 @@ public class AdminTagServiceImpl implements AdminTagService {
     public CommonResult<Void> deleteTag(Long tid) {
         try {
             adminTagManager.deleteTag(tid);
+            return CommonResult.successResponse();
+        } catch (StatusFailException e) {
+            return CommonResult.errorResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public CommonResult<List<TagClassification>> getTagClassification(String oj) {
+        return CommonResult.successResponse(adminTagManager.getTagClassification(oj));
+    }
+
+    @Override
+    public CommonResult<TagClassification> addTagClassification(TagClassification tagClassification) {
+        try {
+            return CommonResult.successResponse(adminTagManager.addTagClassification(tagClassification));
+        } catch (StatusFailException e) {
+            return CommonResult.errorResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public CommonResult<Void> updateTagClassification(TagClassification tagClassification) {
+        try {
+            adminTagManager.updateTagClassification(tagClassification);
+            return CommonResult.successResponse();
+        } catch (StatusFailException e) {
+            return CommonResult.errorResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public CommonResult<Void> deleteTagClassification(Long tcid) {
+        try {
+            adminTagManager.deleteTagClassification(tcid);
             return CommonResult.successResponse();
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());

@@ -1,7 +1,5 @@
 package top.hcode.hoj.service.oj.impl;
 
-import top.hcode.hoj.common.exception.StatusForbiddenException;
-import top.hcode.hoj.common.result.ResultStatus;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.manager.oj.CommonManager;
@@ -10,6 +8,7 @@ import top.hcode.hoj.pojo.entity.problem.Language;
 import top.hcode.hoj.pojo.entity.problem.Tag;
 import top.hcode.hoj.pojo.entity.training.TrainingCategory;
 import top.hcode.hoj.pojo.vo.CaptchaVo;
+import top.hcode.hoj.pojo.vo.ProblemTagVo;
 import top.hcode.hoj.service.oj.CommonService;
 
 import javax.annotation.Resource;
@@ -40,6 +39,11 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public CommonResult<List<Tag>> getAllProblemTagsList(String oj) {
         return CommonResult.successResponse(commonManager.getAllProblemTagsList(oj));
+    }
+
+    @Override
+    public CommonResult<List<ProblemTagVo>> getProblemTagsAndClassification(String oj) {
+        return CommonResult.successResponse(commonManager.getProblemTagsAndClassification(oj));
     }
 
     @Override

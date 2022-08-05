@@ -309,6 +309,15 @@ export const m = {
   Tag_Color: 'Tag Color',
   Tag_Attribution: 'Tag Attribution',
   Delete_Tag_Tips: 'Are you sure you want to delete this tag?',
+  Tag_Tips:'Note: By default, there is no tag classification column, and all tags are [Unclassified]. Please click [Add Tag Classification] in the upper left corner to add tag classification, and then click tag modification #Tag Classification# to classify.',
+  Tag_Classification:'Tag Classification',
+  Add_Tag_Classification: 'Add Tag Classification',
+  Update_Tag_Classification: 'Update Tag Classification',
+  Tag_Classification_Name: 'Tag Classification Name',
+  Tag_Classification_Rank: 'Tag Classification Rank',
+  Tag_Classification_Attribution: 'Tag Classification Attribution',
+  Delete_Tag_Classification_Tips: 'Are you sure you want to delete this tag classification? Prompt: This operation will attribute the labels under this classification to unclassified!',
+  Unclassified:'Unclassified',
 
   // /views/amdin/problem/GroupProblemList.vue
   Search:'Search',

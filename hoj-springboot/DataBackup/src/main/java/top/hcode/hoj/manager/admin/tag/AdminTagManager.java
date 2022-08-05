@@ -4,8 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.common.exception.StatusFailException;
-import top.hcode.hoj.pojo.entity.problem.Tag;
+import top.hcode.hoj.dao.problem.TagClassificationEntityService;
 import top.hcode.hoj.dao.problem.TagEntityService;
+import top.hcode.hoj.pojo.entity.problem.Tag;
+import top.hcode.hoj.pojo.entity.problem.TagClassification;
+
+import java.util.List;
 
 /**
  * @Author: Himit_ZH
@@ -18,7 +22,10 @@ public class AdminTagManager {
     @Autowired
     private TagEntityService tagEntityService;
 
-    public Tag addProblem(Tag tag) throws StatusFailException {
+    @Autowired
+    private TagClassificationEntityService tagClassificationEntityService;
+
+    public Tag addTag(Tag tag) throws StatusFailException {
         QueryWrapper<Tag> tagQueryWrapper = new QueryWrapper<>();
         tagQueryWrapper.eq(tag.getGid() != null, "gid", tag.getGid())
                 .eq("name", tag.getName())
@@ -45,6 +52,47 @@ public class AdminTagManager {
 
     public void deleteTag(Long tid) throws StatusFailException {
         boolean isOk = tagEntityService.removeById(tid);
+        if (!isOk) {
+            throw new StatusFailException("删除失败");
+        }
+    }
+
+    public List<TagClassification> getTagClassification(String oj) {
+        oj = oj.toUpperCase();
+        if (oj.equals("ALL")) {
+            return tagClassificationEntityService.list();
+        } else {
+            QueryWrapper<TagClassification> tagClassificationQueryWrapper = new QueryWrapper<>();
+            tagClassificationQueryWrapper.eq("oj", oj).orderByAsc("`rank`");
+            return tagClassificationEntityService.list(tagClassificationQueryWrapper);
+        }
+    }
+
+    public TagClassification addTagClassification(TagClassification tagClassification) throws StatusFailException {
+        QueryWrapper<TagClassification> tagClassificationQueryWrapper = new QueryWrapper<>();
+        tagClassificationQueryWrapper.eq("name", tagClassification.getName())
+                .eq("oj", tagClassification.getOj());
+        TagClassification existTagClassification = tagClassificationEntityService.getOne(tagClassificationQueryWrapper, false);
+
+        if (existTagClassification != null) {
+            throw new StatusFailException("该标签分类名称已存在！请勿重复！");
+        }
+        boolean isOk = tagClassificationEntityService.save(tagClassification);
+        if (!isOk) {
+            throw new StatusFailException("添加失败");
+        }
+        return tagClassification;
+    }
+
+    public void updateTagClassification(TagClassification tagClassification) throws StatusFailException {
+        boolean isOk = tagClassificationEntityService.updateById(tagClassification);
+        if (!isOk) {
+            throw new StatusFailException("更新失败");
+        }
+    }
+
+    public void deleteTagClassification(Long tcid) throws StatusFailException {
+        boolean isOk = tagClassificationEntityService.removeById(tcid);
         if (!isOk) {
             throw new StatusFailException("删除失败");
         }

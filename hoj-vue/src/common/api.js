@@ -205,6 +205,15 @@ const ojApi = {
       }
     })
   },
+
+  getProblemTagsAndClassification(oj){
+    return ajax('/api/get-problem-tags-and-classification', 'get',{
+      params:{
+        oj
+      }
+    })
+  },
+
   getProblemList (limit, searchParams) {
     let params = {
       limit
@@ -1506,6 +1515,34 @@ const adminApi = {
     return ajax('/api/admin/tag', 'delete', {
       params: {
         tid
+      }
+    })
+  },
+
+  admin_getTagClassification(oj){
+    return ajax('/api/admin/tag/classification', 'get', {
+      params: {
+        oj
+      }
+    })
+  },
+
+  admin_addTagClassification(data){
+    return ajax('/api/admin/tag/classification', 'post', {
+      data
+    })
+  },
+
+  admin_updateTagClassification (data) {
+    return ajax('/api/admin/tag/classification', 'put', {
+      data
+    })
+  },
+
+  admin_deleteTagClassification (tcid) {
+    return ajax('/api/admin/tag/classification', 'delete', {
+      params: {
+        tcid
       }
     })
   },
