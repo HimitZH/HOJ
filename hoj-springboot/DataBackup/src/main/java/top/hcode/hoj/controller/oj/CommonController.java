@@ -7,9 +7,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.problem.*;
+import top.hcode.hoj.pojo.entity.problem.CodeTemplate;
+import top.hcode.hoj.pojo.entity.problem.Language;
+import top.hcode.hoj.pojo.entity.problem.Tag;
 import top.hcode.hoj.pojo.entity.training.TrainingCategory;
 import top.hcode.hoj.pojo.vo.CaptchaVo;
+import top.hcode.hoj.pojo.vo.ProblemTagVo;
 import top.hcode.hoj.service.oj.CommonService;
 
 import java.util.Collection;
@@ -42,6 +45,11 @@ public class CommonController {
     @GetMapping("/get-all-problem-tags")
     public CommonResult<List<Tag>> getAllProblemTagsList(@RequestParam(value = "oj", defaultValue = "ME") String oj) {
         return commonService.getAllProblemTagsList(oj);
+    }
+
+    @GetMapping("/get-problem-tags-and-classification")
+    public CommonResult<List<ProblemTagVo>> getProblemTagsAndClassification(@RequestParam(value = "oj", defaultValue = "ME") String oj) {
+        return commonService.getProblemTagsAndClassification(oj);
     }
 
     @GetMapping("/get-problem-tags")

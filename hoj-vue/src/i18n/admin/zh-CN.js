@@ -305,6 +305,15 @@ export const m = {
   Tag_Color: '标签颜色',
   Tag_Attribution: '标签归属',
   Delete_Tag_Tips: '你是否确定删除该标签？',
+  Tag_Tips:'提示：默认无标签分类栏，所有标签都是[未分类]，请自行点击左上角【添加标签分类】添加标签分类，再点击标签修改#标签分类#进行归类。',
+  Tag_Classification:'标签分类',
+  Add_Tag_Classification: '添加标签分类',
+  Update_Tag_Classification: '修改标签分类',
+  Tag_Classification_Name: '标签分类名称',
+  Tag_Classification_Rank: '标签分类排序',
+  Tag_Classification_Attribution: '标签分类归属',
+  Delete_Tag_Classification_Tips: '你是否确定删除该分类？提示：此操作会把该分类下的标签归属到未分类！',
+  Unclassified:'未分类',
 
   // /views/amdin/problem/GroupProblemList.vue
   Search:'搜索',
