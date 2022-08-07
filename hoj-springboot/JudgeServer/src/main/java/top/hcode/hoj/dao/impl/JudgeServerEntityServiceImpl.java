@@ -44,7 +44,7 @@ public class JudgeServerEntityServiceImpl extends ServiceImpl<JudgeServerMapper,
 
         HashMap<String, Object> res = new HashMap<>();
 
-        res.put("version", "20220619");
+        res.put("version", "20220807");
         res.put("currentTime", new Date());
         res.put("judgeServerName", name);
         res.put("cpu", Runtime.getRuntime().availableProcessors());
