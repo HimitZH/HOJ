@@ -1,5 +1,6 @@
 package top.hcode.hoj.judge.task;
 
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import org.springframework.stereotype.Component;
@@ -144,8 +145,20 @@ public class InteractiveJudge extends AbstractJudge {
                 result.set("code", exitCode);
             }
         } else if (interactiveSandBoxRes.getStatus().equals(Constants.Judge.STATUS_RUNTIME_ERROR.getStatus())) {
-            if (exitCode == SPJ_WA || exitCode == SPJ_ERROR || exitCode == SPJ_AC || exitCode == SPJ_PE || exitCode == SPJ_PC) {
+            if (exitCode == SPJ_WA || exitCode == SPJ_ERROR || exitCode == SPJ_AC || exitCode == SPJ_PE) {
                 result.set("code", exitCode);
+            }else if (exitCode == SPJ_PC) {
+                result.set("code", exitCode);
+                String stdout = interactiveSandBoxRes.getStdout();
+                if (NumberUtil.isNumber(stdout)) {
+                    double percentage = 0.0;
+                    percentage = Double.parseDouble(stdout) / 100;
+                    if (percentage == 1) {
+                        result.set("code", SPJ_AC);
+                    } else {
+                        result.set("percentage", percentage);
+                    }
+                }
             } else {
                 if (!StringUtils.isEmpty(interactiveSandBoxRes.getStderr())) {
                     // 适配testlib.h 根据错误信息前缀判断
