@@ -97,6 +97,9 @@ public class SpecialJudge extends AbstractJudge {
                     result.set("status", Constants.Judge.STATUS_ACCEPTED.getStatus());
                 } else if (code == SPJ_PE) {
                     result.set("status", Constants.Judge.STATUS_PRESENTATION_ERROR.getStatus());
+                } else if (code == SPJ_PC) {
+                    result.set("status", Constants.Judge.STATUS_PARTIAL_ACCEPTED.getStatus());
+                    result.set("percentage", spjResult.getDouble("percentage"));
                 } else {
                     result.set("status", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
                 }
