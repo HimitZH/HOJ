@@ -2,6 +2,7 @@ package top.hcode.hoj.judge.task;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileWriter;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import org.springframework.stereotype.Component;
@@ -166,6 +167,7 @@ public class SpecialJudge extends AbstractJudge {
 
         // 获取跑题用户输出或错误输出
         String spjErrOut = ((JSONObject) spjJudgeResult.get("files")).getStr("stderr");
+        String spjStdOut = ((JSONObject) spjJudgeResult.get("files")).getStr("stdout");
 
         if (!StringUtils.isEmpty(spjErrOut)) {
             result.set("errMsg", spjErrOut);
@@ -181,8 +183,19 @@ public class SpecialJudge extends AbstractJudge {
                 result.set("code", exitCode);
             }
         } else if (spjJudgeResult.getInt("status").intValue() == Constants.Judge.STATUS_RUNTIME_ERROR.getStatus()) {
-            if (exitCode == SPJ_WA || exitCode == SPJ_ERROR || exitCode == SPJ_AC || exitCode == SPJ_PE || exitCode == SPJ_PC) {
+            if (exitCode == SPJ_WA || exitCode == SPJ_ERROR || exitCode == SPJ_AC || exitCode == SPJ_PE) {
                 result.set("code", exitCode);
+            } else if (exitCode == SPJ_PC) {
+                result.set("code", exitCode);
+                if (NumberUtil.isNumber(spjStdOut)) {
+                    double percentage = 0.0;
+                    percentage = Double.parseDouble(spjStdOut) / 100;
+                    if (percentage == 1) {
+                        result.set("code", SPJ_AC);
+                    } else {
+                        result.set("percentage", percentage);
+                    }
+                }
             } else {
                 if (!StringUtils.isEmpty(spjErrOut)) {
                     // 适配testlib.h 根据错误信息前缀判断

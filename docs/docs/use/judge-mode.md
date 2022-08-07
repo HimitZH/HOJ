@@ -112,7 +112,58 @@ int main(int argc, char *args[]){
 	if (fabs(user_output - std_out)<=1e-6)
 		return AC;
 	else 
+     //  fprintf(stderr, "这里会输出错误提示");
+     //  fprintf(stderr, "%s","这里会输出错误提示");
 		return WA;
+}
+```
+
+如果是OI题目，需要该测试点部分得分，则可参考如下
+
+```cpp
+#include<iostream>
+#include<cstdio>
+
+#define PC 99  // 部分正确
+#define AC 100 // 全部正确
+#define PE 101 // 格式错误
+#define WA 102 // 答案错误
+#define ERROR 103 // 系统错误
+
+using namespace std;
+
+void close_file(FILE *f){
+    if(f != NULL){
+        fclose(f);
+    }
+}
+
+int main(int argc, char *args[]){
+    /**
+    args[1]：标准输入文件路径 
+    args[2]：选手输出文件路径
+    args[3]：标准输出文件路径 
+    **/
+    FILE *std_input_file = fopen(args[1], "r");
+    FILE *user_output_file = fopen(args[2], "r");
+    FILE *std_output_file = fopen(args[3], "r");
+    
+    double std_out; // 标准输出
+	fscanf(user_output_file, "%lf", &std_out);
+    
+    double user_output;// 用户输出 
+    fscanf(std_output_file, "%lf", &user_output);
+    
+    // 关闭文件流
+    close_file(std_input_file);
+    close_file(user_output_file);
+    close_file(std_output_file);
+  
+    if(...){ // 符合部分得分
+      fprintf(stdout, "%lf", 50.0); // 表示获得该测试点50.0%的分数
+      fprintf(stderr, "这里会输出错误提示");
+      return PC;
+    }
 }
 ```
 
