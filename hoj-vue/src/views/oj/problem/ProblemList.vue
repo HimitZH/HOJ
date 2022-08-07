@@ -290,9 +290,10 @@
           </div>
         </div>
         <template v-if="searchTagClassificationList.length > 0" v-loading="loadings.tag">
-          <el-row :gutter="10">
-            <el-col v-for="(tagsAndClassification,index)  in searchTagClassificationList" 
-              :key="index" :span="query.oj == 'All' || (searchTagClassificationList.length==index+1 && index%2==0)
+          <el-row :gutter="10" v-for="(item,index) in secondClassificationTemp" 
+              :key="index">
+            <el-col  v-for="(tagsAndClassification,i) in item" :key="i"
+              :span="query.oj == 'All' || (secondClassificationTemp.length==index+1 && item.length == i+1 && i%2 ==0)
               ?24:12">
               <el-collapse v-model="activeTagClassificationIdList" style="margin-top:10px">
                   <el-collapse-item :title="getTagClassificationName(tagsAndClassification.classification)"
@@ -721,6 +722,21 @@ export default {
         return this.query.oj;
       }
     },
+    secondClassificationTemp(){
+      let index = 0;
+      let count = 2;		//两个一组
+      let arrTemp = [];
+      let tagsClassificationList = this.searchTagClassificationList;
+      let len = tagsClassificationList.length;
+      for(let i=0;i<len;i++){
+        index = parseInt(i/count);
+        if (arrTemp.length <= index) {
+          arrTemp.push([]);
+        }
+        arrTemp[index].push(tagsClassificationList[i])
+      }
+      return arrTemp
+    }
   },
   watch: {
     $route(newVal, oldVal) {

@@ -138,10 +138,6 @@ public class StartupRunner implements CommandLineRunner {
     @Value("${forced-update-remote-judge-account}")
     private Boolean forcedUpdateRemoteJudgeAccount;
 
-    @Value("${spring.profiles.active}")
-    private String profile;
-
-
     @Override
     public void run(String... args) throws Exception {
 
