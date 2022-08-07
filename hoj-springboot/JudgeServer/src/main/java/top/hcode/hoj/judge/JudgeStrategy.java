@@ -117,7 +117,7 @@ public class JudgeStrategy {
             result.put("errMsg", "Oops, something has gone wrong with the judgeServer. Please report this to administrator.");
             result.put("time", 0);
             result.put("memory", 0);
-            log.error("[Judge] [Submit Error] Submit Id:[{}] Problem Id:[{}], Error:[{}]",
+            log.error("[Judge] [System Runtime Error] Submit Id:[{}] Problem Id:[{}], Error:[{}]",
                     judge.getSubmitId(),
                     problem.getId(),
                     e.toString());
