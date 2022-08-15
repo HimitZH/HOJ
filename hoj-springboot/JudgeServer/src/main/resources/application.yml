@@ -51,4 +51,4 @@ management:
   endpoints:
     web:
       exposure:
-        include: '*'
+        include: info,health
