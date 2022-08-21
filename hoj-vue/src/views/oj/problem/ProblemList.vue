@@ -558,6 +558,7 @@ export default {
         (res) => {
           this.tagsAndClassificationList = res.data.data;
           this.searchTagClassificationList = res.data.data;
+          this.filterTagList = [];
           let tidLen = this.query.tagId.length;
           let tagLen = this.tagsAndClassificationList.length;
           for (let x = 0; x < tidLen; x++) {
