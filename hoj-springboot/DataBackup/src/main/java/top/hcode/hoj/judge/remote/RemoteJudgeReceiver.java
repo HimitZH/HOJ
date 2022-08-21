@@ -4,19 +4,22 @@ import cn.hutool.core.lang.UUID;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import top.hcode.hoj.dao.contest.ContestRecordEntityService;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.dao.judge.RemoteJudgeAccountEntityService;
 import top.hcode.hoj.judge.AbstractReceiver;
 import top.hcode.hoj.judge.ChooseUtils;
 import top.hcode.hoj.judge.Dispatcher;
+import top.hcode.hoj.pojo.dto.ToJudgeDTO;
+import top.hcode.hoj.pojo.entity.contest.ContestRecord;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
-import top.hcode.hoj.pojo.dto.ToJudgeDTO;
 import top.hcode.hoj.pojo.vo.ConfigVo;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
@@ -24,6 +27,7 @@ import top.hcode.hoj.utils.RedisUtils;
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -44,6 +48,9 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
 
     @Autowired
     private ConfigVo configVo;
+
+    @Autowired
+    private ContestRecordEntityService contestRecordEntityService;
 
     @Autowired
     private RemoteJudgeAccountEntityService remoteJudgeAccountEntityService;
@@ -79,11 +86,21 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
         Long judgeId = task.getLong("judgeId");
         Judge judge = judgeEntityService.getById(judgeId);
         if (judge != null) {
-            dispatchRemoteJudge(judge,
-                    token,
-                    remoteJudgeProblem,
-                    isHasSubmitIdRemoteReJudge,
-                    remoteOJName);
+            if (Objects.equals(judge.getStatus(), Constants.Judge.STATUS_CANCELLED.getStatus())) {
+                if (judge.getCid() != 0) {
+                    UpdateWrapper<ContestRecord> updateWrapper = new UpdateWrapper<>();
+                    // 取消评测，不罚时也不算得分
+                    updateWrapper.set("status", Constants.Contest.RECORD_NOT_AC_NOT_PENALTY.getCode());
+                    updateWrapper.eq("submit_id", judge.getSubmitId()); // submit_id一定只有一个
+                    contestRecordEntityService.update(updateWrapper);
+                }
+            }else {
+                dispatchRemoteJudge(judge,
+                        token,
+                        remoteJudgeProblem,
+                        isHasSubmitIdRemoteReJudge,
+                        remoteOJName);
+            }
         }
     }
 

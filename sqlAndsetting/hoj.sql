@@ -434,6 +434,7 @@ CREATE TABLE `judge` (
   `vjudge_submit_id` bigint(20) unsigned NULL  COMMENT 'vjudge判题在其它oj的提交id',
   `vjudge_username` varchar(255) NULL  COMMENT 'vjudge判题在其它oj的提交用户名',
   `vjudge_password` varchar(255) NULL  COMMENT 'vjudge判题在其它oj的提交账号密码',
+  `is_manual` tinyint(1) DEFAULT '0' COMMENT '是否为人工评测',
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`submit_id`,`pid`,`display_pid`,`uid`,`cid`),

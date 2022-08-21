@@ -3,7 +3,6 @@ package top.hcode.hoj.remoteJudge;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.dao.JudgeEntityService;
@@ -27,10 +26,6 @@ public class RemoteJudgeToSubmit {
 
     @Autowired
     private JudgeContext judgeContext;
-
-
-    @Value("${hoj-judge-server.name}")
-    private String name;
 
     public boolean process(RemoteJudgeStrategy remoteJudgeStrategy) {
 
@@ -87,7 +82,6 @@ public class RemoteJudgeToSubmit {
                 .setVjudgeSubmitId(submitId)
                 .setVjudgeUsername(remoteJudgeDTO.getUsername())
                 .setVjudgePassword(remoteJudgeDTO.getPassword())
-                .setJudger(name)
         );
 
         log.info("[{}] Submit Successfully! The submit_id of remote judge is [{}]. Waiting the result of the task!",

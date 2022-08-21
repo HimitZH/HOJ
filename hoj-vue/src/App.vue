@@ -351,6 +351,10 @@ a:hover {
   background-color: #909399 !important;
   color: #fff !important;
 }
+.status-purple {
+  background-color: #676fc1 !important;
+  color: #fff !important;
+}
 .own-submit-row {
   background: rgb(230, 255, 223) !important;
 }

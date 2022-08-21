@@ -280,7 +280,7 @@ export const m = {
   Length: '代码长度',
   Language: '语言',
   View_submission_details: '查看提交详情',
-  Judger: '判题机',
+  Judger: '判题源',
   Author: '作者',
   Submit_Time: '提交时间',
   Option: '操作',
@@ -294,6 +294,13 @@ export const m = {
   Problem_Score: 'OI题目总分数',
   OI_Rank_Score: 'OI排行榜得分',
   OI_Rank_Calculation_Rule: 'OI排行得分计算公式',
+  Cancel_Evaluation: '取消评测',
+  Modify_Evaluation:'修改评测',
+  Has_Been_Manually_Judged:'已被人工评测',
+  Manually_Jugde:'人工评测',
+  Cancel_Judge_Tips:'你是否确定将该提交标记为已取消？',
+  Cancel_Successfully:'取消成功',
+  Click_to_Manually_Judge:'点击进行人工评测',
 
 
   // /views/oj/status/SubmissionDetails.vue
@@ -458,6 +465,7 @@ export const m = {
   Time_Limit_Exceeded_Description: '您的程序运行时间已超出题目限制。',
   Memory_Limit_Exceeded_Description: '您的程序实际使用的内存已超出题目限制。',
   System_Error_Description: '糟糕，判题机系统出了问题。请报告给管理员。',
+  Cancelled_Description:'您的此次提交被取消！',
   Compile_Explanation: '编译说明',
   Compile_Tips1:"__int64不是ANSI标准定义，只能在VC使用，在 GNU C++ 中应写成 long long 类型， scanf和printf 请使用%lld作为格式",
   Compile_Tips2:"main() 返回值必须定义为 int ，而不是 void",

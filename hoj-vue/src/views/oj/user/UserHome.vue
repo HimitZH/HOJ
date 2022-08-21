@@ -168,7 +168,7 @@
                   v-for="problemID of profile.solvedList"
                   :key="problemID"
                 >
-                  <el-button type="success" @click="goProblem(problemID)">{{
+                  <el-button type="success" @click="goProblem(problemID)" size="small">{{
                     problemID
                   }}</el-button>
                 </div>
