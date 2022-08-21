@@ -134,7 +134,7 @@ public class AccountManager {
         }
         QueryWrapper<UserAcproblem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("uid", userHomeInfo.getUid())
-                .select("distinct pid")
+                .select("distinct pid", "submit_id")
                 .orderByAsc("submit_id");
         List<Long> pidList = new LinkedList<>();
         List<UserAcproblem> acProblemList = userAcproblemEntityService.list(queryWrapper);

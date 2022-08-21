@@ -211,7 +211,7 @@ public class RejudgeManager {
     public Judge manualJudge(Long submitId, Integer status, Integer score) throws StatusFailException {
         QueryWrapper<Judge> judgeQueryWrapper = new QueryWrapper<>();
         judgeQueryWrapper
-                .select("submit_id", "status", "judger", "cid", "pid")
+                .select("submit_id", "status", "judger", "cid", "pid", "uid")
                 .eq("submit_id", submitId);
         Judge judge = judgeEntityService.getOne(judgeQueryWrapper);
         if (judge == null) {
