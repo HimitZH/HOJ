@@ -214,8 +214,8 @@ public class SandboxRun {
      * @param envs              编译的环境变量
      * @param code              编译的源代码
      * @param extraFiles        编译所需的额外文件 key:文件名，value:文件内容
-     * @param needCopyOutCached 是否需要生成编译后的用户程序exe文件
-     * @param needCopyOutExe    是否需要生成用户程序的缓存文件，即生成用户程序id
+     * @param needCopyOutCached 是否需要生成用户程序的缓存文件，即生成用户程序id
+     * @param needCopyOutExe    是否需要生成编译后的用户程序exe文件
      * @param copyOutDir        生成编译后的用户程序exe文件的指定路径
      * @MethodName compile
      * @Description 编译运行

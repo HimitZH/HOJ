@@ -36,7 +36,7 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
 
 
     @Override
-    public void UpdateContestRecord(Integer score, Integer status, Long submitId, Integer useTime) {
+    public void updateContestRecord(Integer score, Integer status, Long submitId, Integer useTime) {
         UpdateWrapper<ContestRecord> updateWrapper = new UpdateWrapper<>();
         // 如果是AC
         if (status.intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {

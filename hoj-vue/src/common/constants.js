@@ -13,6 +13,13 @@ export const JUDGE_STATUS = {
     type: 'info',
     rgb:'#909399'
   },
+  '-4': {
+    name: 'Cancelled',
+    short: 'CA',
+    color: 'purple',
+    type: 'info',
+    rgb:'#676fc1'
+  },
   '-3': {
     name: 'Presentation Error',
     short: 'PE',
@@ -113,6 +120,7 @@ export const JUDGE_STATUS = {
 export const JUDGE_STATUS_RESERVE={
   'ns':-10,
   'snr':-5,
+  'ca':-4,
   'pe':-3,
   'ce':-2,
   'wa':-1,

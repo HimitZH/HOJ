@@ -84,6 +84,10 @@
               <span :class="getStatusColor(4)">System Error</span> :
               {{ $t('m.System_Error_Description') }}
             </li>
+            <li>
+              <span :class="getStatusColor(-4)">Cancelled</span> :
+              {{ $t('m.Cancelled_Description') }}
+            </li>
           </ul>
         </el-card>
         <el-card class="container">

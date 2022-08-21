@@ -3,7 +3,7 @@
 <mapper namespace="top.hcode.hoj.mapper.JudgeMapper">
     <select id="getCommonJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="true">
         select j.submit_id,j.submit_time,j.display_pid,j.username,j.uid,j.pid,j.status,j.share,
-            j.time,j.memory,j.score,j.oi_rank_score,j.length,j.language,j.cid,j.cpid,j.judger
+            j.time,j.memory,j.score,j.oi_rank_score,j.length,j.language,j.cid,j.cpid,j.judger,j.is_manual
             from judge j
             <where>
                 j.cid = 0 AND j.cpid = 0
@@ -37,7 +37,7 @@
 
     <select id="getContestJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="true">
         select j.submit_id,j.submit_time,j.uid,j.username,j.uid,cp.display_id,cp.display_title as title,
-        j.status,j.share,j.time,j.memory,j.score,j.length,j.language,j.cid,j.cpid,j.judger
+        j.status,j.share,j.time,j.memory,j.score,j.length,j.language,j.cid,j.cpid,j.judger,j.is_manual
         from judge j right join
         (
             select display_title,display_id,cid,pid from contest_problem

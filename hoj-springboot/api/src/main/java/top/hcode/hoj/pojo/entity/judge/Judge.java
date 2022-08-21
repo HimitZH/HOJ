@@ -107,6 +107,9 @@ public class Judge implements Serializable {
     @ApiModelProperty(value = "vjudge判题在其它oj的提交账号密码")
     private String vjudgePassword;
 
+    @ApiModelProperty(value = "是否人工评测")
+    private Boolean isManual;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 

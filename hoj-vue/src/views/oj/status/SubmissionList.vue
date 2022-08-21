@@ -4,12 +4,20 @@
       <el-card shadow>
         <div slot="header">
           <el-row :gutter="18">
-            <el-col :md="4" :lg="2">
+            <el-col
+              :md="4"
+              :lg="2"
+            >
               <span class="panel-title hidden-md-and-down">{{
                 $t('m.Status')
               }}</span>
             </el-col>
-            <el-col :xs="10" :sm="8" :md="4" :lg="4">
+            <el-col
+              :xs="10"
+              :sm="8"
+              :md="4"
+              :lg="4"
+            >
               <el-switch
                 style="display: block"
                 v-model="formFilter.onlyMine"
@@ -21,7 +29,13 @@
               </el-switch>
             </el-col>
 
-            <el-col :xs="10" :sm="8" :md="5" :lg="4" style="padding-top: 5px;">
+            <el-col
+              :xs="10"
+              :sm="8"
+              :md="5"
+              :lg="4"
+              style="padding-top: 5px;"
+            >
               <el-dropdown
                 class="drop-menu"
                 @command="handleStatusChange"
@@ -47,17 +61,24 @@
               </el-dropdown>
             </el-col>
 
-            <el-col :sm="8" :md="5" :lg="4" class="hidden-xs-only">
+            <el-col
+              :sm="8"
+              :md="5"
+              :lg="4"
+              class="hidden-xs-only"
+            >
               <el-button
                 type="primary"
                 size="small"
                 icon="el-icon-refresh"
                 round
                 @click="getSubmissions"
-                >{{ $t('m.Refresh') }}</el-button
-              >
+              >{{ $t('m.Refresh') }}</el-button>
             </el-col>
-            <el-col :xs="4" class="hidden-sm-and-up">
+            <el-col
+              :xs="4"
+              class="hidden-sm-and-up"
+            >
               <el-button
                 type="primary"
                 size="small"
@@ -67,7 +88,13 @@
               ></el-button>
             </el-col>
 
-            <el-col :xs="24" :sm="12" :md="5" :lg="5" class="search">
+            <el-col
+              :xs="24"
+              :sm="12"
+              :md="5"
+              :lg="5"
+              class="search"
+            >
               <vxe-input
                 v-model="formFilter.problemID"
                 :placeholder="$t('m.Enter_Problem_ID')"
@@ -77,7 +104,13 @@
                 @search-click="handleQueryChange('probemID')"
               ></vxe-input>
             </el-col>
-            <el-col :xs="24" :sm="12" :md="5" :lg="5" class="search">
+            <el-col
+              :xs="24"
+              :sm="12"
+              :md="5"
+              :lg="5"
+              class="search"
+            >
               <vxe-input
                 v-model="formFilter.username"
                 :disabled="formFilter.onlyMine"
@@ -119,38 +152,118 @@
                 v-if="contestID"
                 @click="getProblemUri(row.displayId)"
                 style="color: rgb(87, 163, 243)"
-                >{{ row.displayId + ' ' + row.title }}
+              >{{ row.displayId + ' ' + row.title }}
               </span>
               <span
                 v-else
                 @click="getProblemUri(row.displayPid)"
                 style="color: rgb(87, 163, 243)"
-                >{{ row.displayPid + ' ' + row.title }}
+              >{{ row.displayPid + ' ' + row.title }}
               </span>
             </template>
           </vxe-table-column>
           <vxe-table-column
             field="status"
             :title="$t('m.Status')"
-            min-width="160"
+            min-width="200"
           >
             <template v-slot="{ row }">
-              <span :class="getStatusColor(row.status)">
-                <i
-                  class="el-icon-loading"
-                  v-if="
+              <el-tooltip
+                effect="dark"
+                :content="$t('m.Click_to_Manually_Judge')"
+                :disabled="hideManuallyJugdeTooltip || disabledManualJudge(row.status)"
+                placement="top"
+              >
+                <el-popover
+                  placement="top"
+                  width="230"
+                  trigger="click"
+                  @show="hideManuallyJugdeTooltip = true"
+                  @hide="hideManuallyJugdeTooltip = false"
+                  :disabled="disabledManualJudge(row.status)"
+                >
+                  <div class="manual-judge-title">
+                    <span>{{ $t('m.Manually_Jugde') }}</span>
+                  </div>
+                  <div>
+                    <span>
+                      <el-button
+                        size="mini"
+                        type="warning"
+                        icon="el-icon-edit"
+                        @click="openChangeJudgeStatusDialog(row)"
+                        :disabled="row.status == JUDGE_STATUS_RESERVE['Pending']"
+                      >{{ $t('m.Modify_Evaluation') }}</el-button>
+                      <el-button
+                        size="mini"
+                        type="danger"
+                        icon="el-icon-close"
+                        :disabled="row.status == JUDGE_STATUS_RESERVE['ca']"
+                        @click="cancelJudge(row)"
+                      >{{ $t('m.Cancel_Evaluation') }}</el-button>
+                    </span>
+                  </div>
+                  <span
+                    :class="getStatusColor(row.status)"
+                    slot="reference"
+                  >
+                    <i
+                      class="el-icon-loading"
+                      v-if="
                     row.status == JUDGE_STATUS_RESERVE['Pending'] ||
                       row.status == JUDGE_STATUS_RESERVE['Compiling'] ||
                       row.status == JUDGE_STATUS_RESERVE['Judging']
                   "
-                ></i>
-                <i
-                  class="el-icon-refresh"
-                  v-if="row.status == JUDGE_STATUS_RESERVE['sf']"
-                  @click="reSubmit(row)"
-                ></i>
-                {{ JUDGE_STATUS[row.status].name }}
-              </span>
+                    ></i>
+                    <i
+                      class="el-icon-refresh"
+                      v-if="row.status == JUDGE_STATUS_RESERVE['sf']"
+                      @click="reSubmit(row)"
+                    ></i>
+                    {{ JUDGE_STATUS[row.status].name }}
+                  </span>
+                </el-popover>
+              </el-tooltip>
+              <el-tooltip
+                class="item"
+                effect="dark"
+                :content="$t('m.Has_Been_Manually_Judged')"
+                placement="top"
+                v-if="row.isManual"
+              >
+                <svg
+                  style="vertical-align: middle;margin-left: 4px;"
+                  t="1660976601239"
+                  class="icon"
+                  viewBox="0 0 1024 1024"
+                  version="1.1"
+                  xmlns="http://www.w3.org/2000/svg"
+                  p-id="9872"
+                  width="16"
+                  height="16"
+                >
+                  <path
+                    d="M706.1 489.4c24.3-36.7 38.6-80.6 38.6-128 0-128.1-103.9-232-232-232s-232 103.9-232 232c0 47.3 14.2 91.3 38.6 128C168.9 561.5 65 715.2 
+                  65 893.2h895.3c0.1-178-103.8-331.7-254.2-403.8z"
+                    fill="#D6F3FA"
+                    p-id="9873"
+                  >
+                  </path>
+                  <path
+                    d="M587 800.7l86.3 61.1-72.6 33.4c-10.5 4.8-22.2-3.5-21.1-15l7.4-79.5z m274.9-205L685.4 844.8l-86.3-61.1 176.5-249.1 86.3 61.1zM825 612.3c3.1-4.4 
+                  2.1-10.5-2.3-13.6-4.4-3.1-10.5-2.1-13.6 2.3l-132 186.2c-3.1 4.4-2.1 10.5 2.3 13.6 4.4 3.1 10.5 2.1 13.6-2.3l132-186.2z m41.5-23.1c6.1-8.6 4-20.6-4.6-26.7l-55-39c-8.6-6.1-20.6-4-26.7 
+                  4.6l-1.6 2.2 86.3 61.1 1.6-2.2z m-75.4 200.1c0 10.4 8.5 19 19 19h78c10.4 0 19-8.5 19-19 0-10.4-8.5-19-19-19h-78c-10.5 0-19 8.5-19 19z m97 63.5H766.6c-10.4 0-19 8.5-19 19 0 10.4 8.5 
+                  19 19 19h121.5c10.4 0 19-8.5 19-19 0-10.4-8.6-19-19-19z m-231-275.2c-44.9-21-94.5-32.1-144.5-32.1-113.5 0-220.2 57.4-283.1 151.1-6.3 9.4-19 12-28.8 6.3-10.8-6.4-14-20.6-7-31 53.6-79.5 
+                  135.2-135.7 227-158.5-51.8-31.3-86.6-87.9-86.6-152.7 0-98.4 80.1-178.5 178.5-178.5s178.5 80.1 178.5 178.5c0 64.7-34.8 121.4-86.5 152.7 24.2 5.9 47.8 14.1 70.3 24.6 11.5 5.3 16.2 19.2 
+                  10.2 30.3-5.4 9.9-17.7 14.1-28 9.3z m-144.4-76.4c77.5 0 140.5-63 140.5-140.5s-63-140.5-140.5-140.5-140.5 63-140.5 140.5 63 140.5 140.5 140.5zM196.2 711c-11-6.1-24.9-1.7-30.3 9.7-3 6.2-5.8 
+                  12.5-8.4 18.8-4.8 11.6 1.2 24.9 13 29 10.8 3.7 22.7-1.6 27-12.2 2.4-5.8 4.9-11.5 7.6-17.1 5.1-10.3 1.1-22.7-8.9-28.2z m-28 64.5c-12.1-3.9-24.8 3.4-27.9 15.7-6 23.5-9.7 47.4-11.2 71.7-0.8 12.6 
+                  9.1 23.4 21.7 23.4 11.4 0 21-8.7 21.6-20.1 1.3-22 4.7-43.8 10.1-65.1 3-10.9-3.5-22.1-14.3-25.6z"
+                    fill="#18BAE5"
+                    p-id="9874"
+                  >
+                  </path>
+                </svg>
+              </el-tooltip>
             </template>
           </vxe-table-column>
           <vxe-table-column
@@ -165,8 +278,7 @@
                   effect="plain"
                   size="medium"
                   :type="JUDGE_STATUS[row.status]['type']"
-                  >{{ row.score }}</el-tag
-                >
+                >{{ row.score }}</el-tag>
               </template>
               <template v-else-if="row.score != null">
                 <el-tooltip placement="top">
@@ -186,17 +298,14 @@
                     effect="plain"
                     size="medium"
                     :type="JUDGE_STATUS[row.status]['type']"
-                    >{{ row.score }}</el-tag
-                  >
+                  >{{ row.score }}</el-tag>
                 </el-tooltip>
               </template>
-              <template
-                v-else-if="
+              <template v-else-if="
                   row.status == JUDGE_STATUS_RESERVE['Pending'] ||
                     row.status == JUDGE_STATUS_RESERVE['Compiling'] ||
                     row.status == JUDGE_STATUS_RESERVE['Judging']
-                "
-              >
+                ">
                 <el-tag
                   effect="plain"
                   size="medium"
@@ -210,12 +319,15 @@
                   effect="plain"
                   size="medium"
                   :type="JUDGE_STATUS[row.status]['type']"
-                  >--</el-tag
-                >
+                >--</el-tag>
               </template>
             </template>
           </vxe-table-column>
-          <vxe-table-column field="time" :title="$t('m.Time')" min-width="96">
+          <vxe-table-column
+            field="time"
+            :title="$t('m.Time')"
+            min-width="96"
+          >
             <template v-slot="{ row }">
               <span>{{ submissionTimeFormat(row.time) }}</span>
             </template>
@@ -253,7 +365,10 @@
                 :content="$t('m.View_submission_details')"
                 placement="top"
               >
-                <el-button type="text" @click="showSubmitDetail(row)">{{
+                <el-button
+                  type="text"
+                  @click="showSubmitDetail(row)"
+                >{{
                   row.language
                 }}</el-button>
               </el-tooltip>
@@ -280,8 +395,7 @@
               <a
                 @click="goUserHome(row.username, row.uid)"
                 style="color: rgb(87, 163, 243)"
-                >{{ row.username }}</a
-              >
+              >{{ row.username }}</a>
             </template>
           </vxe-table-column>
           <vxe-table-column
@@ -290,14 +404,14 @@
             min-width="96"
           >
             <template v-slot="{ row }">
-              <span
-                ><el-tooltip
+              <span>
+                <el-tooltip
                   :content="row.submitTime | localtime"
                   placement="top"
                 >
                   <span>{{ row.submitTime | fromNow }}</span>
-                </el-tooltip></span
-              >
+                </el-tooltip>
+              </span>
             </template>
           </vxe-table-column>
           <!-- 非比赛提交记录，超级管理员可以对提交进行重判 -->
@@ -312,8 +426,7 @@
                 @click="handleRejudge(row)"
                 size="mini"
                 :loading="row.loading"
-                >{{ $t('m.Rejudge') }}</vxe-button
-              >
+              >{{ $t('m.Rejudge') }}</vxe-button>
             </template>
           </vxe-table-column>
         </vxe-table>
@@ -327,24 +440,74 @@
         :layout="'prev, pager, next, sizes'"
       ></Pagination>
     </div>
+    <el-dialog
+      :title="$t('m.Manually_Jugde')+'(Run ID：'+changeJudgeStatus.submitId+')'"
+      width="350px"
+      :visible.sync="changeJudgeStatusDialogVisible"
+      :close-on-click-modal="false"
+      center
+    >
+      <el-form>
+        <el-form-item
+          :label="$t('m.Status')"
+          required
+        >
+          <el-select
+            v-model="changeJudgeStatus.status"
+            size="small"
+          >
+            <el-option
+              :label="JUDGE_STATUS[result].name"
+              :key="result"
+              :value="parseInt(result)"
+              v-for="result in Object.keys(CHANGE_JUDGE_STATUS_LIST)"
+            ></el-option>
+            <el-option
+              label="Cancelled"
+              :value="-4"
+              disabled
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          :label="$t('m.Score')"
+          required
+          v-if="changeJudgeStatus.score != null || changeJudgeStatus.status == JUDGE_STATUS_RESERVE['ca']"
+        >
+          <el-input-number
+            size="small"
+            v-model="changeJudgeStatus.score"
+          ></el-input-number>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button
+          type="primary"
+          @click="manualJudge"
+          :disabled="changeJudgeStatus.status == JUDGE_STATUS_RESERVE['ca']"
+          :loading="changeJudgeStatusLoading"
+        >{{ $t('m.To_Update') }}
+        </el-button>
+      </span>
+    </el-dialog>
   </el-row>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
-import api from '@/common/api';
+import { mapActions, mapGetters } from "vuex";
+import api from "@/common/api";
 import {
   JUDGE_STATUS,
   CONTEST_STATUS,
   JUDGE_STATUS_RESERVE,
   RULE_TYPE,
-} from '@/common/constants';
-import utils from '@/common/utils';
-import Pagination from '@/components/oj/common/Pagination';
-import myMessage from '@/common/message';
-import 'element-ui/lib/theme-chalk/display.css';
+} from "@/common/constants";
+import utils from "@/common/utils";
+import Pagination from "@/components/oj/common/Pagination";
+import myMessage from "@/common/message";
+import "element-ui/lib/theme-chalk/display.css";
 export default {
-  name: 'submissionList',
+  name: "submissionList",
   components: {
     Pagination,
   },
@@ -352,9 +515,9 @@ export default {
     return {
       formFilter: {
         onlyMine: false,
-        status: '',
-        username: '',
-        problemID: '',
+        status: "",
+        username: "",
+        problemID: "",
       },
       loadingTable: false,
       submissions: [],
@@ -364,14 +527,23 @@ export default {
       currentPage: 1,
       contestID: null,
       groupID: null,
-      routeName: '',
+      routeName: "",
       checkStatusNum: 0,
-      JUDGE_STATUS: '',
-      JUDGE_STATUS_LIST: '',
+      JUDGE_STATUS: "",
+      JUDGE_STATUS_LIST: "",
+      CHANGE_JUDGE_STATUS_LIST: "",
       autoCheckOpen: false,
       JUDGE_STATUS_RESERVE: {},
       CONTEST_STATUS: {},
       RULE_TYPE: {},
+      hideManuallyJugdeTooltip:false,
+      changeJudgeStatusDialogVisible: false,
+      changeJudgeStatusLoading: false,
+      changeJudgeStatus: {
+        submitId: null,
+        status: null,
+        score: null,
+      },
     };
   },
   created() {
@@ -383,12 +555,18 @@ export default {
     this.JUDGE_STATUS_RESERVE = Object.assign({}, JUDGE_STATUS_RESERVE);
     this.CONTEST_STATUS = Object.assign({}, CONTEST_STATUS);
     this.RULE_TYPE = Object.assign({}, RULE_TYPE);
-    // 去除下拉框选择中的Compiling,Judging,Submitting,Not Submitted,Submitted Unknown Result 五种状态
-    delete this.JUDGE_STATUS_LIST['6'];
-    delete this.JUDGE_STATUS_LIST['7'];
-    delete this.JUDGE_STATUS_LIST['9'];
-    delete this.JUDGE_STATUS_LIST['-5'];
-    delete this.JUDGE_STATUS_LIST['-10'];
+    // 去除下拉框选择中的Not Submitted,Submitted Unknown Result 三种状态
+    delete this.JUDGE_STATUS_LIST["9"];
+    delete this.JUDGE_STATUS_LIST["-5"];
+    delete this.JUDGE_STATUS_LIST["-10"];
+
+    // 再次去除Cancelled,Compile Error,Compiling,Judging,Submitting
+    this.CHANGE_JUDGE_STATUS_LIST = Object.assign({}, this.JUDGE_STATUS_LIST);
+    delete this.CHANGE_JUDGE_STATUS_LIST["-4"];
+    delete this.CHANGE_JUDGE_STATUS_LIST["-2"];
+    delete this.CHANGE_JUDGE_STATUS_LIST["5"];
+    delete this.CHANGE_JUDGE_STATUS_LIST["6"];
+    delete this.CHANGE_JUDGE_STATUS_LIST["7"];
     this.getData();
   },
   methods: {
@@ -398,13 +576,13 @@ export default {
       this.groupID = this.$route.params.groupID;
       let query = this.$route.query;
       this.formFilter.problemID = query.problemID;
-      this.formFilter.username = query.username || '';
-      this.formFilter.onlyMine = query.onlyMine + '' == 'true' ? true : false; // 统一换成字符串判断
+      this.formFilter.username = query.username || "";
+      this.formFilter.onlyMine = query.onlyMine + "" == "true" ? true : false; // 统一换成字符串判断
       this.formFilter.status = query.status;
       this.formFilter.completeProblemID = query.completeProblemID || false;
       if (this.formFilter.onlyMine) {
         // 当前为搜索自己的提交 那么不可搜索别人的提交
-        this.formFilter.username = '';
+        this.formFilter.username = "";
       }
       this.currentPage = parseInt(query.currentPage) || 1;
       if (this.currentPage < 1) {
@@ -450,11 +628,12 @@ export default {
         row.memory = res.data.data.memory;
         row.errorMessage = res.data.data.errorMessage;
         row.judger = res.data.data.judger;
+        row.isManual = false;
         // 重新加载该行数据到view
         xTable.reloadRow(row, null, null);
 
         this.submissions[row.index] = res.data.data;
-        myMessage.success(this.$i18n.t('m.Resubmitted_Successfully'));
+        myMessage.success(this.$i18n.t("m.Resubmitted_Successfully"));
 
         // 加入待重判列表
         this.needCheckSubmitIds[row.submitId] = row.index;
@@ -480,11 +659,11 @@ export default {
       if (this.formFilter.onlyMine) {
         // 需要判断是否为登陆状态
         if (this.isAuthenticated) {
-          params.username = ''; // 如果是搜索当前用户的提交记录，那么用户名搜索应该无效
-          this.formFilter.username = '';
+          params.username = ""; // 如果是搜索当前用户的提交记录，那么用户名搜索应该无效
+          this.formFilter.username = "";
         } else {
           this.formFilter.onlyMine = false;
-          myMessage.error(this.$i18n.t('m.Please_login_first'));
+          myMessage.error(this.$i18n.t("m.Please_login_first"));
           return;
         }
       }
@@ -493,17 +672,17 @@ export default {
       this.submissions = [];
       this.needCheckSubmitIds = {};
       let func = this.contestID
-        ? 'getContestSubmissionList'
-        : 'getSubmissionList';
+        ? "getContestSubmissionList"
+        : "getSubmissionList";
       api[func](this.limit, utils.filterEmptyValue(params))
         .then((res) => {
           let data = res.data.data;
           let index = 0;
           for (let v of data.records) {
             if (
-              v.status == JUDGE_STATUS_RESERVE['Pending'] ||
-              v.status == JUDGE_STATUS_RESERVE['Compiling'] ||
-              v.status == JUDGE_STATUS_RESERVE['Judging']
+              v.status == JUDGE_STATUS_RESERVE["Pending"] ||
+              v.status == JUDGE_STATUS_RESERVE["Compiling"] ||
+              v.status == JUDGE_STATUS_RESERVE["Judging"]
             ) {
               this.needCheckSubmitIds[v.submitId] = index;
             }
@@ -533,8 +712,8 @@ export default {
       const checkStatus = () => {
         let submitIds = this.needCheckSubmitIds;
         let func = this.contestID
-          ? 'checkContestSubmissonsStatus'
-          : 'checkSubmissonsStatus';
+          ? "checkContestSubmissonsStatus"
+          : "checkSubmissonsStatus";
         api[func](Object.keys(submitIds), this.contestID).then(
           (res) => {
             let result = res.data.data;
@@ -556,13 +735,14 @@ export default {
               viewData[submitIds[key]].time = result[submitId].time;
               viewData[submitIds[key]].memory = result[submitId].memory;
               viewData[submitIds[key]].judger = result[submitId].judger;
+              viewData[submitIds[key]].isManual = result[submitId].isManual;
               // 重新加载这行数据到view中
               this.$refs.xTable.reloadRow(viewData[submitIds[key]], null, null);
 
               if (
-                result[submitId].status != JUDGE_STATUS_RESERVE['Pending'] &&
-                result[submitId].status != JUDGE_STATUS_RESERVE['Compiling'] &&
-                result[submitId].status != JUDGE_STATUS_RESERVE['Judging']
+                result[submitId].status != JUDGE_STATUS_RESERVE["Pending"] &&
+                result[submitId].status != JUDGE_STATUS_RESERVE["Compiling"] &&
+                result[submitId].status != JUDGE_STATUS_RESERVE["Judging"]
               ) {
                 delete this.needCheckSubmitIds[key];
               }
@@ -620,10 +800,10 @@ export default {
       if (!equal) {
         // 避免重复同个路径请求导致报错
         let routeName = queryParams.contestID
-          ? 'ContestSubmissionList'
+          ? "ContestSubmissionList"
           : this.groupID
-          ? 'GroupSubmissionList'
-          : 'SubmissionList';
+          ? "GroupSubmissionList"
+          : "SubmissionList";
         this.$router.push({
           name: routeName,
           query: queryParams,
@@ -635,13 +815,13 @@ export default {
     },
     goUserHome(username, uid) {
       this.$router.push({
-        path: '/user-home',
+        path: "/user-home",
         query: { uid, username },
       });
     },
     handleStatusChange(status) {
-      if (status == 'All') {
-        this.formFilter.status = '';
+      if (status == "All") {
+        this.formFilter.status = "";
       } else {
         this.formFilter.status = status;
       }
@@ -649,7 +829,7 @@ export default {
       this.changeRoute();
     },
     handleQueryChange(searchParam) {
-      if (searchParam == 'probemID') {
+      if (searchParam == "probemID") {
         this.formFilter.completeProblemID = false; // 并非走完全检索displayID了
       }
       this.currentPage = 1;
@@ -668,12 +848,13 @@ export default {
           row.errorMessage = res.data.data.errorMessage;
           row.judger = res.data.data.judger;
           row.loading = false;
+          row.isManual = false;
           // 重新加载该行数据到view
           xTable.reloadRow(row, null, null);
 
           this.submissions[row.index] = res.data.data;
           this.submissions[row.index].loading = false;
-          myMessage.success(this.$i18n.t('m.Rejudge_successfully'));
+          myMessage.success(this.$i18n.t("m.Rejudge_successfully"));
 
           // 加入待重判列表
           this.needCheckSubmitIds[row.submitId] = row.index;
@@ -692,23 +873,23 @@ export default {
       if (this.formFilter.onlyMine) {
         // 需要判断是否为登陆状态
         if (this.isAuthenticated) {
-          this.formFilter.username = '';
+          this.formFilter.username = "";
         } else {
           this.formFilter.onlyMine = false;
-          myMessage.error(this.$i18n.t('m.Please_login_first'));
+          myMessage.error(this.$i18n.t("m.Please_login_first"));
           return;
         }
       }
       this.currentPage = 1;
       this.changeRoute();
     },
-    ...mapActions(['changeModalStatus']),
+    ...mapActions(["changeModalStatus"]),
 
     showSubmitDetail(row) {
       if (this.contestID != null) {
         // 比赛提交详情
         this.$router.push({
-          name: 'ContestSubmissionDeatil',
+          name: "ContestSubmissionDeatil",
           params: {
             contestID: this.contestID,
             problemID: row.displayId,
@@ -717,12 +898,12 @@ export default {
         });
       } else if (this.groupID != null) {
         this.$router.push({
-          name: 'GroupSubmissionDeatil',
+          name: "GroupSubmissionDeatil",
           params: { submitID: row.submitId },
         });
       } else {
         this.$router.push({
-          name: 'SubmissionDeatil',
+          name: "SubmissionDeatil",
           params: { submitID: row.submitId },
         });
       }
@@ -730,7 +911,7 @@ export default {
     getProblemUri(pid) {
       if (this.contestID) {
         this.$router.push({
-          name: 'ContestProblemDetails',
+          name: "ContestProblemDetails",
           params: {
             contestID: this.$route.params.contestID,
             problemID: pid,
@@ -738,7 +919,7 @@ export default {
         });
       } else if (this.groupID) {
         this.$router.push({
-          name: 'GroupProblemDetails',
+          name: "GroupProblemDetails",
           params: {
             problemID: pid,
             groupID: this.groupID,
@@ -746,7 +927,7 @@ export default {
         });
       } else {
         this.$router.push({
-          name: 'ProblemDetails',
+          name: "ProblemDetails",
           params: {
             problemID: pid,
           },
@@ -754,39 +935,115 @@ export default {
       }
     },
     getStatusColor(status) {
-      return 'el-tag el-tag--medium status-' + JUDGE_STATUS[status]['color'];
+      return "el-tag el-tag--medium status-" + JUDGE_STATUS[status]["color"];
     },
     tableRowClassName({ row, rowIndex }) {
       if (row.username == this.userInfo.username && this.isAuthenticated) {
-        return 'own-submit-row';
+        return "own-submit-row";
       }
+    },
+    disabledManualJudge(status){
+      return !this.isSuperAdmin || status == JUDGE_STATUS_RESERVE['Judging'] 
+                || status == JUDGE_STATUS_RESERVE['Compiling']
+                || status == JUDGE_STATUS_RESERVE['ce']
+    },
+    openChangeJudgeStatusDialog(judge) {
+      this.changeJudgeStatus = {
+        submitId: judge.submitId,
+        score: judge.score,
+        status: judge.status,
+        index: judge.index,
+      };
+      this.changeJudgeStatusDialogVisible = true;
+    },
+    cancelJudge(row) {
+      this.$confirm(this.$i18n.t("m.Cancel_Judge_Tips"), "Run ID："+row.submitId, {
+        type: "warning",
+      }).then(
+        () => {
+          api
+            .admin_cancelJudge(row.submitId)
+            .then((res) => {
+              myMessage.success(this.$i18n.t("m.Cancel_Successfully"));
+              let data = res.data.data;
+              row.status = data.status;
+              row.score = data.score;
+              row.oiRankScore = data.oiRankScore;
+              row.judger = data.judger;
+              row.loading = false;
+              row.isManual = true;
+              // 重新加载这行数据到view中
+              this.$refs.xTable.reloadRow(row, null, null);
+            })
+            .catch(() => {});
+        },
+        () => {}
+      );
+    },
+    manualJudge() {
+      this.changeJudgeStatusLoading = true;
+      api
+        .admin_manualJudge(
+          this.changeJudgeStatus.submitId,
+          this.changeJudgeStatus.status,
+          this.changeJudgeStatus.score
+        )
+        .then(
+          (res) => {
+            myMessage.success(this.$i18n.t("m.Update_Successfully"));
+            let data = res.data.data;
+            // 更新数据列表
+            this.submissions[this.changeJudgeStatus.index].status = data.status;
+            this.submissions[this.changeJudgeStatus.index].score = data.score;
+            this.submissions[this.changeJudgeStatus.index].oiRankScore =
+              data.oiRankScore;
+            this.submissions[this.changeJudgeStatus.index].judger = data.judger;
+            this.submissions[this.changeJudgeStatus.index].isManual = true;
+            // 更新view中的结果，f分数，耗时，空间消耗，判题机ip
+            let viewData = this.$refs.xTable.getTableData().tableData;
+            let row = viewData[this.changeJudgeStatus.index];
+            row.status = data.status;
+            row.score = data.score;
+            row.oiRankScore = data.oiRankScore;
+            row.judger = data.judger;
+            row.isManual = true;
+            // 重新加载这行数据到view中
+            this.$refs.xTable.reloadRow(row, null, null);
+            this.changeJudgeStatusLoading = false;
+            this.changeJudgeStatusDialogVisible = false;
+          },
+          (err) => {
+            this.changeJudgeStatusLoading = false;
+          }
+        )
+        .catch(() => {});
     },
   },
   computed: {
     ...mapGetters([
-      'isAuthenticated',
-      'userInfo',
-      'isSuperAdmin',
-      'isAdminRole',
-      'contestRuleType',
-      'contestStatus',
-      'ContestRealTimePermission',
+      "isAuthenticated",
+      "userInfo",
+      "isSuperAdmin",
+      "isAdminRole",
+      "contestRuleType",
+      "contestStatus",
+      "ContestRealTimePermission",
     ]),
     title() {
       if (!this.contestID) {
-        return 'Status';
+        return "Status";
       } else if (this.problemID) {
-        return 'Problem Submissions';
+        return "Problem Submissions";
       } else {
-        return 'Submissions';
+        return "Submissions";
       }
     },
     status() {
-      return this.formFilter.status === ''
-        ? this.$i18n.t('m.Status')
+      return this.formFilter.status === ""
+        ? this.$i18n.t("m.Status")
         : JUDGE_STATUS[this.formFilter.status]
         ? JUDGE_STATUS[this.formFilter.status].name
-        : this.$i18n.t('m.Status');
+        : this.$i18n.t("m.Status");
     },
     rejudgeColumnVisible() {
       return this.isSuperAdmin;
@@ -860,5 +1117,14 @@ export default {
   /deep/ .vxe-table--body-wrapper {
     overflow-x: hidden !important;
   }
+}
+/deep/.el-dialog--center .el-dialog__body {
+  padding-bottom: 0px !important;
+}
+.manual-judge-title {
+  text-align: center;
+  font-weight: bolder;
+  font-size: 15px;
+  margin-bottom: 5px;
 }
 </style>

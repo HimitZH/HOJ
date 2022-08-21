@@ -7,5 +7,9 @@ public interface RejudgeService {
 
     CommonResult<Judge> rejudge(Long submitId);
 
-    CommonResult<Void> rejudgeContestProblem(Long cid,Long pid);
+    CommonResult<Void> rejudgeContestProblem(Long cid, Long pid);
+
+    CommonResult<Judge> manualJudge(Long submitId, Integer status, Integer score);
+
+    CommonResult<Judge> cancelJudge(Long submitId);
 }

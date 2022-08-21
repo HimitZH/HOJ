@@ -890,4 +890,33 @@ CALL problem_tag_Add_classification ;
 DROP PROCEDURE problem_tag_Add_classification;
 
 
+/*
+* 2022.08.21 提交评测增加人工评测标记
+			 
+*/
+DROP PROCEDURE
+IF EXISTS judge_tag_Add_is_manual;
+DELIMITER $$
+ 
+CREATE PROCEDURE judge_tag_Add_is_manual ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'judge'
+	AND column_name = 'is_manual'
+) THEN
+	
+	ALTER TABLE `hoj`.`judge`  ADD COLUMN `is_manual` tinyint(1) DEFAULT '0' COMMENT '是否为人工评测';
+	
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL judge_tag_Add_is_manual ;
 
+DROP PROCEDURE judge_tag_Add_is_manual;

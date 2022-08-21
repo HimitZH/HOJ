@@ -293,6 +293,13 @@ export const m = {
   Problem_Score: 'Problem Score',
   OI_Rank_Score: 'OI Rank Score',
   OI_Rank_Calculation_Rule: 'OI Rank Calculation Rule',
+  Cancel_Evaluation: 'Cancel',
+  Modify_Evaluation:'Modify',
+  Has_Been_Manually_Judged:'Has been manually judged',
+  Manually_Jugde:'Manually Judge',
+  Cancel_Judge_Tips:'Are you sure you want to mark this submission as Cancelled?',
+  Cancel_Successfully:'Cancel Successfully',
+  Click_to_Manually_Judge:'Click to Manually Judge',
 
   // /views/oj/status/SubmissionDetails.vue
   Test_point_details: 'Test point details',
@@ -456,6 +463,7 @@ export const m = {
   Time_Limit_Exceeded_Description: 'The time your program used has exceeded limit.',
   Memory_Limit_Exceeded_Description: 'The memory your program actually used has exceeded limit.',
   System_Error_Description: 'Oops, something has gone wrong with the judger. Please report this to administrator.',
+  Cancelled_Description:'Your submission has been cancelled!',
   Compile_Explanation: 'Compile Explanation',
   Compile_Tips1:"`__int64` is not defined by ANSI standard and can only be used in `VC`. It should be written as `long long` type in `GNU C++`. For `scanf` and `printf`, please use `%lld` as the format.",
   Compile_Tips2:"The return value of `main()` must be defined as `int`, not `void`",

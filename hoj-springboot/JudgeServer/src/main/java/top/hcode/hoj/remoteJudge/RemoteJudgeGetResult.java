@@ -4,7 +4,6 @@ import cn.hutool.core.lang.UUID;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import top.hcode.hoj.dao.JudgeCaseEntityService;
@@ -39,9 +38,6 @@ public class RemoteJudgeGetResult {
 
     @Resource
     private JudgeCaseEntityService judgeCaseEntityService;
-
-    @Value("${hoj-judge-server.name}")
-    private String name;
 
     private final static ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors() * 2);
 
@@ -118,8 +114,7 @@ public class RemoteJudgeGetResult {
                     finalJudgeRes.setSubmitId(remoteJudgeDTO.getJudgeId())
                             .setStatus(status)
                             .setTime(time)
-                            .setMemory(memory)
-                            .setJudger(name);
+                            .setMemory(memory);
 
                     if (status.intValue() == Constants.Judge.STATUS_COMPILE_ERROR.getStatus()) {
                         finalJudgeRes.setErrorMessage(errorInfo);
@@ -170,8 +165,7 @@ public class RemoteJudgeGetResult {
 
                     Judge judge = new Judge();
                     judge.setSubmitId(remoteJudgeDTO.getJudgeId())
-                            .setStatus(status)
-                            .setJudger(name);
+                            .setStatus(status);
                     // 写回数据库
                     judgeEntityService.updateById(judge);
                 }

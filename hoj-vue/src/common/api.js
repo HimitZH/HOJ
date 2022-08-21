@@ -338,6 +338,24 @@ const ojApi = {
     })
   },
 
+  admin_manualJudge (submitId,status,score) {
+    return ajax('/api/admin/judge/manual-judge', 'get', {
+      params: {
+        submitId,
+        status,
+        score
+      }
+    })
+  },
+
+  admin_cancelJudge (submitId) {
+    return ajax('/api/admin/judge/cancel-judge', 'get', {
+      params: {
+        submitId
+      }
+    })
+  },
+
   // ------------------------------------训练模块的请求---------------------------------------------
 
   // 获取训练分类列表

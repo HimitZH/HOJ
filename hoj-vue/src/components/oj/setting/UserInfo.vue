@@ -336,6 +336,9 @@ export default {
       let updateData = utils.filterEmptyValue(
         Object.assign({}, this.formProfile)
       );
+      if(!updateData.gender){
+        updateData.gender = 'secrecy';
+      }
       api.changeUserInfo(updateData).then(
         (res) => {
           myMessage.success(this.$i18n.t('m.Update_Successfully'));

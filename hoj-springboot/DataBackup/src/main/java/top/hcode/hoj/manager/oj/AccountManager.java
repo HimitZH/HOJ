@@ -133,7 +133,9 @@ public class AccountManager {
             throw new StatusFailException("用户不存在");
         }
         QueryWrapper<UserAcproblem> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("uid", userHomeInfo.getUid()).select("distinct pid");
+        queryWrapper.eq("uid", userHomeInfo.getUid())
+                .select("distinct pid")
+                .orderByAsc("submit_id");
         List<Long> pidList = new LinkedList<>();
         List<UserAcproblem> acProblemList = userAcproblemEntityService.list(queryWrapper);
         acProblemList.forEach(acProblem -> {

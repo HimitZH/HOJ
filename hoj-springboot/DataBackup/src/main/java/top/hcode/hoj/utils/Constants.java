@@ -14,6 +14,7 @@ public class Constants {
     public enum Judge {
         STATUS_NOT_SUBMITTED(-10, "Not Submitted", null),
         STATUS_SUBMITTED_UNKNOWN_RESULT(-5, "Submitted Unknown Result", null),
+        STATUS_CANCELLED(-4, "Cancelled","ca"),
         STATUS_PRESENTATION_ERROR(-3, "Presentation Error", "pe"),
         STATUS_COMPILE_ERROR(-2, "Compile Error", "ce"),
         STATUS_WRONG_ANSWER(-1, "Wrong Answer", "wa"),

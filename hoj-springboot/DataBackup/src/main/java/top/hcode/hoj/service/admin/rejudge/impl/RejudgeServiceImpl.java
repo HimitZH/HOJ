@@ -40,4 +40,22 @@ public class RejudgeServiceImpl implements RejudgeService {
             return CommonResult.errorResponse(e.getMessage());
         }
     }
+
+    @Override
+    public CommonResult<Judge> manualJudge(Long submitId, Integer status, Integer score) {
+        try {
+            return CommonResult.successResponse(rejudgeManager.manualJudge(submitId, status, score));
+        } catch (StatusFailException e) {
+            return CommonResult.errorResponse(e.getMessage());
+        }
+    }
+
+    @Override
+    public CommonResult<Judge> cancelJudge(Long submitId) {
+        try {
+            return CommonResult.successResponse(rejudgeManager.cancelJudge(submitId));
+        } catch (StatusFailException e) {
+            return CommonResult.errorResponse(e.getMessage());
+        }
+    }
 }
