@@ -305,6 +305,12 @@ export const m = {
 
   // /views/oj/status/SubmissionDetails.vue
   Test_point_details: '测试点详情',
+  Download_Explanation: '测试点下载说明',
+  Download_tips_1: '本OJ提供该记录第一个非AC的输入输出数据下载; 部分题目因为赛时等原因, 不开放数据下载。',
+  Download_tips_2: '请勿使用本功能恶意刷AC数',
+  Download_in: '下载输入',
+  Download_out: '下载输出',
+  Download_success: '下载成功',
   Copy: '复制',
   Shared: '分享',
   Unshared: '不分享',

@@ -39,4 +39,16 @@ public class TestCaseController {
     public void downloadTestcase(@RequestParam("pid") Long pid, HttpServletResponse response) throws StatusFailException, StatusForbiddenException {
         testCaseService.downloadTestcase(pid, response);
     }
+
+    @GetMapping("/download-wrongcase-in")
+    @RequiresAuthentication
+    public void downloadwrongcasein(@RequestParam("pid") Long pid,@RequestParam("in") String in, HttpServletResponse response) throws StatusFailException, StatusForbiddenException {
+        testCaseService.downloadwrongcasein(pid, in, response);
+    }
+
+    @GetMapping("/download-wrongcase-out")
+    @RequiresAuthentication
+    public void downloadwrongcaseout(@RequestParam("pid") Long pid,@RequestParam("out") String out, HttpServletResponse response) throws StatusFailException, StatusForbiddenException {
+        testCaseService.downloadwrongcaseout(pid, out, response);
+    }
 }

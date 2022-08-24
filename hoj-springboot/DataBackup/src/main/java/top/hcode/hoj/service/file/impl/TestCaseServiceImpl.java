@@ -42,4 +42,12 @@ public class TestCaseServiceImpl implements TestCaseService {
     public void downloadTestcase(Long pid, HttpServletResponse response) throws StatusFailException, StatusForbiddenException {
         testCaseManager.downloadTestcase(pid, response);
     }
+    @Override
+    public void downloadwrongcasein(Long pid, String in, HttpServletResponse response) throws StatusFailException, StatusForbiddenException {
+        testCaseManager.downloadwrongcasein(pid, in, response);
+    }
+    @Override
+    public void downloadwrongcaseout(Long pid, String out, HttpServletResponse response) throws StatusFailException, StatusForbiddenException {
+        testCaseManager.downloadwrongcaseout(pid, out, response);
+    }
 }

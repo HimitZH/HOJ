@@ -18,4 +18,8 @@ public interface TestCaseService {
     public CommonResult<Map<Object, Object>> uploadTestcaseZip(MultipartFile file, Long gid);
 
     public void downloadTestcase(Long pid, HttpServletResponse response) throws StatusFailException, StatusForbiddenException;
+
+    public void downloadwrongcasein(Long pid, String in, HttpServletResponse response) throws StatusFailException, StatusForbiddenException;
+
+    public void downloadwrongcaseout(Long pid, String out, HttpServletResponse response) throws StatusFailException, StatusForbiddenException;
 }

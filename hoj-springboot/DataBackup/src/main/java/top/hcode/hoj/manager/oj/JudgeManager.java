@@ -600,7 +600,7 @@ public class JudgeManager {
                 if (!isRoot
                         && !SecurityUtils.getSubject().hasRole("admin")
                         && !SecurityUtils.getSubject().hasRole("problem_admin")) { // 不是管理员
-                    wrapper.select("time", "memory", "score", "status", "user_output");
+                    wrapper.select("time", "memory", "score", "status", "user_output","input_data","output_data");
                 }
             }
         } else { // 比赛提交

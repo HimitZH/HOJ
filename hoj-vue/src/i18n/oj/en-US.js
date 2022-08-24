@@ -303,6 +303,12 @@ export const m = {
 
   // /views/oj/status/SubmissionDetails.vue
   Test_point_details: 'Test point details',
+  Download_Explanation: 'Test point download instructions',
+  Download_tips_1: 'THE OJ provides the first non AC input / output data download of the record; Some of the questions are not open for download due to reasons such as race time.',
+  Download_tips_2: 'Do not use this function to maliciously brush the AC number',
+  Download_in: 'Download inputfile',
+  Download_out: 'Download outputfile',
+  Download_success: 'Download Successfully',
   Copy: 'Copy',
   Shared: 'Shared',
   Unshared: 'Unshared',

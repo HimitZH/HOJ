@@ -1,14 +1,8 @@
 <template>
   <el-row type="flex" justify="space-around">
     <el-col :span="24" id="status">
-      <el-alert
-        :type="status.type"
-        show-icon
-        :closable="false"
-        effect="dark"
-        :class="getbackgroudColor(submission.status)"
-        style="padding: 18px;"
-      >
+      <el-alert :type="status.type" show-icon :closable="false" effect="dark"
+                :class="getbackgroudColor(submission.status)" style="padding: 18px;">
         <template slot="title">
           <span class="title">{{ status.statusName }}</span>
         </template>
@@ -17,68 +11,39 @@
             <pre>{{ submission.errorMessage }}</pre>
           </div>
           <div v-else class="content">
-            <span class="span-row"
-              >{{ $t('m.Time') }}:
-              {{ submissionTimeFormat(submission.time) }}</span
-            >
-            <span class="span-row"
-              >{{ $t('m.Memory') }}:
-              {{ submissionMemoryFormat(submission.memory) }}</span
-            >
-            <span class="span-row"
-              >{{ $t('m.Length') }}:
-              {{ submissionLengthFormat(submission.length) }}</span
-            >
-            <span class="span-row"
-              >{{ $t('m.Language') }}: {{ submission.language }}</span
-            >
-            <span class="span-row"
-              >{{ $t('m.Author') }}: {{ submission.username }}</span
-            >
+            <span class="span-row">{{ $t('m.Time') }}:
+              {{ submissionTimeFormat(submission.time) }}</span>
+            <span class="span-row">{{ $t('m.Memory') }}:
+              {{ submissionMemoryFormat(submission.memory) }}</span>
+            <span class="span-row">{{ $t('m.Length') }}:
+              {{ submissionLengthFormat(submission.length) }}</span>
+            <span class="span-row">{{ $t('m.Language') }}: {{ submission.language }}</span>
+            <span class="span-row">{{ $t('m.Author') }}: {{ submission.username }}</span>
           </div>
         </template>
       </el-alert>
     </el-col>
 
     <el-col v-if="tableData && !isCE" :span="24">
-      <vxe-table
-        align="center"
-        :data="tableData"
-        stripe
-        auto-resize
-        style="padding-top: 13px;"
-        :loading="loadingTable"
-      >
-        <vxe-table-column
-          field="submitId"
-          :title="$t('m.Run_ID')"
-          width="100"
-        ></vxe-table-column>
+      <vxe-table align="center" :data="tableData" stripe auto-resize style="padding-top: 13px;" :loading="loadingTable">
+        <vxe-table-column field="submitId" :title="$t('m.Run_ID')" width="100"></vxe-table-column>
         <vxe-table-column :title="$t('m.Submit_Time')" min-width="160">
           <template v-slot="{ row }">
             <span>{{ row.submitTime | localtime }}</span>
           </template>
         </vxe-table-column>
-        <vxe-table-column
-          field="pid"
-          :title="$t('m.Problem_ID')"
-          min-width="100"
-        >
+        <vxe-table-column field="pid" :title="$t('m.Problem_ID')" min-width="100">
           <template v-slot="{ row }">
             <a @click="getProblemUri(row)" style="color: rgb(87, 163, 243)">{{
-              row.displayPid
-            }}</a>
+                row.displayPid
+              }}</a>
           </template>
         </vxe-table-column>
-        <vxe-table-column
-          field="status"
-          :title="$t('m.Status')"
-          min-width="160"
-        >
+        <vxe-table-column field="status" :title="$t('m.Status')" min-width="160">
           <template v-slot="{ row }">
             <span :class="getStatusColor(row.status)">{{
-              JUDGE_STATUS[row.status].name
-            }}</span>
+                JUDGE_STATUS[row.status].name
+              }}</span>
           </template>
         </vxe-table-column>
         <vxe-table-column :title="$t('m.Time')" min-width="96">
@@ -91,11 +56,7 @@
             <span>{{ submissionMemoryFormat(row.memory) }}</span>
           </template>
         </vxe-table-column>
-        <vxe-table-column
-          :title="$t('m.Score')"
-          min-width="64"
-          v-if="isIOProblem"
-        >
+        <vxe-table-column :title="$t('m.Score')" min-width="64" v-if="isIOProblem">
           <template v-slot="{ row }">
             <template v-if="row.score != null">
               <el-tooltip placement="top">
@@ -124,25 +85,15 @@
         </vxe-table-column>
       </vxe-table>
     </el-col>
-    <el-col
-      :span="24"
-      v-if="testCaseResult != null && testCaseResult.length > 0"
-    >
+    <el-col :span="24" v-if="testCaseResult != null && testCaseResult.length > 0">
       <el-card style="margin-top: 13px;" shadow="hover">
         <div slot="header">
           <span class="panel-title home-title">{{
-            $t('m.Test_point_details')
-          }}</span>
+              $t('m.Test_point_details')
+            }}</span>
         </div>
         <el-row :gutter="10">
-          <el-col
-            :xs="24"
-            :sm="8"
-            :md="6"
-            :lg="3"
-            v-for="(item, index) in testCaseResult"
-            :key="index"
-          >
+          <el-col :xs="24" :sm="8" :md="6" :lg="3" v-for="(item, index) in testCaseResult" :key="index">
             <el-tooltip placement="top">
               <div slot="content">
                 <template v-if="item.inputData">
@@ -157,11 +108,8 @@
                   item.userOutput ? item.userOutput : $t('m.Nothing')
                 }}
               </div>
-              <div
-                class="test-detail-item"
-                :style="getTestCaseResultColor(item.status)"
-                v-if="item.status == JUDGE_STATUS_RESERVE.ac"
-              >
+              <div class="test-detail-item" :style="getTestCaseResultColor(item.status)"
+                   v-if="item.status == JUDGE_STATUS_RESERVE.ac">
                 <span>Test #{{ index + 1 }}:</span>
                 <h2>{{ JUDGE_STATUS[item.status]['short'] }}</h2>
                 <div style="text-align:center;">
@@ -177,11 +125,7 @@
                 </div>
               </div>
 
-              <div
-                class="test-detail-item"
-                :style="getTestCaseResultColor(item.status)"
-                v-else
-              >
+              <div class="test-detail-item" :style="getTestCaseResultColor(item.status)" v-else>
                 <span>Test #{{ index + 1 }}: </span>
                 <h2>{{ JUDGE_STATUS[item.status]['short'] }}</h2>
                 <div style="text-align:center;">
@@ -201,52 +145,57 @@
         </el-row>
       </el-card>
     </el-col>
-    <template
-      v-if="
-        (submission.code && submission.share && codeShare) ||
-          isSubmissionOwner ||
-          isAdminRole ||
-          (submission.code && submission.cid!=0)
-      "
-    >
+    <template v-if="
+      (submission.code && submission.share && codeShare) ||
+      isSubmissionOwner ||
+      isAdminRole ||
+      (submission.code && submission.cid != 0)
+    ">
       <el-col :span="24" style="margin-top: 13px;" v-if="submission.code">
-        <Highlight
-          :code="submission.code"
-          :language="submission.language"
-          :border-color.sync="status.color"
-        ></Highlight>
+        <Highlight :code="submission.code" :language="submission.language" :border-color.sync="status.color">
+        </Highlight>
       </el-col>
       <el-col :span="24">
         <div id="share-btn">
-          <el-button
-            type="primary"
-            icon="el-icon-document-copy"
-            size="large"
-            @click="doCopy"
-            v-if="submission.code"
-            >{{ $t('m.Copy') }}</el-button
-          >
+          <el-button type="primary" icon="el-icon-document-copy" size="large" @click="doCopy" v-if="submission.code">{{
+              $t('m.Copy')
+            }}</el-button>
           <template v-if="codeShare && isSubmissionOwner">
-            <el-button
-              v-if="submission.share"
-              type="warning"
-              size="large"
-              icon="el-icon-circle-close"
-              @click="shareSubmission(false)"
-            >
+            <el-button v-if="submission.share" type="warning" size="large" icon="el-icon-circle-close"
+                       @click="shareSubmission(false)">
               {{ $t('m.Unshared') }}
             </el-button>
-            <el-button
-              v-else-if="!submission.share"
-              type="primary"
-              size="large"
-              icon="el-icon-share"
-              @click="shareSubmission(true)"
-            >
+            <el-button v-else-if="!submission.share" type="primary" size="large" icon="el-icon-share"
+                       @click="shareSubmission(true)">
               {{ $t('m.Shared') }}
             </el-button>
           </template>
         </div>
+        <br>
+        <br>
+        <br>
+        <el-card v-if="isdownload" style="margin-top: 13px;" shadow="hover">
+          <div slot="header">
+            <span class="panel-title home-title">{{
+                $t('m.Download_Explanation')
+              }}</span>
+          </div>
+          <ul class="result">
+            <li>{{ $t('m.Download_tips_1') }}</li>
+            <li>{{ $t('m.Download_tips_2') }}</li>
+          </ul>
+          <div id="download-btn">
+            <el-button v-if="isdownload" type="primary" size="large" icon="el-icon-download"
+                       @click="downloadwrongcasein">
+              {{ $t('m.Download_in') }}
+            </el-button>
+            <el-button v-if="isdownload" type="primary" size="large" icon="el-icon-download"
+                       @click="downloadwrongcaseout">
+              {{ $t('m.Download_out') }}
+            </el-button>
+            <br></br>
+          </div>
+        </el-card>
       </el-col>
     </template>
   </el-row>
@@ -282,6 +231,10 @@ export default {
         errorMessage: '',
         share: true,
       },
+      qwq: -1,
+      in: "",
+      out: "",
+      isdownload: false,
       tableData: [],
       testCaseResult: [],
       codeShare: true,
@@ -300,15 +253,26 @@ export default {
   methods: {
     doCopy() {
       this.$copyText(this.submission.code).then(
-        () => {
-          myMessage.success(this.$i18n.t('m.Copied_successfully'));
-        },
-        () => {
-          myMessage.success(this.$i18n.t('m.Copied_failed'));
-        }
+          () => {
+            myMessage.success(this.$i18n.t('m.Copied_successfully'));
+          },
+          () => {
+            myMessage.success(this.$i18n.t('m.Copied_failed'));
+          }
       );
     },
-
+    downloadwrongcasein() {
+      let urlin = '/api/file/download-wrongcase-in?pid=' + this.submission.pid + '&in=' + this.in;
+      utils.downloadFile(urlin).then(() => {
+        myMessage.success(this.$i18n.t('m.Download_success'));
+      });
+    },
+    downloadwrongcaseout() {
+      let urlout = '/api/file/download-wrongcase-out?pid=' + this.submission.pid + '&out=' + this.out;
+      utils.downloadFile(urlout).then(() => {
+        myMessage.success(this.$i18n.t('m.Download_success'));
+      });
+    },
     submissionTimeFormat(time) {
       return utils.submissionTimeFormat(time);
     },
@@ -353,11 +317,11 @@ export default {
     },
     getTestCaseResultColor(status) {
       return (
-        'color:' +
-        JUDGE_STATUS[status].rgb +
-        '!important;border-color:' +
-        JUDGE_STATUS[status].rgb +
-        '!important'
+          'color:' +
+          JUDGE_STATUS[status].rgb +
+          '!important;border-color:' +
+          JUDGE_STATUS[status].rgb +
+          '!important'
       );
     },
     getbackgroudColor(status) {
@@ -366,39 +330,39 @@ export default {
     getSubmission() {
       this.loadingTable = true;
       api.getSubmission(this.$route.params.submitID).then(
-        (res) => {
-          this.loadingTable = false;
-          let data = res.data.data;
-          if (
-            data.submission.memory &&
-            data.submission.score &&
-            !this.isIOProblem
-          ) {
-            // score exist means the submission is OI problem submission
-            if (data.submission.score !== null) {
-              this.isIOProblem = true;
+          (res) => {
+            this.loadingTable = false;
+            let data = res.data.data;
+            if (
+                data.submission.memory &&
+                data.submission.score &&
+                !this.isIOProblem
+            ) {
+              // score exist means the submission is OI problem submission
+              if (data.submission.score !== null) {
+                this.isIOProblem = true;
+              }
             }
-          }
-          // 如果是比赛 需要显示的是比赛题号
-          if (this.$route.params.problemID && data.submission.cid != 0) {
-            data.submission.displayPid = this.$route.params.problemID;
-          }
-          this.submission = data.submission;
-          this.tableData = [data.submission];
-          if (data.submission.cid != 0) {
-            // 比赛的提交不可分享
-            this.codeShare = false;
-          } else {
-            this.codeShare = data.codeShare;
-          }
+            // 如果是比赛 需要显示的是比赛题号
+            if (this.$route.params.problemID && data.submission.cid != 0) {
+              data.submission.displayPid = this.$route.params.problemID;
+            }
+            this.submission = data.submission;
+            this.tableData = [data.submission];
+            if (data.submission.cid != 0) {
+              // 比赛的提交不可分享
+              this.codeShare = false;
+            } else {
+              this.codeShare = data.codeShare;
+            }
 
-          this.$nextTick((_) => {
-            addCodeBtn();
-          });
-        },
-        () => {
-          this.loadingTable = false;
-        }
+            this.$nextTick((_) => {
+              addCodeBtn();
+            });
+          },
+          () => {
+            this.loadingTable = false;
+          }
       );
     },
 
@@ -406,6 +370,18 @@ export default {
     getAllCaseResult() {
       api.getAllCaseResult(this.$route.params.submitID).then((res) => {
         this.testCaseResult = res.data.data;
+        if (this.testCaseResult.length > 0) {
+          for (let i = 0; i < this.testCaseResult.length; i++) {
+            let status = this.testCaseResult[i].status;
+            let pid = this.testCaseResult[i].pid;
+            if (status != 0 && pid != 0 && this.submission.cid == 0) {
+              this.isdownload = true;
+              this.in = this.testCaseResult[i].inputData;
+              this.out = this.testCaseResult[i].outputData;
+              break;
+            }
+          }
+        }
       });
     },
 
@@ -416,15 +392,15 @@ export default {
         uid: this.submission.uid,
       };
       api.updateSubmission(data).then(
-        (res) => {
-          this.getSubmission();
-          if (shared) {
-            myMessage.success(this.$i18n.t('m.Shared_successfully'));
-          } else {
-            myMessage.success(this.$i18n.t('m.Cancel_Sharing_Successfully'));
-          }
-        },
-        () => {}
+          (res) => {
+            this.getSubmission();
+            if (shared) {
+              myMessage.success(this.$i18n.t('m.Shared_successfully'));
+            } else {
+              myMessage.success(this.$i18n.t('m.Cancel_Sharing_Successfully'));
+            }
+          },
+          () => { }
       );
     },
   },
@@ -471,17 +447,21 @@ export default {
 #status .title {
   font-size: 20px;
 }
+
 #status .content {
   margin-top: 10px;
   font-size: 14px;
 }
+
 #status .content span {
   margin-right: 10px;
 }
+
 #status .span-row {
   display: block;
   float: left;
 }
+
 #status .content pre {
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -493,12 +473,21 @@ export default {
   margin-top: 5px;
   margin-right: 10px;
 }
+
+#download-btn {
+  float: right;
+  margin-top: 5px;
+  margin-right: 10px;
+}
+
 #share-btn:nth-child(1) {
   margin-right: 0px;
 }
+
 .el-row--flex {
   flex-wrap: wrap;
 }
+
 .el-col {
   padding-left: 5px !important;
   padding-right: 5px !important;
@@ -516,22 +505,27 @@ export default {
   color: #ff431e;
   margin: 0 0 10px 0;
 }
+
 .test-detail-item h2 {
   font-weight: bolder;
   text-align: center;
   margin: 2px;
   padding: 0;
 }
-.test-detail-item > span {
+
+.test-detail-item>span {
   margin-right: 10px;
 }
+
 .test-run-static {
   text-align: center;
 }
+
 .test-detail-item.done {
   border-color: #25bb9b;
   color: #25bb9b;
 }
+
 @media screen and (min-width: 1050px) {
   /deep/ .vxe-table--body-wrapper {
     overflow-x: hidden !important;

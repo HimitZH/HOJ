@@ -268,4 +268,105 @@ public class TestCaseManager {
             FileUtil.del(Constants.File.FILE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
         }
     }
+
+    public void downloadwrongcasein(Long pid, String in, HttpServletResponse response) throws StatusFailException, StatusForbiddenException {
+        String workDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid;
+        File file = new File(workDir);
+        if (!file.exists()) { // 本地为空
+            throw new StatusFailException("对不起，该题目的评测数据为空！");
+        }
+        FileReader fileReader = new FileReader(workDir + File.separator + in);
+        BufferedInputStream bins = new BufferedInputStream(fileReader.getInputStream());
+        OutputStream outs = null;
+        BufferedOutputStream bouts = null;
+        try {
+            outs = response.getOutputStream();
+            bouts = new BufferedOutputStream(outs);
+            response.setContentType("application/x-download");
+            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(pid + "-" + in, "UTF-8"));
+            int bytesRead = 0;
+            byte[] buffer = new byte[1024 * 10];
+            //开始向网络传输文件流
+            while ((bytesRead = bins.read(buffer, 0, 1024 * 10)) != -1) {
+                bouts.write(buffer, 0, bytesRead);
+            }
+            bouts.flush();
+        } catch (IOException e) {
+            log.error("下载错误测试数据文件异常------------>{}", e.getMessage());
+            response.reset();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            Map<String, Object> map = new HashMap<>();
+            map.put("status", ResultStatus.SYSTEM_ERROR);
+            map.put("msg", "下载文件失败，请重新尝试！");
+            map.put("data", null);
+            try {
+                response.getWriter().println(JSONUtil.toJsonStr(map));
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        } finally {
+            try {
+                bins.close();
+                if (outs != null) {
+                    outs.close();
+                }
+                if (bouts != null) {
+                    bouts.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public void downloadwrongcaseout(Long pid, String out, HttpServletResponse response) throws StatusFailException, StatusForbiddenException {
+        String workDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid;
+        File file = new File(workDir);
+        if (!file.exists()) { // 本地为空
+            throw new StatusFailException("对不起，该题目的评测数据为空！");
+        }
+        FileReader fileReader = new FileReader(workDir + File.separator + out);
+        BufferedInputStream bins = new BufferedInputStream(fileReader.getInputStream());
+        OutputStream outs = null;
+        BufferedOutputStream bouts = null;
+        try {
+            outs = response.getOutputStream();
+            bouts = new BufferedOutputStream(outs);
+            response.setContentType("application/x-download");
+            response.setHeader("Content-disposition", "attachment;filename=" + URLEncoder.encode(pid + "-" + out, "UTF-8"));
+            int bytesRead = 0;
+            byte[] buffer = new byte[1024 * 10];
+            //开始向网络传输文件流
+            while ((bytesRead = bins.read(buffer, 0, 1024 * 10)) != -1) {
+                bouts.write(buffer, 0, bytesRead);
+            }
+            bouts.flush();
+        } catch (IOException e) {
+            log.error("下载错误测试数据文件异常------------>{}", e.getMessage());
+            response.reset();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            Map<String, Object> map = new HashMap<>();
+            map.put("status", ResultStatus.SYSTEM_ERROR);
+            map.put("msg", "下载文件失败，请重新尝试！");
+            map.put("data", null);
+            try {
+                response.getWriter().println(JSONUtil.toJsonStr(map));
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        } finally {
+            try {
+                bins.close();
+                if (outs != null) {
+                    outs.close();
+                }
+                if (bouts != null) {
+                    bouts.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
