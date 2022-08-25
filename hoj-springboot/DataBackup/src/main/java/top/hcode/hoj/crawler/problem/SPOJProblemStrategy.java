@@ -7,7 +7,6 @@ import top.hcode.hoj.pojo.entity.problem.Tag;
 import top.hcode.hoj.utils.Constants;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -46,8 +45,9 @@ public class SPOJProblemStrategy extends ProblemStrategy {
         String title = ReUtil.get("<h2 id=\"problem-name\" class=\"text-center\">[\\s\\S]*? - ([\\s\\S]*?)</h2>", body, 1);
         String timeLimit = ReUtil.get("Time limit:</td><td>([\\s\\S]*?)s", body, 1);
         String memoryLimit = ReUtil.get("Memory limit:</td><td>([\\s\\S]*?)MB", body, 1);
-        String desc = ReUtil.get("<div id=\"problem-body\">([\\s\\S]*?)</div>", body, 1);
+        String desc = ReUtil.get("<div id=\"problem-body\">([\\s\\S]*?)</div>[\\s]*?<div class=\"text-center\">", body, 1);
         desc = desc.replaceAll("src=\"/", "src=\"" + HOST + "/")
+                .replaceAll("<br>[\\s]*+","<br>\n")
                 .replaceAll("<pre>", "<pre style=\"padding:9px!important;background-color: #f5f5f5!important\">");
         desc = desc.replaceAll("<!-- here starts your code -->", "");
 
