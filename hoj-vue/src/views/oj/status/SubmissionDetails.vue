@@ -144,104 +144,106 @@
         </vxe-table-column>
       </vxe-table>
     </el-col>
-    <template v-if="testCaseResult.judgeCaseMode == JUDGE_CASE_MODE.DEFAULT ">
-      <el-col
-        :span="24"
-        v-if="testCaseResult != null 
+    <template v-if="testCaseResult != null">
+      <template v-if="testCaseResult.judgeCaseMode == JUDGE_CASE_MODE.DEFAULT ">
+        <el-col
+          :span="24"
+          v-if="testCaseResult != null 
       && testCaseResult.judgeCaseList != null
       && testCaseResult.judgeCaseList.length > 0"
-      >
-        <JudgeCase :judgeCaseList="testCaseResult.judgeCaseList"></JudgeCase>
-      </el-col>
-    </template>
-    <template v-else>
-      <el-col :span="24">
-        <el-collapse
-          accordion
-          style="margin-top: 13px;"
-          v-model="activeName"
         >
-          <el-collapse-item
-            v-for="(item, index) in testCaseResult.subTaskJudgeCaseVoList"
-            :key="index"
-            class="subtask-item"
-            :style="'border-left: 3px solid '+ JUDGE_STATUS[item.status].rgb"
-            :name="item.groupNum"
+          <JudgeCase :judgeCaseList="testCaseResult.judgeCaseList"></JudgeCase>
+        </el-col>
+      </template>
+      <template v-else>
+        <el-col :span="24">
+          <el-collapse
+            accordion
+            style="margin-top: 13px;"
+            v-model="activeName"
           >
-            <template slot="title">
-              <el-row
-                class="subtask-title"
-                :class="activeName == item.groupNum?'active':''"
-              >
-                <el-col
-                  :md="5"
-                  :sm="5"
-                  :xs="6"
-                >
-                  <span>{{$t('m.Subtask')}} #{{item.groupNum}}</span>
-                </el-col>
-                <el-col
-                  :md="5"
-                  :sm="5"
-                  :xs="14"
-                >
-                  <span :class="'text-color-'+JUDGE_STATUS[item.status].color">
-                    <template v-if="item.status == JUDGE_STATUS_RESERVE.ac">
-                      <i class="el-icon-success"></i> {{JUDGE_STATUS[item.status].name}}
-                    </template>
-                    <template v-else>
-                      <i class="el-icon-error"></i> {{JUDGE_STATUS[item.status].name}}
-                    </template>
-                  </span>
-                </el-col>
-                <el-col
-                  :md="4"
-                  :sm="4"
-                  :xs="4"
-                >
-                  <span>
-                    <i
-                      class="el-icon-s-claim"
-                      style="font-weight: 700 !important;"
-                    > {{item.score}}</i>
-                  </span>
-                </el-col>
-                <el-col
-                  :md="5"
-                  :sm="5"
-                  :xs="8"
-                  v-if="item.time != null && !isMobile"
-                >
-                  <span>
-                    <i
-                      class="el-icon-time"
-                      style="font-weight: 700 !important;"
-                    > {{submissionTimeFormat(item.time)}}</i>
-                  </span>
-                </el-col>
-                <el-col
-                  :md="5"
-                  :sm="5"
-                  :xs="8"
-                  v-if="item.memory != null && !isMobile"
-                >
-                  <span>
-                    <i
-                      class="el-icon-cpu"
-                      style="font-weight: 700 !important;"
-                    > {{submissionMemoryFormat(item.memory)}}</i>
-                  </span>
-                </el-col>
-              </el-row>
-            </template>
-            <JudgeCase
-              :judgeCaseList="item.subtaskDetailList"
-              :isSubtask="true"
+            <el-collapse-item
+              v-for="(item, index) in testCaseResult.subTaskJudgeCaseVoList"
+              :key="index"
+              class="subtask-item"
+              :style="'border-left: 3px solid '+ JUDGE_STATUS[item.status].rgb"
+              :name="item.groupNum"
             >
-            </JudgeCase>
-          </el-collapse-item>
-        </el-collapse>
-      </el-col>
+              <template slot="title">
+                <el-row
+                  class="subtask-title"
+                  :class="activeName == item.groupNum?'active':''"
+                >
+                  <el-col
+                    :md="5"
+                    :sm="5"
+                    :xs="6"
+                  >
+                    <span>{{$t('m.Subtask')}} #{{item.groupNum}}</span>
+                  </el-col>
+                  <el-col
+                    :md="5"
+                    :sm="5"
+                    :xs="14"
+                  >
+                    <span :class="'text-color-'+JUDGE_STATUS[item.status].color">
+                      <template v-if="item.status == JUDGE_STATUS_RESERVE.ac">
+                        <i class="el-icon-success"></i> {{JUDGE_STATUS[item.status].name}}
+                      </template>
+                      <template v-else>
+                        <i class="el-icon-error"></i> {{JUDGE_STATUS[item.status].name}}
+                      </template>
+                    </span>
+                  </el-col>
+                  <el-col
+                    :md="4"
+                    :sm="4"
+                    :xs="4"
+                  >
+                    <span>
+                      <i
+                        class="el-icon-s-claim"
+                        style="font-weight: 700 !important;"
+                      > {{item.score}}</i>
+                    </span>
+                  </el-col>
+                  <el-col
+                    :md="5"
+                    :sm="5"
+                    :xs="8"
+                    v-if="item.time != null && !isMobile"
+                  >
+                    <span>
+                      <i
+                        class="el-icon-time"
+                        style="font-weight: 700 !important;"
+                      > {{submissionTimeFormat(item.time)}}</i>
+                    </span>
+                  </el-col>
+                  <el-col
+                    :md="5"
+                    :sm="5"
+                    :xs="8"
+                    v-if="item.memory != null && !isMobile"
+                  >
+                    <span>
+                      <i
+                        class="el-icon-cpu"
+                        style="font-weight: 700 !important;"
+                      > {{submissionMemoryFormat(item.memory)}}</i>
+                    </span>
+                  </el-col>
+                </el-row>
+              </template>
+              <JudgeCase
+                :judgeCaseList="item.subtaskDetailList"
+                :isSubtask="true"
+              >
+              </JudgeCase>
+            </el-collapse-item>
+          </el-collapse>
+        </el-col>
+      </template>
     </template>
     <template v-if="
         (submission.code && submission.share && codeShare) ||
