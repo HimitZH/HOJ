@@ -8,17 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.SubmitIdListDto;
-import top.hcode.hoj.pojo.dto.TestJudgeDto;
 import top.hcode.hoj.pojo.dto.SubmitJudgeDto;
+import top.hcode.hoj.pojo.dto.TestJudgeDto;
 import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.entity.judge.JudgeCase;
+import top.hcode.hoj.pojo.vo.JudgeCaseVo;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.SubmissionInfoVo;
 import top.hcode.hoj.pojo.vo.TestJudgeVo;
 import top.hcode.hoj.service.oj.JudgeService;
 
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @Author: Himit_ZH
@@ -154,7 +153,7 @@ public class JudgeController {
      * @Since 2020/10/29
      */
     @GetMapping("/get-all-case-result")
-    public CommonResult<List<JudgeCase>> getALLCaseResult(@RequestParam(value = "submitId", required = true) Long submitId) {
+    public CommonResult<JudgeCaseVo> getALLCaseResult(@RequestParam(value = "submitId", required = true) Long submitId) {
         return judgeService.getALLCaseResult(submitId);
     }
 }

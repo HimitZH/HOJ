@@ -314,6 +314,7 @@ export const m = {
   Output_File: '输出文件',
   Case_tips: '信息提示',
   Nothing: '无',
+  Subtask:'子任务',
 
   // /views/oj/rank/ACMRank.vue
   ACM_Ranklist: 'ACM 排行榜',
@@ -653,6 +654,11 @@ export const m = {
   No_Discussion: '暂无讨论',
   Problem_Discussion:'题目讨论',
 
+  // /views/oj/group/GroupProblemList.vue
+  Cancel_Admin:'取消管理',
+  Back_To_Problem_List:'返回题目列表',
+  Back_To_Admin_Problem_List:'返回题目管理列表',
+  
   // /views/oj/group/GroupMemberList.vue
   Applying: '申请中',
   Refused: '已拒绝',

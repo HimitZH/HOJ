@@ -330,8 +330,12 @@ public class ProblemFileManager {
                                 problemCaseMap.put("input", jsonObject1.getStr("inputName"));
                                 problemCaseMap.put("output", jsonObject1.getStr("outputName"));
                                 Integer score = jsonObject1.getInt("score");
+                                Integer groupNum = jsonObject1.getInt("groupNum");
                                 if (score != null && score > 0) {
                                     problemCaseMap.put("score", score);
+                                }
+                                if (groupNum != null){
+                                    problemCaseMap.put("groupNum", groupNum);
                                 }
                                 problemCases.add(problemCaseMap);
                             }

@@ -65,7 +65,7 @@ public class SpecialJudge extends AbstractJudge {
             } else {
 
                 // 对于当前测试样例，用户程序的输出对应生成的文件
-                String userOutputFilePath = judgeGlobalDTO.getRunDir() + File.separator + judgeDTO.getTestCaseId() + ".out";
+                String userOutputFilePath = judgeGlobalDTO.getRunDir() + File.separator + judgeDTO.getTestCaseNum() + ".out";
                 FileWriter stdWriter = new FileWriter(userOutputFilePath);
                 stdWriter.write(sandBoxRes.getStdout());
 

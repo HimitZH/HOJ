@@ -330,4 +330,30 @@ public class Constants {
             return null;
         }
     }
+
+    public enum JudgeCaseMode{
+        DEFAULT("default"),
+        SUBTASK_LOWEST("subtask_lowest"),
+        SUBTASK_AVERAGE("subtask_average");
+
+        private final String mode;
+
+        JudgeCaseMode(String mode) {
+            this.mode = mode;
+        }
+
+        public String getMode() {
+            return mode;
+        }
+
+
+        public static JudgeCaseMode getJudgeCaseMode(String mode){
+            for (JudgeCaseMode judgeCaseMode : JudgeCaseMode.values()) {
+                if (judgeCaseMode.getMode().equals(mode)) {
+                    return judgeCaseMode;
+                }
+            }
+            return DEFAULT;
+        }
+    }
 }

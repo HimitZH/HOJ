@@ -3,16 +3,15 @@ package top.hcode.hoj.service.oj;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.SubmitIdListDto;
-import top.hcode.hoj.pojo.dto.TestJudgeDto;
 import top.hcode.hoj.pojo.dto.SubmitJudgeDto;
+import top.hcode.hoj.pojo.dto.TestJudgeDto;
 import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.entity.judge.JudgeCase;
+import top.hcode.hoj.pojo.vo.JudgeCaseVo;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.SubmissionInfoVo;
 import top.hcode.hoj.pojo.vo.TestJudgeVo;
 
 import java.util.HashMap;
-import java.util.List;
 
 public interface JudgeService {
 
@@ -41,5 +40,5 @@ public interface JudgeService {
 
     public CommonResult<HashMap<Long, Object>> checkContestJudgeResult(SubmitIdListDto submitIdListDto);
 
-    public CommonResult<List<JudgeCase>> getALLCaseResult(Long submitId);
+    public CommonResult<JudgeCaseVo> getALLCaseResult(Long submitId);
 }

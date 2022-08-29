@@ -269,6 +269,7 @@ export const m = {
   Sample_Output: '用例输出',
   Sample_Input_File: '输入文件名',
   Sample_Output_File: '输出文件名',
+  Sample_Group_Num:'子任务组数',
   Sample_Tips: '评测数据：判题机对该题目的相关提交进行评测的数据来源。',
   Add_Sample: '添加用例',
   Use_Upload_File: '使用上传文件',
@@ -294,6 +295,10 @@ export const m = {
   Judge_Extra_File_Tips2: '2. 特殊或交互程序：给特殊或交互程序提供额外的库文件',
   User_Program: '选手程序',
   SPJ_Or_Interactive_Program: '特殊或交互程序',
+  Non_Default_Judge_Case_Mode_And_Group_Num_IS_NULL:'评测数据的子任务组数不能为空!',
+  Judge_Case_Default_Mode:'全部评测（得分加和）',
+  Judge_Case_Subtask_Lowest_Mode:'子任务（最低得分）',
+  Judge_Case_Subtask_Average_Mode:'子任务（平均得分）',
 
   // /views/admin/problem/tag
   Admin_Tag: '标签管理',

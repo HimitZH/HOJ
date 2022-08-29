@@ -8,10 +8,10 @@ import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.exception.AccessException;
 import top.hcode.hoj.manager.oj.JudgeManager;
 import top.hcode.hoj.pojo.dto.SubmitIdListDto;
-import top.hcode.hoj.pojo.dto.TestJudgeDto;
 import top.hcode.hoj.pojo.dto.SubmitJudgeDto;
+import top.hcode.hoj.pojo.dto.TestJudgeDto;
 import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.entity.judge.JudgeCase;
+import top.hcode.hoj.pojo.vo.JudgeCaseVo;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.SubmissionInfoVo;
 import top.hcode.hoj.pojo.vo.TestJudgeVo;
@@ -19,7 +19,6 @@ import top.hcode.hoj.service.oj.JudgeService;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @Author: Himit_ZH
@@ -139,7 +138,7 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public CommonResult<List<JudgeCase>> getALLCaseResult(Long submitId) {
+    public CommonResult<JudgeCaseVo> getALLCaseResult(Long submitId) {
         try {
             return CommonResult.successResponse(judgeManager.getALLCaseResult(submitId));
         } catch (StatusNotFoundException e) {

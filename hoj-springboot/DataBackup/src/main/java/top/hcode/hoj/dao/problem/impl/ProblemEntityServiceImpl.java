@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.dao.problem.*;
 import top.hcode.hoj.mapper.ProblemMapper;
+import top.hcode.hoj.pojo.bo.Pair_;
 import top.hcode.hoj.pojo.dto.ProblemDto;
 import top.hcode.hoj.pojo.entity.problem.*;
 import top.hcode.hoj.pojo.vo.ImportProblemVo;
@@ -274,7 +275,6 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
         boolean checkProblemCase = true;
 
         if (!problem.getIsRemote() && problemDto.getSamples().size() > 0) { // 如果是自家的题目才有测试数据
-            int sumScore = 0;
             // 新增加的case列表
             List<ProblemCase> newProblemCaseList = new LinkedList<>();
             // 需要修改的case列表
@@ -289,21 +289,19 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
                             !oldProblemCase.getOutput().equals(problemCase.getOutput())) {
                         needUpdateProblemCaseList.add(problemCase);
                     } else if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
-                        // 分数变动
-                        if (!Objects.equals(oldProblemCase.getScore(), problemCase.getScore())) {
+                        // 分数变动 或者 subtask分组编号变更
+                        if (!Objects.equals(oldProblemCase.getScore(), problemCase.getScore())
+                                || !Objects.equals(oldProblemCase.getGroupNum(), problemCase.getGroupNum())) {
                             needUpdateProblemCaseList.add(problemCase);
                         }
                     }
                 } else {
                     newProblemCaseList.add(problemCase.setPid(pid));
                 }
-
-                if (problemCase.getScore() != null) {
-                    sumScore += problemCase.getScore();
-                }
             }
             // 设置oi总分数，根据每个测试点的加和
             if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
+                int sumScore = calProblemTotalScore(problem.getJudgeCaseMode(), problemDto.getSamples());
                 problem.setIoScore(sumScore);
             }
             // 执行批量删除操作
@@ -323,18 +321,30 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
             }
             checkProblemCase = addCasesToProblemResult && deleteCasesFromProblemResult && updateCasesToProblemResult;
 
-            // 只要有新添加，修改，删除都需要更新版本号 同时更新测试数据
+            // 只要有新添加，修改，删除，或者变更judgeCaseMode 都需要更新版本号 同时更新测试数据
             String caseVersion = String.valueOf(System.currentTimeMillis());
             String testcaseDir = problemDto.getUploadTestcaseDir();
             if (needDeleteProblemCases.size() > 0 || newProblemCaseList.size() > 0
-                    || needUpdateProblemCaseList.size() > 0 || !StringUtils.isEmpty(testcaseDir)) {
+                    || needUpdateProblemCaseList.size() > 0 || !StringUtils.isEmpty(testcaseDir)
+                    || (problemDto.getChangeJudgeCaseMode() != null && problemDto.getChangeJudgeCaseMode())) {
                 problem.setCaseVersion(caseVersion);
                 // 如果是选择上传测试文件的，则需要遍历对应文件夹，读取数据，写入数据库,先前的题目数据一并清空。
                 if (problemDto.getIsUploadTestCase()) {
                     // 获取代理bean对象执行异步方法===》根据测试文件初始info
-                    applicationContext.getBean(ProblemEntityServiceImpl.class).initUploadTestCase(problemDto.getJudgeMode(), caseVersion, pid, testcaseDir, problemDto.getSamples());
+                    applicationContext.getBean(ProblemEntityServiceImpl.class)
+                            .initUploadTestCase(problemDto.getJudgeMode(),
+                                    problem.getJudgeCaseMode(),
+                                    caseVersion,
+                                    pid,
+                                    testcaseDir,
+                                    problemDto.getSamples());
                 } else {
-                    applicationContext.getBean(ProblemEntityServiceImpl.class).initHandTestCase(problemDto.getJudgeMode(), problem.getCaseVersion(), pid, problemDto.getSamples());
+                    applicationContext.getBean(ProblemEntityServiceImpl.class)
+                            .initHandTestCase(problemDto.getJudgeMode(),
+                                    problem.getJudgeCaseMode(),
+                                    problem.getCaseVersion(),
+                                    pid,
+                                    problemDto.getSamples());
                 }
             }
             // 变化成spj或interactive或者取消 同时更新测试数据
@@ -342,9 +352,20 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
                 problem.setCaseVersion(caseVersion);
                 if (problemDto.getIsUploadTestCase()) {
                     // 获取代理bean对象执行异步方法===》根据测试文件初始info
-                    applicationContext.getBean(ProblemEntityServiceImpl.class).initUploadTestCase(problemDto.getJudgeMode(), caseVersion, pid, null, problemDto.getSamples());
+                    applicationContext.getBean(ProblemEntityServiceImpl.class)
+                            .initUploadTestCase(problemDto.getJudgeMode(),
+                                    problem.getJudgeCaseMode(),
+                                    caseVersion,
+                                    pid,
+                                    null,
+                                    problemDto.getSamples());
                 } else {
-                    applicationContext.getBean(ProblemEntityServiceImpl.class).initHandTestCase(problemDto.getJudgeMode(), problem.getCaseVersion(), pid, problemDto.getSamples());
+                    applicationContext.getBean(ProblemEntityServiceImpl.class)
+                            .initHandTestCase(problemDto.getJudgeMode(),
+                                    problem.getJudgeCaseMode(),
+                                    problem.getCaseVersion(),
+                                    pid,
+                                    problemDto.getSamples());
                 }
             }
         }
@@ -438,19 +459,21 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
             }
             addCasesToProblemResult = problemCaseEntityService.saveOrUpdateBatch(problemCases);
             // 获取代理bean对象执行异步方法===》根据测试文件初始info
-            applicationContext.getBean(ProblemEntityServiceImpl.class).initUploadTestCase(problemDto.getJudgeMode(),
-                    problem.getCaseVersion(), pid, testcaseDir, problemDto.getSamples());
+            applicationContext.getBean(ProblemEntityServiceImpl.class).initUploadTestCase(
+                    problemDto.getJudgeMode(),
+                    problem.getJudgeCaseMode(),
+                    problem.getCaseVersion(),
+                    pid,
+                    testcaseDir,
+                    problemDto.getSamples());
         } else {
             // oi题目需要求取平均值，给每个测试点初始oi的score值，默认总分100分
             if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
-                int sumScore = 0;
                 for (ProblemCase problemCase : problemDto.getSamples()) {
                     // 设置好新题目的pid和累加总分数
                     problemCase.setPid(pid);
-                    if (problemCase.getScore() != null) {
-                        sumScore += problemCase.getScore();
-                    }
                 }
+                int sumScore = calProblemTotalScore(problem.getJudgeCaseMode(), problemDto.getSamples());
                 addCasesToProblemResult = problemCaseEntityService.saveOrUpdateBatch(problemDto.getSamples());
                 UpdateWrapper<Problem> problemUpdateWrapper = new UpdateWrapper<>();
                 problemUpdateWrapper.eq("id", pid)
@@ -460,7 +483,11 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
                 problemDto.getSamples().forEach(problemCase -> problemCase.setPid(pid)); // 设置好新题目的pid
                 addCasesToProblemResult = problemCaseEntityService.saveOrUpdateBatch(problemDto.getSamples());
             }
-            initHandTestCase(problemDto.getJudgeMode(), problem.getCaseVersion(), pid, problemDto.getSamples());
+            initHandTestCase(problemDto.getJudgeMode(),
+                    problem.getJudgeCaseMode(),
+                    problem.getCaseVersion(),
+                    pid,
+                    problemDto.getSamples());
         }
 
         // 为新的题目添加对应的tag，可能tag是原表已有，也可能是新的，所以需要判断。
@@ -496,7 +523,8 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
 
     // 初始化上传文件的测试数据，写成json文件
     @Async
-    public void initUploadTestCase(String mode,
+    public void initUploadTestCase(String judgeMode,
+                                   String judgeCaseMode,
                                    String version,
                                    Long problemId,
                                    String tmpTestcaseDir,
@@ -511,7 +539,8 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
         }
 
         JSONObject result = new JSONObject();
-        result.set("mode", mode);
+        result.set("mode", judgeMode);
+        result.set("judgeCaseMode", judgeCaseMode == null ? Constants.JudgeCaseMode.DEFAULT.getMode() : judgeCaseMode);
         result.set("version", version);
         result.set("testCasesSize", problemCaseList.size());
 
@@ -520,6 +549,7 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
         for (ProblemCase problemCase : problemCaseList) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.set("caseId", problemCase.getId());
+            jsonObject.set("groupNum", problemCase.getGroupNum());
             jsonObject.set("score", problemCase.getScore());
             jsonObject.set("inputName", problemCase.getInput());
             jsonObject.set("outputName", problemCase.getOutput());
@@ -539,7 +569,7 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
             outFileWriter.write(output);
 
             // spj和interactive是根据特判程序输出判断结果，所以无需初始化测试数据
-            if (Constants.JudgeMode.DEFAULT.getMode().equals(mode)) {
+            if (Constants.JudgeMode.DEFAULT.getMode().equals(judgeMode)) {
                 // 原数据MD5
                 jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(output.getBytes(StandardCharsets.UTF_8)));
                 // 原数据大小
@@ -565,13 +595,15 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
 
     // 初始化手动输入上传的测试数据，写成json文件
     @Async
-    public void initHandTestCase(String mode,
+    public void initHandTestCase(String judgeMode,
+                                 String judgeCaseMode,
                                  String version,
                                  Long problemId,
                                  List<ProblemCase> problemCaseList) {
 
         JSONObject result = new JSONObject();
-        result.set("mode", mode);
+        result.set("mode", judgeMode);
+        result.set("judgeCaseMode", judgeCaseMode == null ? Constants.JudgeCaseMode.DEFAULT.getMode() : judgeCaseMode);
         result.set("version", version);
         result.set("testCasesSize", problemCaseList.size());
 
@@ -583,6 +615,7 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
             JSONObject jsonObject = new JSONObject();
             String inputName = (index + 1) + ".in";
             jsonObject.set("caseId", problemCaseList.get(index).getId());
+            jsonObject.set("groupNum", problemCaseList.get(index).getGroupNum());
             jsonObject.set("score", problemCaseList.get(index).getScore());
             jsonObject.set("inputName", inputName);
             // 生成对应文件
@@ -599,7 +632,7 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
             outFile.write(outputData);
 
             // spj和interactive是根据特判程序输出判断结果，所以无需初始化测试数据
-            if (Constants.JudgeMode.DEFAULT.getMode().equals(mode)) {
+            if (Constants.JudgeMode.DEFAULT.getMode().equals(judgeMode)) {
                 // 原数据MD5
                 jsonObject.set("outputMd5", DigestUtils.md5DigestAsHex(outputData.getBytes(StandardCharsets.UTF_8)));
                 // 原数据大小
@@ -687,4 +720,38 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
         return sb.toString().replaceAll("\\s+$", "");
     }
 
+
+    private Integer calProblemTotalScore(String judgeCaseMode, List<ProblemCase> problemCaseList) {
+        int sumScore = 0;
+        if (Constants.JudgeCaseMode.SUBTASK_LOWEST.getMode().equals(judgeCaseMode)) {
+            HashMap<Integer, Integer> groupNumMapScore = new HashMap<>();
+            for (ProblemCase problemCase : problemCaseList) {
+                groupNumMapScore.merge(problemCase.getGroupNum(), problemCase.getScore(), Math::min);
+            }
+            for (Integer minScore : groupNumMapScore.values()) {
+                sumScore += minScore;
+            }
+        } else if (Constants.JudgeCaseMode.SUBTASK_AVERAGE.getMode().equals(judgeCaseMode)) {
+            // 预处理 切换成Map Key: groupNum Value: <count,sum_score>
+            HashMap<Integer, Pair_<Integer, Integer>> groupNumMapScore = new HashMap<>();
+            for (ProblemCase problemCase : problemCaseList) {
+                Pair_<Integer, Integer> pair = groupNumMapScore.get(problemCase.getGroupNum());
+                if (pair == null) {
+                    groupNumMapScore.put(problemCase.getGroupNum(), new Pair_<>(1, problemCase.getScore()));
+                } else {
+                    int count = pair.getKey() + 1;
+                    int score = pair.getValue() + problemCase.getScore();
+                    groupNumMapScore.put(problemCase.getGroupNum(), new Pair_<>(count, score));
+                }
+            }
+            for (Pair_<Integer, Integer> pair : groupNumMapScore.values()) {
+                sumScore += (int) Math.round(pair.getValue() * 1.0 / pair.getKey());
+            }
+        } else {
+            for (ProblemCase problemCase : problemCaseList) {
+                sumScore += problemCase.getScore();
+            }
+        }
+        return sumScore;
+    }
 }

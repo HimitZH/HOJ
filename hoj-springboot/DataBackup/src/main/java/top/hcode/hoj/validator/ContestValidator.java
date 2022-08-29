@@ -2,17 +2,15 @@ package top.hcode.hoj.validator;
 
 import cn.hutool.core.util.ReUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
+import top.hcode.hoj.dao.contest.ContestRegisterEntityService;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestRegister;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.dao.contest.ContestRegisterEntityService;
 import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
@@ -33,6 +31,9 @@ public class ContestValidator {
     private GroupValidator groupValidator;
 
     public boolean isSealRank(String uid, Contest contest, Boolean forceRefresh, Boolean isRoot) {
+        if (!contest.getSealRank()){
+            return false;
+        }
         // 如果是管理员同时选择强制刷新榜单，则封榜无效
         Long gid = contest.getGid();
         boolean isContestAdmin = isRoot || contest.getUid().equals(uid);

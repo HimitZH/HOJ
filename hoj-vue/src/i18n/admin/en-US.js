@@ -271,6 +271,7 @@ export const m = {
   Sample_Output: 'Sample Output',
   Sample_Input_File: 'Input File',
   Sample_Output_File: 'Output File',
+  Sample_Group_Num:'Subtask Number',
   Sample_Tips: 'Sample: the data source of the judger to test the submission.',
   Add_Sample: 'Add Sample',
   Use_Upload_File: 'Use Upload File',
@@ -296,7 +297,10 @@ export const m = {
   Judge_Extra_File_Tips2: '2. Special Or Interactive Program: Provide additional library files for special or interactive programs',
   User_Program: 'User Program',
   SPJ_Or_Interactive_Program: 'Special Or Interactive Program',
-
+  Non_Default_Judge_Case_Mode_And_Group_Num_IS_NULL:'The number of subtask groups of evaluation data cannot be empty!',
+  Judge_Case_Default_Mode:'Sum of scores of all samples',
+  Judge_Case_Subtask_Lowest_Mode:'Subtask (Lowest Score)',
+  Judge_Case_Subtask_Average_Mode:'Subtasks (Average Score)',
 
   // /views/admin/problem/Tag.vue
   Admin_Tag: 'Admin Tag',
