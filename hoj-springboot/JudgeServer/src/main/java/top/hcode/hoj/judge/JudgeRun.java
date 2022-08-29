@@ -20,7 +20,8 @@ import top.hcode.hoj.util.ThreadPoolUtils;
 import javax.annotation.Resource;
 import java.io.File;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
 
 /**
  * @Author: Himit_ZH
@@ -49,14 +50,14 @@ public class JudgeRun {
                                          JSONObject testCasesInfo,
                                          String userFileId,
                                          String userFileContent,
-                                         Boolean getUserOutput)
+                                         Boolean getUserOutput,
+                                         String judgeCaseMode)
             throws SystemError, ExecutionException, InterruptedException {
 
         if (testCasesInfo == null) {
             throw new SystemError("The evaluation data of the problem does not exist", null, null);
         }
 
-        List<FutureTask<JSONObject>> futureTasks = new ArrayList<>();
         JSONArray testcaseList = (JSONArray) testCasesInfo.get("testCases");
 
         // 默认给题目限制时间+200ms用来测评
@@ -74,6 +75,8 @@ public class JudgeRun {
         Constants.RunConfig runConfig = Constants.RunConfig.getRunnerByLanguage(judgeLanguage);
         Constants.RunConfig spjConfig = Constants.RunConfig.getRunnerByLanguage("SPJ-" + problem.getSpjLanguage());
         Constants.RunConfig interactiveConfig = Constants.RunConfig.getRunnerByLanguage("INTERACTIVE-" + problem.getSpjLanguage());
+
+        final AbstractJudge abstractJudge = getAbstractJudge(judgeMode);
 
         JudgeGlobalDTO judgeGlobalDTO = JudgeGlobalDTO.builder()
                 .problemId(problem.getId())
@@ -94,6 +97,22 @@ public class JudgeRun {
                 .removeEOLBlank(problem.getIsRemoveEndBlank())
                 .build();
 
+
+        // OI题的subtask最低分模式，则每个subtask组只要有一个case非AC 或者 percentage为 0.0则该组剩余评测点跳过，不再评测
+        if (Constants.Contest.TYPE_OI.getCode().equals(problem.getType())
+                && Constants.JudgeCaseMode.SUBTASK_LOWEST.getMode().equals(judgeCaseMode)) {
+            return subtaskJudgeAllCase(testcaseList, testCasesDir, judgeGlobalDTO, abstractJudge);
+        } else {
+            return defaultJudgeAllCase(testcaseList, testCasesDir, judgeGlobalDTO, abstractJudge);
+        }
+    }
+
+
+    private List<JSONObject> defaultJudgeAllCase(JSONArray testcaseList,
+                                                 String testCasesDir,
+                                                 JudgeGlobalDTO judgeGlobalDTO,
+                                                 AbstractJudge abstractJudge) throws ExecutionException, InterruptedException {
+        List<FutureTask<JSONObject>> futureTasks = new ArrayList<>();
         for (int index = 0; index < testcaseList.size(); index++) {
             JSONObject testcase = (JSONObject) testcaseList.get(index);
             // 将每个需要测试的线程任务加入任务列表中
@@ -110,61 +129,125 @@ public class JudgeRun {
             final Long caseId = testcase.getLong("caseId", null);
             // 该测试点的满分
             final Integer score = testcase.getInt("score", 0);
+            // 该测试点的满分
+            final Integer groupNum = testcase.getInt("groupNum", 1);
 
             final Long maxOutputSize = Math.max(testcase.getLong("outputSize", 0L) * 2, 16 * 1024 * 1024L);
 
             JudgeDTO judgeDTO = JudgeDTO.builder()
-                    .testCaseId(testCaseId)
+                    .testCaseNum(testCaseId)
+                    .testCaseInputFileName(inputFileName)
                     .testCaseInputPath(testCaseInputPath)
+                    .testCaseOutputFileName(outputFileName)
                     .testCaseOutputPath(testCaseOutputPath)
                     .maxOutputSize(maxOutputSize)
+                    .score(score)
                     .build();
 
             futureTasks.add(new FutureTask<>(() -> {
-                JSONObject result;
-                switch (judgeMode) {
-                    case DEFAULT:
-                        result = defaultJudge.judge(judgeDTO, judgeGlobalDTO);
-                        break;
-                    case SPJ:
-                        result = specialJudge.judge(judgeDTO, judgeGlobalDTO);
-                        break;
-                    case INTERACTIVE:
-                        result = interactiveJudge.judge(judgeDTO, judgeGlobalDTO);
-                        break;
-                    default:
-                        throw new RuntimeException("The problem mode is error:" + judgeMode);
-                }
+                JSONObject result = abstractJudge.judge(judgeDTO, judgeGlobalDTO);
                 result.set("caseId", caseId);
-                result.set("score", score);
-                result.set("inputFileName", inputFileName);
-                result.set("outputFileName", outputFileName);
+                result.set("score", judgeDTO.getScore());
+                result.set("inputFileName", judgeDTO.getTestCaseInputFileName());
+                result.set("outputFileName", judgeDTO.getTestCaseOutputFileName());
+                result.set("groupNum", groupNum);
+                result.set("seq", testCaseId);
                 return result;
             }));
+
+        }
+        return SubmitBatchTask2ThreadPool(futureTasks);
+    }
+
+    private List<JSONObject> subtaskJudgeAllCase(JSONArray testcaseList,
+                                                 String testCasesDir,
+                                                 JudgeGlobalDTO judgeGlobalDTO,
+                                                 AbstractJudge abstractJudge) throws ExecutionException, InterruptedException {
+        Map<Integer, List<JudgeDTO>> judgeDTOMap = new LinkedHashMap<>();
+        for (int index = 0; index < testcaseList.size(); index++) {
+            JSONObject testcase = (JSONObject) testcaseList.get(index);
+            // 将每个需要测试的线程任务加入任务列表中
+            final int testCaseId = index + 1;
+            // 输入文件名
+            final String inputFileName = testcase.getStr("inputName");
+            // 输出文件名
+            final String outputFileName = testcase.getStr("outputName");
+            // 题目数据的输入文件的路径
+            final String testCaseInputPath = testCasesDir + File.separator + inputFileName;
+            // 题目数据的输出文件的路径
+            final String testCaseOutputPath = testCasesDir + File.separator + outputFileName;
+            // 数据库表的测试样例id
+            final Long caseId = testcase.getLong("caseId", null);
+            // 该测试点的满分
+            final Integer score = testcase.getInt("score", 0);
+            // 该测试点的满分
+            final Integer groupNum = testcase.getInt("groupNum", 1);
+
+            final Long maxOutputSize = Math.max(testcase.getLong("outputSize", 0L) * 2, 16 * 1024 * 1024L);
+
+            JudgeDTO judgeDTO = JudgeDTO.builder()
+                    .testCaseNum(testCaseId)
+                    .testCaseInputFileName(inputFileName)
+                    .testCaseInputPath(testCaseInputPath)
+                    .testCaseOutputFileName(outputFileName)
+                    .testCaseOutputPath(testCaseOutputPath)
+                    .maxOutputSize(maxOutputSize)
+                    .score(score)
+                    .problemCaseId(caseId)
+                    .build();
+            List<JudgeDTO> judgeDTOList = judgeDTOMap.get(groupNum);
+            if (judgeDTOList == null) {
+                judgeDTOList = new ArrayList<>();
+                judgeDTOList.add(judgeDTO);
+                judgeDTOMap.put(groupNum, judgeDTOList);
+            } else {
+                judgeDTOList.add(judgeDTO);
+            }
         }
 
-        // 提交到线程池进行执行
-        for (FutureTask<JSONObject> futureTask : futureTasks) {
-            ThreadPoolUtils.getInstance().getThreadPool().submit(futureTask);
-        }
-        List<JSONObject> result = new LinkedList<>();
-        while (futureTasks.size() > 0) {
-            Iterator<FutureTask<JSONObject>> iterable = futureTasks.iterator();
-            //遍历一遍
-            while (iterable.hasNext()) {
-                FutureTask<JSONObject> future = iterable.next();
-                if (future.isDone() && !future.isCancelled()) {
-                    // 获取线程返回结果
-                    JSONObject tmp = future.get();
-                    result.add(tmp);
-                    // 任务完成移除任务
-                    iterable.remove();
-                } else {
-                    Thread.sleep(10); // 避免CPU高速运转，这里休息10毫秒
+        List<JSONObject> judgeResList = new ArrayList<>();
+        for (Map.Entry<Integer, List<JudgeDTO>> entry : judgeDTOMap.entrySet()) {
+            Integer groupNum = entry.getKey();
+            Iterator<JudgeDTO> iterator = entry.getValue().iterator();
+            while (iterator.hasNext()) {
+                JudgeDTO judgeDTO = iterator.next();
+                JSONObject judgeRes = SubmitTask2ThreadPool(new FutureTask<>(() -> {
+                    JSONObject result = abstractJudge.judge(judgeDTO, judgeGlobalDTO);
+                    result.set("caseId", judgeDTO.getProblemCaseId());
+                    result.set("score", judgeDTO.getScore());
+                    result.set("inputFileName", judgeDTO.getTestCaseInputFileName());
+                    result.set("outputFileName", judgeDTO.getTestCaseOutputFileName());
+                    result.set("groupNum", groupNum);
+                    result.set("seq", judgeDTO.getTestCaseNum());
+                    return result;
+                }));
+                judgeResList.add(judgeRes);
+                Integer status = judgeRes.getInt("status");
+                Double percentage = judgeRes.getDouble("percentage");
+                if (!Constants.Judge.STATUS_ACCEPTED.getStatus().equals(status)
+                        && !(Constants.Judge.STATUS_PARTIAL_ACCEPTED.getStatus().equals(status)
+                        && percentage != null && percentage > 0.0)) {
+                    // 有评测点得分为0分，不再评测该组其他测试点
+                    while (iterator.hasNext()) {
+                        JudgeDTO elseJudgeDTO = iterator.next();
+                        JSONObject elseJudgeRes = new JSONObject();
+                        elseJudgeRes.set("status", Constants.Judge.STATUS_CANCELLED.getStatus());
+                        elseJudgeRes.set("memory", 0);
+                        elseJudgeRes.set("time", 0);
+                        elseJudgeRes.set("errMsg", "Cancelled: Skipped Judging");
+                        elseJudgeRes.set("caseId", elseJudgeDTO.getProblemCaseId());
+                        elseJudgeRes.set("score", elseJudgeDTO.getScore());
+                        elseJudgeRes.set("inputFileName", elseJudgeDTO.getTestCaseInputFileName());
+                        elseJudgeRes.set("outputFileName", elseJudgeDTO.getTestCaseOutputFileName());
+                        elseJudgeRes.set("groupNum", groupNum);
+                        elseJudgeRes.set("seq", judgeDTO.getTestCaseNum());
+                        judgeResList.add(elseJudgeRes);
+                    }
+                    break;
                 }
             }
         }
-        return result;
+        return judgeResList;
     }
 
     public TestJudgeRes testJudgeCase(String userFileId, TestJudgeReq testJudgeReq) throws ExecutionException, InterruptedException {
@@ -196,23 +279,67 @@ public class JudgeRun {
 
         FutureTask<JSONObject> testJudgeFutureTask = new FutureTask<>(() -> testJudge.judge(judgeDTO, judgeGlobalDTO));
 
-        ThreadPoolUtils.getInstance()
-                .getThreadPool()
-                .submit(testJudgeFutureTask);
+        JSONObject judgeRes = SubmitTask2ThreadPool(testJudgeFutureTask);
+        return TestJudgeRes.builder()
+                .status(judgeRes.getInt("status"))
+                .memory(judgeRes.getLong("memory"))
+                .time(judgeRes.getLong("time"))
+                .stdout(judgeRes.getStr("output"))
+                .stderr(judgeRes.getStr("errMsg"))
+                .build();
+    }
 
-        while (true) {
-            if (testJudgeFutureTask.isDone() && !testJudgeFutureTask.isCancelled()) {
-                JSONObject judgeRes = testJudgeFutureTask.get();
-                return TestJudgeRes.builder()
-                        .status(judgeRes.getInt("status"))
-                        .memory(judgeRes.getLong("memory"))
-                        .time(judgeRes.getLong("time"))
-                        .stdout(judgeRes.getStr("output"))
-                        .stderr(judgeRes.getStr("errMsg"))
-                        .build();
-            }
-            Thread.sleep(100); // 避免CPU高速运转，这里休息100毫秒
+    private AbstractJudge getAbstractJudge(Constants.JudgeMode judgeMode) {
+        switch (judgeMode) {
+            case DEFAULT:
+                return defaultJudge;
+            case SPJ:
+                return specialJudge;
+            case INTERACTIVE:
+                return interactiveJudge;
+            default:
+                throw new RuntimeException("The problem judge mode is error:" + judgeMode);
         }
+    }
+
+    private JSONObject SubmitTask2ThreadPool(FutureTask<JSONObject> futureTask)
+            throws InterruptedException, ExecutionException {
+        // 提交到线程池进行执行
+        ThreadPoolUtils.getInstance().getThreadPool().submit(futureTask);
+        while (true) {
+            if (futureTask.isDone() && !futureTask.isCancelled()) {
+                // 获取线程返回结果
+                return futureTask.get();
+            } else {
+                Thread.sleep(10); // 避免CPU高速运转，这里休息10毫秒
+            }
+        }
+    }
+
+    private List<JSONObject> SubmitBatchTask2ThreadPool(List<FutureTask<JSONObject>> futureTasks)
+            throws InterruptedException, ExecutionException {
+        // 提交到线程池进行执行
+        for (FutureTask<JSONObject> futureTask : futureTasks) {
+            ThreadPoolUtils.getInstance().getThreadPool().submit(futureTask);
+        }
+        List<JSONObject> result = new LinkedList<>();
+        while (futureTasks.size() > 0) {
+            Iterator<FutureTask<JSONObject>> iterable = futureTasks.iterator();
+            //遍历一遍
+            while (iterable.hasNext()) {
+                FutureTask<JSONObject> future = iterable.next();
+                if (future.isDone() && !future.isCancelled()) {
+                    // 获取线程返回结果
+                    JSONObject tmp = future.get();
+                    result.add(tmp);
+                    // 任务完成移除任务
+                    iterable.remove();
+                } else {
+                    Thread.sleep(10); // 避免CPU高速运转，这里休息10毫秒
+                }
+            }
+        }
+        return result;
     }
 
 }

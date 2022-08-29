@@ -26,9 +26,9 @@ public class TestCaseServiceImpl implements TestCaseService {
     private TestCaseManager testCaseManager;
 
     @Override
-    public CommonResult<Map<Object, Object>> uploadTestcaseZip(MultipartFile file, Long gid) {
+    public CommonResult<Map<Object, Object>> uploadTestcaseZip(MultipartFile file, Long gid, String mode) {
         try {
-            return CommonResult.successResponse(testCaseManager.uploadTestcaseZip(file, gid));
+            return CommonResult.successResponse(testCaseManager.uploadTestcaseZip(file, gid, mode));
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
         } catch (StatusSystemErrorException e) {

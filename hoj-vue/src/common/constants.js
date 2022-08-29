@@ -286,6 +286,12 @@ export const USER_TYPE = {
   SUPER_ADMIN: 'root'
 }
 
+export const JUDGE_CASE_MODE = {
+  DEFAULT: 'default',
+  SUBTASK_LOWEST: 'subtask_lowest',
+  SUBTASK_AVERAGE: 'subtask_average'
+}
+
 
 export const STORAGE_KEY = {
   AUTHED: 'authed',

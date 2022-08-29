@@ -51,12 +51,18 @@
       {
           "input": "1.in", 
           "output": "1.out",
-          //"score": 10  // 如果是oi题目需要给测试点加得分
+          // 如果是oi题目需要给测试点加得分
+          //"score": 10,
+          // 如果是oi题目且judgeCaseMode为subtask_lowest或subtask_average可以配置分组
+          //"groupNum": 1
       },
       {
           "input": "2.in", 
           "output": "2.out",
-          //"score": 10  // 如果是oi题目需要给测试点加得分
+          // 如果是oi题目需要给测试点加得分
+          //"score": 10,
+          // 如果是oi题目且judgeCaseMode为subtask_lowest或subtask_average可以配置分组
+          //"groupNum": 1
       }
   ], 
   "tags": ["测试题","测试"], // 题目标签，一般不超过三个 
@@ -80,6 +86,7 @@
       "hint": "", // 题目提示
       "isRemoveEndBlank": true, // 评测数据的输出是否自动去掉行末空格
       "openCaseResult": true,  // 是否允许用户看到各个评测点的结果
+      "judgeCaseMode":"default" // oi题目可以配置，其他值为subtask_lowest或subtask_average
        // "spjLanguage:"C" // 特殊判题的程序代码语言
       // "spjCode":"" // 特殊判题的代码
   }, 

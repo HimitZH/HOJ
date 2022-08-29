@@ -48,15 +48,16 @@ export default {
 
 <style scoped>
 .accordion {
-  border: 1px solid #eaeefb;
+  box-shadow: 0 1px 2px 0 rgb(34 36 38 / 15%), 0 0 0 1px rgb(34 36 38 / 15%);
 }
 .accordion header {
   position: relative;
 }
 .title {
-  font-size: 14px;
+  font-size: 16px;
   margin: 0 0 0 10px;
   line-height: 50px;
+  font-weight: bolder;
 }
 .header_right {
   float: right;
@@ -64,13 +65,13 @@ export default {
 
 .body {
   background-color: #f9fafc;
-  border-top: 1px solid #eaeefb;
+  border-top: 1px solid rgb(34 36 38 / 15%);
   clear: both;
   overflow: hidden;
   padding: 15px 10px;
 }
 footer {
-  border-top: 1px solid #eaeefb;
+  border-top: 1px solid rgb(34 36 38 / 15%);
   height: 36px;
   box-sizing: border-box;
   background-color: #fff;

@@ -165,6 +165,7 @@ export default {
 </script>
 
 <style>
+
 * {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -212,6 +213,7 @@ samp {
   bottom: 0;
   width: 100%;
 }
+
 .mobile-menu-active {
   background-color: rgba(0, 0, 0, 0.1);
 }

@@ -8,26 +8,26 @@
         <el-col :md="18" :xs="19" v-if="isSuperAdmin || isGroupAdmin">
           <el-button
             v-if="!editPage"
-            :type="createPage ? 'danger' : 'primary'"
+            :type="createPage ? 'primary' : 'primary'"
             size="small"
             @click="handleCreatePage"
             :icon="createPage ? 'el-icon-back' : 'el-icon-plus'"
-            >{{ createPage ? $t('m.Back') : $t('m.Create') }}</el-button
+            >{{ createPage ? $t('m.Back_To_Problem_List') : $t('m.Create') }}</el-button
           >
           <el-button
             v-if="editPage && adminPage"
-            type="danger"
+            type="primary"
             size="small"
             @click="handleEditPage"
             icon="el-icon-back"
-            >{{ $t('m.Back') }}</el-button
+            >{{ $t('m.Back_To_Admin_Problem_List') }}</el-button
           >`
           <el-button
-            :type="adminPage ? 'warning' : 'success'"
+            :type="adminPage ? 'danger' : 'success'"
             size="small"
             @click="handleAdminPage"
-            :icon="adminPage ? 'el-icon-back' : 'el-icon-s-opportunity'"
-            >{{ adminPage ? $t('m.Back') : $t('m.Problem_Admin') }}</el-button
+            :icon="adminPage ? 'el-icon-circle-close' : 'el-icon-s-opportunity'"
+            >{{ adminPage ? $t('m.Cancel_Admin') : $t('m.Problem_Admin') }}</el-button
           >
         </el-col>
       </el-row>

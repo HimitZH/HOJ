@@ -44,6 +44,9 @@ public class Problem implements Serializable {
     @ApiModelProperty(value = "default,spj,interactive")
     private String judgeMode;
 
+    @ApiModelProperty(value = "default,subtask_lowest,subtask_average")
+    private String judgeCaseMode;
+
     @ApiModelProperty(value = "单位ms")
     private Integer timeLimit;
 

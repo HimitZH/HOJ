@@ -39,6 +39,9 @@ public class ProblemCase {
     @ApiModelProperty(value = "该测试样例的IO得分")
     private Integer score;
 
+    @ApiModelProperty(value = "subtask分组的编号")
+    private Integer groupNum;
+
     @ApiModelProperty(value = "0可用，1不可用")
     private Integer status;
 

@@ -13,6 +13,7 @@ import top.hcode.hoj.common.exception.SubmitError;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.dao.JudgeCaseEntityService;
 import top.hcode.hoj.dao.JudgeEntityService;
+import top.hcode.hoj.judge.entity.Pair_;
 import top.hcode.hoj.pojo.dto.TestJudgeReq;
 import top.hcode.hoj.pojo.dto.TestJudgeRes;
 import top.hcode.hoj.pojo.entity.judge.Judge;
@@ -77,6 +78,7 @@ public class JudgeStrategy {
             judgeUpdateWrapper.set("status", Constants.Judge.STATUS_JUDGING.getStatus())
                     .eq("submit_id", judge.getSubmitId());
             judgeEntityService.update(judgeUpdateWrapper);
+            String judgeCaseMode = testCasesInfo.getStr("judgeCaseMode", Constants.JudgeCaseMode.DEFAULT.getMode());
             // 开始测试每个测试点
             List<JSONObject> allCaseResultList = judgeRun.judgeAllCase(judge.getSubmitId(),
                     problem,
@@ -85,10 +87,11 @@ public class JudgeStrategy {
                     testCasesInfo,
                     userFileId,
                     judge.getCode(),
-                    false);
+                    false,
+                    judgeCaseMode);
 
             // 对全部测试点结果进行评判,获取最终评判结果
-            return getJudgeInfo(allCaseResultList, problem, judge);
+            return getJudgeInfo(allCaseResultList, problem, judge, judgeCaseMode);
         } catch (SystemError systemError) {
             result.put("code", Constants.Judge.STATUS_SYSTEM_ERROR.getStatus());
             result.put("errMsg", "Oops, something has gone wrong with the judgeServer. Please report this to administrator.");
@@ -271,30 +274,63 @@ public class JudgeStrategy {
     }
 
     // 获取判题的运行时间，运行空间，OI得分
-    public HashMap<String, Object> computeResultInfo(List<JudgeCase> allTestCaseResultList, Boolean isACM,
-                                                     Integer errorCaseNum, Integer totalScore, Integer problemDiffculty) {
+    public HashMap<String, Object> computeResultInfo(List<JudgeCase> allTestCaseResultList,
+                                                     Boolean isACM,
+                                                     Integer errorCaseNum,
+                                                     Integer totalScore,
+                                                     Integer problemDifficulty,
+                                                     String judgeCaseMode) {
         HashMap<String, Object> result = new HashMap<>();
         // 用时和内存占用保存为多个测试点中最长的
-        allTestCaseResultList.stream().max(Comparator.comparing(t -> t.getTime()))
+        allTestCaseResultList.stream().max(Comparator.comparing(JudgeCase::getTime))
                 .ifPresent(t -> result.put("time", t.getTime()));
 
-        allTestCaseResultList.stream().max(Comparator.comparing(t -> t.getMemory()))
+        allTestCaseResultList.stream().max(Comparator.comparing(JudgeCase::getMemory))
                 .ifPresent(t -> result.put("memory", t.getMemory()));
 
         // OI题目计算得分
         if (!isACM) {
             // 全对的直接用总分*0.1+2*题目难度
-            if (errorCaseNum == 0) {
-                int oiRankScore = (int) Math.round(totalScore * 0.1 + 2 * problemDiffculty);
+            if (errorCaseNum == 0 && Constants.JudgeCaseMode.DEFAULT.getMode().equals(judgeCaseMode)) {
+                int oiRankScore = (int) Math.round(totalScore * 0.1 + 2 * problemDifficulty);
                 result.put("score", totalScore);
                 result.put("oiRankScore", oiRankScore);
             } else {
                 int sumScore = 0;
-                for (JudgeCase testcaseResult : allTestCaseResultList) {
-                    sumScore += testcaseResult.getScore();
+                if (Constants.JudgeCaseMode.SUBTASK_LOWEST.getMode().equals(judgeCaseMode)) {
+                    HashMap<Integer, Integer> groupNumMapScore = new HashMap<>();
+                    for (JudgeCase testcaseResult : allTestCaseResultList) {
+                        groupNumMapScore.merge(testcaseResult.getGroupNum(), testcaseResult.getScore(), Math::min);
+                    }
+                    for (Integer minScore : groupNumMapScore.values()) {
+                        sumScore += minScore;
+                    }
+                } else if (Constants.JudgeCaseMode.SUBTASK_AVERAGE.getMode().equals(judgeCaseMode)) {
+                    // 预处理 切换成Map Key: groupNum Value: <count,sum_score>
+                    HashMap<Integer, Pair_<Integer, Integer>> groupNumMapScore = new HashMap<>();
+                    for (JudgeCase testcaseResult : allTestCaseResultList) {
+                        Pair_<Integer, Integer> pair = groupNumMapScore.get(testcaseResult.getGroupNum());
+                        if (pair == null) {
+                            groupNumMapScore.put(testcaseResult.getGroupNum(), new Pair_<>(1, testcaseResult.getScore()));
+                        } else {
+                            int count = pair.getKey() + 1;
+                            int score = pair.getValue() + testcaseResult.getScore();
+                            groupNumMapScore.put(testcaseResult.getGroupNum(), new Pair_<>(count, score));
+                        }
+                    }
+                    for (Pair_<Integer, Integer> pair : groupNumMapScore.values()) {
+                        sumScore += (int) Math.round(pair.getValue() * 1.0 / pair.getKey());
+                    }
+                } else {
+                    for (JudgeCase testcaseResult : allTestCaseResultList) {
+                        sumScore += testcaseResult.getScore();
+                    }
+                }
+                if (totalScore != 0 && sumScore > totalScore) {
+                    sumScore = totalScore;
                 }
                 //测试点总得分*0.1+2*题目难度*（测试点总得分/题目总分）
-                int oiRankScore = (int) Math.round(sumScore * 0.1 + 2 * problemDiffculty * (sumScore * 1.0 / totalScore));
+                int oiRankScore = (int) Math.round(sumScore * 0.1 + 2 * problemDifficulty * (sumScore * 1.0 / totalScore));
                 result.put("score", sumScore);
                 result.put("oiRankScore", oiRankScore);
             }
@@ -303,7 +339,10 @@ public class JudgeStrategy {
     }
 
     // 进行最终测试结果的判断（除编译失败外的评测状态码和时间，空间,OI题目的得分）
-    public HashMap<String, Object> getJudgeInfo(List<JSONObject> testCaseResultList, Problem problem, Judge judge) {
+    public HashMap<String, Object> getJudgeInfo(List<JSONObject> testCaseResultList,
+                                                Problem problem,
+                                                Judge judge,
+                                                String judgeCaseMode) {
 
         boolean isACM = Objects.equals(problem.getType(), Constants.Contest.TYPE_ACM.getCode());
 
@@ -318,17 +357,23 @@ public class JudgeStrategy {
             Integer status = jsonObject.getInt("status");
 
             Long caseId = jsonObject.getLong("caseId", null);
+            Integer groupNum = jsonObject.getInt("groupNum", null);
+            Integer seq = jsonObject.getInt("seq", 0);
             String inputFileName = jsonObject.getStr("inputFileName");
             String outputFileName = jsonObject.getStr("outputFileName");
             String msg = jsonObject.getStr("errMsg");
             JudgeCase judgeCase = new JudgeCase();
-            judgeCase.setTime(time).setMemory(memory)
+            judgeCase.setTime(time)
+                    .setMemory(memory)
                     .setStatus(status)
                     .setInputData(inputFileName)
                     .setOutputData(outputFileName)
                     .setPid(problem.getId())
                     .setUid(judge.getUid())
                     .setCaseId(caseId)
+                    .setSeq(seq)
+                    .setGroupNum(groupNum)
+                    .setMode(judgeCaseMode)
                     .setSubmitId(judge.getSubmitId());
 
             if (!StringUtils.isEmpty(msg) && !Objects.equals(status, Constants.Judge.STATUS_COMPILE_ERROR.getStatus())) {
@@ -368,8 +413,12 @@ public class JudgeStrategy {
         }
 
         // 获取判题的运行时间，运行空间，OI得分
-        HashMap<String, Object> result = computeResultInfo(allCaseResList, isACM, errorTestCaseList.size(),
-                problem.getIoScore(), problem.getDifficulty());
+        HashMap<String, Object> result = computeResultInfo(allCaseResList,
+                isACM,
+                errorTestCaseList.size(),
+                problem.getIoScore(),
+                problem.getDifficulty(),
+                judgeCaseMode);
 
         // 如果该题为ACM类型的题目，多个测试点全部正确则AC，否则取第一个错误的测试点的状态
         // 如果该题为OI类型的题目, 若多个测试点全部正确则AC，若全部错误则取第一个错误测试点状态，否则为部分正确

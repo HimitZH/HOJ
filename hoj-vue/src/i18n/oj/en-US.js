@@ -312,6 +312,7 @@ export const m = {
   Output_File: 'Output File',
   Case_tips: 'Case Tips',
   Nothing: 'Nothing',
+  Subtask: 'Subtask',
 
   // /views/oj/rank/ACMRank.vue
   ACM_Ranklist: 'ACM Ranklist',
@@ -662,6 +663,11 @@ export const m = {
   // /views/oj/group/GroupDiscussionList.vue
   No_Discussion: 'No Discussion',
   Problem_Discussion:'Problem Discussion',
+
+  // /views/oj/group/GroupProblemList.vue
+  Cancel_Admin:'Cancel Admin',
+  Back_To_Problem_List:'Back to Problem List',
+  Back_To_Admin_Problem_List:'Back to Admin Problem List',
 
   // /views/oj/group/GroupMemberList.vue
   Applying: 'Applying',

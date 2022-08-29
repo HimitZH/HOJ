@@ -920,3 +920,38 @@ DELIMITER ;
 CALL judge_tag_Add_is_manual ;
 
 DROP PROCEDURE judge_tag_Add_is_manual;
+
+/*
+* 2022.08.30 OI题目增加subtask
+			 
+*/
+DROP PROCEDURE
+IF EXISTS add_Problem_Subtask;
+DELIMITER $$
+ 
+CREATE PROCEDURE add_Problem_Subtask ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'problem'
+	AND column_name = 'judge_case_mode'
+) THEN
+	
+	ALTER TABLE `hoj`.`problem`  ADD COLUMN `judge_case_mode` varchar(255) DEFAULT 'default' COMMENT '题目样例评测模式,default,subtask_lowest,subtask_average';
+	ALTER TABLE `hoj`.`problem_case`  ADD COLUMN `group_num` int(11) DEFAULT '1' COMMENT 'subtask分组的编号';
+	ALTER TABLE `hoj`.`judge_case`  ADD COLUMN `group_num` int(11) DEFAULT NULL COMMENT 'subtask分组的组号';
+	ALTER TABLE `hoj`.`judge_case`  ADD COLUMN `seq` int(11) DEFAULT NULL COMMENT '排序';
+	ALTER TABLE `hoj`.`judge_case`  ADD COLUMN `mode` varchar(255) DEFAULT 'default' COMMENT 'default,subtask_lowest,subtask_average';
+	
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL add_Problem_Subtask ;
+
+DROP PROCEDURE add_Problem_Subtask;
