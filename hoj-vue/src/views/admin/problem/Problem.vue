@@ -574,15 +574,21 @@
 
           <el-form-item
             required
-            v-if="problem.type == 1"
           >
             <el-radio-group
               v-model="problem.judgeCaseMode"
               @change="switchJudgeCaseMode"
             >
-              <el-radio :label="JUDGE_CASE_MODE.DEFAULT">{{$t('m.Judge_Case_Default_Mode')}}</el-radio>
-              <el-radio :label="JUDGE_CASE_MODE.SUBTASK_LOWEST">{{$t('m.Judge_Case_Subtask_Lowest_Mode')}}</el-radio>
-              <el-radio :label="JUDGE_CASE_MODE.SUBTASK_AVERAGE">{{$t('m.Judge_Case_Subtask_Average_Mode')}}</el-radio>
+              <el-radio :label="JUDGE_CASE_MODE.DEFAULT">
+                {{ problem.type == 1 ? $t('m.OI_Judge_Case_Default_Mode'): $t('m.ACM_Judge_Case_Default_Mode')}}
+              </el-radio>
+              <template v-if="problem.type == 1">
+                <el-radio :label="JUDGE_CASE_MODE.SUBTASK_LOWEST">{{$t('m.Judge_Case_Subtask_Lowest_Mode')}}</el-radio>
+                <el-radio :label="JUDGE_CASE_MODE.SUBTASK_AVERAGE">{{$t('m.Judge_Case_Subtask_Average_Mode')}}</el-radio>
+              </template>
+              <template v-else>
+                <el-radio :label="JUDGE_CASE_MODE.ERGODIC_WITHOUT_ERROR">{{$t('m.Judge_Case_Ergodic_Without_Error_Mode')}}</el-radio>
+              </template>
             </el-radio-group>
           </el-form-item>
 
@@ -644,7 +650,8 @@
                 >
                 </vxe-table-column>
                 <vxe-table-column
-                  v-if="problem.judgeCaseMode != JUDGE_CASE_MODE.DEFAULT"
+                  v-if="problem.judgeCaseMode == JUDGE_CASE_MODE.SUBTASK_LOWEST 
+                    || problem.judgeCaseMode == JUDGE_CASE_MODE.SUBTASK_AVERAGE"
                   field="groupNum"
                   :title="$t('m.Sample_Group_Num')"
                   sortable
@@ -749,7 +756,8 @@
                   </el-col>
                   <el-col
                     :span="24"
-                    v-show="problem.judgeCaseMode != JUDGE_CASE_MODE.DEFAULT"
+                    v-show="problem.judgeCaseMode == JUDGE_CASE_MODE.SUBTASK_LOWEST 
+                    || problem.judgeCaseMode == JUDGE_CASE_MODE.SUBTASK_AVERAGE"
                   >
                     <el-form-item :label="$t('m.Sample_Group_Num')">
                       <el-input
@@ -1536,8 +1544,9 @@ export default {
                 return;
               }
               if (
-                this.problem.judgeCaseMode != this.JUDGE_CASE_MODE.DEFAULT &&
-                this.problemSamples[i].groupNum == ""
+                (this.problem.judgeCaseMode == this.JUDGE_CASE_MODE.SUBTASK_LOWEST 
+                  || this.problem.judgeCaseMode == this.JUDGE_CASE_MODE.SUBTASK_AVERAGE
+                ) && this.problemSamples[i].groupNum == ""
               ) {
                 myMessage.error(
                   this.$i18n.t("m.Problem_Sample") +
@@ -1591,8 +1600,9 @@ export default {
                 return;
               }
               if (
-                this.problem.judgeCaseMode != this.JUDGE_CASE_MODE.DEFAULT &&
-                problemSamples[i].groupNum == ""
+                (this.problem.judgeCaseMode == this.JUDGE_CASE_MODE.SUBTASK_LOWEST 
+                  || this.problem.judgeCaseMode == this.JUDGE_CASE_MODE.SUBTASK_AVERAGE
+                ) && problemSamples[i].groupNum == ""
               ) {
                 myMessage.error(
                   this.$i18n.t("m.Problem_Sample") +

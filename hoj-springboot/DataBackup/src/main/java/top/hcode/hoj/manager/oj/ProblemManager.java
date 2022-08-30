@@ -130,11 +130,11 @@ public class ProblemManager {
             queryWrapper.eq("cid", pidListDto.getCid());
         } else {
             queryWrapper.eq("cid", 0);
-        }
-        if (pidListDto.getGid() != null) {
-            queryWrapper.eq("gid", pidListDto.getGid());
-        } else {
-            queryWrapper.isNull("gid");
+            if (pidListDto.getGid() != null) {
+                queryWrapper.eq("gid", pidListDto.getGid());
+            } else {
+                queryWrapper.isNull("gid");
+            }
         }
         List<Judge> judges = judgeEntityService.list(queryWrapper);
 

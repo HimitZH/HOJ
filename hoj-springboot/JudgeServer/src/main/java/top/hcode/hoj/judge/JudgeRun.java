@@ -102,12 +102,24 @@ public class JudgeRun {
         if (Constants.Contest.TYPE_OI.getCode().equals(problem.getType())
                 && Constants.JudgeCaseMode.SUBTASK_LOWEST.getMode().equals(judgeCaseMode)) {
             return subtaskJudgeAllCase(testcaseList, testCasesDir, judgeGlobalDTO, abstractJudge);
+        } else if (Constants.JudgeCaseMode.ERGODIC_WITHOUT_ERROR.getMode().equals(judgeCaseMode)){
+            // 顺序评测测试点，遇到非AC就停止！
+            return ergodicJudgeAllCase(testcaseList, testCasesDir, judgeGlobalDTO, abstractJudge);
         } else {
             return defaultJudgeAllCase(testcaseList, testCasesDir, judgeGlobalDTO, abstractJudge);
         }
     }
 
-
+    /**
+     * 默认会评测全部的测试点数据
+     * @param testcaseList
+     * @param testCasesDir
+     * @param judgeGlobalDTO
+     * @param abstractJudge
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     private List<JSONObject> defaultJudgeAllCase(JSONArray testcaseList,
                                                  String testCasesDir,
                                                  JudgeGlobalDTO judgeGlobalDTO,
@@ -129,7 +141,7 @@ public class JudgeRun {
             final Long caseId = testcase.getLong("caseId", null);
             // 该测试点的满分
             final Integer score = testcase.getInt("score", 0);
-            // 该测试点的满分
+            // 该测试点的分组（用于subtask）
             final Integer groupNum = testcase.getInt("groupNum", 1);
 
             final Long maxOutputSize = Math.max(testcase.getLong("outputSize", 0L) * 2, 16 * 1024 * 1024L);
@@ -159,6 +171,81 @@ public class JudgeRun {
         return SubmitBatchTask2ThreadPool(futureTasks);
     }
 
+    /**
+     * 顺序评测，遇到非AC就停止评测
+     * @param testcaseList
+     * @param testCasesDir
+     * @param judgeGlobalDTO
+     * @param abstractJudge
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    private List<JSONObject> ergodicJudgeAllCase(JSONArray testcaseList,
+                                                 String testCasesDir,
+                                                 JudgeGlobalDTO judgeGlobalDTO,
+                                                 AbstractJudge abstractJudge) throws ExecutionException, InterruptedException {
+        List<JSONObject> judgeResList = new ArrayList<>();
+        for (int index = 0; index < testcaseList.size(); index++) {
+            JSONObject testcase = (JSONObject) testcaseList.get(index);
+            // 将每个需要测试的线程任务加入任务列表中
+            final int testCaseId = index + 1;
+            // 输入文件名
+            final String inputFileName = testcase.getStr("inputName");
+            // 输出文件名
+            final String outputFileName = testcase.getStr("outputName");
+            // 题目数据的输入文件的路径
+            final String testCaseInputPath = testCasesDir + File.separator + inputFileName;
+            // 题目数据的输出文件的路径
+            final String testCaseOutputPath = testCasesDir + File.separator + outputFileName;
+            // 数据库表的测试样例id
+            final Long caseId = testcase.getLong("caseId", null);
+            // 该测试点的满分
+            final Integer score = testcase.getInt("score", 0);
+            // 该测试点的分组（用于subtask）
+            final Integer groupNum = testcase.getInt("groupNum", 1);
+
+            final Long maxOutputSize = Math.max(testcase.getLong("outputSize", 0L) * 2, 16 * 1024 * 1024L);
+
+            JudgeDTO judgeDTO = JudgeDTO.builder()
+                    .testCaseNum(testCaseId)
+                    .testCaseInputFileName(inputFileName)
+                    .testCaseInputPath(testCaseInputPath)
+                    .testCaseOutputFileName(outputFileName)
+                    .testCaseOutputPath(testCaseOutputPath)
+                    .maxOutputSize(maxOutputSize)
+                    .score(score)
+                    .build();
+
+            JSONObject judgeRes = SubmitTask2ThreadPool(new FutureTask<>(() -> {
+                JSONObject result = abstractJudge.judge(judgeDTO, judgeGlobalDTO);
+                result.set("caseId", caseId);
+                result.set("score", judgeDTO.getScore());
+                result.set("inputFileName", judgeDTO.getTestCaseInputFileName());
+                result.set("outputFileName", judgeDTO.getTestCaseOutputFileName());
+                result.set("groupNum", groupNum);
+                result.set("seq", judgeDTO.getTestCaseNum());
+                return result;
+            }));
+            judgeResList.add(judgeRes);
+            Integer status = judgeRes.getInt("status");
+            if (!Constants.Judge.STATUS_ACCEPTED.getStatus().equals(status)){
+                break;
+            }
+        }
+        return judgeResList;
+    }
+
+    /**
+     * 根据测试点的groupNum进行分组，每组按顺序评测，遇到非AC有评测点得分为0分，不再评测该组剩余的测试点
+     * @param testcaseList
+     * @param testCasesDir
+     * @param judgeGlobalDTO
+     * @param abstractJudge
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     private List<JSONObject> subtaskJudgeAllCase(JSONArray testcaseList,
                                                  String testCasesDir,
                                                  JudgeGlobalDTO judgeGlobalDTO,
@@ -180,7 +267,7 @@ public class JudgeRun {
             final Long caseId = testcase.getLong("caseId", null);
             // 该测试点的满分
             final Integer score = testcase.getInt("score", 0);
-            // 该测试点的满分
+            // 该测试点的分组（用于subtask）
             final Integer groupNum = testcase.getInt("groupNum", 1);
 
             final Long maxOutputSize = Math.max(testcase.getLong("outputSize", 0L) * 2, 16 * 1024 * 1024L);
@@ -250,6 +337,14 @@ public class JudgeRun {
         return judgeResList;
     }
 
+    /**
+     * 运行自测评测单个测试点（由接口传入 输入与输出的数据）
+     * @param userFileId
+     * @param testJudgeReq
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     public TestJudgeRes testJudgeCase(String userFileId, TestJudgeReq testJudgeReq) throws ExecutionException, InterruptedException {
 
         // 默认给限制时间+200ms用来测评

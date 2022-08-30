@@ -644,6 +644,7 @@ public class JudgeManager {
             Constants.JudgeCaseMode judgeCaseMode = Constants.JudgeCaseMode.getJudgeCaseMode(mode);
             switch (judgeCaseMode) {
                 case DEFAULT:
+                case ERGODIC_WITHOUT_ERROR:
                     judgeCaseVo.setJudgeCaseList(judgeCaseList);
                     break;
                 case SUBTASK_AVERAGE:
