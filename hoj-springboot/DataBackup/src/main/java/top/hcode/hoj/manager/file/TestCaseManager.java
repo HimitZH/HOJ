@@ -137,7 +137,8 @@ public class TestCaseManager {
             }
 
             testcaseMap.put("output", oriOutputFileName);
-            if (!Objects.equals(Constants.JudgeCaseMode.DEFAULT.getMode(), mode)) {
+            if (Objects.equals(Constants.JudgeCaseMode.SUBTASK_LOWEST.getMode(), mode)
+                    || Objects.equals(Constants.JudgeCaseMode.SUBTASK_AVERAGE.getMode(), mode)) {
                 testcaseMap.put("groupNum", 1);
             }
             problemCaseList.add(testcaseMap);

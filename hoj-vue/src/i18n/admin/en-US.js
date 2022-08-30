@@ -298,9 +298,11 @@ export const m = {
   User_Program: 'User Program',
   SPJ_Or_Interactive_Program: 'Special Or Interactive Program',
   Non_Default_Judge_Case_Mode_And_Group_Num_IS_NULL:'The number of subtask groups of evaluation data cannot be empty!',
-  Judge_Case_Default_Mode:'Sum of scores of all samples',
+  OI_Judge_Case_Default_Mode:'Sum of scores of all samples',
+  ACM_Judge_Case_Default_Mode:'Judge all test cases',
   Judge_Case_Subtask_Lowest_Mode:'Subtask (Lowest Score)',
   Judge_Case_Subtask_Average_Mode:'Subtasks (Average Score)',
+  Judge_Case_Ergodic_Without_Error_Mode: 'Stop judge when error',
 
   // /views/admin/problem/Tag.vue
   Admin_Tag: 'Admin Tag',

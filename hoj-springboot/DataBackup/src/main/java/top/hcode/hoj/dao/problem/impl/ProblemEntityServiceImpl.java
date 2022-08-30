@@ -537,10 +537,12 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
             FileUtil.clean(testCasesDir);
             FileUtil.copyFilesFromDir(new File(tmpTestcaseDir), new File(testCasesDir), true);
         }
-
+        if (StringUtils.isEmpty(judgeCaseMode)) {
+            judgeCaseMode = Constants.JudgeCaseMode.DEFAULT.getMode();
+        }
         JSONObject result = new JSONObject();
         result.set("mode", judgeMode);
-        result.set("judgeCaseMode", judgeCaseMode == null ? Constants.JudgeCaseMode.DEFAULT.getMode() : judgeCaseMode);
+        result.set("judgeCaseMode", judgeCaseMode);
         result.set("version", version);
         result.set("testCasesSize", problemCaseList.size());
 
@@ -549,7 +551,10 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
         for (ProblemCase problemCase : problemCaseList) {
             JSONObject jsonObject = new JSONObject();
             jsonObject.set("caseId", problemCase.getId());
-            jsonObject.set("groupNum", problemCase.getGroupNum());
+            if (judgeCaseMode.equals(Constants.JudgeCaseMode.SUBTASK_AVERAGE.getMode())
+                    || judgeCaseMode.equals(Constants.JudgeCaseMode.SUBTASK_LOWEST.getMode())) {
+                jsonObject.set("groupNum", problemCase.getGroupNum());
+            }
             jsonObject.set("score", problemCase.getScore());
             jsonObject.set("inputName", problemCase.getInput());
             jsonObject.set("outputName", problemCase.getOutput());
@@ -603,7 +608,10 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
 
         JSONObject result = new JSONObject();
         result.set("mode", judgeMode);
-        result.set("judgeCaseMode", judgeCaseMode == null ? Constants.JudgeCaseMode.DEFAULT.getMode() : judgeCaseMode);
+        if (StringUtils.isEmpty(judgeCaseMode)) {
+            judgeCaseMode = Constants.JudgeCaseMode.DEFAULT.getMode();
+        }
+        result.set("judgeCaseMode", judgeCaseMode);
         result.set("version", version);
         result.set("testCasesSize", problemCaseList.size());
 
@@ -615,7 +623,10 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
             JSONObject jsonObject = new JSONObject();
             String inputName = (index + 1) + ".in";
             jsonObject.set("caseId", problemCaseList.get(index).getId());
-            jsonObject.set("groupNum", problemCaseList.get(index).getGroupNum());
+            if (judgeCaseMode.equals(Constants.JudgeCaseMode.SUBTASK_AVERAGE.getMode())
+                    || judgeCaseMode.equals(Constants.JudgeCaseMode.SUBTASK_LOWEST.getMode())) {
+                jsonObject.set("groupNum", problemCaseList.get(index).getGroupNum());
+            }
             jsonObject.set("score", problemCaseList.get(index).getScore());
             jsonObject.set("inputName", inputName);
             // 生成对应文件

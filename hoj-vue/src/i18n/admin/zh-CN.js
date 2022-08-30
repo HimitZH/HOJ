@@ -296,9 +296,11 @@ export const m = {
   User_Program: '选手程序',
   SPJ_Or_Interactive_Program: '特殊或交互程序',
   Non_Default_Judge_Case_Mode_And_Group_Num_IS_NULL:'评测数据的子任务组数不能为空!',
-  Judge_Case_Default_Mode:'全部评测（得分加和）',
+  OI_Judge_Case_Default_Mode:'全部评测（得分加和）',
+  ACM_Judge_Case_Default_Mode:'默认（全部评测）',
   Judge_Case_Subtask_Lowest_Mode:'子任务（最低得分）',
   Judge_Case_Subtask_Average_Mode:'子任务（平均得分）',
+  Judge_Case_Ergodic_Without_Error_Mode: '遇错止评（顺序评测）',
 
   // /views/admin/problem/tag
   Admin_Tag: '标签管理',

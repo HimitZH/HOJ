@@ -93,6 +93,8 @@ module.exports = context => config({
                 children: [
 					'use/import-problem',
 					'use/judge-mode',
+					'use/judge-case-mode',
+					'use/cancel-judge',
 					'use/testcase',
 					'use/training',
 					'use/contest',

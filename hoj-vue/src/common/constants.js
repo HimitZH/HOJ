@@ -289,7 +289,8 @@ export const USER_TYPE = {
 export const JUDGE_CASE_MODE = {
   DEFAULT: 'default',
   SUBTASK_LOWEST: 'subtask_lowest',
-  SUBTASK_AVERAGE: 'subtask_average'
+  SUBTASK_AVERAGE: 'subtask_average',
+  ERGODIC_WITHOUT_ERROR: 'ergodic_without_error'
 }
 
 
