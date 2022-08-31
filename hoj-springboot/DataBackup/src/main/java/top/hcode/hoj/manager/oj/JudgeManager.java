@@ -595,13 +595,13 @@ public class JudgeManager {
         QueryWrapper<JudgeCase> wrapper = new QueryWrapper<>();
         if (judge.getCid() == 0) { // 非比赛提交
             if (userRolesVo == null) { // 没有登录
-                wrapper.select("time", "memory", "score", "status", "user_output", "group_num", "seq");
+                wrapper.select("time", "memory", "score", "status", "user_output", "group_num", "seq", "mode");
             } else {
                 boolean isRoot = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
                 if (!isRoot
                         && !SecurityUtils.getSubject().hasRole("admin")
                         && !SecurityUtils.getSubject().hasRole("problem_admin")) { // 不是管理员
-                    wrapper.select("time", "memory", "score", "status", "user_output", "group_num", "seq");
+                    wrapper.select("time", "memory", "score", "status", "user_output", "group_num", "seq", "mode");
                 }
             }
         } else { // 比赛提交
@@ -626,7 +626,7 @@ public class JudgeManager {
                             return null;
                         }
                     }
-                    wrapper.select("time", "memory", "score", "status", "user_output", "group_num", "seq");
+                    wrapper.select("time", "memory", "score", "status", "user_output", "group_num", "seq", "mode");
                 }
             }
         }
@@ -669,15 +669,20 @@ public class JudgeManager {
             for (Map.Entry<Integer, List<JudgeCase>> entry : groupJudgeCaseMap.entrySet()) {
                 int sumScore = 0;
                 boolean hasNotACJudgeCase = false;
+                int acCount = 0;
                 for (JudgeCase judgeCase : entry.getValue()) {
                     sumScore += judgeCase.getScore();
                     if (!Objects.equals(Constants.Judge.STATUS_ACCEPTED.getStatus(), judgeCase.getStatus())) {
                         hasNotACJudgeCase = true;
+                    } else {
+                        acCount++;
                     }
                 }
                 SubTaskJudgeCaseVo subTaskJudgeCaseVo = new SubTaskJudgeCaseVo();
                 subTaskJudgeCaseVo.setGroupNum(entry.getKey());
                 subTaskJudgeCaseVo.setSubtaskDetailList(entry.getValue());
+                subTaskJudgeCaseVo.setAc(acCount);
+                subTaskJudgeCaseVo.setTotal(entry.getValue().size());
                 int score = (int) Math.round(sumScore * 1.0 / entry.getValue().size());
                 subTaskJudgeCaseVo.setScore(score);
                 if (score == 0) {
@@ -693,16 +698,22 @@ public class JudgeManager {
             for (Map.Entry<Integer, List<JudgeCase>> entry : groupJudgeCaseMap.entrySet()) {
                 int minScore = 2147483647;
                 JudgeCase finalResJudgeCase = null;
+                int acCount = 0;
                 for (JudgeCase judgeCase : entry.getValue()) {
                     if (!Constants.Judge.STATUS_CANCELLED.getStatus().equals(judgeCase.getStatus())) {
                         if (judgeCase.getScore() < minScore) {
                             finalResJudgeCase = judgeCase;
                             minScore = judgeCase.getScore();
                         }
+                        if (Objects.equals(Constants.Judge.STATUS_ACCEPTED.getStatus(), judgeCase.getStatus())) {
+                            acCount++;
+                        }
                     }
                 }
                 SubTaskJudgeCaseVo subTaskJudgeCaseVo = new SubTaskJudgeCaseVo();
                 subTaskJudgeCaseVo.setGroupNum(entry.getKey());
+                subTaskJudgeCaseVo.setAc(acCount);
+                subTaskJudgeCaseVo.setTotal(entry.getValue().size());
                 if (finalResJudgeCase != null) {
                     subTaskJudgeCaseVo.setMemory(finalResJudgeCase.getMemory());
                     subTaskJudgeCaseVo.setScore(finalResJudgeCase.getScore());

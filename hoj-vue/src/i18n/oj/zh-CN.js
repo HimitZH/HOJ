@@ -205,6 +205,7 @@ export const m = {
   Problem_ID: '题目ID',
   Total: '总数',
   AC_Rate: 'AC 通过率',
+  AC: '通过',
   Score: '分数',
 
   // /views/oj/problem/problemList.vue

@@ -39,6 +39,16 @@ public class SubTaskJudgeCaseVo {
     private Integer status;
 
     /**
+     * 该subtask最终AC测试点的个数
+     */
+    private Integer ac;
+
+    /**
+     * 该subtask的测试点总数
+     */
+    private Integer total;
+
+    /**
      * 该subtask下各个测试点的具体结果
      */
     List<JudgeCase> subtaskDetailList;

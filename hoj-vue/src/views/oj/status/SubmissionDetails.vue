@@ -201,12 +201,25 @@
                     :sm="4"
                     :xs="4"
                   >
-                    <span>
-                      <i
-                        class="el-icon-s-claim"
-                        style="font-weight: 700 !important;"
-                      > {{item.score}}</i>
-                    </span>
+                    <el-tooltip placement="top" effect="light">
+                      <div slot="content">
+                        <template v-if="testCaseResult.judgeCaseMode == JUDGE_CASE_MODE.SUBTASK_AVERAGE">
+                          {{$t('m.Judge_Case_Subtask_Average_Mode')}}<br/>
+                        </template>
+                        <template v-else>
+                          {{$t('m.Judge_Case_Subtask_Lowest_Mode')}}<br/>
+                        </template>
+                        {{ $t('m.Score') }}：{{item.score}}<br />
+                        {{ $t('m.AC') }}：{{item.ac}}<br />
+                        {{ $t('m.Total') }}：{{item.total}}
+                      </div>
+                      <span>
+                        <i
+                          class="el-icon-s-claim"
+                          style="font-weight: 700 !important;"
+                        > {{item.score}} pts ({{item.ac}}/{{item.total}})</i>
+                      </span>
+                    </el-tooltip>
                   </el-col>
                   <el-col
                     :md="5"
