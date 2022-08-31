@@ -46,7 +46,7 @@
             </div>
             <div class="test-run-static">
               <span v-if="item.score != null">
-                {{ item.score }} <i class="el-icon-success"></i>
+                {{ item.score }} pts <i class="el-icon-success"></i>
               </span>
               <span v-else>
                 <i class="el-icon-success"></i>
@@ -67,7 +67,7 @@
             </div>
             <div class="test-run-static">
               <span v-if="item.score != null">
-                {{ item.score }} <i class="el-icon-error"></i>
+                {{ item.score }} pts <i class="el-icon-error"></i>
               </span>
               <span v-else>
                 <i class="el-icon-error"></i>

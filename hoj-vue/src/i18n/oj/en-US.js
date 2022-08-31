@@ -205,6 +205,7 @@ export const m = {
   Problem_ID: 'Problem ID',
   Total: 'Total',
   AC_Rate: 'AC Rate',
+  AC: 'Accepted',
   Score: 'Score',
 
   // /views/oj/problem/problemList.vue
