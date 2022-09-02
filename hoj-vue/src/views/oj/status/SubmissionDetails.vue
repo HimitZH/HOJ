@@ -178,14 +178,14 @@
                   <el-col
                     :md="5"
                     :sm="5"
-                    :xs="6"
+                    :xs="7"
                   >
                     <span>{{$t('m.Subtask')}} #{{item.groupNum}}</span>
                   </el-col>
                   <el-col
                     :md="5"
                     :sm="5"
-                    :xs="14"
+                    :xs="13"
                   >
                     <span :class="'text-color-'+JUDGE_STATUS[item.status].color">
                       <template v-if="item.status == JUDGE_STATUS_RESERVE.ac">
@@ -197,8 +197,8 @@
                     </span>
                   </el-col>
                   <el-col
-                    :md="4"
-                    :sm="4"
+                    :md="5"
+                    :sm="5"
                     :xs="4"
                   >
                     <el-tooltip placement="top" effect="light">
@@ -214,16 +214,24 @@
                         {{ $t('m.Total') }}：{{item.total}}
                       </div>
                       <span>
+                        <template v-if="!isMobile">
                         <i
                           class="el-icon-s-claim"
                           style="font-weight: 700 !important;"
                         > {{item.score}} pts ({{item.ac}}/{{item.total}})</i>
+                      </template>
+                      <template v-else>
+                        <i
+                          class="el-icon-s-claim"
+                          style="font-weight: 700 !important;"
+                        > {{item.score}}</i>
+                      </template>
                       </span>
                     </el-tooltip>
                   </el-col>
                   <el-col
-                    :md="5"
-                    :sm="5"
+                    :md="4"
+                    :sm="4"
                     :xs="8"
                     v-if="item.time != null && !isMobile"
                   >
@@ -235,8 +243,8 @@
                     </span>
                   </el-col>
                   <el-col
-                    :md="5"
-                    :sm="5"
+                    :md="4"
+                    :sm="4"
                     :xs="8"
                     v-if="item.memory != null && !isMobile"
                   >
@@ -587,6 +595,11 @@ export default {
   padding-left: 20px;
   transition: 0.1s ease, color 0.1s ease;
   font-weight: 700 !important;
+}
+@media screen and (max-width: 768px) {
+  .subtask-title {
+    padding-left: 5px;
+  }
 }
 .subtask-title span {
   color: rgba(0, 0, 0, 0.4);

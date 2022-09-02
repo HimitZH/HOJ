@@ -1,7 +1,7 @@
 import api from '@/common/api'
 import {  TRAINING_TYPE } from '@/common/constants'
 const state = {
-  intoAccess: true, // 比赛进入权限
+  intoAccess: true, // 训练进入权限
   training: {
     auth: TRAINING_TYPE.Public.name,
     rankShowName:'username',
