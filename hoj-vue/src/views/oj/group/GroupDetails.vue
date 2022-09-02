@@ -99,7 +99,7 @@
 
       <template
         v-if="
-          route_name === 'GroupSubmissionList' ||
+          $route.name === 'GroupSubmissionList' ||
             $route.name === 'GroupProblemDetails' ||
             ($route.name != 'GroupTrainingList' 
              && $route.name.startsWith('GroupTraining'))
@@ -117,7 +117,7 @@
           <transition name="el-fade-in-linear">
             <router-view></router-view>
           </transition>
-          <el-card v-show="route_name === 'GroupDetails'">
+          <el-card v-show="$route.name === 'GroupDetails'">
             <el-row>
               <el-col
                 :md="isGroupMember || isSuperAdmin ? 12 : 24"

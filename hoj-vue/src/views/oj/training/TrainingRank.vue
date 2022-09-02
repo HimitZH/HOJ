@@ -1,7 +1,10 @@
 <template>
   <div style="margin-top:5px">
     <el-card shadow>
-      <div slot="header" class="rank-title">
+      <div
+        slot="header"
+        class="rank-title"
+      >
         <span class="panel-title">{{ $t('m.Record_List') }}</span>
       </div>
       <vxe-table
@@ -43,12 +46,14 @@
 
             <span style="float:right;text-align:right">
               <a @click="getUserHomeByUsername(row.uid, row.username)">
-                <span class="contest-username"
-                  ><span class="contest-rank-flag" v-if="row.gender == 'female'"
-                    >Girl</span
-                  >{{ row.username }}</span
-                >
-                <span class="contest-school" v-if="row.school">{{
+                <span class="contest-username"><span
+                    class="contest-rank-flag"
+                    v-if="row.gender == 'female'"
+                  >Girl</span>{{ row.username }}</span>
+                <span
+                  class="contest-school"
+                  v-if="row.school"
+                >{{
                   row.school
                 }}</span>
               </a>
@@ -75,12 +80,14 @@
 
             <span style="float:right;text-align:right">
               <a @click="getUserHomeByUsername(row.uid, row.username)">
-                <span class="contest-username"
-                  ><span class="contest-rank-flag" v-if="row.gender == 'female'"
-                    >Girl</span
-                  >{{ row.username }}</span
-                >
-                <span class="contest-school" v-if="row.school">{{
+                <span class="contest-username"><span
+                    class="contest-rank-flag"
+                    v-if="row.gender == 'female'"
+                  >Girl</span>{{ row.username }}</span>
+                <span
+                  class="contest-school"
+                  v-if="row.school"
+                >{{
                   row.school
                 }}</span>
               </a>
@@ -101,12 +108,10 @@
           min-width="90"
         >
           <template v-slot="{ row }">
-            <span
-              ><a
+            <span><a
                 @click="getUserACSubmit(row.username)"
                 style="color:rgb(87, 163, 243);font-size:16px"
-                >{{ row.ac }}</a
-              >
+              >{{ row.ac }}</a>
               <br />
               <span class="judge-time">({{ row.totalRunTime }}ms)</span>
             </span>
@@ -119,18 +124,18 @@
           :field="problem.problemId"
         >
           <template v-slot:header>
-            <span
-              ><a
+            <span><a
                 @click="getTrainingProblemById(problem.problemId)"
                 class="emphasis"
                 style="color:#495060;"
-                >{{ problem.problemId }}</a
-              ></span
-            >
+              >{{ problem.problemId }}</a></span>
           </template>
           <template v-slot="{ row }">
             <template v-if="row.submissionInfo[problem.problemId]">
-              <el-tooltip effect="dark" placement="top">
+              <el-tooltip
+                effect="dark"
+                placement="top"
+              >
                 <div slot="content">
                   {{
                     JUDGE_STATUS[row.submissionInfo[problem.problemId].status]
@@ -175,16 +180,16 @@
   </div>
 </template>
 <script>
-import Avatar from 'vue-avatar';
-import { mapActions, mapGetters } from 'vuex';
-import { JUDGE_STATUS } from '@/common/constants';
-const Pagination = () => import('@/components/oj/common/Pagination');
-import api from '@/common/api';
-import { mapState } from 'vuex';
-import time from '@/common/time';
+import Avatar from "vue-avatar";
+import { mapActions, mapGetters } from "vuex";
+import { JUDGE_STATUS } from "@/common/constants";
+const Pagination = () => import("@/components/oj/common/Pagination");
+import api from "@/common/api";
+import { mapState } from "vuex";
+import time from "@/common/time";
 
 export default {
-  name: 'TrainingRank',
+  name: "TrainingRank",
   components: {
     Pagination,
     Avatar,
@@ -194,13 +199,17 @@ export default {
       total: 0,
       page: 1,
       limit: 30,
-      trainingID: '',
+      trainingID: "",
       dataRank: [],
       JUDGE_STATUS: {},
+      groupID: null,
     };
   },
   mounted() {
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
+    if (this.$route.params.groupID) {
+      this.groupID = this.$route.params.groupID;
+    }
     if (!this.trainingProblemList.length) {
       this.getTrainingProblemList();
     }
@@ -208,7 +217,7 @@ export default {
     this.getTrainingRankData();
   },
   methods: {
-    ...mapActions(['getTrainingProblemList']),
+    ...mapActions(["getTrainingProblemList"]),
 
     getTrainingRankData() {
       let data = {
@@ -226,49 +235,76 @@ export default {
     },
 
     getUserACSubmit(username) {
-      this.$router.push({
-        name: 'SubmissionList',
-        query: { username: username, status: 0 },
-      });
+      if (!this.groupID) {
+        this.$router.push({
+          name: "SubmissionList",
+          query: { username: username, status: 0 },
+        });
+      } else {
+        this.$router.push({
+          name: "GroupSubmissionList",
+          params: { groupID: this.groupID },
+          query: { username: username, status: 0 },
+        });
+      }
     },
     getUserHomeByUsername(uid, username) {
       this.$router.push({
-        name: 'UserHome',
+        name: "UserHome",
         query: { username: username, uid: uid },
       });
     },
     getTrainingProblemById(pid) {
-      this.$router.push({
-        name: 'TrainingProblemDetails',
-        params: {
-          trainingID: this.trainingID,
-          problemID: pid,
-        },
-      });
-    },
-    getUserProblemSubmission({ row, column }) {
-      if (
-        column.property !== 'rank' &&
-        column.property !== 'totalScore' &&
-        column.property !== 'username' &&
-        column.property !== 'realname' &&
-        column.property !== 'rating'
-      ) {
+      if (!this.groupID) {
         this.$router.push({
-          name: 'SubmissionList',
-          query: { username: row.username, problemID: column.property },
+          name: "TrainingProblemDetails",
+          params: {
+            trainingID: this.trainingID,
+            problemID: pid,
+          },
+        });
+      } else {
+        this.$router.push({
+          name: "GroupTrainingProblemDetails",
+          params: {
+            trainingID: this.trainingID,
+            groupID: this.groupID,
+            problemID: pid,
+          },
         });
       }
     },
+    getUserProblemSubmission({ row, column }) {
+      if (
+        column.property !== "rank" &&
+        column.property !== "totalScore" &&
+        column.property !== "username" &&
+        column.property !== "realname" &&
+        column.property !== "rating"
+      ) {
+        if (!this.groupID) {
+          this.$router.push({
+            name: "SubmissionList",
+            query: { username: row.username, problemID: column.property },
+          });
+        } else {
+          this.$router.push({
+            name: "GroupSubmissionList",
+            params: { groupID: this.groupID },
+            query: { username: row.username, problemID: column.property },
+          });
+        }
+      }
+    },
     cellClassName({ row, rowIndex, column, columnIndex }) {
-      if (column.property === 'username' && row.userCellClassName) {
+      if (column.property === "username" && row.userCellClassName) {
         return row.userCellClassName;
       }
     },
     applyToTable(dataRank) {
       dataRank.forEach((rank, i) => {
-        if (dataRank[i].gender == 'female') {
-          dataRank[i].userCellClassName = 'bg-female';
+        if (dataRank[i].gender == "female") {
+          dataRank[i].userCellClassName = "bg-female";
         }
       });
       this.dataRank = dataRank;
@@ -281,7 +317,7 @@ export default {
     ...mapState({
       trainingProblemList: (state) => state.training.trainingProblemList,
     }),
-    ...mapGetters(['isTrainingAdmin']),
+    ...mapGetters(["isTrainingAdmin"]),
     training() {
       return this.$store.state.training.training;
     },

@@ -3,27 +3,42 @@
     <div id="problem-main">
       <!--problem main-->
       <el-row class="problem-box">
-        <el-col :sm="24" :md="24" :lg="12" class="problem-left">
+        <el-col
+          :sm="24"
+          :md="24"
+          :lg="12"
+          class="problem-left"
+        >
           <el-tabs
             v-model="activeName"
             type="border-card"
             @tab-click="handleClickTab"
           >
-            <el-tab-pane name="problemDetail" v-loading="loading">
-              <span slot="label"
-                ><i class="fa fa-list-alt">
-                  {{ $t('m.Problem_Description') }}</i
-                >
+            <el-tab-pane
+              name="problemDetail"
+              v-loading="loading"
+            >
+              <span slot="label"><i class="fa fa-list-alt">
+                  {{ $t('m.Problem_Description') }}</i>
               </span>
-              <div :padding="10" shadow class="problem-detail">
-                <div slot="header" class="panel-title">
-                  <span>{{ problemData.problem.title }}</span
-                  ><br />
-                  <span v-if="contestID && !contestEnded"
-                    ><el-tag effect="plain" size="small">{{
+              <div
+                :padding="10"
+                shadow
+                class="problem-detail"
+              >
+                <div
+                  slot="header"
+                  class="panel-title"
+                >
+                  <span>{{ problemData.problem.title }}</span><br />
+                  <span v-if="contestID && !contestEnded">
+                    <el-tag
+                      effect="plain"
+                      size="small"
+                    >{{
                       $t('m.Contest_Problem')
-                    }}</el-tag></span
-                  >
+                    }}</el-tag>
+                  </span>
                   <div
                     v-else-if="problemData.tags.length > 0"
                     class="problem-tag"
@@ -39,8 +54,7 @@
                         type="primary"
                         style="cursor: pointer;"
                         effect="plain"
-                        >{{ $t('m.Show_Tags') }}</el-tag
-                      >
+                      >{{ $t('m.Show_Tags') }}</el-tag>
                       <el-tag
                         v-for="(tag, index) in problemData.tags"
                         :key="index"
@@ -48,15 +62,17 @@
                         :color="tag.color ? tag.color : '#409eff'"
                         effect="dark"
                         style="margin-right:5px;margin-top:2px"
-                        >{{ tag.name }}</el-tag
-                      >
+                      >{{ tag.name }}</el-tag>
                     </el-popover>
                   </div>
                   <div
                     v-else-if="problemData.tags.length == 0"
                     class="problem-tag"
                   >
-                    <el-tag effect="plain" size="small">{{
+                    <el-tag
+                      effect="plain"
+                      size="small"
+                    >{{
                       $t('m.No_tag')
                     }}</el-tag>
                   </div>
@@ -66,77 +82,74 @@
                         type="primary"
                         :underline="false"
                         @click="goProblemDiscussion"
-                        ><i class="fa fa-comments" aria-hidden="true"></i>
-                        {{ $t('m.Problem_Discussion') }}</el-link
-                      ></span
-                    >
+                      ><i
+                          class="fa fa-comments"
+                          aria-hidden="true"
+                        ></i>
+                        {{ $t('m.Problem_Discussion') }}</el-link>
+                    </span>
                     <span>
                       <el-link
                         type="primary"
                         :underline="false"
                         @click="graphVisible = !graphVisible"
-                        ><i class="fa fa-pie-chart" aria-hidden="true"></i>
-                        {{ $t('m.Statistic') }}</el-link
-                      ></span
-                    >
+                      ><i
+                          class="fa fa-pie-chart"
+                          aria-hidden="true"
+                        ></i>
+                        {{ $t('m.Statistic') }}</el-link>
+                    </span>
                     <span>
                       <el-link
                         type="primary"
                         :underline="false"
                         @click="goProblemSubmission"
-                        ><i class="fa fa-bars" aria-hidden="true"></i>
-                        {{ $t('m.Solutions') }}</el-link
-                      ></span
-                    >
+                      ><i
+                          class="fa fa-bars"
+                          aria-hidden="true"
+                        ></i>
+                        {{ $t('m.Solutions') }}</el-link>
+                    </span>
                   </div>
                   <div class="question-intr">
                     <template v-if="!isCFProblem">
-                      <span
-                        >{{ $t('m.Time_Limit') }}：C/C++
+                      <span>{{ $t('m.Time_Limit') }}：C/C++
                         {{ problemData.problem.timeLimit }}MS，{{
                           $t('m.Other')
                         }}
-                        {{ problemData.problem.timeLimit * 2 }}MS</span
-                      ><br />
-                      <span
-                        >{{ $t('m.Memory_Limit') }}：C/C++
+                        {{ problemData.problem.timeLimit * 2 }}MS</span><br />
+                      <span>{{ $t('m.Memory_Limit') }}：C/C++
                         {{ problemData.problem.memoryLimit }}MB，{{
                           $t('m.Other')
                         }}
-                        {{ problemData.problem.memoryLimit * 2 }}MB</span
-                      ><br />
+                        {{ problemData.problem.memoryLimit * 2 }}MB</span><br />
                     </template>
 
                     <template v-else>
-                      <span
-                        >{{ $t('m.Time_Limit') }}：{{
+                      <span>{{ $t('m.Time_Limit') }}：{{
                           problemData.problem.timeLimit
-                        }}MS</span
-                      >
+                        }}MS</span>
                       <br />
-                      <span
-                        >{{ $t('m.Memory_Limit') }}：{{
+                      <span>{{ $t('m.Memory_Limit') }}：{{
                           problemData.problem.memoryLimit
-                        }}MB</span
-                      ><br />
+                        }}MB</span><br />
                     </template>
                     <template v-if="problemData.problem.difficulty != null">
-                      <span
-                        >{{ $t('m.Level') }}：<span
+                      <span>{{ $t('m.Level') }}：<span
                           class="el-tag el-tag--small"
                           :style="getLevelColor(problemData.problem.difficulty)"
-                          >{{
+                        >{{
                             getLevelName(problemData.problem.difficulty)
-                          }}</span
-                        ></span
-                      >
+                          }}</span></span>
                       <br />
                     </template>
                     <template v-if="problemData.problem.type == 1">
-                      <span
-                        >{{ $t('m.Score') }}：{{ problemData.problem.ioScore }}
+                      <span>{{ $t('m.Score') }}：{{ problemData.problem.ioScore }}
                       </span>
-                      <span v-if="!contestID" style="margin-left:5px;">
+                      <span
+                        v-if="!contestID"
+                        style="margin-left:5px;"
+                      >
                         {{ $t('m.OI_Rank_Score') }}：{{
                           calcOIRankScore(
                             problemData.problem.ioScore,
@@ -148,14 +161,11 @@
                     </template>
 
                     <template v-if="problemData.problem.author">
-                      <span
-                        >{{ $t('m.Created') }}：<el-link
+                      <span>{{ $t('m.Created') }}：<el-link
                           type="info"
                           class="author-name"
                           @click="goUserHome(problemData.problem.author)"
-                          >{{ problemData.problem.author }}</el-link
-                        ></span
-                      ><br />
+                        >{{ problemData.problem.author }}</el-link></span><br />
                     </template>
                   </div>
                 </div>
@@ -243,15 +253,16 @@
 
                   <template v-if="problemData.problem.source && !contestID">
                     <p class="title">{{ $t('m.Source') }}</p>
-                    <p class="content" v-html="problemData.problem.source"></p>
+                    <p
+                      class="content"
+                      v-html="problemData.problem.source"
+                    ></p>
                   </template>
                 </div>
               </div>
             </el-tab-pane>
             <el-tab-pane name="mySubmission">
-              <span slot="label"
-                ><i class="el-icon-time"></i> {{ $t('m.My_Submission') }}</span
-              >
+              <span slot="label"><i class="el-icon-time"></i> {{ $t('m.My_Submission') }}</span>
               <template v-if="!isAuthenticated">
                 <div style="margin:50px 0px;margin-left:-20px;">
                   <el-alert
@@ -280,14 +291,14 @@
                       min-width="96"
                     >
                       <template v-slot="{ row }">
-                        <span
-                          ><el-tooltip
+                        <span>
+                          <el-tooltip
                             :content="row.submitTime | localtime"
                             placement="top"
                           >
                             <span>{{ row.submitTime | fromNow }}</span>
-                          </el-tooltip></span
-                        >
+                          </el-tooltip>
+                        </span>
                       </template>
                     </vxe-table-column>
                     <vxe-table-column
@@ -301,12 +312,18 @@
                         }}</span>
                       </template>
                     </vxe-table-column>
-                    <vxe-table-column :title="$t('m.Time')" min-width="96">
+                    <vxe-table-column
+                      :title="$t('m.Time')"
+                      min-width="96"
+                    >
                       <template v-slot="{ row }">
                         <span>{{ submissionTimeFormat(row.time) }}</span>
                       </template>
                     </vxe-table-column>
-                    <vxe-table-column :title="$t('m.Memory')" min-width="96">
+                    <vxe-table-column
+                      :title="$t('m.Memory')"
+                      min-width="96"
+                    >
                       <template v-slot="{ row }">
                         <span>{{ submissionMemoryFormat(row.memory) }}</span>
                       </template>
@@ -322,8 +339,7 @@
                             effect="plain"
                             size="medium"
                             :type="JUDGE_STATUS[row.status]['type']"
-                            >{{ row.score }}</el-tag
-                          >
+                          >{{ row.score }}</el-tag>
                         </template>
                         <template v-else-if="row.score != null">
                           <el-tooltip placement="top">
@@ -343,17 +359,14 @@
                               effect="plain"
                               size="medium"
                               :type="JUDGE_STATUS[row.status]['type']"
-                              >{{ row.score }}</el-tag
-                            >
+                            >{{ row.score }}</el-tag>
                           </el-tooltip>
                         </template>
-                        <template
-                          v-else-if="
+                        <template v-else-if="
                             row.status == JUDGE_STATUS_RESERVE['Pending'] ||
                               row.status == JUDGE_STATUS_RESERVE['Compiling'] ||
                               row.status == JUDGE_STATUS_RESERVE['Judging']
-                          "
-                        >
+                          ">
                           <el-tag
                             effect="plain"
                             size="medium"
@@ -367,8 +380,7 @@
                             effect="plain"
                             size="medium"
                             :type="JUDGE_STATUS[row.status]['type']"
-                            >--</el-tag
-                          >
+                          >--</el-tag>
                         </template>
                       </template>
                     </vxe-table-column>
@@ -388,8 +400,7 @@
                           <el-button
                             type="text"
                             @click="showSubmitDetail(row)"
-                            >{{ row.language }}</el-button
-                          >
+                          >{{ row.language }}</el-button>
                         </el-tooltip>
                       </template>
                     </vxe-table-column>
@@ -404,9 +415,11 @@
               </template>
             </el-tab-pane>
 
-            <el-tab-pane name="extraFile" v-if="userExtraFile">
-              <span slot="label"
-                ><i class="fa fa-file-code-o"> {{ $t('m.Problem_Annex') }}</i>
+            <el-tab-pane
+              name="extraFile"
+              v-if="userExtraFile"
+            >
+              <span slot="label"><i class="fa fa-file-code-o"> {{ $t('m.Problem_Annex') }}</i>
               </span>
               <div class="problem-detail">
                 <el-divider></el-divider>
@@ -423,7 +436,10 @@
                 </div>
                 <el-divider></el-divider>
 
-                <div class="markdown-body" v-if="fileContent">
+                <div
+                  class="markdown-body"
+                  v-if="fileContent"
+                >
                   <h3>
                     {{ fileName }}
                     <el-button
@@ -476,7 +492,12 @@
             ></el-button>
           </el-tooltip>
         </div>
-        <el-col :sm="24" :md="24" :lg="12" class="problem-right">
+        <el-col
+          :sm="24"
+          :md="24"
+          :lg="12"
+          class="problem-right"
+        >
           <el-card
             :padding="10"
             id="submit-code"
@@ -501,17 +522,24 @@
               :isRemoteJudge="problemData.problem.isRemote"
             ></CodeMirror>
             <el-row>
-              <el-col :sm="24" :md="10" :lg="10" style="margin-top:4px;">
+              <el-col
+                :sm="24"
+                :md="10"
+                :lg="10"
+                style="margin-top:4px;"
+              >
                 <div v-if="!isAuthenticated">
                   <el-alert
                     type="info"
                     show-icon
                     effect="dark"
                     :closable="false"
-                    >{{ $t('m.Please_login_first') }}</el-alert
-                  >
+                  >{{ $t('m.Please_login_first') }}</el-alert>
                 </div>
-                <div class="status" v-if="statusVisible">
+                <div
+                  class="status"
+                  v-if="statusVisible"
+                >
                   <template v-if="result.status == JUDGE_STATUS_RESERVE['sf']">
                     <span>{{ $t('m.Status') }}:</span>
                     <el-tag
@@ -523,27 +551,22 @@
                       {{ submissionStatus.text }}
                     </el-tag>
                   </template>
-                  <template
-                    v-else-if="result.status == JUDGE_STATUS_RESERVE['snr']"
-                  >
+                  <template v-else-if="result.status == JUDGE_STATUS_RESERVE['snr']">
                     <el-alert
                       type="warning"
                       show-icon
                       effect="dark"
                       :closable="false"
-                      >{{ $t('m.Submitted_Not_Result') }}</el-alert
-                    >
+                    >{{ $t('m.Submitted_Not_Result') }}</el-alert>
                   </template>
-                  <template
-                    v-else-if="
+                  <template v-else-if="
                       !this.contestID ||
                         (this.contestID &&
                           ContestRealTimePermission &&
                           this.contestRuleType == RULE_TYPE.OI) ||
                         (this.contestID &&
                           this.contestRuleType == RULE_TYPE.ACM)
-                    "
-                  >
+                    ">
                     <span>{{ $t('m.Status') }}:</span>
                     <el-tooltip
                       class="item"
@@ -557,57 +580,51 @@
                         :color="submissionStatus.color"
                         @click.native="submissionRoute"
                       >
-                        <i class="fa fa-circle" aria-hidden="true"></i>
+                        <i
+                          class="fa fa-circle"
+                          aria-hidden="true"
+                        ></i>
                         {{ submissionStatus.text }}
                       </el-tag>
                     </el-tooltip>
                   </template>
-                  <template
-                    v-else-if="
+                  <template v-else-if="
                       this.contestID &&
                         !ContestRealTimePermission &&
                         this.contestRuleType == RULE_TYPE.OI
-                    "
-                  >
+                    ">
                     <el-alert
                       type="success"
                       show-icon
                       effect="dark"
                       :closable="false"
-                      >{{ $t('m.Submitted_successfully') }}</el-alert
-                    >
+                    >{{ $t('m.Submitted_successfully') }}</el-alert>
                   </template>
                 </div>
-                <div
-                  v-else-if="
+                <div v-else-if="
                     (!this.contestID ||
                       this.contestRuleType == RULE_TYPE.ACM) &&
                       problemData.myStatus == JUDGE_STATUS_RESERVE.ac
-                  "
-                >
+                  ">
                   <el-alert
                     type="success"
                     show-icon
                     effect="dark"
                     :closable="false"
-                    >{{ $t('m.You_have_solved_the_problem') }}</el-alert
-                  >
+                  >{{ $t('m.You_have_solved_the_problem') }}</el-alert>
                 </div>
-                <div
-                  v-else-if="
+                <div v-else-if="
                     this.contestID &&
                       !ContestRealTimePermission &&
                       this.contestRuleType == RULE_TYPE.OI &&
                       submissionExists
-                  "
-                >
+                  ">
                   <el-alert
                     type="success"
                     show-icon
                     effect="dark"
                     :closable="false"
-                    >{{ $t('m.You_have_submitted_a_solution') }}</el-alert
-                  >
+                  >{{ $t('m.You_have_submitted_a_solution') }}</el-alert>
                 </div>
                 <div v-if="contestEnded">
                   <el-alert
@@ -615,12 +632,16 @@
                     show-icon
                     effect="dark"
                     :closable="false"
-                    >{{ $t('m.Contest_has_ended') }}</el-alert
-                  >
+                  >{{ $t('m.Contest_has_ended') }}</el-alert>
                 </div>
               </el-col>
 
-              <el-col :sm="24" :md="14" :lg="14" style="margin-top:4px;">
+              <el-col
+                :sm="24"
+                :md="14"
+                :lg="14"
+                style="margin-top:4px;"
+              >
                 <template v-if="captchaRequired">
                   <div class="captcha-container">
                     <el-tooltip
@@ -628,9 +649,15 @@
                       content="Click to refresh"
                       placement="top"
                     >
-                      <img :src="captchaSrc" @click="getCaptchaSrc" />
+                      <img
+                        :src="captchaSrc"
+                        @click="getCaptchaSrc"
+                      />
                     </el-tooltip>
-                    <el-input v-model="captchaCode" class="captcha-code" />
+                    <el-input
+                      v-model="captchaCode"
+                      class="captcha-code"
+                    />
                   </div>
                 </template>
                 <el-button
@@ -649,11 +676,24 @@
                   type="success"
                   :class="openTestCaseDrawer?'tj-btn active':'tj-btn non-active'"
                   @click.native="openTestJudgeDrawer"
-                  effect="plain">
-                  <svg t="1653665263421" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1656" width="12" height="12" style="vertical-align: middle;">
-                    <path d="M1022.06544 583.40119c0 11.0558-4.034896 20.61962-12.111852 28.696576-8.077979 8.077979-17.639752 12.117992-28.690436 12.117992L838.446445 624.215758c0 72.690556-14.235213 134.320195-42.718941 184.89915l132.615367 133.26312c8.076956 8.065699 12.117992 17.634636 12.117992 28.690436 0 11.050684-4.034896 20.614503-12.117992 28.691459-7.653307 8.065699-17.209964 12.106736-28.690436 12.106736-11.475356 0-21.040199-4.041036-28.690436-12.106736L744.717737 874.15318c-2.124384 2.118244-5.308913 4.88424-9.558703 8.283664-4.259 3.3984-13.180184 9.463536-26.78504 18.171871-13.598716 8.715499-27.415396 16.473183-41.439808 23.276123-14.029528 6.797823-31.462572 12.966313-52.289923 18.49319-20.827351 5.517667-41.446971 8.28571-61.842487 8.28571L552.801776 379.38668l-81.611739 0 0 571.277058c-21.668509 0-43.250036-2.874467-64.707744-8.615215-21.473057-5.734608-39.960107-12.749372-55.476499-21.039175-15.518438-8.289804-29.541827-16.572444-42.077328-24.867364-12.541641-8.290827-21.781072-15.193027-27.739784-20.714787l-9.558703-8.93244L154.95056 998.479767c-8.500605 8.921183-18.699897 13.386892-30.606065 13.386892-10.201339 0-19.335371-3.40454-27.409257-10.202363-8.079002-7.652284-12.437264-17.10968-13.080923-28.372188-0.633427-11.263531 2.659573-21.143553 9.893324-29.647227l128.787178-144.727219c-24.650423-48.464805-36.980239-106.699114-36.980239-174.710091L42.738895 624.207571c-11.057847 0-20.61655-4.041036-28.690436-12.111852-8.079002-8.082072-12.120039-17.640776-12.120039-28.696576 0-11.050684 4.041036-20.61962 12.120039-28.689413 8.073886-8.072863 17.632589-12.107759 28.690436-12.107759l142.81466 0L185.553555 355.156836l-110.302175-110.302175c-8.074909-8.077979-12.113899-17.640776-12.113899-28.691459 0-11.04966 4.044106-20.61962 12.113899-28.690436 8.071839-8.076956 17.638729-12.123109 28.691459-12.123109 11.056823 0 20.612457 4.052293 28.692482 12.123109l110.302175 110.302175 538.128077 0 110.303198-110.302175c8.070816-8.076956 17.632589-12.123109 28.690436-12.123109 11.050684 0 20.617573 4.052293 28.689413 12.123109 8.077979 8.070816 12.119015 17.640776 12.119015 28.690436 0 11.050684-4.041036 20.614503-12.119015 28.691459l-110.302175 110.302175 0 187.448206 142.815683 0c11.0558 0 20.618597 4.034896 28.690436 12.113899 8.076956 8.069793 12.117992 17.638729 12.117992 28.683273l0 0L1022.06544 583.40119 1022.06544 583.40119zM716.021162 216.158085 307.968605 216.158085c0-56.526411 19.871583-104.667851 59.616796-144.414087 39.733956-39.746236 87.88256-59.611679 144.411017-59.611679 56.529481 0 104.678084 19.865443 144.413064 59.611679C696.156742 111.48921 716.021162 159.631674 716.021162 216.158085L716.021162 216.158085 716.021162 216.158085 716.021162 216.158085z" 
-                      p-id="1657" 
-                      :fill="openTestCaseDrawer?'#ffffff':'#67c23a'">
+                  effect="plain"
+                >
+                  <svg
+                    t="1653665263421"
+                    class="icon"
+                    viewBox="0 0 1024 1024"
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    p-id="1656"
+                    width="12"
+                    height="12"
+                    style="vertical-align: middle;"
+                  >
+                    <path
+                      d="M1022.06544 583.40119c0 11.0558-4.034896 20.61962-12.111852 28.696576-8.077979 8.077979-17.639752 12.117992-28.690436 12.117992L838.446445 624.215758c0 72.690556-14.235213 134.320195-42.718941 184.89915l132.615367 133.26312c8.076956 8.065699 12.117992 17.634636 12.117992 28.690436 0 11.050684-4.034896 20.614503-12.117992 28.691459-7.653307 8.065699-17.209964 12.106736-28.690436 12.106736-11.475356 0-21.040199-4.041036-28.690436-12.106736L744.717737 874.15318c-2.124384 2.118244-5.308913 4.88424-9.558703 8.283664-4.259 3.3984-13.180184 9.463536-26.78504 18.171871-13.598716 8.715499-27.415396 16.473183-41.439808 23.276123-14.029528 6.797823-31.462572 12.966313-52.289923 18.49319-20.827351 5.517667-41.446971 8.28571-61.842487 8.28571L552.801776 379.38668l-81.611739 0 0 571.277058c-21.668509 0-43.250036-2.874467-64.707744-8.615215-21.473057-5.734608-39.960107-12.749372-55.476499-21.039175-15.518438-8.289804-29.541827-16.572444-42.077328-24.867364-12.541641-8.290827-21.781072-15.193027-27.739784-20.714787l-9.558703-8.93244L154.95056 998.479767c-8.500605 8.921183-18.699897 13.386892-30.606065 13.386892-10.201339 0-19.335371-3.40454-27.409257-10.202363-8.079002-7.652284-12.437264-17.10968-13.080923-28.372188-0.633427-11.263531 2.659573-21.143553 9.893324-29.647227l128.787178-144.727219c-24.650423-48.464805-36.980239-106.699114-36.980239-174.710091L42.738895 624.207571c-11.057847 0-20.61655-4.041036-28.690436-12.111852-8.079002-8.082072-12.120039-17.640776-12.120039-28.696576 0-11.050684 4.041036-20.61962 12.120039-28.689413 8.073886-8.072863 17.632589-12.107759 28.690436-12.107759l142.81466 0L185.553555 355.156836l-110.302175-110.302175c-8.074909-8.077979-12.113899-17.640776-12.113899-28.691459 0-11.04966 4.044106-20.61962 12.113899-28.690436 8.071839-8.076956 17.638729-12.123109 28.691459-12.123109 11.056823 0 20.612457 4.052293 28.692482 12.123109l110.302175 110.302175 538.128077 0 110.303198-110.302175c8.070816-8.076956 17.632589-12.123109 28.690436-12.123109 11.050684 0 20.617573 4.052293 28.689413 12.123109 8.077979 8.070816 12.119015 17.640776 12.119015 28.690436 0 11.050684-4.041036 20.614503-12.119015 28.691459l-110.302175 110.302175 0 187.448206 142.815683 0c11.0558 0 20.618597 4.034896 28.690436 12.113899 8.076956 8.069793 12.117992 17.638729 12.117992 28.683273l0 0L1022.06544 583.40119 1022.06544 583.40119zM716.021162 216.158085 307.968605 216.158085c0-56.526411 19.871583-104.667851 59.616796-144.414087 39.733956-39.746236 87.88256-59.611679 144.411017-59.611679 56.529481 0 104.678084 19.865443 144.413064 59.611679C696.156742 111.48921 716.021162 159.631674 716.021162 216.158085L716.021162 216.158085 716.021162 216.158085 716.021162 216.158085z"
+                      p-id="1657"
+                      :fill="openTestCaseDrawer?'#ffffff':'#67c23a'"
+                    >
                     </path>
                   </svg>
                   <span style="vertical-align: middle;">
@@ -667,20 +707,36 @@
       </el-row>
     </div>
 
-    <el-dialog :visible.sync="graphVisible" width="400px">
+    <el-dialog
+      :visible.sync="graphVisible"
+      width="400px"
+    >
       <div id="pieChart-detail">
-        <ECharts :options="largePie" :initOptions="largePieInitOpts"></ECharts>
+        <ECharts
+          :options="largePie"
+          :initOptions="largePieInitOpts"
+        ></ECharts>
       </div>
       <div slot="footer">
-        <el-button type="ghost" @click="graphVisible = false" size="small">{{
+        <el-button
+          type="ghost"
+          @click="graphVisible = false"
+          size="small"
+        >{{
           $t('m.Close')
         }}</el-button>
       </div>
     </el-dialog>
 
-    <el-dialog :visible.sync="submitPwdVisible" width="340px">
+    <el-dialog
+      :visible.sync="submitPwdVisible"
+      width="340px"
+    >
       <el-form>
-        <el-form-item :label="$t('m.Enter_the_contest_password')" required>
+        <el-form-item
+          :label="$t('m.Enter_the_contest_password')"
+          required
+        >
           <el-input
             :placeholder="$t('m.Enter_the_contest_password')"
             v-model="submitPwd"
@@ -701,9 +757,9 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
-import storage from '@/common/storage';
-import utils from '@/common/utils';
+import { mapGetters, mapActions } from "vuex";
+import storage from "@/common/storage";
+import utils from "@/common/utils";
 import {
   JUDGE_STATUS,
   CONTEST_STATUS,
@@ -712,18 +768,18 @@ import {
   buildIndividualLanguageAndSettingKey,
   RULE_TYPE,
   PROBLEM_LEVEL,
-} from '@/common/constants';
-import { pie, largePie } from './chartData';
-import api from '@/common/api';
-import myMessage from '@/common/message';
-import { addCodeBtn } from '@/common/codeblock';
-const CodeMirror = () => import('@/components/oj/common/CodeMirror.vue');
-import Pagination from '@/components/oj/common/Pagination';
+} from "@/common/constants";
+import { pie, largePie } from "./chartData";
+import api from "@/common/api";
+import myMessage from "@/common/message";
+import { addCodeBtn } from "@/common/codeblock";
+const CodeMirror = () => import("@/components/oj/common/CodeMirror.vue");
+import Pagination from "@/components/oj/common/Pagination";
 // 只显示这些状态的图形占用
-const filtedStatus = ['wa', 'ce', 'ac', 'pa', 'tle', 'mle', 're', 'pe'];
+const filtedStatus = ["wa", "ce", "ac", "pa", "tle", "mle", "re", "pe"];
 
 export default {
-  name: 'ProblemDetails',
+  name: "ProblemDetails",
   components: {
     CodeMirror,
     Pagination,
@@ -734,23 +790,23 @@ export default {
       captchaRequired: false,
       graphVisible: false,
       submissionExists: false,
-      captchaCode: '',
-      captchaSrc: '',
+      captchaCode: "",
+      captchaSrc: "",
       contestID: 0,
       groupID: null,
-      problemID: '',
+      problemID: "",
       trainingID: null,
       submitting: false,
-      code: '',
-      language: '',
+      code: "",
+      language: "",
       isRemote: false,
-      theme: 'solarized',
-      fontSize: '14px',
+      theme: "solarized",
+      fontSize: "14px",
       tabSize: 4,
-      submissionId: '',
+      submissionId: "",
       submitted: false,
       submitPwdVisible: false,
-      submitPwd: '',
+      submitPwd: "",
       result: {
         status: 9,
       },
@@ -767,8 +823,8 @@ export default {
       largePie: largePie,
       // echarts 无法获取隐藏dom的大小，需手动指定
       largePieInitOpts: {
-        width: '380',
-        height: '380',
+        width: "380",
+        height: "380",
       },
       JUDGE_STATUS_RESERVE: {},
       JUDGE_STATUS: {},
@@ -776,18 +832,18 @@ export default {
       RULE_TYPE: {},
       toResetWatch: false,
       toWatchProblem: false,
-      activeName: 'problemDetail',
+      activeName: "problemDetail",
       loadingTable: false,
       mySubmission_total: 0,
       mySubmission_limit: 15,
       mySubmission_currentPage: 1,
       mySubmissions: [],
       loading: false,
-      bodyClass: '',
+      bodyClass: "",
       userExtraFile: null,
-      fileContent: '',
-      fileName: '',
-      openTestCaseDrawer:false
+      fileContent: "",
+      fileName: "",
+      openTestCaseDrawer: false,
     };
   },
   created() {
@@ -796,8 +852,8 @@ export default {
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
     this.PROBLEM_LEVEL = Object.assign({}, PROBLEM_LEVEL);
     this.RULE_TYPE = Object.assign({}, RULE_TYPE);
-    if (this.$route.name === 'ProblemDetails') {
-      this.bodyClass = 'problem-body';
+    if (this.$route.name === "ProblemDetails") {
+      this.bodyClass = "problem-body";
     }
   },
 
@@ -806,11 +862,14 @@ export default {
     this.dragControllerDiv();
   },
   methods: {
-    ...mapActions(['changeDomTitle']),
-    initProblemCodeAndSetting(){
+    ...mapActions(["changeDomTitle"]),
+    initProblemCodeAndSetting() {
       // 获取缓存中的该题的做题代码，代码语言，代码风格
       let problemCodeAndSetting = storage.get(
-      buildProblemCodeAndSettingKey(this.$route.params.problemID, this.$route.params.contestID)
+        buildProblemCodeAndSettingKey(
+          this.$route.params.problemID,
+          this.$route.params.contestID
+        )
       );
       if (problemCodeAndSetting) {
         this.language = problemCodeAndSetting.language;
@@ -823,15 +882,15 @@ export default {
           buildIndividualLanguageAndSettingKey()
         );
         if (individualLanguageAndSetting) {
-            this.language = individualLanguageAndSetting.language;
-            this.theme = individualLanguageAndSetting.theme;
-            this.fontSize = individualLanguageAndSetting.fontSize;
-            this.tabSize = individualLanguageAndSetting.tabSize;
-          }
+          this.language = individualLanguageAndSetting.language;
+          this.theme = individualLanguageAndSetting.theme;
+          this.fontSize = individualLanguageAndSetting.fontSize;
+          this.tabSize = individualLanguageAndSetting.tabSize;
+        }
       }
     },
     handleClickTab({ name }) {
-      if (name == 'mySubmission' && this.isAuthenticated) {
+      if (name == "mySubmission" && this.isAuthenticated) {
         this.getMySubmission();
       }
     },
@@ -852,8 +911,8 @@ export default {
         }
       }
       let func = this.contestID
-        ? 'getContestSubmissionList'
-        : 'getSubmissionList';
+        ? "getContestSubmissionList"
+        : "getSubmissionList";
       this.loadingTable = true;
       api[func](this.mySubmission_limit, utils.filterEmptyValue(params))
         .then(
@@ -872,7 +931,7 @@ export default {
         });
     },
     getStatusColor(status) {
-      return 'el-tag el-tag--medium status-' + JUDGE_STATUS[status].color;
+      return "el-tag el-tag--medium status-" + JUDGE_STATUS[status].color;
     },
     submissionTimeFormat(time) {
       return utils.submissionTimeFormat(time);
@@ -886,35 +945,42 @@ export default {
       if (row.cid != 0) {
         // 比赛提交详情
         this.$router.push({
-          name: 'ContestSubmissionDeatil',
+          name: "ContestSubmissionDeatil",
           params: {
             contestID: this.$route.params.contestID,
             problemID: row.displayId,
             submitID: row.submitId,
           },
         });
+      } else if (this.groupID) {
+        this.$router.push({
+          name: "GroupSubmissionDeatil",
+          params: {
+            submitID: row.submitId,
+          },
+        });
       } else {
         this.$router.push({
-          name: 'SubmissionDeatil',
+          name: "SubmissionDeatil",
           params: { submitID: row.submitId },
         });
       }
     },
 
     dragControllerDiv() {
-      var resize = document.getElementsByClassName('problem-resize');
-      var left = document.getElementsByClassName('problem-left');
-      var right = document.getElementsByClassName('problem-right');
-      var box = document.getElementsByClassName('problem-box');
+      var resize = document.getElementsByClassName("problem-resize");
+      var left = document.getElementsByClassName("problem-left");
+      var right = document.getElementsByClassName("problem-right");
+      var box = document.getElementsByClassName("problem-box");
       const _this = this;
       for (let i = 0; i < resize.length; i++) {
         // 鼠标按下事件
-        resize[i].onmousedown = function(e) {
+        resize[i].onmousedown = function (e) {
           //颜色改变提醒
-          resize[i].style.background = '#818181';
+          resize[i].style.background = "#818181";
           var startX = e.clientX;
           // 鼠标拖动事件
-          document.onmousemove = function(e) {
+          document.onmousemove = function (e) {
             resize[i].left = startX;
             var endX = e.clientX;
             var moveLen = resize[i].left + (endX - startX); // （endx-startx）=移动的距离。resize[i].left+移动的距离=左边区域最后的宽度
@@ -923,9 +989,9 @@ export default {
             if (moveLen > maxT - 580) moveLen = maxT - 580; //右边区域最小宽度为580px
             resize[i].style.left = moveLen; // 设置左侧区域的宽度
             for (let j = 0; j < left.length; j++) {
-              left[j].style.width = moveLen + 'px';
+              left[j].style.width = moveLen + "px";
               let tmp = box[i].clientWidth - moveLen - 11;
-              right[j].style.width = tmp + 'px';
+              right[j].style.width = tmp + "px";
               if (tmp > 0) {
                 _this.toResetWatch = false;
               }
@@ -935,9 +1001,9 @@ export default {
             }
           };
           // 鼠标松开事件
-          document.onmouseup = function(evt) {
+          document.onmouseup = function (evt) {
             //颜色恢复
-            resize[i].style.background = '#d6d6d6';
+            resize[i].style.background = "#d6d6d6";
             document.onmousemove = null;
             document.onmouseup = null;
             resize[i].releaseCapture && resize[i].releaseCapture(); //当你不在需要继续获得鼠标消息就要应该调用ReleaseCapture()释放掉
@@ -953,24 +1019,24 @@ export default {
         this.toWatchProblem = false;
         return;
       }
-      var resize = document.getElementsByClassName('problem-resize');
-      var left = document.getElementsByClassName('problem-left');
-      var right = document.getElementsByClassName('problem-right');
-      var box = document.getElementsByClassName('problem-box');
+      var resize = document.getElementsByClassName("problem-resize");
+      var left = document.getElementsByClassName("problem-left");
+      var right = document.getElementsByClassName("problem-right");
+      var box = document.getElementsByClassName("problem-box");
       for (let i = 0; i < resize.length; i++) {
         resize[i].style.left = box[i].clientWidth - 11;
         for (let j = 0; j < left.length; j++) {
-          left[j].style.width = box[i].clientWidth - 11 + 'px';
-          right[j].style.width = '0px';
+          left[j].style.width = box[i].clientWidth - 11 + "px";
+          right[j].style.width = "0px";
         }
       }
       this.toResetWatch = true;
     },
     resetWatch(minLeft = false) {
-      var resize = document.getElementsByClassName('problem-resize');
-      var left = document.getElementsByClassName('problem-left');
-      var right = document.getElementsByClassName('problem-right');
-      var box = document.getElementsByClassName('problem-box');
+      var resize = document.getElementsByClassName("problem-resize");
+      var left = document.getElementsByClassName("problem-left");
+      var right = document.getElementsByClassName("problem-right");
+      var box = document.getElementsByClassName("problem-box");
       for (let i = 0; i < resize.length; i++) {
         let leftWidth = 0;
         if (minLeft) {
@@ -980,8 +1046,8 @@ export default {
         }
         resize[i].style.left = leftWidth - 11;
         for (let j = 0; j < left.length; j++) {
-          left[j].style.width = leftWidth - 11 + 'px';
-          right[j].style.width = box[i].clientWidth - leftWidth + 'px';
+          left[j].style.width = leftWidth - 11 + "px";
+          right[j].style.width = box[i].clientWidth - leftWidth + "px";
         }
       }
       this.toResetWatch = false;
@@ -998,15 +1064,15 @@ export default {
         this.trainingID = this.$route.params.trainingID;
       }
       let func =
-        this.$route.name === 'ContestProblemDetails'
-          ? 'getContestProblem'
-          : 'getProblem';
+        this.$route.name === "ContestProblemDetails"
+          ? "getContestProblem"
+          : "getProblem";
       this.loading = true;
       api[func](this.problemID, this.contestID, this.groupID).then(
         (res) => {
           let result = res.data.data;
           this.changeDomTitle({ title: result.problem.title });
-          result['myStatus'] = -10; // 设置默认值
+          result["myStatus"] = -10; // 设置默认值
 
           result.problem.examples = utils.stringToExamples(
             result.problem.examples
@@ -1065,7 +1131,7 @@ export default {
           this.changePie(result.problemCount);
 
           // 在beforeRouteEnter中修改了, 说明本地有code，无需加载template
-          if (this.code !== '') {
+          if (this.code !== "") {
             return;
           }
           if (this.problemData.languages.length != 0) {
@@ -1101,8 +1167,8 @@ export default {
       }
 
       let data = [
-        { name: 'WA', value: total - acNum },
-        { name: 'AC', value: acNum },
+        { name: "WA", value: total - acNum },
+        { name: "AC", value: acNum },
       ];
       this.pie.series[0].data = data;
       // 只把大图的AC selected下，这里需要做一下deepcopy
@@ -1112,10 +1178,10 @@ export default {
 
       // 根据结果设置legend,没有提交过的legend不显示
       let legend = Object.keys(problemData).map((ele) =>
-        (ele + '').toUpperCase()
+        (ele + "").toUpperCase()
       );
       if (legend.length === 0) {
-        legend.push('AC', 'WA');
+        legend.push("AC", "WA");
       }
       this.largePie.legend.data = legend;
 
@@ -1126,24 +1192,24 @@ export default {
       let largePieData = [];
       Object.keys(problemData).forEach((ele) => {
         largePieData.push({
-          name: (ele + '').toUpperCase(),
+          name: (ele + "").toUpperCase(),
           value: problemData[ele],
         });
       });
-      largePieData.push({ name: 'AC', value: acCount });
+      largePieData.push({ name: "AC", value: acCount });
       this.largePie.series[0].data = largePieData;
     },
 
     goProblemSubmission() {
       if (this.contestID) {
         this.$router.push({
-          name: 'ContestSubmissionList',
+          name: "ContestSubmissionList",
           params: { contestID: this.contestID },
           query: { problemID: this.problemID, completeProblemID: true },
         });
       } else if (this.groupID) {
         this.$router.push({
-          name: 'GroupSubmissionList',
+          name: "GroupSubmissionList",
           query: {
             problemID: this.problemID,
             completeProblemID: true,
@@ -1152,7 +1218,7 @@ export default {
         });
       } else {
         this.$router.push({
-          name: 'SubmissionList',
+          name: "SubmissionList",
           query: {
             problemID: this.problemID,
             completeProblemID: true,
@@ -1163,12 +1229,12 @@ export default {
     goProblemDiscussion() {
       if (this.groupID) {
         this.$router.push({
-          name: 'GroupProblemDiscussion',
+          name: "GroupProblemDiscussion",
           params: { problemID: this.problemID, groupID: this.groupID },
         });
       } else {
         this.$router.push({
-          name: 'ProblemDiscussion',
+          name: "ProblemDiscussion",
           params: { problemID: this.problemID },
         });
       }
@@ -1180,7 +1246,7 @@ export default {
         if (this.problemData.codeTemplate[newLang]) {
           this.code = this.problemData.codeTemplate[newLang];
         } else {
-          this.code = '';
+          this.code = "";
         }
       }
       this.language = newLang;
@@ -1190,12 +1256,12 @@ export default {
     },
     onResetToTemplate() {
       this.$confirm(
-        this.$i18n.t('m.Are_you_sure_you_want_to_reset_your_code'),
-        'Tips',
+        this.$i18n.t("m.Are_you_sure_you_want_to_reset_your_code"),
+        "Tips",
         {
-          cancelButtonText: this.$i18n.t('m.Cancel'),
-          confirmButtonText: this.$i18n.t('m.OK'),
-          type: 'warning',
+          cancelButtonText: this.$i18n.t("m.Cancel"),
+          confirmButtonText: this.$i18n.t("m.OK"),
+          type: "warning",
         }
       )
         .then(() => {
@@ -1203,7 +1269,7 @@ export default {
           if (codeTemplate && codeTemplate[this.language]) {
             this.code = codeTemplate[this.language];
           } else {
-            this.code = '';
+            this.code = "";
           }
         })
         .catch(() => {});
@@ -1223,11 +1289,11 @@ export default {
               // status不为判题和排队中才表示此次判题结束
               if (
                 res.data.data.submission.status !=
-                  JUDGE_STATUS_RESERVE['Pending'] &&
+                  JUDGE_STATUS_RESERVE["Pending"] &&
                 res.data.data.submission.status !=
-                  JUDGE_STATUS_RESERVE['Compiling'] &&
+                  JUDGE_STATUS_RESERVE["Compiling"] &&
                 res.data.data.submission.status !=
-                  JUDGE_STATUS_RESERVE['Judging']
+                  JUDGE_STATUS_RESERVE["Judging"]
               ) {
                 this.submitting = false;
                 this.submitted = false;
@@ -1253,12 +1319,12 @@ export default {
     checkContestPassword() {
       // 密码为空，需要重新输入
       if (!this.submitPwd) {
-        myMessage.warning(this.$i18n.t('m.Enter_the_contest_password'));
+        myMessage.warning(this.$i18n.t("m.Enter_the_contest_password"));
         return;
       }
-      api.registerContest(this.contestID + '', this.submitPwd).then(
+      api.registerContest(this.contestID + "", this.submitPwd).then(
         (res) => {
-          this.$store.commit('contestSubmitAccess', { submitAccess: true });
+          this.$store.commit("contestSubmitAccess", { submitAccess: true });
           this.submitPwdVisible = false;
           this.submitCode();
         },
@@ -1267,13 +1333,13 @@ export default {
     },
 
     submitCode() {
-      if (this.code.trim() === '') {
-        myMessage.error(this.$i18n.t('m.Code_can_not_be_empty'));
+      if (this.code.trim() === "") {
+        myMessage.error(this.$i18n.t("m.Code_can_not_be_empty"));
         return;
       }
 
       if (this.code.length > 65535) {
-        myMessage.error(this.$i18n.t('m.Code_Length_can_not_exceed_65535'));
+        myMessage.error(this.$i18n.t("m.Code_Length_can_not_exceed_65535"));
         return;
       }
 
@@ -1283,7 +1349,7 @@ export default {
         return;
       }
 
-      this.submissionId = '';
+      this.submissionId = "";
       this.result = { status: 9 };
       this.submitting = true;
       let data = {
@@ -1308,16 +1374,16 @@ export default {
             this.submissionExists = true;
             if (!detailsVisible) {
               this.$Modal.success({
-                title: 'Success',
-                content: this.$i18n.t('m.Submit_code_successfully'),
+                title: "Success",
+                content: this.$i18n.t("m.Submit_code_successfully"),
               });
               return;
             } else {
-              myMessage.success(this.$i18n.t('m.Submit_code_successfully'));
+              myMessage.success(this.$i18n.t("m.Submit_code_successfully"));
             }
             // 更新store的可提交权限
             if (!this.canSubmit) {
-              this.$store.commit('contestIntoAccess', { access: true });
+              this.$store.commit("contestIntoAccess", { access: true });
             }
             this.submitted = true;
             this.checkSubmissionStatus();
@@ -1340,13 +1406,13 @@ export default {
         if (this.submissionExists) {
           this.$confirm(
             this.$i18n.t(
-              'm.You_have_submission_in_this_problem_sure_to_cover_it'
+              "m.You_have_submission_in_this_problem_sure_to_cover_it"
             ),
-            'Warning',
+            "Warning",
             {
-              confirmButtonText: this.$i18n.t('m.OK'),
-              cancelButtonText: this.$i18n.t('m.Cancel'),
-              type: 'warning',
+              confirmButtonText: this.$i18n.t("m.OK"),
+              cancelButtonText: this.$i18n.t("m.Cancel"),
+              type: "warning",
             }
           )
             .then(() => {
@@ -1371,7 +1437,7 @@ export default {
       this.submitting = true;
       api.reSubmitRemoteJudge(submitId).then(
         (res) => {
-          myMessage.success(this.$i18n.t('m.Resubmitted_Successfully'));
+          myMessage.success(this.$i18n.t("m.Resubmitted_Successfully"));
           this.submitted = true;
           this.checkSubmissionStatus();
         },
@@ -1401,7 +1467,7 @@ export default {
     },
     goUserHome(username) {
       this.$router.push({
-        path: '/user-home',
+        path: "/user-home",
         query: { username },
       });
     },
@@ -1410,24 +1476,24 @@ export default {
     },
 
     onCopy(event) {
-      myMessage.success(this.$i18n.t('m.Copied_successfully'));
+      myMessage.success(this.$i18n.t("m.Copied_successfully"));
     },
     onCopyError(e) {
-      myMessage.success(this.$i18n.t('m.Copied_failed'));
+      myMessage.success(this.$i18n.t("m.Copied_failed"));
     },
-    openTestJudgeDrawer(){
+    openTestJudgeDrawer() {
       this.openTestCaseDrawer = !this.openTestCaseDrawer;
-    }
+    },
   },
   computed: {
     ...mapGetters([
-      'problemSubmitDisabled',
-      'contestRuleType',
-      'ContestRealTimePermission',
-      'contestStatus',
-      'isAuthenticated',
-      'canSubmit',
-      'websiteConfig'
+      "problemSubmitDisabled",
+      "contestRuleType",
+      "ContestRealTimePermission",
+      "contestStatus",
+      "isAuthenticated",
+      "canSubmit",
+      "websiteConfig",
     ]),
     contest() {
       return this.$store.state.contest.contest;
@@ -1437,15 +1503,15 @@ export default {
     },
     submissionStatus() {
       return {
-        text: JUDGE_STATUS[this.result.status]['name'],
-        color: JUDGE_STATUS[this.result.status]['rgb'],
+        text: JUDGE_STATUS[this.result.status]["name"],
+        color: JUDGE_STATUS[this.result.status]["rgb"],
       };
     },
     submissionRoute() {
       if (this.contestID) {
         // 比赛提交详情
         this.$router.push({
-          name: 'ContestSubmissionDeatil',
+          name: "ContestSubmissionDeatil",
           params: {
             contestID: this.contestID,
             problemID: this.problemID,
@@ -1454,66 +1520,69 @@ export default {
         });
       } else if (this.groupID) {
         this.$router.push({
-          name: 'GroupSubmissionDeatil',
+          name: "GroupSubmissionDeatil",
           params: { submitID: this.submissionId, gid: this.groupID },
         });
       } else {
         this.$router.push({
-          name: 'SubmissionDeatil',
+          name: "SubmissionDeatil",
           params: { submitID: this.submissionId },
         });
       }
     },
     isCFProblem() {
       if (
-        this.problemID.indexOf('CF-') == 0 ||
-        this.problemID.indexOf('GYM-') == 0
+        this.problemID.indexOf("CF-") == 0 ||
+        this.problemID.indexOf("GYM-") == 0
       ) {
         return true;
       } else {
         return false;
       }
     },
-    isShowProblemDiscussion(){
-      if(!this.contestID){
-        if(this.groupID){
-          if(this.websiteConfig.openGroupDiscussion){
+    isShowProblemDiscussion() {
+      if (!this.contestID) {
+        if (this.groupID) {
+          if (this.websiteConfig.openGroupDiscussion) {
             return true;
           }
-        }else{
-          if(this.websiteConfig.openPublicDiscussion){
+        } else {
+          if (this.websiteConfig.openPublicDiscussion) {
             return true;
           }
         }
       }
       return false;
     },
-    problemType(){
-      if(this.contestID){
+    problemType() {
+      if (this.contestID) {
         return "contest";
-      }else if(this.groupID){
+      } else if (this.groupID) {
         return "group";
-      }else{
-        return "public"
+      } else {
+        return "public";
       }
-    }
+    },
   },
   beforeRouteLeave(to, from, next) {
     // 防止切换组件后仍然不断请求
     clearInterval(this.refreshStatus);
-    storage.set(buildProblemCodeAndSettingKey(this.problemID, from.params.contestID), {
-      code: this.code,
-      language: this.language,
-      theme: this.theme,
-      fontSize: this.fontSize,
-      tabSize: this.tabSize
-    });
+    storage.set(
+      buildProblemCodeAndSettingKey(this.problemID, from.params.contestID),
+      {
+        code: this.code,
+        language: this.language,
+        theme: this.theme,
+        fontSize: this.fontSize,
+        tabSize: this.tabSize,
+      }
+    );
 
     storage.set(buildIndividualLanguageAndSettingKey(), {
       language: this.language,
       theme: this.theme,
       fontSize: this.fontSize,
-      tabSize: this.tabSize
+      tabSize: this.tabSize,
     });
 
     next();
@@ -1653,7 +1722,7 @@ a {
     display: block;
   }
   .problem-resize:hover .fold:before {
-    content: '';
+    content: "";
     position: absolute;
     display: block;
     width: 6px;
@@ -1774,7 +1843,7 @@ p.content {
 #submit-code .status {
   float: left;
 }
-.submission-status:hover{
+.submission-status:hover {
   cursor: pointer;
 }
 #submit-code .status span {
@@ -1813,18 +1882,18 @@ p.content {
   /* margin-top: 20px; */
   height: 350px;
 }
-.tj-btn{
+.tj-btn {
   margin-right: 15px;
   float: right;
   cursor: pointer;
 }
-.tj-btn.non-active{
+.tj-btn.non-active {
   border: 1px solid #32ca99;
 }
-.tj-btn.non-active:hover{
+.tj-btn.non-active:hover {
   background-color: #d5f1eb;
 }
-.tj-btn.active{
+.tj-btn.active {
   background-color: #67c23a;
   border-color: #67c23a;
   color: #fff;
