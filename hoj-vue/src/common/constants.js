@@ -133,6 +133,7 @@ export const JUDGE_STATUS_RESERVE={
   'Compiling':6,
   'Judging':7,
   'pa':8,
+  'Submitting':9,
   'sf':10,
 }
 

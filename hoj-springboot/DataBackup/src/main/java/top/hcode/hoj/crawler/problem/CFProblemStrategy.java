@@ -10,6 +10,7 @@ import top.hcode.hoj.pojo.entity.problem.Tag;
 import top.hcode.hoj.utils.CodeForcesUtils;
 import top.hcode.hoj.utils.Constants;
 
+import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,6 +26,8 @@ public class CFProblemStrategy extends ProblemStrategy {
     public static final String JUDGE_NAME = "CF";
     public static final String HOST = "https://codeforces.com";
     public static final String PROBLEM_URL = "/problemset/problem/%s/%s";
+
+    protected List<HttpCookie> cookies;
 
     public String getJudgeName() {
         return JUDGE_NAME;
@@ -59,12 +62,13 @@ public class CFProblemStrategy extends ProblemStrategy {
             throw new IllegalArgumentException("Codeforces: Incorrect problem id format!");
         }
 
-        String html = HttpRequest.get(getProblemUrl(contestId, problemNum))
+        HttpRequest request = HttpRequest.get(getProblemUrl(contestId, problemNum))
                 .header("cookie", "RCPC=" + CodeForcesUtils.getRCPC())
-                .timeout(20000)
-                .execute()
-                .body();
-
+                .timeout(20000);
+        if (cookies != null) {
+            request.cookie(cookies);
+        }
+        String html = request.execute().body();
         // 重定向失效，更新RCPC
         if (html.contains("Redirecting... Please, wait.")) {
             List<String> list = ReUtil.findAll("[a-z0-9]+[a-z0-9]{31}", html, 0, new ArrayList<>());
@@ -153,8 +157,8 @@ public class CFProblemStrategy extends ProblemStrategy {
             String input = inputExampleList.get(i)
                     .replaceAll("<br>", "\n")
                     .replaceAll("<br />", "\n")
-                    .replaceAll("<div .*?>","")
-                    .replaceAll("</div>","\n")
+                    .replaceAll("<div .*?>", "")
+                    .replaceAll("</div>", "\n")
                     .trim();
             sb.append(HtmlUtil.unescape(input)).append("</input>");
             sb.append("<output>");

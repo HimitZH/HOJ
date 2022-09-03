@@ -567,7 +567,7 @@
                         (this.contestID &&
                           this.contestRuleType == RULE_TYPE.ACM)
                     ">
-                    <span>{{ $t('m.Status') }}:</span>
+                    <span style="font-size: 14px;font-weight: bolder;">{{ $t('m.Status') }}:</span>
                     <el-tooltip
                       class="item"
                       effect="dark"
@@ -580,11 +580,21 @@
                         :color="submissionStatus.color"
                         @click.native="submissionRoute"
                       >
-                        <i
-                          class="fa fa-circle"
-                          aria-hidden="true"
-                        ></i>
-                        {{ submissionStatus.text }}
+                        <template v-if="this.result.status == JUDGE_STATUS_RESERVE['Pending'] 
+                        || this.result.status == JUDGE_STATUS_RESERVE['Compiling'] 
+                        || this.result.status == JUDGE_STATUS_RESERVE['Judging'] 
+                        || this.result.status == JUDGE_STATUS_RESERVE['Submitting']">
+                          <i class="el-icon-loading"></i> {{ submissionStatus.text }}
+                        </template>
+                        <template v-else-if="this.result.status == JUDGE_STATUS_RESERVE.ac">
+                          <i class="el-icon-success"> {{ submissionStatus.text }}</i>
+                        </template>
+                        <template v-else-if="this.result.status == JUDGE_STATUS_RESERVE.pa">
+                          <i class="el-icon-remove"> {{ submissionStatus.text }}</i>
+                        </template>
+                        <template v-else>
+                          <i class="el-icon-error"> {{ submissionStatus.text }}</i>
+                        </template>
                       </el-tag>
                     </el-tooltip>
                   </template>
@@ -1847,7 +1857,6 @@ p.content {
   cursor: pointer;
 }
 #submit-code .status span {
-  margin-right: 10px;
   margin-left: 10px;
 }
 .captcha-container {
