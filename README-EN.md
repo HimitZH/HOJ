@@ -71,6 +71,16 @@ Wait for the command execution to complete, and then run `docker ps`. When you s
 
 Modern browsers(chrome, firefox) and Internet Explorer 10+, also supports mobile browser.
 
+## Support & Contribution
+
+- If you think HOJ is helpful to you, please give the project a star.
+- If you found any bug, please feel free to contact us [QQ Group: 598587305 ](https://qm.qq.com/cgi-bin/qm/qr?k=WWGBZ5gfDiBZOcpNvM8xnZTfUq7BT4Rs&jump_from=webapi) or issue.
+- Thanks to everyone that contributes to this project.
+
+## License
+
+[MIT](http://opensource.org/licenses/MIT)
+
 ## Screenshots
 
 **Note: you can switch languages at the bottom of the page.  (Chinese & English)**
@@ -207,9 +217,3 @@ Modern browsers(chrome, firefox) and Internet Explorer 10+, also supports mobile
 
 
 ![评论区](https://img-blog.csdnimg.cn/20210509233845230.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
-
-
-
-## License
-
-[MIT](http://opensource.org/licenses/MIT)
