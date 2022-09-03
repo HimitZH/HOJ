@@ -21,6 +21,7 @@ import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.dao.problem.*;
+import top.hcode.hoj.exception.ProblemIDRepeatException;
 import top.hcode.hoj.mapper.ProblemMapper;
 import top.hcode.hoj.pojo.bo.Pair_;
 import top.hcode.hoj.pojo.dto.ProblemDto;
@@ -401,7 +402,7 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
         problemQueryWrapper.eq("problem_id", problemId);
         int existedProblem = problemMapper.selectCount(problemQueryWrapper);
         if (existedProblem > 0) {
-            throw new RuntimeException("The problem_id [" + problemId + "] already exists. Do not reuse it!");
+            throw new ProblemIDRepeatException("The problem_id [" + problemId + "] already exists. Do not reuse it!");
         }
 
 

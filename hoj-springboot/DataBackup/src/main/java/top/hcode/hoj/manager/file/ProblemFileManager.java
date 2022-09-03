@@ -15,21 +15,20 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusSystemErrorException;
 import top.hcode.hoj.common.result.ResultStatus;
-import top.hcode.hoj.pojo.dto.ProblemDto;
-import top.hcode.hoj.pojo.entity.problem.*;
-import top.hcode.hoj.pojo.vo.ImportProblemVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.dao.problem.LanguageEntityService;
 import top.hcode.hoj.dao.problem.ProblemCaseEntityService;
 import top.hcode.hoj.dao.problem.ProblemEntityService;
 import top.hcode.hoj.dao.problem.TagEntityService;
+import top.hcode.hoj.exception.ProblemIDRepeatException;
+import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.entity.problem.*;
+import top.hcode.hoj.pojo.vo.ImportProblemVo;
+import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.utils.Constants;
-
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -64,7 +63,6 @@ public class ProblemFileManager {
      * @Return
      * @Since 2021/5/27
      */
-    @Transactional(rollbackFor = Exception.class)
     public void importProblem(MultipartFile file) throws StatusFailException, StatusSystemErrorException {
 
         String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1);
@@ -234,8 +232,32 @@ public class ProblemFileManager {
         if (problemDtos.size() == 0) {
             throw new StatusFailException("警告：未成功导入一道以上的题目，请检查文件格式是否正确！");
         } else {
+            HashSet<String> repeatProblemIDSet = new HashSet<>();
+            HashSet<String> failedProblemIDSet = new HashSet<>();
+            int failedCount = 0;
             for (ProblemDto problemDto : problemDtos) {
-                problemEntityService.adminAddProblem(problemDto);
+                try {
+                    boolean isOk = problemEntityService.adminAddProblem(problemDto);
+                    if (!isOk) {
+                        failedCount++;
+                    }
+                } catch (ProblemIDRepeatException e) {
+                    repeatProblemIDSet.add(problemDto.getProblem().getProblemId());
+                    failedCount++;
+                } catch (Exception e) {
+                    log.error("", e);
+                    failedProblemIDSet.add(problemDto.getProblem().getProblemId());
+                    failedCount++;
+                }
+            }
+            if (failedCount > 0) {
+                int successCount = problemDtos.size() - failedCount;
+                String errMsg = "[导入结果] 成功数：" + successCount + ",  失败数：" + failedCount +
+                        ",  重复失败的题目ID：" + repeatProblemIDSet;
+                if (failedProblemIDSet.size() > 0) {
+                    errMsg = errMsg + "<br/>未知失败的题目ID：" + failedProblemIDSet;
+                }
+                throw new StatusFailException(errMsg);
             }
         }
     }

@@ -14,22 +14,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
+import top.hcode.hoj.dao.user.UserInfoEntityService;
+import top.hcode.hoj.dao.user.UserRecordEntityService;
+import top.hcode.hoj.dao.user.UserRoleEntityService;
 import top.hcode.hoj.manager.msg.AdminNoticeManager;
 import top.hcode.hoj.pojo.dto.AdminEditUserDto;
 import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.entity.user.UserRecord;
 import top.hcode.hoj.pojo.entity.user.UserRole;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.dao.user.UserInfoEntityService;
-import top.hcode.hoj.dao.user.UserRecordEntityService;
-import top.hcode.hoj.dao.user.UserRoleEntityService;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -147,69 +144,89 @@ public class AdminUserManager {
         }
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void insertBatchUser(List<List<String>> users) throws StatusFailException {
-        List<UserInfo> userInfoList = new LinkedList<>();
-        List<UserRole> userRoleList = new LinkedList<>();
-        List<UserRecord> userRecordList = new LinkedList<>();
+        List<String> successUidList = new LinkedList<>();
         if (users != null) {
+            HashSet<String> failedUserNameSet = new HashSet<>();
             for (List<String> user : users) {
-                String uuid = IdUtil.simpleUUID();
-                UserInfo userInfo = new UserInfo()
-                        .setUuid(uuid)
-                        .setUsername(user.get(0))
-                        .setPassword(SecureUtil.md5(user.get(1)))
-                        .setEmail(StringUtils.isEmpty(user.get(2)) ? null : user.get(2));
-
-                if (user.size() >= 4) {
-                    String realname = user.get(3);
-                    if (!StringUtils.isEmpty(realname)) {
-                        userInfo.setRealname(user.get(3));
+                try {
+                    String uuid = addNewUser(user);
+                    if (uuid != null) {
+                        successUidList.add(uuid);
+                    }else{
+                        failedUserNameSet.add(user.get(0));
                     }
+                } catch (Exception e) {
+                    failedUserNameSet.add(user.get(0));
                 }
-
-                if (user.size() >= 5) {
-                    String gender = user.get(4);
-                    if ("male".equals(gender.toLowerCase()) || "0".equals(gender)) {
-                        userInfo.setGender("male");
-                    } else if ("female".equals(gender.toLowerCase()) || "1".equals(gender)) {
-                        userInfo.setGender("female");
-                    }
-                }
-
-                if (user.size() >= 6) {
-                    String nickname = user.get(5);
-                    if (!StringUtils.isEmpty(nickname)) {
-                        userInfo.setNickname(nickname);
-                    }
-                }
-
-                if (user.size() >= 7) {
-                    String school = user.get(6);
-                    if (!StringUtils.isEmpty(school)) {
-                        userInfo.setSchool(school);
-                    }
-                }
-
-                userInfoList.add(userInfo);
-                userRoleList.add(new UserRole()
-                        .setRoleId(1002L)
-                        .setUid(uuid));
-                userRecordList.add(new UserRecord().setUid(uuid));
             }
-            boolean result1 = userInfoEntityService.saveBatch(userInfoList);
-            boolean result2 = userRoleEntityService.saveBatch(userRoleList);
-            boolean result3 = userRecordEntityService.saveBatch(userRecordList);
-            if (result1 && result2 && result3) {
-                // 异步同步系统通知
-                List<String> uidList = userInfoList.stream().map(UserInfo::getUuid).collect(Collectors.toList());
-                adminNoticeManager.syncNoticeToNewRegisterBatchUser(uidList);
-            } else {
-                throw new StatusFailException("删除失败");
+            // 异步同步系统通知
+            if (successUidList.size() > 0) {
+                adminNoticeManager.syncNoticeToNewRegisterBatchUser(successUidList);
+            }
+            if (failedUserNameSet.size() > 0) {
+                int failedCount = failedUserNameSet.size();
+                int successCount = users.size() - failedCount;
+                String errMsg = "[导入结果] 成功数：" + successCount + ",  失败数：" + failedCount +
+                        ",  失败的用户名：" + failedUserNameSet;
+                throw new StatusFailException(errMsg);
             }
         } else {
             throw new StatusFailException("插入的用户数据不能为空！");
         }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public String addNewUser(List<String> user) throws StatusFailException {
+        String uuid = IdUtil.simpleUUID();
+        UserInfo userInfo = new UserInfo()
+                .setUuid(uuid)
+                .setUsername(user.get(0))
+                .setPassword(SecureUtil.md5(user.get(1)))
+                .setEmail(user.size() <= 2 || StringUtils.isEmpty(user.get(2)) ? null : user.get(2));
+
+        if (user.size() >= 4) {
+            String realname = user.get(3);
+            if (!StringUtils.isEmpty(realname)) {
+                userInfo.setRealname(user.get(3));
+            }
+        }
+
+        if (user.size() >= 5) {
+            String gender = user.get(4);
+            if ("male".equals(gender.toLowerCase()) || "0".equals(gender)) {
+                userInfo.setGender("male");
+            } else if ("female".equals(gender.toLowerCase()) || "1".equals(gender)) {
+                userInfo.setGender("female");
+            }
+        }
+
+        if (user.size() >= 6) {
+            String nickname = user.get(5);
+            if (!StringUtils.isEmpty(nickname)) {
+                userInfo.setNickname(nickname);
+            }
+        }
+
+        if (user.size() >= 7) {
+            String school = user.get(6);
+            if (!StringUtils.isEmpty(school)) {
+                userInfo.setSchool(school);
+            }
+        }
+
+
+        boolean result1 = userInfoEntityService.save(userInfo);
+        UserRole userRole = new UserRole()
+                .setRoleId(1002L)
+                .setUid(uuid);
+        boolean result2 = userRoleEntityService.save(userRole);
+        UserRecord userRecord = new UserRecord().setUid(uuid);
+        boolean result3 = userRecordEntityService.save(userRecord);
+        if (!result1 || !result2 || !result3) {
+            throw new StatusFailException("生成用户失败");
+        }
+        return uuid;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -251,7 +268,7 @@ public class AdminUserManager {
             adminNoticeManager.syncNoticeToNewRegisterBatchUser(uidList);
             return MapUtil.builder().put("key", key).map();
         } else {
-            throw new StatusFailException("生成指定用户失败！");
+            throw new StatusFailException("生成指定用户失败！注意查看组合生成的用户名是否已有存在的！");
         }
     }
 }
