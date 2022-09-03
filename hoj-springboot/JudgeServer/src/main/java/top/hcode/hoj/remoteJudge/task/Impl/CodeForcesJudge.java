@@ -1,6 +1,5 @@
 package top.hcode.hoj.remoteJudge.task.Impl;
 
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.http.HttpRequest;
@@ -32,7 +31,7 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
     public static final String LOGIN_URL = "/enter";
     public static final String SUBMIT_URL = "/contest/%s/submit";
     public static final String SUBMISSION_RESULT_URL = "/api/user.status?handle=%s&from=1&count=%s";
-    public static final String CE_INFO_URL = "/data/submitSource";
+    public static final String SUBMIT_SOURCE_URL = "/data/submitSource";
     public static final String MY_SUBMISSION = "/problemset/status?my=on";
     public static final String SUBMISSION_BY_USERNAME = "/submissions/%s";
 
@@ -94,7 +93,6 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
             remoteJudgeDTO.setCookies(httpResponse.getCookies());
         }
 
-        long nowTime = DateUtil.currentSeconds();
         submitCode(remoteJudgeDTO);
         if (remoteJudgeDTO.getSubmitStatus() == 403) {
             // 如果提交出现403可能是cookie失效了，再执行登录，重新提交
@@ -210,7 +208,7 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
         } else {
             csrfToken = remoteJudgeDTO.getCsrfToken();
         }
-        HttpRequest httpRequest = HttpUtil.createPost(HOST + CE_INFO_URL)
+        HttpRequest httpRequest = HttpUtil.createPost(HOST + SUBMIT_SOURCE_URL)
                 .cookie(remoteJudgeDTO.getCookies())
                 .timeout(30000);
         httpRequest.form(MapUtil
