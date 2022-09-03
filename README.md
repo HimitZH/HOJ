@@ -1,4 +1,7 @@
 # Hcode Online Judge（HOJ）
+
+![logo](./logo.png)
+
 [![Java](https://img.shields.io/badge/Java-1.8-informational)](http://openjdk.java.net/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.2.6.RELEASE-success)](https://spring.io/projects/spring-boot)
 [![SpringCloud Alibaba](https://img.shields.io/badge/Spring%20Cloud%20Alibaba-2.2.1.RELEASE-success)](https://spring.io/projects/spring-cloud-alibaba)
@@ -10,9 +13,17 @@
 [![Gitee Star](https://gitee.com/himitzh0730/hoj/badge/star.svg)](https://gitee.com/himitzh0730/hoj)
 [![QQ Group 598587305](https://img.shields.io/badge/QQ%20Group-598587305-blue)](https://qm.qq.com/cgi-bin/qm/qr?k=WWGBZ5gfDiBZOcpNvM8xnZTfUq7BT4Rs&jump_from=webapi)
 
-## 一、前言
+简体中文| [English](./README-EN.md)
 
-基于前后端分离，分布式架构的在线测评平台（hoj），前端使用vue，后端主要使用springboot，redis，mysql，nacos等技术，**支持HDU、POJ、Codeforces（包括GYM）、AtCoder、SPOJ的Remote Judge判题，同时适配手机端、电脑端浏览，拥有讨论区与站内消息系统，支持私有训练、公开训练（题单），支持团队功能，还有完善的判题模式（普通测评、特殊测评、交互测评）和完善的比赛功能（打星队伍、关注队伍、外榜）。**
+## 一、总概
+
+- 基于Vue和Spring Boot、Spring Cloud Alibaba构建的前后端分离，分布式架构的评测系统
+- **支持多种评测语言：C、C++、C#、Python、PyPy、Go、Java、JavaScript、PHP**
+- **支持HDU、POJ、Codeforces（包括GYM）、AtCoder、SPOJ的Remote Judge评测**
+- **支持移动端、PC端浏览，拥有讨论区与站内消息系统**
+- **支持私有训练、公开训练（题单）和团队功能**
+- **完善的评测功能：普通测评、特殊测评、交互测评、在线自测、子任务分组评测**
+- **完善的比赛功能：打星队伍、关注队伍、外榜**
 
 |               在线Demo               |                   在线文档                   |             Github&Gitee仓库地址             |    QQ群    |
 | :--------------------------------: | :--------------------------------------: | :--------------------------------------: | :-------: |
@@ -31,42 +42,7 @@
 
 部署文档：[基于docker-compose部署](https://docs.hdoi.cn/deploy/docker)
 
-具体请看部署文档，已安装docker和docker-compose的可以执行以下命令快速部署
-
-**注意：**
-
-**1. 正式部署请自行修改配置，不要使用默认配置的密码，例如mysql、redis、nacos的密码**
-
-**2. 如果已经为了测试而使用默认配置启动来部署，建议删掉当前文件夹，重新执行以下部署流程，修改默认配置**
-
-```shell
-git clone https://gitee.com/himitzh0730/hoj-deploy.git && cd hoj-deploy && cd standAlone
-
-vim .env # 建议执行这一步，对默认配置进行修改。
-
-docker-compose up -d
-```
-
-根据网速情况，大约十到二十分钟即可安装完毕，全程无需人工干预。
-
-```shell
-docker ps # 查看当前运行的容器状态
-```
-
-1. 大概初始化启动需要一至两分钟，当看到所有的容器的状态status都为`UP`和`healthy`就代表 OJ 已经启动成功。
-
-   **注意：可能初始化过程中访问网页会出现服务器异常，此为正常现象，因为容器还在初始化中，请耐心等待容器状态为up和healthy，大概需要1~2分钟**
-
-2. 默认超级管理员账号与密码：**root / hoj123456**
-
-   **部署成功后，登录root账号进入后台（`http://ip/admin/conf`）修改邮箱配置，新用户才可以正常注册（因为账号注册与密码等修改操作需要通过邮件发送验证码）邮箱配置可以自行百度，开启使用例如QQ邮箱提供的POP3/SMTP服务：**
-
-   ```
-   Host: smtp.qq.com
-   Port: 465
-   Username: qq邮箱账号
-   Password: 开启SMTP服务后生成的随机授权码
-   ```
+部署仓库：https://gitee.com/himitzh0730/hoj-deploy
 
 ## 三、更新
 
@@ -143,7 +119,7 @@ docker ps # 查看当前运行的容器状态
 
 > 题目列表页
 
-![题目列表页](https://img-blog.csdnimg.cn/0ee61f329e094592b0a0cff55d12b404.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![题目列表](https://img-blog.csdnimg.cn/d9ba009c757d48b590debe3a409c571f.png)
 
 
 
@@ -199,6 +175,10 @@ docker ps # 查看当前运行的容器状态
 > 提交列表页
 
 ![在这里插入图片描述](https://img-blog.csdnimg.cn/20210609213021223.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+
+> 提交详情
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/4256087c5363478d9d4ff4631ebc178e.png)
 
 ### 7. 排行榜
 
