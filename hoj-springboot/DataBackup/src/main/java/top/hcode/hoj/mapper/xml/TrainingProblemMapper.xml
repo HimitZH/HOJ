@@ -4,8 +4,12 @@
 
 
     <select id="getTrainingProblemCount" resultType="java.lang.Long">
-        select p.id from training_problem tp,problem p
-        where tp.tid = #{tid} and tp.pid = p.id and p.auth = 1
+        select p.id
+        from training_problem tp,
+             problem p
+        where tp.tid = #{tid}
+          and tp.pid = p.id
+          and p.auth = 1
     </select>
 
 
@@ -22,25 +26,54 @@
     </resultMap>
 
     <select id="getTrainingProblemList" resultMap="map_TrainingProblemList">
-        SELECT p.id AS pid, p.problem_id, p.title, p.difficulty, p.type
-        ,(SELECT COUNT(*)
-            FROM judge j
-            WHERE j.cid = 0 AND j.pid = p.id AND j.status = 0
-        ) as ac,
-        (SELECT COUNT(*)
-            FROM judge j
-            WHERE j.cid = 0 AND j.pid = p.id
-        ) as total
+        SELECT p.id AS pid,
+               p.problem_id,
+               p.title,
+               p.difficulty,
+               p.type
+                ,
+               (SELECT COUNT(*)
+                FROM judge j
+                WHERE j.cid = 0
+                  AND j.pid = p.id
+                  AND j.status = 0
+               )    as ac,
+               (SELECT COUNT(*)
+                FROM judge j
+                WHERE j.cid = 0
+                  AND j.pid = p.id
+               )    as total
         FROM problem p,
-        training_problem tp
+             training_problem tp
         where p.id = tp.pid
-        and p.auth = 1
-        and tp.tid = #{tid}
+          and p.auth = 1
+          and tp.tid = #{tid}
         order by tp.`rank` asc
     </select>
 
     <!-- 子查询 :为了防止分页总数据数出错-->
     <select id="getProblemTag" resultType="top.hcode.hoj.pojo.entity.problem.Tag">
-        select t.* from tag t,problem_tag pt where t.id = pt.tid and pt.pid = #{pid}
+        select t.*
+        from tag t,
+             problem_tag pt
+        where t.id = pt.tid
+          and pt.pid = #{pid}
+    </select>
+
+
+    <select id="getPrivateTrainingProblemListByPid" resultType="top.hcode.hoj.pojo.entity.training.TrainingProblem">
+        SELECT tp.*
+        from (
+                 select t.id
+                 FROM training_register tr,
+                      training t
+                 where tr.tid = t.id
+                   and t.auth = 'Private'
+                   and tr.uid = #{uid}
+             ) tm
+                 left join
+             training_problem tp
+             on tm.id = tp.tid
+        where tp.pid = #{pid}
     </select>
 </mapper>

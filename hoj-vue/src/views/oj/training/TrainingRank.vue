@@ -46,10 +46,14 @@
 
             <span style="float:right;text-align:right">
               <a @click="getUserHomeByUsername(row.uid, row.username)">
-                <span class="contest-username"><span
-                    class="contest-rank-flag"
-                    v-if="row.gender == 'female'"
-                  >Girl</span>{{ row.username }}</span>
+                <span class="contest-username">
+                  <span class="contest-rank-flag" v-if="row.uid == userInfo.uid"
+                    >Me</span
+                  >
+                  <span class="contest-rank-flag" v-if="row.gender == 'female'"
+                    >Girl</span
+                  >
+                  {{ row.username }}</span>
                 <span
                   class="contest-school"
                   v-if="row.school"
@@ -80,10 +84,14 @@
 
             <span style="float:right;text-align:right">
               <a @click="getUserHomeByUsername(row.uid, row.username)">
-                <span class="contest-username"><span
-                    class="contest-rank-flag"
-                    v-if="row.gender == 'female'"
-                  >Girl</span>{{ row.username }}</span>
+                <span class="contest-username">
+                  <span class="contest-rank-flag" v-if="row.uid == userInfo.uid"
+                    >Me</span
+                  >
+                  <span class="contest-rank-flag" v-if="row.gender == 'female'"
+                    >Girl</span
+                  >
+                  {{ row.username }}</span>
                 <span
                   class="contest-school"
                   v-if="row.school"
@@ -277,7 +285,6 @@ export default {
     getUserProblemSubmission({ row, column }) {
       if (
         column.property !== "rank" &&
-        column.property !== "totalScore" &&
         column.property !== "username" &&
         column.property !== "realname" &&
         column.property !== "rating"
@@ -297,6 +304,15 @@ export default {
       }
     },
     cellClassName({ row, rowIndex, column, columnIndex }) {
+      if (row.username == this.userInfo.username) {
+        if (
+          column.property == 'rank' ||
+          column.property == 'username' ||
+          column.property == 'realname'
+        ) {
+          return 'own-submit-row';
+        }
+      }
       if (column.property === "username" && row.userCellClassName) {
         return row.userCellClassName;
       }
@@ -317,7 +333,7 @@ export default {
     ...mapState({
       trainingProblemList: (state) => state.training.trainingProblemList,
     }),
-    ...mapGetters(["isTrainingAdmin"]),
+    ...mapGetters(["isTrainingAdmin","userInfo"]),
     training() {
       return this.$store.state.training.training;
     },

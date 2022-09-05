@@ -9,6 +9,7 @@ import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusAccessDeniedException;
 import top.hcode.hoj.common.exception.StatusFailException;
@@ -360,24 +361,19 @@ public class TrainingManager {
      */
     @Async
     public void checkAndSyncTrainingRecord(Long pid, Long submitId, String uid) {
-
-        QueryWrapper<TrainingProblem> trainingProblemQueryWrapper = new QueryWrapper<>();
-        trainingProblemQueryWrapper.eq("pid", pid);
-
-        List<TrainingProblem> trainingProblemList = trainingProblemEntityService.list(trainingProblemQueryWrapper);
-        List<TrainingRecord> trainingRecordList = new ArrayList<>();
-        for (TrainingProblem trainingProblem : trainingProblemList) {
-            TrainingRecord trainingRecord = new TrainingRecord();
-            trainingRecord.setPid(pid)
-                    .setTid(trainingProblem.getTid())
-                    .setTpid(trainingProblem.getId())
-                    .setSubmitId(submitId)
-                    .setUid(uid);
-            trainingRecordList.add(trainingRecord);
-        }
-        if (trainingRecordList.size() > 0) {
+        List<TrainingProblem> trainingProblemList = trainingProblemEntityService.getPrivateTrainingProblemListByPid(pid, uid);
+        if (!CollectionUtils.isEmpty(trainingProblemList)) {
+            List<TrainingRecord> trainingRecordList = new ArrayList<>();
+            for (TrainingProblem trainingProblem : trainingProblemList) {
+                TrainingRecord trainingRecord = new TrainingRecord();
+                trainingRecord.setPid(pid)
+                        .setTid(trainingProblem.getTid())
+                        .setTpid(trainingProblem.getId())
+                        .setSubmitId(submitId)
+                        .setUid(uid);
+                trainingRecordList.add(trainingRecord);
+            }
             trainingRecordEntityService.saveBatch(trainingRecordList);
         }
     }
-
 }

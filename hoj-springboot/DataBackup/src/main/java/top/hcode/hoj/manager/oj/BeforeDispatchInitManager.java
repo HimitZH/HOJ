@@ -74,6 +74,9 @@ public class BeforeDispatchInitManager {
     @Resource
     private ContestValidator contestValidator;
 
+    @Resource
+    private TrainingManager trainingManager;
+
     @Autowired
     private GroupValidator groupValidator;
 
@@ -82,6 +85,7 @@ public class BeforeDispatchInitManager {
         UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
 
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
+        problemQueryWrapper.select("id","problem_id","auth","is_group","gid");
         problemQueryWrapper.eq("problem_id", problemId);
         Problem problem = problemEntityService.getOne(problemQueryWrapper, false);
 
@@ -100,9 +104,10 @@ public class BeforeDispatchInitManager {
         judge.setCpid(0L)
                 .setPid(problem.getId())
                 .setDisplayPid(problem.getProblemId());
-
         // 将新提交数据插入数据库
         judgeEntityService.save(judge);
+
+        trainingManager.checkAndSyncTrainingRecord(problem.getId(),judge.getSubmitId(),judge.getUid());
     }
 
 

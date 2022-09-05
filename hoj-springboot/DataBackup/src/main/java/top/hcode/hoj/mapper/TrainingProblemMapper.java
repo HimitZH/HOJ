@@ -17,4 +17,5 @@ public interface TrainingProblemMapper extends BaseMapper<TrainingProblem> {
 
     public List<ProblemVo> getTrainingProblemList(@Param("tid") Long tid);
 
+    public List<TrainingProblem> getPrivateTrainingProblemListByPid(@Param("pid") Long pid, @Param("uid") String uid);
 }
