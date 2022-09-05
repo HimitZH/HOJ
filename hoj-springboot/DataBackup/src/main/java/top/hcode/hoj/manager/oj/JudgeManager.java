@@ -146,6 +146,7 @@ public class JudgeManager {
             beforeDispatchInitManager.initTrainingSubmission(judgeDto.getTid(), judgeDto.getPid(), userRolesVo, judge);
         } else { // 如果不是比赛提交和训练提交
             beforeDispatchInitManager.initCommonSubmission(judgeDto.getPid(), judge);
+
         }
 
         // 将提交加入任务队列

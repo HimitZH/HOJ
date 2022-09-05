@@ -44,7 +44,7 @@ public class TrainingProblemEntityServiceImpl extends ServiceImpl<TrainingProble
     }
 
     static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-        Map<Object,Boolean> seen = new ConcurrentHashMap<>();
+        Map<Object, Boolean> seen = new ConcurrentHashMap<>();
         return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
@@ -60,6 +60,11 @@ public class TrainingProblemEntityServiceImpl extends ServiceImpl<TrainingProble
                 .eq("uid", uid)
                 .eq("status", 0);
         return judgeEntityService.count(judgeQueryWrapper);
+    }
+
+    @Override
+    public List<TrainingProblem> getPrivateTrainingProblemListByPid(Long pid, String uid) {
+        return trainingProblemMapper.getPrivateTrainingProblemListByPid(pid, uid);
     }
 
 }
