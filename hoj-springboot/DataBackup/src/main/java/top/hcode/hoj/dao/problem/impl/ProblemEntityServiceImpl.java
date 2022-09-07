@@ -761,7 +761,9 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
             }
         } else {
             for (ProblemCase problemCase : problemCaseList) {
-                sumScore += problemCase.getScore();
+                if (problemCase.getScore() != null) {
+                    sumScore += problemCase.getScore();
+                }
             }
         }
         return sumScore;
