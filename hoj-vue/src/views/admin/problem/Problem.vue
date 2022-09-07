@@ -669,6 +669,7 @@
                 <vxe-table-column
                   field="score"
                   :title="$t('m.Score')"
+                  v-if="problem.type == 1"
                   min-width="100"
                 >
                   <template v-slot="{ row }">
@@ -677,6 +678,7 @@
                       :placeholder="$t('m.Score')"
                       v-model="row.score"
                       :disabled="problem.type != 1"
+                      type="number"
                     >
                     </el-input>
                   </template>
@@ -742,7 +744,7 @@
                   </el-col>
                   <el-col
                     :span="24"
-                    v-show="problem.type == 1"
+                    v-if="problem.type == 1"
                   >
                     <el-form-item :label="$t('m.Score')">
                       <el-input
