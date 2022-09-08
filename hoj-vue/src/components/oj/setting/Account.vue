@@ -314,7 +314,7 @@ export default {
                   this.$router.push({ name: 'Logout' });
                 }, 5000);
               } else {
-                myMessage.error(res.data.msg);
+                myMessage.error(res.data.data.msg);
                 this.visible.passwordAlert = {
                   show: true,
                   title: this.$i18n.t('m.Update_Failed'),
