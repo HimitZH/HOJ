@@ -185,7 +185,7 @@ export const m = {
 
   // /views/oj/Home.vue
   Welcome_to: 'Welcome to ',
-  Recent_7_Days_AC_Rank: 'Recent 7 Days AC Top 10 Rank',
+  Recent_7_Days_AC_Rank: 'Rank: Accepted In The Last Week',
   Other_OJ_Contest: 'Other Online Judge Contest',
   Supported_Remote_Online_Judge: 'Supported Remote Online Judge',
 
@@ -205,14 +205,14 @@ export const m = {
   Problem_ID: 'Problem ID',
   Total: 'Total',
   AC_Rate: 'AC Rate',
-  AC: 'Accepted',
+  AC: 'AC',
   Score: 'Score',
 
   // /views/oj/problem/problemList.vue
   Problem_List: 'Problem List',
   Problem_Bank: 'Problem Bank',
   All: 'All',
-  My_OJ: 'Mine',
+  My_OJ: 'Main',
   Level: 'Level',
   Tags: 'Tags',
   Search_Filter_Tag: 'Enter the tag name...',
@@ -459,6 +459,7 @@ export const m = {
   Judging_Description: 'Your program is running with test data. Please wait for the result...',
   Compile_Error_Description: "Failed to compile your source code. Click on the link to see compiler's output.",
   Persentation_Error_Description: 'The code you submitted is very close to the correct answer. Please check whether there are extra spaces, newlines and other blanks in the code format output.',
+  Partial_Accepted_Description:'Come on! The code you submitted has passed some test points. Please consider other possibilities.',
   Accepted_Description: 'Congratulations! Your solution is correct.',
   Wrong_Answer_Description: "Your program's output doesn't match judger's answer.",
   Runtime_Error_Description: 'Your program terminated abnormally. Possible reasons are: segment fault, divided by zero or exited with code other than 0.',
