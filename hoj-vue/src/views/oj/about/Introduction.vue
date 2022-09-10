@@ -61,6 +61,10 @@
               {{ $t('m.Persentation_Error_Description') }}
             </li>
             <li>
+              <span :class="getStatusColor(8)">Partial Accepted</span> :
+              {{ $t('m.Partial_Accepted_Description') }}
+            </li>
+            <li>
               <span :class="getStatusColor(0)">Accepted</span> :
               {{ $t('m.Accepted_Description') }}
             </li>

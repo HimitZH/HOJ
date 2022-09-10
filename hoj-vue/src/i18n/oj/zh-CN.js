@@ -185,7 +185,7 @@ export const m = {
 
   // /views/oj/Home.vue
   Welcome_to: '欢迎使用 ',
-  Recent_7_Days_AC_Rank: '最近7天内AC排名',
+  Recent_7_Days_AC_Rank: '最近一周过题榜单',
   Other_OJ_Contest: '其它OJ的近期比赛',
   Supported_Remote_Online_Judge: '支持的远程评测平台',
 
@@ -461,6 +461,7 @@ export const m = {
   Judging_Description: '正在使用测试数据运行您的程序中，请等待结果...',
   Compile_Error_Description: "无法编译您的源代码，点击链接查看编译器的输出。",
   Persentation_Error_Description: '您提交的代码已经很接近正确答案，请检查代码格式输出是否有多余空格，换行等空白符。',
+  Partial_Accepted_Description:'加油！您提交的代码通过了部分测试点，请考虑其他可能性。',
   Accepted_Description: '恭喜! 您的解题方法是正确的。',
   Wrong_Answer_Description: "您的程序输出结果与判题程序的答案不符。",
   Runtime_Error_Description: '您的程序异常终止，可能的原因是：段错误，被零除或用非0的代码退出程序。',
