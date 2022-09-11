@@ -342,6 +342,8 @@ export const m = {
   Category: 'Category',
   Discussion_title: 'Title',
   Discussion_Desc: 'Description',
+  Associated_Problem:'Associated Problem ID',
+  Associated_Problem_Tips:'Associated Problem ID, e.g. P1000',
   Discussion_Category: 'Category',
   Discussion_top: 'Top',
   Discussion_content: 'Content',

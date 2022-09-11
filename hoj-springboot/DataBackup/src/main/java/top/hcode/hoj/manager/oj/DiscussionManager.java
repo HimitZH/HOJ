@@ -37,6 +37,7 @@ import top.hcode.hoj.validator.AccessValidator;
 import top.hcode.hoj.validator.GroupValidator;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author: Himit_ZH
@@ -351,6 +352,17 @@ public class DiscussionManager {
     }
 
     public List<Category> getDiscussionCategory() {
+        return categoryEntityService.list();
+    }
+
+    public List<Category> upsertDiscussionCategory(List<Category> categoryList) throws StatusFailException {
+        List<Category> categories = categoryList.stream().filter(category -> category.getName() != null
+                        && !category.getName().trim().isEmpty())
+                .collect(Collectors.toList());
+        boolean isOk = categoryEntityService.saveOrUpdateBatch(categories);
+        if (!isOk){
+            throw new StatusFailException("修改失败");
+        }
         return categoryEntityService.list();
     }
 

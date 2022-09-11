@@ -328,7 +328,7 @@ export const m = {
   // /views/oj/rank/OIRank.vue
   OI_Ranklist: 'OI 排行榜',
 
-  // /views/oj/discussion/discussion.vue
+  // /views/oj/discussion/discussionList.vue
   Go_to_problem: '前往原题',
   Release_Time: '发布时间',
   Likes: '点赞',
@@ -344,6 +344,8 @@ export const m = {
   Category: '分类',
   Discussion_title: '标题',
   Discussion_Desc: '描述',
+  Associated_Problem:'讨论关联的题目ID',
+  Associated_Problem_Tips:'讨论关联的题目ID, 例如 P1000',
   Discussion_Category: '分类',
   Discussion_top: '是否置顶',
   Discussion_content: '内容',
@@ -354,7 +356,7 @@ export const m = {
   Post_successfully: '发布成功',
   Send_successfully: '发送成功',
 
-  // /views/oj/discussion/discussionList.vue
+  // /views/oj/discussion/discussion.vue
   Report: '举报',
   Like: '点赞',
   Liked: '已点赞',
