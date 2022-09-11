@@ -105,6 +105,7 @@
 import NavBar from '@/components/oj/common/NavBar';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { LOGO, MOTTO } from '@/common/logo';
+import storage from "@/common/storage";
 export default {
   name: 'app-content',
   components: {
@@ -125,6 +126,34 @@ export default {
     changeWebLanguage(language) {
       this.$store.commit('changeWebLanguage', { language: language });
     },
+    autoChangeLanguge() {
+      /**
+       * 语言自动转换优先级：路径参数 > 本地存储 > 浏览器自动识别
+       */
+      let lang = this.$route.query.l;
+      if(lang){
+        lang = lang.toLowerCase();
+        if(lang == 'zh-cn'){
+          this.$store.commit('changeWebLanguage', { language: 'zh-CN' });
+        }else{
+          this.$store.commit('changeWebLanguage', { language: 'en-US' });
+        }
+        return;
+      }
+
+      lang = storage.get('Web_Language');
+      if(lang){
+        return;
+      }
+
+      lang = navigator.userLanguage || window.navigator.language;
+      lang = lang.toLowerCase();
+      if(lang == 'zh-cn'){
+        this.$store.commit('changeWebLanguage', { language: 'zh-CN' });
+      }else{
+        this.$store.commit('changeWebLanguage', { language: 'en-US' });
+      }
+    }
   },
   watch: {
     $route(newVal, oldVal) {
@@ -159,6 +188,7 @@ export default {
   mounted() {
     console.log(LOGO);
     console.log(MOTTO);
+    this.autoChangeLanguge();
     this.getWebsiteConfig();
   },
 };

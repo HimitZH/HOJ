@@ -1844,7 +1844,7 @@ p.content {
   background: #f1f1f1;
   border: 1px dashed #e9eaec;
   overflow: auto;
-  font-size: 0.9em;
+  font-size: 1.1em;
   margin-right: 7%;
 }
 #submit-code {

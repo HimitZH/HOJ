@@ -619,6 +619,12 @@ const ojApi = {
   getCategoryList(){
     return ajax("/api/discussion-category",'get')
   },
+
+  upsertCategoryList(data){
+    return ajax("/api/discussion-category",'post',{
+      data
+    })
+  },
   
   getDiscussionList(limit,searchParams){
     let params = {

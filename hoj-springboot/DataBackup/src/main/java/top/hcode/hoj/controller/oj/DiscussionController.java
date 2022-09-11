@@ -3,6 +3,7 @@ package top.hcode.hoj.controller.oj;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.annotation.HOJAccess;
@@ -83,6 +84,14 @@ public class DiscussionController {
     public CommonResult<List<Category>> getDiscussionCategory() {
         return discussionService.getDiscussionCategory();
     }
+
+    @PostMapping("/discussion-category")
+    @RequiresAuthentication
+    @RequiresRoles("root")
+    public CommonResult<List<Category>> upsertDiscussionCategory(@RequestBody List<Category> categoryList) {
+        return discussionService.upsertDiscussionCategory(categoryList);
+    }
+
 
     @PostMapping("/discussion-report")
     @RequiresAuthentication

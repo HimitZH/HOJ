@@ -31,6 +31,8 @@ public interface DiscussionService {
 
     public CommonResult<List<Category>>  getDiscussionCategory();
 
+    public CommonResult<List<Category>>  upsertDiscussionCategory(List<Category> categoryList);
+
     public CommonResult<Void>  addDiscussionReport(DiscussionReport discussionReport);
 
 }
