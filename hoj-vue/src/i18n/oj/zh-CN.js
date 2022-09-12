@@ -5,7 +5,11 @@ export const m = {
   Server_error_please_refresh_again: '服务器错误，请重新刷新！',
   Request_timed_out_please_try_again_later: '请求超时，请稍后再尝试！',
   Network_error_abnormal_link_with_server_please_try_again_later: '网络错误，与服务器链接出现异常，请稍后再尝试！',
-  
+  Error:'错误',
+  No_Access_There_is_no_open_discussion_area_on_the_website: '禁止访问：当前网站未开启讨论区！',
+  No_Access_There_is_no_open_group_discussion_area_on_the_website: '禁止访问：当前网站未开启团队讨论区！',
+  No_Access_There_is_no_open_contest_comment_area_on_the_website: '禁止访问：当前网站未开启比赛评论区！',
+
   // /components/oj/common/NavBar.vue 导航栏
   NavBar_Home: '首页',
   NavBar_Problem: '题目',
@@ -249,7 +253,7 @@ export const m = {
   Memory_Limit: '内存限制',
   Other: '其他语言',
   Created: '出题人',
-  Please_login_first: '请先登录',
+  Please_login_first: '请先登录!',
   Submit: '提交评测',
   Online_Test:'在线自测',
   Submitting: '提交中',
