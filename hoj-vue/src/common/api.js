@@ -38,6 +38,11 @@ axios.interceptors.request.use(
   error => {
     // NProgress.done();
     mMessage.error(error.response.data.msg);
+    Vue.prototype.$notify.error({
+      title: i18n.t('m.Error'),
+      message: error.response.data.msg,
+      duration: 5000
+    });
     return Promise.error(error);
   })
 
@@ -52,6 +57,11 @@ axios.interceptors.response.use(
       return Promise.resolve(response);
     } else {
       mMessage.error(response.data.msg);
+      Vue.prototype.$notify.error({
+        title: i18n.t('m.Error'),
+        message: response.data.msg,
+        duration: 8000
+      });
       return Promise.reject(response);
     }
 
@@ -73,6 +83,11 @@ axios.interceptors.response.use(
         case 401:
           if(error.response.data.msg){
             mMessage.error(error.response.data.msg);
+            Vue.prototype.$notify.error({
+              title: i18n.t('m.Error'),
+              message: error.response.data.msg,
+              duration: 8000
+            });
           }
           if(error.response.config.headers['Url-Type'] === 'admin'){
             router.push("/api/admin/login")
@@ -86,6 +101,11 @@ axios.interceptors.response.use(
         case 403:
           if(error.response.data.msg){
             mMessage.error(error.response.data.msg);
+            Vue.prototype.$notify.error({
+              title: i18n.t('m.Error'),
+              message: error.response.data.msg,
+              duration: 8000
+            });
           }
           break;
         // 404请求不存在
@@ -97,6 +117,11 @@ axios.interceptors.response.use(
           if(error.response.data){
             if(error.response.data.msg){
               mMessage.error(error.response.data.msg);
+              Vue.prototype.$notify.error({
+                title: i18n.t('m.Error'),
+                message: error.response.data.msg,
+                duration: 8000
+              });
             }else{
               mMessage.error(i18n.t('m.Server_error_please_refresh_again'));
             }

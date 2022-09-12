@@ -271,12 +271,17 @@ export default {
     onFile3Change(file, fileList) {
       this.fileList3 = fileList.slice(-1);
     },
-    uploadSucceeded(response) {
+    uploadSucceeded(response, file, fileList) {
       this.loading.HOJ = false;
       this.loading.QDOJ = false;
       this.loading.FPS = false;
       if (response.status != 200) {
         myMessage.error(response.msg);
+        this.$notify.error({
+          title: this.$i18n.t('m.Error'),
+          message: response.msg,
+          duration: 8000
+        });
       } else {
         myMessage.success(this.$i18n.t('m.Upload_Problem_Succeeded'));
         this.getProblems();
