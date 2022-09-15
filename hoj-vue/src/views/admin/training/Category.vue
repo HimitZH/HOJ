@@ -122,7 +122,7 @@ export default {
         this.category = {
           id: null,
           name: null,
-          color: null,
+          color: '#409eff',
         };
       } else {
         this.upsertTitle = 'Update_Category';
