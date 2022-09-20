@@ -4,7 +4,6 @@ import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -19,9 +18,11 @@ import top.hcode.hoj.pojo.entity.problem.Language;
 import top.hcode.hoj.pojo.vo.ConfigVo;
 import top.hcode.hoj.utils.Constants;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @Author: Himit_ZH
@@ -337,6 +338,39 @@ public class StartupRunner implements CommandLineRunner {
         deleteWrapper.eq("name", "Microsoft Visual C++ 2010")
                 .eq("oj", "CF");
         languageEntityService.remove(deleteWrapper);
+
+        /**
+         * 2022.09.20 增加hdu的Java和C#支持
+         */
+        List<Language> newHduLanguageList = new ArrayList<>();
+        QueryWrapper<Language> languageQueryWrapper = new QueryWrapper<>();
+        languageQueryWrapper.select("id","name");
+        languageQueryWrapper.eq("oj", "HDU");
+        List<Language> hduLanguageList = languageEntityService.list(languageQueryWrapper);
+        List<String> collect = hduLanguageList.stream()
+                .map(Language::getName)
+                .collect(Collectors.toList());
+        if(!collect.contains("Java")) {
+            Language hduJavaLanguage = new Language();
+            hduJavaLanguage.setContentType("text/x-java")
+                    .setName("Java")
+                    .setDescription("Java")
+                    .setIsSpj(false)
+                    .setOj("HDU");
+            newHduLanguageList.add(hduJavaLanguage);
+        }
+        if(!collect.contains("C#")) {
+            Language hduCSharpLanguage = new Language();
+            hduCSharpLanguage.setContentType("text/x-csharp")
+                    .setName("C#")
+                    .setDescription("C#")
+                    .setIsSpj(false)
+                    .setOj("HDU");
+            newHduLanguageList.add(hduCSharpLanguage);
+        }
+        if (newHduLanguageList.size() > 0) {
+            languageEntityService.saveBatch(newHduLanguageList);
+        }
     }
 
     private void checkRemoteOJLanguage(Constants.RemoteOJ... remoteOJList) {
