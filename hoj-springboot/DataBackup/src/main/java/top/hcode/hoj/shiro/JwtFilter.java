@@ -16,7 +16,6 @@ import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.utils.JwtUtils;
 import top.hcode.hoj.utils.RedisUtils;
 
-
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -139,5 +138,10 @@ public class JwtFilter extends AuthenticatingFilter {
             return false;
         }
         return super.preHandle(request, response);
+    }
+
+    @Override
+    protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
+        return false;
     }
 }
