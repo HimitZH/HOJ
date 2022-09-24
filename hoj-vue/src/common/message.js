@@ -2,7 +2,7 @@ import Vue from 'vue'
 
 let messageInstance = null;
 
-const message=function(type,msg,duration=3000){
+const message=function(type,msg,duration=4000){
     if(messageInstance !=null){
         messageInstance.close()
     }
