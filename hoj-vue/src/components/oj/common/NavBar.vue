@@ -301,7 +301,7 @@
 
         <mu-menu
           slot="right"
-          v-show="isAuthenticated"
+          v-if="isAuthenticated"
           :open.sync="openusermenu"
         >
           <mu-button flat>
@@ -310,7 +310,7 @@
               :inline="true"
               :size="30"
               color="#FFF"
-              :src="userInfo.avatar"
+              :src="avatar"
               :title="userInfo.username"
             ></avatar>
             <i class="el-icon-caret-bottom"></i>
