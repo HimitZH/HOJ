@@ -161,7 +161,6 @@ export default {
             (res) => {
               this.btnLoginLoading = false;
               this.changeModalStatus({ visible: false });
-
               const jwt = res.headers['authorization'];
               this.$store.commit('changeUserToken', jwt);
               this.$store.dispatch('setUserInfo', res.data.data);

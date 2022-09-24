@@ -254,6 +254,7 @@ export const m = {
   Other: 'Other',
   Created: 'Created By',
   Please_login_first: 'Please login first!',
+  Please_login_first_by_admin_account:'Please login again with the administrator account!',
   Submit: 'Submit',
   Online_Test:'Online Test',
   Submitting: 'Submitting',

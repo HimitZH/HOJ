@@ -54,14 +54,15 @@ router.beforeEach((to, from, next) => {
             next({
               path: '/admin/login' 
             })
+            mMessage.error(i18n.t('m.Please_login_first_by_admin_account'))
           }else{ // oj端
             next({
               path: '/home' 
             })
             store.commit('changeModalStatus',{mode: 'Login', visible: true})
+            mMessage.error(i18n.t('m.Please_login_first'))
+            store.commit("clearUserInfoAndToken");
           }
-          mMessage.error(i18n.t('m.Please_login_first'))
-          store.commit("clearUserInfoAndToken");
         }
       }else if(to.matched.some(record => record.meta.requireAdmin)){ //判断是否需要管理员权限
         if(isAmdin){
@@ -71,14 +72,15 @@ router.beforeEach((to, from, next) => {
             next({
               path: '/admin/login' 
             })
+            mMessage.error(i18n.t('m.Please_login_first_by_admin_account'))
           }else{
             next({
               path: '/home' 
             })
             store.commit('changeModalStatus',{mode: 'Login', visible: true})
+            mMessage.error(i18n.t('m.Please_login_first'))
+            store.commit("clearUserInfoAndToken");
           }  
-          mMessage.error(i18n.t('m.Please_login_first'))
-          store.commit("clearUserInfoAndToken");
         }
       }else{
         next()

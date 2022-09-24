@@ -254,6 +254,7 @@ export const m = {
   Other: '其他语言',
   Created: '出题人',
   Please_login_first: '请先登录!',
+  Please_login_first_by_admin_account:'请重新使用管理员账号登录！',
   Submit: '提交评测',
   Online_Test:'在线自测',
   Submitting: '提交中',
