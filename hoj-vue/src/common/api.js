@@ -119,6 +119,9 @@ axios.interceptors.response.use(
               });
             }
           }
+          if(error.response.config.url.startsWith('/api/admin')){
+            router.push("/admin")
+          }
           break;
         // 404请求不存在
         case 404:
