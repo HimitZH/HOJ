@@ -264,6 +264,7 @@ export const m = {
   Compile: 'Compile',
   Compiled_Successfully: 'Compiled Successfully',
   Code_Template: 'Code Template',
+  Code_template_of_the_language_cannot_be_empty:'Code template of the language cannot be empty!',
   Type: 'Type',
   Judge_Samples: 'Judge Samples',
   Problem_Sample: 'Sample',

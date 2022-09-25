@@ -1704,6 +1704,15 @@ export default {
           if (problemLanguageList[i].name == lang.name) {
             problemLanguageList[i] = lang;
             if (this.codeTemplate[lang.name].status) {
+              if(this.codeTemplate[lang.name].code == null 
+                || this.codeTemplate[lang.name].code.length == 0){
+                  myMessage.error(
+                    lang.name +
+                      "：" +
+                      this.$i18n.t("m.Code_template_of_the_language_cannot_be_empty")
+                  );
+                  return;
+              }
               this.problemCodeTemplate.push({
                 id: this.codeTemplate[lang.name].id,
                 pid: this.pid,
