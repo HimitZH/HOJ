@@ -262,6 +262,7 @@ export const m = {
   Compile: '编译',
   Compiled_Successfully: '编译成功',
   Code_Template: '代码模板',
+  Code_template_of_the_language_cannot_be_empty:'语言的代码模板不能为空！',
   Type: '类型',
   Judge_Samples: '评测数据',
   Problem_Sample: '测试用例',
