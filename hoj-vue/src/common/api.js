@@ -46,7 +46,7 @@ axios.interceptors.request.use(
       Vue.prototype.$notify.error({
         title: i18n.t('m.Error'),
         message: error.response.data.msg,
-        duration: 8000
+        duration: 6000
       });
     }
     return Promise.error(error);
@@ -67,7 +67,7 @@ axios.interceptors.response.use(
         Vue.prototype.$notify.error({
           title: i18n.t('m.Error'),
           message: response.data.msg,
-          duration: 8000
+          duration: 6000
         });
       }
       return Promise.reject(response);
@@ -95,7 +95,7 @@ axios.interceptors.response.use(
               Vue.prototype.$notify.error({
                 title: i18n.t('m.Error'),
                 message: error.response.data.msg,
-                duration: 8000
+                duration: 6000
               });
             }
           }
@@ -115,7 +115,7 @@ axios.interceptors.response.use(
               Vue.prototype.$notify.error({
                 title: i18n.t('m.Error'),
                 message: error.response.data.msg,
-                duration: 8000
+                duration: 6000
               });
             }
           }
@@ -136,7 +136,7 @@ axios.interceptors.response.use(
                 Vue.prototype.$notify.error({
                   title: i18n.t('m.Error'),
                   message: error.response.data.msg,
-                  duration: 8000
+                  duration: 6000
                 });
               }
             } else {
