@@ -117,7 +117,7 @@ export const m = {
 
   // /components/oj/setting/UserInfo.vue 
   Avatar_Setting: 'Avatar Setting',
-  UserInfo_Setting: 'UserInfo Setting',
+  UserInfo_Setting: 'User Info Setting',
   Upload_avatar_hint: 'Drag and drop the avatar here, or click here.',
   CF_Username: 'Codeforces Username',
   School: 'School',
@@ -510,7 +510,7 @@ export const m = {
   Eight_Spaces:'8 spaces',
   Reset_Code: 'Reset Code',
   Upload_file: 'Upload file',
-  monokai: 'Mnokai',
+  monokai: 'Monokai',
   solarized: 'Molarized Light',
   material: 'Material',
   idea:'IDEA',
@@ -637,8 +637,6 @@ export const m = {
   Apply_Group: 'Apply to Join',
   Apply_Successfully: 'Apply Successfully',
   Exit_Group: 'Exit Group',
-  Applying:'Applying...',
-  Reject_Application:'Rejected',
   Exit_Group_Tips: 'Are you sure you want to exit the group? After exiting, you will no longer be able to view group resources!',
   Exit_Successfully: 'Exit Successfully',
   Disband_Group:'Disband Group',
@@ -706,6 +704,7 @@ export const m = {
   // GroupAdminProblemList.vue
   Group_Problem_Apply_Public:'Apply to join the public problem bank',
   Already_Public_Problem:'Already in the public problem bank',
+  Applying_for_Publicity:'Applying for publicity',
   Group_Problem_Apply_Public_Tips:'Are you sure you want to apply for this problem to be added to the public bank?',
   Cancel_Group_Problem_Apply_Public_Tips:'Do you want to cancel the application for this problem to be added to the public bank?'
 }

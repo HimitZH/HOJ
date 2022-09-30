@@ -355,7 +355,6 @@ export const m = {
   Private_Training: '私有训练',
   Training_Password: '训练密码',
   Edit_Training: '编辑训练',
-  Create_Training: '创建训练',
   Redirect_To_Category: '当前训练的分类列表为空，请先前往创建分类！',
   Redirect: '重定向',
 
@@ -370,7 +369,7 @@ export const m = {
   Update_Category: '修改分类',
   To_Add: '添加',
   To_Update: '更新',
-  Create_Training: '创建训练',
+
   Category_Name: '分类名称',
   Category_Color: '分类颜色',
   Delete_Category_Tips: '你是否确定删除该分类？',

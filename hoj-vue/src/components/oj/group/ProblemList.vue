@@ -336,7 +336,7 @@ export default {
       if(progress == null){
         return this.$i18n.t('m.Group_Problem_Apply_Public');
       }else if(progress == 1){
-        return this.$i18n.t('m.Applying');
+        return this.$i18n.t('m.Applying_for_Publicity');
       }else if(progress == 2){
         return this.$i18n.t('m.Already_Public_Problem');
       }else if(progress == 3){
