@@ -259,7 +259,7 @@ export const m = {
   Online_Test:'在线自测',
   Submitting: '提交中',
   Judging: '正在评测',
-  Wrong_Answer: 'Wrong Answer',
+  Wrong_Answer: '答案错误',
   View_Contest: '查看比赛',
   Are_you_sure_you_want_to_reset_your_code: '您确定要重置代码吗？',
   Code_can_not_be_empty: '代码不能为空',
@@ -706,6 +706,7 @@ export const m = {
   // GroupAdminProblemList.vue
   Group_Problem_Apply_Public:'申请加入公开题库',
   Already_Public_Problem:'已在公开题库中',
+  Applying_for_Publicity:'申请公开中',
   Group_Problem_Apply_Public_Tips:'您是否确定要申请该题目加入公开题库？',
   Cancel_Group_Problem_Apply_Public_Tips:'您是否要取消申请该题目加入公开题库？'
 }

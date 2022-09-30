@@ -258,7 +258,6 @@ export const m = {
   General_Judge_Mode_Tips: 'General Judge: the contestant program reads the problem standard input file, executes the code logic to obtain the contestant\'s output, and compares the contents of the problem standard output file to obtain the problem judgment result',
   Special_Judge_Mode_Tips: 'Special Judge: the output results required by the problem may not be unique, and different results are allowed. Therefore, a special program is needed to read standard output, player output and standard input, and compare them to obtain the final judgment result',
   Interactive_Judge_Mode_Tips: 'Interactive Judge: the standard output of the interactive program is written to the standard input of the player program through the interactive channel, and the standard output of the player program is written to the standard input of the interactive program through the interactive channel. Both need to flush the output buffer',
-  Use_Special_Judge: 'Use Special Judge',
   SPJ_Language: 'SPJ Program Language',
   Interactive_Language: 'Interactive Program Langugae',
   Compile: 'Compile',
@@ -311,7 +310,7 @@ export const m = {
   Update_Tag: 'Update Tag',
   To_Add: 'Add',
   To_Update: 'Update',
-  Create_Training: 'Create Training',
+
   Tag_Name: 'Tag Name',
   Tag_Color: 'Tag Color',
   Tag_Attribution: 'Tag Attribution',
@@ -349,7 +348,6 @@ export const m = {
   Private_Training: 'Private Training',
   Training_Password: 'Training Password',
   Edit_Training: 'Edit Training',
-  Create_Training: 'Create Training',
   Redirect_To_Category: 'The category list of current training is empty. Please go to create category first!',
   Redirect: 'Redirect',
 
