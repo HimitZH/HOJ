@@ -55,9 +55,9 @@ export const m = {
   CPU_Core: 'CPU核心数',
   CPU_Usage: 'CPU使用率',
   Mem_Usage: '内存使用率',
+  Healthy: '健康',
   Secure: '不稳定',
   Healthy_Status: '状态',
-  Healthy: '健康',
   Unhealthy: '不健康',
   Judge_Server: '判题系统',
 
@@ -203,12 +203,12 @@ export const m = {
   Contest_Problem_List: '比赛题目列表',
   Display_ID: '展示ID',
   Display_Title: '展示标题',
+  Original_Display: '原题显示',
+  Contest_Display: '比赛显示',
   Add_Rmote_OJ_Problem: '添加远程OJ题目',
   Add_From_Public_Problem: '从公共题库添加题目',
   ACM_Contest_Add_From_Public_Problem_Tips:'当前比赛为ACM赛制：只支持导入ACM类型的题目和远程题目',
   OI_Contest_Add_From_Public_Problem_Tips:'当前比赛为OI赛制：只支持导入OI类型的题目和远程题目',
-  Original_Display: '原题显示',
-  Contest_Display: '比赛显示',
   Auth: '权限',
   Modified_User: '最近修改者',
   All_Problem: '全部题目',
@@ -232,6 +232,7 @@ export const m = {
 
   // /views/admin/problem/Problem.vue
   Problem_Display_ID: '题目展示ID',
+  Title: '标题',
   Contest_Display_Title: '比赛中的展示标题',
   Contest_Display_ID: '比赛中的展示ID',
   Description: '描述',
@@ -257,8 +258,9 @@ export const m = {
   General_Judge_Mode_Tips: '普通判题：选手程序读取题目标准输入文件，执行代码逻辑得到选手输出，对比题目标准输出文件内容得到判题结果',
   Special_Judge_Mode_Tips: '特殊判题：题目要求的输出结果可能不唯一，允许不同结果存在，所以需要一个特殊程序读取标准输出、选手输出和标准输入，进行对比得出最终判题结果',
   Interactive_Judge_Mode_Tips: '交互判题：交互程序的标准输出通过交互通道写到选手程序标准输入，选手程序的标准输出通过交互通道写到交互程序的标准输入，两者需要刷新输出缓冲区',
-  Interactive_Language: '交互判题程序语言',
+  Use_Special_Judge: '使用特殊判题',
   SPJ_Language: '特殊判题程序语言',
+  Interactive_Language: '交互判题程序语言',
   Compile: '编译',
   Compiled_Successfully: '编译成功',
   Code_Template: '代码模板',
@@ -303,12 +305,13 @@ export const m = {
   Judge_Case_Subtask_Average_Mode:'子任务（平均得分）',
   Judge_Case_Ergodic_Without_Error_Mode: '遇错止评（顺序评测）',
 
-  // /views/admin/problem/tag
+  // /views/admin/problem/Tag.vue
   Admin_Tag: '标签管理',
   Add_Tag: '添加标签',
   Update_Tag: '修改标签',
   To_Add: '添加',
   To_Update: '更新',
+  Create_Training: '创建训练',
   Tag_Name: '标签名称',
   Tag_Color: '标签颜色',
   Tag_Attribution: '标签归属',
@@ -328,16 +331,6 @@ export const m = {
   Enter_Group_ID:'请输入团队ID',
   Agreed:'已同意',
   Examine:'审批',
-
-  // /views/admin/problem/ImportAndExport.vue
-  Export_Problem: '导出题目',
-  Export: '导出',
-  Import_Problem: '导入题目',
-  Import_QDOJ_Problem: '导入QDUOJ的题目',
-  Import_FPS_Problem: '导入FPS格式的题目',
-  Export_Problem_NULL_Tips: '选择导出的题目不能为空',
-  Upload_Problem_Succeeded: '上传题目成功',
-  Upload_Problem_Failed: '上传题目失败',
 
   // /views/admin/training/TrainingList.vue
   Update_Time: '更新时间',
@@ -370,11 +363,20 @@ export const m = {
   Update_Category: '修改分类',
   To_Add: '添加',
   To_Update: '更新',
-  Create_Training: '创建训练',
   Category_Name: '分类名称',
   Category_Color: '分类颜色',
   Delete_Category_Tips: '你是否确定删除该分类？',
 
+  // /views/admin/problem/ImportAndExport.vue
+  Export_Problem: '导出题目',
+  Export: '导出',
+  Import_Problem: '导入题目',
+  Import_QDOJ_Problem: '导入QDUOJ的题目',
+  Import_FPS_Problem: '导入FPS格式的题目',
+  Export_Problem_NULL_Tips: '选择导出的题目不能为空',
+  Upload_Problem_Succeeded: '上传题目成功',
+  Upload_Problem_Failed: '上传题目失败',
+  
   // /views/admin/contest/ContestList.vue
   Start_Time: '开始时间',
   End_Time: '结束时间',
@@ -415,9 +417,9 @@ export const m = {
   Contest_Duration_Check: '比赛时长不能小于0',
   Contets_Time_Check: '开始时间应该早于结束时间',
   Print_Func: '打印功能',
+  Open: '开启',
   Not_Support_Print: '不支持打印',
   Support_Offline_Print: '支持线下打印',
-  Open: '开启',
   Add_Star_User_Error: '请不要重复添加已有打星用户！',
   Star_User_UserName: '打星用户（请使用登录用户名）',
   Rank_Show_Name: '榜单显示用户名称',

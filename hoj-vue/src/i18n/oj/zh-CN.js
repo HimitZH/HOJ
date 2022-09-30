@@ -259,7 +259,7 @@ export const m = {
   Online_Test:'在线自测',
   Submitting: '提交中',
   Judging: '正在评测',
-  Wrong_Answer: 'Wrong Answer',
+  Wrong_Answer: '答案错误',
   View_Contest: '查看比赛',
   Are_you_sure_you_want_to_reset_your_code: '您确定要重置代码吗？',
   Code_can_not_be_empty: '代码不能为空',
@@ -307,7 +307,6 @@ export const m = {
   Cancel_Judge_Tips:'你是否确定将该提交标记为已取消？',
   Cancel_Successfully:'取消成功',
   Click_to_Manually_Judge:'点击进行人工评测',
-
 
   // /views/oj/status/SubmissionDetails.vue
   Test_point_details: '测试点详情',
@@ -449,8 +448,8 @@ export const m = {
   // /views/oj/contest/children/ContestRejudgeAdmin.vue
   Contest_Rejudge: '比赛重新测评',
   ID: 'ID',
-  Rejudge_All: '重测',
   Contest_Rejudge_Tips: '您确定重测所有提交记录?',
+  Rejudge_All: '重测',
   Rejudge_successfully: '重测成功',
 
   // /views/oj/contest/children/OIContestRank.vue
@@ -637,13 +636,13 @@ export const m = {
   // /views/oj/group/GroupDetails.vue
   Apply_Group: '申请加入',
   Apply_Successfully: '申请成功',
+  Reject_Application:'拒绝',
   Exit_Group: '退出团队',
   Exit_Group_Tips: '确定要退出团队吗？退出后您将无法再查看团队资源！',
   Exit_Successfully: '退出成功',
   Disband_Group:'解散团队',
   Disband_Group_Tips:'您是否确定要解散该团队？',
   Disband_Successfully:'解散成功',
-  
   Group_Number: '团队编号',
   Group_Home: '主页 ',
   Group_Problem: '题目',
@@ -667,7 +666,7 @@ export const m = {
   Cancel_Admin:'取消管理',
   Back_To_Problem_List:'返回题目列表',
   Back_To_Admin_Problem_List:'返回题目管理列表',
-  
+
   // /views/oj/group/GroupMemberList.vue
   Applying: '申请中',
   Refused: '已拒绝',
@@ -686,7 +685,7 @@ export const m = {
   Back_To_Admin_Training_List:'返回训练管理列表',
   Back_To_Training_List:'返回训练列表',
   Back_Admin_Training_Problem_List:'返回训练题目管理列表',
-  
+
   // /views/oj/group/GroupContestList.vue
   Back_To_Admin_Contest_List:'返回比赛管理列表',
   Back_To_Contest_List:'返回比赛列表',
@@ -694,7 +693,7 @@ export const m = {
 
   // /views/oj/group/GroupSetting.vue
   Add_From_Group_Problem: '从团队题库添加题目',
-  
+
   // /views/oj/group/GroupSetting.vue
   Group_Visible: '在团队列表显示',
   Group_Not_Visible: '在团队列表隐藏',

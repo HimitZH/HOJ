@@ -332,7 +332,6 @@ export const m = {
   Agreed:'Agreed',
   Examine:'Examine',
 
-
   // /views/admin/training/TrainingList.vue
   Update_Time: 'Update Time',
   Order_Number: 'Order Number',
@@ -377,7 +376,7 @@ export const m = {
   Export_Problem_NULL_Tips: 'The problem selected for export cannot be empty',
   Upload_Problem_Succeeded: 'Upload Problem Succeeded',
   Upload_Problem_Failed: 'Upload Problem Failed',
-
+  
   // /views/admin/contest/ContestList.vue
   Start_Time: 'Start Time',
   End_Time: 'End Time',

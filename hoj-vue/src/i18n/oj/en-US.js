@@ -10,7 +10,7 @@ export const m = {
   No_Access_There_is_no_open_group_discussion_area_on_the_website: 'No Access: There is no open group discussion area on the website!',
   No_Access_There_is_no_open_contest_comment_area_on_the_website: 'No Access: There is no open contest comment area on the website!',
 
-  //  /components/oj/common/NavBar.vue 导航栏
+  // /components/oj/common/NavBar.vue 导航栏
   NavBar_Home: 'Home',
   NavBar_Problem: 'Problem',
   NavBar_Training: 'Training',
@@ -115,9 +115,8 @@ export const m = {
   Guess_robot: 'Speed too fast, may be machine operation! Please verify again!',
 
 
-  // /components/oj/setting/UserInfo.vue 
+  // /components/oj/setting/UserInfo.vue
   Avatar_Setting: 'Avatar Setting',
-  UserInfo_Setting: 'UserInfo Setting',
   Upload_avatar_hint: 'Drag and drop the avatar here, or click here.',
   CF_Username: 'Codeforces Username',
   School: 'School',
@@ -176,6 +175,7 @@ export const m = {
 
   // /views/oj/user/Setting.vue
   Account_Setting: 'Account Setting',
+  UserInfo_Setting: 'User Info Setting',
 
   // App.vue 底部文案
   Service: 'Service',
@@ -280,6 +280,7 @@ export const m = {
 
   // /views/oj/status/SubmissionList.vue
   Mine: 'Mine',
+  ID: 'ID',
   Time: 'Time',
   Memory: 'Memory',
   Length: 'Length',
@@ -510,7 +511,7 @@ export const m = {
   Eight_Spaces:'8 spaces',
   Reset_Code: 'Reset Code',
   Upload_file: 'Upload file',
-  monokai: 'Mnokai',
+  monokai: 'Monokai',
   solarized: 'Molarized Light',
   material: 'Material',
   idea:'IDEA',
@@ -553,7 +554,6 @@ export const m = {
   Load_More: 'Load More',
   Delete_Comment_Tips: 'This operation will delete the comment and all its replies. Do you want to continue?',
   Delete_Reply_Tips: 'This operation will delete the reply. Do you want to continue?',
-
 
   // /views/oj/message/message.vue
   Message_Center: 'Message Center',
@@ -636,9 +636,8 @@ export const m = {
   // /views/oj/group/GroupDetails.vue
   Apply_Group: 'Apply to Join',
   Apply_Successfully: 'Apply Successfully',
-  Exit_Group: 'Exit Group',
-  Applying:'Applying...',
   Reject_Application:'Rejected',
+  Exit_Group: 'Exit Group',
   Exit_Group_Tips: 'Are you sure you want to exit the group? After exiting, you will no longer be able to view group resources!',
   Exit_Successfully: 'Exit Successfully',
   Disband_Group:'Disband Group',
@@ -652,23 +651,13 @@ export const m = {
   Group_Submission: 'Submission',
   Group_Discussion: 'Discussion',
   Group_Setting: 'Setting',
-  Group_Rank:'Rank',
   Group_Announcement: 'Announcement',
+  Group_Rank:'Rank',
   Group_Member: 'Member',
   Apply_Reason: 'Apply Reason',
   Apply_Reason_Check_Required: 'The apply reason is required.',
   Apply_Reason_Check_Min_Max: 'The length of apply reason is 5 to 100',
 
-  // /views/oj/group/GroupTrainingList.vue
-  Back_To_Admin_Training_List:'Back to Admin Trainingt List',
-  Back_To_Training_List:'Back To Training List',
-  Back_Admin_Training_Problem_List:'Back Admin Training Problem List',
-
-  // /views/oj/group/GroupContestList.vue
-  Back_To_Admin_Contest_List:'Back to Admin Contest List',
-  Back_To_Contest_List:'Back to Contest List',
-  Back_Admin_Contest_Problem_List:'Back to Admin Contest Problem List',
-  
   // /views/oj/group/GroupDiscussionList.vue
   No_Discussion: 'No Discussion',
   Problem_Discussion:'Problem Discussion',
@@ -691,6 +680,16 @@ export const m = {
   View_Reason: 'View Reason',
   Delete_Member: 'Kick Member',
   Delete_Member_Tips: 'Are you sure you want to kick the member out of the group? After kicking out, the member will no longer be able to view group resources! What\'s more, if the member is the owner, the group will be disbanded together!',
+
+  // /views/oj/group/GroupTrainingList.vue
+  Back_To_Admin_Training_List:'Back to Admin Trainingt List',
+  Back_To_Training_List:'Back To Training List',
+  Back_Admin_Training_Problem_List:'Back Admin Training Problem List',
+
+  // /views/oj/group/GroupContestList.vue
+  Back_To_Admin_Contest_List:'Back to Admin Contest List',
+  Back_To_Contest_List:'Back to Contest List',
+  Back_Admin_Contest_Problem_List:'Back to Admin Contest Problem List',
 
   // /views/oj/group/GroupSetting.vue
   Add_From_Group_Problem: 'Add_From_Group_Problem',
