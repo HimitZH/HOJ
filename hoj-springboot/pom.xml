@@ -6,7 +6,7 @@
 
     <groupId>top.hcode</groupId>
     <artifactId>hoj-springboot</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>4.3</version>
     <modules>
         <module>api</module>
         <module>DataBackup</module>
@@ -45,6 +45,8 @@
         <maven.compiler.target>8</maven.compiler.target>
         <junit.version>4.12</junit.version>
         <lombok.version>1.16.10</lombok.version>
+        <oshi.version>5.6.1</oshi.version>
+        <hutool.version>5.8.8</hutool.version>
         <log4j.version>1.2.17</log4j.version>
         <mysql.version>8.0.19</mysql.version>
         <druid.version>1.1.20</druid.version>
@@ -120,6 +122,18 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
+            </dependency>
+            <!--hutool-->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+            <!--oshi-->
+            <dependency>
+                <groupId>com.github.oshi</groupId>
+                <artifactId>oshi-core</artifactId>
+                <version>${oshi.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

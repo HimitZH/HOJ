@@ -5,11 +5,12 @@
     <parent>
         <artifactId>hoj-springboot</artifactId>
         <groupId>top.hcode</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>4.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>DataBackup</artifactId>
+    <artifactId>hoj-backend</artifactId>
     <build>
+        <finalName>${project.artifactId}-${version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
@@ -51,8 +52,8 @@
     <dependencies>
         <dependency>
             <groupId>top.hcode</groupId>
-            <artifactId>api</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <artifactId>hoj-api</artifactId>
+            <version>4.3</version>
         </dependency>
 
         <dependency>
@@ -127,13 +128,11 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.7.22</version>
         </dependency>
 
         <dependency>
             <groupId>com.github.oshi</groupId>
             <artifactId>oshi-core</artifactId>
-            <version>5.6.1</version>
         </dependency>
 
         <dependency>

@@ -5,13 +5,14 @@
     <parent>
         <artifactId>hoj-springboot</artifactId>
         <groupId>top.hcode</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>4.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>api</artifactId>
+    <artifactId>hoj-api</artifactId>
 
     <build>
+        <finalName>${project.artifactId}-${version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
