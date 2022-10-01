@@ -1386,6 +1386,9 @@ export default {
         fileList[i].pid = this.problem.id;
       }
       this.problem.testCaseScore = fileList;
+      this.problem.testCaseScore.forEach((item, index) => {
+        item.index = index + 1;
+      });
       this.testCaseUploaded = true;
       this.problem.uploadTestcaseDir = response.data.fileListDir;
     },
