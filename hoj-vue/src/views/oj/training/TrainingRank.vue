@@ -48,7 +48,7 @@
               <a @click="getUserHomeByUsername(row.uid, row.username)">
                 <span class="contest-username">
                   <span class="contest-rank-flag" v-if="row.uid == userInfo.uid"
-                    >Me</span
+                    >Own</span
                   >
                   <span class="contest-rank-flag" v-if="row.gender == 'female'"
                     >Girl</span
@@ -86,7 +86,7 @@
               <a @click="getUserHomeByUsername(row.uid, row.username)">
                 <span class="contest-username">
                   <span class="contest-rank-flag" v-if="row.uid == userInfo.uid"
-                    >Me</span
+                    >Own</span
                   >
                   <span class="contest-rank-flag" v-if="row.gender == 'female'"
                     >Girl</span

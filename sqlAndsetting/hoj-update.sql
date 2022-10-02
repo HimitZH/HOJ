@@ -955,3 +955,37 @@ DELIMITER ;
 CALL add_Problem_Subtask ;
 
 DROP PROCEDURE add_Problem_Subtask;
+
+
+
+/*
+* 2022.10.02  比赛增加奖项排名显示
+			 
+*/
+DROP PROCEDURE
+IF EXISTS add_Contest_Award;
+DELIMITER $$
+ 
+CREATE PROCEDURE add_Contest_Award ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'contest'
+	AND column_name = 'award_type'
+) THEN
+	
+	ALTER TABLE `hoj`.`contest`  ADD COLUMN `award_type` int(11) DEFAULT '0' COMMENT '奖项类型：0(不设置),1(设置占比),2(设置人数)';
+	ALTER TABLE `hoj`.`contest`  ADD COLUMN `award_config` text DEFAULT NULL COMMENT '奖项配置 json';
+	
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL add_Contest_Award ;
+
+DROP PROCEDURE add_Contest_Award;

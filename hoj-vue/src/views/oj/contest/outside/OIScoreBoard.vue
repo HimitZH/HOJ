@@ -146,7 +146,22 @@
           :title="$t('m.Contest_Rank_Seq')"
         >
           <template v-slot="{ row }">
-            {{ row.rank == -1 ? '*' : row.rank }}
+            <template v-if="row.rank == -1">
+              <span>*</span>
+            </template>
+            <template v-else>
+              <template v-if="row.isWinAward">
+                <RankBox
+                  :num="row.rank"
+                  :background="row.awardBackground"
+                  :color="row.awardColor"
+                  :name="row.awardName"
+                ></RankBox>
+              </template>
+              <template v-else>
+                <RankBox :num="row.rank"></RankBox>
+              </template>
+            </template>
           </template>
         </vxe-table-column>
         <vxe-table-column
@@ -344,10 +359,12 @@
 <script>
 import Avatar from 'vue-avatar';
 import ScoreBoardMixin from './scoreBoardMixin';
+const RankBox = () => import("@/components/oj/common/RankBox");
 export default {
   name: 'OIContestRank',
   components: {
     Avatar,
+    RankBox
   },
   mixins: [ScoreBoardMixin],
   data() {

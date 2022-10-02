@@ -427,6 +427,17 @@ export const m = {
   Show_Realname: 'Real name',
   Account_Limit: 'Account Limit (Login Username)',
   The_allowed_account_will_be: 'The allowed username will be ',
+  Contest_Award:'Contest Award',
+  Contest_Award_Null:'Do not set',
+  Contest_Award_Set_Number:'Set the number',
+  Contest_Award_Set_Proportion:'Set the proportion',
+  Contest_Award_Priority:'Priority',
+  Contest_Award_Name:'Award Name',
+  Contest_Award_Background:'Award Background',
+  Contest_Award_Color:'Award Color',
+  Contest_Award_Show:'Award Style Display',
+  Contest_Award_Number:'Number',
+  Contest_Award_Proportion:'Proportion',
 
   // /views/admin/discussion/Discussion.vue
   Discussion_ID: 'Discussion ID',
