@@ -108,6 +108,12 @@ public class Contest implements Serializable {
     @ApiModelProperty(value = "团队ID")
     private Long gid;
 
+    @ApiModelProperty(value = "奖项类型：0(不设置),1(设置占比),2(设置人数)")
+    private Integer awardType;
+
+    @ApiModelProperty(value = "奖项配置 json")
+    private String awardConfig;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 

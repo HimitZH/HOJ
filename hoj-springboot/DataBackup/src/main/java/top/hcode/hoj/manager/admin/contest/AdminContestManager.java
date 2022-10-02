@@ -15,15 +15,17 @@ import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusSystemErrorException;
+import top.hcode.hoj.dao.contest.ContestEntityService;
+import top.hcode.hoj.dao.contest.ContestRegisterEntityService;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestRegister;
 import top.hcode.hoj.pojo.vo.AdminContestVo;
+import top.hcode.hoj.pojo.vo.ContestAwardConfigVo;
 import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.dao.contest.ContestRegisterEntityService;
-import top.hcode.hoj.dao.contest.ContestEntityService;
 import top.hcode.hoj.utils.Constants;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -79,10 +81,27 @@ public class AdminContestManager {
         if (StringUtils.isEmpty(contest.getStarAccount())) {
             adminContestVo.setStarAccount(new ArrayList<>());
         } else {
-            JSONObject jsonObject = JSONUtil.parseObj(contest.getStarAccount());
-            List<String> starAccount = jsonObject.get("star_account", List.class);
-            adminContestVo.setStarAccount(starAccount);
+            try {
+                JSONObject jsonObject = JSONUtil.parseObj(contest.getStarAccount());
+                List<String> starAccount = jsonObject.get("star_account", List.class);
+                adminContestVo.setStarAccount(starAccount);
+            } catch (Exception e) {
+                adminContestVo.setStarAccount(new ArrayList<>());
+            }
         }
+
+        if (contest.getAwardType() != null && contest.getAwardType() != 0) {
+            try {
+                JSONObject jsonObject = JSONUtil.parseObj(contest.getAwardConfig());
+                List<ContestAwardConfigVo> awardConfigList = jsonObject.get("config", List.class);
+                adminContestVo.setAwardConfigList(awardConfigList);
+            } catch (Exception e) {
+                adminContestVo.setAwardConfigList(new ArrayList<>());
+            }
+        } else {
+            adminContestVo.setAwardConfigList(new ArrayList<>());
+        }
+
         return adminContestVo;
     }
 
@@ -105,6 +124,15 @@ public class AdminContestManager {
             accountJson.set("star_account", adminContestVo.getStarAccount());
         }
         contest.setStarAccount(accountJson.toString());
+
+        if (adminContestVo.getAwardType() != null && adminContestVo.getAwardType() != 0) {
+            JSONObject awardConfigJson = new JSONObject();
+            List<ContestAwardConfigVo> awardConfigList = adminContestVo.getAwardConfigList();
+            awardConfigList.sort(Comparator.comparingInt(ContestAwardConfigVo::getPriority));
+            awardConfigJson.set("config", awardConfigList);
+            contest.setAwardConfig(awardConfigJson.toString());
+        }
+
         boolean isOk = contestEntityService.save(contest);
         if (!isOk) { // 删除成功
             throw new StatusFailException("添加失败");
@@ -113,7 +141,7 @@ public class AdminContestManager {
 
     public void cloneContest(Long cid) throws StatusSystemErrorException {
         Contest contest = contestEntityService.getById(cid);
-        if (contest == null){
+        if (contest == null) {
             throw new StatusSystemErrorException("该比赛不存在，无法克隆！");
         }
         // 获取当前登录的用户
@@ -124,9 +152,8 @@ public class AdminContestManager {
                 .setId(null)
                 .setGmtCreate(null)
                 .setGmtModified(null);
-        contest.setTitle(contest.getTitle()+" [Cloned]");
-        boolean isOk = contestEntityService.save(contest);
-
+        contest.setTitle(contest.getTitle() + " [Cloned]");
+        contestEntityService.save(contest);
     }
 
     public void updateContest(AdminContestVo adminContestVo) throws StatusForbiddenException, StatusFailException {
@@ -140,9 +167,20 @@ public class AdminContestManager {
             throw new StatusForbiddenException("对不起，你无权限操作！");
         }
         Contest contest = BeanUtil.copyProperties(adminContestVo, Contest.class, "starAccount");
+
         JSONObject accountJson = new JSONObject();
         accountJson.set("star_account", adminContestVo.getStarAccount());
         contest.setStarAccount(accountJson.toString());
+
+        if (adminContestVo.getAwardType() != null && adminContestVo.getAwardType() != 0) {
+            List<ContestAwardConfigVo> awardConfigList = adminContestVo.getAwardConfigList();
+            awardConfigList.sort(Comparator.comparingInt(ContestAwardConfigVo::getPriority));
+            JSONObject awardConfigJson = new JSONObject();
+            awardConfigJson.set("config", awardConfigList);
+            contest.setAwardConfig(awardConfigJson.toString());
+        }
+
+
         Contest oldContest = contestEntityService.getById(contest.getId());
         boolean isOk = contestEntityService.saveOrUpdate(contest);
         if (isOk) {

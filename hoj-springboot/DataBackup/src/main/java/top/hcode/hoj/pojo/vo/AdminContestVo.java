@@ -91,6 +91,12 @@ public class AdminContestVo {
     @ApiModelProperty(value = "团队id")
     private Long gid;
 
+    @ApiModelProperty(value = "奖项类型：0(不设置),1(设置占比),2(设置人数)")
+    private Integer awardType;
+
+    @ApiModelProperty(value = "奖项配置")
+    private List<ContestAwardConfigVo> awardConfigList;
+
     private Date gmtCreate;
 
     private Date gmtModified;

@@ -156,6 +156,8 @@ CREATE TABLE `contest` (
   `oi_rank_score_type` varchar(255) DEFAULT 'Recent' COMMENT 'oi排行榜得分方式，Recent、Highest',
   `is_group` tinyint(1) DEFAULT '0',
   `gid` bigint(20) unsigned DEFAULT NULL,
+  `award_type` int(11) DEFAULT '0' COMMENT '奖项类型：0(不设置),1(设置占比),2(设置人数)',
+  `award_config` text DEFAULT NULL COMMENT '奖项配置 json',
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`uid`),

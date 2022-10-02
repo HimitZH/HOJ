@@ -425,6 +425,17 @@ export const m = {
   Show_Realname: '真实姓名',
   Account_Limit: '账号限制（登录用户名）',
   The_allowed_account_will_be: '允许参加比赛的用户名是：',
+  Contest_Award:'比赛奖项',
+  Contest_Award_Null:'不设置',
+  Contest_Award_Set_Number:'设置人数',
+  Contest_Award_Set_Proportion:'设置占比',
+  Contest_Award_Priority:'优先级',
+  Contest_Award_Name:'奖项名称',
+  Contest_Award_Background:'背景颜色',
+  Contest_Award_Color:'文本颜色',
+  Contest_Award_Show:'样式展示',
+  Contest_Award_Number:'人数',
+  Contest_Award_Proportion:'占比',
 
   // /views/admin/discussion/Discussion.vue
   Discussion_ID: '讨论ID',
