@@ -619,6 +619,7 @@ export default {
             if (resData.status != JUDGE_STATUS_RESERVE['Pending']) {
                 // status不为pending
                 this.testJudgeRes = resData;
+                this.equalsExpectedOuput = null; 
                 if(resData.status == JUDGE_STATUS_RESERVE['ac']){
                   let size = this.problemTestCase.length;
                   for(let i=0;i<size;i++){
