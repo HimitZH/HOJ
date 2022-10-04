@@ -61,6 +61,7 @@
                     medals = parmas.medals;
                 }
                 var board = new Board(contestInfo, medals);
+				closeLoading();
                 board.showInitBoard();
                 $('html').keydown(function(e) {
                     if (e.keyCode == 13) {
