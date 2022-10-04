@@ -188,6 +188,7 @@
             from judge j, user_info u
             where j.cid = #{cid}
             and j.uid = u.uuid
+            and j.status != -4
             and j.uid not in
             <foreach collection="uidList" item="uid" open="(" separator="," close=")">
                 #{uid}
