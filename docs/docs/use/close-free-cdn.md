@@ -24,7 +24,7 @@ hoj-frontend(前端vue项目)如果不挂载任何CDN，最终打包生成的文
 如果本身hoj部署在**学校内网机器**上或者**云服务器是无带宽上限、按流量计费的实例**，那么可以不用考虑带宽问题，可以直接取消CDN挂载，直接全部自己打包成对应的静态文件，然后挂载到docker的`hoj-frontend`镜像里面
 :::
 **操作如下:**
-  1. 下载前端源代码：[https://gitee.com/himitzh0730/hoj/tree/master/hoj-vue](https://gitee.com/himitzh0730/hoj/tree/master/hoj-vue)
+  1. 下载前端源代码：[https://gitee.com/himitzh0730/hoj/tree/master/hoj-frontend/hoj-vue](https://gitee.com/himitzh0730/hoj/tree/master/hoj-frontend/hoj-vue)
 
   2. 进入`hoj-vue`文件夹，编辑`vue.config.js`文件，按下面的修改
 
