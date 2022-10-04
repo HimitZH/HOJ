@@ -31,7 +31,7 @@
 
 ### (2). 部署
 
-1. [下载本项目](https://gitee.com/himitzh0730/hoj/tree/master/hoj-frontend/hoj-vue)，git clone或者download zip
+1. [下载本项目](https://gitee.com/himitzh0730/hoj/tree/master/hoj-vue)，git clone或者download zip
 
 2. 前提是本地有vue-cli4与npm，请自行百度下载
 
@@ -53,7 +53,7 @@
 
    ​
 
-   再将另外一个滚榜的前端文件夹也放到指定的文件夹，先去下载文件夹[scrollBoard](https://gitee.com/himitzh0730/hoj-deploy/tree/master/src/frontend/scrollBoard), 然后在服务器上创建文件夹`/hoj/www/scrollBoard`，将下载好的文件夹scrollBoard的内容复制进去。
+   再将另外一个滚榜的前端文件夹也放到指定的文件夹，先去下载文件夹[scrollBoard](https://gitee.com/himitzh0730/hoj/tree/master/hoj-scrollBoard), 然后在服务器上创建文件夹`/hoj/www/scrollBoard`，将下载好的文件夹scrollBoard的内容复制进去。
 
    ```shell
    mkdir -p /hoj/www/scrollBoard

@@ -84,7 +84,7 @@ docker-compose up -d
 
 >  附加：如何自定义前端请看这里 => [自定义前端文档](/use/update-fe.html)
 
-（1）首先到`./hoj/hoj-vue`文件夹中，拉取[hoj-vue](https://gitee.com/himitzh0730/hoj/tree/master/hoj-frontend/hoj-vue)仓库最新的代码，请注意解决出现的冲突。
+（1）首先到`./hoj/hoj-vue`文件夹中，拉取[hoj-vue](https://gitee.com/himitzh0730/hoj/tree/master/hoj-vue)仓库最新的代码，请注意解决出现的冲突。
 
 ```shell
 git pull
