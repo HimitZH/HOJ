@@ -36,12 +36,13 @@
 
 
     <select id="getContestJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="true">
-        select j.submit_id,j.submit_time,j.uid,j.username,j.uid,cp.display_id,cp.display_title as title,
+        select j.submit_id,j.submit_time,j.uid,j.username,cp.display_id,cp.display_title as title,
         j.status,j.share,j.time,j.memory,j.score,j.length,j.language,j.cid,j.cpid,j.judger,j.is_manual
         from judge j right join
         (
             select display_title,display_id,cid,pid from contest_problem
             <where>
+                cid = #{cid}
                 <if test="displayId!=null and displayId!=''">
                     <if test="completeProblemID != true">
                         AND display_id like concat('%',#{displayId},'%')
@@ -176,5 +177,29 @@
                 AND username = #{username}
             </if>
         </where>
+    </select>
+
+    <select id="getContestScrollBoardSubmission" resultType="top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVo" useCache="true">
+        select ju.submit_id,ju.submit_time, ju.uid, ju.username, ju.status, ju.nickname, ju.realname, ju.gender, ju.school,
+        cp.display_id
+        from
+        (
+            select j.submit_id, j.submit_time, j.status,j.cpid, u.uuid as uid, u.username, u.nickname, u.realname, u.gender, u.school
+            from judge j, user_info u
+            where j.cid = #{cid}
+            and j.uid = u.uuid
+            and j.uid not in
+            <foreach collection="uidList" item="uid" open="(" separator="," close=")">
+                #{uid}
+            </foreach>
+        )  ju
+        right join
+        (
+            select id, display_id from contest_problem
+            where cid = #{cid}
+        ) cp
+        on ju.cpid = cp.id
+        where ju.submit_id is not null
+        order by ju.submit_id DESC
     </select>
 </mapper>

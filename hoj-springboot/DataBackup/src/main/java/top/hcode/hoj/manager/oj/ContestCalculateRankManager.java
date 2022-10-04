@@ -177,7 +177,7 @@ public class ContestCalculateRankManager {
                     }
                 }
 
-                if (isNeedSetAward) {
+                if (isNeedSetAward && currentACMRankVo.getAc() > 0) {
                     if (configVo == null || configVo.getNum() == 0) {
                         if (!awardConfigVoList.isEmpty()) {
                             configVo = awardConfigVoList.poll();
@@ -438,7 +438,7 @@ public class ContestCalculateRankManager {
                     }
                 }
 
-                if (isNeedSetAward) {
+                if (isNeedSetAward && currentOIRankVo.getTotalScore() > 0) {
                     if (configVo == null || configVo.getNum() == 0) {
                         if (!awardConfigVoList.isEmpty()) {
                             configVo = awardConfigVoList.poll();
@@ -591,7 +591,7 @@ public class ContestCalculateRankManager {
     }
 
 
-    private List<String> getSuperAdminUidList(Long gid) {
+    public List<String> getSuperAdminUidList(Long gid) {
 
         List<String> superAdminUidList = userInfoEntityService.getSuperAdminUidList();
 

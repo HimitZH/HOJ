@@ -403,6 +403,7 @@ export const m = {
   Print: '打印',
   Admin_Print: '管理打印',
   Admin_Helper: 'AC助手',
+  ScrollBoard: '滚榜',
   Register_contest_successfully: '比赛报名成功',
   Please_check_the_contest_announcement_for_details: '具体内容请查看比赛公告',
   Go_To_Group_Contest_List:'前往团队比赛列表',
@@ -452,6 +453,16 @@ export const m = {
   Rejudge_All: '重测',
   Contest_Rejudge_Tips: '您确定重测所有提交记录?',
   Rejudge_successfully: '重测成功',
+
+  // /views/oj/contest/children/ScrollBoard.vue
+  ScrollBoard_Parameter_Config: '滚榜参数配置',
+  Start_Rolling:'开始滚榜',
+  Contest_ID:'比赛ID',
+  Number_of_gold_medals:'金牌数量',
+  Number_of_silver_medals:'银牌数量',
+  Number_of_bronze_medals:'铜牌数量',
+  Formula_for_calculating_the_number_of_medals:'奖牌的计算公式',
+  Contest_Non_Ended_But_Want_to_Scroll_Board:'比赛还未结束，你确定是否前往滚榜？',
 
   // /views/oj/contest/children/OIContestRank.vue
   Total_Score: '总分',

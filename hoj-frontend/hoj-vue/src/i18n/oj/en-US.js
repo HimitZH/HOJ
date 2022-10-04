@@ -401,6 +401,7 @@ export const m = {
   Print: 'Print',
   Admin_Print: 'Admin Print',
   Admin_Helper: 'AC Info',
+  ScrollBoard: 'Scroll Board',
   Register_contest_successfully: 'Register contest successfully',
   Please_check_the_contest_announcement_for_details: 'Please check the contest announcement for details',
   Go_To_Group_Contest_List:'Go to Group Contest List',
@@ -450,6 +451,16 @@ export const m = {
   Contest_Rejudge_Tips: 'Are you sure you want to rejudge all submissions of the questions?',
   Rejudge_All: 'Rejudge All',
   Rejudge_successfully: 'Rejudge successfully',
+
+  // /views/oj/contest/children/ScrollBoard.vue
+  ScrollBoard_Parameter_Config: 'Scroll Board Config',
+  Start_Rolling:'Start Rolling',
+  Contest_ID:'Contest ID',
+  Number_of_gold_medals:'Number of gold medals',
+  Number_of_silver_medals:'Number of silver medals',
+  Number_of_bronze_medals:'Number of bronze medals',
+  Formula_for_calculating_the_number_of_medals:'Formula for calculating the number of medals',
+  Contest_Non_Ended_But_Want_to_Scroll_Board:'The contest is not over yet. Are you sure you want to sroll the board?',
 
   // /views/oj/contest/children/OIContestRank.vue
   Total_Score: 'Total Score',

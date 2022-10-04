@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Scroll Board - HOJ</title>
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/scrollboard.css">
+    <link rel="stylesheet" type="text/css" href="css/loading.css">
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/scrollboard.js"></script>
+    <body>
+        <div id="app-loader">
+            <div class="square"></div>
+            <div class="square"></div>
+            <div class="square last"></div>
+            <div class="square clear"></div>
+            <div class="square"></div>
+            <div class="square last"></div>
+            <div class="square clear"></div>
+            <div class="square "></div>
+            <div class="square last"></div>
+            <div class="loader-content">
+              <span>Loading...</span>
+            </div>
+        </div>
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h3 class="modal-title" id="myModalTitle"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" role="alert">
+                        <span id="errorMsg"></span>
+                    </div>
+                    <div class="alert alert-info" role="alert">
+                        <a href="/home" class="alert-link">点击此处返回平台首页 (Click here to return to Online Judge Homepage)</a>
+                    </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </body>
+</head>
+
+<body>
+	<script type="text/javascript">
+        var parmas = getRequestParams();
+        if(parmas.cid == undefined || parmas.cid == null){
+            closeLoading();
+            showErrorMessage('[Request Parma Error]', '请求路径的参数cid不能为空 (The cid cannot be empty)');
+        }else{
+            var contestInfo = getContestInfo(parmas.cid);
+            if(contestInfo != null){
+                var medals = new Array(0, 0, 0);
+                if(parmas.medals != undefined 
+                    && parmas.medals != null 
+                    && parmas.medals instanceof Array){
+                    medals = parmas.medals;
+                }
+                var board = new Board(contestInfo, medals);
+                board.showInitBoard();
+                $('html').keydown(function(e) {
+                    if (e.keyCode == 13) {
+                        board.keydown();
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -16,6 +16,7 @@ import top.hcode.hoj.mapper.ProblemMapper;
 import top.hcode.hoj.pojo.entity.contest.ContestRecord;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVo;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.ProblemCountVo;
 import top.hcode.hoj.utils.Constants;
@@ -147,6 +148,11 @@ public class JudgeEntityServiceImpl extends ServiceImpl<JudgeMapper, Judge> impl
     @Override
     public List<ProblemCountVo> getProblemListCount(List<Long> pidList) {
         return judgeMapper.getProblemListCount(pidList);
+    }
+
+
+    public List<ContestScrollBoardSubmissionVo> getContestScrollBoardSubmission(Long cid, List<String> uidList) {
+        return judgeMapper.getContestScrollBoardSubmission(cid, uidList);
     }
 
 }

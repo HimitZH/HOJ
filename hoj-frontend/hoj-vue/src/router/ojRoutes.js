@@ -20,6 +20,7 @@ import Announcements from "@/components/oj/common/Announcements.vue"
 import ContestComment from "@/views/oj/contest/children/ContestComment.vue"
 import ContestPrint from "@/views/oj/contest/children/ContestPrint.vue"
 import ContestAdminPrint from "@/views/oj/contest/children/ContestAdminPrint.vue"
+import ScrollBoard from "@/views/oj/contest/children/ScrollBoard.vue"
 import ContestRejudgeAdmin from "@/views/oj/contest/children/ContestRejudgeAdmin.vue"
 import DiscussionList from "@/views/oj/discussion/discussionList.vue"
 import Discussion from "@/views/oj/discussion/discussion.vue"
@@ -190,6 +191,12 @@ const ojRoutes = [
         path:'admin-print',
         component: ContestAdminPrint,
         meta: { title: 'Contest Admin Print'}
+      },
+      {
+        name: 'ScrollBoard',
+        path:'scroll-board',
+        component: ScrollBoard,
+        meta: { title: 'Contest Scroll Board'}
       }
     ]
   },

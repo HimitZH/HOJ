@@ -35,18 +35,28 @@
 
 2. 前提是本地有vue-cli4与npm，请自行百度下载
 
-4. 然后在当前hoj-vue文件夹的src路径运行打包命令
+3. 然后在当前hoj-vue文件夹的src路径运行打包命令
 
    ```powershell
    npm run build
    ```
 
-5. 打包成功会在src同文件夹内有个dist文件夹，复制里面的html和css等静态文件
+4. 打包成功会在src同文件夹内有个dist文件夹，复制里面的html和css等静态文件
 
 5. 在云服务器上创建文件夹
 
    ```shell
    mkdir -p /hoj/www/html
+   ```
+
+   然后将这些静态文件复制到里面即可。
+
+   ​
+
+   再将另外一个滚榜的前端文件夹也放到指定的文件夹，先去下载文件夹[scrollBoard](https://gitee.com/himitzh0730/hoj-deploy/tree/master/src/frontend/scrollBoard), 然后在服务器上创建文件夹`/hoj/www/scrollBoard`，将下载好的文件夹scrollBoard的内容复制进去。
+
+   ```shell
+   mkdir -p /hoj/www/scrollBoard
    ```
 
    然后将这些静态文件复制到里面即可
@@ -85,6 +95,11 @@
          location / {  # 路由重定向以适应Vue中的路由
                  index index.html;
                  try_files $uri $uri/ /index.html;
+         }
+         location ^~ /scrollBoard{
+             alias  /hoj/www/scrollBoard;
+             try_files $uri $uri/ /index.html;
+             index index.html index.htm;
          }
    }
    ```
@@ -233,6 +248,11 @@ server {
             index index.html;
             try_files $uri $uri/ /index.html;
     }
+  	location ^~ /scrollBoard{
+        alias   /usr/share/nginx/scrollBoard;
+        try_files $uri $uri/ /index.html;
+        index index.html index.htm;
+    }
 	
 }
 ```
@@ -268,7 +288,11 @@ server {
             index index.html;
             try_files $uri $uri/ /index.html;
     }
-	
+  	location ^~ /scrollBoard{
+        alias   /usr/share/nginx/scrollBoard;
+        try_files $uri $uri/ /index.html;
+        index index.html index.htm;
+    }
 }
 ```
 
@@ -299,6 +323,8 @@ COPY default.conf.template /etc/nginx/conf.d/default.conf.template
 COPY default.conf.ssl.template /etc/nginx/conf.d/default.conf.ssl.template
 
 ADD html/ /usr/share/nginx/html/
+
+ADD scrollBoard/ /usr/share/nginx/scrollBoard/
 
 COPY ./run.sh /docker-entrypoint.sh
 

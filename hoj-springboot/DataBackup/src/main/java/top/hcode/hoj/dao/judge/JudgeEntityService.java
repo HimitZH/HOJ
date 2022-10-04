@@ -4,6 +4,7 @@ package top.hcode.hoj.dao.judge;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import com.baomidou.mybatisplus.extension.service.IService;
+import top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVo;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.ProblemCountVo;
 
@@ -60,4 +61,6 @@ public interface JudgeEntityService extends IService<Judge> {
     public int getTodayJudgeNum();
 
     public List<ProblemCountVo> getProblemListCount(List<Long> pidList);
+
+    public List<ContestScrollBoardSubmissionVo> getContestScrollBoardSubmission(Long cid, List<String> uidList);
 }
