@@ -202,12 +202,12 @@ export default {
       this.limit = pageSize;
       this.init();
     },
-    getProblemList(page = 1) {
+    getProblemList() {
       this.loading = true;
       let params = {
         tid: this.trainingId,
       }
-      api.getGroupTrainingProblemList(page, this.limit, params).then(
+      api.getGroupTrainingProblemList(this.currentPage, this.limit, params).then(
         (res) => {
           this.loading = false;
           this.total = res.data.data.problemList.total;
