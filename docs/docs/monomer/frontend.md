@@ -31,7 +31,7 @@
 
 ### (2). 部署
 
-1. [下载本项目](https://gitee.com/himitzh0730/hoj/tree/master/hoj-vue)，git clone或者download zip
+1. [下载本项目](https://gitee.com/himitzh0730/hoj/tree/master/hoj-frontend/hoj-vue)，git clone或者download zip
 
 2. 前提是本地有vue-cli4与npm，请自行百度下载
 
