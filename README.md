@@ -23,7 +23,7 @@
 - **支持移动端、PC端浏览，拥有讨论区与站内消息系统**
 - **支持私有训练、公开训练（题单）和团队功能**
 - **完善的评测功能：普通测评、特殊测评、交互测评、在线自测、子任务分组评测**
-- **完善的比赛功能：打星队伍、关注队伍、外榜**
+- **完善的比赛功能：打星队伍、关注队伍、外榜、滚榜**
 
 |               在线Demo               |                   在线文档                   |             Github&Gitee仓库地址             |    QQ群    |
 | :--------------------------------: | :--------------------------------------: | :--------------------------------------: | :-------: |
@@ -88,6 +88,7 @@
 | 2022-08-06 | 增加题目标签的分类管理（二级标签）                        | Himit_ZH    |
 | 2022-08-21 | 增加人工评测、取消评测                              | Himit_ZH    |
 | 2022-08-30 | 增加OI题目的subtask、ACM题目的'遇错止评'模式            | Himit_ZH    |
+| 2022-10-04 | 增加比赛奖项配置，增加ACM赛制的滚榜                      | Himit_ZH    |
 
 ## 五、部分截图
 
@@ -161,7 +162,7 @@
 
 - ACM比赛
 
-![比赛排行榜](https://img-blog.csdnimg.cn/c50140e3b73d482d82ca6f13f47aa080.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+  ![比赛排行榜](https://img-blog.csdnimg.cn/c50140e3b73d482d82ca6f13f47aa080.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
 
 
 
@@ -169,6 +170,12 @@
 
   ![oi排行榜](https://img-blog.csdnimg.cn/67f6262854bb44efa70c374f1f156166.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
 
+
+
+
+- 滚榜
+
+  ![在这里插入图片描述](https://img-blog.csdnimg.cn/8f8258babd3f43f78802144e7ecf18fe.png)
 
 ### 6. 评测
 

@@ -297,6 +297,25 @@
             ></router-view>
           </transition>
         </el-tab-pane>
+
+        <el-tab-pane
+          name="ScrollBoard"
+          lazy
+          :disabled="contestMenuDisabled"
+          v-if="showScrollBoard"
+        >
+          <span slot="label"
+            ><i class="el-icon-video-camera-solid" aria-hidden="true"></i>&nbsp;{{
+              $t('m.ScrollBoard')
+            }}</span
+          >
+          <transition name="el-zoom-in-bottom">
+            <router-view
+              v-if="route_name === 'ScrollBoard'"
+            ></router-view>
+          </transition>
+        </el-tab-pane>
+
       </el-tabs>
     </div>
   </div>
@@ -471,6 +490,9 @@ export default {
       }
     },
     showAdminHelper() {
+      return this.isContestAdmin && this.contestRuleType === RULE_TYPE.ACM;
+    },
+    showScrollBoard(){
       return this.isContestAdmin && this.contestRuleType === RULE_TYPE.ACM;
     },
     descriptionHtml() {

@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVo;
 import top.hcode.hoj.pojo.vo.JudgeVo;
 import top.hcode.hoj.pojo.vo.ProblemCountVo;
 
@@ -59,5 +60,8 @@ public interface JudgeMapper extends BaseMapper<Judge> {
 
     List<ProblemCountVo> getProblemListCount(@Param("pidList") List<Long> pidList);
 
-    List<Judge> getLastYearUserJudgeList(@Param("uid")String uid, @Param("username")String username);
+    List<Judge> getLastYearUserJudgeList(@Param("uid") String uid, @Param("username") String username);
+
+    List<ContestScrollBoardSubmissionVo> getContestScrollBoardSubmission(@Param("cid") Long cid,
+                                                                         @Param("uidList") List<String> uidList);
 }

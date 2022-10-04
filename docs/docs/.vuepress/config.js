@@ -98,6 +98,7 @@ module.exports = context => config({
 					'use/testcase',
 					'use/training',
 					'use/contest',
+					'use/scroll-board',
 					'use/group',
 					'use/import-user',
 					'use/admin-user',
