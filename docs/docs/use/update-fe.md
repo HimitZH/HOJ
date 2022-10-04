@@ -3,7 +3,7 @@
 
 ## 一、完全自定义前端
 
-直接下载[https://gitee.com/himitzh0730/hoj/tree/master/hoj-frontend/hoj-vue](https://gitee.com/himitzh0730/hoj/tree/master/hoj-frontend/hoj-vue)
+直接下载 [hoj-vue](https://gitee.com/himitzh0730/hoj/tree/master/hoj-vue)
 
 修改后，使用`npm run build`，生成一个dist文件夹，结构如下：
 
