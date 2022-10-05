@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author Himit_ZH
@@ -22,12 +22,15 @@ import java.util.List;
 @Mapper
 @Repository
 public interface ContestMapper extends BaseMapper<Contest> {
-    List<ContestVo> getContestList(IPage page,@Param("type") Integer type,
-                                   @Param("status")Integer status,@Param("keyword")String keyword);
 
-    List<ContestRegisterCountVo> getContestRegisterCount(@Param("cidList")List<Long> cidList);
+    List<ContestVo> getContestList(IPage page,
+                                   @Param("type") Integer type,
+                                   @Param("status") Integer status,
+                                   @Param("keyword") String keyword);
 
-    ContestVo getContestInfoById(@Param("cid")long cid);
+    List<ContestRegisterCountVo> getContestRegisterCount(@Param("cidList") List<Long> cidList);
+
+    ContestVo getContestInfoById(@Param("cid") long cid);
 
     List<ContestVo> getWithinNext14DaysContests();
 }

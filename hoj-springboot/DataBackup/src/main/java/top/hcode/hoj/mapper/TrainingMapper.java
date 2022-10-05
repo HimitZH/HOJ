@@ -1,6 +1,7 @@
 package top.hcode.hoj.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -18,7 +19,8 @@ import java.util.List;
 @Repository
 public interface TrainingMapper extends BaseMapper<Training> {
 
-    List<TrainingVo> getTrainingList(@Param("categoryId") Long categoryId,
+    List<TrainingVo> getTrainingList(IPage page,
+                                     @Param("categoryId") Long categoryId,
                                      @Param("auth") String auth,
                                      @Param("keyword") String keyword);
 }

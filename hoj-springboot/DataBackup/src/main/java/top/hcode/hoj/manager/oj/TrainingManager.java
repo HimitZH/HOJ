@@ -82,8 +82,17 @@ public class TrainingManager {
 
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
-        if (limit == null || limit < 1) limit = 30;
-        return trainingEntityService.getTrainingList(limit, currentPage, categoryId, auth, keyword);
+        if (limit == null || limit < 1) limit = 20;
+
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+
+        String currentUid = null;
+        if (userRolesVo != null) {
+            currentUid = userRolesVo.getUid();
+        }
+
+        return trainingEntityService.getTrainingList(limit, currentPage, categoryId, auth, keyword, currentUid);
     }
 
 

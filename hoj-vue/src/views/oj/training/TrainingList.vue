@@ -122,17 +122,40 @@
             >
           </template>
         </vxe-table-column>
+
+        <vxe-table-column 
+          field="acCount" 
+          :title="$t('m.Progress')" 
+          min-width="120"
+          align="center">
+          <template v-slot="{ row }">
+            <span>
+              <el-tooltip
+                effect="dark"
+                :content="row.acCount + '/' + row.problemCount"
+                placement="top"
+              >
+                <el-progress
+                  :text-inside="true"
+                  :stroke-width="20"
+                  :percentage="getPassingRate(row.acCount, row.problemCount)"
+                ></el-progress>
+              </el-tooltip>
+            </span>
+          </template>
+        </vxe-table-column>
+
         <vxe-table-column
           field="problemCount"
           :title="$t('m.Problem_Number')"
-          min-width="80"
+          min-width="70"
           align="center"
         >
         </vxe-table-column>
         <vxe-table-column
           field="author"
           :title="$t('m.Author')"
-          min-width="150"
+          min-width="130"
           align="center"
           show-overflow
         >
@@ -145,12 +168,19 @@
         <vxe-table-column
           field="gmtModified"
           :title="$t('m.Recent_Update')"
-          min-width="160"
+          min-width="96"
           align="center"
           show-overflow
         >
           <template v-slot="{ row }">
-            {{ row.gmtModified | localtime }}
+            <span>
+                <el-tooltip
+                  :content="row.gmtModified | localtime"
+                  placement="top"
+                >
+                  <span>{{ row.gmtModified | fromNow }}</span>
+                </el-tooltip>
+              </span>
           </template>
         </vxe-table-column>
       </vxe-table>
@@ -196,6 +226,15 @@ export default {
     let route = this.$route.query;
     this.currentPage = parseInt(route.currentPage) || 1;
     this.TRAINING_TYPE = Object.assign({}, TRAINING_TYPE);
+
+    if(!this.isAuthenticated){
+      setTimeout(() => {
+        // 将指定列设置为隐藏状态
+        this.$refs.trainingList.getColumnByField('acCount').visible = false;
+        this.$refs.trainingList.refreshColumn();
+      }, 200);
+    }
+
     this.getTrainingCategoryList();
   },
   mounted() {
@@ -298,6 +337,12 @@ export default {
         );
       }
     },
+    getPassingRate(ac, total) {
+      if (!total) {
+        return 0;
+      }
+      return ((ac / total) * 100).toFixed(2);
+    },
   },
   computed: {
     ...mapGetters(['isAuthenticated']),
@@ -308,6 +353,14 @@ export default {
         this.init();
       }
     },
+    isAuthenticated(newVal, oldVal){
+      setTimeout(() => {
+        // 将指定列设置为隐藏状态
+        this.$refs.trainingList.getColumnByField('acCount').visible = newVal;
+        this.$refs.trainingList.refreshColumn();
+      }, 200);
+      this.init();
+    }
   },
 };
 </script>

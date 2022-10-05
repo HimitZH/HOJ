@@ -596,6 +596,7 @@ export const m = {
   Number: '编号',
   Problem_Number: '题目数',
   Recent_Update: '最近更新',
+  Progress:'进度',
 
   // /views/oj/training/TrainingDetails.vue
   Training_Introduction: '训练简介',

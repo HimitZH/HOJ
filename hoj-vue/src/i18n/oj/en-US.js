@@ -591,10 +591,11 @@ export const m = {
   Search_Training: 'Search Training',
   Training_Public: 'Public',
   Training_Private: 'Private',
-  Training_Category: 'Training Category',
-  Number: 'Number',
-  Problem_Number: 'Problem Number',
-  Recent_Update: 'Recent Update',
+  Training_Category: 'Category',
+  Number: 'ID',
+  Problem_Number: 'Num',
+  Recent_Update: 'Updated',
+  Progress:'Progress',
 
   // /views/oj/training/TrainingDetails.vue
   Training_Introduction: 'Training Introduction',
