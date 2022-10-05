@@ -49,7 +49,7 @@ public class TrainingProblemEntityServiceImpl extends ServiceImpl<TrainingProble
     }
 
     @Override
-    public Integer getUserTrainingACProblemCount(String uid, List<Long> pidList) {
+    public Integer getUserTrainingACProblemCount(String uid, Long gid, List<Long> pidList) {
         if (CollectionUtils.isEmpty(pidList)) {
             return 0;
         }
@@ -59,6 +59,13 @@ public class TrainingProblemEntityServiceImpl extends ServiceImpl<TrainingProble
                 .eq("cid", 0)
                 .eq("uid", uid)
                 .eq("status", 0);
+
+        if (gid == null) {
+            judgeQueryWrapper.isNull("gid");
+        } else {
+            judgeQueryWrapper.eq("gid", gid);
+        }
+
         return judgeEntityService.count(judgeQueryWrapper);
     }
 
@@ -68,8 +75,13 @@ public class TrainingProblemEntityServiceImpl extends ServiceImpl<TrainingProble
     }
 
     @Override
-    public List<TrainingProblem> getTrainingProblemListAcceptedStatusByUid(List<Long> tidList, String uid) {
-        return trainingProblemMapper.getTrainingProblemListAcceptedStatusByUid(tidList, uid);
+    public List<TrainingProblem> getTrainingListAcceptedCountByUid(List<Long> tidList, String uid) {
+        return trainingProblemMapper.getTrainingListAcceptedCountByUid(tidList, uid);
+    }
+
+    @Override
+    public List<TrainingProblem> getGroupTrainingListAcceptedCountByUid(List<Long> tidList, Long gid, String uid) {
+        return trainingProblemMapper.getGroupTrainingListAcceptedCountByUid(tidList, gid, uid);
     }
 
 }
