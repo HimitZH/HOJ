@@ -76,4 +76,22 @@
              on tm.id = tp.tid
         where tp.pid = #{pid}
     </select>
+
+    <select id="getTrainingProblemListAcceptedStatusByUid" resultType="top.hcode.hoj.pojo.entity.training.TrainingProblem">
+        SELECT a.pid,a.tid
+        FROM
+            (
+                SELECT pid,tid FROM training_problem WHERE tid in
+                <foreach collection="tidList" item="tid" open="(" separator="," close=")">
+                    #{tid}
+                </foreach>
+            ) a
+                left join
+            (
+                SELECT DISTINCT pid FROM user_acproblem where uid = #{uid}
+            ) b
+            on a.pid = b.pid
+        where b.pid is not null
+    </select>
+
 </mapper>

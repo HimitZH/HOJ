@@ -43,6 +43,6 @@
         SELECT tp.tid,COUNT(*) AS problem_count FROM training_problem tp,problem p
         WHERE tp.pid = p.id AND p.auth = 1 GROUP BY tp.tid
         ) tp
-        ON t.id = tp.tid ORDER BY t.`rank` ASC;
+        ON t.id = tp.tid ORDER BY t.`rank` ASC
     </select>
 </mapper>
