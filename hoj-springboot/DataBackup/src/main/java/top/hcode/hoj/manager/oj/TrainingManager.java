@@ -114,10 +114,13 @@ public class TrainingManager {
             throw new StatusFailException("该训练不存在或不允许显示！");
         }
 
+        Long gid = training.getGid();
         if (training.getIsGroup()) {
             if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), training.getGid())) {
                 throw new StatusForbiddenException("对不起，您无权限操作！");
             }
+        } else {
+            gid = null;
         }
 
         TrainingVo trainingVo = BeanUtil.copyProperties(training, TrainingVo.class);
@@ -128,8 +131,8 @@ public class TrainingManager {
         trainingVo.setProblemCount(trainingProblemIdList.size());
 
         if (userRolesVo != null && trainingValidator.isInTrainingOrAdmin(training, userRolesVo)) {
-            Integer userTrainingACProblemCount = trainingProblemEntityService.getUserTrainingACProblemCount(userRolesVo.getUid(), trainingProblemIdList);
-            trainingVo.setAcCount(userTrainingACProblemCount);
+            Integer count = trainingProblemEntityService.getUserTrainingACProblemCount(userRolesVo.getUid(), gid, trainingProblemIdList);
+            trainingVo.setAcCount(count);
         } else {
             trainingVo.setAcCount(0);
         }

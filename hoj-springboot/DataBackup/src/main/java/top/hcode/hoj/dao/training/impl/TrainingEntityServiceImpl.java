@@ -49,7 +49,7 @@ public class TrainingEntityServiceImpl extends ServiceImpl<TrainingMapper, Train
         // 当前用户有登录，且训练列表不为空，则查询用户对于每个训练的做题进度
         if (!StringUtils.isEmpty(currentUid) && trainingList.size() > 0) {
             List<Long> tidList = trainingList.stream().map(TrainingVo::getId).collect(Collectors.toList());
-            List<TrainingProblem> trainingProblemList = trainingProblemEntityService.getTrainingProblemListAcceptedStatusByUid(tidList, currentUid);
+            List<TrainingProblem> trainingProblemList = trainingProblemEntityService.getTrainingListAcceptedCountByUid(tidList, currentUid);
 
             HashMap<Long, Integer> tidMapCount = new HashMap<>(trainingList.size());
             for (TrainingProblem trainingProblem : trainingProblemList) {
@@ -62,7 +62,6 @@ public class TrainingEntityServiceImpl extends ServiceImpl<TrainingMapper, Train
                 Integer count = tidMapCount.getOrDefault(trainingVo.getId(), 0);
                 trainingVo.setAcCount(count);
             }
-
         }
 
         page.setRecords(trainingList);
