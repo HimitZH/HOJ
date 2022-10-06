@@ -641,8 +641,11 @@ public class ContestCalculateRankManager {
             for (JSONObject object : list) {
                 ContestAwardConfigVo configVo = JSONUtil.toBean(object, ContestAwardConfigVo.class);
                 if (configVo.getNum() != null && configVo.getNum() > 0) {
-                    configVo.setNum((int) (configVo.getNum() * 0.01 * totalUser));
-                    queue.offer(configVo);
+                    int num = (int) (configVo.getNum() * 0.01 * totalUser);
+                    if (num > 0) {
+                        configVo.setNum(num);
+                        queue.offer(configVo);
+                    }
                 }
             }
         } else {
