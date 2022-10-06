@@ -62,7 +62,6 @@ public class AdminContestManager {
     }
 
     public AdminContestVo getContest(Long cid) throws StatusFailException, StatusForbiddenException {
-        // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(cid);
         if (contest == null) { // 查询不存在
             throw new StatusFailException("查询失败：该比赛不存在,请检查参数cid是否准确！");
