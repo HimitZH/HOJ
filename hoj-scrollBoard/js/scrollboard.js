@@ -689,6 +689,9 @@ function getTeamList(submissions, rankShowName, starUsernameList) {
     for (var key in submissions) {
         var team = submissions[key];
         var name = team[rankShowName];
+        if(name == null || name == '' || name.trim().length == 0){
+            name = team.username;
+        }
         while (name!=name.replace(' ','_')) name=name.replace(' ','_');
         while (name!=name.replace('.','_')) name=name.replace('.','_');
         var girl = false;

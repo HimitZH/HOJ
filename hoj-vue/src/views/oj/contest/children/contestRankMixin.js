@@ -53,6 +53,13 @@ export default {
       let key = buildContestRankConcernedKey(this.contestID);
       storage.set(key, this.concernedList);
       this.getContestRankData(this.page, true);
+    },
+    getRankShowName(rankShowName, username){
+      let finalShowName = rankShowName;
+      if(rankShowName == null || rankShowName == '' || rankShowName.trim().length == 0){
+        finalShowName = username;
+      }
+      return finalShowName;
     }
   },
   computed: {

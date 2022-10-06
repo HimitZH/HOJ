@@ -114,59 +114,64 @@
           align="left"
         >
           <template v-slot="{ row }">
-            <avatar
-              :username="row[contest.rankShowName]"
-              :inline="true"
-              :size="37"
-              color="#FFF"
-              :src="row.avatar"
-              :title="row[contest.rankShowName]"
-            ></avatar>
-            <el-tooltip placement="top">
-              <div slot="content">
-                {{
-                  row.isConcerned ? $t('m.Unfollow') : $t('m.Top_And_Follow')
-                }}
-              </div>
-              <span
-                class="contest-rank-concerned"
-                @click="updateConcernedList(row.uid, !row.isConcerned)"
-              >
-                <i
-                  class="fa fa-star"
-                  v-if="row.isConcerned"
-                  style="color: red;"
-                ></i>
-                <i
-                  class="el-icon-star-off"
-                  v-else
-                ></i>
+            <div class="contest-rank-user-box">
+              <span>
+                <avatar
+                :username="row.rankShowName"
+                :inline="true"
+                :size="37"
+                color="#FFF"
+                :src="row.avatar"
+                :title="row.rankShowName"
+                ></avatar>
               </span>
-            </el-tooltip>
-            <span style="float:right;text-align:right">
-              <a @click="getUserHomeByUsername(row.uid, row.username)">
-                <span class="contest-username">
-                  <span
-                    class="contest-rank-flag"
-                    v-if="row.uid == userInfo.uid"
-                  >Own</span>
-                  <span
-                    class="contest-rank-flag"
-                    v-if="row.rank == -1"
-                  >Star</span>
-                  <span
-                    class="contest-rank-flag"
-                    v-if="row.gender == 'female'"
-                  >Girl</span>
-                  {{ row[contest.rankShowName] }}</span>
+              <el-tooltip placement="top">
+                <div slot="content">
+                  {{
+                    row.isConcerned ? $t('m.Unfollow') : $t('m.Top_And_Follow')
+                  }}
+                </div>
                 <span
-                  class="contest-school"
-                  v-if="row.school"
-                >{{
-                  row.school
-                }}</span>
-              </a>
-            </span>
+                  class="contest-rank-concerned"
+                  @click="updateConcernedList(row.uid, !row.isConcerned)"
+                >
+                  <i
+                    class="fa fa-star"
+                    v-if="row.isConcerned"
+                    style="color: red;"
+                  ></i>
+                  <i
+                    class="el-icon-star-off"
+                    v-else
+                  ></i>
+                </span>
+              </el-tooltip>
+              <span class="contest-rank-user-info">
+                <a @click="getUserHomeByUsername(row.uid, row.username)">
+                  <span class="contest-username" :title="row.rankShowName">
+                    <span
+                      class="contest-rank-flag"
+                      v-if="row.uid == userInfo.uid"
+                    >Own</span>
+                    <span
+                      class="contest-rank-flag"
+                      v-if="row.rank == -1"
+                    >Star</span>
+                    <span
+                      class="contest-rank-flag"
+                      v-if="row.gender == 'female'"
+                    >Girl</span>
+                    {{ row.rankShowName }}</span>
+                  <span
+                    class="contest-school"
+                    v-if="row.school"
+                    :title="row.school"
+                  >{{
+                    row.school
+                  }}</span>
+                </a>
+              </span>
+            </div>
           </template>
         </vxe-table-column>
         <vxe-table-column
@@ -178,59 +183,64 @@
           align="left"
         >
           <template v-slot="{ row }">
-            <avatar
-              :username="row[contest.rankShowName]"
-              :inline="true"
-              :size="37"
-              color="#FFF"
-              :src="row.avatar"
-              :title="row[contest.rankShowName]"
-            ></avatar>
-            <el-tooltip placement="top">
-              <div slot="content">
-                {{
-                  row.isConcerned ? $t('m.Unfollow') : $t('m.Top_And_Follow')
-                }}
-              </div>
-              <span
-                class="contest-rank-concerned"
-                @click="updateConcernedList(row.uid, !row.isConcerned)"
-              >
-                <i
-                  class="fa fa-star"
-                  v-if="row.isConcerned"
-                  style="color: red;"
-                ></i>
-                <i
-                  class="el-icon-star-off"
-                  v-else
-                ></i>
+            <div class="contest-rank-user-box">
+              <span>
+                <avatar
+                :username="row.rankShowName"
+                :inline="true"
+                :size="37"
+                color="#FFF"
+                :src="row.avatar"
+                :title="row.rankShowName"
+                ></avatar>
               </span>
-            </el-tooltip>
-            <span style="float:right;text-align:right">
-              <a @click="getUserHomeByUsername(row.uid, row.username)">
-                <span class="contest-username">
-                  <span
-                    class="contest-rank-flag"
-                    v-if="row.uid == userInfo.uid"
-                  >Own</span>
-                  <span
-                    class="contest-rank-flag"
-                    v-if="row.rank == -1"
-                  >Star</span>
-                  <span
-                    class="contest-rank-flag"
-                    v-if="row.gender == 'female'"
-                  >Girl</span>
-                  {{ row[contest.rankShowName] }}</span>
+              <el-tooltip placement="top">
+                <div slot="content">
+                  {{
+                    row.isConcerned ? $t('m.Unfollow') : $t('m.Top_And_Follow')
+                  }}
+                </div>
                 <span
-                  class="contest-school"
-                  v-if="row.school"
-                >{{
-                  row.school
-                }}</span>
-              </a>
-            </span>
+                  class="contest-rank-concerned"
+                  @click="updateConcernedList(row.uid, !row.isConcerned)"
+                >
+                  <i
+                    class="fa fa-star"
+                    v-if="row.isConcerned"
+                    style="color: red;"
+                  ></i>
+                  <i
+                    class="el-icon-star-off"
+                    v-else
+                  ></i>
+                </span>
+              </el-tooltip>
+              <span class="contest-rank-user-info">
+                <a @click="getUserHomeByUsername(row.uid, row.username)">
+                  <span class="contest-username" :title="row.rankShowName">
+                    <span
+                      class="contest-rank-flag"
+                      v-if="row.uid == userInfo.uid"
+                    >Own</span>
+                    <span
+                      class="contest-rank-flag"
+                      v-if="row.rank == -1"
+                    >Star</span>
+                    <span
+                      class="contest-rank-flag"
+                      v-if="row.gender == 'female'"
+                    >Girl</span>
+                    {{ row.rankShowName }}</span>
+                  <span
+                    class="contest-school"
+                    v-if="row.school"
+                    :title="row.school"
+                  >{{
+                    row.school
+                  }}</span>
+                </a>
+              </span>
+            </div>
           </template>
         </vxe-table-column>
         <vxe-table-column
@@ -577,17 +587,17 @@ export default {
         let info = rank.submissionInfo;
         let cellClass = {};
         if (this.concernedList.indexOf(rank.uid) != -1) {
-          dataRank[i].isConcerned = true;
+          rank.isConcerned = true;
         }
         Object.keys(info).forEach((problemID) => {
-          dataRank[i][problemID] = info[problemID];
-          if (dataRank[i][problemID].ACTime != null) {
-            dataRank[i][problemID].errorNum += 1;
-            dataRank[i][problemID].specificTime = this.parseTimeToSpecific(
-              dataRank[i][problemID].ACTime
+          rank[problemID] = info[problemID];
+          if (rank[problemID].ACTime != null) {
+            rank[problemID].errorNum += 1;
+            rank[problemID].specificTime = this.parseTimeToSpecific(
+              rank[problemID].ACTime
             );
-            dataRank[i][problemID].ACTime = parseInt(
-              dataRank[i][problemID].ACTime / 60
+            rank[problemID].ACTime = parseInt(
+              rank[problemID].ACTime / 60
             );
           }
           let status = info[problemID];
@@ -601,13 +611,14 @@ export default {
             cellClass[problemID] = "wa";
           }
         });
-        dataRank[i].cellClassName = cellClass;
-        if (dataRank[i].rank == -1) {
-          dataRank[i].userCellClassName = "bg-star";
+        rank.cellClassName = cellClass;
+        if (rank.rank == -1) {
+          rank.userCellClassName = "bg-star";
         }
-        if (dataRank[i].gender == "female") {
-          dataRank[i].userCellClassName = "bg-female";
+        if (rank.gender == "female") {
+          rank.userCellClassName = "bg-female";
         }
+        rank.rankShowName = this.getRankShowName(rank[this.contest.rankShowName],rank.username)
       });
       this.dataRank = dataRank;
     },
@@ -629,7 +640,8 @@ export default {
       }
       for (let i = topIndex; i < len && i < topIndex + 10; i++) {
         let rank = rankData[i];
-        users.push(rank[this.contest.rankShowName]);
+        let rankShowName = this.getRankShowName(rank[this.contest.rankShowName], rank.username);
+        users.push(rankShowName);
         let info = rank.submissionInfo;
         // 提取出已AC题目的时间
         let timeData = [];
@@ -652,7 +664,7 @@ export default {
           data.push([realTime, index + 1]);
         }
         seriesData.push({
-          name: rank[this.contest.rankShowName],
+          name: rankShowName,
           type: "line",
           data,
         });

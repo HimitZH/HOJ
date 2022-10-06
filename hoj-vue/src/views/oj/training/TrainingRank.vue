@@ -35,33 +35,37 @@
           align="left"
         >
           <template v-slot="{ row }">
-            <avatar
-              :username="row.username"
-              :inline="true"
-              :size="37"
-              color="#FFF"
-              :src="row.avatar"
-              :title="row.username"
-            ></avatar>
-
-            <span style="float:right;text-align:right">
-              <a @click="getUserHomeByUsername(row.uid, row.username)">
-                <span class="contest-username">
-                  <span class="contest-rank-flag" v-if="row.uid == userInfo.uid"
-                    >Own</span
-                  >
-                  <span class="contest-rank-flag" v-if="row.gender == 'female'"
-                    >Girl</span
-                  >
-                  {{ row.username }}</span>
-                <span
-                  class="contest-school"
-                  v-if="row.school"
-                >{{
-                  row.school
-                }}</span>
-              </a>
-            </span>
+            <div class="contest-rank-user-box">
+              <span style="margin-right: 0.5rem">
+                <avatar
+                  :username="row.username"
+                  :inline="true"
+                  :size="37"
+                  color="#FFF"
+                  :src="row.avatar"
+                  :title="row.username"
+                ></avatar>
+              </span>
+              <span class="contest-rank-user-info">
+                <a @click="getUserHomeByUsername(row.uid, row.username)">
+                  <span class="contest-username" :title="row.username">
+                    <span class="contest-rank-flag" v-if="row.uid == userInfo.uid"
+                      >Own</span
+                    >
+                    <span class="contest-rank-flag" v-if="row.gender == 'female'"
+                      >Girl</span
+                    >
+                    {{ row.username }}</span>
+                  <span
+                    class="contest-school"
+                    v-if="row.school"
+                    :title="row.school"
+                  >{{
+                    row.school
+                  }}</span>
+                </a>
+              </span>
+            </div>
           </template>
         </vxe-table-column>
         <vxe-table-column
@@ -73,33 +77,37 @@
           align="left"
         >
           <template v-slot="{ row }">
-            <avatar
-              :username="row.username"
-              :inline="true"
-              :size="37"
-              color="#FFF"
-              :src="row.avatar"
-              :title="row.username"
-            ></avatar>
-
-            <span style="float:right;text-align:right">
-              <a @click="getUserHomeByUsername(row.uid, row.username)">
-                <span class="contest-username">
-                  <span class="contest-rank-flag" v-if="row.uid == userInfo.uid"
-                    >Own</span
-                  >
-                  <span class="contest-rank-flag" v-if="row.gender == 'female'"
-                    >Girl</span
-                  >
-                  {{ row.username }}</span>
-                <span
-                  class="contest-school"
-                  v-if="row.school"
-                >{{
-                  row.school
-                }}</span>
-              </a>
-            </span>
+            <div class="contest-rank-user-box">
+              <span style="margin-right: 0.5rem">
+                <avatar
+                  :username="row.username"
+                  :inline="true"
+                  :size="37"
+                  color="#FFF"
+                  :src="row.avatar"
+                  :title="row.username"
+                ></avatar>
+              </span>
+              <span class="contest-rank-user-info">
+                <a @click="getUserHomeByUsername(row.uid, row.username)">
+                  <span class="contest-username" :title="row.username">
+                    <span class="contest-rank-flag" v-if="row.uid == userInfo.uid"
+                      >Own</span
+                    >
+                    <span class="contest-rank-flag" v-if="row.gender == 'female'"
+                      >Girl</span
+                    >
+                    {{ row.username }}</span>
+                  <span
+                    class="contest-school"
+                    v-if="row.school"
+                    :title="row.school"
+                  >{{
+                    row.school
+                  }}</span>
+                </a>
+              </span>
+            </div>
           </template>
         </vxe-table-column>
         <vxe-table-column

@@ -353,17 +353,49 @@ a:hover {
   font-family: "Raleway";
 }
 
+.contest-rank-switch {
+  margin-bottom: 30px;
+  margin-top: -8px;
+}
+.contest-rank-switch span {
+  margin-left: 5px;
+}
+.contest-rank-concerned {
+  font-size: 1rem;
+  margin-left: 0.5rem !important;
+  margin-right: 0.5rem !important;
+  vertical-align: top;
+}
+.contest-rank-concerned i {
+  margin-top: 11px;
+  cursor: pointer;
+}
+.contest-rank-user-box{
+  display: flex;
+}
+.contest-rank-user-info{
+  flex: 1;
+  text-align:right;
+  min-width: 0;
+}
+
 .contest-username {
   display: block;
   overflow: hidden;
   color: black;
   font-size: 13.5px;
   font-weight: 550;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .contest-school {
   font-size: 12px;
   font-weight: normal;
   color: dimgrey;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block;
 }
 .contest-rank-flag {
   margin-right: 20px !important;

@@ -16,6 +16,7 @@ export default {
     this.concernedList = storage.get(key) || [];
     this.loading.info = true;
     this.$store.dispatch('getScoreBoardContestInfo').then((res) => {
+        this.getContestOutsideScoreboard();
         if (!this.contestEnded) {
           this.autoRefresh = true;
           this.handleAutoRefresh(true);
@@ -98,6 +99,13 @@ export default {
         },
       })
     },
+    getRankShowName(rankShowName, username){
+      let finalShowName = rankShowName;
+      if(rankShowName == null || rankShowName == '' || rankShowName.trim().length == 0){
+        finalShowName = username;
+      }
+      return finalShowName;
+    }
   },
   computed: {
     ...mapState({
