@@ -724,12 +724,7 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
     // 去除每行末尾的空白符
     public static String rtrim(String value) {
         if (value == null) return null;
-        StringBuilder sb = new StringBuilder();
-        String[] strArr = value.split("\n");
-        for (String str : strArr) {
-            sb.append(str.replaceAll("\\s+$", "")).append("\n");
-        }
-        return sb.toString().replaceAll("\\s+$", "");
+        return value.replaceAll("[^\\S\\r\\n]+(?=\\n|\\r)|\\s+(?=$)", "");
     }
 
 

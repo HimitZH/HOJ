@@ -158,11 +158,6 @@ public abstract class AbstractJudge {
     // 去除行末尾空白符
     protected String rtrim(String value) {
         if (value == null) return null;
-        StringBuilder sb = new StringBuilder();
-        String[] strArr = value.split("\n");
-        for (String str : strArr) {
-            sb.append(str.replaceAll("\\s+$", "")).append("\n");
-        }
-        return sb.toString().replaceAll("\\s+$", "");
+        return value.replaceAll("[^\\S\\r\\n]+(?=\\n|\\r)|\\s+(?=$)", "");
     }
 }

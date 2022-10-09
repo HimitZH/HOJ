@@ -75,7 +75,7 @@ public class SandboxRun {
 
     private static final int MEMORY_LIMIT_MB = 512;
 
-    private static final int STACK_LIMIT_MB = 256;
+    private static final int STACK_LIMIT_MB = 128;
 
     private static final int STDIO_SIZE_MB = 32;
 
@@ -341,11 +341,7 @@ public class SandboxRun {
         cmd.set("cpuLimit", maxTime * 1000 * 1000L);
         cmd.set("clockLimit", maxTime * 1000 * 1000L * 3);
         // byte
-        if (maxMemory >= MEMORY_LIMIT_MB) {
-            cmd.set("memoryLimit", (maxMemory + 100) * 1024 * 1024L);
-        } else {
-            cmd.set("memoryLimit", MEMORY_LIMIT_MB * 1024 * 1024L);
-        }
+        cmd.set("memoryLimit", (maxMemory + 100) * 1024 * 1024L);
         cmd.set("procLimit", maxProcessNumber);
         cmd.set("stackLimit", maxStack * 1024 * 1024L);
 
