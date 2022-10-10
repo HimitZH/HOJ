@@ -109,6 +109,8 @@ public class DefaultJudge extends AbstractJudge {
             String userOutputMd5 = DigestUtils.md5DigestAsHex(rtrim(userOutput).getBytes(StandardCharsets.UTF_8));
             if (userOutputMd5.equals(testcaseInfo.getStr("EOFStrippedOutputMd5"))) {
                 return Constants.Judge.STATUS_ACCEPTED.getStatus();
+            }else{
+                return Constants.Judge.STATUS_WRONG_ANSWER.getStatus();
             }
         } else { // 不选择默认去掉文末空格 与原数据进行对比
             String userOutputMd5 = DigestUtils.md5DigestAsHex(userOutput.getBytes(StandardCharsets.UTF_8));
