@@ -99,10 +99,10 @@ int main(int argc, char *args[]){
     FILE *std_output_file = fopen(args[3], "r");
     
     double std_out; // 标准输出
-	fscanf(user_output_file, "%lf", &std_out);
+	fscanf(std_output_file, "%lf", &std_out);
     
     double user_output;// 用户输出 
-    fscanf(std_output_file, "%lf", &user_output);
+    fscanf(user_output_file, "%lf", &user_output);
     
     // 关闭文件流
     close_file(std_input_file);
@@ -149,10 +149,10 @@ int main(int argc, char *args[]){
     FILE *std_output_file = fopen(args[3], "r");
     
     double std_out; // 标准输出
-	fscanf(user_output_file, "%lf", &std_out);
+	fscanf(std_output_file, "%lf", &std_out);
     
     double user_output;// 用户输出 
-    fscanf(std_output_file, "%lf", &user_output);
+    fscanf(user_output_file, "%lf", &user_output);
     
     // 关闭文件流
     close_file(std_input_file);

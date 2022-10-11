@@ -69,7 +69,6 @@ export default {
   display: block;
   font: 700 15px/20px Arial;
   height: 20px;
-  letter-spacing: -1px;
   margin: auto;
   overflow: hidden;
   text-align: center;
