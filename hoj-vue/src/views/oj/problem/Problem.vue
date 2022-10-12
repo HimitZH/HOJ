@@ -910,6 +910,7 @@ export default {
         currentPage: this.mySubmission_currentPage,
         problemID: this.problemID,
         contestID: this.contestID,
+        completeProblemID: true,
         gid: this.groupID,
         limit: this.mySubmission_limit,
       };
