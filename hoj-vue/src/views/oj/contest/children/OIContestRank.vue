@@ -6,60 +6,6 @@
             ? $t('m.Based_on_The_Recent_Score_Submitted_Of_Each_Problem')
             : $t('m.Based_on_The_Highest_Score_Submitted_For_Each_Problem')
         }}）</span>
-      <span style="float:right;font-size: 20px;">
-        <el-popover
-          trigger="hover"
-          placement="left-start"
-        >
-          <i
-            class="el-icon-s-tools"
-            slot="reference"
-          ></i>
-          <div id="switches">
-            <p>
-              <span>{{ $t('m.Chart') }}</span>
-              <el-switch v-model="showChart"></el-switch>
-            </p>
-            <p>
-              <span>{{ $t('m.Table') }}</span>
-              <el-switch v-model="showTable"></el-switch>
-            </p>
-            <p>
-              <span>{{ $t('m.Star_User') }}</span>
-              <el-switch
-                v-model="showStarUser"
-                @change="getContestRankData(page)"
-              ></el-switch>
-            </p>
-            <p>
-              <span>{{ $t('m.Auto_Refresh') }}(10s)</span>
-              <el-switch
-                :disabled="refreshDisabled"
-                @change="handleAutoRefresh"
-                v-model="autoRefresh"
-              ></el-switch>
-            </p>
-            <template v-if="isContestAdmin">
-              <p>
-                <span>{{ $t('m.Force_Update') }}</span>
-                <el-switch
-                  v-model="forceUpdate"
-                  @change="getContestRankData(page)"
-                ></el-switch>
-              </p>
-            </template>
-            <template v-if="isContestAdmin">
-              <el-button
-                type="primary"
-                size="small"
-                @click="downloadRankCSV"
-              >{{
-                $t('m.Download_as_CSV')
-              }}</el-button>
-            </template>
-          </div>
-        </el-popover>
-      </span>
     </div>
     <div
       v-show="showChart"
@@ -71,6 +17,89 @@
         :autoresize="true"
       ></ECharts>
     </div>
+    <el-row>
+      <el-col
+        :xs="24"
+        :md="8"
+      >
+        <div class="contest-rank-search contest-rank-filter">
+          <el-input
+            :placeholder="$t('m.Contest_Rank_Search_Placeholder')"
+            v-model="keyword"
+            @keyup.enter.native="getContestRankData(page)"
+          >
+            <el-button
+              slot="append"
+              icon="el-icon-search"
+              class="search-btn"
+              @click="getContestRankData(page)"
+            ></el-button>
+          </el-input>
+        </div>
+      </el-col>
+      <el-col
+        :xs="24"
+        :md="16"
+      >
+        <div class="contest-rank-config">
+          <el-popover
+            trigger="hover"
+            placement="left-start"
+          >
+            <el-button
+              round
+              size="small"
+              slot="reference"
+            >
+              {{$t('m.Contest_Rank_Setting')}}
+            </el-button>
+            <div id="switches">
+              <p>
+                <span>{{ $t('m.Chart') }}</span>
+                <el-switch v-model="showChart"></el-switch>
+              </p>
+              <p>
+                <span>{{ $t('m.Table') }}</span>
+                <el-switch v-model="showTable"></el-switch>
+              </p>
+              <p>
+                <span>{{ $t('m.Star_User') }}</span>
+                <el-switch
+                  v-model="showStarUser"
+                  @change="getContestRankData(page)"
+                ></el-switch>
+              </p>
+              <p>
+                <span>{{ $t('m.Auto_Refresh') }}(10s)</span>
+                <el-switch
+                  :disabled="refreshDisabled"
+                  @change="handleAutoRefresh"
+                  v-model="autoRefresh"
+                ></el-switch>
+              </p>
+              <template v-if="isContestAdmin">
+                <p>
+                  <span>{{ $t('m.Force_Update') }}</span>
+                  <el-switch
+                    v-model="forceUpdate"
+                    @change="getContestRankData(page)"
+                  ></el-switch>
+                </p>
+              </template>
+              <template v-if="isContestAdmin">
+                <el-button
+                  type="primary"
+                  size="small"
+                  @click="downloadRankCSV"
+                >{{
+                    $t('m.Download_as_CSV')
+                  }}</el-button>
+              </template>
+            </div>
+          </el-popover>
+        </div>
+      </el-col>
+    </el-row>
     <div v-show="showTable">
       <vxe-table
         round
@@ -96,16 +125,14 @@
             <template v-else>
               <template v-if="row.isWinAward">
                 <RankBox
-                :num="row.rank"
-                :background="row.awardBackground"
-                :color="row.awardColor"
-                :name="row.awardName"
-              ></RankBox>
+                  :num="row.rank"
+                  :background="row.awardBackground"
+                  :color="row.awardColor"
+                  :name="row.awardName"
+                ></RankBox>
               </template>
               <template v-else>
-                <RankBox
-                :num="row.rank"
-              ></RankBox>
+                <RankBox :num="row.rank"></RankBox>
               </template>
             </template>
           </template>
@@ -124,12 +151,12 @@
             <div class="contest-rank-user-box">
               <span>
                 <avatar
-                :username="row.rankShowName"
-                :inline="true"
-                :size="37"
-                color="#FFF"
-                :src="row.avatar"
-                :title="row.rankShowName"
+                  :username="row.rankShowName"
+                  :inline="true"
+                  :size="37"
+                  color="#FFF"
+                  :src="row.avatar"
+                  :title="row.rankShowName"
                 ></avatar>
               </span>
               <el-tooltip placement="top">
@@ -155,7 +182,10 @@
               </el-tooltip>
               <span class="contest-rank-user-info">
                 <a @click="getUserHomeByUsername(row.uid, row.username)">
-                  <span class="contest-username" :title="row.rankShowName">
+                  <span
+                    class="contest-username"
+                    :title="row.rankShowName"
+                  >
                     <span
                       class="contest-rank-flag"
                       v-if="row.uid == userInfo.uid"
@@ -193,12 +223,12 @@
             <div class="contest-rank-user-box">
               <span>
                 <avatar
-                :username="row.rankShowName"
-                :inline="true"
-                :size="37"
-                color="#FFF"
-                :src="row.avatar"
-                :title="row.rankShowName"
+                  :username="row.rankShowName"
+                  :inline="true"
+                  :size="37"
+                  color="#FFF"
+                  :src="row.avatar"
+                  :title="row.rankShowName"
                 ></avatar>
               </span>
               <el-tooltip placement="top">
@@ -224,7 +254,10 @@
               </el-tooltip>
               <span class="contest-rank-user-info">
                 <a @click="getUserHomeByUsername(row.uid, row.username)">
-                  <span class="contest-username" :title="row.rankShowName">
+                  <span
+                    class="contest-username"
+                    :title="row.rankShowName"
+                  >
                     <span
                       class="contest-rank-flag"
                       v-if="row.uid == userInfo.uid"
@@ -348,6 +381,7 @@
       :total="total"
       :page-size.sync="limit"
       :current.sync="page"
+      :page-sizes="[10, 30, 50, 100, 300, 500]"
       @on-change="getContestRankData"
       @on-page-size-change="getContestRankData(1)"
       :layout="'prev, pager, next, sizes'"
@@ -373,9 +407,10 @@ export default {
     return {
       total: 0,
       page: 1,
-      limit: 30,
+      limit: 50,
       contestID: "",
       dataRank: [],
+      keyword: null,
       autoRefresh: false,
       options: {
         title: {
@@ -541,7 +576,9 @@ export default {
       }
       for (let i = topIndex; i < len && i < topIndex + 10; i++) {
         let ele = rankData[i];
-        user.push(this.getRankShowName(ele[this.contest.rankShowName],ele.username));
+        user.push(
+          this.getRankShowName(ele[this.contest.rankShowName], ele.username)
+        );
         scores.push(ele.totalScore);
       }
       this.options.xAxis[0].data = user;
@@ -573,7 +610,10 @@ export default {
         if (rank.gender == "female") {
           rank.userCellClassName = "bg-female";
         }
-        rank.rankShowName = this.getRankShowName(rank[this.contest.rankShowName], rank.username)
+        rank.rankShowName = this.getRankShowName(
+          rank[this.contest.rankShowName],
+          rank.username
+        );
       });
       this.dataRank = dataRank;
     },

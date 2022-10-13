@@ -1,13 +1,19 @@
 <template>
   <div class="scoreboard-body">
-    <el-card shadow v-loading="loading.info">
+    <el-card
+      shadow
+      v-loading="loading.info"
+    >
       <div class="contest-title">
         <div slot="header">
           <span class="panel-title">{{ contest.title }}</span>
         </div>
       </div>
       <el-row style="margin-top: 10px;">
-        <el-col :span="14" class="text-align:left">
+        <el-col
+          :span="14"
+          class="text-align:left"
+        >
           <el-tooltip
             v-if="contest.auth != null && contest.auth != undefined"
             :content="$t('m.' + CONTEST_TYPE_REVERSE[contest.auth]['tips'])"
@@ -22,28 +28,42 @@
               {{ $t('m.' + CONTEST_TYPE_REVERSE[contest.auth]['name']) }}
             </el-tag>
           </el-tooltip>
-           <el-tooltip
-              v-if="contest.gid != null"
-              :content="$t('m.Go_To_Group_Contest_List')"
-              style="margin-left:10px;"
-              placement="top">
-              <el-button 
-                size="small" 
-                type="primary"
-                @click="toGroupContestList(contest.gid)">
-                <i class="fa fa-users"></i>
-                  {{ $t('m.Group_Contest_Tag')}}
-              </el-button>
+          <el-tooltip
+            v-if="contest.gid != null"
+            :content="$t('m.Go_To_Group_Contest_List')"
+            style="margin-left:10px;"
+            placement="top"
+          >
+            <el-button
+              size="small"
+              type="primary"
+              @click="toGroupContestList(contest.gid)"
+            >
+              <i class="fa fa-users"></i>
+              {{ $t('m.Group_Contest_Tag')}}
+            </el-button>
           </el-tooltip>
         </el-col>
-        <el-col :span="10" style="text-align:right">
-          <el-button size="small" plain v-if="contest.count != null">
-            <i class="el-icon-user-solid" style="color:rgb(48, 145, 242);"></i
-            >x{{ contest.count }}
+        <el-col
+          :span="10"
+          style="text-align:right"
+        >
+          <el-button
+            size="small"
+            plain
+            v-if="contest.count != null"
+          >
+            <i
+              class="el-icon-user-solid"
+              style="color:rgb(48, 145, 242);"
+            ></i>x{{ contest.count }}
           </el-button>
 
           <template v-if="contest.type == 0">
-            <el-button size="small" :type="'primary'">
+            <el-button
+              size="small"
+              :type="'primary'"
+            >
               <i class="fa fa-trophy"></i>
               {{ contest.type | parseContestType }}
             </el-button>
@@ -63,7 +83,10 @@
               "
               placement="top"
             >
-              <el-button size="small" :type="'warning'">
+              <el-button
+                size="small"
+                :type="'warning'"
+              >
                 <i class="fa fa-trophy"></i>
                 {{ contest.type | parseContestType }}
               </el-button>
@@ -74,15 +97,29 @@
 
       <div class="contest-time">
         <el-row>
-          <el-col :xs="24" :md="12" class="left">
+          <el-col
+            :xs="24"
+            :md="12"
+            class="left"
+          >
             <p>
-              <i class="fa fa-hourglass-start" aria-hidden="true"></i>
+              <i
+                class="fa fa-hourglass-start"
+                aria-hidden="true"
+              ></i>
               {{ $t('m.StartAt') }}：{{ contest.startTime | localtime }}
             </p>
           </el-col>
-          <el-col :xs="24" :md="12" class="right">
+          <el-col
+            :xs="24"
+            :md="12"
+            class="right"
+          >
             <p>
-              <i class="fa fa-hourglass-end" aria-hidden="true"></i>
+              <i
+                class="fa fa-hourglass-end"
+                aria-hidden="true"
+              ></i>
               {{ $t('m.EndAt') }}：{{ contest.endTime | localtime }}
             </p>
           </el-col>
@@ -96,39 +133,79 @@
         ></el-slider>
       </div>
       <el-row>
-        <el-col :span="24" style="text-align:center">
-          <el-tag effect="dark" size="medium" :style="countdownColor">
-            <i class="fa fa-circle" aria-hidden="true"></i>
+        <el-col
+          :span="24"
+          style="text-align:center"
+        >
+          <el-tag
+            effect="dark"
+            size="medium"
+            :style="countdownColor"
+          >
+            <i
+              class="fa fa-circle"
+              aria-hidden="true"
+            ></i>
             {{ countdown }}
           </el-tag>
         </el-col>
       </el-row>
     </el-card>
-    <el-card shadow style="margin-top:15px;" v-loading="loading.rank">
-      <div class="contest-rank-switch">
-        <span style="float:right;">
-          <span>{{ $t('m.Auto_Refresh') }}(30s)</span>
-          <el-switch
-            :disabled="contestEnded"
-            @change="handleAutoRefresh"
-            v-model="autoRefresh"
-          ></el-switch>
-        </span>
-        <span style="float:right;" v-if="isContestAdmin">
-          <span>{{ $t('m.Force_Update') }}</span>
-          <el-switch
-            v-model="forceUpdate"
-            @change="getContestOutsideScoreboard"
-          ></el-switch>
-        </span>
-        <span style="float:right;">
-          <span>{{ $t('m.Star_User') }}</span>
-          <el-switch
-            v-model="showStarUser"
-            @change="getContestOutsideScoreboard"
-          ></el-switch>
-        </span>
-      </div>
+    <el-card
+      shadow
+      style="margin-top:15px;"
+      v-loading="loading.rank"
+    >
+      <el-row>
+        <el-col
+          :xs="24"
+          :md="8"
+        >
+          <div class="contest-rank-search contest-rank-filter">
+            <el-input
+              :placeholder="$t('m.Contest_Rank_Search_Placeholder')"
+              v-model="keyword"
+              @keyup.enter.native="getContestOutsideScoreboard"
+            >
+              <el-button
+                slot="append"
+                icon="el-icon-search"
+                class="search-btn"
+                @click="getContestOutsideScoreboard"
+              ></el-button>
+            </el-input>
+          </div>
+        </el-col>
+        <el-col
+          :xs="24"
+          :md="16"
+        >
+          <div class="contest-rank-config contest-scoreBoard-config">
+            <span>
+              <span>{{ $t('m.Star_User') }}</span>
+              <el-switch
+                v-model="showStarUser"
+                @change="getContestOutsideScoreboard"
+              ></el-switch>
+            </span>
+            <span v-if="isContestAdmin">
+              <span>{{ $t('m.Force_Update') }}</span>
+              <el-switch
+                v-model="forceUpdate"
+                @change="getContestOutsideScoreboard"
+              ></el-switch>
+            </span>
+            <span>
+              <span>{{ $t('m.Auto_Refresh') }}(30s)</span>
+              <el-switch
+                :disabled="contestEnded"
+                @change="handleAutoRefresh"
+                v-model="autoRefresh"
+              ></el-switch>
+            </span>
+          </div>
+        </el-col>
+      </el-row>
       <vxe-table
         round
         border
@@ -178,13 +255,13 @@
             <div class="contest-rank-user-box">
               <span>
                 <avatar
-                :username="row.rankShowName"
-                :inline="true"
-                :size="37"
-                color="#FFF"
-                :src="row.avatar"
-                :title="row.rankShowName"
-              ></avatar>
+                  :username="row.rankShowName"
+                  :inline="true"
+                  :size="37"
+                  color="#FFF"
+                  :src="row.avatar"
+                  :title="row.rankShowName"
+                ></avatar>
               </span>
               <el-tooltip placement="top">
                 <div slot="content">
@@ -201,21 +278,31 @@
                     v-if="row.isConcerned"
                     style="color: red;"
                   ></i>
-                  <i class="el-icon-star-off" v-else></i>
+                  <i
+                    class="el-icon-star-off"
+                    v-else
+                  ></i>
                 </span>
               </el-tooltip>
               <span class="contest-rank-user-info">
                 <a @click="getUserHomeByUsername(row.uid, row.username)">
-                  <span class="contest-username" :title="row.rankShowName"
-                    ><span class="contest-rank-flag" v-if="row.rank == -1"
-                      >Star</span
-                    >
-                    <span class="contest-rank-flag" v-if="row.gender == 'female'"
-                      >Girl</span
-                    >
-                    {{ row.rankShowName }}</span
-                  >
-                  <span class="contest-school" v-if="row.school" :title="row.school">{{
+                  <span
+                    class="contest-username"
+                    :title="row.rankShowName"
+                  ><span
+                      class="contest-rank-flag"
+                      v-if="row.rank == -1"
+                    >Star</span>
+                    <span
+                      class="contest-rank-flag"
+                      v-if="row.gender == 'female'"
+                    >Girl</span>
+                    {{ row.rankShowName }}</span>
+                  <span
+                    class="contest-school"
+                    v-if="row.school"
+                    :title="row.school"
+                  >{{
                     row.school
                   }}</span>
                 </a>
@@ -235,13 +322,13 @@
             <div class="contest-rank-user-box">
               <span>
                 <avatar
-                :username="row.rankShowName"
-                :inline="true"
-                :size="37"
-                color="#FFF"
-                :src="row.avatar"
-                :title="row.rankShowName"
-              ></avatar>
+                  :username="row.rankShowName"
+                  :inline="true"
+                  :size="37"
+                  color="#FFF"
+                  :src="row.avatar"
+                  :title="row.rankShowName"
+                ></avatar>
               </span>
               <el-tooltip placement="top">
                 <div slot="content">
@@ -258,21 +345,31 @@
                     v-if="row.isConcerned"
                     style="color: red;"
                   ></i>
-                  <i class="el-icon-star-off" v-else></i>
+                  <i
+                    class="el-icon-star-off"
+                    v-else
+                  ></i>
                 </span>
               </el-tooltip>
               <span class="contest-rank-user-info">
                 <a @click="getUserHomeByUsername(row.uid, row.username)">
-                  <span class="contest-username" :title="row.rankShowName"
-                    ><span class="contest-rank-flag" v-if="row.rank == -1"
-                      >Star</span
-                    >
-                    <span class="contest-rank-flag" v-if="row.gender == 'female'"
-                      >Girl</span
-                    >
-                    {{ row.rankShowName }}</span
-                  >
-                  <span class="contest-school" v-if="row.school" :title="row.school">{{
+                  <span
+                    class="contest-username"
+                    :title="row.rankShowName"
+                  ><span
+                      class="contest-rank-flag"
+                      v-if="row.rank == -1"
+                    >Star</span>
+                    <span
+                      class="contest-rank-flag"
+                      v-if="row.gender == 'female'"
+                    >Girl</span>
+                    {{ row.rankShowName }}</span>
+                  <span
+                    class="contest-school"
+                    v-if="row.school"
+                    :title="row.school"
+                  >{{
                     row.school
                   }}</span>
                 </a>
@@ -286,8 +383,7 @@
           min-width="90"
         >
           <template v-slot="{ row }">
-            <span
-              ><a style="color:rgb(87, 163, 243);">{{ row.totalScore }}</a>
+            <span><a style="color:rgb(87, 163, 243);">{{ row.totalScore }}</a>
               <br />
               <span class="problem-time">({{ row.totalTime }}ms)</span>
             </span>
@@ -299,7 +395,10 @@
           :key="problem.displayId"
         >
           <template v-slot:header>
-            <span class="contest-rank-balloon" v-if="problem.color">
+            <span
+              class="contest-rank-balloon"
+              v-if="problem.color"
+            >
               <svg
                 t="1633685184463"
                 class="icon"
@@ -318,13 +417,19 @@
               </svg>
             </span>
             <span>
-              <a class="emphasis" style="color:#495060;">
+              <a
+                class="emphasis"
+                style="color:#495060;"
+              >
                 {{ problem.displayId }}
               </a>
             </span>
             <br />
             <span>
-              <el-tooltip effect="dark" placement="top">
+              <el-tooltip
+                effect="dark"
+                placement="top"
+              >
                 <div slot="content">
                   {{ problem.displayId + '. ' + problem.displayTitle }}
                   <br />
@@ -338,8 +443,7 @@
                       getProblemCount(problemErrorCountMap[problem.displayId])
                   }}
                 </div>
-                <span
-                  >({{
+                <span>({{
                     getProblemCount(problemACCountMap[problem.displayId])
                   }}/{{
                     getProblemCount(problemACCountMap[problem.displayId]) +
@@ -356,31 +460,45 @@
               <span
                 v-if="row.timeInfo && row.timeInfo[problem.displayId] != null"
                 style="font-size:12px;"
-                >({{ row.timeInfo[problem.displayId] }}ms)</span
-              >
+              >({{ row.timeInfo[problem.displayId] }}ms)</span>
             </div>
           </template>
         </vxe-table-column>
       </vxe-table>
+      <Pagination
+        :total="total"
+        :page-size.sync="limit"
+        :page-sizes="[10, 30, 50, 100, 300]"
+        :current.sync="page"
+        @on-change="getContestOutsideScoreboard"
+        @on-page-size-change="getContestOutsideScoreboard"
+        :layout="'prev, pager, next, sizes'"
+      ></Pagination>
     </el-card>
   </div>
 </template>
 <script>
-import Avatar from 'vue-avatar';
-import ScoreBoardMixin from './scoreBoardMixin';
+import Avatar from "vue-avatar";
+import ScoreBoardMixin from "./scoreBoardMixin";
 const RankBox = () => import("@/components/oj/common/RankBox");
+const Pagination = () => import("@/components/oj/common/Pagination");
 export default {
-  name: 'OIContestRank',
+  name: "OIContestRank",
   components: {
     Avatar,
-    RankBox
+    RankBox,
+    Pagination,
   },
   mixins: [ScoreBoardMixin],
   data() {
     return {
-      contestID: '',
+      contestID: "",
       dataRank: [],
       autoRefresh: false,
+      keyword: null,
+      page: 1,
+      limit: 50,
+      total: 0,
       loading: {
         info: false,
         rank: false,
@@ -404,27 +522,27 @@ export default {
   },
   methods: {
     cellClassName({ row, rowIndex, column, columnIndex }) {
-      if (column.property === 'username' && row.userCellClassName) {
+      if (column.property === "username" && row.userCellClassName) {
         return row.userCellClassName;
       }
 
       if (
-        column.property !== 'rank' &&
-        column.property !== 'totalScore' &&
-        column.property !== 'username'
+        column.property !== "rank" &&
+        column.property !== "totalScore" &&
+        column.property !== "username"
       ) {
         return row.cellClassName[
           [this.contestProblems[columnIndex - 3].displayId]
         ];
       } else {
-        if (row.isConcerned && column.property !== 'username') {
-          return 'bg-concerned';
+        if (row.isConcerned && column.property !== "username") {
+          return "bg-concerned";
         }
       }
     },
     getUserHomeByUsername(uid, username) {
       this.$router.push({
-        name: 'UserHome',
+        name: "UserHome",
         query: { username: username, uid: uid },
       });
     },
@@ -449,24 +567,27 @@ export default {
 
           let score = submissionInfo[problemID];
           if (timeInfo != null && timeInfo[problemID] != undefined) {
-            cellClass[problemID] = 'oi-100';
+            cellClass[problemID] = "oi-100";
             acCountMap[problemID] += 1;
           } else if (score == 0) {
-            cellClass[problemID] = 'oi-0';
+            cellClass[problemID] = "oi-0";
             errorCountMap[problemID] += 1;
           } else if (score != null) {
-            cellClass[problemID] = 'oi-between';
+            cellClass[problemID] = "oi-between";
             errorCountMap[problemID] += 1;
           }
         });
         rank.cellClassName = cellClass;
         if (rank.rank == -1) {
-          rank.userCellClassName = 'bg-star';
+          rank.userCellClassName = "bg-star";
         }
-        if (rank.gender == 'female') {
-          rank.userCellClassName = 'bg-female';
+        if (rank.gender == "female") {
+          rank.userCellClassName = "bg-female";
         }
-        rank.rankShowName = this.getRankShowName(rank[this.contest.rankShowName], rank.username);
+        rank.rankShowName = this.getRankShowName(
+          rank[this.contest.rankShowName],
+          rank.username
+        );
       });
       this.dataRank = dataRank;
       this.problemACCountMap = acCountMap;

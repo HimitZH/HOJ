@@ -1,5 +1,6 @@
 package top.hcode.hoj.service.oj.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
@@ -12,7 +13,6 @@ import top.hcode.hoj.pojo.vo.ContestOutsideInfo;
 import top.hcode.hoj.service.oj.ContestScoreboardService;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * @Author: Himit_ZH
@@ -37,7 +37,7 @@ public class ContestScoreboardServiceImpl implements ContestScoreboardService {
     }
 
     @Override
-    public CommonResult<List> getContestOutsideScoreboard(ContestRankDto contestRankDto) {
+    public CommonResult<IPage> getContestOutsideScoreboard(ContestRankDto contestRankDto) {
         try {
             return CommonResult.successResponse(contestScoreboardManager.getContestOutsideScoreboard(contestRankDto));
         }  catch (StatusForbiddenException e) {

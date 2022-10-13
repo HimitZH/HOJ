@@ -425,6 +425,8 @@ export const m = {
   Star_User: '打星用户',
   Unfollow: '取消关注',
   Top_And_Follow: '置顶关注',
+  Contest_Rank_Search_Placeholder:'请输入用户名称 / 学校名称',
+  Contest_Rank_Setting:'榜单设置',
 
   // /views/oj/contest/children/ACMInfo.vue
   AC_Time: 'AC 时间',

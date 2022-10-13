@@ -18,7 +18,8 @@ export default {
         cid: this.$route.params.contestID,
         forceRefresh: this.forceUpdate ? true: false,
         removeStar: !this.showStarUser,
-        concernedList:this.concernedList
+        concernedList:this.concernedList,
+        keyword: this.keyword
       }
       api.getContestRank(data).then(res => {
         if (this.showChart && !refresh) {

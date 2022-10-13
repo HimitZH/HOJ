@@ -2,60 +2,6 @@
   <el-card shadow>
     <div slot="header">
       <span class="panel-title">{{ $t('m.Contest_Rank') }}</span>
-      <span style="float:right;font-size: 20px;">
-        <el-popover
-          trigger="hover"
-          placement="left-start"
-        >
-          <i
-            class="el-icon-s-tools"
-            slot="reference"
-          ></i>
-          <div id="switches">
-            <p>
-              <span>{{ $t('m.Chart') }}</span>
-              <el-switch v-model="showChart"></el-switch>
-            </p>
-            <p>
-              <span>{{ $t('m.Table') }}</span>
-              <el-switch v-model="showTable"></el-switch>
-            </p>
-            <p>
-              <span>{{ $t('m.Star_User') }}</span>
-              <el-switch
-                v-model="showStarUser"
-                @change="getContestRankData(page)"
-              ></el-switch>
-            </p>
-            <p>
-              <span>{{ $t('m.Auto_Refresh') }}(10s)</span>
-              <el-switch
-                :disabled="refreshDisabled"
-                v-model="autoRefresh"
-                @change="handleAutoRefresh"
-              ></el-switch>
-            </p>
-            <template v-if="isContestAdmin">
-              <p>
-                <span>{{ $t('m.Force_Update') }}</span>
-                <el-switch
-                  v-model="forceUpdate"
-                  @change="getContestRankData(page)"
-                ></el-switch>
-              </p>
-            </template>
-            <template v-if="isContestAdmin">
-              <el-button
-                type="primary"
-                size="small"
-                @click="downloadRankCSV"
-              >{{
-                $t('m.Download_as_CSV')
-              }}</el-button>
-            </template>
-          </div>
-        </el-popover>
-      </span>
     </div>
     <div
       v-show="showChart"
@@ -67,6 +13,90 @@
         :autoresize="true"
       ></ECharts>
     </div>
+    <el-row>
+      <el-col
+        :xs="24"
+        :md="8"
+      >
+        <div class="contest-rank-search contest-rank-filter">
+          <el-input
+            :placeholder="$t('m.Contest_Rank_Search_Placeholder')"
+            v-model="keyword"
+            @keyup.enter.native="getContestRankData(page)"
+          >
+            <el-button
+              slot="append"
+              icon="el-icon-search"
+              class="search-btn"
+              @click="getContestRankData(page)"
+            ></el-button>
+          </el-input>
+        </div>
+      </el-col>
+      <el-col
+        :xs="24"
+        :md="16"
+      >
+        <div class="contest-rank-config">
+          <el-popover
+            trigger="hover"
+            placement="left-start"
+          >
+            <el-button
+              round
+              size="small"
+              slot="reference"
+            >
+              {{$t('m.Contest_Rank_Setting')}}
+            </el-button>
+            <div id="switches">
+              <p>
+                <span>{{ $t('m.Chart') }}</span>
+                <el-switch v-model="showChart"></el-switch>
+              </p>
+              <p>
+                <span>{{ $t('m.Table') }}</span>
+                <el-switch v-model="showTable"></el-switch>
+              </p>
+              <p>
+                <span>{{ $t('m.Star_User') }}</span>
+                <el-switch
+                  v-model="showStarUser"
+                  @change="getContestRankData(page)"
+                ></el-switch>
+              </p>
+              <p>
+                <span>{{ $t('m.Auto_Refresh') }}(10s)</span>
+                <el-switch
+                  :disabled="refreshDisabled"
+                  v-model="autoRefresh"
+                  @change="handleAutoRefresh"
+                ></el-switch>
+              </p>
+              <template v-if="isContestAdmin">
+                <p>
+                  <span>{{ $t('m.Force_Update') }}</span>
+                  <el-switch
+                    v-model="forceUpdate"
+                    @change="getContestRankData(page)"
+                  ></el-switch>
+                </p>
+              </template>
+              <template v-if="isContestAdmin">
+                <el-button
+                  type="primary"
+                  size="small"
+                  @click="downloadRankCSV"
+                >{{
+                    $t('m.Download_as_CSV')
+                  }}</el-button>
+              </template>
+            </div>
+          </el-popover>
+        </div>
+      </el-col>
+    </el-row>
+
     <div v-show="showTable">
       <vxe-table
         round
@@ -117,12 +147,12 @@
             <div class="contest-rank-user-box">
               <span>
                 <avatar
-                :username="row.rankShowName"
-                :inline="true"
-                :size="37"
-                color="#FFF"
-                :src="row.avatar"
-                :title="row.rankShowName"
+                  :username="row.rankShowName"
+                  :inline="true"
+                  :size="37"
+                  color="#FFF"
+                  :src="row.avatar"
+                  :title="row.rankShowName"
                 ></avatar>
               </span>
               <el-tooltip placement="top">
@@ -148,7 +178,10 @@
               </el-tooltip>
               <span class="contest-rank-user-info">
                 <a @click="getUserHomeByUsername(row.uid, row.username)">
-                  <span class="contest-username" :title="row.rankShowName">
+                  <span
+                    class="contest-username"
+                    :title="row.rankShowName"
+                  >
                     <span
                       class="contest-rank-flag"
                       v-if="row.uid == userInfo.uid"
@@ -186,12 +219,12 @@
             <div class="contest-rank-user-box">
               <span>
                 <avatar
-                :username="row.rankShowName"
-                :inline="true"
-                :size="37"
-                color="#FFF"
-                :src="row.avatar"
-                :title="row.rankShowName"
+                  :username="row.rankShowName"
+                  :inline="true"
+                  :size="37"
+                  color="#FFF"
+                  :src="row.avatar"
+                  :title="row.rankShowName"
                 ></avatar>
               </span>
               <el-tooltip placement="top">
@@ -217,7 +250,10 @@
               </el-tooltip>
               <span class="contest-rank-user-info">
                 <a @click="getUserHomeByUsername(row.uid, row.username)">
-                  <span class="contest-username" :title="row.rankShowName">
+                  <span
+                    class="contest-username"
+                    :title="row.rankShowName"
+                  >
                     <span
                       class="contest-rank-flag"
                       v-if="row.uid == userInfo.uid"
@@ -389,7 +425,7 @@
     <Pagination
       :total="total"
       :page-size.sync="limit"
-      :page-sizes="[10, 30, 100, 500, 1000, 10000]"
+      :page-sizes="[10, 30, 50, 100, 300, 500]"
       :current.sync="page"
       @on-change="getContestRankData"
       @on-page-size-change="getContestRankData(1)"
@@ -419,10 +455,11 @@ export default {
     return {
       total: 0,
       page: 1,
-      limit: 30,
+      limit: 50,
       autoRefresh: false,
       contestID: "",
       dataRank: [],
+      keyword: null,
       options: {
         title: {
           text: this.$i18n.t("m.Top_10_Teams"),
@@ -596,9 +633,7 @@ export default {
             rank[problemID].specificTime = this.parseTimeToSpecific(
               rank[problemID].ACTime
             );
-            rank[problemID].ACTime = parseInt(
-              rank[problemID].ACTime / 60
-            );
+            rank[problemID].ACTime = parseInt(rank[problemID].ACTime / 60);
           }
           let status = info[problemID];
           if (status.isFirstAC) {
@@ -618,7 +653,10 @@ export default {
         if (rank.gender == "female") {
           rank.userCellClassName = "bg-female";
         }
-        rank.rankShowName = this.getRankShowName(rank[this.contest.rankShowName],rank.username)
+        rank.rankShowName = this.getRankShowName(
+          rank[this.contest.rankShowName],
+          rank.username
+        );
       });
       this.dataRank = dataRank;
     },
@@ -640,7 +678,10 @@ export default {
       }
       for (let i = topIndex; i < len && i < topIndex + 10; i++) {
         let rank = rankData[i];
-        let rankShowName = this.getRankShowName(rank[this.contest.rankShowName], rank.username);
+        let rankShowName = this.getRankShowName(
+          rank[this.contest.rankShowName],
+          rank.username
+        );
         users.push(rankShowName);
         let info = rank.submissionInfo;
         // 提取出已AC题目的时间
