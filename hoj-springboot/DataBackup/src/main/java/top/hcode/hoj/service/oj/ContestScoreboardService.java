@@ -1,10 +1,9 @@
 package top.hcode.hoj.service.oj;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ContestRankDto;
 import top.hcode.hoj.pojo.vo.ContestOutsideInfo;
-
-import java.util.List;
 
 /**
  * @Author: Himit_ZH
@@ -15,6 +14,6 @@ public interface ContestScoreboardService {
 
     public CommonResult<ContestOutsideInfo> getContestOutsideInfo(Long cid);
 
-    public CommonResult<List> getContestOutsideScoreboard(ContestRankDto contestRankDto);
+    public CommonResult<IPage> getContestOutsideScoreboard(ContestRankDto contestRankDto);
 
 }

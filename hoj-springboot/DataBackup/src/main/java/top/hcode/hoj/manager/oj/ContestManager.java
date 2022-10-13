@@ -455,7 +455,7 @@ public class ContestManager {
         }
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
-        if (limit == null || limit < 1) limit = 30;
+        if (limit == null || limit < 1) limit = 50;
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
@@ -484,7 +484,8 @@ public class ContestManager {
                     contestRankDto.getExternalCidList(),
                     contest,
                     currentPage,
-                    limit);
+                    limit,
+                    contestRankDto.getKeyword());
 
         } else {
             // OI比赛
@@ -495,7 +496,8 @@ public class ContestManager {
                     contestRankDto.getExternalCidList(),
                     contest,
                     currentPage,
-                    limit);
+                    limit,
+                    contestRankDto.getKeyword());
         }
         return resultList;
     }

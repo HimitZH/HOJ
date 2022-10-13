@@ -1,13 +1,13 @@
 package top.hcode.hoj.controller.oj;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ContestRankDto;
-import top.hcode.hoj.pojo.vo.*;
+import top.hcode.hoj.pojo.vo.ContestOutsideInfo;
 import top.hcode.hoj.service.oj.ContestScoreboardService;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * @Author: Himit_ZH
@@ -41,7 +41,7 @@ public class ContestScoreboardController {
      * @Since 2021/12/07
      */
     @PostMapping("/get-contest-outside-scoreboard")
-    public CommonResult<List> getContestOutsideScoreboard(@RequestBody ContestRankDto contestRankDto) {
+    public CommonResult<IPage> getContestOutsideScoreboard(@RequestBody ContestRankDto contestRankDto) {
         return contestScoreboardService.getContestOutsideScoreboard(contestRankDto);
     }
 }
