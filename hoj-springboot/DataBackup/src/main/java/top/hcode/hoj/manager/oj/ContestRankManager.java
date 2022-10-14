@@ -56,7 +56,7 @@ public class ContestRankManager {
                 externalCidList);
 
         if (StrUtil.isNotBlank(keyword)) {
-            String finalKeyword = keyword.trim();
+            String finalKeyword = keyword.trim().toLowerCase();
             orderResultList = orderResultList.stream()
                     .filter(rankVo -> filterBySchoolORRankShowName(finalKeyword,
                             rankVo.getSchool(),
@@ -101,7 +101,7 @@ public class ContestRankManager {
                 externalCidList);
 
         if (StrUtil.isNotBlank(keyword)) {
-            String finalKeyword = keyword.trim();
+            String finalKeyword = keyword.trim().toLowerCase();
             orderResultList = orderResultList.stream()
                     .filter(rankVo -> filterBySchoolORRankShowName(finalKeyword,
                             rankVo.getSchool(),
@@ -156,7 +156,7 @@ public class ContestRankManager {
                 cacheTime);
 
         if (StrUtil.isNotBlank(keyword)) {
-            String finalKeyword = keyword.trim();
+            String finalKeyword = keyword.trim().toLowerCase();
             acmContestRankVos = acmContestRankVos.stream()
                     .filter(rankVo -> filterBySchoolORRankShowName(finalKeyword,
                             rankVo.getSchool(),
@@ -210,7 +210,7 @@ public class ContestRankManager {
                 cacheTime);
 
         if (StrUtil.isNotBlank(keyword)) {
-            String finalKeyword = keyword.trim();
+            String finalKeyword = keyword.trim().toLowerCase();
             oiContestRankVoList = oiContestRankVoList.stream()
                     .filter(rankVo -> filterBySchoolORRankShowName(finalKeyword,
                             rankVo.getSchool(),
@@ -251,10 +251,10 @@ public class ContestRankManager {
     }
 
     private boolean filterBySchoolORRankShowName(String keyword, String school, String rankShowName) {
-        if (StrUtil.isNotEmpty(school) && school.contains(keyword)) {
+        if (StrUtil.isNotEmpty(school) && school.toLowerCase().contains(keyword)) {
             return true;
         }
-        return StrUtil.isNotEmpty(rankShowName) && rankShowName.contains(keyword);
+        return StrUtil.isNotEmpty(rankShowName) && rankShowName.toLowerCase().contains(keyword);
     }
 
 }
