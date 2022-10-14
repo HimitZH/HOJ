@@ -19,7 +19,7 @@ export default {
         forceRefresh: this.forceUpdate ? true: false,
         removeStar: !this.showStarUser,
         concernedList:this.concernedList,
-        keyword: this.keyword
+        keyword: this.keyword == null? null: this.keyword.trim()
       }
       api.getContestRank(data).then(res => {
         if (this.showChart && !refresh) {

@@ -44,7 +44,7 @@ export default {
         concernedList:this.concernedList,
         currentPage: this.page,
         limit: this.limit,
-        keyword: this.keyword
+        keyword: this.keyword == null? null: this.keyword.trim()
       }
       this.loading.rank = true;
       api.getContestOutsideScoreboard(data).then(res => {

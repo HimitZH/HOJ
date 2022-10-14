@@ -242,7 +242,7 @@ public class ContestRankManager {
         switch (contestRankShowName) {
             case "username":
                 return username;
-            case "realName":
+            case "realname":
                 return realName;
             case "nickname":
                 return nickname;
