@@ -238,12 +238,12 @@ public class ContestRankManager {
         return page;
     }
 
-    private String getUserRankShowName(String contestRankShowName, String username, String realName, String nickname) {
+    private String getUserRankShowName(String contestRankShowName, String username, String realname, String nickname) {
         switch (contestRankShowName) {
             case "username":
                 return username;
-            case "realName":
-                return realName;
+            case "realname":
+                return realname;
             case "nickname":
                 return nickname;
         }
