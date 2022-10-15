@@ -87,7 +87,7 @@ Modern browsers(chrome, firefox) and Internet Explorer 10+, also supports mobile
 
 ### 1. Home
 
-![首页英文](https://img-blog.csdnimg.cn/e4982d7f4b0c4a07afa2017b836786f8.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![首页英文](https://img-blog.csdnimg.cn/f6792ddc05f34527bdf744fa4d6d5c88.png)
 
 ### 2. Station message
 
