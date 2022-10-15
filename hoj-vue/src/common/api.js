@@ -190,6 +190,19 @@ const ojApi = {
     return ajax('/api/get-recent-seven-ac-rank', 'get', {
     })
   },
+  getLastWeekSubmissionStatistics(forceRefresh){
+    let params = {
+      forceRefresh
+    }
+    return ajax('/api/get-last-week-submission-statistics', 'get', {
+      params
+    })
+  },
+
+  getRecentUpdatedProblemList(){
+    return ajax('/api/get-recent-updated-problem', 'get', {
+    })
+  },
 
   // 用户账户的相关请求
   getRegisterEmail(email) {

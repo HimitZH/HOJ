@@ -191,8 +191,9 @@ export const m = {
   Welcome_to: 'Welcome to ',
   Recent_7_Days_AC_Rank: 'Rank: Accepted In The Last Week',
   Other_OJ_Contest: 'Other Online Judge Contest',
+  Latest_Problem: 'Latest Problem',
   Supported_Remote_Online_Judge: 'Supported Remote Online Judge',
-
+  Statistics_Submissions_In_The_Last_Week: 'Statistics: Submissions In The Last Week',
 
   // 表格通用列名,按钮，搜索框等
   Enter_keyword: 'Enter keyword',

@@ -191,7 +191,9 @@ export const m = {
   Welcome_to: '欢迎使用 ',
   Recent_7_Days_AC_Rank: '最近一周过题榜单',
   Other_OJ_Contest: '其它OJ的近期比赛',
+  Latest_Problem: '最新题目',
   Supported_Remote_Online_Judge: '支持的远程评测平台',
+  Statistics_Submissions_In_The_Last_Week: '最近一周提交统计',
 
 
   // 表格通用列名,按钮，搜索框等

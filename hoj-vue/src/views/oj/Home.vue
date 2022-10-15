@@ -1,13 +1,17 @@
 <template>
   <div>
     <el-row :gutter="30">
-      <el-col :md="15" :sm="24">
+      <el-col
+        :md="15"
+        :sm="24"
+      >
         <el-card>
-          <div slot="header" class="content-center">
-            <span class="panel-title home-title welcome-title"
-              >{{ $t('m.Welcome_to')
-              }}{{ websiteConfig.shortName }}</span
-            >
+          <div
+            slot="header"
+            class="content-center"
+          >
+            <span class="panel-title home-title welcome-title">{{ $t('m.Welcome_to')
+              }}{{ websiteConfig.shortName }}</span>
           </div>
           <el-carousel
             :interval="interval"
@@ -20,8 +24,14 @@
               v-for="(item, index) in carouselImgList"
               :key="index"
             >
-              <el-image :src="item.url" fit="fill">
-                <div slot="error" class="image-slot">
+              <el-image
+                :src="item.url"
+                fit="fill"
+              >
+                <div
+                  slot="error"
+                  class="image-slot"
+                >
                   <i class="el-icon-picture-outline"></i>
                 </div>
               </el-image>
@@ -29,55 +39,75 @@
           </el-carousel>
         </el-card>
         <Announcements class="card-top"></Announcements>
+        <SubmissionStatistic class="card-top"></SubmissionStatistic>
         <el-card class="card-top">
-          <div slot="header" class="clearfix">
-            <span class="panel-title home-title">{{
-              $t('m.Other_OJ_Contest')
+          <div
+            slot="header"
+            class="clearfix"
+          >
+            <span class="panel-title home-title">
+              <i class="el-icon-magic-stick"></i> {{
+              $t('m.Latest_Problem')
             }}</span>
           </div>
           <vxe-table
             border="inner"
             highlight-hover-row
             stripe
-            :loading="loading.recentOtherContestsLoading"
+            :loading="loading.recentUpdatedProblemsLoading"
             auto-resize
-            :data="otherContests"
-            @cell-click="goOtherOJContest"
+            :data="recentUpdatedProblems"
+            @cell-click="goProblem"
           >
             <vxe-table-column
-              field="oj"
-              :title="$t('m.Recent_Contest')"
-              min-width="150"
+              field="problemId"
+              :title="$t('m.Problem_ID')"
+              min-width="100"
               show-overflow
-              header-align="center"
+              align="center"
             >
-              <template v-slot="{ row }">
-                <span>[{{ row.oj }}] {{ row.title }}</span>
-              </template>
             </vxe-table-column>
             <vxe-table-column
-              field="beginTime"
-              :title="$t('m.Contest_Time')"
+              field="title"
+              :title="$t('m.Title')"
               show-overflow
-              min-width="150"
+              min-width="130"
+              align="center"
+            >
+            </vxe-table-column>
+            <vxe-table-column
+              field="gmtModified"
+              :title="$t('m.Recent_Update')"
+              show-overflow
+              min-width="96"
               align="center"
             >
               <template v-slot="{ row }">
-                <span
-                  >{{ row.beginTime | localtime }} ~
-                  {{ row.endTime | localtime }}</span
+                <el-tooltip
+                  :content="row.gmtModified | localtime"
+                  placement="top"
                 >
+                  <span>{{ row.gmtModified | fromNow }}</span>
+                </el-tooltip>
               </template>
             </vxe-table-column>
+
           </vxe-table>
         </el-card>
       </el-col>
-      <el-col :md="9" :sm="24" class="phone-margin">
+      <el-col
+        :md="9"
+        :sm="24"
+        class="phone-margin"
+      >
         <template v-if="contests.length">
           <el-card>
-            <div slot="header" class="clearfix title content-center">
+            <div
+              slot="header"
+              class="clearfix title content-center"
+            >
               <div class="home-title home-contest">
-                {{ $t('m.Recent_Contest') }}
+                <i class="el-icon-trophy"></i> {{ $t('m.Recent_Contest') }}
               </div>
             </div>
             <el-card
@@ -91,8 +121,14 @@
                   : 'contest-card-schedule'
               "
             >
-              <div slot="header" class="clearfix contest-header">
-                <a class="contest-title" @click="goContest(contest.id)">{{
+              <div
+                slot="header"
+                class="clearfix contest-header"
+              >
+                <a
+                  class="contest-title"
+                  @click="goContest(contest.id)"
+                >{{
                   contest.title
                 }}</a>
                 <div class="contest-status">
@@ -101,7 +137,10 @@
                     size="medium"
                     :color="CONTEST_STATUS_REVERSE[contest.status]['color']"
                   >
-                    <i class="fa fa-circle" aria-hidden="true"></i>
+                    <i
+                      class="fa fa-circle"
+                      aria-hidden="true"
+                    ></i>
                     {{
                       $t('m.' + CONTEST_STATUS_REVERSE[contest.status]['name'])
                     }}
@@ -116,7 +155,7 @@
                     @click="goContestList(contest.type)"
                     size="mini"
                     style="margin-right: 10px;"
-                    ><i class="fa fa-trophy"></i>
+                  ><i class="fa fa-trophy"></i>
                     {{ contest.type | parseContestType }}
                   </el-button>
                 </template>
@@ -141,7 +180,7 @@
                       @click="goContestList(contest.type)"
                       size="mini"
                       style="margin-right: 10px;"
-                      ><i class="fa fa-trophy"></i>
+                    ><i class="fa fa-trophy"></i>
                       {{ contest.type | parseContestType }}
                     </el-button>
                   </el-tooltip>
@@ -167,7 +206,7 @@
                     round
                     size="mini"
                     style="margin-top: 4px;"
-                    ><i class="fa fa-calendar"></i>
+                  ><i class="fa fa-calendar"></i>
                     {{
                       contest.startTime | localtime((format = 'MM-DD HH:mm'))
                     }}
@@ -179,7 +218,7 @@
                     round
                     size="mini"
                     style="margin-top: 4px;"
-                    ><i class="fa fa-clock-o"></i>
+                  ><i class="fa fa-clock-o"></i>
                     {{ getDuration(contest.startTime, contest.endTime) }}
                   </el-button>
                 </li>
@@ -193,8 +232,7 @@
                     <i
                       class="el-icon-user-solid"
                       style="color:rgb(48, 145, 242);"
-                    ></i
-                    >x{{ contest.count }}
+                    ></i>x{{ contest.count }}
                   </el-button>
                 </li>
               </ul>
@@ -202,10 +240,13 @@
           </el-card>
         </template>
         <el-card :class="contests.length ? 'card-top' : ''">
-          <div slot="header" class="clearfix">
-            <span class="panel-title home-title">{{
-              $t('m.Recent_7_Days_AC_Rank')
-            }}</span>
+          <div
+            slot="header"
+            class="clearfix"
+          >
+            <span class="panel-title home-title">
+              <i class="el-icon-s-data"></i> {{ $t('m.Recent_7_Days_AC_Rank')}}
+            </span>
           </div>
           <vxe-table
             border="inner"
@@ -216,10 +257,12 @@
             max-height="500px"
             :loading="loading.recent7ACRankLoading"
           >
-            <vxe-table-column type="seq" min-width="50">
+            <vxe-table-column
+              type="seq"
+              min-width="50"
+            >
               <template v-slot="{ rowIndex }">
-                <span :class="getRankTagClass(rowIndex)"
-                  >{{ rowIndex + 1 }}
+                <span :class="getRankTagClass(rowIndex)">{{ rowIndex + 1 }}
                 </span>
                 <span :class="'cite no' + rowIndex"></span>
               </template>
@@ -242,10 +285,16 @@
                 <a
                   @click="goUserHome(row.username, row.uid)"
                   style="color:#2d8cf0;"
-                  >{{ row.username }}</a
+                >{{ row.username }}</a>
+                <span
+                  style="margin-left:2px"
+                  v-if="row.titleName"
                 >
-                <span style="margin-left:2px" v-if="row.titleName">
-                  <el-tag effect="dark" size="small" :color="row.titleColor">
+                  <el-tag
+                    effect="dark"
+                    size="small"
+                    :color="row.titleColor"
+                  >
                     {{ row.titleName }}
                   </el-tag>
                 </span>
@@ -261,9 +310,12 @@
           </vxe-table>
         </el-card>
         <el-card class="card-top">
-          <div slot="header" class="clearfix title">
+          <div
+            slot="header"
+            class="clearfix title"
+          >
             <span class="home-title panel-title">
-              {{ $t('m.Supported_Remote_Online_Judge') }}
+              <i class="el-icon-monitor"></i> {{ $t('m.Supported_Remote_Online_Judge') }}
             </span>
           </div>
           <el-row :gutter="20">
@@ -273,8 +325,14 @@
               v-for="(oj, index) in remoteJudgeList"
               :key="index"
             >
-              <a :href="oj.url" target="_blank">
-                <el-tooltip :content="oj.name" placement="top">
+              <a
+                :href="oj.url"
+                target="_blank"
+              >
+                <el-tooltip
+                  :content="oj.name"
+                  placement="top"
+                >
                   <el-image
                     :src="oj.logo"
                     fit="fill"
@@ -283,7 +341,10 @@
                       oj.status ? 'oj-normal ' + oj.name : 'oj-error ' + oj.name
                     "
                   >
-                    <div slot="error" class="image-slot">
+                    <div
+                      slot="error"
+                      class="image-slot"
+                    >
                       <i class="el-icon-picture-outline"></i>
                     </div>
                   </el-image>
@@ -298,79 +359,82 @@
 </template>
 
 <script>
-import time from '@/common/time';
-import api from '@/common/api';
+import time from "@/common/time";
+import api from "@/common/api";
 import {
   CONTEST_STATUS_REVERSE,
   CONTEST_TYPE_REVERSE,
-} from '@/common/constants';
-import { mapState, mapGetters } from 'vuex';
-import Avatar from 'vue-avatar';
-import myMessage from '@/common/message';
-const Announcements = () => import('@/components/oj/common/Announcements.vue');
+} from "@/common/constants";
+import { mapState, mapGetters } from "vuex";
+import Avatar from "vue-avatar";
+import myMessage from "@/common/message";
+const Announcements = () => import("@/components/oj/common/Announcements.vue");
+const SubmissionStatistic = () =>
+  import("@/components/oj/home/SubmissionStatistic.vue");
 export default {
-  name: 'home',
+  name: "home",
   components: {
     Announcements,
+    SubmissionStatistic,
     Avatar,
   },
   data() {
     return {
       interval: 5000,
-      otherContests: [],
+      recentUpdatedProblems: [],
       recentUserACRecord: [],
       CONTEST_STATUS_REVERSE: {},
       CONTEST_TYPE_REVERSE: {},
       contests: [],
       loading: {
         recent7ACRankLoading: false,
-        recentOtherContestsLoading: false,
+        recentUpdatedProblemsLoading: false,
         recentContests: false,
       },
       carouselImgList: [
         {
-          url: 'https://s1.ax1x.com/2022/05/15/ORSjyT.jpg',
+          url: "https://s1.ax1x.com/2022/05/15/ORSjyT.jpg",
         },
         {
-          url: 'https://s1.ax1x.com/2022/05/15/ORp86f.jpg',
+          url: "https://s1.ax1x.com/2022/05/15/ORp86f.jpg",
         },
       ],
-      srcHight: '440px',
+      srcHight: "440px",
       remoteJudgeList: [
         {
-          url: 'http://acm.hdu.edu.cn',
-          name: 'HDU',
-          logo: require('@/assets/hdu-logo.png'),
+          url: "http://acm.hdu.edu.cn",
+          name: "HDU",
+          logo: require("@/assets/hdu-logo.png"),
           status: true,
         },
         {
-          url: 'http://poj.org',
-          name: 'POJ',
-          logo: require('@/assets/poj-logo.png'),
+          url: "http://poj.org",
+          name: "POJ",
+          logo: require("@/assets/poj-logo.png"),
           status: true,
         },
         {
-          url: 'https://codeforces.com',
-          name: 'Codeforces',
-          logo: require('@/assets/codeforces-logo.png'),
+          url: "https://codeforces.com",
+          name: "Codeforces",
+          logo: require("@/assets/codeforces-logo.png"),
           status: true,
         },
         {
-          url: 'https://codeforces.com/gyms',
-          name: 'GYM',
-          logo: require('@/assets/gym-logo.png'),
+          url: "https://codeforces.com/gyms",
+          name: "GYM",
+          logo: require("@/assets/gym-logo.png"),
           status: true,
         },
         {
-          url: 'https://atcoder.jp',
-          name: 'AtCoder',
-          logo: require('@/assets/atcoder-logo.png'),
+          url: "https://atcoder.jp",
+          name: "AtCoder",
+          logo: require("@/assets/atcoder-logo.png"),
           status: true,
         },
         {
-          url: 'https://www.spoj.com',
-          name: 'SPOJ',
-          logo: require('@/assets/spoj-logo.png'),
+          url: "https://www.spoj.com",
+          name: "SPOJ",
+          logo: require("@/assets/spoj-logo.png"),
           status: true,
         },
       ],
@@ -379,16 +443,16 @@ export default {
   mounted() {
     let screenWidth = window.screen.width;
     if (screenWidth < 768) {
-      this.srcHight = '200px';
+      this.srcHight = "200px";
     } else {
-      this.srcHight = '440px';
+      this.srcHight = "440px";
     }
     this.CONTEST_STATUS_REVERSE = Object.assign({}, CONTEST_STATUS_REVERSE);
     this.CONTEST_TYPE_REVERSE = Object.assign({}, CONTEST_TYPE_REVERSE);
     this.getHomeCarousel();
     this.getRecentContests();
     this.getRecent7ACRank();
-    this.getRecentOtherContests();
+    this.getRecentUpdatedProblemList();
   },
   methods: {
     getHomeCarousel() {
@@ -411,15 +475,15 @@ export default {
         }
       );
     },
-    getRecentOtherContests() {
-      this.loading.recentOtherContestsLoading = true;
-      api.getRecentOtherContests().then(
+    getRecentUpdatedProblemList() {
+      this.loading.recentUpdatedProblemsLoading = true;
+      api.getRecentUpdatedProblemList().then(
         (res) => {
-          this.otherContests = res.data.data;
-          this.loading.recentOtherContestsLoading = false;
+          this.recentUpdatedProblems = res.data.data;
+          this.loading.recentUpdatedProblemsLoading = false;
         },
         (err) => {
-          this.loading.recentOtherContestsLoading = false;
+          this.loading.recentUpdatedProblemsLoading = false;
         }
       );
     },
@@ -437,30 +501,34 @@ export default {
     },
     goContest(cid) {
       if (!this.isAuthenticated) {
-        myMessage.warning(this.$i18n.t('m.Please_login_first'));
-        this.$store.dispatch('changeModalStatus', { visible: true });
+        myMessage.warning(this.$i18n.t("m.Please_login_first"));
+        this.$store.dispatch("changeModalStatus", { visible: true });
       } else {
         this.$router.push({
-          name: 'ContestDetails',
+          name: "ContestDetails",
           params: { contestID: cid },
         });
       }
     },
     goContestList(type) {
       this.$router.push({
-        name: 'ContestList',
+        name: "ContestList",
         query: {
           type,
         },
       });
     },
-
-    goOtherOJContest(event) {
-      window.open(event.row.url);
+    goProblem(event) {
+      this.$router.push({
+        name: "ProblemDetails",
+        params: {
+          problemID: event.row.problemId,
+        },
+      });
     },
     goUserHome(username, uid) {
       this.$router.push({
-        path: '/user-home',
+        path: "/user-home",
         query: { uid, username },
       });
     },
@@ -468,12 +536,12 @@ export default {
       return time.formatSpecificDuration(startTime, endTime);
     },
     getRankTagClass(rowIndex) {
-      return 'rank-tag no' + (rowIndex + 1);
+      return "rank-tag no" + (rowIndex + 1);
     },
   },
   computed: {
-    ...mapState(['websiteConfig']),
-    ...mapGetters(['isAuthenticated']),
+    ...mapState(["websiteConfig"]),
+    ...mapGetters(["isAuthenticated"]),
   },
 };
 </script>
@@ -570,7 +638,7 @@ li {
 .clearfix:before,
 .clearfix:after {
   display: table;
-  content: '';
+  content: "";
 }
 .clearfix:after {
   clear: both;
@@ -578,7 +646,7 @@ li {
 .welcome-title {
   font-weight: 600;
   font-size: 25px;
-  font-family: 'Raleway';
+  font-family: "Raleway";
 }
 .contest-status {
   float: right;

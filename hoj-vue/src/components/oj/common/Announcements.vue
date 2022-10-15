@@ -2,7 +2,7 @@
   <el-card shadow :padding="10">
     <div slot="header">
       <span class="panel-title" v-if="isContest">{{ title }}</span>
-      <span v-else class="home-title panel-title">{{ title }}</span>
+      <span v-else class="home-title panel-title"><i class="el-icon-data-board"></i> {{ title }}</span>
       <span style="float: right">
         <el-button
           v-if="listVisible"
