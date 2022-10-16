@@ -426,13 +426,6 @@ public class ImportHydroProblemManager {
         problem.setDescription(description);
     }
 
-    public static void main(String[] args) {
-        String A = "写程序，计算骑士从一个位置移动到另一个位置所需的最少移动次数。骑士移动的规则如下图所示。\n" +
-                "![image](file://0eoF-SShe0X83tQXNw1mb.png)";
-        List<String> fileNameList = ReUtil.findAll("\\(file://([\\s\\S]*?)\\)", A, 1);
-        System.out.println(fileNameList);
-    }
-
     private List<Language> buildLanguageList(List<String> langList, HashMap<String, Long> languageMap) {
         List<Language> languages = new LinkedList<>();
         for (String lang : langList) {
