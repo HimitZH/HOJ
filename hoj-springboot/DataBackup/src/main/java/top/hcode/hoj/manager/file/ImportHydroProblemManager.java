@@ -32,6 +32,7 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 /**
@@ -203,7 +204,7 @@ public class ImportHydroProblemManager {
             problemMarkdown = FileUtil.readString(rootDirPath + File.separator + "problem.md", StandardCharsets.UTF_8);
         }
 
-        parseMarkdown(problemMarkdown, problem);
+        parseMarkdown(problemMarkdown, problem, rootDirPath);
 
         dto.setProblem(problem);
         dto.setJudgeMode(problem.getJudgeMode());
@@ -377,7 +378,7 @@ public class ImportHydroProblemManager {
         }
     }
 
-    private void parseMarkdown(String md, Problem problem) {
+    private void parseMarkdown(String md, Problem problem, String rootDirPath) {
         List<String> inputExampleList = ReUtil.findAll("```input\\d+\n([\\s\\S]*?)\n```", md, 1);
         List<String> outputExampleList = ReUtil.findAll("```output\\d+\n([\\s\\S]*?)\n```", md, 1);
         if (!CollectionUtils.isEmpty(inputExampleList)) {
@@ -396,9 +397,40 @@ public class ImportHydroProblemManager {
             problem.setExamples(sb.toString());
         }
 
+        // 处理题面中的图片等文件
+        // file://0eoF-SShe0X83tQXNw1mb.png
+        List<String> fileNameList = ReUtil.findAll("\\(file://([\\s\\S]*?)\\)", md, 1);
+        //将文件保存指定目录
+        String additionalFilePath = rootDirPath + File.separator + "additional_file";
+        if (!CollectionUtils.isEmpty(fileNameList) && FileUtil.exist(additionalFilePath)) {
+            for (String filename : fileNameList) {
+                String filePath = additionalFilePath + File.separator + filename;
+                if (FileUtil.exist(filePath)) {
+                    FileUtil.copyFile(filePath, Constants.File.MARKDOWN_FILE_FOLDER.getPath() + File.separator + filename, StandardCopyOption.REPLACE_EXISTING);
+                    String lowerName = filename.toLowerCase();
+                    if (lowerName.endsWith(".png")
+                            || lowerName.equals(".jpg")
+                            || lowerName.equals(".gif")
+                            || lowerName.equals(".jpeg")
+                            || lowerName.equals(".webp")) {
+                        md = md.replace("file://" + filename, Constants.File.IMG_API.getPath() + filename);
+                    } else {
+                        md = md.replace("file://" + filename, Constants.File.FILE_API.getPath() + filename);
+                    }
+                }
+            }
+        }
+
         String description = md.replaceAll("```input\\d+\n[\\s\\S]*?\n```", "")
                 .replaceAll("```output\\d+\n[\\s\\S]*?\n```", "");
         problem.setDescription(description);
+    }
+
+    public static void main(String[] args) {
+        String A = "写程序，计算骑士从一个位置移动到另一个位置所需的最少移动次数。骑士移动的规则如下图所示。\n" +
+                "![image](file://0eoF-SShe0X83tQXNw1mb.png)";
+        List<String> fileNameList = ReUtil.findAll("\\(file://([\\s\\S]*?)\\)", A, 1);
+        System.out.println(fileNameList);
     }
 
     private List<Language> buildLanguageList(List<String> langList, HashMap<String, Long> languageMap) {

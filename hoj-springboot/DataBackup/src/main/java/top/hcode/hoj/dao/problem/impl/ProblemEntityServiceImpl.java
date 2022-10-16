@@ -631,6 +631,7 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
         // 删除临时上传文件夹
         FileUtil.del(tmpTestcaseDir);
         // 删除非测试数据的文件
+        listFileNames.remove("info");
         if (!CollectionUtils.isEmpty(listFileNames)) {
             for (String filename : listFileNames) {
                 FileUtil.del(testCasesDir + File.separator + filename);
