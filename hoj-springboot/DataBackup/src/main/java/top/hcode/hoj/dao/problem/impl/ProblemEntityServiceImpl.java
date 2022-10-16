@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.io.file.FileWriter;
+import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
@@ -18,6 +19,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
@@ -398,26 +400,39 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
                     .setSpjCode(null);
         }
 
-        /**
-         *  problem_id唯一性检查
-         */
-        String problemId = problem.getProblemId().toUpperCase();
-        QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
-        problemQueryWrapper.eq("problem_id", problemId);
-        int existedProblem = problemMapper.selectCount(problemQueryWrapper);
-        if (existedProblem > 0) {
-            throw new ProblemIDRepeatException("The problem_id [" + problemId + "] already exists. Do not reuse it!");
-        }
-
-
         // 设置测试样例的版本号
         problem.setCaseVersion(String.valueOf(System.currentTimeMillis()));
         if (problem.getIsGroup() == null) {
             problem.setIsGroup(false);
         }
-        problem.setProblemId(problemId);
-        boolean addProblemResult = problemMapper.insert(problem) == 1;
-        long pid = problem.getId();
+
+        // 如果没有提供problemId,则或者生成 P1000之类的，以problem表的id作为数字
+        if (problem.getProblemId() == null) {
+            problem.setProblemId(UUID.fastUUID().toString());
+            problemMapper.insert(problem);
+
+            UpdateWrapper<Problem> problemUpdateWrapper = new UpdateWrapper<>();
+            problemUpdateWrapper.set("problem_id", "P" + problem.getId());
+            problemUpdateWrapper.eq("id", problem.getId());
+            problemMapper.update(null, problemUpdateWrapper);
+            problem.setProblemId("P" + problem.getId());
+        } else {
+            // problem_id唯一性检查
+            String problemId = problem.getProblemId().toUpperCase();
+            QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
+            problemQueryWrapper.eq("problem_id", problemId);
+            int existedProblem = problemMapper.selectCount(problemQueryWrapper);
+            if (existedProblem > 0) {
+                throw new ProblemIDRepeatException("The problem_id [" + problemId + "] already exists. Do not reuse it!");
+            }
+            problem.setProblemId(problemId);
+            problemMapper.insert(problem);
+        }
+        Long pid = problem.getId();
+        if (pid == null) {
+            throw new ProblemIDRepeatException("The problem with problem_id [" + problem.getProblemId() + "] insert failed!");
+        }
+
         // 为新的题目添加对应的language
         List<ProblemLanguage> problemLanguageList = new LinkedList<>();
         for (Language language : problemDto.getLanguages()) {
@@ -518,7 +533,7 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
         }
 
 
-        if (addProblemResult && addCasesToProblemResult && addLangToProblemResult
+        if (addCasesToProblemResult && addLangToProblemResult
                 && addTagsToProblemResult && addProblemCodeTemplate) {
             return true;
         } else {
@@ -538,10 +553,15 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
         String testCasesDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + problemId;
 
         // 将之前的临时文件夹里面的评测文件全部复制到指定文件夹(覆盖)
+
         if (!StringUtils.isEmpty(tmpTestcaseDir)) {
             FileUtil.clean(testCasesDir);
-            FileUtil.copyFilesFromDir(new File(tmpTestcaseDir), new File(testCasesDir), true);
+            File testCasesDirFile = new File(testCasesDir);
+            FileUtil.copyFilesFromDir(new File(tmpTestcaseDir), testCasesDirFile, true);
         }
+
+        List<String> listFileNames = FileUtil.listFileNames(testCasesDir);
+
         if (StringUtils.isEmpty(judgeCaseMode)) {
             judgeCaseMode = Constants.JudgeCaseMode.DEFAULT.getMode();
         }
@@ -560,9 +580,13 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
                     || judgeCaseMode.equals(Constants.JudgeCaseMode.SUBTASK_LOWEST.getMode())) {
                 jsonObject.set("groupNum", problemCase.getGroupNum());
             }
+
             jsonObject.set("score", problemCase.getScore());
             jsonObject.set("inputName", problemCase.getInput());
             jsonObject.set("outputName", problemCase.getOutput());
+
+            listFileNames.remove(problemCase.getInput());
+            listFileNames.remove(problemCase.getOutput());
 
             // 读取输入文件
             FileReader inputFile = new FileReader(testCasesDir + File.separator + problemCase.getInput(), CharsetUtil.UTF_8);
@@ -572,11 +596,17 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
             inputFileWriter.write(input);
 
             // 读取输出文件
-            FileReader outputFile = new FileReader(testCasesDir + File.separator + problemCase.getOutput(), CharsetUtil.UTF_8);
-            String output = outputFile.readString().replaceAll("\r\n", "\n");
-
-            FileWriter outFileWriter = new FileWriter(testCasesDir + File.separator + problemCase.getOutput(), CharsetUtil.UTF_8);
-            outFileWriter.write(output);
+            String output = "";
+            String outputFilePath = testCasesDir + File.separator + problemCase.getOutput();
+            if (FileUtil.exist(outputFilePath)) {
+                FileReader outputFile = new FileReader(outputFilePath, CharsetUtil.UTF_8);
+                output = outputFile.readString().replaceAll("\r\n", "\n");
+                FileWriter outFileWriter = new FileWriter(testCasesDir + File.separator + problemCase.getOutput(), CharsetUtil.UTF_8);
+                outFileWriter.write(output);
+            } else {
+                FileWriter fileWriter = new FileWriter(outputFilePath);
+                fileWriter.write("");
+            }
 
             // spj和interactive是根据特判程序输出判断结果，所以无需初始化测试数据
             if (Constants.JudgeMode.DEFAULT.getMode().equals(judgeMode)) {
@@ -600,6 +630,12 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
         infoFile.write(JSONUtil.toJsonStr(result));
         // 删除临时上传文件夹
         FileUtil.del(tmpTestcaseDir);
+        // 删除非测试数据的文件
+        if (!CollectionUtils.isEmpty(listFileNames)) {
+            for (String filename : listFileNames) {
+                FileUtil.del(testCasesDir + File.separator + filename);
+            }
+        }
     }
 
 

@@ -60,8 +60,11 @@ public class JudgeStrategy {
             // 测试数据文件所在文件夹
             String testCasesDir = Constants.JudgeDir.TEST_CASE_DIR.getContent() + File.separator + "problem_" + problem.getId();
             // 从文件中加载测试数据json
-            JSONObject testCasesInfo = problemTestCaseUtils.loadTestCaseInfo(problem.getId(), testCasesDir, problem.getCaseVersion(),
-                    problem.getJudgeMode());
+            JSONObject testCasesInfo = problemTestCaseUtils.loadTestCaseInfo(problem.getId(),
+                    testCasesDir,
+                    problem.getCaseVersion(),
+                    problem.getJudgeMode(),
+                    problem.getJudgeCaseMode());
 
             // 检查是否为spj或者interactive，同时是否有对应编译完成的文件，若不存在，就先编译生成该文件，同时也要检查版本
             boolean isOk = checkOrCompileExtraProgram(problem);
@@ -100,7 +103,7 @@ public class JudgeStrategy {
             log.error("[Judge] [System Error] Submit Id:[{}] Problem Id:[{}], Error:[{}]",
                     judge.getSubmitId(),
                     problem.getId(),
-                    systemError.toString());
+                    systemError);
         } catch (SubmitError submitError) {
             result.put("code", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus());
             result.put("errMsg", mergeNonEmptyStrings(submitError.getMessage(), submitError.getStdout(), submitError.getStderr()));
@@ -109,7 +112,7 @@ public class JudgeStrategy {
             log.error("[Judge] [Submit Error] Submit Id:[{}] Problem Id:[{}], Error:[{}]",
                     judge.getSubmitId(),
                     problem.getId(),
-                    submitError.toString());
+                    submitError);
         } catch (CompileError compileError) {
             result.put("code", Constants.Judge.STATUS_COMPILE_ERROR.getStatus());
             result.put("errMsg", mergeNonEmptyStrings(compileError.getStdout(), compileError.getStderr()));
@@ -123,7 +126,7 @@ public class JudgeStrategy {
             log.error("[Judge] [System Runtime Error] Submit Id:[{}] Problem Id:[{}], Error:[{}]",
                     judge.getSubmitId(),
                     problem.getId(),
-                    e.toString());
+                    e);
         } finally {
 
             // 删除tmpfs内存中的用户代码可执行文件

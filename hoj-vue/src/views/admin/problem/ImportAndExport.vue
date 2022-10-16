@@ -73,7 +73,7 @@
         <span class="panel-title home-title">{{ $t('m.Import_Problem') }}</span>
       </div>
       <el-upload
-        ref="HOJ"
+        ref="hoj"
         action="/api/file/import-problem"
         name="file"
         :file-list="fileList1"
@@ -87,7 +87,7 @@
       >
         <el-button
           size="small"
-          :loading="loading.HOJ"
+          :loading="loading.hoj"
           type="primary"
           slot="trigger"
           icon="el-icon-folder-opened"
@@ -97,8 +97,8 @@
           style="margin-left: 10px;"
           size="small"
           type="success"
-          @click="submitUpload('HOJ')"
-          :loading="loading.HOJ"
+          @click="submitUpload('hoj')"
+          :loading="loading.hoj"
           :disabled="!fileList1.length"
           icon="el-icon-upload"
           >{{ $t('m.Upload') }}</el-button
@@ -109,11 +109,11 @@
     <el-card style="margin-top:15px">
       <div slot="header">
         <span class="panel-title home-title">{{
-          $t('m.Import_QDOJ_Problem')
+          $t('m.Import_QDUOJ_Problem')
         }}</span>
       </div>
       <el-upload
-        ref="QDOJ"
+        ref="qduoj"
         action="/api/file/import-qdoj-problem"
         name="file"
         :file-list="fileList2"
@@ -129,7 +129,7 @@
           size="small"
           type="primary"
           slot="trigger"
-          :loading="loading.QDOJ"
+          :loading="loading.qduoj"
           icon="el-icon-folder-opened"
           >{{ $t('m.Choose_File') }}</el-button
         >
@@ -137,8 +137,8 @@
           style="margin-left: 10px;"
           size="small"
           type="success"
-          @click="submitUpload('QDOJ')"
-          :loading="loading.QDOJ"
+          @click="submitUpload('qduoj')"
+          :loading="loading.qduoj"
           icon="el-icon-upload"
           :disabled="!fileList2.length"
           >{{ $t('m.Upload') }}</el-button
@@ -153,7 +153,7 @@
         }}</span>
       </div>
       <el-upload
-        ref="FPS"
+        ref="fps"
         action="/api/file/import-fps-problem"
         name="file"
         :file-list="fileList3"
@@ -169,7 +169,7 @@
           size="small"
           type="primary"
           slot="trigger"
-          :loading="loading.FPS"
+          :loading="loading.fps"
           icon="el-icon-folder-opened"
           >{{ $t('m.Choose_File') }}</el-button
         >
@@ -177,10 +177,50 @@
           style="margin-left: 10px;"
           size="small"
           type="success"
-          @click="submitUpload('FPS')"
-          :loading="loading.FPS"
+          @click="submitUpload('fps')"
+          :loading="loading.fps"
           icon="el-icon-upload"
           :disabled="!fileList3.length"
+          >{{ $t('m.Upload') }}</el-button
+        >
+      </el-upload>
+    </el-card>
+
+    <el-card style="margin-top:15px">
+      <div slot="header">
+        <span class="panel-title home-title">{{
+          $t('m.Import_Hydro_Problem')
+        }}</span>
+      </div>
+      <el-upload
+        ref="hydro"
+        action="/api/file/import-hydro-problem"
+        name="file"
+        :file-list="fileList4"
+        :show-file-list="true"
+        :with-credentials="true"
+        :limit="3"
+        :on-change="onFile4Change"
+        :auto-upload="false"
+        :on-success="uploadSucceeded"
+        :on-error="uploadFailed"
+      >
+        <el-button
+          size="small"
+          type="primary"
+          slot="trigger"
+          :loading="loading.hydro"
+          icon="el-icon-folder-opened"
+          >{{ $t('m.Choose_File') }}</el-button
+        >
+        <el-button
+          style="margin-left: 10px;"
+          size="small"
+          type="success"
+          @click="submitUpload('hydro')"
+          :loading="loading.hydro"
+          icon="el-icon-upload"
+          :disabled="!fileList4.length"
           >{{ $t('m.Upload') }}</el-button
         >
       </el-upload>
@@ -198,6 +238,7 @@ export default {
       fileList1: [],
       fileList2: [],
       fileList3: [],
+      fileList4: [],
       page: 1,
       limit: 10,
       total: 0,
@@ -207,9 +248,10 @@ export default {
       problems: [],
       selected_problems: [],
       loading: {
-        HOJ: false,
-        qdoj: false,
+        hoj: false,
+        qduoj: false,
         fps: false,
+        hydro:false,
       },
     };
   },
@@ -271,15 +313,20 @@ export default {
     onFile3Change(file, fileList) {
       this.fileList3 = fileList.slice(-1);
     },
+    onFile4Change(file, fileList) {
+      this.fileList4 = fileList.slice(-1);
+    },
     uploadSucceeded(response, file, fileList) {
-      this.loading.HOJ = false;
-      this.loading.QDOJ = false;
-      this.loading.FPS = false;
+      this.loading.hoj = false;
+      this.loading.qduoj = false;
+      this.loading.fps = false;
+      this.loading.hydro = false;
       if (response.status != 200) {
         myMessage.error(response.msg);
         this.$notify.error({
           title: this.$i18n.t('m.Error'),
           message: response.msg,
+          dangerouslyUseHTMLString: true,
           duration: 8000
         });
       } else {
@@ -288,9 +335,10 @@ export default {
       }
     },
     uploadFailed() {
-      this.loading.HOJ = false;
-      this.loading.QDOJ = false;
-      this.loading.FPS = false;
+      this.loading.hoj = false;
+      this.loading.qduoj = false;
+      this.loading.fps = false;
+      this.loading.hydro = false;
       myMessage.error(this.$i18n.t('m.Upload_Problem_Failed'));
     },
     filterByKeyword() {

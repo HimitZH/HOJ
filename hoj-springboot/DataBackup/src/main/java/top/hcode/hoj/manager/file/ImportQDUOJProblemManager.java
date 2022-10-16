@@ -91,7 +91,7 @@ public class ImportQDUOJProblemManager {
         File[] files = testCaseFileList.listFiles();
         if (files == null || files.length == 0) {
             FileUtil.del(fileDir);
-            throw new StatusFailException("评测数据压缩包里文件不能为空！");
+            throw new StatusFailException("压缩包里文件不能为空！");
         }
 
 
@@ -195,8 +195,8 @@ public class ImportQDUOJProblemManager {
         if (problemDtos.size() == 0) {
             throw new StatusFailException("警告：未成功导入一道以上的题目，请检查文件格式是否正确！");
         } else {
-            HashSet<String> repeatProblemIDSet = new HashSet<>();
-            HashSet<String> failedProblemIDSet = new HashSet<>();
+            HashSet<String> repeatProblemTitleSet = new HashSet<>();
+            HashSet<String> failedProblemTitleSet = new HashSet<>();
             int failedCount = 0;
             for (ProblemDto problemDto : problemDtos) {
                 try {
@@ -205,20 +205,20 @@ public class ImportQDUOJProblemManager {
                         failedCount++;
                     }
                 } catch (ProblemIDRepeatException e) {
-                    repeatProblemIDSet.add(problemDto.getProblem().getProblemId());
+                    repeatProblemTitleSet.add(problemDto.getProblem().getTitle());
                     failedCount++;
                 } catch (Exception e) {
                     log.error("", e);
-                    failedProblemIDSet.add(problemDto.getProblem().getProblemId());
+                    failedProblemTitleSet.add(problemDto.getProblem().getTitle());
                     failedCount++;
                 }
             }
             if (failedCount > 0) {
                 int successCount = problemDtos.size() - failedCount;
                 String errMsg = "[导入结果] 成功数：" + successCount + ",  失败数：" + failedCount +
-                        ",  重复失败的题目ID：" + repeatProblemIDSet;
-                if (failedProblemIDSet.size() > 0) {
-                    errMsg = errMsg + "<br/>未知失败的题目ID：" + failedProblemIDSet;
+                        ",  重复失败的题目标题：" + repeatProblemTitleSet;
+                if (failedProblemTitleSet.size() > 0) {
+                    errMsg = errMsg + "<br/>未知失败的题目标题：" + failedProblemTitleSet;
                 }
                 throw new StatusFailException(errMsg);
             }

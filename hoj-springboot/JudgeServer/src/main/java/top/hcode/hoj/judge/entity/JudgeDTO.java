@@ -56,7 +56,7 @@ public class JudgeDTO implements Serializable {
     private String testCaseOutputContent;
 
     /**
-     * 当前题目评测点的输出字符大小限制 kb
+     * 当前题目评测点的输出字符大小限制 B
      */
     private Long maxOutputSize;
 

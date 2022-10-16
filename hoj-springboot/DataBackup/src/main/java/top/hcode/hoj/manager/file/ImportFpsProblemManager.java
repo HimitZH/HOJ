@@ -85,8 +85,8 @@ public class ImportFpsProblemManager {
         if (problemDtoList.size() == 0) {
             throw new StatusFailException("警告：未成功导入一道以上的题目，请检查文件格式是否正确！");
         } else {
-            HashSet<String> repeatProblemIDSet = new HashSet<>();
-            HashSet<String> failedProblemIDSet = new HashSet<>();
+            HashSet<String> repeatProblemTitleSet = new HashSet<>();
+            HashSet<String> failedProblemTitleSet = new HashSet<>();
             int failedCount = 0;
             for (ProblemDto problemDto : problemDtoList) {
                 try {
@@ -95,20 +95,20 @@ public class ImportFpsProblemManager {
                         failedCount++;
                     }
                 } catch (ProblemIDRepeatException e) {
-                    repeatProblemIDSet.add(problemDto.getProblem().getProblemId());
+                    repeatProblemTitleSet.add(problemDto.getProblem().getTitle());
                     failedCount++;
                 } catch (Exception e) {
                     log.error("", e);
-                    failedProblemIDSet.add(problemDto.getProblem().getProblemId());
+                    failedProblemTitleSet.add(problemDto.getProblem().getTitle());
                     failedCount++;
                 }
             }
             if (failedCount > 0) {
                 int successCount = problemDtoList.size() - failedCount;
                 String errMsg = "[导入结果] 成功数：" + successCount + ",  失败数：" + failedCount +
-                        ",  重复失败的题目ID：" + repeatProblemIDSet;
-                if (failedProblemIDSet.size() > 0) {
-                    errMsg = errMsg + "<br/>未知失败的题目ID：" + failedProblemIDSet;
+                        ",  重复失败的题目标题：" + repeatProblemTitleSet;
+                if (failedProblemTitleSet.size() > 0) {
+                    errMsg = errMsg + "<br/>未知失败的题目标题：" + failedProblemTitleSet;
                 }
                 throw new StatusFailException(errMsg);
             }
@@ -142,7 +142,7 @@ public class ImportFpsProblemManager {
 
         String fileDirId = IdUtil.simpleUUID();
         String fileDir = Constants.File.TESTCASE_TMP_FOLDER.getPath() + File.separator + fileDirId;
-        long time = System.currentTimeMillis();
+
         int index = 1;
         for (Element item : XmlUtil.getElements(rootElement, "item")) {
 
@@ -157,8 +157,7 @@ public class ImportFpsProblemManager {
                     .setCodeShare(false)
                     .setIsRemote(false)
                     .setAuth(1)
-                    .setIsGroup(false)
-                    .setProblemId(String.valueOf(time + index));
+                    .setIsGroup(false);
 
             Element title = XmlUtil.getElement(item, "title");
             // 标题

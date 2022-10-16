@@ -3,7 +3,6 @@ package top.hcode.hoj.judge.entity;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
@@ -20,6 +19,11 @@ public class SandBoxRes {
      * 单个程序的状态码
      */
     private Integer status;
+
+    /**
+     * 原沙盒输出的状态字符
+     */
+    private String originalStatus;
 
     /**
      * 单个程序的退出码

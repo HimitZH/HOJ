@@ -70,6 +70,10 @@ public class DefaultJudge extends AbstractJudge {
             }
         } else {
             result.set("status", sandBoxRes.getStatus());
+            // 输出超限的特别提示
+            if ("Output Limit Exceeded".equals(sandBoxRes.getOriginalStatus())){
+                errMsg.append("The output character length of the program exceeds the limit");
+            }
         }
 
         // b

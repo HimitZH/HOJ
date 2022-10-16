@@ -64,6 +64,7 @@ public abstract class AbstractJudge {
                 .memory(judgeResult.getLong("memory") / 1024) // b-->kb
                 .exitCode(judgeResult.getInt("exitStatus"))
                 .status(judgeResult.getInt("status"))
+                .originalStatus(judgeResult.getStr("originalStatus"))
                 .build();
 
         return checkResult(sandBoxRes, judgeDTO, judgeGlobalDTO);
@@ -79,6 +80,7 @@ public abstract class AbstractJudge {
                 .memory(userJudgeResult.getLong("memory") / 1024) // b-->kb
                 .exitCode(userJudgeResult.getInt("exitStatus"))
                 .status(userJudgeResult.getInt("status"))
+                .originalStatus(userJudgeResult.getStr("originalStatus"))
                 .build();
 
         JSONObject interactiveJudgeResult = (JSONObject) judgeResultList.get(1);
@@ -89,6 +91,7 @@ public abstract class AbstractJudge {
                 .memory(interactiveJudgeResult.getLong("memory") / 1024) // b-->kb
                 .exitCode(interactiveJudgeResult.getInt("exitStatus"))
                 .status(interactiveJudgeResult.getInt("status"))
+                .originalStatus(interactiveJudgeResult.getStr("originalStatus"))
                 .build();
 
         return checkMultipleResult(userSandBoxRes, interactiveSandBoxRes, judgeDTO, judgeGlobalDTO);

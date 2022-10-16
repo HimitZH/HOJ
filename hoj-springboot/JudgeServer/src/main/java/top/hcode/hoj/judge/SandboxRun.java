@@ -278,8 +278,9 @@ public class SandboxRun {
         param.set("cmd", new JSONArray().put(cmd));
 
         JSONArray result = instance.run("/run", param);
-        JSONObject tmp = (JSONObject) result.get(0);
-        ((JSONObject) result.get(0)).set("status", RESULT_MAP_STATUS.get(tmp.getStr("status")));
+        JSONObject compileRes = (JSONObject) result.get(0);
+        compileRes.set("originalStatus", compileRes.getStr("status"));
+        compileRes.set("status", RESULT_MAP_STATUS.get(compileRes.getStr("status")));
         return result;
     }
 
@@ -363,8 +364,9 @@ public class SandboxRun {
         // 调用判题安全沙箱
         JSONArray result = instance.run("/run", param);
 
-        JSONObject tmp = (JSONObject) result.get(0);
-        ((JSONObject) result.get(0)).set("status", RESULT_MAP_STATUS.get(tmp.getStr("status")));
+        JSONObject testcaseRes = (JSONObject) result.get(0);
+        testcaseRes.set("originalStatus", testcaseRes.getStr("status"));
+        testcaseRes.set("status", RESULT_MAP_STATUS.get(testcaseRes.getStr("status")));
         return result;
     }
 
@@ -456,9 +458,9 @@ public class SandboxRun {
 
         // 调用判题安全沙箱
         JSONArray result = instance.run("/run", param);
-
-        JSONObject tmp = (JSONObject) result.get(0);
-        ((JSONObject) result.get(0)).set("status", RESULT_MAP_STATUS.get(tmp.getStr("status")));
+        JSONObject spjRes = (JSONObject) result.get(0);
+        spjRes.set("originalStatus", spjRes.getStr("status"));
+        spjRes.set("status", RESULT_MAP_STATUS.get(spjRes.getStr("status")));
         return result;
     }
 
@@ -645,7 +647,9 @@ public class SandboxRun {
         JSONArray result = instance.run("/run", param);
         JSONObject userRes = (JSONObject) result.get(0);
         JSONObject interactiveRes = (JSONObject) result.get(1);
+        userRes.set("originalStatus", userRes.getStr("status"));
         userRes.set("status", RESULT_MAP_STATUS.get(userRes.getStr("status")));
+        interactiveRes.set("originalStatus", interactiveRes.getStr("status"));
         interactiveRes.set("status", RESULT_MAP_STATUS.get(interactiveRes.getStr("status")));
         return result;
     }

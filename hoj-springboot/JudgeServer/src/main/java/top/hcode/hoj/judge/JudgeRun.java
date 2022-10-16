@@ -144,7 +144,7 @@ public class JudgeRun {
             // 该测试点的分组（用于subtask）
             final Integer groupNum = testcase.getInt("groupNum", 1);
 
-            final Long maxOutputSize = Math.max(testcase.getLong("outputSize", 0L) * 2, 16 * 1024 * 1024L);
+            final Long maxOutputSize = Math.max(testcase.getLong("outputSize", 0L) * 2, 32 * 1024 * 1024L);
 
             JudgeDTO judgeDTO = JudgeDTO.builder()
                     .testCaseNum(testCaseId)
@@ -205,7 +205,7 @@ public class JudgeRun {
             // 该测试点的分组（用于subtask）
             final Integer groupNum = testcase.getInt("groupNum", 1);
 
-            final Long maxOutputSize = Math.max(testcase.getLong("outputSize", 0L) * 2, 16 * 1024 * 1024L);
+            final Long maxOutputSize = Math.max(testcase.getLong("outputSize", 0L) * 2, 32 * 1024 * 1024L);
 
             JudgeDTO judgeDTO = JudgeDTO.builder()
                     .testCaseNum(testCaseId)
@@ -270,7 +270,7 @@ public class JudgeRun {
             // 该测试点的分组（用于subtask）
             final Integer groupNum = testcase.getInt("groupNum", 1);
 
-            final Long maxOutputSize = Math.max(testcase.getLong("outputSize", 0L) * 2, 16 * 1024 * 1024L);
+            final Long maxOutputSize = Math.max(testcase.getLong("outputSize", 0L) * 2, 32 * 1024 * 1024L);
 
             JudgeDTO judgeDTO = JudgeDTO.builder()
                     .testCaseNum(testCaseId)
@@ -364,7 +364,7 @@ public class JudgeRun {
                 .runConfig(runConfig)
                 .build();
 
-        Long maxOutputSize = Math.max(testJudgeReq.getTestCaseInput().length() * 2L, 16 * 1024 * 1024L);
+        Long maxOutputSize = Math.max(testJudgeReq.getTestCaseInput().length() * 2L, 32 * 1024 * 1024L);
 
         JudgeDTO judgeDTO = JudgeDTO.builder()
                 .testCaseInputContent(testJudgeReq.getTestCaseInput() + "\n")

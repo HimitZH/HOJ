@@ -78,6 +78,7 @@ public class JudgeServiceImpl implements JudgeService {
                         "io_score",
                         "difficulty",
                         "judge_mode",
+                        "judge_case_mode",
                         "time_limit",
                         "memory_limit",
                         "stack_limit",
