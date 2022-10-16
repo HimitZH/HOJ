@@ -22,7 +22,7 @@
                     <span class="el-dropdown-link">
                       {{
                         query.type == ''
-                          ? $t('m.Rule')
+                          ? $t('m.Contest_Rule')
                           : parseContestType(query.type)
                       }}
                       <i class="el-icon-caret-bottom"></i>
@@ -93,18 +93,22 @@
                 >
                   <el-row type="flex" justify="space-between" align="middle">
                     <el-col :xs="10" :sm="4" :md="3" :lg="2">
-                      <img
-                        v-show="contest.type == 0"
+                      <template v-if="contest.type == 0">
+                        <el-image 
+                        :src="acmSrc" 
                         class="trophy"
-                        :src="acmSrc"
-                        width="95px"
-                      />
-                      <img
-                        v-show="contest.type == 1"
+                        style="width: 100px;"
+                        :preview-src-list="[acmSrc]">
+                        </el-image>
+                      </template>
+                      <template v-else>
+                        <el-image 
+                        :src="oiSrc" 
                         class="trophy"
-                        :src="oiSrc"
-                        width="95px"
-                      />
+                        style="width: 100px;"
+                        :preview-src-list="[oiSrc]">
+                        </el-image>
+                      </template>
                     </el-col>
                     <el-col
                       :xs="10"

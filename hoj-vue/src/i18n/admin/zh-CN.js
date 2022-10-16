@@ -399,6 +399,7 @@ export const m = {
   Seal_Time_Rank: '开启封榜',
   Real_Time_Rank: '实时榜单',
   Seal_Rank_Time: '封榜时间',
+  Timeliness_Of_Rank:'榜单实时性',
   Contest_Auth: '比赛权限',
   Contest_Password: '比赛密码',
   OI_Rank_Score_Type: 'OI排行榜得分类型',

@@ -133,13 +133,14 @@
             v-if="contest.sealRank"
           >
             <el-form-item
-              :label="$t('m.Seal_Time_Rank')"
+              :label="$t('m.Timeliness_Of_Rank')"
               required
             >
               <el-switch
                 v-model="contest.sealRank"
                 active-color="#13ce66"
-                inactive-color="#ff4949"
+                :active-text="$t('m.Seal_Time_Rank')"
+                :inactive-text="$t('m.Real_Time_Rank')"
               >
               </el-switch>
             </el-form-item>
@@ -151,13 +152,14 @@
             v-else
           >
             <el-form-item
-              :label="$t('m.Real_Time_Rank')"
+              :label="$t('m.Timeliness_Of_Rank')"
               required
             >
               <el-switch
                 v-model="contest.sealRank"
                 active-color="#13ce66"
-                inactive-color=""
+                :active-text="$t('m.Seal_Time_Rank')"
+                :inactive-text="$t('m.Real_Time_Rank')"
                 @change="setSealRankTimeDefaultValue"
               >
               </el-switch>

@@ -376,7 +376,7 @@ export const m = {
   Back: '返回',
 
   // /views/oj/contest/ContestList.vue
-  Rule: '规则',
+  Contest_Rule: '赛制',
   Running: '进行中',
   Scheduled: '筹备中',
   Ended: '已结束',

@@ -576,7 +576,7 @@ export default {
       ) {
         this.$router.push({
           name: "ContestSubmissionList",
-          query: { username: row.username, problemID: column.property },
+          query: { username: row.username, problemID: column.property, completeProblemID: true },
         });
       }
     },

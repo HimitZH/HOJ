@@ -373,7 +373,7 @@ export const m = {
   Back: 'Back',
 
   // /views/oj/contest/ContestList.vue
-  Rule: 'Rule',
+  Contest_Rule: 'Rule',
   Running: 'Running',
   Scheduled: 'Scheduled',
   Ended: 'Ended',
