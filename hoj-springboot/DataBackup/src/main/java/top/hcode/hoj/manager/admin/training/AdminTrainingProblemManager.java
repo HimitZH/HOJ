@@ -124,7 +124,6 @@ public class AdminTrainingProblemManager {
             QueryWrapper<TrainingProblem> trainingProblemQueryWrapper = new QueryWrapper<>();
             trainingProblemQueryWrapper.eq("tid", tid).eq("pid", pid);
             isOk = trainingProblemEntityService.remove(trainingProblemQueryWrapper);
-
         } else {
              /*
                 problem的id为其他表的外键的表中的对应数据都会被一起删除！
@@ -136,15 +135,17 @@ public class AdminTrainingProblemManager {
             if (tid == null) {
                 FileUtil.del(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid);
             }
-
             // 更新训练最近更新时间
             UpdateWrapper<Training> trainingUpdateWrapper = new UpdateWrapper<>();
             trainingUpdateWrapper.set("gmt_modified", new Date())
                     .eq("id", tid);
             trainingEntityService.update(trainingUpdateWrapper);
-
         } else {
-            throw new StatusFailException("删除失败！");
+            String msg = "删除失败！";
+            if (tid != null){
+                msg = "移除失败！";
+            }
+            throw new StatusFailException(msg);
         }
     }
 

@@ -136,23 +136,21 @@ public class AccountManager {
         queryWrapper.eq("uid", userHomeInfo.getUid())
                 .select("distinct pid", "submit_id")
                 .orderByAsc("submit_id");
-        List<Long> pidList = new LinkedList<>();
+
         List<UserAcproblem> acProblemList = userAcproblemEntityService.list(queryWrapper);
-        acProblemList.forEach(acProblem -> {
-            pidList.add(acProblem.getPid());
-        });
+        List<Long> pidList = acProblemList.stream().map(UserAcproblem::getPid).collect(Collectors.toList());
 
         List<String> disPlayIdList = new LinkedList<>();
 
         if (pidList.size() > 0) {
             QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
+            problemQueryWrapper.select("id", "problem_id", "difficulty");
             problemQueryWrapper.in("id", pidList);
             List<Problem> problems = problemEntityService.list(problemQueryWrapper);
-            problems.forEach(problem -> {
-                disPlayIdList.add(problem.getProblemId());
-            });
+            Map<Integer, List<Problem>> map = problems.stream().collect(Collectors.groupingBy(Problem::getDifficulty));
+            userHomeInfo.setSolvedGroupByDifficulty(map);
+            disPlayIdList = problems.stream().map(Problem::getProblemId).collect(Collectors.toList());
         }
-
         userHomeInfo.setSolvedList(disPlayIdList);
         QueryWrapper<Session> sessionQueryWrapper = new QueryWrapper<>();
         sessionQueryWrapper.eq("uid", userHomeInfo.getUid())

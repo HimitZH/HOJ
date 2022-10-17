@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" v-loading="loading">
     <div class="avatar-container">
       <avatar
         :username="profile.username"
@@ -121,7 +121,7 @@
           </el-col>
         </el-row>
         <el-card style="margin-top:1rem;" v-if="loadingCalendarHeatmap">
-          <div class="calendar-title">
+          <div class="card-title">
             <i class="el-icon-data-analysis" style="color:#409eff">
             </i>
             {{ $t('m.Thermal_energy_table_submitted_in_the_last_year') }}
@@ -151,30 +151,76 @@
           </el-tab-pane>
           <el-tab-pane :label="$t('m.UserHome_Solved_Problems')"
             ><div id="problems">
-              <div v-if="profile.solvedList.length">
-                {{ $t('m.List_Solved_Problems') }}
-                <el-button
-                  type="primary"
-                  icon="el-icon-refresh"
-                  circle
-                  size="mini"
-                  @click="freshProblemDisplayID"
-                ></el-button>
-              </div>
-              <p v-else>{{ $t('m.UserHome_Not_Data') }}</p>
-              <div class="btns">
-                <div
-                  class="problem-btn"
-                  v-for="problemID of profile.solvedList"
-                  :key="problemID"
-                >
-                  <el-button type="success" @click="goProblem(problemID)" size="small">{{
-                    problemID
-                  }}</el-button>
+              <el-card class="level-card"
+                v-if="profile.solvedGroupByDifficulty != null">
+                <div class="card-title" style="font-size: 1rem;">
+                  <i class="el-icon-set-up" style="color:#409eff">
+                  </i>
+                  {{ $t('m.Difficulty_Statistics') }}
                 </div>
-              </div>
-            </div></el-tab-pane
-          >
+                <el-collapse accordion>
+                  <el-collapse-item v-for="(level, key) in PROBLEM_LEVEL" :key="key">
+                    <template slot="title">
+                      <div style="width: 100%;text-align: left;">
+                        <el-tag
+                        effect="dark"
+                        :style="getLevelColor(key)"
+                        size="medium">
+                        {{ getLevelName(key) }}
+                        </el-tag>
+                        <span class="card-p-count">
+                          {{ getProblemListCount(profile.solvedGroupByDifficulty[key])}} {{$t('m.Problems')}}
+                        </span>
+                      </div>
+                    </template>
+                    <div class="btns">
+                      <div
+                        class="problem-btn"
+                        v-for="(value, index) in profile.solvedGroupByDifficulty[key]"
+                        :key="index"
+                      >
+                        <el-button 
+                          round
+                          :style="getLevelColor(key)"
+                          @click="goProblem(value.problemId)" 
+                          size="small">{{
+                          value.problemId
+                        }}</el-button>
+                      </div>
+                    </div>
+                  </el-collapse-item>
+                </el-collapse>
+              </el-card>
+
+              <template v-if="profile.solvedList.length">
+                  <el-divider><i class="el-icon-circle-check"></i></el-divider>
+                  <div>
+                    {{ $t('m.List_Solved_Problems') }}
+                    <el-button
+                      type="primary"
+                      icon="el-icon-refresh"
+                      circle
+                      size="mini"
+                      @click="freshProblemDisplayID"
+                    ></el-button>
+                  </div>
+                  <div class="btns">
+                    <div
+                      class="problem-btn"
+                      v-for="problemID of profile.solvedList"
+                      :key="problemID"
+                    >
+                      <el-button round @click="goProblem(problemID)" size="small">{{
+                        problemID
+                      }}</el-button>
+                    </div>
+                  </div>
+              </template>
+              <template v-else>
+                <p>{{ $t('m.UserHome_Not_Data') }}</p>
+              </template>
+            </div>
+          </el-tab-pane>
         </el-tabs>
       </div>
     </el-card>
@@ -188,6 +234,8 @@ import { addCodeBtn } from '@/common/codeblock';
 import Avatar from 'vue-avatar';
 import 'vue-calendar-heatmap/dist/vue-calendar-heatmap.css'
 import { CalendarHeatmap } from 'vue-calendar-heatmap'
+import { PROBLEM_LEVEL } from '@/common/constants';
+import utils from '@/common/utils';
 export default {
   components: {
     Avatar,
@@ -206,11 +254,14 @@ export default {
         rating: 0,
         score: 0,
         solvedList: [],
+        solvedGroupByDifficulty:null,
         calendarHeatLocale:null,
         calendarHeatmapValue:[],
         calendarHeatmapEndDate:'',
-        loadingCalendarHeatmap:false
+        loadingCalendarHeatmap:false,
+        loading:false,
       },
+      PROBLEM_LEVEL: {},
     };
   },
   created(){
@@ -221,6 +272,7 @@ export default {
       this.calendarHeatmapEndDate = res.data.data.endDate;
       this.loadingCalendarHeatmap = true
     });
+    this.PROBLEM_LEVEL = Object.assign({}, PROBLEM_LEVEL);
   },
   mounted() {
     this.calendarHeatLocale = {
@@ -258,12 +310,16 @@ export default {
     init() {
       const uid = this.$route.query.uid;
       const username = this.$route.query.username;
+      this.loading = true;
       api.getUserInfo(uid, username).then((res) => {
         this.changeDomTitle({ title: res.data.username });
         this.profile = res.data.data;
         this.$nextTick((_) => {
           addCodeBtn();
         });
+        this.loading = false;
+      },(_)=>{
+        this.loading = false;
       });
 
     },
@@ -291,6 +347,19 @@ export default {
       let index = nickname.length % 5;
       return typeArr[index];
     },
+    getLevelColor(difficulty) {
+      return utils.getLevelColor(difficulty);
+    },
+    getLevelName(difficulty) {
+      return utils.getLevelName(difficulty);
+    },
+    getProblemListCount(list){
+      if(!list){
+        return 0;
+      }else{
+        return list.length;
+      }
+    }
   },
   watch: {
     $route(newVal, oldVal) {
@@ -432,10 +501,28 @@ export default {
   font-weight: 600;
 }
 #problems {
-  margin-top: 40px;
   padding-left: 30px;
   padding-right: 30px;
   font-size: 18px;
+}
+.level-card{
+  width: calc(45% - 0.5em);
+  margin: 1rem auto;
+}
+@media (max-width: 768px){
+  .level-card{
+    margin: 1em 0;
+    width: 100%;
+  }
+  #problems{
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+}
+.card-p-count{
+  float:right;
+  font-size: 1.1em;
+  font-weight: bolder;
 }
 .btns {
   margin-top: 15px;
@@ -472,7 +559,7 @@ export default {
 .female {
   background-color: pink;
 }
-.calendar-title{
+.card-title{
   font-size: 1.2rem;
   font-weight: 500;
   align-items: center;

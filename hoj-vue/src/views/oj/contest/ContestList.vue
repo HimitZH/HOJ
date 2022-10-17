@@ -283,14 +283,14 @@ import {
 } from '@/common/constants';
 import myMessage from '@/common/message';
 const Pagination = () => import('@/components/oj/common/Pagination');
-const ContestListAttention = () => import('@/components/oj/contest/ContestListAttention');
+// const ContestListAttention = () => import('@/components/oj/contest/ContestListAttention');
 const limit = 10;
 
 export default {
   name: 'contest-list',
   components: {
     Pagination,
-    ContestListAttention
+    // ContestListAttention
   },
   data() {
     return {

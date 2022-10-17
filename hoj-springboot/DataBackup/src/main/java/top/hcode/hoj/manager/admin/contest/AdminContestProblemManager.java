@@ -180,9 +180,6 @@ public class AdminContestProblemManager {
                 problem的id为其他表的外键的表中的对应数据都会被一起删除！
               */
             problemEntityService.removeById(pid);
-        }
-
-        if (cid == null) {
             FileUtil.del(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid);
         }
     }

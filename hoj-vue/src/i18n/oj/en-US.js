@@ -150,6 +150,8 @@ export const m = {
   Personal_Profile: 'Persion Profile',
   UserHome_Solved_Problems: 'Solved Problems',
   Thermal_energy_table_submitted_in_the_last_year:'Thermal energy table submitted in the last year',
+  Difficulty_Statistics:'Difficulty Statistics',
+  Problems:'Problems',
   Calendar_Tooltip_Uint:'submissions',
   Jan: 'Jan', 
   Feb: 'Feb', 
