@@ -96,6 +96,7 @@ public class ChooseUtils {
 
 
     @Transactional(rollbackFor = Exception.class)
+    @Deprecated
     public JudgeServer chooseFixedServer(Boolean isRemote, String fixedTag, Integer index, Integer total) {
         // 获取该微服务的所有健康实例
         List<Instance> instances = getInstances(JudgeServiceName);

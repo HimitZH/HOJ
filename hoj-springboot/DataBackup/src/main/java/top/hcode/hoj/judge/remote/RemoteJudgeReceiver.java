@@ -94,7 +94,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
                     updateWrapper.eq("submit_id", judge.getSubmitId()); // submit_id一定只有一个
                     contestRecordEntityService.update(updateWrapper);
                 }
-            }else {
+            } else {
                 dispatchRemoteJudge(judge,
                         token,
                         remoteJudgeProblem,
@@ -143,7 +143,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
             toJudgeDTO.setUsername(judge.getVjudgeUsername());
             toJudgeDTO.setPassword(judge.getVjudgePassword());
             // 调用判题服务
-            dispatcher.dispatcherJudge("judge", "/remote-judge", toJudgeDTO);
+            dispatcher.dispatch(Constants.TaskType.REMOTE_JUDGE, toJudgeDTO);
             return;
         }
 
@@ -175,7 +175,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
                             .setPassword(account.getPassword());
                     toJudgeDTO.setIsHasSubmitIdRemoteReJudge(false);
                     // 调用判题服务
-                    dispatcher.dispatcherJudge("judge", "/remote-judge", toJudgeDTO);
+                    dispatcher.dispatch(Constants.TaskType.REMOTE_JUDGE, toJudgeDTO);
                     Future future = futureTaskMap.get(key);
                     if (future != null) {
                         future.cancel(true);
@@ -237,7 +237,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
                             .setPassword(account.getPassword());
                     toJudgeDTO.setIsHasSubmitIdRemoteReJudge(finalIsHasSubmitIdRemoteReJudge);
                     // 调用判题服务
-                    dispatcher.dispatcherJudge("judge", "/remote-judge", toJudgeDTO);
+                    dispatcher.dispatch(Constants.TaskType.REMOTE_JUDGE, toJudgeDTO);
                     Future future = futureTaskMap.get(key);
                     if (future != null) {
                         future.cancel(true);
@@ -257,7 +257,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
             toJudgeDTO.setUsername(judge.getVjudgeUsername());
             toJudgeDTO.setPassword(judge.getVjudgePassword());
             // 调用判题服务
-            dispatcher.dispatcherJudge("judge", "/remote-judge", toJudgeDTO);
+            dispatcher.dispatch(Constants.TaskType.REMOTE_JUDGE, toJudgeDTO);
             return;
         }
 
@@ -294,7 +294,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
                     toJudgeDTO.setIndex(index);
                     toJudgeDTO.setSize(size);
                     // 调用判题服务
-                    dispatcher.dispatcherJudge("judge", "/remote-judge", toJudgeDTO);
+                    dispatcher.dispatch(Constants.TaskType.REMOTE_JUDGE, toJudgeDTO);
                     Future future = futureTaskMap.get(key);
                     if (future != null) {
                         future.cancel(true);

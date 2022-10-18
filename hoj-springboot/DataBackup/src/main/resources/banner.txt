@@ -16,6 +16,6 @@ ${AnsiColor.BRIGHT_YELLOW}
 '---'         `---`                  '---'        `----'
             Hcode Online Judge(HOJ) - Backend
                     @Author Himit_ZH
-                    @Last Update 20221017
+                    @Last Update 20221018
           ->Github<- https://www.github.com/HimitZH/HOJ
           ->Gitee<-  https://gitee.com/himitzh0730/hoj

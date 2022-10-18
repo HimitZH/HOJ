@@ -223,7 +223,7 @@ public class ImportFpsProblemManager {
             problem.setTimeLimit(timeLimit);
 
             // mb
-            Integer memoryLimit = getMemoryLimit(item);
+            Integer memoryLimit = getMemoryLimit(version,item);
             problem.setMemoryLimit(memoryLimit);
 
             // 题面用例
@@ -322,26 +322,32 @@ public class ImportFpsProblemManager {
         String timeUnit = timeLimitNode.getAttribute("unit");
         String timeLimit = timeLimitNode.getTextContent();
         int index = timeUnits.indexOf(timeUnit.toLowerCase());
-        if (index == -1) {
-            throw new RuntimeException("Invalid time limit unit:" + timeUnit);
-        }
         if ("1.1".equals(version)) {
+            if (index == -1){
+                index = 1;
+            }
             return Integer.parseInt(timeLimit) * (int) Math.pow(1000, index);
         } else {
+            if (index == -1) {
+                throw new RuntimeException("Invalid time limit unit:" + timeUnit);
+            }
             double tmp = (Double.parseDouble(timeLimit) * Math.pow(1000, index));
             return (int) tmp;
         }
     }
 
-    private Integer getMemoryLimit(Element item) {
+    private Integer getMemoryLimit(String version,Element item) {
         Element memoryLimitNode = XmlUtil.getElement(item, "memory_limit");
         String memoryUnit = memoryLimitNode.getAttribute("unit");
         String memoryLimit = memoryLimitNode.getTextContent();
-        int index = memoryUnits.indexOf(memoryUnit.toLowerCase());
+        int index;
+        index = memoryUnits.indexOf(memoryUnit.toLowerCase());
+        if ("1.1".equals(version)){
+            index = 1;
+        }
         if (index == -1) {
             throw new RuntimeException("Invalid memory limit unit:" + memoryUnit);
         }
-
         return Integer.parseInt(memoryLimit) * (int) Math.pow(1000, index - 1);
     }
 }

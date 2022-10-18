@@ -377,7 +377,7 @@ public class GroupProblemManager {
         }
 
         compileDTO.setToken(judgeToken);
-        dispatcher.dispatcherJudge("compile", "/compile-spj", compileDTO);
+        dispatcher.dispatch(Constants.TaskType.COMPILE_SPJ, compileDTO);
     }
 
     public void compileInteractive(CompileDTO compileDTO, Long gid) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
@@ -402,7 +402,7 @@ public class GroupProblemManager {
         }
 
         compileDTO.setToken(judgeToken);
-        dispatcher.dispatcherJudge("compile", "/compile-interactive", compileDTO);
+        dispatcher.dispatch(Constants.TaskType.COMPILE_INTERACTIVE, compileDTO);
     }
 
     public void changeProblemAuth(Long pid, Integer auth) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {

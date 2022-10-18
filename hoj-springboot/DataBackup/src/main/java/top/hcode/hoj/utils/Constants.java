@@ -357,4 +357,40 @@ public class Constants {
             return DEFAULT;
         }
     }
+
+    public enum TaskType{
+        /**
+         * 自身评测
+         */
+        JUDGE("/judge"),
+        /**
+         * 远程评测
+         */
+        REMOTE_JUDGE("/remote-judge"),
+
+        /**
+         * 在线调试
+         */
+        TEST_JUDGE("/test-judge"),
+        /**
+         * 编译特判程序
+         */
+        COMPILE_SPJ("/compile-spj"),
+
+        /**
+         * 编译交互程序
+         */
+        COMPILE_INTERACTIVE("/compile-interactive");
+
+        private final String path;
+
+        TaskType(String path) {
+            this.path = path;
+        }
+
+        public String getPath() {
+            return path;
+        }
+
+    }
 }

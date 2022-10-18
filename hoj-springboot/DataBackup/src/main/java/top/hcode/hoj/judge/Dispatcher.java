@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @Author: Himit_ZH
  * @Date: 2021/4/15 17:29
- * @Description:
+ * @Description: 分发调用判题机执行任务
  */
 @Component
 @Slf4j(topic = "hoj")
@@ -56,44 +56,147 @@ public class Dispatcher {
 
     private final static Map<String, Future> futureTaskMap = new ConcurrentHashMap<>(20);
 
+    // 每个提交任务尝试300次失败则判为提交失败
+    protected final static Integer maxTryNum = 300;
+
     @Autowired
     private RemoteJudgeAccountEntityServiceImpl remoteJudgeAccountService;
 
-    public CommonResult dispatcherJudge(String type, String path, Object data) {
-        switch (type) {
-            case "judge":
-                ToJudgeDTO judgeData = (ToJudgeDTO) data;
-                toJudge(path, judgeData, judgeData.getJudge().getSubmitId(), judgeData.getRemoteJudgeProblem() != null);
+    public CommonResult dispatch(Constants.TaskType taskType, Object data) {
+        switch (taskType) {
+            case JUDGE:
+                defaultJudge((ToJudgeDTO) data, taskType.getPath());
                 break;
-            case "compile":
-                CompileDTO compileDTO = (CompileDTO) data;
-                return toCompile(path, compileDTO);
+            case REMOTE_JUDGE:
+                remoteJudge((ToJudgeDTO) data, taskType.getPath());
+                break;
+            case TEST_JUDGE:
+                testJudge((TestJudgeReq) data, taskType.getPath());
+                break;
+            case COMPILE_SPJ:
+            case COMPILE_INTERACTIVE:
+                return compile((CompileDTO) data, taskType.getPath());
             default:
                 throw new IllegalArgumentException("判题机不支持此调用类型");
         }
         return null;
     }
 
-    public void dispatcherTestJudge(TestJudgeReq testJudgeReq, String path) {
+    /**
+     * 普通评测
+     * @param data
+     * @param path
+     */
+    public void defaultJudge(ToJudgeDTO data, String path) {
+
+        Long submitId = data.getJudge().getSubmitId();
         AtomicInteger count = new AtomicInteger(0);
-        String key = testJudgeReq.getUniqueKey();
+        String taskKey = UUID.randomUUID().toString() + submitId;
+
         Runnable getResultTask = () -> {
-            if (count.get() > 300) { // 300次失败则判为提交失败
-                Future future = futureTaskMap.get(key);
-                if (future != null) {
-                    boolean isCanceled = future.cancel(true);
-                    if (isCanceled) {
-                        futureTaskMap.remove(key);
-                    }
-                }
+            if (count.get() > maxTryNum) {
+                checkResult(null, submitId);
+                releaseTaskThread(taskKey);
                 return;
             }
             count.getAndIncrement();
             JudgeServer judgeServer = chooseUtils.chooseServer(false);
+            if (judgeServer != null) { // 获取到判题机资源
+                CommonResult result = null;
+                try {
+                    result = restTemplate.postForObject("http://" + judgeServer.getUrl() + path, data, CommonResult.class);
+                } catch (Exception e) {
+                    log.error("[Self Judge] Request the judge server [" + judgeServer.getUrl() + "] error -------------->", e);
+                } finally {
+                    checkResult(result, submitId);
+                    releaseJudgeServer(judgeServer.getId());
+                    releaseTaskThread(taskKey);
+                }
+            }
+        };
+        ScheduledFuture<?> scheduledFuture = scheduler.scheduleWithFixedDelay(getResultTask, 0, 2, TimeUnit.SECONDS);
+        futureTaskMap.put(taskKey, scheduledFuture);
+    }
 
+    /**
+     * 远程评测
+     * @param data
+     * @param path
+     */
+    public void remoteJudge(ToJudgeDTO data, String path) {
+
+        String oj = data.getRemoteJudgeProblem().split("-")[0];
+        if (oj.equals("GYM")) {
+            oj = "CF";
+        }
+
+        // 如果是vj判題，同时不是已有提交id的获取结果操作，归属于CF的判題，需要控制判题机的权限，一机一题
+        boolean isCFFixServerJudge = ChooseUtils.openCodeforcesFixServer
+                && !data.getIsHasSubmitIdRemoteReJudge()
+                && Constants.RemoteOJ.CODEFORCES.getName().equals(oj);
+
+        Long submitId = data.getJudge().getSubmitId();
+        AtomicInteger count = new AtomicInteger(0);
+        String taskKey = UUID.randomUUID().toString() + submitId;
+        final String finalOj = oj;
+
+        Runnable getResultTask = () -> {
+            if (count.get() > maxTryNum) { // 300次失败则判为提交失败
+                // 远程判题需要将账号归为可用
+                changeRemoteJudgeStatus(finalOj, data.getUsername(), null);
+                checkResult(null, submitId);
+                releaseTaskThread(taskKey);
+                return;
+            }
+            count.getAndIncrement();
+            JudgeServer judgeServer = null;
+            if (!isCFFixServerJudge) {
+                judgeServer = chooseUtils.chooseServer(true);
+            } else {
+                judgeServer = chooseUtils.chooseFixedServer(true, "cf_submittable", data.getIndex(), data.getSize());
+            }
+            if (judgeServer != null) { // 获取到判题机资源
+                data.setJudgeServerIp(judgeServer.getIp());
+                data.setJudgeServerPort(judgeServer.getPort());
+                CommonResult result = null;
+                try {
+                    result = restTemplate.postForObject("http://" + judgeServer.getUrl() + path, data, CommonResult.class);
+                } catch (Exception e) {
+                    log.error("[Remote Judge] Request the judge server [" + judgeServer.getUrl() + "] error-------------->", e);
+                    changeRemoteJudgeStatus(finalOj, data.getUsername(), judgeServer);
+                } finally {
+                    checkResult(result, submitId);
+                    if (!isCFFixServerJudge) {
+                        // 无论成功与否，都要将对应的当前判题机当前判题数减1
+                        releaseJudgeServer(judgeServer.getId());
+                    }
+                    releaseTaskThread(taskKey);
+                }
+            }
+        };
+        ScheduledFuture<?> scheduledFuture = scheduler.scheduleWithFixedDelay(getResultTask, 0, 2, TimeUnit.SECONDS);
+        futureTaskMap.put(taskKey, scheduledFuture);
+    }
+
+    /**
+     * 在线调试
+     * @param testJudgeReq
+     * @param path
+     */
+    public void testJudge(TestJudgeReq testJudgeReq, String path) {
+        AtomicInteger count = new AtomicInteger(0);
+        String taskKey = testJudgeReq.getUniqueKey();
+        Runnable getResultTask = () -> {
+            if (count.get() > maxTryNum) { // 300次失败则判为提交失败
+                releaseTaskThread(taskKey);
+                return;
+            }
+            count.getAndIncrement();
+            JudgeServer judgeServer = chooseUtils.chooseServer(false);
             if (judgeServer != null) { // 获取到判题机资源
                 try {
-                    JSONObject resultJson = restTemplate.postForObject("http://" + judgeServer.getUrl() + path, testJudgeReq, JSONObject.class);
+                    String url = "http://" + judgeServer.getUrl() + path;
+                    JSONObject resultJson = restTemplate.postForObject(url, testJudgeReq, JSONObject.class);
                     if (resultJson != null) {
                         if (resultJson.getInt("status") == ResultStatus.SUCCESS.getStatus()) {
                             TestJudgeRes testJudgeRes = resultJson.getBean("data", TestJudgeRes.class);
@@ -112,7 +215,7 @@ public class Dispatcher {
                         }
                     }
                 } catch (Exception e) {
-                    log.error("调用判题服务器[" + judgeServer.getUrl() + "]发送异常-------------->", e);
+                    log.error("[Test Judge] Request the judge server [" + judgeServer.getUrl() + "] error-------------->", e);
                     TestJudgeRes testJudgeRes = TestJudgeRes.builder()
                             .status(Constants.Judge.STATUS_SYSTEM_ERROR.getStatus())
                             .time(0L)
@@ -121,109 +224,32 @@ public class Dispatcher {
                             .build();
                     redisUtils.set(testJudgeReq.getUniqueKey(), testJudgeRes, 60);
                 } finally {
-                    // 无论成功与否，都要将对应的当前判题机当前判题数减1
-                    reduceCurrentTaskNum(judgeServer.getId());
-                    Future future = futureTaskMap.get(key);
-                    if (future != null) {
-                        boolean isCanceled = future.cancel(true);
-                        if (isCanceled) {
-                            futureTaskMap.remove(key);
-                        }
-                    }
+                    releaseJudgeServer(judgeServer.getId());
+                    releaseTaskThread(taskKey);
                 }
             }
         };
         ScheduledFuture<?> scheduledFuture = scheduler.scheduleWithFixedDelay(getResultTask, 0, 1, TimeUnit.SECONDS);
-        futureTaskMap.put(key, scheduledFuture);
+        futureTaskMap.put(taskKey, scheduledFuture);
     }
 
 
-    public void toJudge(String path, ToJudgeDTO data, Long submitId, Boolean isRemote) {
-
-        String oj = null;
-        if (isRemote) {
-            oj = data.getRemoteJudgeProblem().split("-")[0];
-            if (oj.equals("GYM")) {
-                oj = "CF";
-            }
-        }
-
-        // 如果是vj判題，同时不是已有提交id的获取结果操作，归属于CF的判題，需要控制判题机的权限，一机一题
-        boolean isCFFixServerJudge = isRemote
-                && ChooseUtils.openCodeforcesFixServer
-                && !data.getIsHasSubmitIdRemoteReJudge()
-                && Constants.RemoteOJ.CODEFORCES.getName().equals(oj);
-
-        // 尝试600s
-        AtomicInteger count = new AtomicInteger(0);
-        String key = UUID.randomUUID().toString() + submitId;
-        final String finalOj = oj;
-        Runnable getResultTask = () -> {
-            if (count.get() > 300) { // 300次失败则判为提交失败
-                if (isRemote) { // 远程判题需要将账号归为可用
-                    changeRemoteJudgeStatus(finalOj, data.getUsername(), null);
-                }
-                checkResult(null, submitId);
-                Future future = futureTaskMap.get(key);
-                if (future != null) {
-                    boolean isCanceled = future.cancel(true);
-                    if (isCanceled) {
-                        futureTaskMap.remove(key);
-                    }
-                }
-                return;
-            }
-            count.getAndIncrement();
-            JudgeServer judgeServer = null;
-            if (!isCFFixServerJudge) {
-                judgeServer = chooseUtils.chooseServer(isRemote);
-            } else {
-                judgeServer = chooseUtils.chooseFixedServer(true, "cf_submittable", data.getIndex(), data.getSize());
-            }
-
-            if (judgeServer != null) { // 获取到判题机资源
-                data.setJudgeServerIp(judgeServer.getIp());
-                data.setJudgeServerPort(judgeServer.getPort());
-                CommonResult result = null;
-                try {
-                    result = restTemplate.postForObject("http://" + judgeServer.getUrl() + path, data, CommonResult.class);
-                } catch (Exception e) {
-                    log.error("调用判题服务器[" + judgeServer.getUrl() + "]发送异常-------------->", e);
-                    if (isRemote) {
-                        changeRemoteJudgeStatus(finalOj, data.getUsername(), judgeServer);
-                    }
-                } finally {
-                    checkResult(result, submitId);
-                    if (!isCFFixServerJudge) {
-                        // 无论成功与否，都要将对应的当前判题机当前判题数减1
-                        reduceCurrentTaskNum(judgeServer.getId());
-                    }
-                    Future future = futureTaskMap.get(key);
-                    if (future != null) {
-                        boolean isCanceled = future.cancel(true);
-                        if (isCanceled) {
-                            futureTaskMap.remove(key);
-                        }
-                    }
-                }
-            }
-        };
-        ScheduledFuture<?> scheduledFuture = scheduler.scheduleWithFixedDelay(getResultTask, 0, 2, TimeUnit.SECONDS);
-        futureTaskMap.put(key, scheduledFuture);
-    }
-
-
-    public CommonResult toCompile(String path, CompileDTO data) {
+    /**
+     * 编译特殊判题程序或交互程序
+     * @param data
+     * @param path
+     */
+    public CommonResult compile(CompileDTO data, String path) {
         CommonResult result = CommonResult.errorResponse("没有可用的判题服务器，请重新尝试！");
         JudgeServer judgeServer = chooseUtils.chooseServer(false);
         if (judgeServer != null) {
             try {
                 result = restTemplate.postForObject("http://" + judgeServer.getUrl() + path, data, CommonResult.class);
             } catch (Exception e) {
-                log.error("调用判题服务器[" + judgeServer.getUrl() + "]发送异常-------------->", e.getMessage());
+                log.error("[Compile] Request the judge server [" + judgeServer.getUrl() + "] error-------------->", e.getMessage());
             } finally {
                 // 无论成功与否，都要将对应的当前判题机当前判题数减1
-                reduceCurrentTaskNum(judgeServer.getId());
+                releaseJudgeServer(judgeServer.getId());
             }
         }
         return result;
@@ -249,9 +275,30 @@ public class Dispatcher {
 
     }
 
-    public void reduceCurrentTaskNum(Integer id) {
+    /**
+     * 成功与否，皆需移除任务，释放线程
+     *
+     * @param taskKey
+     */
+    private void releaseTaskThread(String taskKey) {
+        Future future = futureTaskMap.get(taskKey);
+        if (future != null) {
+            boolean isCanceled = future.cancel(true);
+            if (isCanceled) {
+                futureTaskMap.remove(taskKey);
+            }
+        }
+    }
+
+    /**
+     * 释放评测机资源
+     *
+     * @param judgeServerId
+     */
+    public void releaseJudgeServer(Integer judgeServerId) {
         UpdateWrapper<JudgeServer> judgeServerUpdateWrapper = new UpdateWrapper<>();
-        judgeServerUpdateWrapper.setSql("task_number = task_number-1").eq("id", id);
+        judgeServerUpdateWrapper.setSql("task_number = task_number-1")
+                .eq("id", judgeServerId);
         boolean isOk = judgeServerEntityService.update(judgeServerUpdateWrapper);
         if (!isOk) { // 重试八次
             tryAgainUpdateJudge(judgeServerUpdateWrapper);
@@ -281,6 +328,12 @@ public class Dispatcher {
     }
 
 
+    /**
+     * 将远程评测的账号变为可用
+     * @param oj
+     * @param username
+     * @param judgeServer
+     */
     public void changeRemoteJudgeStatus(String oj, String username, JudgeServer judgeServer) {
         changeAccountStatus(oj, username);
         if (ChooseUtils.openCodeforcesFixServer) {
@@ -293,7 +346,11 @@ public class Dispatcher {
         }
     }
 
-
+    /**
+     * 将远程评测的账号变为可用
+     * @param remoteJudge
+     * @param username
+     */
     public void changeAccountStatus(String remoteJudge, String username) {
 
         UpdateWrapper<RemoteJudgeAccount> remoteJudgeAccountUpdateWrapper = new UpdateWrapper<>();
@@ -324,7 +381,7 @@ public class Dispatcher {
                 attemptNumber++;
                 retryable = attemptNumber < 8;
                 if (attemptNumber == 8) {
-                    log.error("远程判题：修正账号为可用状态失败----------->{}", "oj:" + remoteJudge + ",username:" + username);
+                    log.error("[Remote Judge] Failed to change the account to be available----------->{}", "oj:" + remoteJudge + ",username:" + username);
                     break;
                 }
                 try {
@@ -336,7 +393,7 @@ public class Dispatcher {
         } while (retryable);
     }
 
-
+    @Deprecated
     public void changeServerSubmitCFStatus(String ip, Integer port) {
 
         if (StringUtils.isEmpty(ip) || port == null) {
@@ -354,6 +411,7 @@ public class Dispatcher {
         }
     }
 
+    @Deprecated
     private void tryAgainUpdateServer(UpdateWrapper<JudgeServer> updateWrapper, String ip, Integer port) {
         boolean retryable;
         int attemptNumber = 0;
@@ -365,7 +423,7 @@ public class Dispatcher {
                 attemptNumber++;
                 retryable = attemptNumber < 8;
                 if (attemptNumber == 8) {
-                    log.error("Remote Judge：Change CF Judge Server Status to `true` Failed! =======>{}", "ip:" + ip + ",port:" + port);
+                    log.error("[Remote Judge] Change Codeforces Judge Server Status to `true` Failed! =======>{}", "ip:" + ip + ",port:" + port);
                     break;
                 }
                 try {

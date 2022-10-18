@@ -197,7 +197,7 @@ public class AdminProblemManager {
         }
 
         compileDTO.setToken(judgeToken);
-        return dispatcher.dispatcherJudge("compile", "/compile-spj", compileDTO);
+        return dispatcher.dispatch(Constants.TaskType.COMPILE_SPJ, compileDTO);
     }
 
     public CommonResult compileInteractive(CompileDTO compileDTO) {
@@ -207,7 +207,7 @@ public class AdminProblemManager {
         }
 
         compileDTO.setToken(judgeToken);
-        return dispatcher.dispatcherJudge("compile", "/compile-interactive", compileDTO);
+        return dispatcher.dispatch(Constants.TaskType.COMPILE_INTERACTIVE, compileDTO);
     }
 
     @Transactional(rollbackFor = Exception.class)

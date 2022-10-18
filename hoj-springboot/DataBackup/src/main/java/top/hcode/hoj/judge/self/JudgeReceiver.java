@@ -66,7 +66,7 @@ public class JudgeReceiver extends AbstractReceiver {
     public void handleJudgeMsg(String taskStr, String queueName) {
         if (Constants.Queue.TEST_JUDGE_WAITING.getName().equals(queueName)) {
             TestJudgeReq testJudgeReq = JSONUtil.toBean(taskStr, TestJudgeReq.class);
-            dispatcher.dispatcherTestJudge(testJudgeReq, "/test-judge");
+            dispatcher.dispatch(Constants.TaskType.TEST_JUDGE, testJudgeReq);
         } else {
             JSONObject task = JSONUtil.parseObj(taskStr);
             Long judgeId = task.getLong("judgeId");
@@ -84,7 +84,7 @@ public class JudgeReceiver extends AbstractReceiver {
                 } else {
                     String token = task.getStr("token");
                     // 调用判题服务
-                    dispatcher.dispatcherJudge("judge", "/judge", new ToJudgeDTO()
+                    dispatcher.dispatch(Constants.TaskType.JUDGE, new ToJudgeDTO()
                             .setJudge(judge)
                             .setToken(token)
                             .setRemoteJudgeProblem(null));
