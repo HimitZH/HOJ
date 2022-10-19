@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @Date: 2021/1/16 16:07
  * @Description:
  */
-@ApiModel(value = "比赛题目列表格式数据ContestProblemVo", description = "")
+@ApiModel(value = "比赛题目列表格式数据ContestProblemVO", description = "")
 @Data
 public class ContestProblemVO implements Serializable {
 

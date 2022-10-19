@@ -13,7 +13,7 @@ import java.util.List;
  * @Date: 2020/10/27 14:14
  * @Description:
  */
-@ApiModel(value = "题目列表查询对象ProblemVo", description = "")
+@ApiModel(value = "题目列表查询对象ProblemVO", description = "")
 @Data
 public class ProblemVO implements Serializable {
 

@@ -12,7 +12,7 @@ import java.util.Date;
  * @Date: 2021/11/20 10:51
  * @Description:
  */
-@ApiModel(value="训练题单查询对象TrainingVo", description="")
+@ApiModel(value="训练题单查询对象TrainingVO", description="")
 @Data
 public class TrainingVO implements Serializable {
 

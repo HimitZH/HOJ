@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @Date: 2020/10/27 21:09
  * @Description:
  */
-@ApiModel(value="ACM排行榜数据类ACMRankVo", description="")
+@ApiModel(value="ACM排行榜数据类ACMRankVO", description="")
 @Data
 public class ACMRankVO implements Serializable {
 

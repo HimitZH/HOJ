@@ -13,7 +13,7 @@ import java.util.Map;
  * @Date: 2021/1/7 22:27
  * @Description:用户主页的数据格式
  */
-@ApiModel(value = "用户主页的数据格式类UserHomeVo", description = "")
+@ApiModel(value = "用户主页的数据格式类UserHomeVO", description = "")
 @Data
 public class UserHomeVO {
 

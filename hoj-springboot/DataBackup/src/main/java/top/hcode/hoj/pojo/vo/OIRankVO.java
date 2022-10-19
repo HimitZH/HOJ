@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @Date: 2021/1/7 14:56
  * @Description:
  */
-@ApiModel(value="OI排行榜数据类OIRankVo", description="")
+@ApiModel(value="OI排行榜数据类OIRankVO", description="")
 @Data
 public class OIRankVO implements Serializable {
     @ApiModelProperty(value = "用户id")
