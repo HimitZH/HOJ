@@ -16,7 +16,7 @@ import top.hcode.hoj.mapper.RoleAuthMapper;
 import top.hcode.hoj.mapper.UserRoleMapper;
 import top.hcode.hoj.pojo.entity.user.Auth;
 import top.hcode.hoj.pojo.entity.user.Role;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.utils.JwtUtils;
 
 import java.util.LinkedList;
@@ -55,7 +55,7 @@ public class AccountRealm extends AuthorizingRealm {
         List<Role> roles = userRoleMapper.getRolesByUid(user.getUid());
         // 角色变动，同时需要修改会话里面的数据
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userInfo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userInfo = (UserRolesVO) session.getAttribute("userInfo");
         userInfo.setRoles(roles);
         session.setAttribute("userInfo",userInfo);
         for (Role role:roles) {
@@ -75,7 +75,7 @@ public class AccountRealm extends AuthorizingRealm {
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         JwtToken jwt = (JwtToken) token;
         String userId = jwtUtils.getClaimByToken((String) jwt.getPrincipal()).getSubject();
-        UserRolesVo userRoles = userRoleMapper.getUserRoles(userId, null);
+        UserRolesVO userRoles = userRoleMapper.getUserRoles(userId, null);
         if(userRoles == null) {
             throw new UnknownAccountException("账户不存在！");
         }

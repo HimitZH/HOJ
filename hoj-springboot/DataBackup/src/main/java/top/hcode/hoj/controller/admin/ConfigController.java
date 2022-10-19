@@ -8,16 +8,14 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.DBAndRedisConfigDto;
-import top.hcode.hoj.pojo.dto.EmailConfigDto;
-import top.hcode.hoj.pojo.dto.TestEmailDto;
-import top.hcode.hoj.pojo.dto.WebConfigDto;
+import top.hcode.hoj.pojo.dto.DBAndRedisConfigDTO;
+import top.hcode.hoj.pojo.dto.EmailConfigDTO;
+import top.hcode.hoj.pojo.dto.TestEmailDTO;
+import top.hcode.hoj.pojo.dto.WebConfigDTO;
 import top.hcode.hoj.service.admin.system.ConfigService;
 
 
-import javax.mail.MessagingException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author: Himit_ZH
@@ -52,7 +50,7 @@ public class ConfigController {
 
     @RequiresPermissions("system_info_admin")
     @RequestMapping("/get-web-config")
-    public CommonResult<WebConfigDto> getWebConfig() {
+    public CommonResult<WebConfigDTO> getWebConfig() {
         return configService.getWebConfig();
     }
 
@@ -66,39 +64,39 @@ public class ConfigController {
 
     @RequiresPermissions("system_info_admin")
     @RequestMapping(value = "/set-web-config", method = RequestMethod.PUT)
-    public CommonResult<Void> setWebConfig(@RequestBody WebConfigDto config) {
+    public CommonResult<Void> setWebConfig(@RequestBody WebConfigDTO config) {
 
         return configService.setWebConfig(config);
     }
 
     @RequiresPermissions("system_info_admin")
     @RequestMapping("/get-email-config")
-    public CommonResult<EmailConfigDto> getEmailConfig() {
+    public CommonResult<EmailConfigDTO> getEmailConfig() {
 
         return configService.getEmailConfig();
     }
 
     @RequiresPermissions("system_info_admin")
     @PutMapping("/set-email-config")
-    public CommonResult<Void> setEmailConfig(@RequestBody EmailConfigDto config) {
+    public CommonResult<Void> setEmailConfig(@RequestBody EmailConfigDTO config) {
         return configService.setEmailConfig(config);
     }
 
     @RequiresPermissions("system_info_admin")
     @PostMapping("/test-email")
-    public CommonResult<Void> testEmail(@RequestBody TestEmailDto testEmailDto) {
+    public CommonResult<Void> testEmail(@RequestBody TestEmailDTO testEmailDto) {
         return configService.testEmail(testEmailDto);
     }
 
     @RequiresPermissions("system_info_admin")
     @RequestMapping("/get-db-and-redis-config")
-    public CommonResult<DBAndRedisConfigDto> getDBAndRedisConfig() {
+    public CommonResult<DBAndRedisConfigDTO> getDBAndRedisConfig() {
         return configService.getDBAndRedisConfig();
     }
 
     @RequiresPermissions("system_info_admin")
     @PutMapping("/set-db-and-redis-config")
-    public CommonResult<Void> setDBAndRedisConfig(@RequestBody DBAndRedisConfigDto config) {
+    public CommonResult<Void> setDBAndRedisConfig(@RequestBody DBAndRedisConfigDTO config) {
         return configService.setDBAndRedisConfig(config);
     }
 

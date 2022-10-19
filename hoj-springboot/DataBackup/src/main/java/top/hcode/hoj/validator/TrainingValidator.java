@@ -10,7 +10,7 @@ import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.dao.training.TrainingRegisterEntityService;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingRegister;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
@@ -31,12 +31,12 @@ public class TrainingValidator {
 
     public void validateTrainingAuth(Training training) throws StatusAccessDeniedException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
         validateTrainingAuth(training, userRolesVo);
     }
 
 
-    public void validateTrainingAuth(Training training, UserRolesVo userRolesVo) throws StatusAccessDeniedException, StatusForbiddenException {
+    public void validateTrainingAuth(Training training, UserRolesVO userRolesVo) throws StatusAccessDeniedException, StatusForbiddenException {
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
 
@@ -80,7 +80,7 @@ public class TrainingValidator {
         }
     }
 
-    public boolean isInTrainingOrAdmin(Training training, UserRolesVo userRolesVo) throws StatusAccessDeniedException {
+    public boolean isInTrainingOrAdmin(Training training, UserRolesVO userRolesVo) throws StatusAccessDeniedException {
         if (Constants.Training.AUTH_PRIVATE.getValue().equals(training.getAuth())) {
             if (userRolesVo == null) {
                 throw new StatusAccessDeniedException("该训练属于私有题单，请先登录以校验权限！");

@@ -6,8 +6,8 @@ import top.hcode.hoj.common.exception.StatusNotFoundException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.group.contest.GroupContestAnnouncementManager;
-import top.hcode.hoj.pojo.dto.AnnouncementDto;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.dto.AnnouncementDTO;
+import top.hcode.hoj.pojo.vo.AnnouncementVO;
 import top.hcode.hoj.service.group.contest.GroupContestAnnouncementService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class GroupContestAnnouncementServiceImpl implements GroupContestAnnounce
     private GroupContestAnnouncementManager groupContestAnnouncementManager;
 
     @Override
-    public CommonResult<IPage<AnnouncementVo>> getContestAnnouncementList(Integer limit, Integer currentPage, Long cid) {
+    public CommonResult<IPage<AnnouncementVO>> getContestAnnouncementList(Integer limit, Integer currentPage, Long cid) {
         try {
             return CommonResult.successResponse(groupContestAnnouncementManager.getContestAnnouncementList(limit, currentPage, cid));
         } catch (StatusForbiddenException e) {
@@ -36,7 +36,7 @@ public class GroupContestAnnouncementServiceImpl implements GroupContestAnnounce
     }
 
     @Override
-    public CommonResult<Void> addContestAnnouncement(AnnouncementDto announcementDto) {
+    public CommonResult<Void> addContestAnnouncement(AnnouncementDTO announcementDto) {
         try {
             groupContestAnnouncementManager.addContestAnnouncement(announcementDto);
             return CommonResult.successResponse();
@@ -50,7 +50,7 @@ public class GroupContestAnnouncementServiceImpl implements GroupContestAnnounce
     }
 
     @Override
-    public CommonResult<Void> updateContestAnnouncement(AnnouncementDto announcementDto) {
+    public CommonResult<Void> updateContestAnnouncement(AnnouncementDTO announcementDto) {
         try {
             groupContestAnnouncementManager.updateContestAnnouncement(announcementDto);
             return CommonResult.successResponse();

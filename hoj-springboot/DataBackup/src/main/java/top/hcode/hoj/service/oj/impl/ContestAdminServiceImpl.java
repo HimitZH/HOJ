@@ -7,7 +7,7 @@ import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.oj.ContestAdminManager;
-import top.hcode.hoj.pojo.dto.CheckACDto;
+import top.hcode.hoj.pojo.dto.CheckACDTO;
 import top.hcode.hoj.pojo.entity.contest.ContestPrint;
 import top.hcode.hoj.pojo.entity.contest.ContestRecord;
 import top.hcode.hoj.service.oj.ContestAdminService;
@@ -36,7 +36,7 @@ public class ContestAdminServiceImpl implements ContestAdminService {
     }
 
     @Override
-    public CommonResult<Void> checkContestACInfo(CheckACDto checkACDto) {
+    public CommonResult<Void> checkContestACInfo(CheckACDTO checkACDto) {
         try {
             contestAdminManager.checkContestACInfo(checkACDto);
             return CommonResult.successResponse();

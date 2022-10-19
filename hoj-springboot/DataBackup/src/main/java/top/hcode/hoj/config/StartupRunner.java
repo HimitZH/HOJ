@@ -15,7 +15,7 @@ import top.hcode.hoj.dao.problem.LanguageEntityService;
 import top.hcode.hoj.manager.admin.system.ConfigManager;
 import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
 import top.hcode.hoj.pojo.entity.problem.Language;
-import top.hcode.hoj.pojo.vo.ConfigVo;
+import top.hcode.hoj.pojo.vo.ConfigVO;
 import top.hcode.hoj.utils.Constants;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 public class StartupRunner implements CommandLineRunner {
 
     @Autowired
-    private ConfigVo configVo;
+    private ConfigVO configVo;
 
     @Autowired
     private ConfigManager configManager;

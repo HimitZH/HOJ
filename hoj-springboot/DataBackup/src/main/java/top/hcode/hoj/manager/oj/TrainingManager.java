@@ -18,7 +18,7 @@ import top.hcode.hoj.dao.group.GroupMemberEntityService;
 import top.hcode.hoj.dao.training.*;
 import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.manager.admin.training.AdminTrainingRecordManager;
-import top.hcode.hoj.pojo.dto.RegisterTrainingDto;
+import top.hcode.hoj.pojo.dto.RegisterTrainingDTO;
 import top.hcode.hoj.pojo.entity.training.*;
 import top.hcode.hoj.pojo.vo.*;
 import top.hcode.hoj.utils.Constants;
@@ -78,14 +78,14 @@ public class TrainingManager {
      * @Return
      * @Since 2021/11/20
      */
-    public IPage<TrainingVo> getTrainingList(Integer limit, Integer currentPage, String keyword, Long categoryId, String auth) {
+    public IPage<TrainingVO> getTrainingList(Integer limit, Integer currentPage, String keyword, Long categoryId, String auth) {
 
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 20;
 
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         String currentUid = null;
         if (userRolesVo != null) {
@@ -103,9 +103,9 @@ public class TrainingManager {
      * @Return
      * @Since 2021/11/20
      */
-    public TrainingVo getTraining(Long tid) throws StatusFailException, StatusAccessDeniedException, StatusForbiddenException {
+    public TrainingVO getTraining(Long tid) throws StatusFailException, StatusAccessDeniedException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -123,7 +123,7 @@ public class TrainingManager {
             gid = null;
         }
 
-        TrainingVo trainingVo = BeanUtil.copyProperties(training, TrainingVo.class);
+        TrainingVO trainingVo = BeanUtil.copyProperties(training, TrainingVO.class);
         TrainingCategory trainingCategory = trainingCategoryEntityService.getTrainingCategoryByTrainingId(training.getId());
         trainingVo.setCategoryName(trainingCategory.getName());
         trainingVo.setCategoryColor(trainingCategory.getColor());
@@ -147,7 +147,7 @@ public class TrainingManager {
      * @Return
      * @Since 2021/11/20
      */
-    public List<ProblemVo> getTrainingProblemList(Long tid) throws StatusAccessDeniedException,
+    public List<ProblemVO> getTrainingProblemList(Long tid) throws StatusAccessDeniedException,
             StatusForbiddenException, StatusFailException {
         Training training = trainingEntityService.getById(tid);
         if (training == null || !training.getStatus()) {
@@ -166,7 +166,7 @@ public class TrainingManager {
      * @Return
      * @Since 2021/11/20
      */
-    public void toRegisterTraining(RegisterTrainingDto registerTrainingDto) throws StatusFailException, StatusForbiddenException {
+    public void toRegisterTraining(RegisterTrainingDTO registerTrainingDto) throws StatusFailException, StatusForbiddenException {
 
         Long tid = registerTrainingDto.getTid();
         String password = registerTrainingDto.getPassword();
@@ -187,7 +187,7 @@ public class TrainingManager {
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         QueryWrapper<TrainingRegister> registerQueryWrapper = new QueryWrapper<>();
         registerQueryWrapper.eq("tid", tid).eq("uid", userRolesVo.getUid());
@@ -214,11 +214,11 @@ public class TrainingManager {
      * @Return
      * @Since 2021/11/20
      */
-    public AccessVo getTrainingAccess(Long tid) throws StatusFailException {
+    public AccessVO getTrainingAccess(Long tid) throws StatusFailException {
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         QueryWrapper<TrainingRegister> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("tid", tid).eq("uid", userRolesVo.getUid());
@@ -232,7 +232,7 @@ public class TrainingManager {
             }
         }
 
-        AccessVo accessVo = new AccessVo();
+        AccessVO accessVo = new AccessVO();
         accessVo.setAccess(access);
 
         return accessVo;
@@ -248,7 +248,7 @@ public class TrainingManager {
      * @Return
      * @Since 2021/11/22
      */
-    public IPage<TrainingRankVo> getTrainingRank(Long tid, Integer limit, Integer currentPage) throws
+    public IPage<TrainingRankVO> getTrainingRank(Long tid, Integer limit, Integer currentPage) throws
             StatusAccessDeniedException, StatusForbiddenException, StatusFailException {
 
         Training training = trainingEntityService.getById(tid);
@@ -265,10 +265,10 @@ public class TrainingManager {
         return getTrainingRank(tid, training.getIsGroup() ? training.getGid() : null, training.getAuthor(), currentPage, limit);
     }
 
-    private IPage<TrainingRankVo> getTrainingRank(Long tid, Long gid, String username, int currentPage, int limit) {
+    private IPage<TrainingRankVO> getTrainingRank(Long tid, Long gid, String username, int currentPage, int limit) {
 
         Map<Long, String> tpIdMapDisplayId = getTPIdMapDisplayId(tid);
-        List<TrainingRecordVo> trainingRecordVoList = trainingRecordEntityService.getTrainingRecord(tid);
+        List<TrainingRecordVO> trainingRecordVOList = trainingRecordEntityService.getTrainingRecord(tid);
 
         List<String> superAdminUidList = userInfoEntityService.getSuperAdminUidList();
         if (gid != null) {
@@ -276,21 +276,21 @@ public class TrainingManager {
             superAdminUidList.addAll(groupRootUidList);
         }
 
-        List<TrainingRankVo> result = new ArrayList<>();
+        List<TrainingRankVO> result = new ArrayList<>();
 
         HashMap<String, Integer> uidMapIndex = new HashMap<>();
         int pos = 0;
-        for (TrainingRecordVo trainingRecordVo : trainingRecordVoList) {
+        for (TrainingRecordVO trainingRecordVo : trainingRecordVOList) {
             // 超级管理员和训练创建者的提交不入排行榜
             if (username.equals(trainingRecordVo.getUsername())
                     || superAdminUidList.contains(trainingRecordVo.getUid())) {
                 continue;
             }
 
-            TrainingRankVo trainingRankVo;
+            TrainingRankVO trainingRankVo;
             Integer index = uidMapIndex.get(trainingRecordVo.getUid());
             if (index == null) {
-                trainingRankVo = new TrainingRankVo();
+                trainingRankVo = new TrainingRankVO();
                 trainingRankVo.setRealname(trainingRecordVo.getRealname())
                         .setAvatar(trainingRecordVo.getAvatar())
                         .setSchool(trainingRecordVo.getSchool())
@@ -341,14 +341,14 @@ public class TrainingManager {
             trainingRankVo.getSubmissionInfo().put(displayId, problemSubmissionInfo);
         }
 
-        List<TrainingRankVo> orderResultList = result.stream().sorted(Comparator.comparing(TrainingRankVo::getAc, Comparator.reverseOrder()) // 先以总ac数降序
-                .thenComparing(TrainingRankVo::getTotalRunTime) //再以总耗时升序
+        List<TrainingRankVO> orderResultList = result.stream().sorted(Comparator.comparing(TrainingRankVO::getAc, Comparator.reverseOrder()) // 先以总ac数降序
+                .thenComparing(TrainingRankVO::getTotalRunTime) //再以总耗时升序
         ).collect(Collectors.toList());
 
         // 计算好排行榜，然后进行分页
-        Page<TrainingRankVo> page = new Page<>(currentPage, limit);
+        Page<TrainingRankVO> page = new Page<>(currentPage, limit);
         int count = orderResultList.size();
-        List<TrainingRankVo> pageList = new ArrayList<>();
+        List<TrainingRankVO> pageList = new ArrayList<>();
         //计算当前页第一条数据的下标
         int currId = currentPage > 1 ? (currentPage - 1) * limit : 0;
         for (int i = 0; i < limit && i < count - currId; i++) {

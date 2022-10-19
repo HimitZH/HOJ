@@ -6,7 +6,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.ChangeGroupProblemProgressDto;
+import top.hcode.hoj.pojo.dto.ChangeGroupProblemProgressDTO;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.service.admin.problem.AdminGroupProblemService;
 
@@ -34,7 +34,7 @@ public class AdminGroupProblemController {
     }
 
     @PutMapping("/change-progress")
-    public CommonResult<Void> changeProgress(@RequestBody ChangeGroupProblemProgressDto changeGroupProblemProgressDto) {
+    public CommonResult<Void> changeProgress(@RequestBody ChangeGroupProblemProgressDTO changeGroupProblemProgressDto) {
         return adminGroupProblemService.changeProgress(changeGroupProblemProgressDto);
     }
 }

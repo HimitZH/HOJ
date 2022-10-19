@@ -12,11 +12,11 @@ import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.crawler.problem.ProblemStrategy;
 import top.hcode.hoj.manager.admin.problem.RemoteProblemManager;
-import top.hcode.hoj.pojo.dto.TrainingProblemDto;
+import top.hcode.hoj.pojo.dto.TrainingProblemDTO;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.dao.problem.ProblemEntityService;
 import top.hcode.hoj.dao.training.TrainingProblemEntityService;
 import top.hcode.hoj.dao.training.TrainingEntityService;
@@ -149,7 +149,7 @@ public class AdminTrainingProblemManager {
         }
     }
 
-    public void addProblemFromPublic(TrainingProblemDto trainingProblemDto) throws StatusFailException {
+    public void addProblemFromPublic(TrainingProblemDTO trainingProblemDto) throws StatusFailException {
 
         Long pid = trainingProblemDto.getPid();
         Long tid = trainingProblemDto.getTid();
@@ -191,7 +191,7 @@ public class AdminTrainingProblemManager {
         // 如果该题目不存在，需要先导入
         if (problem == null) {
             Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
             try {
                 ProblemStrategy.RemoteProblemInfo otherOJProblemInfo = remoteProblemManager.getOtherOJProblemInfo(name.toUpperCase(), problemId, userRolesVo.getUsername());
                 if (otherOJProblemInfo != null) {

@@ -6,9 +6,9 @@ import top.hcode.hoj.common.exception.StatusSystemErrorException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.oj.AccountManager;
-import top.hcode.hoj.pojo.dto.ChangeEmailDto;
-import top.hcode.hoj.pojo.dto.ChangePasswordDto;
-import top.hcode.hoj.pojo.dto.CheckUsernameOrEmailDto;
+import top.hcode.hoj.pojo.dto.ChangeEmailDTO;
+import top.hcode.hoj.pojo.dto.ChangePasswordDTO;
+import top.hcode.hoj.pojo.dto.CheckUsernameOrEmailDTO;
 import top.hcode.hoj.pojo.vo.*;
 import top.hcode.hoj.service.oj.AccountService;
 
@@ -26,12 +26,12 @@ public class AccountServiceImpl implements AccountService {
     private AccountManager accountManager;
 
     @Override
-    public CommonResult<CheckUsernameOrEmailVo> checkUsernameOrEmail(CheckUsernameOrEmailDto checkUsernameOrEmailDto) {
+    public CommonResult<CheckUsernameOrEmailVO> checkUsernameOrEmail(CheckUsernameOrEmailDTO checkUsernameOrEmailDto) {
         return CommonResult.successResponse(accountManager.checkUsernameOrEmail(checkUsernameOrEmailDto));
     }
 
     @Override
-    public CommonResult<UserHomeVo> getUserHomeInfo(String uid, String username) {
+    public CommonResult<UserHomeVO> getUserHomeInfo(String uid, String username) {
         try {
             return CommonResult.successResponse(accountManager.getUserHomeInfo(uid, username));
         } catch (StatusFailException e) {
@@ -40,7 +40,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CommonResult<UserCalendarHeatmapVo> getUserCalendarHeatmap(String uid, String username) {
+    public CommonResult<UserCalendarHeatmapVO> getUserCalendarHeatmap(String uid, String username) {
         try {
             return CommonResult.successResponse(accountManager.getUserCalendarHeatmap(uid, username));
         } catch (StatusFailException e) {
@@ -49,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CommonResult<ChangeAccountVo> changePassword(ChangePasswordDto changePasswordDto) {
+    public CommonResult<ChangeAccountVO> changePassword(ChangePasswordDTO changePasswordDto) {
         try {
             return CommonResult.successResponse(accountManager.changePassword(changePasswordDto));
         } catch (StatusFailException e) {
@@ -60,7 +60,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CommonResult<ChangeAccountVo> changeEmail(ChangeEmailDto changeEmailDto) {
+    public CommonResult<ChangeAccountVO> changeEmail(ChangeEmailDTO changeEmailDto) {
         try {
             return CommonResult.successResponse(accountManager.changeEmail(changeEmailDto));
         } catch (StatusFailException e) {
@@ -71,7 +71,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CommonResult<UserInfoVo> changeUserInfo(UserInfoVo userInfoVo) {
+    public CommonResult<UserInfoVO> changeUserInfo(UserInfoVO userInfoVo) {
         try {
             return CommonResult.successResponse(accountManager.changeUserInfo(userInfoVo));
         } catch (StatusFailException e) {

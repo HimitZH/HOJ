@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.training.Training;
-import top.hcode.hoj.pojo.vo.TrainingVo;
+import top.hcode.hoj.pojo.vo.TrainingVO;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ import java.util.List;
 @Repository
 public interface TrainingMapper extends BaseMapper<Training> {
 
-    List<TrainingVo> getTrainingList(IPage page,
+    List<TrainingVO> getTrainingList(IPage page,
                                      @Param("categoryId") Long categoryId,
                                      @Param("auth") String auth,
                                      @Param("keyword") String keyword);

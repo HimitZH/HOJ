@@ -3,7 +3,7 @@ package top.hcode.hoj.dao.group.impl;
 import top.hcode.hoj.dao.group.GroupContestEntityService;
 import top.hcode.hoj.mapper.GroupContestMapper;
 import top.hcode.hoj.pojo.entity.contest.Contest;
-import top.hcode.hoj.pojo.vo.ContestVo;
+import top.hcode.hoj.pojo.vo.ContestVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -24,10 +24,10 @@ public class GroupContestEntityServiceImpl extends ServiceImpl<GroupContestMappe
     private GroupContestMapper groupContestMapper;
 
     @Override
-    public IPage<ContestVo> getContestList(int limit, int currentPage, Long gid) {
-        IPage<ContestVo> iPage = new Page<>(currentPage, limit);
+    public IPage<ContestVO> getContestList(int limit, int currentPage, Long gid) {
+        IPage<ContestVO> iPage = new Page<>(currentPage, limit);
 
-        List<ContestVo> contestList = groupContestMapper.getContestList(iPage, gid);
+        List<ContestVO> contestList = groupContestMapper.getContestList(iPage, gid);
 
         return iPage.setRecords(contestList);
     }

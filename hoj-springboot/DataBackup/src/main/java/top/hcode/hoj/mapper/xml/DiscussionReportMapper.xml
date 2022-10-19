@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.mapper.DiscussionReportMapper">
 
-    <resultMap id="map_DiscussionReportVo" type="top.hcode.hoj.pojo.vo.DiscussionReportVo">
+    <resultMap id="map_DiscussionReportVo" type="top.hcode.hoj.pojo.vo.DiscussionReportVO">
         <id column="id" property="id"></id>
         <result column="content" property="content"></result>
         <result column="did" property="did"></result>
@@ -17,7 +17,7 @@
 
 
     <!-- 主查询  -->
-    <select id="getDiscussionReportList" resultMap="map_DiscussionReportVo" resultType="top.hcode.hoj.pojo.vo.DiscussionReportVo">
+    <select id="getDiscussionReportList" resultMap="map_DiscussionReportVo" resultType="top.hcode.hoj.pojo.vo.DiscussionReportVO">
         select dr.*,d.gid,d.title,d.author from discussion_report dr
         left join discussion d
         on dr.did = d.id

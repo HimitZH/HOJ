@@ -22,7 +22,7 @@ import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
 import top.hcode.hoj.pojo.entity.training.TrainingRecord;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.dao.contest.ContestEntityService;
 import top.hcode.hoj.dao.contest.ContestProblemEntityService;
 import top.hcode.hoj.dao.contest.ContestRecordEntityService;
@@ -82,7 +82,7 @@ public class BeforeDispatchInitManager {
 
     public void initCommonSubmission(String problemId, Judge judge) throws StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
         problemQueryWrapper.select("id","problem_id","auth","is_group","gid");
@@ -112,7 +112,7 @@ public class BeforeDispatchInitManager {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public void initContestSubmission(Long cid, String displayId, UserRolesVo userRolesVo, Judge judge) throws StatusNotFoundException, StatusForbiddenException {
+    public void initContestSubmission(Long cid, String displayId, UserRolesVO userRolesVo, Judge judge) throws StatusNotFoundException, StatusForbiddenException {
         // 首先判断一下比赛的状态是否是正在进行，结束状态都不能提交，比赛前比赛管理员可以提交
         Contest contest = contestEntityService.getById(cid);
 
@@ -181,7 +181,7 @@ public class BeforeDispatchInitManager {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public void initTrainingSubmission(Long tid, String displayId, UserRolesVo userRolesVo, Judge judge) throws StatusForbiddenException, StatusFailException, StatusAccessDeniedException {
+    public void initTrainingSubmission(Long tid, String displayId, UserRolesVO userRolesVo, Judge judge) throws StatusForbiddenException, StatusFailException, StatusAccessDeniedException {
 
         Training training = trainingEntityService.getById(tid);
         if (training == null || !training.getStatus()) {

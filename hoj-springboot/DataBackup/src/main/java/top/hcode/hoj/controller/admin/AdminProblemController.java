@@ -9,7 +9,7 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
 import top.hcode.hoj.pojo.dto.CompileDTO;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.ProblemCase;
@@ -57,14 +57,14 @@ public class AdminProblemController {
     @PostMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult<Void> addProblem(@RequestBody ProblemDto problemDto) {
+    public CommonResult<Void> addProblem(@RequestBody ProblemDTO problemDto) {
         return adminProblemService.addProblem(problemDto);
     }
 
     @PutMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult<Void> updateProblem(@RequestBody ProblemDto problemDto) {
+    public CommonResult<Void> updateProblem(@RequestBody ProblemDTO problemDto) {
         return adminProblemService.updateProblem(problemDto);
     }
 

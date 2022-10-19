@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
-import top.hcode.hoj.pojo.vo.ContestRegisterCountVo;
-import top.hcode.hoj.pojo.vo.ContestVo;
+import top.hcode.hoj.pojo.vo.ContestRegisterCountVO;
+import top.hcode.hoj.pojo.vo.ContestVO;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.mapper.ContestMapper;
 import top.hcode.hoj.dao.contest.ContestEntityService;
@@ -31,32 +31,32 @@ public class ContestEntityServiceImpl extends ServiceImpl<ContestMapper, Contest
     private ContestMapper contestMapper;
 
     @Override
-    public List<ContestVo> getWithinNext14DaysContests() {
-        List<ContestVo> contestList = contestMapper.getWithinNext14DaysContests();
+    public List<ContestVO> getWithinNext14DaysContests() {
+        List<ContestVO> contestList = contestMapper.getWithinNext14DaysContests();
         setRegisterCount(contestList);
 
         return contestList;
     }
 
     @Override
-    public IPage<ContestVo> getContestList(Integer limit, Integer currentPage, Integer type, Integer status, String keyword) {
+    public IPage<ContestVO> getContestList(Integer limit, Integer currentPage, Integer type, Integer status, String keyword) {
         //新建分页
-        IPage<ContestVo> page = new Page<>(currentPage, limit);
+        IPage<ContestVO> page = new Page<>(currentPage, limit);
 
-        List<ContestVo> contestList = contestMapper.getContestList(page, type, status, keyword);
+        List<ContestVO> contestList = contestMapper.getContestList(page, type, status, keyword);
         setRegisterCount(contestList);
 
         return page.setRecords(contestList);
     }
 
     @Override
-    public ContestVo getContestInfoById(long cid) {
+    public ContestVO getContestInfoById(long cid) {
         List<Long> cidList = Collections.singletonList(cid);
-        ContestVo contestVo = contestMapper.getContestInfoById(cid);
+        ContestVO contestVo = contestMapper.getContestInfoById(cid);
         if (contestVo != null) {
-            List<ContestRegisterCountVo> contestRegisterCountVoList = contestMapper.getContestRegisterCount(cidList);
-            if(!CollectionUtils.isEmpty(contestRegisterCountVoList)) {
-                ContestRegisterCountVo contestRegisterCountVo = contestRegisterCountVoList.get(0);
+            List<ContestRegisterCountVO> contestRegisterCountVOList = contestMapper.getContestRegisterCount(cidList);
+            if(!CollectionUtils.isEmpty(contestRegisterCountVOList)) {
+                ContestRegisterCountVO contestRegisterCountVo = contestRegisterCountVOList.get(0);
                 contestVo.setCount(contestRegisterCountVo.getCount());
             }
         }
@@ -64,12 +64,12 @@ public class ContestEntityServiceImpl extends ServiceImpl<ContestMapper, Contest
     }
 
 
-    private void setRegisterCount(List<ContestVo> contestList){
-        List<Long> cidList = contestList.stream().map(ContestVo::getId).collect(Collectors.toList());
+    private void setRegisterCount(List<ContestVO> contestList){
+        List<Long> cidList = contestList.stream().map(ContestVO::getId).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(cidList)) {
-            List<ContestRegisterCountVo> contestRegisterCountVoList = contestMapper.getContestRegisterCount(cidList);
-            for (ContestRegisterCountVo contestRegisterCountVo : contestRegisterCountVoList) {
-                for (ContestVo contestVo : contestList) {
+            List<ContestRegisterCountVO> contestRegisterCountVOList = contestMapper.getContestRegisterCount(cidList);
+            for (ContestRegisterCountVO contestRegisterCountVo : contestRegisterCountVOList) {
+                for (ContestVO contestVo : contestList) {
                     if (contestRegisterCountVo.getCid().equals(contestVo.getId())) {
                         contestVo.setCount(contestRegisterCountVo.getCount());
                         break;

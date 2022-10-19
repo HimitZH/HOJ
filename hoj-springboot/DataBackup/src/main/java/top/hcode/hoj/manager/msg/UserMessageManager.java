@@ -15,9 +15,9 @@ import top.hcode.hoj.pojo.entity.discussion.Discussion;
 import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.pojo.entity.msg.MsgRemind;
 import top.hcode.hoj.pojo.entity.msg.UserSysNotice;
-import top.hcode.hoj.pojo.vo.UserMsgVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
-import top.hcode.hoj.pojo.vo.UserUnreadMsgCountVo;
+import top.hcode.hoj.pojo.vo.UserMsgVO;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
+import top.hcode.hoj.pojo.vo.UserUnreadMsgCountVO;
 import top.hcode.hoj.dao.contest.ContestEntityService;
 import top.hcode.hoj.dao.discussion.CommentEntityService;
 import top.hcode.hoj.dao.discussion.DiscussionEntityService;
@@ -60,13 +60,13 @@ public class UserMessageManager {
     @Resource
     private UserSysNoticeEntityService userSysNoticeEntityService;
 
-    public UserUnreadMsgCountVo getUnreadMsgCount() {
+    public UserUnreadMsgCountVO getUnreadMsgCount() {
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
-        UserUnreadMsgCountVo userUnreadMsgCount = msgRemindEntityService.getUserUnreadMsgCount(userRolesVo.getUid());
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        UserUnreadMsgCountVO userUnreadMsgCount = msgRemindEntityService.getUserUnreadMsgCount(userRolesVo.getUid());
         if (userUnreadMsgCount == null) {
-            userUnreadMsgCount = new UserUnreadMsgCountVo(0, 0, 0, 0, 0);
+            userUnreadMsgCount = new UserUnreadMsgCountVO(0, 0, 0, 0, 0);
         }
         return userUnreadMsgCount;
     }
@@ -76,7 +76,7 @@ public class UserMessageManager {
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
         boolean isOk = cleanMsgByType(type, id, userRolesVo.getUid());
         if (!isOk) {
             throw new StatusFailException("清空失败");
@@ -84,20 +84,20 @@ public class UserMessageManager {
     }
 
 
-    public IPage<UserMsgVo> getCommentMsg(Integer limit, Integer currentPage) {
+    public IPage<UserMsgVO> getCommentMsg(Integer limit, Integer currentPage) {
 
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 5;
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         return getUserMsgList(userRolesVo.getUid(), "Discuss", limit, currentPage);
     }
 
 
-    public IPage<UserMsgVo> getReplyMsg(Integer limit, Integer currentPage) {
+    public IPage<UserMsgVO> getReplyMsg(Integer limit, Integer currentPage) {
 
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
@@ -105,13 +105,13 @@ public class UserMessageManager {
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         return getUserMsgList(userRolesVo.getUid(), "Reply", limit, currentPage);
     }
 
 
-    public IPage<UserMsgVo> getLikeMsg(Integer limit, Integer currentPage) {
+    public IPage<UserMsgVO> getLikeMsg(Integer limit, Integer currentPage) {
 
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
@@ -119,7 +119,7 @@ public class UserMessageManager {
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         return getUserMsgList(userRolesVo.getUid(), "Like", limit, currentPage);
     }
@@ -148,9 +148,9 @@ public class UserMessageManager {
     }
 
 
-    private IPage<UserMsgVo> getUserMsgList(String uid, String action, int limit, int currentPage) {
-        Page<UserMsgVo> page = new Page<>(currentPage, limit);
-        IPage<UserMsgVo> userMsgList = msgRemindEntityService.getUserMsg(page, uid, action);
+    private IPage<UserMsgVO> getUserMsgList(String uid, String action, int limit, int currentPage) {
+        Page<UserMsgVO> page = new Page<>(currentPage, limit);
+        IPage<UserMsgVO> userMsgList = msgRemindEntityService.getUserMsg(page, uid, action);
         if (userMsgList.getTotal() > 0) {
             switch (action) {
                 case "Discuss":  // 评论我的
@@ -168,15 +168,15 @@ public class UserMessageManager {
     }
 
 
-    private IPage<UserMsgVo> getUserDiscussMsgList(IPage<UserMsgVo> userMsgList) {
+    private IPage<UserMsgVO> getUserDiscussMsgList(IPage<UserMsgVO> userMsgList) {
 
         List<Integer> discussionIds = userMsgList.getRecords()
                 .stream()
-                .map(UserMsgVo::getSourceId)
+                .map(UserMsgVO::getSourceId)
                 .collect(Collectors.toList());
         Collection<Discussion> discussions = discussionEntityService.listByIds(discussionIds);
         for (Discussion discussion : discussions) {
-            for (UserMsgVo userMsgVo : userMsgList.getRecords()) {
+            for (UserMsgVO userMsgVo : userMsgList.getRecords()) {
                 if (Objects.equals(discussion.getId(), userMsgVo.getSourceId())) {
                     userMsgVo.setSourceTitle(discussion.getTitle());
                     break;
@@ -187,9 +187,9 @@ public class UserMessageManager {
         return userMsgList;
     }
 
-    private IPage<UserMsgVo> getUserReplyMsgList(IPage<UserMsgVo> userMsgList) {
+    private IPage<UserMsgVO> getUserReplyMsgList(IPage<UserMsgVO> userMsgList) {
 
-        for (UserMsgVo userMsgVo : userMsgList.getRecords()) {
+        for (UserMsgVO userMsgVo : userMsgList.getRecords()) {
             if ("Discussion".equals(userMsgVo.getSourceType())) {
                 Discussion discussion = discussionEntityService.getById(userMsgVo.getSourceId());
                 if (discussion != null) {
@@ -247,8 +247,8 @@ public class UserMessageManager {
         return userMsgList;
     }
 
-    private IPage<UserMsgVo> getUserLikeMsgList(IPage<UserMsgVo> userMsgList) {
-        for (UserMsgVo userMsgVo : userMsgList.getRecords()) {
+    private IPage<UserMsgVO> getUserLikeMsgList(IPage<UserMsgVO> userMsgList) {
+        for (UserMsgVO userMsgVo : userMsgList.getRecords()) {
             if ("Discussion".equals(userMsgVo.getSourceType())) {
                 Discussion discussion = discussionEntityService.getById(userMsgVo.getSourceId());
                 if (discussion != null) {
@@ -271,10 +271,10 @@ public class UserMessageManager {
 
 
     @Async
-    public void updateUserMsgRead(IPage<UserMsgVo> userMsgList) {
+    public void updateUserMsgRead(IPage<UserMsgVO> userMsgList) {
         List<Long> idList = userMsgList.getRecords().stream()
                 .filter(userMsgVo -> !userMsgVo.getState())
-                .map(UserMsgVo::getId)
+                .map(UserMsgVO::getId)
                 .collect(Collectors.toList());
         if (idList.size() == 0) {
             return;

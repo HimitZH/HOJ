@@ -7,8 +7,8 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.group.contest.GroupContestManager;
 import top.hcode.hoj.pojo.entity.contest.Contest;
-import top.hcode.hoj.pojo.vo.AdminContestVo;
-import top.hcode.hoj.pojo.vo.ContestVo;
+import top.hcode.hoj.pojo.vo.AdminContestVO;
+import top.hcode.hoj.pojo.vo.ContestVO;
 import top.hcode.hoj.service.group.contest.GroupContestService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class GroupContestServiceImpl implements GroupContestService {
     private GroupContestManager groupContestManager;
 
     @Override
-    public CommonResult<IPage<ContestVo>> getContestList(Integer limit, Integer currentPage, Long gid) {
+    public CommonResult<IPage<ContestVO>> getContestList(Integer limit, Integer currentPage, Long gid) {
         try {
             return CommonResult.successResponse(groupContestManager.getContestList(limit, currentPage, gid));
         } catch (StatusForbiddenException e) {
@@ -48,7 +48,7 @@ public class GroupContestServiceImpl implements GroupContestService {
     }
 
     @Override
-    public CommonResult<AdminContestVo> getContest(Long tid) {
+    public CommonResult<AdminContestVO> getContest(Long tid) {
         try {
             return CommonResult.successResponse(groupContestManager.getContest(tid));
         } catch (StatusForbiddenException e) {
@@ -61,7 +61,7 @@ public class GroupContestServiceImpl implements GroupContestService {
     }
 
     @Override
-    public CommonResult<Void> addContest(AdminContestVo adminContestVo) {
+    public CommonResult<Void> addContest(AdminContestVO adminContestVo) {
         try {
             groupContestManager.addContest(adminContestVo);
             return CommonResult.successResponse();
@@ -75,7 +75,7 @@ public class GroupContestServiceImpl implements GroupContestService {
     }
 
     @Override
-    public CommonResult<Void> updateContest(AdminContestVo adminContestVo) {
+    public CommonResult<Void> updateContest(AdminContestVO adminContestVo) {
         try {
             groupContestManager.updateContest(adminContestVo);
             return CommonResult.successResponse();

@@ -10,15 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.AnnouncementDto;
-import top.hcode.hoj.pojo.dto.ContestProblemDto;
-import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.dto.AnnouncementDTO;
+import top.hcode.hoj.pojo.dto.ContestProblemDTO;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestProblem;
 
 import top.hcode.hoj.pojo.entity.problem.Problem;
-import top.hcode.hoj.pojo.vo.AdminContestVo;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.vo.AdminContestVO;
+import top.hcode.hoj.pojo.vo.AnnouncementVO;
 
 import top.hcode.hoj.service.admin.contest.AdminContestAnnouncementService;
 import top.hcode.hoj.service.admin.contest.AdminContestProblemService;
@@ -60,7 +60,7 @@ public class AdminContestController {
     @GetMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult<AdminContestVo> getContest(@RequestParam("cid") Long cid) {
+    public CommonResult<AdminContestVO> getContest(@RequestParam("cid") Long cid) {
 
         return adminContestService.getContest(cid);
     }
@@ -76,7 +76,7 @@ public class AdminContestController {
     @PostMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult<Void> addContest(@RequestBody AdminContestVo adminContestVo) {
+    public CommonResult<Void> addContest(@RequestBody AdminContestVO adminContestVo) {
 
         return adminContestService.addContest(adminContestVo);
     }
@@ -92,7 +92,7 @@ public class AdminContestController {
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     @Transactional(rollbackFor = Exception.class)
-    public CommonResult<Void> updateContest(@RequestBody AdminContestVo adminContestVo) {
+    public CommonResult<Void> updateContest(@RequestBody AdminContestVO adminContestVo) {
 
         return adminContestService.updateContest(adminContestVo);
     }
@@ -145,7 +145,7 @@ public class AdminContestController {
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     @Transactional(rollbackFor = Exception.class)
-    public CommonResult<Map<Object, Object>> addProblem(@RequestBody ProblemDto problemDto) {
+    public CommonResult<Map<Object, Object>> addProblem(@RequestBody ProblemDTO problemDto) {
 
         return adminContestProblemService.addProblem(problemDto);
     }
@@ -154,7 +154,7 @@ public class AdminContestController {
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
     @Transactional(rollbackFor = Exception.class)
-    public CommonResult<Void> updateProblem(@RequestBody ProblemDto problemDto) {
+    public CommonResult<Void> updateProblem(@RequestBody ProblemDTO problemDto) {
 
         return adminContestProblemService.updateProblem(problemDto);
     }
@@ -179,7 +179,7 @@ public class AdminContestController {
     @PostMapping("/add-problem-from-public")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult<Void> addProblemFromPublic(@RequestBody ContestProblemDto contestProblemDto) {
+    public CommonResult<Void> addProblemFromPublic(@RequestBody ContestProblemDTO contestProblemDto) {
 
         return adminContestProblemService.addProblemFromPublic(contestProblemDto);
     }
@@ -203,7 +203,7 @@ public class AdminContestController {
     @GetMapping("/announcement")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult<IPage<AnnouncementVo>> getAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
+    public CommonResult<IPage<AnnouncementVO>> getAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
                                                                    @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                                                    @RequestParam(value = "cid", required = true) Long cid) {
 
@@ -221,7 +221,7 @@ public class AdminContestController {
     @PostMapping("/announcement")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult<Void> addAnnouncement(@RequestBody AnnouncementDto announcementDto) {
+    public CommonResult<Void> addAnnouncement(@RequestBody AnnouncementDTO announcementDto) {
 
         return adminContestAnnouncementService.addAnnouncement(announcementDto);
     }
@@ -229,7 +229,7 @@ public class AdminContestController {
     @PutMapping("/announcement")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult<Void> updateAnnouncement(@RequestBody AnnouncementDto announcementDto) {
+    public CommonResult<Void> updateAnnouncement(@RequestBody AnnouncementDTO announcementDto) {
 
         return adminContestAnnouncementService.updateAnnouncement(announcementDto);
     }

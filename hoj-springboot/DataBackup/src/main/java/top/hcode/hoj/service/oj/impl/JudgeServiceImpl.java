@@ -7,14 +7,14 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.exception.AccessException;
 import top.hcode.hoj.manager.oj.JudgeManager;
-import top.hcode.hoj.pojo.dto.SubmitIdListDto;
-import top.hcode.hoj.pojo.dto.SubmitJudgeDto;
-import top.hcode.hoj.pojo.dto.TestJudgeDto;
+import top.hcode.hoj.pojo.dto.SubmitIdListDTO;
+import top.hcode.hoj.pojo.dto.SubmitJudgeDTO;
+import top.hcode.hoj.pojo.dto.TestJudgeDTO;
 import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.vo.JudgeCaseVo;
-import top.hcode.hoj.pojo.vo.JudgeVo;
-import top.hcode.hoj.pojo.vo.SubmissionInfoVo;
-import top.hcode.hoj.pojo.vo.TestJudgeVo;
+import top.hcode.hoj.pojo.vo.JudgeCaseVO;
+import top.hcode.hoj.pojo.vo.JudgeVO;
+import top.hcode.hoj.pojo.vo.SubmissionInfoVO;
+import top.hcode.hoj.pojo.vo.TestJudgeVO;
 import top.hcode.hoj.service.oj.JudgeService;
 
 import javax.annotation.Resource;
@@ -32,7 +32,7 @@ public class JudgeServiceImpl implements JudgeService {
     private JudgeManager judgeManager;
 
     @Override
-    public CommonResult<Judge> submitProblemJudge(SubmitJudgeDto judgeDto) {
+    public CommonResult<Judge> submitProblemJudge(SubmitJudgeDTO judgeDto) {
         try {
             return CommonResult.successResponse(judgeManager.submitProblemJudge(judgeDto));
         } catch (StatusForbiddenException | AccessException e) {
@@ -47,7 +47,7 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public CommonResult<String> submitProblemTestJudge(TestJudgeDto testJudgeDto) {
+    public CommonResult<String> submitProblemTestJudge(TestJudgeDTO testJudgeDto) {
         try {
             return CommonResult.successResponse(judgeManager.submitProblemTestJudge(testJudgeDto), "success");
         } catch (StatusForbiddenException | AccessException e) {
@@ -69,7 +69,7 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public CommonResult<SubmissionInfoVo> getSubmission(Long submitId) {
+    public CommonResult<SubmissionInfoVO> getSubmission(Long submitId) {
         try {
             return CommonResult.successResponse(judgeManager.getSubmission(submitId));
         } catch (StatusNotFoundException e) {
@@ -80,7 +80,7 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public CommonResult<TestJudgeVo> getTestJudgeResult(String testJudgeKey) {
+    public CommonResult<TestJudgeVO> getTestJudgeResult(String testJudgeKey) {
         try {
             return CommonResult.successResponse(judgeManager.getTestJudgeResult(testJudgeKey));
         } catch (StatusFailException e) {
@@ -89,7 +89,7 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public CommonResult<IPage<JudgeVo>> getJudgeList(Integer limit,
+    public CommonResult<IPage<JudgeVO>> getJudgeList(Integer limit,
                                                      Integer currentPage,
                                                      Boolean onlyMine,
                                                      String searchPid,
@@ -124,12 +124,12 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public CommonResult<HashMap<Long, Object>> checkCommonJudgeResult(SubmitIdListDto submitIdListDto) {
+    public CommonResult<HashMap<Long, Object>> checkCommonJudgeResult(SubmitIdListDTO submitIdListDto) {
         return CommonResult.successResponse(judgeManager.checkCommonJudgeResult(submitIdListDto));
     }
 
     @Override
-    public CommonResult<HashMap<Long, Object>> checkContestJudgeResult(SubmitIdListDto submitIdListDto) {
+    public CommonResult<HashMap<Long, Object>> checkContestJudgeResult(SubmitIdListDTO submitIdListDto) {
         try {
             return CommonResult.successResponse(judgeManager.checkContestJudgeResult(submitIdListDto));
         } catch (StatusNotFoundException e) {
@@ -138,7 +138,7 @@ public class JudgeServiceImpl implements JudgeService {
     }
 
     @Override
-    public CommonResult<JudgeCaseVo> getALLCaseResult(Long submitId) {
+    public CommonResult<JudgeCaseVO> getALLCaseResult(Long submitId) {
         try {
             return CommonResult.successResponse(judgeManager.getALLCaseResult(submitId));
         } catch (StatusNotFoundException e) {

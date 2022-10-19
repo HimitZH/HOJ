@@ -4,9 +4,9 @@ package top.hcode.hoj.dao.judge;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import com.baomidou.mybatisplus.extension.service.IService;
-import top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVo;
-import top.hcode.hoj.pojo.vo.JudgeVo;
-import top.hcode.hoj.pojo.vo.ProblemCountVo;
+import top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVO;
+import top.hcode.hoj.pojo.vo.JudgeVO;
+import top.hcode.hoj.pojo.vo.ProblemCountVO;
 
 import java.util.Date;
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.List;
 
 public interface JudgeEntityService extends IService<Judge> {
 
-    IPage<JudgeVo> getCommonJudgeList(Integer limit,
+    IPage<JudgeVO> getCommonJudgeList(Integer limit,
                                       Integer currentPage,
                                       String searchPid,
                                       Integer status,
@@ -32,7 +32,7 @@ public interface JudgeEntityService extends IService<Judge> {
                                       Boolean completeProblemID,
                                       Long gid);
 
-    IPage<JudgeVo> getContestJudgeList(Integer limit,
+    IPage<JudgeVO> getContestJudgeList(Integer limit,
                                        Integer currentPage,
                                        String displayId,
                                        Long cid,
@@ -49,18 +49,18 @@ public interface JudgeEntityService extends IService<Judge> {
 
     void failToUseRedisPublishJudge(Long submitId, Long pid, Boolean isContest);
 
-    ProblemCountVo getContestProblemCount(Long pid,
+    ProblemCountVO getContestProblemCount(Long pid,
                                           Long cpid,
                                           Long cid,
                                           Date startTime,
                                           Date sealRankTime,
                                           List<String> adminList);
 
-    ProblemCountVo getProblemCount(Long pid, Long gid);
+    ProblemCountVO getProblemCount(Long pid, Long gid);
 
     public int getTodayJudgeNum();
 
-    public List<ProblemCountVo> getProblemListCount(List<Long> pidList);
+    public List<ProblemCountVO> getProblemListCount(List<Long> pidList);
 
-    public List<ContestScrollBoardSubmissionVo> getContestScrollBoardSubmission(Long cid, List<String> uidList);
+    public List<ContestScrollBoardSubmissionVO> getContestScrollBoardSubmission(Long cid, List<String> uidList);
 }

@@ -7,8 +7,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.mapper.MsgRemindMapper;
 import top.hcode.hoj.pojo.entity.msg.MsgRemind;
-import top.hcode.hoj.pojo.vo.UserMsgVo;
-import top.hcode.hoj.pojo.vo.UserUnreadMsgCountVo;
+import top.hcode.hoj.pojo.vo.UserMsgVO;
+import top.hcode.hoj.pojo.vo.UserUnreadMsgCountVO;
 import top.hcode.hoj.dao.msg.MsgRemindEntityService;
 
 import javax.annotation.Resource;
@@ -25,12 +25,12 @@ public class MsgRemindEntityServiceImpl extends ServiceImpl<MsgRemindMapper, Msg
     @Resource
     private MsgRemindMapper msgRemindMapper;
     @Override
-    public UserUnreadMsgCountVo getUserUnreadMsgCount(String uid) {
+    public UserUnreadMsgCountVO getUserUnreadMsgCount(String uid) {
         return msgRemindMapper.getUserUnreadMsgCount(uid);
     }
 
     @Override
-    public IPage<UserMsgVo> getUserMsg(Page<UserMsgVo> page, String uid, String action) {
+    public IPage<UserMsgVO> getUserMsg(Page<UserMsgVO> page, String uid, String action) {
         return msgRemindMapper.getUserMsg(page, uid, action);
     }
 

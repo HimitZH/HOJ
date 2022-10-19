@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.hcode.hoj.mapper.JudgeMapper;
 import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.vo.ACMRankVo;
+import top.hcode.hoj.pojo.vo.ACMRankVO;
 import top.hcode.hoj.pojo.entity.user.UserRecord;
 import top.hcode.hoj.mapper.UserRecordMapper;
-import top.hcode.hoj.pojo.vo.OIRankVo;
-import top.hcode.hoj.pojo.vo.UserHomeVo;
+import top.hcode.hoj.pojo.vo.OIRankVO;
+import top.hcode.hoj.pojo.vo.UserHomeVO;
 import top.hcode.hoj.dao.user.UserRecordEntityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -42,12 +42,12 @@ public class UserRecordEntityServiceImpl extends ServiceImpl<UserRecordMapper, U
     private static final long cacheRankSecond = 10;
 
     @Override
-    public List<ACMRankVo> getRecent7ACRank() {
+    public List<ACMRankVO> getRecent7ACRank() {
         return userRecordMapper.getRecent7ACRank();
     }
 
     @Override
-    public UserHomeVo getUserHomeInfo(String uid, String username) {
+    public UserHomeVO getUserHomeInfo(String uid, String username) {
         return userRecordMapper.getUserHomeInfo(uid, username);
     }
 
@@ -57,21 +57,21 @@ public class UserRecordEntityServiceImpl extends ServiceImpl<UserRecordMapper, U
     }
 
     @Override
-    public IPage<OIRankVo> getOIRankList(Page<OIRankVo> page, List<String> uidList) {
+    public IPage<OIRankVO> getOIRankList(Page<OIRankVO> page, List<String> uidList) {
         return userRecordMapper.getOIRankList(page, uidList);
     }
 
     @Override
-    public IPage<ACMRankVo> getACMRankList(Page<ACMRankVo> page, List<String> uidList) {
+    public IPage<ACMRankVO> getACMRankList(Page<ACMRankVO> page, List<String> uidList) {
         return userRecordMapper.getACMRankList(page, uidList);
     }
 
     @Override
-    public IPage<OIRankVo> getGroupRankList(Page<OIRankVo> page, Long gid, List<String> uidList, String rankType, Boolean useCache) {
+    public IPage<OIRankVO> getGroupRankList(Page<OIRankVO> page, Long gid, List<String> uidList, String rankType, Boolean useCache) {
         if (useCache) {
-            IPage<OIRankVo> data = null;
+            IPage<OIRankVO> data = null;
             String key = Constants.Account.GROUP_RANK_CACHE.getCode() + "_" + gid + "_" + rankType + "_" + page.getCurrent() + "_" + page.getSize();
-            data = (IPage<OIRankVo>) redisUtils.get(key);
+            data = (IPage<OIRankVO>) redisUtils.get(key);
             if (data == null) {
                 data = userRecordMapper.getGroupRankList(page, gid, uidList, rankType);
                 redisUtils.set(key, data, cacheRankSecond);

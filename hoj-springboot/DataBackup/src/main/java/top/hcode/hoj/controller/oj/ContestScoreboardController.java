@@ -3,8 +3,8 @@ package top.hcode.hoj.controller.oj;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.ContestRankDto;
-import top.hcode.hoj.pojo.vo.ContestOutsideInfo;
+import top.hcode.hoj.pojo.dto.ContestRankDTO;
+import top.hcode.hoj.pojo.vo.ContestOutsideInfoVO;
 import top.hcode.hoj.service.oj.ContestScoreboardService;
 
 import javax.annotation.Resource;
@@ -30,7 +30,7 @@ public class ContestScoreboardController {
      * @Since 2021/12/8
      */
     @GetMapping("/get-contest-outsize-info")
-    public CommonResult<ContestOutsideInfo> getContestOutsideInfo(@RequestParam(value = "cid", required = true) Long cid) {
+    public CommonResult<ContestOutsideInfoVO> getContestOutsideInfo(@RequestParam(value = "cid", required = true) Long cid) {
         return contestScoreboardService.getContestOutsideInfo(cid);
     }
 
@@ -41,7 +41,7 @@ public class ContestScoreboardController {
      * @Since 2021/12/07
      */
     @PostMapping("/get-contest-outside-scoreboard")
-    public CommonResult<IPage> getContestOutsideScoreboard(@RequestBody ContestRankDto contestRankDto) {
+    public CommonResult<IPage> getContestOutsideScoreboard(@RequestBody ContestRankDTO contestRankDto) {
         return contestScoreboardService.getContestOutsideScoreboard(contestRankDto);
     }
 }

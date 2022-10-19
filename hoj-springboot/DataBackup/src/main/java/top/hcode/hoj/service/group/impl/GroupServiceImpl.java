@@ -7,8 +7,8 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.group.GroupManager;
 import top.hcode.hoj.pojo.entity.group.Group;
-import top.hcode.hoj.pojo.vo.AccessVo;
-import top.hcode.hoj.pojo.vo.GroupVo;
+import top.hcode.hoj.pojo.vo.AccessVO;
+import top.hcode.hoj.pojo.vo.GroupVO;
 import top.hcode.hoj.service.group.GroupService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class GroupServiceImpl implements GroupService {
     private GroupManager groupManager;
 
     @Override
-    public CommonResult<IPage<GroupVo>> getGroupList(Integer limit, Integer currentPage, String keyword, Integer auth, Boolean onlyMine) {
+    public CommonResult<IPage<GroupVO>> getGroupList(Integer limit, Integer currentPage, String keyword, Integer auth, Boolean onlyMine) {
         return CommonResult.successResponse(groupManager.getGroupList(limit, currentPage, keyword, auth, onlyMine));
     }
 
@@ -42,7 +42,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public CommonResult<AccessVo> getGroupAccess(Long gid) {
+    public CommonResult<AccessVO> getGroupAccess(Long gid) {
         try {
             return CommonResult.successResponse(groupManager.getGroupAccess(gid));
         } catch (StatusNotFoundException e) {

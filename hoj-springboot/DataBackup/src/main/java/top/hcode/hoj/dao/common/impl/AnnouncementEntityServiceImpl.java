@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.hcode.hoj.pojo.entity.common.Announcement;
 import top.hcode.hoj.mapper.AnnouncementMapper;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.vo.AnnouncementVO;
 import top.hcode.hoj.dao.common.AnnouncementEntityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -25,15 +25,15 @@ public class AnnouncementEntityServiceImpl extends ServiceImpl<AnnouncementMappe
     private AnnouncementMapper announcementMapper;
 
     @Override
-    public IPage<AnnouncementVo> getAnnouncementList(int limit, int currentPage,Boolean notAdmin) {
+    public IPage<AnnouncementVO> getAnnouncementList(int limit, int currentPage, Boolean notAdmin) {
         //新建分页
-        Page<AnnouncementVo> page = new Page<>(currentPage, limit);
+        Page<AnnouncementVO> page = new Page<>(currentPage, limit);
         return announcementMapper.getAnnouncementList(page,notAdmin);
     }
 
     @Override
-    public IPage<AnnouncementVo> getContestAnnouncement(Long cid,Boolean notAdmin,int limit, int currentPage) {
-        Page<AnnouncementVo> page = new Page<>(currentPage, limit);
+    public IPage<AnnouncementVO> getContestAnnouncement(Long cid, Boolean notAdmin, int limit, int currentPage) {
+        Page<AnnouncementVO> page = new Page<>(currentPage, limit);
         return announcementMapper.getContestAnnouncement(page,cid,notAdmin);
     }
 }

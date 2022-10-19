@@ -1,7 +1,7 @@
 package top.hcode.hoj.dao.contest;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import top.hcode.hoj.pojo.vo.ContestVo;
+import top.hcode.hoj.pojo.vo.ContestVO;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -17,9 +17,9 @@ import java.util.List;
  */
 public interface ContestEntityService extends IService<Contest> {
 
-    List<ContestVo> getWithinNext14DaysContests();
+    List<ContestVO> getWithinNext14DaysContests();
 
-    IPage<ContestVo> getContestList(Integer limit, Integer currentPage, Integer type, Integer status, String keyword);
+    IPage<ContestVO> getContestList(Integer limit, Integer currentPage, Integer type, Integer status, String keyword);
 
-    ContestVo getContestInfoById(long cid);
+    ContestVO getContestInfoById(long cid);
 }

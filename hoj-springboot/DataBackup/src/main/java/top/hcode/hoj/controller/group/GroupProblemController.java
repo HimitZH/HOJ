@@ -5,12 +5,12 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
 import top.hcode.hoj.pojo.dto.CompileDTO;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.ProblemCase;
 import top.hcode.hoj.pojo.entity.problem.Tag;
-import top.hcode.hoj.pojo.vo.ProblemVo;
+import top.hcode.hoj.pojo.vo.ProblemVO;
 import top.hcode.hoj.service.group.problem.GroupProblemService;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public class GroupProblemController {
     private GroupProblemService groupProblemService;
 
     @GetMapping("/get-problem-list")
-    public CommonResult<IPage<ProblemVo>> getProblemList(@RequestParam(value = "limit", required = false) Integer limit,
+    public CommonResult<IPage<ProblemVO>> getProblemList(@RequestParam(value = "limit", required = false) Integer limit,
                                                          @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                                          @RequestParam(value = "gid", required = true) Long gid) {
         return groupProblemService.getProblemList(limit, currentPage, gid);
@@ -48,12 +48,12 @@ public class GroupProblemController {
     }
 
     @PostMapping("/problem")
-    public CommonResult<Void> addProblem(@RequestBody ProblemDto problemDto) {
+    public CommonResult<Void> addProblem(@RequestBody ProblemDTO problemDto) {
         return groupProblemService.addProblem(problemDto);
     }
 
     @PutMapping("/problem")
-    public CommonResult<Void> updateProblem(@RequestBody ProblemDto problemDto) {
+    public CommonResult<Void> updateProblem(@RequestBody ProblemDTO problemDto) {
         return groupProblemService.updateProblem(problemDto);
     }
 

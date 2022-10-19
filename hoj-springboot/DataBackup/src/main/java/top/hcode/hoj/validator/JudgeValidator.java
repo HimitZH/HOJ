@@ -6,8 +6,8 @@ import org.springframework.util.StringUtils;
 import top.hcode.hoj.annotation.HOJAccessEnum;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.exception.AccessException;
-import top.hcode.hoj.pojo.dto.TestJudgeDto;
-import top.hcode.hoj.pojo.dto.SubmitJudgeDto;
+import top.hcode.hoj.pojo.dto.TestJudgeDTO;
+import top.hcode.hoj.pojo.dto.SubmitJudgeDTO;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
@@ -42,7 +42,7 @@ public class JudgeValidator {
         MODE_MAP_LANGUAGE.put("text/x-php", "PHP");
     }
 
-    public void validateSubmissionInfo(SubmitJudgeDto submitJudgeDto) throws StatusFailException, AccessException {
+    public void validateSubmissionInfo(SubmitJudgeDTO submitJudgeDto) throws StatusFailException, AccessException {
 
         if (submitJudgeDto.getGid() != null) { // 团队内的提交
             accessValidator.validateAccess(HOJAccessEnum.GROUP_JUDGE);
@@ -68,7 +68,7 @@ public class JudgeValidator {
         }
     }
 
-    public void validateTestJudgeInfo(TestJudgeDto testJudgeDto) throws StatusFailException, AccessException {
+    public void validateTestJudgeInfo(TestJudgeDTO testJudgeDto) throws StatusFailException, AccessException {
         String type = testJudgeDto.getType();
         switch (type) {
             case "public":

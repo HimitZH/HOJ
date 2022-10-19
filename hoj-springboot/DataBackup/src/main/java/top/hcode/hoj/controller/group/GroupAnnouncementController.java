@@ -2,7 +2,7 @@ package top.hcode.hoj.controller.group;
 
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.common.Announcement;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.vo.AnnouncementVO;
 import top.hcode.hoj.service.group.announcement.GroupAnnouncementService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -23,14 +23,14 @@ public class GroupAnnouncementController {
     private GroupAnnouncementService groupAnnouncementService;
 
     @GetMapping("/get-announcement-list")
-    public CommonResult<IPage<AnnouncementVo>> getAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
+    public CommonResult<IPage<AnnouncementVO>> getAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
                                                                    @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                                                    @RequestParam(value = "gid", required = true) Long gid) {
         return groupAnnouncementService.getAnnouncementList(limit, currentPage, gid);
     }
 
     @GetMapping("/get-admin-announcement-list")
-    public CommonResult<IPage<AnnouncementVo>> getAdminAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
+    public CommonResult<IPage<AnnouncementVO>> getAdminAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
                                                                         @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                                                         @RequestParam(value = "gid", required = true) Long gid) {
         return groupAnnouncementService.getAdminAnnouncementList(limit, currentPage, gid);

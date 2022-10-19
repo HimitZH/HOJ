@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.manager.group.GroupRankManager;
-import top.hcode.hoj.pojo.vo.OIRankVo;
+import top.hcode.hoj.pojo.vo.OIRankVO;
 import top.hcode.hoj.service.group.GroupRankService;
 
 import javax.annotation.Resource;
@@ -22,7 +22,7 @@ public class GroupRankServiceImpl implements GroupRankService {
     private GroupRankManager groupRankManager;
 
     @Override
-    public CommonResult<IPage<OIRankVo>> getGroupRankList(Integer limit,
+    public CommonResult<IPage<OIRankVO>> getGroupRankList(Integer limit,
                                                           Integer currentPage,
                                                           String searchUser,
                                                           Integer type,

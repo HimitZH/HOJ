@@ -1,14 +1,14 @@
 package top.hcode.hoj.controller.group;
 
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.AnnouncementDto;
-import top.hcode.hoj.pojo.dto.ContestProblemDto;
-import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.dto.AnnouncementDTO;
+import top.hcode.hoj.pojo.dto.ContestProblemDTO;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestProblem;
-import top.hcode.hoj.pojo.vo.AdminContestVo;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
-import top.hcode.hoj.pojo.vo.ContestVo;
+import top.hcode.hoj.pojo.vo.AdminContestVO;
+import top.hcode.hoj.pojo.vo.AnnouncementVO;
+import top.hcode.hoj.pojo.vo.ContestVO;
 import top.hcode.hoj.service.group.contest.GroupContestAnnouncementService;
 import top.hcode.hoj.service.group.contest.GroupContestProblemService;
 import top.hcode.hoj.service.group.contest.GroupContestService;
@@ -40,7 +40,7 @@ public class GroupContestController {
     private GroupContestAnnouncementService groupContestAnnouncementService;
 
     @GetMapping("/get-contest-list")
-    public CommonResult<IPage<ContestVo>> getContestList(@RequestParam(value = "limit", required = false) Integer limit,
+    public CommonResult<IPage<ContestVO>> getContestList(@RequestParam(value = "limit", required = false) Integer limit,
                                                          @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                                          @RequestParam(value = "gid", required = true) Long gid) {
         return groupContestService.getContestList(limit, currentPage, gid);
@@ -54,17 +54,17 @@ public class GroupContestController {
     }
 
     @GetMapping("/contest")
-    public CommonResult<AdminContestVo> getContest(@RequestParam("cid") Long cid) {
+    public CommonResult<AdminContestVO> getContest(@RequestParam("cid") Long cid) {
         return groupContestService.getContest(cid);
     }
 
     @PostMapping("/contest")
-    public CommonResult<Void> addContest(@RequestBody AdminContestVo adminContestVo) {
+    public CommonResult<Void> addContest(@RequestBody AdminContestVO adminContestVo) {
         return groupContestService.addContest(adminContestVo);
     }
 
     @PutMapping("/contest")
-    public CommonResult<Void> updateContest(@RequestBody AdminContestVo adminContestVo) {
+    public CommonResult<Void> updateContest(@RequestBody AdminContestVO adminContestVo) {
         return groupContestService.updateContest(adminContestVo);
     }
 
@@ -90,7 +90,7 @@ public class GroupContestController {
     }
 
     @PostMapping("/contest-problem")
-    public CommonResult<Map<Object, Object>> addProblem(@RequestBody ProblemDto problemDto) {
+    public CommonResult<Map<Object, Object>> addProblem(@RequestBody ProblemDTO problemDto) {
 
         return groupContestProblemService.addProblem(problemDto);
     }
@@ -115,7 +115,7 @@ public class GroupContestController {
     }
 
     @PostMapping("/add-contest-problem-from-public")
-    public CommonResult<Void> addProblemFromPublic(@RequestBody ContestProblemDto contestProblemDto) {
+    public CommonResult<Void> addProblemFromPublic(@RequestBody ContestProblemDTO contestProblemDto) {
         return groupContestProblemService.addProblemFromPublic(contestProblemDto);
     }
 
@@ -127,19 +127,19 @@ public class GroupContestController {
     }
 
     @GetMapping("/get-contest-announcement-list")
-    public CommonResult<IPage<AnnouncementVo>> getContestAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
-                                                                   @RequestParam(value = "currentPage", required = false) Integer currentPage,
-                                                                   @RequestParam(value = "cid", required = true) Long cid) {
+    public CommonResult<IPage<AnnouncementVO>> getContestAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
+                                                                          @RequestParam(value = "currentPage", required = false) Integer currentPage,
+                                                                          @RequestParam(value = "cid", required = true) Long cid) {
         return groupContestAnnouncementService.getContestAnnouncementList(limit, currentPage, cid);
     }
 
     @PostMapping("/contest-announcement")
-    public CommonResult<Void> addContestAnnouncement(@RequestBody AnnouncementDto announcementDto) {
+    public CommonResult<Void> addContestAnnouncement(@RequestBody AnnouncementDTO announcementDto) {
         return groupContestAnnouncementService.addContestAnnouncement(announcementDto);
     }
 
     @PutMapping("/contest-announcement")
-    public CommonResult<Void> updateContestAnnouncement(@RequestBody AnnouncementDto announcementDto) {
+    public CommonResult<Void> updateContestAnnouncement(@RequestBody AnnouncementDTO announcementDto) {
         return groupContestAnnouncementService.updateContestAnnouncement(announcementDto);
     }
 

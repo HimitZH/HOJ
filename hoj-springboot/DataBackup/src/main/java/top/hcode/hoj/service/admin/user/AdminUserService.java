@@ -2,8 +2,8 @@ package top.hcode.hoj.service.admin.user;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.AdminEditUserDto;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.dto.AdminEditUserDTO;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 
 import java.util.List;
 import java.util.Map;
@@ -15,9 +15,9 @@ import java.util.Map;
  */
 public interface AdminUserService {
 
-    public CommonResult<IPage<UserRolesVo>> getUserList(Integer limit, Integer currentPage,Boolean onlyAdmin, String keyword);
+    public CommonResult<IPage<UserRolesVO>> getUserList(Integer limit, Integer currentPage, Boolean onlyAdmin, String keyword);
 
-    public CommonResult<Void> editUser(AdminEditUserDto adminEditUserDto);
+    public CommonResult<Void> editUser(AdminEditUserDTO adminEditUserDto);
 
     public CommonResult<Void> deleteUser(List<String> deleteUserIdList);
 

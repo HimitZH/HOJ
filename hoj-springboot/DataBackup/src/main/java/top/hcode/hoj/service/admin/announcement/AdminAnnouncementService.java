@@ -3,7 +3,7 @@ package top.hcode.hoj.service.admin.announcement;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.common.Announcement;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.vo.AnnouncementVO;
 
 /**
  * @Author: Himit_ZH
@@ -12,7 +12,7 @@ import top.hcode.hoj.pojo.vo.AnnouncementVo;
  */
 public interface AdminAnnouncementService {
 
-    public CommonResult<IPage<AnnouncementVo>> getAnnouncementList(Integer limit, Integer currentPage);
+    public CommonResult<IPage<AnnouncementVO>> getAnnouncementList(Integer limit, Integer currentPage);
 
     public CommonResult<Void> deleteAnnouncement(Long aid);
 

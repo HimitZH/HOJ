@@ -17,10 +17,10 @@ import top.hcode.hoj.dao.user.UserAcproblemEntityService;
 import top.hcode.hoj.pojo.entity.group.Group;
 import top.hcode.hoj.pojo.entity.group.GroupMember;
 import top.hcode.hoj.pojo.entity.user.UserAcproblem;
-import top.hcode.hoj.pojo.vo.AccessVo;
-import top.hcode.hoj.pojo.vo.ConfigVo;
-import top.hcode.hoj.pojo.vo.GroupVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.AccessVO;
+import top.hcode.hoj.pojo.vo.ConfigVO;
+import top.hcode.hoj.pojo.vo.GroupVO;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 import top.hcode.hoj.validator.GroupValidator;
@@ -52,11 +52,11 @@ public class GroupManager {
     private GroupValidator groupValidator;
 
     @Autowired
-    private ConfigVo configVo;
+    private ConfigVO configVo;
 
-    public IPage<GroupVo> getGroupList(Integer limit, Integer currentPage, String keyword, Integer auth, boolean onlyMine) {
+    public IPage<GroupVO> getGroupList(Integer limit, Integer currentPage, String keyword, Integer auth, boolean onlyMine) {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;
@@ -77,7 +77,7 @@ public class GroupManager {
 
     public Group getGroup(Long gid) throws StatusNotFoundException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -96,9 +96,9 @@ public class GroupManager {
         return group;
     }
 
-    public AccessVo getGroupAccess(Long gid) throws StatusFailException, StatusNotFoundException, StatusForbiddenException {
+    public AccessVO getGroupAccess(Long gid) throws StatusFailException, StatusNotFoundException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -115,14 +115,14 @@ public class GroupManager {
             }
         }
 
-        AccessVo accessVo = new AccessVo();
+        AccessVO accessVo = new AccessVO();
         accessVo.setAccess(access);
         return accessVo;
     }
 
     public Integer getGroupAuth(Long gid) {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         QueryWrapper<GroupMember> groupMemberQueryWrapper = new QueryWrapper<>();
         groupMemberQueryWrapper.eq("gid", gid).eq("uid", userRolesVo.getUid());
@@ -139,7 +139,7 @@ public class GroupManager {
     @Transactional(rollbackFor = Exception.class)
     public void addGroup(Group group) throws StatusFailException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
@@ -231,7 +231,7 @@ public class GroupManager {
 
     public void updateGroup(Group group) throws StatusFailException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -283,7 +283,7 @@ public class GroupManager {
 
     public void deleteGroup(Long gid) throws StatusFailException, StatusNotFoundException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 

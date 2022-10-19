@@ -7,8 +7,8 @@ import top.hcode.hoj.pojo.entity.problem.CodeTemplate;
 import top.hcode.hoj.pojo.entity.problem.Language;
 import top.hcode.hoj.pojo.entity.problem.Tag;
 import top.hcode.hoj.pojo.entity.training.TrainingCategory;
-import top.hcode.hoj.pojo.vo.CaptchaVo;
-import top.hcode.hoj.pojo.vo.ProblemTagVo;
+import top.hcode.hoj.pojo.vo.CaptchaVO;
+import top.hcode.hoj.pojo.vo.ProblemTagVO;
 import top.hcode.hoj.service.oj.CommonService;
 
 import javax.annotation.Resource;
@@ -27,7 +27,7 @@ public class CommonServiceImpl implements CommonService {
     private CommonManager commonManager;
 
     @Override
-    public CommonResult<CaptchaVo> getCaptcha() {
+    public CommonResult<CaptchaVO> getCaptcha() {
         return CommonResult.successResponse(commonManager.getCaptcha());
     }
 
@@ -42,7 +42,7 @@ public class CommonServiceImpl implements CommonService {
     }
 
     @Override
-    public CommonResult<List<ProblemTagVo>> getProblemTagsAndClassification(String oj) {
+    public CommonResult<List<ProblemTagVO>> getProblemTagsAndClassification(String oj) {
         return CommonResult.successResponse(commonManager.getProblemTagsAndClassification(oj));
     }
 

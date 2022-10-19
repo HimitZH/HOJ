@@ -26,7 +26,7 @@ import top.hcode.hoj.manager.email.EmailManager;
 import top.hcode.hoj.pojo.dto.*;
 import top.hcode.hoj.pojo.entity.common.File;
 import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
-import top.hcode.hoj.pojo.vo.ConfigVo;
+import top.hcode.hoj.pojo.vo.ConfigVO;
 import top.hcode.hoj.utils.ConfigUtils;
 import top.hcode.hoj.utils.Constants;
 
@@ -42,7 +42,7 @@ import java.util.*;
 @Slf4j(topic = "hoj")
 public class ConfigManager {
     @Autowired
-    private ConfigVo configVo;
+    private ConfigVO configVo;
 
     @Autowired
     private EmailManager emailManager;
@@ -141,9 +141,9 @@ public class ConfigManager {
     }
 
 
-    public WebConfigDto getWebConfig() {
+    public WebConfigDTO getWebConfig() {
 
-        return WebConfigDto.builder()
+        return WebConfigDTO.builder()
                 .baseUrl(UnicodeUtil.toString(configVo.getBaseUrl()))
                 .name(UnicodeUtil.toString(configVo.getName()))
                 .shortName(UnicodeUtil.toString(configVo.getShortName()))
@@ -171,7 +171,7 @@ public class ConfigManager {
         }
     }
 
-    public void setWebConfig(WebConfigDto config) throws StatusFailException {
+    public void setWebConfig(WebConfigDTO config) throws StatusFailException {
 
         if (!StringUtils.isEmpty(config.getBaseUrl())) {
             configVo.setBaseUrl(config.getBaseUrl());
@@ -206,8 +206,8 @@ public class ConfigManager {
         }
     }
 
-    public EmailConfigDto getEmailConfig() {
-        return EmailConfigDto.builder()
+    public EmailConfigDTO getEmailConfig() {
+        return EmailConfigDTO.builder()
                 .emailUsername(configVo.getEmailUsername())
                 .emailPassword(configVo.getEmailPassword())
                 .emailHost(configVo.getEmailHost())
@@ -218,7 +218,7 @@ public class ConfigManager {
     }
 
 
-    public void setEmailConfig(EmailConfigDto config) throws StatusFailException {
+    public void setEmailConfig(EmailConfigDTO config) throws StatusFailException {
 
         if (!StringUtils.isEmpty(config.getEmailHost())) {
             configVo.setEmailHost(config.getEmailHost());
@@ -250,7 +250,7 @@ public class ConfigManager {
     }
 
 
-    public void testEmail(TestEmailDto testEmailDto) throws StatusFailException {
+    public void testEmail(TestEmailDTO testEmailDto) throws StatusFailException {
         String email = testEmailDto.getEmail();
         if (StringUtils.isEmpty(email)) {
             throw new StatusFailException("测试的邮箱不能为空！");
@@ -263,8 +263,8 @@ public class ConfigManager {
         }
     }
 
-    public DBAndRedisConfigDto getDBAndRedisConfig() {
-        return DBAndRedisConfigDto.builder()
+    public DBAndRedisConfigDTO getDBAndRedisConfig() {
+        return DBAndRedisConfigDTO.builder()
                 .dbName(configVo.getMysqlDBName())
                 .dbHost(configVo.getMysqlHost())
                 .dbPort(configVo.getMysqlPort())
@@ -277,7 +277,7 @@ public class ConfigManager {
     }
 
 
-    public void setDBAndRedisConfig(DBAndRedisConfigDto config) throws StatusFailException {
+    public void setDBAndRedisConfig(DBAndRedisConfigDTO config) throws StatusFailException {
 
         if (!StringUtils.isEmpty(config.getDbName())) {
             configVo.setMysqlDBName(config.getDbName());
@@ -314,8 +314,8 @@ public class ConfigManager {
         }
     }
 
-    public SwitchConfigDto getSwitchConfig() {
-        return SwitchConfigDto.builder()
+    public SwitchConfigDTO getSwitchConfig() {
+        return SwitchConfigDTO.builder()
                 .openPublicDiscussion(configVo.getOpenPublicDiscussion())
                 .openGroupDiscussion(configVo.getOpenGroupDiscussion())
                 .openContestComment(configVo.getOpenContestComment())
@@ -344,7 +344,7 @@ public class ConfigManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void setSwitchConfig(SwitchConfigDto config) throws StatusFailException {
+    public void setSwitchConfig(SwitchConfigDTO config) throws StatusFailException {
         if (config.getOpenPublicDiscussion() != null) {
             configVo.setOpenPublicDiscussion(config.getOpenPublicDiscussion());
         }

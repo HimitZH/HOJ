@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.mapper.FileMapper;
 import top.hcode.hoj.pojo.entity.common.File;
-import top.hcode.hoj.pojo.vo.ACMContestRankVo;
-import top.hcode.hoj.pojo.vo.OIContestRankVo;
+import top.hcode.hoj.pojo.vo.ACMContestRankVO;
+import top.hcode.hoj.pojo.vo.OIContestRankVO;
 import top.hcode.hoj.dao.common.FileEntityService;
 
 import java.util.HashMap;
@@ -90,11 +90,11 @@ public class FileEntityEntityServiceImpl extends ServiceImpl<FileMapper, File> i
     }
 
     @Override
-    public List<List<Object>> changeACMContestRankToExcelRowList(List<ACMContestRankVo> acmContestRankVoList,
+    public List<List<Object>> changeACMContestRankToExcelRowList(List<ACMContestRankVO> acmContestRankVOList,
                                                                  List<String> contestProblemDisplayIDList,
                                                                  String rankShowName) {
         List<List<Object>> allRowDataList = new LinkedList<>();
-        for (ACMContestRankVo acmContestRankVo : acmContestRankVoList) {
+        for (ACMContestRankVO acmContestRankVo : acmContestRankVOList) {
             List<Object> rowData = new LinkedList<>();
             rowData.add(acmContestRankVo.getRank() == -1 ? "*" : acmContestRankVo.getRank().toString());
             rowData.add(acmContestRankVo.getUsername());
@@ -146,11 +146,11 @@ public class FileEntityEntityServiceImpl extends ServiceImpl<FileMapper, File> i
     }
 
     @Override
-    public List<List<Object>> changOIContestRankToExcelRowList(List<OIContestRankVo> oiContestRankVoList,
+    public List<List<Object>> changOIContestRankToExcelRowList(List<OIContestRankVO> oiContestRankVOList,
                                                                List<String> contestProblemDisplayIDList,
                                                                String rankShowName) {
         List<List<Object>> allRowDataList = new LinkedList<>();
-        for (OIContestRankVo oiContestRankVo : oiContestRankVoList) {
+        for (OIContestRankVO oiContestRankVo : oiContestRankVOList) {
             List<Object> rowData = new LinkedList<>();
             rowData.add(oiContestRankVo.getRank() == -1 ? "*" : oiContestRankVo.getRank().toString());
             rowData.add(oiContestRankVo.getUsername());

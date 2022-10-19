@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import top.hcode.hoj.pojo.vo.ConfigVo;
+import top.hcode.hoj.pojo.vo.ConfigVO;
 
 import java.util.List;
 
@@ -19,13 +19,13 @@ import java.util.List;
 public class ConfigUtils {
 
     @Autowired
-    private ConfigVo configVo;
+    private ConfigVO configVo;
 
     public String getConfigContent() {
         return buildYamlStr(configVo);
     }
 
-    public String buildYamlStr(ConfigVo configVo) {
+    public String buildYamlStr(ConfigVO configVo) {
         return "hoj:\n" +
                 "  jwt:\n" +
                 "    # 加密秘钥\n" +

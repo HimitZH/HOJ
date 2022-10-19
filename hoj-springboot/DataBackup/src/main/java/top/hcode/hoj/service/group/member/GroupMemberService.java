@@ -2,7 +2,7 @@ package top.hcode.hoj.service.group.member;
 
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.group.GroupMember;
-import top.hcode.hoj.pojo.vo.GroupMemberVo;
+import top.hcode.hoj.pojo.vo.GroupMemberVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
@@ -12,9 +12,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  */
 public interface GroupMemberService {
 
-    public CommonResult<IPage<GroupMemberVo>> getMemberList(Integer limit, Integer currentPage, String keyword, Integer auth, Long gid);
+    public CommonResult<IPage<GroupMemberVO>> getMemberList(Integer limit, Integer currentPage, String keyword, Integer auth, Long gid);
 
-    public CommonResult<IPage<GroupMemberVo>> getApplyList(Integer limit, Integer currentPage, String keyword, Integer auth, Long gid);
+    public CommonResult<IPage<GroupMemberVO>> getApplyList(Integer limit, Integer currentPage, String keyword, Integer auth, Long gid);
 
     public CommonResult<Void> addMember(Long gid, String code, String reason);
 

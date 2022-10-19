@@ -7,11 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.entity.problem.Problem;
-import top.hcode.hoj.pojo.vo.ACMRankVo;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
-import top.hcode.hoj.pojo.vo.ContestVo;
-import top.hcode.hoj.pojo.vo.SubmissionStatisticsVo;
+import top.hcode.hoj.pojo.vo.*;
 import top.hcode.hoj.service.oj.HomeService;
 
 import java.util.HashMap;
@@ -41,7 +37,7 @@ public class HomeController {
      */
 
     @GetMapping("/get-recent-contest")
-    public CommonResult<List<ContestVo>> getRecentContest() {
+    public CommonResult<List<ContestVO>> getRecentContest() {
         return homeService.getRecentContest();
     }
 
@@ -67,7 +63,7 @@ public class HomeController {
      * @Since 2021/1/15
      */
     @GetMapping("/get-recent-seven-ac-rank")
-    public CommonResult<List<ACMRankVo>> getRecentSevenACRank() {
+    public CommonResult<List<ACMRankVO>> getRecentSevenACRank() {
         return homeService.getRecentSevenACRank();
     }
 
@@ -93,7 +89,7 @@ public class HomeController {
      * @Since 2020/12/29
      */
     @GetMapping("/get-common-announcement")
-    public CommonResult<IPage<AnnouncementVo>> getCommonAnnouncement(@RequestParam(value = "limit", required = false) Integer limit,
+    public CommonResult<IPage<AnnouncementVO>> getCommonAnnouncement(@RequestParam(value = "limit", required = false) Integer limit,
                                                                      @RequestParam(value = "currentPage", required = false) Integer currentPage) {
         return homeService.getCommonAnnouncement(limit, currentPage);
     }
@@ -119,7 +115,7 @@ public class HomeController {
      * @Since 2022/10/15
      */
     @GetMapping("/get-recent-updated-problem")
-    public CommonResult<List<Problem>> getRecentUpdatedProblemList() {
+    public CommonResult<List<RecentUpdatedProblemVO>> getRecentUpdatedProblemList() {
         return homeService.getRecentUpdatedProblemList();
     }
 
@@ -131,7 +127,7 @@ public class HomeController {
      * @Since 2022/10/15
      */
     @GetMapping("/get-last-week-submission-statistics")
-    public CommonResult<SubmissionStatisticsVo> getLastWeekSubmissionStatistics(
+    public CommonResult<SubmissionStatisticsVO> getLastWeekSubmissionStatistics(
             @RequestParam(value = "forceRefresh", defaultValue = "false") Boolean forceRefresh) {
         return homeService.getLastWeekSubmissionStatistics(forceRefresh);
     }

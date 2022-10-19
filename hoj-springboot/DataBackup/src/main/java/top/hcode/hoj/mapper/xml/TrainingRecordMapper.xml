@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.mapper.TrainingRecordMapper">
-    <select id="getTrainingRecord" resultType="top.hcode.hoj.pojo.vo.TrainingRecordVo">
+    <select id="getTrainingRecord" resultType="top.hcode.hoj.pojo.vo.TrainingRecordVO">
         SELECT tr.tid,tr.uid,tr.pid,tr.tpid,tr.submit_id,j.status,j.score,j.time as use_time,
         u.gender,u.realname as realname,u.username,u.avatar,u.school,u.nickname
         FROM training_record tr,user_info u,judge j

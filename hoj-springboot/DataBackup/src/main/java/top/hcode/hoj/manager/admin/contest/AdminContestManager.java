@@ -19,9 +19,9 @@ import top.hcode.hoj.dao.contest.ContestEntityService;
 import top.hcode.hoj.dao.contest.ContestRegisterEntityService;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestRegister;
-import top.hcode.hoj.pojo.vo.AdminContestVo;
-import top.hcode.hoj.pojo.vo.ContestAwardConfigVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.AdminContestVO;
+import top.hcode.hoj.pojo.vo.ContestAwardConfigVO;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.utils.Constants;
 
 import java.util.ArrayList;
@@ -61,13 +61,13 @@ public class AdminContestManager {
         return contestEntityService.page(iPage, queryWrapper);
     }
 
-    public AdminContestVo getContest(Long cid) throws StatusFailException, StatusForbiddenException {
+    public AdminContestVO getContest(Long cid) throws StatusFailException, StatusForbiddenException {
         Contest contest = contestEntityService.getById(cid);
         if (contest == null) { // 查询不存在
             throw new StatusFailException("查询失败：该比赛不存在,请检查参数cid是否准确！");
         }
         // 获取当前登录的用户
-        UserRolesVo userRolesVo = (UserRolesVo) SecurityUtils.getSubject().getSession().getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) SecurityUtils.getSubject().getSession().getAttribute("userInfo");
 
         // 是否为超级管理员
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
@@ -76,7 +76,7 @@ public class AdminContestManager {
         if (!isRoot && !userRolesVo.getUid().equals(contest.getUid())) {
             throw new StatusForbiddenException("对不起，你无权限操作！");
         }
-        AdminContestVo adminContestVo = BeanUtil.copyProperties(contest, AdminContestVo.class, "starAccount");
+        AdminContestVO adminContestVo = BeanUtil.copyProperties(contest, AdminContestVO.class, "starAccount");
         if (StringUtils.isEmpty(contest.getStarAccount())) {
             adminContestVo.setStarAccount(new ArrayList<>());
         } else {
@@ -92,7 +92,7 @@ public class AdminContestManager {
         if (contest.getAwardType() != null && contest.getAwardType() != 0) {
             try {
                 JSONObject jsonObject = JSONUtil.parseObj(contest.getAwardConfig());
-                List<ContestAwardConfigVo> awardConfigList = jsonObject.get("config", List.class);
+                List<ContestAwardConfigVO> awardConfigList = jsonObject.get("config", List.class);
                 adminContestVo.setAwardConfigList(awardConfigList);
             } catch (Exception e) {
                 adminContestVo.setAwardConfigList(new ArrayList<>());
@@ -114,7 +114,7 @@ public class AdminContestManager {
         }
     }
 
-    public void addContest(AdminContestVo adminContestVo) throws StatusFailException {
+    public void addContest(AdminContestVO adminContestVo) throws StatusFailException {
         Contest contest = BeanUtil.copyProperties(adminContestVo, Contest.class, "starAccount");
         JSONObject accountJson = new JSONObject();
         if (adminContestVo.getStarAccount() == null) {
@@ -126,8 +126,8 @@ public class AdminContestManager {
 
         if (adminContestVo.getAwardType() != null && adminContestVo.getAwardType() != 0) {
             JSONObject awardConfigJson = new JSONObject();
-            List<ContestAwardConfigVo> awardConfigList = adminContestVo.getAwardConfigList();
-            awardConfigList.sort(Comparator.comparingInt(ContestAwardConfigVo::getPriority));
+            List<ContestAwardConfigVO> awardConfigList = adminContestVo.getAwardConfigList();
+            awardConfigList.sort(Comparator.comparingInt(ContestAwardConfigVO::getPriority));
             awardConfigJson.set("config", awardConfigList);
             contest.setAwardConfig(awardConfigJson.toString());
         }
@@ -144,7 +144,7 @@ public class AdminContestManager {
             throw new StatusSystemErrorException("该比赛不存在，无法克隆！");
         }
         // 获取当前登录的用户
-        UserRolesVo userRolesVo = (UserRolesVo) SecurityUtils.getSubject().getSession().getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) SecurityUtils.getSubject().getSession().getAttribute("userInfo");
         contest.setUid(userRolesVo.getUid())
                 .setAuthor(userRolesVo.getUsername())
                 .setSource(cid.intValue())
@@ -155,10 +155,10 @@ public class AdminContestManager {
         contestEntityService.save(contest);
     }
 
-    public void updateContest(AdminContestVo adminContestVo) throws StatusForbiddenException, StatusFailException {
+    public void updateContest(AdminContestVO adminContestVo) throws StatusForbiddenException, StatusFailException {
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
         // 是否为超级管理员
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         // 只有超级管理员和比赛拥有者才能操作
@@ -172,8 +172,8 @@ public class AdminContestManager {
         contest.setStarAccount(accountJson.toString());
 
         if (adminContestVo.getAwardType() != null && adminContestVo.getAwardType() != 0) {
-            List<ContestAwardConfigVo> awardConfigList = adminContestVo.getAwardConfigList();
-            awardConfigList.sort(Comparator.comparingInt(ContestAwardConfigVo::getPriority));
+            List<ContestAwardConfigVO> awardConfigList = adminContestVo.getAwardConfigList();
+            awardConfigList.sort(Comparator.comparingInt(ContestAwardConfigVO::getPriority));
             JSONObject awardConfigJson = new JSONObject();
             awardConfigJson.set("config", awardConfigList);
             contest.setAwardConfig(awardConfigJson.toString());
@@ -198,7 +198,7 @@ public class AdminContestManager {
     public void changeContestVisible(Long cid, String uid, Boolean visible) throws StatusFailException, StatusForbiddenException {
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
         // 是否为超级管理员
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         // 只有超级管理员和比赛拥有者才能操作

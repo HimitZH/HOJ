@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.contest.ContestProblem;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import top.hcode.hoj.pojo.vo.ContestProblemVo;
+import top.hcode.hoj.pojo.vo.ContestProblemVO;
 
 import java.util.Date;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.List;
 @Mapper
 @Repository
 public interface ContestProblemMapper extends BaseMapper<ContestProblem> {
-    List<ContestProblemVo> getContestProblemList(@Param("cid") Long cid, @Param("startTime") Date startTime,
+    List<ContestProblemVO> getContestProblemList(@Param("cid") Long cid, @Param("startTime") Date startTime,
                                                  @Param("endTime") Date endTime, @Param("sealTime") Date sealTime,
                                                  @Param("isAdmin") Boolean isAdmin, @Param("adminList") List<String> adminList);
 }

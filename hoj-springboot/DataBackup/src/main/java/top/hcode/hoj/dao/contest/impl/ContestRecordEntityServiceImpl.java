@@ -13,7 +13,7 @@ import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.mapper.ContestRecordMapper;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestRecord;
-import top.hcode.hoj.pojo.vo.ContestRecordVo;
+import top.hcode.hoj.pojo.vo.ContestRecordVO;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
@@ -101,7 +101,7 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
 
 
     @Override
-    public List<ContestRecordVo> getOIContestRecord(Contest contest, List<Integer> externalCidList, Boolean isOpenSealRank) {
+    public List<ContestRecordVO> getOIContestRecord(Contest contest, List<Integer> externalCidList, Boolean isOpenSealRank) {
 
         String oiRankScoreType = contest.getOiRankScoreType();
         Long cid = contest.getId();
@@ -129,7 +129,7 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
 
         } else {
             String key = Constants.Contest.OI_CONTEST_RANK_CACHE.getName() + "_" + oiRankScoreType + "_" + cid;
-            List<ContestRecordVo> oiContestRecordList = (List<ContestRecordVo>) redisUtils.get(key);
+            List<ContestRecordVO> oiContestRecordList = (List<ContestRecordVO>) redisUtils.get(key);
             if (oiContestRecordList == null) {
                 Long sealTime = DateUtil.between(contest.getStartTime(), contest.getSealRankTime(), DateUnit.SECOND);
                 if (sealTime > 0) {
@@ -158,7 +158,7 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
     }
 
     @Override
-    public List<ContestRecordVo> getACMContestRecord(String contestCreatorUid, Long cid, List<Integer> externalCidList, Date startTime) {
+    public List<ContestRecordVO> getACMContestRecord(String contestCreatorUid, Long cid, List<Integer> externalCidList, Date startTime) {
         if (CollectionUtil.isEmpty(externalCidList)) {
             return contestRecordMapper.getACMContestRecord(contestCreatorUid, cid, null, null);
         } else {

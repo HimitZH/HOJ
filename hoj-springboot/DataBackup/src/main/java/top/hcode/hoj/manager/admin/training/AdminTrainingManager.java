@@ -11,12 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
-import top.hcode.hoj.pojo.dto.TrainingDto;
+import top.hcode.hoj.pojo.dto.TrainingDTO;
 import top.hcode.hoj.pojo.entity.training.MappingTrainingCategory;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingCategory;
 import top.hcode.hoj.pojo.entity.training.TrainingRegister;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.dao.training.*;
 import top.hcode.hoj.utils.Constants;
 
@@ -69,7 +69,7 @@ public class AdminTrainingManager {
     }
 
 
-    public TrainingDto getTraining(Long tid) throws StatusFailException, StatusForbiddenException {
+    public TrainingDTO getTraining(Long tid) throws StatusFailException, StatusForbiddenException {
         // 获取本场训练的信息
         Training training = trainingEntityService.getById(tid);
         if (training == null) { // 查询不存在
@@ -78,7 +78,7 @@ public class AdminTrainingManager {
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
         // 是否为超级管理员
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         // 只有超级管理员和训练拥有者才能操作
@@ -86,7 +86,7 @@ public class AdminTrainingManager {
             throw new StatusForbiddenException("对不起，你无权限操作！");
         }
 
-        TrainingDto trainingDto = new TrainingDto();
+        TrainingDTO trainingDto = new TrainingDTO();
         trainingDto.setTraining(training);
 
         QueryWrapper<MappingTrainingCategory> queryWrapper = new QueryWrapper<>();
@@ -113,7 +113,7 @@ public class AdminTrainingManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void addTraining(TrainingDto trainingDto) throws StatusFailException {
+    public void addTraining(TrainingDTO trainingDto) throws StatusFailException {
 
         Training training = trainingDto.getTraining();
         trainingEntityService.save(training);
@@ -137,10 +137,10 @@ public class AdminTrainingManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateTraining(TrainingDto trainingDto) throws StatusForbiddenException, StatusFailException {
+    public void updateTraining(TrainingDTO trainingDto) throws StatusForbiddenException, StatusFailException {
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
         // 是否为超级管理员
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         // 只有超级管理员和训练拥有者才能操作
@@ -198,7 +198,7 @@ public class AdminTrainingManager {
     public void changeTrainingStatus(Long tid, String author, Boolean status) throws StatusForbiddenException, StatusFailException {
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
         // 是否为超级管理员
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         // 只有超级管理员和训练拥有者才能操作

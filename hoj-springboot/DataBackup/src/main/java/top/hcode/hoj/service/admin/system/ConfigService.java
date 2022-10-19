@@ -14,22 +14,22 @@ public interface ConfigService {
 
     public CommonResult<Void> deleteHomeCarousel(Long id);
 
-    public CommonResult<WebConfigDto> getWebConfig();
+    public CommonResult<WebConfigDTO> getWebConfig();
 
-    public CommonResult<Void> setWebConfig(WebConfigDto config);
+    public CommonResult<Void> setWebConfig(WebConfigDTO config);
 
-    public CommonResult<EmailConfigDto> getEmailConfig();
+    public CommonResult<EmailConfigDTO> getEmailConfig();
 
-    public CommonResult<Void> setEmailConfig(EmailConfigDto config);
+    public CommonResult<Void> setEmailConfig(EmailConfigDTO config);
 
-    public CommonResult<Void> testEmail(TestEmailDto testEmailDto);
+    public CommonResult<Void> testEmail(TestEmailDTO testEmailDto);
 
-    public CommonResult<DBAndRedisConfigDto> getDBAndRedisConfig();
+    public CommonResult<DBAndRedisConfigDTO> getDBAndRedisConfig();
 
-    public CommonResult<Void> setDBAndRedisConfig(DBAndRedisConfigDto config);
+    public CommonResult<Void> setDBAndRedisConfig(DBAndRedisConfigDTO config);
 
-    public CommonResult<SwitchConfigDto> getSwitchConfig();
+    public CommonResult<SwitchConfigDTO> getSwitchConfig();
 
-    public CommonResult<Void> setSwitchConfig(SwitchConfigDto config);
+    public CommonResult<Void> setSwitchConfig(SwitchConfigDTO config);
 
 }

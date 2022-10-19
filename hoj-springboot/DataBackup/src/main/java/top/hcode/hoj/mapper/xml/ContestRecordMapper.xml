@@ -25,7 +25,7 @@
         ORDER BY c.checked ASC,c.submit_time ASC
     </select>
 
-    <select id="getOIContestRecordByRecentSubmission" resultType="top.hcode.hoj.pojo.vo.ContestRecordVo">
+    <select id="getOIContestRecordByRecentSubmission" resultType="top.hcode.hoj.pojo.vo.ContestRecordVO">
         SELECT cr.id,cr.cid,cr.uid,cr.pid,cr.cpid,cr.display_id,cr.submit_id,u.username,cr.status,cr.submit_time,
         cr.time,cr.score,cr.use_time,cr.checked,cr.gmt_create,cr.gmt_modified,
         u.gender,u.realname as realname,u.avatar,u.school,u.nickname
@@ -62,7 +62,7 @@
         AND t.cpid = cr.cpid AND u.uuid = cr.uid AND t.time = cr.time
     </select>
 
-    <select id="getOIContestRecordByHighestSubmission" resultType="top.hcode.hoj.pojo.vo.ContestRecordVo">
+    <select id="getOIContestRecordByHighestSubmission" resultType="top.hcode.hoj.pojo.vo.ContestRecordVO">
         SELECT cr.id,cr.cid,cr.uid,cr.pid,cr.cpid,cr.display_id,cr.submit_id,u.username,cr.status,cr.submit_time,
         cr.time,cr.score,cr.use_time,cr.checked,cr.gmt_create,cr.gmt_modified,
         u.gender,u.realname as realname,u.avatar,u.school,u.nickname
@@ -100,7 +100,7 @@
     </select>
 
 
-    <select id="getACMContestRecord" resultType="top.hcode.hoj.pojo.vo.ContestRecordVo">
+    <select id="getACMContestRecord" resultType="top.hcode.hoj.pojo.vo.ContestRecordVO">
         SELECT cr.id,cr.cid,cr.uid,cr.pid,cr.cpid,cr.display_id,cr.submit_id,u.username,cr.status,cr.submit_time,
         cr.time,cr.score,cr.use_time,cr.checked,cr.gmt_create,cr.gmt_modified,
         u.gender,u.realname as realname,u.avatar,u.school,u.nickname

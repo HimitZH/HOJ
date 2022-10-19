@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.vo.ContestScrollBoardInfoVo;
-import top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVo;
+import top.hcode.hoj.pojo.vo.ContestScrollBoardInfoVO;
+import top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVO;
 import top.hcode.hoj.service.oj.ContestScrollBoardService;
 
 import javax.annotation.Resource;
@@ -24,13 +24,13 @@ public class ContestScrollBoardController {
     private ContestScrollBoardService contestScrollBoardService;
 
     @GetMapping("/get-contest-scroll-board-info")
-    public CommonResult<ContestScrollBoardInfoVo> getContestScrollBoardInfo(@RequestParam(value = "cid", required = true) Long cid) {
+    public CommonResult<ContestScrollBoardInfoVO> getContestScrollBoardInfo(@RequestParam(value = "cid", required = true) Long cid) {
         return contestScrollBoardService.getContestScrollBoardInfo(cid);
     }
 
 
     @GetMapping("/get-contest-scroll-board-submission")
-    public CommonResult<List<ContestScrollBoardSubmissionVo>> getContestScrollBoardSubmission(
+    public CommonResult<List<ContestScrollBoardSubmissionVO>> getContestScrollBoardSubmission(
             @RequestParam(value = "cid", required = true) Long cid) {
         return contestScrollBoardService.getContestScrollBoardSubmission(cid);
     }

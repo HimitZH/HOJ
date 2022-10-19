@@ -2,8 +2,8 @@ package top.hcode.hoj.controller.group;
 
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.group.Group;
-import top.hcode.hoj.pojo.vo.AccessVo;
-import top.hcode.hoj.pojo.vo.GroupVo;
+import top.hcode.hoj.pojo.vo.AccessVO;
+import top.hcode.hoj.pojo.vo.GroupVO;
 import top.hcode.hoj.service.group.GroupService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -24,7 +24,7 @@ public class GroupController {
     private GroupService groupService;
 
     @GetMapping("/get-group-list")
-    public CommonResult<IPage<GroupVo>> getGroupList(@RequestParam(value = "limit", required = false) Integer limit,
+    public CommonResult<IPage<GroupVO>> getGroupList(@RequestParam(value = "limit", required = false) Integer limit,
                                                      @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                                      @RequestParam(value = "keyword", required = false) String keyword,
                                                      @RequestParam(value = "auth", required = false) Integer auth,
@@ -39,7 +39,7 @@ public class GroupController {
 
     @RequiresAuthentication
     @GetMapping("/get-group-access")
-    public CommonResult<AccessVo> getGroupAccess(@RequestParam(value = "gid", required = true) Long gid) {
+    public CommonResult<AccessVO> getGroupAccess(@RequestParam(value = "gid", required = true) Long gid) {
         return groupService.getGroupAccess(gid);
     }
 

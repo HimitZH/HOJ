@@ -5,7 +5,7 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.discussion.Discussion;
 import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
 import top.hcode.hoj.pojo.entity.problem.Category;
-import top.hcode.hoj.pojo.vo.DiscussionVo;
+import top.hcode.hoj.pojo.vo.DiscussionVO;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public interface DiscussionService {
                                                             String keyword,
                                                             Boolean admin);
 
-    public CommonResult<DiscussionVo>  getDiscussion(Integer did);
+    public CommonResult<DiscussionVO>  getDiscussion(Integer did);
 
     public CommonResult<Void>  addDiscussion(Discussion discussion);
 

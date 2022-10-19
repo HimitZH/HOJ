@@ -11,8 +11,8 @@ import top.hcode.hoj.pojo.entity.problem.CodeTemplate;
 import top.hcode.hoj.pojo.entity.problem.Language;
 import top.hcode.hoj.pojo.entity.problem.Tag;
 import top.hcode.hoj.pojo.entity.training.TrainingCategory;
-import top.hcode.hoj.pojo.vo.CaptchaVo;
-import top.hcode.hoj.pojo.vo.ProblemTagVo;
+import top.hcode.hoj.pojo.vo.CaptchaVO;
+import top.hcode.hoj.pojo.vo.ProblemTagVO;
 import top.hcode.hoj.service.oj.CommonService;
 
 import java.util.Collection;
@@ -32,7 +32,7 @@ public class CommonController {
 
 
     @GetMapping("/captcha")
-    public CommonResult<CaptchaVo> getCaptcha() {
+    public CommonResult<CaptchaVO> getCaptcha() {
         return commonService.getCaptcha();
     }
 
@@ -48,7 +48,7 @@ public class CommonController {
     }
 
     @GetMapping("/get-problem-tags-and-classification")
-    public CommonResult<List<ProblemTagVo>> getProblemTagsAndClassification(@RequestParam(value = "oj", defaultValue = "ME") String oj) {
+    public CommonResult<List<ProblemTagVO>> getProblemTagsAndClassification(@RequestParam(value = "oj", defaultValue = "ME") String oj) {
         return commonService.getProblemTagsAndClassification(oj);
     }
 

@@ -1,7 +1,7 @@
 package top.hcode.hoj.dao.group;
 
 import top.hcode.hoj.pojo.entity.group.GroupMember;
-import top.hcode.hoj.pojo.vo.GroupMemberVo;
+import top.hcode.hoj.pojo.vo.GroupMemberVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -14,9 +14,9 @@ import java.util.List;
  */
 public interface GroupMemberEntityService extends IService<GroupMember> {
 
-    IPage<GroupMemberVo> getMemberList(int limit, int currentPage, String keyword, Integer auth, Long gid);
+    IPage<GroupMemberVO> getMemberList(int limit, int currentPage, String keyword, Integer auth, Long gid);
 
-    IPage<GroupMemberVo> getApplyList(int limit, int currentPage, String keyword, Integer auth, Long gid);
+    IPage<GroupMemberVO> getApplyList(int limit, int currentPage, String keyword, Integer auth, Long gid);
 
     List<String> getGroupRootUidList(Long gid);
 

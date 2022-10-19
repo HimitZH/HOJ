@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
-import top.hcode.hoj.pojo.vo.ACMRankVo;
+import top.hcode.hoj.pojo.vo.ACMRankVO;
 import top.hcode.hoj.pojo.entity.user.UserRecord;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import top.hcode.hoj.pojo.vo.OIRankVo;
-import top.hcode.hoj.pojo.vo.UserHomeVo;
+import top.hcode.hoj.pojo.vo.OIRankVO;
+import top.hcode.hoj.pojo.vo.UserHomeVO;
 
 import java.util.List;
 
@@ -24,15 +24,15 @@ import java.util.List;
 @Mapper
 @Repository
 public interface UserRecordMapper extends BaseMapper<UserRecord> {
-    IPage<ACMRankVo> getACMRankList(Page<ACMRankVo> page, @Param("uidList") List<String> uidList);
+    IPage<ACMRankVO> getACMRankList(Page<ACMRankVO> page, @Param("uidList") List<String> uidList);
 
-    List<ACMRankVo> getRecent7ACRank();
+    List<ACMRankVO> getRecent7ACRank();
 
-    IPage<OIRankVo> getOIRankList(Page<OIRankVo> page, @Param("uidList") List<String> uidList);
+    IPage<OIRankVO> getOIRankList(Page<OIRankVO> page, @Param("uidList") List<String> uidList);
 
-    UserHomeVo getUserHomeInfo(@Param("uid") String uid, @Param("username") String username);
+    UserHomeVO getUserHomeInfo(@Param("uid") String uid, @Param("username") String username);
 
-    IPage<OIRankVo> getGroupRankList(Page<OIRankVo> page,
+    IPage<OIRankVO> getGroupRankList(Page<OIRankVO> page,
                                      @Param("gid") Long gid,
                                      @Param("uidList") List<String> uidList,
                                      @Param("rankType") String rankType);

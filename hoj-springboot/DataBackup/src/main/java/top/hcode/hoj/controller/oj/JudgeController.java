@@ -7,14 +7,14 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.SubmitIdListDto;
-import top.hcode.hoj.pojo.dto.SubmitJudgeDto;
-import top.hcode.hoj.pojo.dto.TestJudgeDto;
+import top.hcode.hoj.pojo.dto.SubmitIdListDTO;
+import top.hcode.hoj.pojo.dto.SubmitJudgeDTO;
+import top.hcode.hoj.pojo.dto.TestJudgeDTO;
 import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.vo.JudgeCaseVo;
-import top.hcode.hoj.pojo.vo.JudgeVo;
-import top.hcode.hoj.pojo.vo.SubmissionInfoVo;
-import top.hcode.hoj.pojo.vo.TestJudgeVo;
+import top.hcode.hoj.pojo.vo.JudgeCaseVO;
+import top.hcode.hoj.pojo.vo.JudgeVO;
+import top.hcode.hoj.pojo.vo.SubmissionInfoVO;
+import top.hcode.hoj.pojo.vo.TestJudgeVO;
 import top.hcode.hoj.service.oj.JudgeService;
 
 import java.util.HashMap;
@@ -46,7 +46,7 @@ public class JudgeController {
      * @Since 2020/10/29
      */
     @GetMapping("/get-submission-list")
-    public CommonResult<IPage<JudgeVo>> getJudgeList(@RequestParam(value = "limit", required = false) Integer limit,
+    public CommonResult<IPage<JudgeVO>> getJudgeList(@RequestParam(value = "limit", required = false) Integer limit,
                                                      @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                                      @RequestParam(value = "onlyMine", required = false) Boolean onlyMine,
                                                      @RequestParam(value = "problemID", required = false) String searchPid,
@@ -65,7 +65,7 @@ public class JudgeController {
      * @Since 2021/1/2
      */
     @GetMapping("/get-submission-detail")
-    public CommonResult<SubmissionInfoVo> getSubmission(@RequestParam(value = "submitId", required = true) Long submitId) {
+    public CommonResult<SubmissionInfoVO> getSubmission(@RequestParam(value = "submitId", required = true) Long submitId) {
         return judgeService.getSubmission(submitId);
     }
 
@@ -78,21 +78,21 @@ public class JudgeController {
     @RequiresAuthentication
     @RequiresPermissions("submit")
     @RequestMapping(value = "/submit-problem-judge", method = RequestMethod.POST)
-    public CommonResult<Judge> submitProblemJudge(@RequestBody SubmitJudgeDto judgeDto) {
+    public CommonResult<Judge> submitProblemJudge(@RequestBody SubmitJudgeDTO judgeDto) {
         return judgeService.submitProblemJudge(judgeDto);
     }
 
     @RequiresAuthentication
     @RequiresPermissions("submit")
     @RequestMapping(value = "/submit-problem-test-judge", method = RequestMethod.POST)
-    public CommonResult<String> submitProblemTestJudge(@RequestBody TestJudgeDto testJudgeDto) {
+    public CommonResult<String> submitProblemTestJudge(@RequestBody TestJudgeDTO testJudgeDto) {
         return judgeService.submitProblemTestJudge(testJudgeDto);
     }
 
 
     @RequiresAuthentication
     @GetMapping("/get-test-judge-result")
-    public CommonResult<TestJudgeVo> getTestJudgeResult(@RequestParam("testJudgeKey") String testJudgeKey) {
+    public CommonResult<TestJudgeVO> getTestJudgeResult(@RequestParam("testJudgeKey") String testJudgeKey) {
         return judgeService.getTestJudgeResult(testJudgeKey);
     }
 
@@ -127,7 +127,7 @@ public class JudgeController {
      * @Since 2021/1/3
      */
     @RequestMapping(value = "/check-submissions-status", method = RequestMethod.POST)
-    public CommonResult<HashMap<Long, Object>> checkCommonJudgeResult(@RequestBody SubmitIdListDto submitIdListDto) {
+    public CommonResult<HashMap<Long, Object>> checkCommonJudgeResult(@RequestBody SubmitIdListDTO submitIdListDto) {
         return judgeService.checkCommonJudgeResult(submitIdListDto);
     }
 
@@ -140,7 +140,7 @@ public class JudgeController {
      */
     @RequestMapping(value = "/check-contest-submissions-status", method = RequestMethod.POST)
     @RequiresAuthentication
-    public CommonResult<HashMap<Long, Object>> checkContestJudgeResult(@RequestBody SubmitIdListDto submitIdListDto) {
+    public CommonResult<HashMap<Long, Object>> checkContestJudgeResult(@RequestBody SubmitIdListDTO submitIdListDto) {
         return judgeService.checkContestJudgeResult(submitIdListDto);
     }
 
@@ -153,7 +153,7 @@ public class JudgeController {
      * @Since 2020/10/29
      */
     @GetMapping("/get-all-case-result")
-    public CommonResult<JudgeCaseVo> getALLCaseResult(@RequestParam(value = "submitId", required = true) Long submitId) {
+    public CommonResult<JudgeCaseVO> getALLCaseResult(@RequestParam(value = "submitId", required = true) Long submitId) {
         return judgeService.getALLCaseResult(submitId);
     }
 }

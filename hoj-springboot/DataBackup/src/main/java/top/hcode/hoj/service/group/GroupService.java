@@ -2,8 +2,8 @@ package top.hcode.hoj.service.group;
 
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.group.Group;
-import top.hcode.hoj.pojo.vo.AccessVo;
-import top.hcode.hoj.pojo.vo.GroupVo;
+import top.hcode.hoj.pojo.vo.AccessVO;
+import top.hcode.hoj.pojo.vo.GroupVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
@@ -13,11 +13,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  */
 public interface GroupService {
 
-    public CommonResult<IPage<GroupVo>> getGroupList(Integer limit, Integer currentPage, String keyword, Integer auth, Boolean onlyMine);
+    public CommonResult<IPage<GroupVO>> getGroupList(Integer limit, Integer currentPage, String keyword, Integer auth, Boolean onlyMine);
 
     public CommonResult<Group> getGroup(Long gid);
 
-    public CommonResult<AccessVo> getGroupAccess(Long gid);
+    public CommonResult<AccessVO> getGroupAccess(Long gid);
 
     public CommonResult<Integer> getGroupAuth(Long gid);
 

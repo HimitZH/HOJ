@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.pojo.entity.contest.Contest;
-import top.hcode.hoj.pojo.vo.ACMContestRankVo;
-import top.hcode.hoj.pojo.vo.OIContestRankVo;
+import top.hcode.hoj.pojo.vo.ACMContestRankVO;
+import top.hcode.hoj.pojo.vo.OIContestRankVO;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class ContestRankManager {
      * @param keyword        搜索关键词：匹配学校或榜单显示名称
      * @desc 获取ACM比赛排行榜
      */
-    public IPage<ACMContestRankVo> getContestACMRankPage(Boolean isOpenSealRank,
+    public IPage<ACMContestRankVO> getContestACMRankPage(Boolean isOpenSealRank,
                                                          Boolean removeStar,
                                                          String currentUserId,
                                                          List<String> concernedList,
@@ -48,7 +48,7 @@ public class ContestRankManager {
                                                          String keyword) {
 
         // 进行排序计算
-        List<ACMContestRankVo> orderResultList = contestCalculateRankManager.calcACMRank(isOpenSealRank,
+        List<ACMContestRankVO> orderResultList = contestCalculateRankManager.calcACMRank(isOpenSealRank,
                 removeStar,
                 contest,
                 currentUserId,
@@ -83,7 +83,7 @@ public class ContestRankManager {
      * @param keyword        搜索关键词：匹配学校或榜单显示名称
      * @desc 获取OI比赛排行榜
      */
-    public IPage<OIContestRankVo> getContestOIRankPage(Boolean isOpenSealRank,
+    public IPage<OIContestRankVO> getContestOIRankPage(Boolean isOpenSealRank,
                                                        Boolean removeStar,
                                                        String currentUserId,
                                                        List<String> concernedList,
@@ -93,7 +93,7 @@ public class ContestRankManager {
                                                        int limit,
                                                        String keyword) {
 
-        List<OIContestRankVo> orderResultList = contestCalculateRankManager.calcOIRank(isOpenSealRank,
+        List<OIContestRankVO> orderResultList = contestCalculateRankManager.calcOIRank(isOpenSealRank,
                 removeStar,
                 contest,
                 currentUserId,
@@ -132,7 +132,7 @@ public class ContestRankManager {
      * @param cacheTime       缓存时间（秒）
      * @return
      */
-    public IPage<ACMContestRankVo> getACMContestScoreboard(Boolean isOpenSealRank,
+    public IPage<ACMContestRankVO> getACMContestScoreboard(Boolean isOpenSealRank,
                                                            Boolean removeStar,
                                                            Contest contest,
                                                            String currentUserId,
@@ -146,7 +146,7 @@ public class ContestRankManager {
         if (CollectionUtil.isNotEmpty(externalCidList)) {
             useCache = false;
         }
-        List<ACMContestRankVo> acmContestRankVos = contestCalculateRankManager.calcACMRank(isOpenSealRank,
+        List<ACMContestRankVO> acmContestRankVOS = contestCalculateRankManager.calcACMRank(isOpenSealRank,
                 removeStar,
                 contest,
                 currentUserId,
@@ -157,7 +157,7 @@ public class ContestRankManager {
 
         if (StrUtil.isNotBlank(keyword)) {
             String finalKeyword = keyword.trim().toLowerCase();
-            acmContestRankVos = acmContestRankVos.stream()
+            acmContestRankVOS = acmContestRankVOS.stream()
                     .filter(rankVo -> filterBySchoolORRankShowName(finalKeyword,
                             rankVo.getSchool(),
                             getUserRankShowName(contest.getRankShowName(),
@@ -166,7 +166,7 @@ public class ContestRankManager {
                                     rankVo.getNickname())))
                     .collect(Collectors.toList());
         }
-        return getPagingRankList(acmContestRankVos, currentPage, limit);
+        return getPagingRankList(acmContestRankVOS, currentPage, limit);
     }
 
     /**
@@ -185,7 +185,7 @@ public class ContestRankManager {
      * @param cacheTime       缓存时间（秒）
      * @return
      */
-    public IPage<OIContestRankVo> getOIContestScoreboard(Boolean isOpenSealRank,
+    public IPage<OIContestRankVO> getOIContestScoreboard(Boolean isOpenSealRank,
                                                          Boolean removeStar,
                                                          Contest contest,
                                                          String currentUserId,
@@ -200,7 +200,7 @@ public class ContestRankManager {
         if (CollectionUtil.isNotEmpty(externalCidList)) {
             useCache = false;
         }
-        List<OIContestRankVo> oiContestRankVoList = contestCalculateRankManager.calcOIRank(isOpenSealRank,
+        List<OIContestRankVO> oiContestRankVOList = contestCalculateRankManager.calcOIRank(isOpenSealRank,
                 removeStar,
                 contest,
                 currentUserId,
@@ -211,7 +211,7 @@ public class ContestRankManager {
 
         if (StrUtil.isNotBlank(keyword)) {
             String finalKeyword = keyword.trim().toLowerCase();
-            oiContestRankVoList = oiContestRankVoList.stream()
+            oiContestRankVOList = oiContestRankVOList.stream()
                     .filter(rankVo -> filterBySchoolORRankShowName(finalKeyword,
                             rankVo.getSchool(),
                             getUserRankShowName(contest.getRankShowName(),
@@ -220,7 +220,7 @@ public class ContestRankManager {
                                     rankVo.getNickname())))
                     .collect(Collectors.toList());
         }
-        return getPagingRankList(oiContestRankVoList, currentPage, limit);
+        return getPagingRankList(oiContestRankVOList, currentPage, limit);
     }
 
     private <T> Page<T> getPagingRankList(List<T> rankList, int currentPage, int limit) {

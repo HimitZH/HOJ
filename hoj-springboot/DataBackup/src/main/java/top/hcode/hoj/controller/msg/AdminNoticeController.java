@@ -6,7 +6,7 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.msg.AdminSysNotice;
-import top.hcode.hoj.pojo.vo.AdminSysNoticeVo;
+import top.hcode.hoj.pojo.vo.AdminSysNoticeVO;
 import top.hcode.hoj.service.msg.AdminNoticeService;
 
 import javax.annotation.Resource;
@@ -26,7 +26,7 @@ public class AdminNoticeController {
     @GetMapping("/notice")
     @RequiresAuthentication
     @RequiresRoles("root")
-    public CommonResult<IPage<AdminSysNoticeVo>> getSysNotice(@RequestParam(value = "limit", required = false) Integer limit,
+    public CommonResult<IPage<AdminSysNoticeVO>> getSysNotice(@RequestParam(value = "limit", required = false) Integer limit,
                                                               @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                                               @RequestParam(value = "type", required = false) String type) {
 

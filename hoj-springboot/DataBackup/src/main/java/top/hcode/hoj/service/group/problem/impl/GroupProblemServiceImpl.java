@@ -10,11 +10,11 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.group.problem.GroupProblemManager;
 import top.hcode.hoj.pojo.dto.CompileDTO;
-import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.ProblemCase;
 import top.hcode.hoj.pojo.entity.problem.Tag;
-import top.hcode.hoj.pojo.vo.ProblemVo;
+import top.hcode.hoj.pojo.vo.ProblemVO;
 import top.hcode.hoj.service.group.problem.GroupProblemService;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class GroupProblemServiceImpl implements GroupProblemService {
     private GroupProblemManager groupProblemManager;
 
     @Override
-    public CommonResult<IPage<ProblemVo>> getProblemList(Integer limit, Integer currentPage, Long gid) {
+    public CommonResult<IPage<ProblemVO>> getProblemList(Integer limit, Integer currentPage, Long gid) {
         try {
             return CommonResult.successResponse(groupProblemManager.getProblemList(limit, currentPage, gid));
         } catch (StatusForbiddenException e) {
@@ -66,7 +66,7 @@ public class GroupProblemServiceImpl implements GroupProblemService {
     }
 
     @Override
-    public CommonResult<Void> addProblem(ProblemDto problemDto) {
+    public CommonResult<Void> addProblem(ProblemDTO problemDto) {
         try {
             groupProblemManager.addProblem(problemDto);
             return CommonResult.successResponse();
@@ -80,7 +80,7 @@ public class GroupProblemServiceImpl implements GroupProblemService {
     }
 
     @Override
-    public CommonResult<Void> updateProblem(ProblemDto problemDto) {
+    public CommonResult<Void> updateProblem(ProblemDTO problemDto) {
         try {
             groupProblemManager.updateProblem(problemDto);
             return CommonResult.successResponse();

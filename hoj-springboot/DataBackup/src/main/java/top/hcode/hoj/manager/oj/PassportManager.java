@@ -13,22 +13,22 @@ import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusAccessDeniedException;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
-import top.hcode.hoj.manager.email.EmailManager;
-import top.hcode.hoj.manager.msg.NoticeManager;
-import top.hcode.hoj.pojo.bo.EmailRuleBo;
-import top.hcode.hoj.pojo.dto.LoginDto;
-import top.hcode.hoj.pojo.dto.RegisterDto;
-import top.hcode.hoj.pojo.dto.ApplyResetPasswordDto;
-import top.hcode.hoj.pojo.dto.ResetPasswordDto;
-import top.hcode.hoj.pojo.entity.user.*;
-import top.hcode.hoj.pojo.vo.ConfigVo;
-import top.hcode.hoj.pojo.vo.RegisterCodeVo;
-import top.hcode.hoj.pojo.vo.UserInfoVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
 import top.hcode.hoj.dao.user.SessionEntityService;
 import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.dao.user.UserRecordEntityService;
 import top.hcode.hoj.dao.user.UserRoleEntityService;
+import top.hcode.hoj.manager.email.EmailManager;
+import top.hcode.hoj.manager.msg.NoticeManager;
+import top.hcode.hoj.pojo.bo.EmailRuleBO;
+import top.hcode.hoj.pojo.dto.ApplyResetPasswordDTO;
+import top.hcode.hoj.pojo.dto.LoginDTO;
+import top.hcode.hoj.pojo.dto.RegisterDTO;
+import top.hcode.hoj.pojo.dto.ResetPasswordDTO;
+import top.hcode.hoj.pojo.entity.user.*;
+import top.hcode.hoj.pojo.vo.ConfigVO;
+import top.hcode.hoj.pojo.vo.RegisterCodeVO;
+import top.hcode.hoj.pojo.vo.UserInfoVO;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.JwtUtils;
@@ -54,10 +54,10 @@ public class PassportManager {
     private JwtUtils jwtUtils;
 
     @Resource
-    private ConfigVo configVo;
+    private ConfigVO configVo;
 
     @Resource
-    private EmailRuleBo emailRuleBo;
+    private EmailRuleBO emailRuleBO;
 
     @Resource
     private UserInfoEntityService userInfoEntityService;
@@ -78,7 +78,7 @@ public class PassportManager {
     @Resource
     private NoticeManager noticeManager;
 
-    public UserInfoVo login(LoginDto loginDto, HttpServletResponse response, HttpServletRequest request) throws StatusFailException {
+    public UserInfoVO login(LoginDTO loginDto, HttpServletResponse response, HttpServletRequest request) throws StatusFailException {
         // 去掉账号密码首尾的空格
         loginDto.setPassword(loginDto.getPassword().trim());
         loginDto.setUsername(loginDto.getUsername().trim());
@@ -102,7 +102,7 @@ public class PassportManager {
             throw new StatusFailException("对不起！登录失败次数过多！您的账号有风险，半个小时内暂时无法登录！");
         }
 
-        UserRolesVo userRolesVo = userRoleEntityService.getUserRoles(null, loginDto.getUsername());
+        UserRolesVO userRolesVo = userRoleEntityService.getUserRoles(null, loginDto.getUsername());
 
         if (userRolesVo == null) {
             throw new StatusFailException("用户名或密码错误！请注意大小写！");
@@ -139,7 +139,7 @@ public class PassportManager {
         // 异步检查是否异地登录
         sessionEntityService.checkRemoteLogin(userRolesVo.getUid());
 
-        UserInfoVo userInfoVo = new UserInfoVo();
+        UserInfoVO userInfoVo = new UserInfoVO();
         BeanUtil.copyProperties(userRolesVo, userInfoVo, "roles");
         userInfoVo.setRoleList(userRolesVo.getRoles()
                 .stream()
@@ -149,7 +149,7 @@ public class PassportManager {
     }
 
 
-    public RegisterCodeVo getRegisterCode(String email) throws StatusAccessDeniedException, StatusFailException, StatusForbiddenException {
+    public RegisterCodeVO getRegisterCode(String email) throws StatusAccessDeniedException, StatusFailException, StatusForbiddenException {
 
         if (!configVo.getRegister()) { // 需要判断一下网站是否开启注册
             throw new StatusAccessDeniedException("对不起！本站暂未开启注册功能！");
@@ -165,7 +165,7 @@ public class PassportManager {
             throw new StatusFailException("对不起！您的邮箱格式不正确！");
         }
 
-        boolean isBlackEmail = emailRuleBo.getBlackList().stream().anyMatch(email::endsWith);
+        boolean isBlackEmail = emailRuleBO.getBlackList().stream().anyMatch(email::endsWith);
         if (isBlackEmail) {
             throw new StatusForbiddenException("对不起！您的邮箱无法注册本网站！");
         }
@@ -187,7 +187,7 @@ public class PassportManager {
         emailManager.sendCode(email, numbers);
         redisUtils.set(lockKey, 0, 60);
 
-        RegisterCodeVo registerCodeVo = new RegisterCodeVo();
+        RegisterCodeVO registerCodeVo = new RegisterCodeVO();
         registerCodeVo.setEmail(email);
         registerCodeVo.setExpire(5 * 60);
 
@@ -196,7 +196,7 @@ public class PassportManager {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public void register(RegisterDto registerDto) throws StatusAccessDeniedException, StatusFailException {
+    public void register(RegisterDTO registerDto) throws StatusAccessDeniedException, StatusFailException {
 
         if (!configVo.getRegister()) { // 需要判断一下网站是否开启注册
             throw new StatusAccessDeniedException("对不起！本站暂未开启注册功能！");
@@ -252,7 +252,7 @@ public class PassportManager {
     }
 
 
-    public void applyResetPassword(ApplyResetPasswordDto applyResetPasswordDto) throws StatusFailException {
+    public void applyResetPassword(ApplyResetPasswordDTO applyResetPasswordDto) throws StatusFailException {
 
         String captcha = applyResetPasswordDto.getCaptcha();
         String captchaKey = applyResetPasswordDto.getCaptchaKey();
@@ -292,7 +292,7 @@ public class PassportManager {
     }
 
 
-    public void resetPassword(ResetPasswordDto resetPasswordDto) throws StatusFailException {
+    public void resetPassword(ResetPasswordDTO resetPasswordDto) throws StatusFailException {
         String username = resetPasswordDto.getUsername();
         String password = resetPasswordDto.getPassword();
         String code = resetPasswordDto.getCode();

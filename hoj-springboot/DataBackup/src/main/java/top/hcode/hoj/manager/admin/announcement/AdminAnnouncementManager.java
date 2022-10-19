@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.pojo.entity.common.Announcement;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.vo.AnnouncementVO;
 import top.hcode.hoj.dao.common.AnnouncementEntityService;
 
 
@@ -20,7 +20,7 @@ public class AdminAnnouncementManager {
     @Autowired
     private AnnouncementEntityService announcementEntityService;
 
-    public IPage<AnnouncementVo> getAnnouncementList(Integer limit, Integer currentPage) {
+    public IPage<AnnouncementVO> getAnnouncementList(Integer limit, Integer currentPage) {
 
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;

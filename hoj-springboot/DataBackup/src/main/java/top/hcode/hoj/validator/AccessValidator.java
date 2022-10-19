@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.annotation.HOJAccessEnum;
 import top.hcode.hoj.exception.AccessException;
-import top.hcode.hoj.pojo.vo.ConfigVo;
+import top.hcode.hoj.pojo.vo.ConfigVO;
 
 /**
  * @Author Himit_ZH
@@ -14,7 +14,7 @@ import top.hcode.hoj.pojo.vo.ConfigVo;
 public class AccessValidator {
 
     @Autowired
-    private ConfigVo configVo;
+    private ConfigVO configVo;
 
     public void validateAccess(HOJAccessEnum hojAccessEnum) throws AccessException {
         switch (hojAccessEnum) {

@@ -18,11 +18,11 @@ import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.dao.user.UserRecordEntityService;
 import top.hcode.hoj.dao.user.UserRoleEntityService;
 import top.hcode.hoj.manager.msg.AdminNoticeManager;
-import top.hcode.hoj.pojo.dto.AdminEditUserDto;
+import top.hcode.hoj.pojo.dto.AdminEditUserDTO;
 import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.entity.user.UserRecord;
 import top.hcode.hoj.pojo.entity.user.UserRole;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
@@ -52,7 +52,7 @@ public class AdminUserManager {
     @Autowired
     private RedisUtils redisUtils;
 
-    public IPage<UserRolesVo> getUserList(Integer limit, Integer currentPage, Boolean onlyAdmin, String keyword) {
+    public IPage<UserRolesVO> getUserList(Integer limit, Integer currentPage, Boolean onlyAdmin, String keyword) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;
         if (keyword != null) {
@@ -61,7 +61,7 @@ public class AdminUserManager {
         return userRoleEntityService.getUserList(limit, currentPage, keyword, onlyAdmin);
     }
 
-    public void editUser(AdminEditUserDto adminEditUserDto) throws StatusFailException {
+    public void editUser(AdminEditUserDTO adminEditUserDto) throws StatusFailException {
 
         String username = adminEditUserDto.getUsername();
         String uid = adminEditUserDto.getUid();
@@ -129,7 +129,7 @@ public class AdminUserManager {
         if (changeUserRole) {
             // 获取当前登录的用户
             Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
             String title = "权限变更通知(Authority Change Notice)";
             String content = userRoleEntityService.getAuthChangeContent(oldType, type);
             adminNoticeManager.addSingleNoticeToUser(userRolesVo.getUid(), uid, title, content, "Sys");

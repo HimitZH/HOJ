@@ -19,12 +19,12 @@ import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.dao.problem.LanguageEntityService;
 import top.hcode.hoj.dao.problem.ProblemEntityService;
 import top.hcode.hoj.exception.ProblemIDRepeatException;
-import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
 import top.hcode.hoj.pojo.entity.problem.CodeTemplate;
 import top.hcode.hoj.pojo.entity.problem.Language;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.ProblemCase;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
@@ -79,16 +79,16 @@ public class ImportFpsProblemManager {
         }
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
-        List<ProblemDto> problemDtoList = parseFps(file.getInputStream(), userRolesVo.getUsername());
-        if (problemDtoList.size() == 0) {
+        List<ProblemDTO> problemDTOList = parseFps(file.getInputStream(), userRolesVo.getUsername());
+        if (problemDTOList.size() == 0) {
             throw new StatusFailException("警告：未成功导入一道以上的题目，请检查文件格式是否正确！");
         } else {
             HashSet<String> repeatProblemTitleSet = new HashSet<>();
             HashSet<String> failedProblemTitleSet = new HashSet<>();
             int failedCount = 0;
-            for (ProblemDto problemDto : problemDtoList) {
+            for (ProblemDTO problemDto : problemDTOList) {
                 try {
                     boolean isOk = problemEntityService.adminAddProblem(problemDto);
                     if (!isOk) {
@@ -104,7 +104,7 @@ public class ImportFpsProblemManager {
                 }
             }
             if (failedCount > 0) {
-                int successCount = problemDtoList.size() - failedCount;
+                int successCount = problemDTOList.size() - failedCount;
                 String errMsg = "[导入结果] 成功数：" + successCount + ",  失败数：" + failedCount +
                         ",  重复失败的题目标题：" + repeatProblemTitleSet;
                 if (failedProblemTitleSet.size() > 0) {
@@ -116,7 +116,7 @@ public class ImportFpsProblemManager {
 
     }
 
-    private List<ProblemDto> parseFps(InputStream inputStream, String username) throws StatusFailException {
+    private List<ProblemDTO> parseFps(InputStream inputStream, String username) throws StatusFailException {
 
         Document document = null;
         try {
@@ -138,7 +138,7 @@ public class ImportFpsProblemManager {
         Element rootElement = XmlUtil.getRootElement(document);
         String version = rootElement.getAttribute("version");
 
-        List<ProblemDto> problemDtoList = new ArrayList<>();
+        List<ProblemDTO> problemDTOList = new ArrayList<>();
 
         String fileDirId = IdUtil.simpleUUID();
         String fileDir = Constants.File.TESTCASE_TMP_FOLDER.getPath() + File.separator + fileDirId;
@@ -300,7 +300,7 @@ public class ImportFpsProblemManager {
             if (problem.getSpjLanguage() != null) {
                 mode = Constants.JudgeMode.SPJ.getMode();
             }
-            ProblemDto problemDto = new ProblemDto();
+            ProblemDTO problemDto = new ProblemDTO();
             problemDto.setSamples(problemSamples)
                     .setIsUploadTestCase(true)
                     .setUploadTestcaseDir(problemTestCaseDir)
@@ -310,10 +310,10 @@ public class ImportFpsProblemManager {
                     .setProblem(problem)
                     .setCodeTemplates(codeTemplates);
 
-            problemDtoList.add(problemDto);
+            problemDTOList.add(problemDto);
             index++;
         }
-        return problemDtoList;
+        return problemDTOList;
     }
 
 

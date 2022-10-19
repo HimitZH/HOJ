@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.hcode.hoj.pojo.entity.msg.MsgRemind;
-import top.hcode.hoj.pojo.vo.UserMsgVo;
-import top.hcode.hoj.pojo.vo.UserUnreadMsgCountVo;
+import top.hcode.hoj.pojo.vo.UserMsgVO;
+import top.hcode.hoj.pojo.vo.UserUnreadMsgCountVO;
 
 
 /**
@@ -15,7 +15,7 @@ import top.hcode.hoj.pojo.vo.UserUnreadMsgCountVo;
  */
 public interface MsgRemindEntityService extends IService<MsgRemind> {
 
-    UserUnreadMsgCountVo getUserUnreadMsgCount(String uid);
+    UserUnreadMsgCountVO getUserUnreadMsgCount(String uid);
 
-    IPage<UserMsgVo> getUserMsg(Page<UserMsgVo> page, String uid,String action);
+    IPage<UserMsgVO> getUserMsg(Page<UserMsgVO> page, String uid, String action);
 }

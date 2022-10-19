@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.mapper.JudgeMapper">
-    <select id="getCommonJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="true">
+    <select id="getCommonJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVO" useCache="true">
         select j.submit_id,j.submit_time,j.display_pid,j.username,j.uid,j.pid,j.status,j.share,
             j.time,j.memory,j.score,j.oi_rank_score,j.length,j.language,j.cid,j.cpid,j.judger,j.is_manual
             from judge j
@@ -35,7 +35,7 @@
     </select>
 
 
-    <select id="getContestJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVo" useCache="true">
+    <select id="getContestJudgeList" resultType="top.hcode.hoj.pojo.vo.JudgeVO" useCache="true">
         select j.submit_id,j.submit_time,j.uid,j.username,cp.display_id,cp.display_title as title,
         j.status,j.share,j.time,j.memory,j.score,j.length,j.language,j.cid,j.cpid,j.judger,j.is_manual
         from judge j right join
@@ -89,7 +89,7 @@
         SELECT count(*) FROM judge WHERE DATE(gmt_create) = CURDATE();
     </select>
 
-    <select id="getContestProblemCount" resultType="top.hcode.hoj.pojo.vo.ProblemCountVo">
+    <select id="getContestProblemCount" resultType="top.hcode.hoj.pojo.vo.ProblemCountVO">
         SELECT COUNT(IF(status=-3,status,NULL)) AS pe,
         COUNT(IF(status=-2,status,NULL)) AS ce,
         COUNT(IF(status=-1,status,NULL)) AS wa,
@@ -119,7 +119,7 @@
         </where>
     </select>
 
-    <select id="getProblemCount" resultType="top.hcode.hoj.pojo.vo.ProblemCountVo">
+    <select id="getProblemCount" resultType="top.hcode.hoj.pojo.vo.ProblemCountVO">
         SELECT pid,COUNT(IF(status=-3,status,NULL)) AS pe,
         COUNT(IF(status=-2,status,NULL)) AS ce,
         COUNT(IF(status=-1,status,NULL)) AS wa,
@@ -142,7 +142,7 @@
         </where>
     </select>
 
-    <select id="getProblemListCount" resultType="top.hcode.hoj.pojo.vo.ProblemCountVo">
+    <select id="getProblemListCount" resultType="top.hcode.hoj.pojo.vo.ProblemCountVO">
         SELECT pid,COUNT(IF(STATUS=-3,STATUS,NULL)) AS pe,
         COUNT(IF(STATUS=-2,STATUS,NULL)) AS ce,
         COUNT(IF(STATUS=-1,STATUS,NULL)) AS wa,
@@ -179,7 +179,7 @@
         </where>
     </select>
 
-    <select id="getContestScrollBoardSubmission" resultType="top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVo" useCache="true">
+    <select id="getContestScrollBoardSubmission" resultType="top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVO" useCache="true">
         select ju.submit_id,ju.submit_time, ju.uid, ju.username, ju.status, ju.nickname, ju.realname, ju.gender, ju.school,
         cp.display_id
         from

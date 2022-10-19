@@ -13,7 +13,7 @@
     </select>
 
 
-    <resultMap id="map_TrainingProblemList" type="top.hcode.hoj.pojo.vo.ProblemVo">
+    <resultMap id="map_TrainingProblemList" type="top.hcode.hoj.pojo.vo.ProblemVO">
         <id column="pid" property="pid"></id>
         <result column="problem_id" property="problemId"></result>
         <result column="title" property="title"></result>

@@ -2,7 +2,7 @@ package top.hcode.hoj.service.group.announcement;
 
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.common.Announcement;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.vo.AnnouncementVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
@@ -12,9 +12,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  */
 public interface GroupAnnouncementService {
 
-    public CommonResult<IPage<AnnouncementVo>> getAnnouncementList(Integer limit, Integer currentPage, Long gid);
+    public CommonResult<IPage<AnnouncementVO>> getAnnouncementList(Integer limit, Integer currentPage, Long gid);
 
-    public CommonResult<IPage<AnnouncementVo>> getAdminAnnouncementList(Integer limit, Integer currentPage, Long gid);
+    public CommonResult<IPage<AnnouncementVO>> getAdminAnnouncementList(Integer limit, Integer currentPage, Long gid);
 
     public CommonResult<Void> addAnnouncement(Announcement announcement);
 

@@ -1,7 +1,7 @@
 package top.hcode.hoj.mapper;
 
 import top.hcode.hoj.pojo.entity.problem.Problem;
-import top.hcode.hoj.pojo.vo.ProblemVo;
+import top.hcode.hoj.pojo.vo.ProblemVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Mapper;
@@ -19,7 +19,7 @@ import java.util.List;
 @Repository
 public interface GroupProblemMapper extends BaseMapper<Problem> {
 
-    List<ProblemVo> getProblemList(IPage iPage, @Param("gid") Long gid);
+    List<ProblemVO> getProblemList(IPage iPage, @Param("gid") Long gid);
 
     List<Problem> getAdminProblemList(IPage iPage, @Param("gid") Long gid);
 }

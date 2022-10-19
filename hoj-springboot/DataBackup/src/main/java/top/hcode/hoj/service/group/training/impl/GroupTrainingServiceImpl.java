@@ -6,9 +6,9 @@ import top.hcode.hoj.common.exception.StatusNotFoundException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.group.training.GroupTrainingManager;
-import top.hcode.hoj.pojo.dto.TrainingDto;
+import top.hcode.hoj.pojo.dto.TrainingDTO;
 import top.hcode.hoj.pojo.entity.training.Training;
-import top.hcode.hoj.pojo.vo.TrainingVo;
+import top.hcode.hoj.pojo.vo.TrainingVO;
 import top.hcode.hoj.service.group.training.GroupTrainingService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class GroupTrainingServiceImpl implements GroupTrainingService {
     private GroupTrainingManager groupTrainingManager;
 
     @Override
-    public CommonResult<IPage<TrainingVo>> getTrainingList(Integer limit, Integer currentPage, Long gid) {
+    public CommonResult<IPage<TrainingVO>> getTrainingList(Integer limit, Integer currentPage, Long gid) {
         try {
             return CommonResult.successResponse(groupTrainingManager.getTrainingList(limit, currentPage, gid));
         } catch (StatusForbiddenException e) {
@@ -48,7 +48,7 @@ public class GroupTrainingServiceImpl implements GroupTrainingService {
     }
 
     @Override
-    public CommonResult<TrainingDto> getTraining(Long tid) {
+    public CommonResult<TrainingDTO> getTraining(Long tid) {
         try {
             return CommonResult.successResponse(groupTrainingManager.getTraining(tid));
         } catch (StatusForbiddenException e) {
@@ -61,7 +61,7 @@ public class GroupTrainingServiceImpl implements GroupTrainingService {
     }
 
     @Override
-    public CommonResult<Void> addTraining(TrainingDto trainingDto) {
+    public CommonResult<Void> addTraining(TrainingDTO trainingDto) {
         try {
             groupTrainingManager.addTraining(trainingDto);
             return CommonResult.successResponse();
@@ -75,7 +75,7 @@ public class GroupTrainingServiceImpl implements GroupTrainingService {
     }
 
     @Override
-    public CommonResult<Void> updateTraining(TrainingDto trainingDto) {
+    public CommonResult<Void> updateTraining(TrainingDTO trainingDto) {
         try {
             groupTrainingManager.updateTraining(trainingDto);
             return CommonResult.successResponse();

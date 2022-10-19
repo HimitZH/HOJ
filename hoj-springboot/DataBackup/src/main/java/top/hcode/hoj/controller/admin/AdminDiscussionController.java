@@ -11,7 +11,7 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.discussion.Discussion;
 import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
 
-import top.hcode.hoj.pojo.vo.DiscussionReportVo;
+import top.hcode.hoj.pojo.vo.DiscussionReportVO;
 import top.hcode.hoj.service.admin.discussion.AdminDiscussionService;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public class AdminDiscussionController {
     @GetMapping("/discussion-report")
     @RequiresRoles(value = {"root", "admin","problem_admin"}, logical = Logical.OR)
     @RequiresAuthentication
-    public CommonResult<IPage<DiscussionReportVo>> getDiscussionReport(@RequestParam(value = "limit", defaultValue = "10") Integer limit,
+    public CommonResult<IPage<DiscussionReportVO>> getDiscussionReport(@RequestParam(value = "limit", defaultValue = "10") Integer limit,
                                                                        @RequestParam(value = "currentPage", defaultValue = "1") Integer currentPage) {
         return adminDiscussionService.getDiscussionReport(limit, currentPage);
     }

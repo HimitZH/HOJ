@@ -6,9 +6,9 @@ import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.admin.account.AdminAccountManager;
-import top.hcode.hoj.pojo.vo.UserInfoVo;
+import top.hcode.hoj.pojo.vo.UserInfoVO;
 import top.hcode.hoj.service.admin.account.AdminAccountService;
-import top.hcode.hoj.pojo.dto.LoginDto;
+import top.hcode.hoj.pojo.dto.LoginDTO;
 
 import javax.annotation.Resource;
 
@@ -25,7 +25,7 @@ public class AdminAccountServiceImpl implements AdminAccountService {
     private AdminAccountManager adminAccountManager;
 
     @Override
-    public CommonResult<UserInfoVo> login(LoginDto loginDto) {
+    public CommonResult<UserInfoVO> login(LoginDTO loginDto) {
         try {
             return CommonResult.successResponse(adminAccountManager.login(loginDto));
         } catch (StatusFailException e) {

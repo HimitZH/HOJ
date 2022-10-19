@@ -5,12 +5,11 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.ReplyDto;
+import top.hcode.hoj.pojo.dto.ReplyDTO;
 import top.hcode.hoj.pojo.entity.discussion.Comment;
-import top.hcode.hoj.pojo.entity.discussion.Reply;
-import top.hcode.hoj.pojo.vo.CommentListVo;
+import top.hcode.hoj.pojo.vo.CommentListVO;
 import top.hcode.hoj.pojo.vo.CommentVo;
-import top.hcode.hoj.pojo.vo.ReplyVo;
+import top.hcode.hoj.pojo.vo.ReplyVO;
 import top.hcode.hoj.service.oj.CommentService;
 
 import java.util.List;
@@ -29,7 +28,7 @@ public class CommentController {
 
 
     @GetMapping("/comments")
-    public CommonResult<CommentListVo> getComments(@RequestParam(value = "cid", required = false) Long cid,
+    public CommonResult<CommentListVO> getComments(@RequestParam(value = "cid", required = false) Long cid,
                                                    @RequestParam(value = "did", required = false) Integer did,
                                                    @RequestParam(value = "limit", required = false, defaultValue = "20") Integer limit,
                                                    @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage) {
@@ -60,7 +59,7 @@ public class CommentController {
     }
 
     @GetMapping("/reply")
-    public CommonResult<List<ReplyVo>> getAllReply(@RequestParam("commentId") Integer commentId,
+    public CommonResult<List<ReplyVO>> getAllReply(@RequestParam("commentId") Integer commentId,
                                                    @RequestParam(value = "cid", required = false) Long cid) {
         return commentService.getAllReply(commentId, cid);
     }
@@ -68,13 +67,13 @@ public class CommentController {
     @PostMapping("/reply")
     @RequiresPermissions("reply_add")
     @RequiresAuthentication
-    public CommonResult<ReplyVo> addReply(@RequestBody ReplyDto replyDto) {
+    public CommonResult<ReplyVO> addReply(@RequestBody ReplyDTO replyDto) {
         return commentService.addReply(replyDto);
     }
 
     @DeleteMapping("/reply")
     @RequiresAuthentication
-    public CommonResult<Void> deleteReply(@RequestBody ReplyDto replyDto) {
+    public CommonResult<Void> deleteReply(@RequestBody ReplyDTO replyDto) {
         return commentService.deleteReply(replyDto);
     }
 

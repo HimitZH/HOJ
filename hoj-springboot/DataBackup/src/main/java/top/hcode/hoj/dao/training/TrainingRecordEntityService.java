@@ -2,7 +2,7 @@ package top.hcode.hoj.dao.training;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.hcode.hoj.pojo.entity.training.TrainingRecord;
-import top.hcode.hoj.pojo.vo.TrainingRecordVo;
+import top.hcode.hoj.pojo.vo.TrainingRecordVO;
 
 import java.util.List;
 
@@ -14,6 +14,6 @@ import java.util.List;
  */
 public interface TrainingRecordEntityService extends IService<TrainingRecord> {
 
-    public List<TrainingRecordVo> getTrainingRecord(Long tid);
+    public List<TrainingRecordVO> getTrainingRecord(Long tid);
 
 }

@@ -2,8 +2,8 @@ package top.hcode.hoj.service.group.contest;
 
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.contest.Contest;
-import top.hcode.hoj.pojo.vo.AdminContestVo;
-import top.hcode.hoj.pojo.vo.ContestVo;
+import top.hcode.hoj.pojo.vo.AdminContestVO;
+import top.hcode.hoj.pojo.vo.ContestVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
@@ -13,15 +13,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  */
 public interface GroupContestService {
 
-    public CommonResult<IPage<ContestVo>> getContestList(Integer limit, Integer currentPage, Long gid);
+    public CommonResult<IPage<ContestVO>> getContestList(Integer limit, Integer currentPage, Long gid);
 
     public CommonResult<IPage<Contest>> getAdminContestList(Integer limit, Integer currentPage, Long gid);
 
-    public CommonResult<AdminContestVo> getContest(Long cid);
+    public CommonResult<AdminContestVO> getContest(Long cid);
 
-    public CommonResult<Void> addContest(AdminContestVo adminContestVo);
+    public CommonResult<Void> addContest(AdminContestVO adminContestVo);
 
-    public CommonResult<Void> updateContest(AdminContestVo adminContestVo);
+    public CommonResult<Void> updateContest(AdminContestVO adminContestVo);
 
     public CommonResult<Void> deleteContest(Long cid);
 

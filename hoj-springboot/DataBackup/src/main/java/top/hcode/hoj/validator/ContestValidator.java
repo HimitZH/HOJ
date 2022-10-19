@@ -10,7 +10,7 @@ import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.dao.contest.ContestRegisterEntityService;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestRegister;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
@@ -60,7 +60,7 @@ public class ContestValidator {
      * @Description 需要对该比赛做判断，是否处于开始或结束状态才可以获取，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
      * @Since 2021/1/17
      */
-    public void validateContestAuth(Contest contest, UserRolesVo userRolesVo, Boolean isRoot) throws StatusFailException, StatusForbiddenException {
+    public void validateContestAuth(Contest contest, UserRolesVO userRolesVo, Boolean isRoot) throws StatusFailException, StatusForbiddenException {
 
         if (contest == null || !contest.getVisible()) {
             throw new StatusFailException("对不起，该比赛不存在！");

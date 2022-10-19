@@ -13,7 +13,7 @@ import org.crazycake.shiro.RedisSessionDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.hcode.hoj.pojo.entity.user.UserRole;
 import top.hcode.hoj.mapper.UserRoleMapper;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.dao.user.UserRoleEntityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -41,14 +41,14 @@ public class UserRoleEntityServiceImpl extends ServiceImpl<UserRoleMapper, UserR
     private RedisSessionDAO redisSessionDAO;
 
     @Override
-    public UserRolesVo getUserRoles(String uid, String username) {
+    public UserRolesVO getUserRoles(String uid, String username) {
         return userRoleMapper.getUserRoles(uid, username);
     }
 
     @Override
-    public IPage<UserRolesVo> getUserList(int limit, int currentPage, String keyword, Boolean onlyAdmin) {
+    public IPage<UserRolesVO> getUserList(int limit, int currentPage, String keyword, Boolean onlyAdmin) {
         //新建分页
-        Page<UserRolesVo> page = new Page<>(currentPage, limit);
+        Page<UserRolesVO> page = new Page<>(currentPage, limit);
         if (onlyAdmin) {
             return userRoleMapper.getAdminUserList(page, limit, currentPage, keyword);
         } else {

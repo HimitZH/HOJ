@@ -28,7 +28,7 @@ public class AccountController {
      * @Since 2020/11/5
      */
     @RequestMapping(value = "/check-username-or-email", method = RequestMethod.POST)
-    public CommonResult<CheckUsernameOrEmailVo> checkUsernameOrEmail(@RequestBody CheckUsernameOrEmailDto checkUsernameOrEmailDto) {
+    public CommonResult<CheckUsernameOrEmailVO> checkUsernameOrEmail(@RequestBody CheckUsernameOrEmailDTO checkUsernameOrEmailDto) {
         return accountService.checkUsernameOrEmail(checkUsernameOrEmailDto);
     }
 
@@ -40,7 +40,7 @@ public class AccountController {
      * @Since 2021/01/07
      */
     @GetMapping("/get-user-home-info")
-    public CommonResult<UserHomeVo> getUserHomeInfo(@RequestParam(value = "uid", required = false) String uid,
+    public CommonResult<UserHomeVO> getUserHomeInfo(@RequestParam(value = "uid", required = false) String uid,
                                                     @RequestParam(value = "username", required = false) String username) {
         return accountService.getUserHomeInfo(uid, username);
     }
@@ -53,8 +53,8 @@ public class AccountController {
      * @Description 获取用户最近一年的提交热力图数据
      */
     @GetMapping("/get-user-calendar-heatmap")
-    public CommonResult<UserCalendarHeatmapVo> getUserCalendarHeatmap(@RequestParam(value = "uid", required = false) String uid,
-                                                           @RequestParam(value = "username", required = false) String username) {
+    public CommonResult<UserCalendarHeatmapVO> getUserCalendarHeatmap(@RequestParam(value = "uid", required = false) String uid,
+                                                                      @RequestParam(value = "username", required = false) String username) {
         return accountService.getUserCalendarHeatmap(uid, username);
     }
 
@@ -69,7 +69,7 @@ public class AccountController {
 
     @PostMapping("/change-password")
     @RequiresAuthentication
-    public CommonResult<ChangeAccountVo> changePassword(@RequestBody ChangePasswordDto changePasswordDto) {
+    public CommonResult<ChangeAccountVO> changePassword(@RequestBody ChangePasswordDTO changePasswordDto) {
         return accountService.changePassword(changePasswordDto);
     }
 
@@ -82,13 +82,13 @@ public class AccountController {
      */
     @PostMapping("/change-email")
     @RequiresAuthentication
-    public CommonResult<ChangeAccountVo> changeEmail(@RequestBody ChangeEmailDto changeEmailDto) {
+    public CommonResult<ChangeAccountVO> changeEmail(@RequestBody ChangeEmailDTO changeEmailDto) {
         return accountService.changeEmail(changeEmailDto);
     }
 
     @PostMapping("/change-userInfo")
     @RequiresAuthentication
-    public CommonResult<UserInfoVo> changeUserInfo(@RequestBody UserInfoVo userInfoVo) {
+    public CommonResult<UserInfoVO> changeUserInfo(@RequestBody UserInfoVO userInfoVo) {
         return accountService.changeUserInfo(userInfoVo);
     }
 

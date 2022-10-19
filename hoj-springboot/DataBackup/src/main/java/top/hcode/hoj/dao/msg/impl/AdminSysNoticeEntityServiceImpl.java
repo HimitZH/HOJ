@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import top.hcode.hoj.mapper.AdminSysNoticeMapper;
 
 import top.hcode.hoj.pojo.entity.msg.AdminSysNotice;
-import top.hcode.hoj.pojo.vo.AdminSysNoticeVo;
+import top.hcode.hoj.pojo.vo.AdminSysNoticeVO;
 import top.hcode.hoj.dao.msg.AdminSysNoticeEntityService;
 
 import javax.annotation.Resource;
@@ -24,8 +24,8 @@ public class AdminSysNoticeEntityServiceImpl extends ServiceImpl<AdminSysNoticeM
     private AdminSysNoticeMapper adminSysNoticeMapper;
 
     @Override
-    public IPage<AdminSysNoticeVo> getSysNotice(int limit, int currentPage, String type) {
-        Page<AdminSysNoticeVo> page = new Page<>(currentPage, limit);
+    public IPage<AdminSysNoticeVO> getSysNotice(int limit, int currentPage, String type) {
+        Page<AdminSysNoticeVO> page = new Page<>(currentPage, limit);
         return adminSysNoticeMapper.getAdminSysNotice(page, type);
     }
 }

@@ -4,7 +4,7 @@ import com.alibaba.excel.EasyExcel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import top.hcode.hoj.pojo.vo.ExcelUserVo;
+import top.hcode.hoj.pojo.vo.ExcelUserVO;
 import top.hcode.hoj.utils.RedisUtils;
 
 import javax.servlet.http.HttpServletResponse;
@@ -33,16 +33,16 @@ public class UserFileManager {
         String fileName = URLEncoder.encode(key, "UTF-8");
         response.setHeader("Content-disposition", "attachment;filename=" + fileName + ".xlsx");
         response.setHeader("Content-Type", "application/xlsx");
-        EasyExcel.write(response.getOutputStream(), ExcelUserVo.class).sheet("用户数据").doWrite(getGenerateUsers(key));
+        EasyExcel.write(response.getOutputStream(), ExcelUserVO.class).sheet("用户数据").doWrite(getGenerateUsers(key));
     }
 
-    private List<ExcelUserVo> getGenerateUsers(String key) {
-        List<ExcelUserVo> result = new LinkedList<>();
+    private List<ExcelUserVO> getGenerateUsers(String key) {
+        List<ExcelUserVO> result = new LinkedList<>();
         Map<Object, Object> userInfo = redisUtils.hmget(key);
         for (Object hashKey : userInfo.keySet()) {
             String username = (String) hashKey;
             String password = (String) userInfo.get(hashKey);
-            result.add(new ExcelUserVo().setUsername(username).setPassword(password));
+            result.add(new ExcelUserVO().setUsername(username).setPassword(password));
         }
         return result;
     }

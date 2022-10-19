@@ -2,11 +2,11 @@ package top.hcode.hoj.service.oj;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.RegisterTrainingDto;
-import top.hcode.hoj.pojo.vo.AccessVo;
-import top.hcode.hoj.pojo.vo.ProblemVo;
-import top.hcode.hoj.pojo.vo.TrainingRankVo;
-import top.hcode.hoj.pojo.vo.TrainingVo;
+import top.hcode.hoj.pojo.dto.RegisterTrainingDTO;
+import top.hcode.hoj.pojo.vo.AccessVO;
+import top.hcode.hoj.pojo.vo.ProblemVO;
+import top.hcode.hoj.pojo.vo.TrainingRankVO;
+import top.hcode.hoj.pojo.vo.TrainingVO;
 
 import java.util.List;
 
@@ -17,15 +17,15 @@ import java.util.List;
  */
 public interface TrainingService {
 
-    public CommonResult<IPage<TrainingVo>> getTrainingList(Integer limit, Integer currentPage, String keyword, Long categoryId, String auth);
+    public CommonResult<IPage<TrainingVO>> getTrainingList(Integer limit, Integer currentPage, String keyword, Long categoryId, String auth);
 
-    public CommonResult<TrainingVo> getTraining(Long tid);
+    public CommonResult<TrainingVO> getTraining(Long tid);
 
-    public CommonResult<List<ProblemVo>> getTrainingProblemList(Long tid);
+    public CommonResult<List<ProblemVO>> getTrainingProblemList(Long tid);
 
-    public CommonResult<Void> toRegisterTraining(RegisterTrainingDto registerTrainingDto);
+    public CommonResult<Void> toRegisterTraining(RegisterTrainingDTO registerTrainingDto);
 
-    public CommonResult<AccessVo> getTrainingAccess( Long tid);
+    public CommonResult<AccessVO> getTrainingAccess(Long tid);
 
-    public CommonResult<IPage<TrainingRankVo>> getTrainingRank(Long tid, Integer limit, Integer currentPage);
+    public CommonResult<IPage<TrainingRankVO>> getTrainingRank(Long tid, Integer limit, Integer currentPage);
 }

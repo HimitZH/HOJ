@@ -11,8 +11,8 @@ import top.hcode.hoj.dao.contest.ContestProblemEntityService;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestProblem;
-import top.hcode.hoj.pojo.vo.ContestScrollBoardInfoVo;
-import top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVo;
+import top.hcode.hoj.pojo.vo.ContestScrollBoardInfoVO;
+import top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVO;
 import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
@@ -41,7 +41,7 @@ public class ContestScrollBoardManager {
     private ContestCalculateRankManager contestCalculateRankManager;
 
 
-    public ContestScrollBoardInfoVo getContestScrollBoardInfo(Long cid) throws StatusFailException {
+    public ContestScrollBoardInfoVO getContestScrollBoardInfo(Long cid) throws StatusFailException {
         Contest contest = contestEntityService.getById(cid);
         if (contest == null) {
             throw new StatusFailException("比赛不存在 (The contest does not exist)");
@@ -67,7 +67,7 @@ public class ContestScrollBoardManager {
             balloonColor.put(contestProblem.getDisplayId(), contestProblem.getColor());
         }
 
-        ContestScrollBoardInfoVo info = new ContestScrollBoardInfoVo();
+        ContestScrollBoardInfoVO info = new ContestScrollBoardInfoVO();
         info.setId(cid);
         info.setProblemCount(contestProblemList.size());
         info.setBalloonColor(balloonColor);
@@ -89,7 +89,7 @@ public class ContestScrollBoardManager {
     }
 
 
-    public List<ContestScrollBoardSubmissionVo> getContestScrollBoardSubmission(Long cid) throws StatusFailException {
+    public List<ContestScrollBoardSubmissionVO> getContestScrollBoardSubmission(Long cid) throws StatusFailException {
         Contest contest = contestEntityService.getById(cid);
         if (contest == null) {
             throw new StatusFailException("比赛不存在 (The contest does not exist)");

@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.LoginDto;
-import top.hcode.hoj.pojo.dto.RegisterDto;
-import top.hcode.hoj.pojo.dto.ApplyResetPasswordDto;
-import top.hcode.hoj.pojo.dto.ResetPasswordDto;
-import top.hcode.hoj.pojo.vo.RegisterCodeVo;
-import top.hcode.hoj.pojo.vo.UserInfoVo;
+import top.hcode.hoj.pojo.dto.LoginDTO;
+import top.hcode.hoj.pojo.dto.RegisterDTO;
+import top.hcode.hoj.pojo.dto.ApplyResetPasswordDTO;
+import top.hcode.hoj.pojo.dto.ResetPasswordDTO;
+import top.hcode.hoj.pojo.vo.RegisterCodeVO;
+import top.hcode.hoj.pojo.vo.UserInfoVO;
 import top.hcode.hoj.service.oj.PassportService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +38,7 @@ public class PassportController {
      * @Since 2020/10/24
      */
     @PostMapping("/login")
-    public CommonResult<UserInfoVo> login(@Validated @RequestBody LoginDto loginDto, HttpServletResponse response, HttpServletRequest request) {
+    public CommonResult<UserInfoVO> login(@Validated @RequestBody LoginDTO loginDto, HttpServletResponse response, HttpServletRequest request) {
         return passportService.login(loginDto, response, request);
     }
 
@@ -49,7 +49,7 @@ public class PassportController {
      * @Since 2020/10/26
      */
     @RequestMapping(value = "/get-register-code", method = RequestMethod.GET)
-    public CommonResult<RegisterCodeVo> getRegisterCode(@RequestParam(value = "email", required = true) String email) {
+    public CommonResult<RegisterCodeVO> getRegisterCode(@RequestParam(value = "email", required = true) String email) {
         return passportService.getRegisterCode(email);
     }
 
@@ -62,7 +62,7 @@ public class PassportController {
      * @Since 2020/10/24
      */
     @PostMapping("/register")
-    public CommonResult<Void> register(@Validated @RequestBody RegisterDto registerDto) {
+    public CommonResult<Void> register(@Validated @RequestBody RegisterDTO registerDto) {
         return passportService.register(registerDto);
     }
 
@@ -75,7 +75,7 @@ public class PassportController {
      * @Since 2020/11/6
      */
     @PostMapping("/apply-reset-password")
-    public CommonResult<Void> applyResetPassword(@RequestBody ApplyResetPasswordDto applyResetPasswordDto) {
+    public CommonResult<Void> applyResetPassword(@RequestBody ApplyResetPasswordDTO applyResetPasswordDto) {
         return passportService.applyResetPassword(applyResetPasswordDto);
     }
 
@@ -88,7 +88,7 @@ public class PassportController {
      * @Since 2020/11/6
      */
     @PostMapping("/reset-password")
-    public CommonResult<Void> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+    public CommonResult<Void> resetPassword(@RequestBody ResetPasswordDTO resetPasswordDto) {
         return passportService.resetPassword(resetPasswordDto);
     }
 

@@ -18,12 +18,12 @@ import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.crawler.problem.ProblemStrategy;
 import top.hcode.hoj.manager.admin.problem.RemoteProblemManager;
-import top.hcode.hoj.pojo.dto.ContestProblemDto;
-import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.dto.ContestProblemDTO;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
 import top.hcode.hoj.pojo.entity.contest.ContestProblem;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.Problem;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.dao.contest.ContestProblemEntityService;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.dao.problem.ProblemEntityService;
@@ -150,7 +150,7 @@ public class AdminContestProblemManager {
         if (problem != null) { // 查询成功
             // 获取当前登录的用户
             Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
             boolean isRoot = SecurityUtils.getSubject().hasRole("root");
             boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
@@ -184,7 +184,7 @@ public class AdminContestProblemManager {
         }
     }
 
-    public Map<Object, Object> addProblem(ProblemDto problemDto) throws StatusFailException {
+    public Map<Object, Object> addProblem(ProblemDTO problemDto) throws StatusFailException {
 
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("problem_id", problemDto.getProblem().getProblemId().toUpperCase());
@@ -203,10 +203,10 @@ public class AdminContestProblemManager {
         }
     }
 
-    public void updateProblem(ProblemDto problemDto) throws StatusForbiddenException, StatusFailException {
+    public void updateProblem(ProblemDTO problemDto) throws StatusForbiddenException, StatusFailException {
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
@@ -254,7 +254,7 @@ public class AdminContestProblemManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void addProblemFromPublic(ContestProblemDto contestProblemDto) throws StatusFailException {
+    public void addProblemFromPublic(ContestProblemDTO contestProblemDto) throws StatusFailException {
 
         Long pid = contestProblemDto.getPid();
         Long cid = contestProblemDto.getCid();
@@ -293,7 +293,7 @@ public class AdminContestProblemManager {
         // 如果该题目不存在，需要先导入
         if (problem == null) {
             Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
             try {
                 ProblemStrategy.RemoteProblemInfo otherOJProblemInfo = remoteProblemManager.getOtherOJProblemInfo(name.toUpperCase(), problemId, userRolesVo.getUsername());
                 if (otherOJProblemInfo != null) {

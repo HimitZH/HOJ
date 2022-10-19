@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.common.Announcement;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.vo.AnnouncementVO;
 import top.hcode.hoj.service.admin.announcement.AdminAnnouncementService;
 
 
@@ -27,7 +27,7 @@ public class AnnouncementController {
 
     @GetMapping("/announcement")
     @RequiresPermissions("announcement_admin")
-    public CommonResult<IPage<AnnouncementVo>> getAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
+    public CommonResult<IPage<AnnouncementVO>> getAnnouncementList(@RequestParam(value = "limit", required = false) Integer limit,
                                                                    @RequestParam(value = "currentPage", required = false) Integer currentPage) {
         return adminAnnouncementService.getAnnouncementList(limit, currentPage);
     }

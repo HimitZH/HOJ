@@ -12,8 +12,8 @@ import top.hcode.hoj.dao.training.TrainingProblemEntityService;
 import top.hcode.hoj.mapper.GroupTrainingMapper;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
-import top.hcode.hoj.pojo.vo.TrainingVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.TrainingVO;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -35,18 +35,18 @@ public class GroupTrainingEntityServiceImpl extends ServiceImpl<GroupTrainingMap
     private TrainingProblemEntityService trainingProblemEntityService;
 
     @Override
-    public IPage<TrainingVo> getTrainingList(int limit, int currentPage, Long gid) {
-        IPage<TrainingVo> iPage = new Page<>(currentPage, limit);
+    public IPage<TrainingVO> getTrainingList(int limit, int currentPage, Long gid) {
+        IPage<TrainingVO> iPage = new Page<>(currentPage, limit);
 
-        List<TrainingVo> trainingList = groupTrainingMapper.getTrainingList(iPage, gid);
+        List<TrainingVO> trainingList = groupTrainingMapper.getTrainingList(iPage, gid);
 
         // 当前用户有登录，且训练列表不为空，则查询用户对于每个训练的做题进度
         if (trainingList.size() > 0) {
 
             Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
-            List<Long> tidList = trainingList.stream().map(TrainingVo::getId).collect(Collectors.toList());
+            List<Long> tidList = trainingList.stream().map(TrainingVO::getId).collect(Collectors.toList());
             List<TrainingProblem> trainingProblemList = trainingProblemEntityService.getGroupTrainingListAcceptedCountByUid(tidList, gid, userRolesVo.getUid());
             HashMap<Long, Integer> tidMapCount = new HashMap<>(trainingList.size());
             for (TrainingProblem trainingProblem : trainingProblemList) {
@@ -55,7 +55,7 @@ public class GroupTrainingEntityServiceImpl extends ServiceImpl<GroupTrainingMap
                 tidMapCount.put(trainingProblem.getTid(), count);
             }
 
-            for (TrainingVo trainingVo : trainingList) {
+            for (TrainingVO trainingVo : trainingList) {
                 Integer count = tidMapCount.getOrDefault(trainingVo.getId(), 0);
                 trainingVo.setAcCount(count);
             }

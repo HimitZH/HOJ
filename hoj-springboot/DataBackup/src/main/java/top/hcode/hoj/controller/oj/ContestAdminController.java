@@ -6,7 +6,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.CheckACDto;
+import top.hcode.hoj.pojo.dto.CheckACDTO;
 import top.hcode.hoj.pojo.entity.contest.ContestPrint;
 import top.hcode.hoj.pojo.entity.contest.ContestRecord;
 import top.hcode.hoj.service.oj.ContestAdminService;
@@ -49,7 +49,7 @@ public class ContestAdminController {
      */
     @PutMapping("/check-contest-ac-info")
     @RequiresAuthentication
-    public CommonResult<Void> checkContestACInfo(@RequestBody CheckACDto checkACDto) {
+    public CommonResult<Void> checkContestACInfo(@RequestBody CheckACDTO checkACDto) {
 
         return contestAdminService.checkContestACInfo(checkACDto);
     }

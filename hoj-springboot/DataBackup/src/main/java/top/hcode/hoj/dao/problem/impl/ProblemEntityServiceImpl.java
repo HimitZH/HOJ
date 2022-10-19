@@ -27,11 +27,11 @@ import top.hcode.hoj.dao.problem.*;
 import top.hcode.hoj.exception.ProblemIDRepeatException;
 import top.hcode.hoj.mapper.ProblemMapper;
 import top.hcode.hoj.pojo.bo.Pair_;
-import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
 import top.hcode.hoj.pojo.entity.problem.*;
-import top.hcode.hoj.pojo.vo.ImportProblemVo;
-import top.hcode.hoj.pojo.vo.ProblemCountVo;
-import top.hcode.hoj.pojo.vo.ProblemVo;
+import top.hcode.hoj.pojo.vo.ImportProblemVO;
+import top.hcode.hoj.pojo.vo.ProblemCountVO;
+import top.hcode.hoj.pojo.vo.ProblemVO;
 import top.hcode.hoj.utils.Constants;
 
 import java.io.File;
@@ -78,24 +78,24 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
     private final static Pattern EOL_PATTERN = Pattern.compile("[^\\S\\n]+(?=\\n)");
 
     @Override
-    public Page<ProblemVo> getProblemList(int limit, int currentPage, Long pid, String title, Integer difficulty,
+    public Page<ProblemVO> getProblemList(int limit, int currentPage, Long pid, String title, Integer difficulty,
                                           List<Long> tid, String oj) {
 
         //新建分页
-        Page<ProblemVo> page = new Page<>(currentPage, limit);
+        Page<ProblemVO> page = new Page<>(currentPage, limit);
         Integer tagListSize = null;
         if (tid != null) {
             tid = tid.stream().distinct().collect(Collectors.toList());
             tagListSize = tid.size();
         }
 
-        List<ProblemVo> problemList = problemMapper.getProblemList(page, pid, title, difficulty, tid, tagListSize, oj);
+        List<ProblemVO> problemList = problemMapper.getProblemList(page, pid, title, difficulty, tid, tagListSize, oj);
 
         if (problemList.size() > 0) {
-            List<Long> pidList = problemList.stream().map(ProblemVo::getPid).collect(Collectors.toList());
-            List<ProblemCountVo> problemListCount = judgeEntityService.getProblemListCount(pidList);
-            for (ProblemVo problemVo : problemList) {
-                for (ProblemCountVo problemCountVo : problemListCount) {
+            List<Long> pidList = problemList.stream().map(ProblemVO::getPid).collect(Collectors.toList());
+            List<ProblemCountVO> problemListCount = judgeEntityService.getProblemListCount(pidList);
+            for (ProblemVO problemVo : problemList) {
+                for (ProblemCountVO problemCountVo : problemListCount) {
                     if (problemVo.getPid().equals(problemCountVo.getPid())) {
                         problemVo.setProblemCountVo(problemCountVo);
                         break;
@@ -109,7 +109,7 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean adminUpdateProblem(ProblemDto problemDto) {
+    public boolean adminUpdateProblem(ProblemDTO problemDto) {
 
         Problem problem = problemDto.getProblem();
         if (Constants.JudgeMode.DEFAULT.getMode().equals(problemDto.getJudgeMode())) {
@@ -391,7 +391,7 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public boolean adminAddProblem(ProblemDto problemDto) {
+    public boolean adminAddProblem(ProblemDTO problemDto) {
 
         Problem problem = problemDto.getProblem();
 
@@ -709,10 +709,10 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
 
     @Override
     @SuppressWarnings("All")
-    public ImportProblemVo buildExportProblem(Long pid, List<HashMap<String, Object>> problemCaseList,
+    public ImportProblemVO buildExportProblem(Long pid, List<HashMap<String, Object>> problemCaseList,
                                               HashMap<Long, String> languageMap, HashMap<Long, String> tagMap) {
         // 导出相当于导入
-        ImportProblemVo importProblemVo = new ImportProblemVo();
+        ImportProblemVO importProblemVo = new ImportProblemVO();
         Problem problem = problemMapper.selectById(pid);
         problem.setCaseVersion(null)
                 .setGmtCreate(null)

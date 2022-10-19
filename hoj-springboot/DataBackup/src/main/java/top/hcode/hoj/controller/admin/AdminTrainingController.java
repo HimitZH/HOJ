@@ -7,8 +7,8 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.TrainingDto;
-import top.hcode.hoj.pojo.dto.TrainingProblemDto;
+import top.hcode.hoj.pojo.dto.TrainingDTO;
+import top.hcode.hoj.pojo.dto.TrainingProblemDTO;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
 import top.hcode.hoj.service.admin.training.AdminTrainingProblemService;
@@ -45,7 +45,7 @@ public class AdminTrainingController {
     @GetMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult<TrainingDto> getTraining(@RequestParam("tid") Long tid) {
+    public CommonResult<TrainingDTO> getTraining(@RequestParam("tid") Long tid) {
         return adminTrainingService.getTraining(tid);
     }
 
@@ -59,14 +59,14 @@ public class AdminTrainingController {
     @PostMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult<Void> addTraining(@RequestBody TrainingDto trainingDto) {
+    public CommonResult<Void> addTraining(@RequestBody TrainingDTO trainingDto) {
         return adminTrainingService.addTraining(trainingDto);
     }
 
     @PutMapping("")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult<Void> updateTraining(@RequestBody TrainingDto trainingDto) {
+    public CommonResult<Void> updateTraining(@RequestBody TrainingDTO trainingDto) {
         return adminTrainingService.updateTraining(trainingDto);
     }
 
@@ -111,7 +111,7 @@ public class AdminTrainingController {
     @PostMapping("/add-problem-from-public")
     @RequiresAuthentication
     @RequiresRoles(value = {"root", "admin", "problem_admin"}, logical = Logical.OR)
-    public CommonResult<Void> addProblemFromPublic(@RequestBody TrainingProblemDto trainingProblemDto) {
+    public CommonResult<Void> addProblemFromPublic(@RequestBody TrainingProblemDTO trainingProblemDto) {
         return adminTrainingProblemService.addProblemFromPublic(trainingProblemDto);
     }
 

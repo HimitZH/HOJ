@@ -1,8 +1,8 @@
 package top.hcode.hoj.service.group.contest;
 
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.AnnouncementDto;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.dto.AnnouncementDTO;
+import top.hcode.hoj.pojo.vo.AnnouncementVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
@@ -12,11 +12,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
  */
 public interface GroupContestAnnouncementService {
 
-    public CommonResult<IPage<AnnouncementVo>> getContestAnnouncementList(Integer limit, Integer currentPage, Long cid);
+    public CommonResult<IPage<AnnouncementVO>> getContestAnnouncementList(Integer limit, Integer currentPage, Long cid);
 
-    public CommonResult<Void> addContestAnnouncement(AnnouncementDto announcementDto);
+    public CommonResult<Void> addContestAnnouncement(AnnouncementDTO announcementDto);
 
-    public CommonResult<Void> updateContestAnnouncement(AnnouncementDto announcementDto);
+    public CommonResult<Void> updateContestAnnouncement(AnnouncementDTO announcementDto);
 
     public CommonResult<Void> deleteContestAnnouncement(Long aid, Long cid);
 

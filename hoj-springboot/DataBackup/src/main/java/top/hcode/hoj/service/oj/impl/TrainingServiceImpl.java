@@ -8,11 +8,11 @@ import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.oj.TrainingManager;
-import top.hcode.hoj.pojo.dto.RegisterTrainingDto;
-import top.hcode.hoj.pojo.vo.AccessVo;
-import top.hcode.hoj.pojo.vo.ProblemVo;
-import top.hcode.hoj.pojo.vo.TrainingRankVo;
-import top.hcode.hoj.pojo.vo.TrainingVo;
+import top.hcode.hoj.pojo.dto.RegisterTrainingDTO;
+import top.hcode.hoj.pojo.vo.AccessVO;
+import top.hcode.hoj.pojo.vo.ProblemVO;
+import top.hcode.hoj.pojo.vo.TrainingRankVO;
+import top.hcode.hoj.pojo.vo.TrainingVO;
 import top.hcode.hoj.service.oj.TrainingService;
 
 import javax.annotation.Resource;
@@ -30,12 +30,12 @@ public class TrainingServiceImpl implements TrainingService {
     private TrainingManager trainingManager;
 
     @Override
-    public CommonResult<IPage<TrainingVo>> getTrainingList(Integer limit, Integer currentPage, String keyword, Long categoryId, String auth) {
+    public CommonResult<IPage<TrainingVO>> getTrainingList(Integer limit, Integer currentPage, String keyword, Long categoryId, String auth) {
         return CommonResult.successResponse(trainingManager.getTrainingList(limit, currentPage, keyword, categoryId, auth));
     }
 
     @Override
-    public CommonResult<TrainingVo> getTraining(Long tid) {
+    public CommonResult<TrainingVO> getTraining(Long tid) {
         try {
             return CommonResult.successResponse(trainingManager.getTraining(tid));
         } catch (StatusFailException e) {
@@ -48,7 +48,7 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
-    public CommonResult<List<ProblemVo>> getTrainingProblemList(Long tid) {
+    public CommonResult<List<ProblemVO>> getTrainingProblemList(Long tid) {
         try {
             return CommonResult.successResponse(trainingManager.getTrainingProblemList(tid));
         } catch (StatusFailException e) {
@@ -61,7 +61,7 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
-    public CommonResult<Void> toRegisterTraining(RegisterTrainingDto registerTrainingDto) {
+    public CommonResult<Void> toRegisterTraining(RegisterTrainingDTO registerTrainingDto) {
         try {
             trainingManager.toRegisterTraining(registerTrainingDto);
             return CommonResult.successResponse();
@@ -73,7 +73,7 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
-    public CommonResult<AccessVo> getTrainingAccess(Long tid) {
+    public CommonResult<AccessVO> getTrainingAccess(Long tid) {
         try {
             return CommonResult.successResponse(trainingManager.getTrainingAccess(tid));
         } catch (StatusFailException e) {
@@ -82,7 +82,7 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
-    public CommonResult<IPage<TrainingRankVo>> getTrainingRank(Long tid, Integer limit, Integer currentPage) {
+    public CommonResult<IPage<TrainingRankVO>> getTrainingRank(Long tid, Integer limit, Integer currentPage) {
         try {
             return CommonResult.successResponse(trainingManager.getTrainingRank(tid, limit, currentPage));
         } catch (StatusFailException e) {

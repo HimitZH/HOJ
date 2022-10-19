@@ -39,7 +39,7 @@ public class HomeManager {
     private ContestEntityService contestEntityService;
 
     @Autowired
-    private ConfigVo configVo;
+    private ConfigVO configVo;
 
     @Autowired
     private AnnouncementEntityService announcementEntityService;
@@ -69,7 +69,7 @@ public class HomeManager {
      * @Return CommonResult
      * @Since 2020/12/29
      */
-    public List<ContestVo> getRecentContest() {
+    public List<ContestVO> getRecentContest() {
         return contestEntityService.getWithinNext14DaysContests();
     }
 
@@ -100,7 +100,7 @@ public class HomeManager {
      * @Return
      * @Since 2021/1/15
      */
-    public List<ACMRankVo> getRecentSevenACRank() {
+    public List<ACMRankVO> getRecentSevenACRank() {
         return userRecordEntityService.getRecent7ACRank();
     }
 
@@ -127,7 +127,7 @@ public class HomeManager {
      * @Return CommonResult
      * @Since 2020/12/29
      */
-    public IPage<AnnouncementVo> getCommonAnnouncement(Integer limit, Integer currentPage) {
+    public IPage<AnnouncementVO> getCommonAnnouncement(Integer limit, Integer currentPage) {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;
         return announcementEntityService.getAnnouncementList(limit, currentPage, true);
@@ -165,17 +165,39 @@ public class HomeManager {
      * @Return List<Problem>
      * @Since 2022/10/15
      */
-    public List<Problem> getRecentUpdatedProblemList() {
+    public List<RecentUpdatedProblemVO> getRecentUpdatedProblemList() {
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
         problemQueryWrapper.select("id", "problem_id", "title", "type", "gmt_modified", "gmt_create");
         problemQueryWrapper.eq("auth", 1);
         problemQueryWrapper.orderByDesc("gmt_create");
         problemQueryWrapper.last("limit 10");
-        return problemEntityService.list(problemQueryWrapper);
+        List<Problem> problemList = problemEntityService.list(problemQueryWrapper);
+        if (!CollectionUtils.isEmpty(problemList)){
+            return problemList.stream()
+                    .map(this::convertUpdatedProblemVO)
+                    .collect(Collectors.toList());
+        }
+        return new ArrayList<>();
     }
 
-    public SubmissionStatisticsVo getLastWeekSubmissionStatistics(Boolean forceRefresh) {
-        SubmissionStatisticsVo submissionStatisticsVo = (SubmissionStatisticsVo) redisUtils.get(SUBMISSION_STATISTICS_KEY);
+    private RecentUpdatedProblemVO convertUpdatedProblemVO(Problem problem) {
+        return RecentUpdatedProblemVO.builder()
+                .problemId(problem.getProblemId())
+                .id(problem.getId())
+                .title(problem.getTitle())
+                .gmtCreate(problem.getGmtCreate())
+                .gmtModified(problem.getGmtModified())
+                .type(problem.getType())
+                .build();
+    }
+
+    /**
+     * 获取网站最近一周的提交状态（ac总量、提交总量）
+     * @param forceRefresh
+     * @return
+     */
+    public SubmissionStatisticsVO getLastWeekSubmissionStatistics(Boolean forceRefresh) {
+        SubmissionStatisticsVO submissionStatisticsVo = (SubmissionStatisticsVO) redisUtils.get(SUBMISSION_STATISTICS_KEY);
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         forceRefresh = forceRefresh && isRoot;
@@ -193,7 +215,7 @@ public class HomeManager {
         return submissionStatisticsVo;
     }
 
-    private SubmissionStatisticsVo buildSubmissionStatisticsVo(List<Judge> judgeList) {
+    private SubmissionStatisticsVO buildSubmissionStatisticsVo(List<Judge> judgeList) {
         long acTodayCount = 0;
         long acOneDayAgoCount = 0;
         long acTwoDaysAgoCount = 0;
@@ -280,7 +302,7 @@ public class HomeManager {
             }
         }
 
-        SubmissionStatisticsVo submissionStatisticsVo = new SubmissionStatisticsVo();
+        SubmissionStatisticsVO submissionStatisticsVo = new SubmissionStatisticsVO();
         submissionStatisticsVo.setDateStrList(Arrays.asList(
                 sixDaysAgoStr,
                 fiveDaysAgoStr,

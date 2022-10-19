@@ -1,7 +1,7 @@
 package top.hcode.hoj.mapper;
 
 import top.hcode.hoj.pojo.entity.group.Group;
-import top.hcode.hoj.pojo.vo.GroupVo;
+import top.hcode.hoj.pojo.vo.GroupVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Mapper;
@@ -18,7 +18,7 @@ import java.util.List;
 @Mapper
 @Repository
 public interface GroupMapper extends BaseMapper<Group> {
-    List<GroupVo> getGroupList(IPage iPage,
+    List<GroupVO> getGroupList(IPage iPage,
                                @Param("keyword") String keyword,
                                @Param("auth") Integer auth,
                                @Param("uid") String uid,

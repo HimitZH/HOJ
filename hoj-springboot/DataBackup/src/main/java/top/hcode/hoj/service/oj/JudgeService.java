@@ -2,30 +2,30 @@ package top.hcode.hoj.service.oj;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.SubmitIdListDto;
-import top.hcode.hoj.pojo.dto.SubmitJudgeDto;
-import top.hcode.hoj.pojo.dto.TestJudgeDto;
+import top.hcode.hoj.pojo.dto.SubmitIdListDTO;
+import top.hcode.hoj.pojo.dto.SubmitJudgeDTO;
+import top.hcode.hoj.pojo.dto.TestJudgeDTO;
 import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.vo.JudgeCaseVo;
-import top.hcode.hoj.pojo.vo.JudgeVo;
-import top.hcode.hoj.pojo.vo.SubmissionInfoVo;
-import top.hcode.hoj.pojo.vo.TestJudgeVo;
+import top.hcode.hoj.pojo.vo.JudgeCaseVO;
+import top.hcode.hoj.pojo.vo.JudgeVO;
+import top.hcode.hoj.pojo.vo.SubmissionInfoVO;
+import top.hcode.hoj.pojo.vo.TestJudgeVO;
 
 import java.util.HashMap;
 
 public interface JudgeService {
 
-    public CommonResult<Judge> submitProblemJudge(SubmitJudgeDto judgeDto);
+    public CommonResult<Judge> submitProblemJudge(SubmitJudgeDTO judgeDto);
 
-    public CommonResult<String> submitProblemTestJudge(TestJudgeDto testJudgeDto);
+    public CommonResult<String> submitProblemTestJudge(TestJudgeDTO testJudgeDto);
 
     public CommonResult<Judge> resubmit(Long submitId);
 
-    public CommonResult<SubmissionInfoVo> getSubmission(Long submitId);
+    public CommonResult<SubmissionInfoVO> getSubmission(Long submitId);
 
-    public CommonResult<TestJudgeVo> getTestJudgeResult(String testJudgeKey);
+    public CommonResult<TestJudgeVO> getTestJudgeResult(String testJudgeKey);
 
-    public CommonResult<IPage<JudgeVo>> getJudgeList(Integer limit,
+    public CommonResult<IPage<JudgeVO>> getJudgeList(Integer limit,
                                                      Integer currentPage,
                                                      Boolean onlyMine,
                                                      String searchPid,
@@ -36,9 +36,9 @@ public interface JudgeService {
 
     public CommonResult<Void> updateSubmission(Judge judge);
 
-    public CommonResult<HashMap<Long, Object>> checkCommonJudgeResult(SubmitIdListDto submitIdListDto);
+    public CommonResult<HashMap<Long, Object>> checkCommonJudgeResult(SubmitIdListDTO submitIdListDto);
 
-    public CommonResult<HashMap<Long, Object>> checkContestJudgeResult(SubmitIdListDto submitIdListDto);
+    public CommonResult<HashMap<Long, Object>> checkContestJudgeResult(SubmitIdListDTO submitIdListDto);
 
-    public CommonResult<JudgeCaseVo> getALLCaseResult(Long submitId);
+    public CommonResult<JudgeCaseVO> getALLCaseResult(Long submitId);
 }

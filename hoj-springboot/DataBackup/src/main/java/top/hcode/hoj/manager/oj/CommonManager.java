@@ -11,8 +11,8 @@ import top.hcode.hoj.dao.problem.*;
 import top.hcode.hoj.dao.training.TrainingCategoryEntityService;
 import top.hcode.hoj.pojo.entity.problem.*;
 import top.hcode.hoj.pojo.entity.training.TrainingCategory;
-import top.hcode.hoj.pojo.vo.CaptchaVo;
-import top.hcode.hoj.pojo.vo.ProblemTagVo;
+import top.hcode.hoj.pojo.vo.CaptchaVO;
+import top.hcode.hoj.pojo.vo.ProblemTagVO;
 import top.hcode.hoj.utils.RedisUtils;
 
 import java.util.*;
@@ -53,7 +53,7 @@ public class CommonManager {
     @Autowired
     private TrainingCategoryEntityService trainingCategoryEntityService;
 
-    public CaptchaVo getCaptcha() {
+    public CaptchaVO getCaptcha() {
         ArithmeticCaptcha specCaptcha = new ArithmeticCaptcha(90, 30, 4);
         specCaptcha.setCharType(Captcha.TYPE_DEFAULT);
         // 2位数运算
@@ -63,7 +63,7 @@ public class CommonManager {
         // 存入redis并设置过期时间为30分钟
         redisUtil.set(key, verCode, 1800);
         // 将key和base64返回给前端
-        CaptchaVo captchaVo = new CaptchaVo();
+        CaptchaVO captchaVo = new CaptchaVO();
         captchaVo.setImg(specCaptcha.toBase64());
         captchaVo.setCaptchaKey(key);
         return captchaVo;
@@ -90,9 +90,9 @@ public class CommonManager {
         return tagList;
     }
 
-    public List<ProblemTagVo> getProblemTagsAndClassification(String oj) {
+    public List<ProblemTagVO> getProblemTagsAndClassification(String oj) {
         oj = oj.toUpperCase();
-        List<ProblemTagVo> problemTagVoList = new ArrayList<>();
+        List<ProblemTagVO> problemTagVOList = new ArrayList<>();
         List<TagClassification> classificationList = null;
         List<Tag> tagList = null;
         if (oj.equals("ALL")) {
@@ -112,12 +112,12 @@ public class CommonManager {
             tagList = tagEntityService.list(tagQueryWrapper);
         }
         if (CollectionUtils.isEmpty(classificationList)) {
-            ProblemTagVo problemTagVo = new ProblemTagVo();
+            ProblemTagVO problemTagVo = new ProblemTagVO();
             problemTagVo.setTagList(tagList);
-            problemTagVoList.add(problemTagVo);
+            problemTagVOList.add(problemTagVo);
         } else {
             for (TagClassification classification : classificationList) {
-                ProblemTagVo problemTagVo = new ProblemTagVo();
+                ProblemTagVO problemTagVo = new ProblemTagVO();
                 problemTagVo.setClassification(classification);
                 List<Tag> tags = new ArrayList<>();
                 if (!CollectionUtils.isEmpty(tagList)) {
@@ -131,19 +131,19 @@ public class CommonManager {
                     }
                 }
                 problemTagVo.setTagList(tags);
-                problemTagVoList.add(problemTagVo);
+                problemTagVOList.add(problemTagVo);
             }
             if (tagList.size() > 0) {
-                ProblemTagVo problemTagVo = new ProblemTagVo();
+                ProblemTagVO problemTagVo = new ProblemTagVO();
                 problemTagVo.setTagList(tagList);
-                problemTagVoList.add(problemTagVo);
+                problemTagVOList.add(problemTagVo);
             }
         }
 
         if (oj.equals("ALL")) {
-            Collections.sort(problemTagVoList, problemTagVoComparator);
+            Collections.sort(problemTagVOList, problemTagVoComparator);
         }
-        return problemTagVoList;
+        return problemTagVOList;
     }
 
 
@@ -196,7 +196,7 @@ public class CommonManager {
         return codeTemplateEntityService.list(queryWrapper);
     }
 
-    private Comparator<ProblemTagVo> problemTagVoComparator = (p1, p2) -> {
+    private Comparator<ProblemTagVO> problemTagVoComparator = (p1, p2) -> {
         if (p1 == null) {
             return 1;
         }

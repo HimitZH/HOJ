@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import top.hcode.hoj.mapper.DiscussionMapper;
 import top.hcode.hoj.pojo.entity.discussion.Discussion;
 import top.hcode.hoj.pojo.entity.msg.MsgRemind;
-import top.hcode.hoj.pojo.vo.DiscussionVo;
+import top.hcode.hoj.pojo.vo.DiscussionVO;
 import top.hcode.hoj.dao.discussion.DiscussionEntityService;
 import top.hcode.hoj.dao.msg.MsgRemindEntityService;
 
@@ -25,7 +25,7 @@ public class DiscussionEntityServiceImpl extends ServiceImpl<DiscussionMapper, D
     private DiscussionMapper discussionMapper;
 
     @Override
-    public DiscussionVo getDiscussion(Integer did, String uid) {
+    public DiscussionVO getDiscussion(Integer did, String uid) {
         return discussionMapper.getDiscussion(did, uid);
     }
 

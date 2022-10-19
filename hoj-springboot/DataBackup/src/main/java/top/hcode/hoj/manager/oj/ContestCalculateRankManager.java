@@ -14,10 +14,10 @@ import top.hcode.hoj.dao.group.GroupMemberEntityService;
 import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.group.GroupMember;
-import top.hcode.hoj.pojo.vo.ACMContestRankVo;
-import top.hcode.hoj.pojo.vo.ContestAwardConfigVo;
-import top.hcode.hoj.pojo.vo.ContestRecordVo;
-import top.hcode.hoj.pojo.vo.OIContestRankVo;
+import top.hcode.hoj.pojo.vo.ACMContestRankVO;
+import top.hcode.hoj.pojo.vo.ContestAwardConfigVO;
+import top.hcode.hoj.pojo.vo.ContestRecordVO;
+import top.hcode.hoj.pojo.vo.OIContestRankVO;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
@@ -45,7 +45,7 @@ public class ContestCalculateRankManager {
     @Autowired
     private GroupMemberEntityService groupMemberEntityService;
 
-    public List<ACMContestRankVo> calcACMRank(boolean isOpenSealRank,
+    public List<ACMContestRankVO> calcACMRank(boolean isOpenSealRank,
                                               boolean removeStar,
                                               Contest contest,
                                               String currentUserId,
@@ -62,7 +62,7 @@ public class ContestCalculateRankManager {
     }
 
 
-    public List<OIContestRankVo> calcOIRank(Boolean isOpenSealRank,
+    public List<OIContestRankVO> calcOIRank(Boolean isOpenSealRank,
                                             Boolean removeStar,
                                             Contest contest,
                                             String currentUserId,
@@ -94,7 +94,7 @@ public class ContestCalculateRankManager {
      * @Return
      * @Since 2021/12/10
      */
-    public List<ACMContestRankVo> calcACMRank(boolean isOpenSealRank,
+    public List<ACMContestRankVO> calcACMRank(boolean isOpenSealRank,
                                               boolean removeStar,
                                               Contest contest,
                                               String currentUserId,
@@ -102,10 +102,10 @@ public class ContestCalculateRankManager {
                                               List<Integer> externalCidList,
                                               boolean useCache,
                                               Long cacheTime) {
-        List<ACMContestRankVo> orderResultList;
+        List<ACMContestRankVO> orderResultList;
         if (useCache) {
             String key = Constants.Contest.CONTEST_RANK_CAL_RESULT_CACHE.getName() + "_" + contest.getId();
-            orderResultList = (List<ACMContestRankVo>) redisUtils.get(key);
+            orderResultList = (List<ACMContestRankVO>) redisUtils.get(key);
             if (orderResultList == null) {
                 if (isOpenSealRank) {
                     long minSealRankTime = DateUtil.between(contest.getStartTime(), contest.getSealRankTime(), DateUnit.SECOND);
@@ -127,7 +127,7 @@ public class ContestCalculateRankManager {
         // 需要打星的用户名列表
         HashMap<String, Boolean> starAccountMap = starAccountToMap(contest.getStarAccount());
 
-        Queue<ContestAwardConfigVo> awardConfigVoList = null;
+        Queue<ContestAwardConfigVO> awardConfigVoList = null;
         boolean isNeedSetAward = contest.getAwardType() != null && contest.getAwardType() > 0;
         if (removeStar) {
             // 如果选择了移除打星队伍，同时该用户属于打星队伍，则将其移除
@@ -146,7 +146,7 @@ public class ContestCalculateRankManager {
             }
         }
         // 记录当前用户排名数据和关注列表的用户排名数据
-        List<ACMContestRankVo> topACMRankVoList = new ArrayList<>();
+        List<ACMContestRankVO> topACMRankVoList = new ArrayList<>();
         boolean needAddConcernedUser = false;
         if (!CollectionUtils.isEmpty(concernedList)) {
             needAddConcernedUser = true;
@@ -156,10 +156,10 @@ public class ContestCalculateRankManager {
 
         int rankNum = 1;
         int len = orderResultList.size();
-        ACMContestRankVo lastACMRankVo = null;
-        ContestAwardConfigVo configVo = null;
+        ACMContestRankVO lastACMRankVo = null;
+        ContestAwardConfigVO configVo = null;
         for (int i = 0; i < len; i++) {
-            ACMContestRankVo currentACMRankVo = orderResultList.get(i);
+            ACMContestRankVO currentACMRankVo = orderResultList.get(i);
             if (!removeStar && starAccountMap.containsKey(currentACMRankVo.getUsername())) {
                 // 打星队伍排名为-1
                 currentACMRankVo.setRank(-1);
@@ -222,21 +222,21 @@ public class ContestCalculateRankManager {
     }
 
 
-    private List<ACMContestRankVo> getACMOrderRank(Contest contest,
+    private List<ACMContestRankVO> getACMOrderRank(Contest contest,
                                                    Boolean isOpenSealRank,
                                                    Long minSealRankTime,
                                                    Long maxSealRankTime,
                                                    List<Integer> externalCidList) {
 
 
-        List<ContestRecordVo> contestRecordList = contestRecordEntityService.getACMContestRecord(contest.getUid(),
+        List<ContestRecordVO> contestRecordList = contestRecordEntityService.getACMContestRecord(contest.getUid(),
                 contest.getId(),
                 externalCidList,
                 contest.getStartTime());
 
         List<String> superAdminUidList = getSuperAdminUidList(contest.getGid());
 
-        List<ACMContestRankVo> result = new ArrayList<>();
+        List<ACMContestRankVO> result = new ArrayList<>();
 
         HashMap<String, Integer> uidMapIndex = new HashMap<>();
 
@@ -244,17 +244,17 @@ public class ContestCalculateRankManager {
 
         HashMap<String, Long> firstACMap = new HashMap<>();
 
-        for (ContestRecordVo contestRecord : contestRecordList) {
+        for (ContestRecordVO contestRecord : contestRecordList) {
 
             if (superAdminUidList.contains(contestRecord.getUid())) { // 超级管理员的提交不入排行榜
                 continue;
             }
 
-            ACMContestRankVo ACMContestRankVo;
+            ACMContestRankVO ACMContestRankVo;
             if (!uidMapIndex.containsKey(contestRecord.getUid())) { // 如果该用户信息没还记录
 
                 // 初始化参数
-                ACMContestRankVo = new ACMContestRankVo();
+                ACMContestRankVo = new ACMContestRankVO();
                 ACMContestRankVo.setRealname(contestRecord.getRealname())
                         .setAvatar(contestRecord.getAvatar())
                         .setSchool(contestRecord.getSchool())
@@ -341,8 +341,8 @@ public class ContestCalculateRankManager {
             ACMContestRankVo.getSubmissionInfo().put(contestRecord.getDisplayId(), problemSubmissionInfo);
         }
 
-        List<ACMContestRankVo> orderResultList = result.stream().sorted(Comparator.comparing(ACMContestRankVo::getAc, Comparator.reverseOrder()) // 先以总ac数降序
-                .thenComparing(ACMContestRankVo::getTotalTime) //再以总耗时升序
+        List<ACMContestRankVO> orderResultList = result.stream().sorted(Comparator.comparing(ACMContestRankVO::getAc, Comparator.reverseOrder()) // 先以总ac数降序
+                .thenComparing(ACMContestRankVO::getTotalTime) //再以总耗时升序
         ).collect(Collectors.toList());
 
         return orderResultList;
@@ -363,7 +363,7 @@ public class ContestCalculateRankManager {
      * @Return
      * @Since 2021/12/10
      */
-    public List<OIContestRankVo> calcOIRank(boolean isOpenSealRank,
+    public List<OIContestRankVO> calcOIRank(boolean isOpenSealRank,
                                             boolean removeStar,
                                             Contest contest,
                                             String currentUserId,
@@ -372,10 +372,10 @@ public class ContestCalculateRankManager {
                                             boolean useCache,
                                             Long cacheTime) {
 
-        List<OIContestRankVo> orderResultList;
+        List<OIContestRankVO> orderResultList;
         if (useCache) {
             String key = Constants.Contest.CONTEST_RANK_CAL_RESULT_CACHE.getName() + "_" + contest.getId();
-            orderResultList = (List<OIContestRankVo>) redisUtils.get(key);
+            orderResultList = (List<OIContestRankVO>) redisUtils.get(key);
             if (orderResultList == null) {
                 orderResultList = getOIOrderRank(contest, externalCidList, isOpenSealRank);
                 redisUtils.set(key, orderResultList, cacheTime);
@@ -387,7 +387,7 @@ public class ContestCalculateRankManager {
         // 需要打星的用户名列表
         HashMap<String, Boolean> starAccountMap = starAccountToMap(contest.getStarAccount());
 
-        Queue<ContestAwardConfigVo> awardConfigVoList = null;
+        Queue<ContestAwardConfigVO> awardConfigVoList = null;
         boolean isNeedSetAward = contest.getAwardType() != null && contest.getAwardType() > 0;
         if (removeStar) {
             // 如果选择了移除打星队伍，同时该用户属于打星队伍，则将其移除
@@ -407,7 +407,7 @@ public class ContestCalculateRankManager {
         }
 
         // 记录当前用户排名数据和关注列表的用户排名数据
-        List<OIContestRankVo> topOIRankVoList = new ArrayList<>();
+        List<OIContestRankVO> topOIRankVoList = new ArrayList<>();
         boolean needAddConcernedUser = false;
         if (!CollectionUtils.isEmpty(concernedList)) {
             needAddConcernedUser = true;
@@ -416,11 +416,11 @@ public class ContestCalculateRankManager {
         }
 
         int rankNum = 1;
-        OIContestRankVo lastOIRankVo = null;
-        ContestAwardConfigVo configVo = null;
+        OIContestRankVO lastOIRankVo = null;
+        ContestAwardConfigVO configVo = null;
         int len = orderResultList.size();
         for (int i = 0; i < len; i++) {
-            OIContestRankVo currentOIRankVo = orderResultList.get(i);
+            OIContestRankVO currentOIRankVo = orderResultList.get(i);
             if (!removeStar && starAccountMap.containsKey(currentOIRankVo.getUsername())) {
                 // 打星队伍排名为-1
                 currentOIRankVo.setRank(-1);
@@ -483,13 +483,13 @@ public class ContestCalculateRankManager {
         return topOIRankVoList;
     }
 
-    private List<OIContestRankVo> getOIOrderRank(Contest contest, List<Integer> externalCidList, Boolean isOpenSealRank) {
+    private List<OIContestRankVO> getOIOrderRank(Contest contest, List<Integer> externalCidList, Boolean isOpenSealRank) {
 
-        List<ContestRecordVo> oiContestRecord = contestRecordEntityService.getOIContestRecord(contest, externalCidList, isOpenSealRank);
+        List<ContestRecordVO> oiContestRecord = contestRecordEntityService.getOIContestRecord(contest, externalCidList, isOpenSealRank);
 
         List<String> superAdminUidList = getSuperAdminUidList(contest.getGid());
 
-        List<OIContestRankVo> result = new ArrayList<>();
+        List<OIContestRankVO> result = new ArrayList<>();
 
         HashMap<String, Integer> uidMapIndex = new HashMap<>();
 
@@ -499,7 +499,7 @@ public class ContestCalculateRankManager {
 
         int index = 0;
 
-        for (ContestRecordVo contestRecord : oiContestRecord) {
+        for (ContestRecordVO contestRecord : oiContestRecord) {
 
             if (superAdminUidList.contains(contestRecord.getUid())) { // 超级管理员的提交不入排行榜
                 continue;
@@ -523,10 +523,10 @@ public class ContestCalculateRankManager {
                 }
             }
 
-            OIContestRankVo oiContestRankVo;
+            OIContestRankVO oiContestRankVo;
             if (!uidMapIndex.containsKey(contestRecord.getUid())) { // 如果该用户信息没还记录
                 // 初始化参数
-                oiContestRankVo = new OIContestRankVo();
+                oiContestRankVo = new OIContestRankVO();
                 oiContestRankVo.setRealname(contestRecord.getRealname())
                         .setUid(contestRecord.getUid())
                         .setUsername(contestRecord.getUsername())
@@ -569,7 +569,7 @@ public class ContestCalculateRankManager {
         }
 
 
-        for (OIContestRankVo oiContestRankVo : result) {
+        for (OIContestRankVO oiContestRankVo : result) {
             HashMap<String, Integer> pidMapTime = uidMapTime.get(oiContestRankVo.getUid());
             int sumTime = 0;
             if (pidMapTime != null) {
@@ -583,9 +583,9 @@ public class ContestCalculateRankManager {
         }
 
         // 根据总得分进行降序,再根据总时耗升序排序
-        List<OIContestRankVo> orderResultList = result.stream()
-                .sorted(Comparator.comparing(OIContestRankVo::getTotalScore, Comparator.reverseOrder())
-                        .thenComparing(OIContestRankVo::getTotalTime, Comparator.naturalOrder()))
+        List<OIContestRankVO> orderResultList = result.stream()
+                .sorted(Comparator.comparing(OIContestRankVO::getTotalScore, Comparator.reverseOrder())
+                        .thenComparing(OIContestRankVO::getTotalTime, Comparator.naturalOrder()))
                 .collect(Collectors.toList());
         return orderResultList;
     }
@@ -627,19 +627,19 @@ public class ContestCalculateRankManager {
         return res;
     }
 
-    private Queue<ContestAwardConfigVo> getContestAwardConfigList(String awardConfig, Integer awardType, Integer totalUser) {
+    private Queue<ContestAwardConfigVO> getContestAwardConfigList(String awardConfig, Integer awardType, Integer totalUser) {
         if (StringUtils.isEmpty(awardConfig)) {
             return new LinkedList<>();
         }
         JSONObject jsonObject = JSONUtil.parseObj(awardConfig);
         List<JSONObject> list = jsonObject.get("config", List.class);
 
-        Queue<ContestAwardConfigVo> queue = new LinkedList<>();
+        Queue<ContestAwardConfigVO> queue = new LinkedList<>();
 
         if (awardType == 1) {
             // 占比转换成具体人数
             for (JSONObject object : list) {
-                ContestAwardConfigVo configVo = JSONUtil.toBean(object, ContestAwardConfigVo.class);
+                ContestAwardConfigVO configVo = JSONUtil.toBean(object, ContestAwardConfigVO.class);
                 if (configVo.getNum() != null && configVo.getNum() > 0) {
                     int num = (int) (configVo.getNum() * 0.01 * totalUser);
                     if (num > 0) {
@@ -650,7 +650,7 @@ public class ContestCalculateRankManager {
             }
         } else {
             for (JSONObject object : list) {
-                ContestAwardConfigVo configVo = JSONUtil.toBean(object, ContestAwardConfigVo.class);
+                ContestAwardConfigVO configVo = JSONUtil.toBean(object, ContestAwardConfigVO.class);
                 if (configVo.getNum() != null && configVo.getNum() > 0) {
                     queue.offer(configVo);
                 }

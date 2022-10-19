@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.user.Role;
 import top.hcode.hoj.pojo.entity.user.UserRole;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 
 import java.util.List;
 
@@ -24,15 +24,15 @@ import java.util.List;
 @Repository
 public interface UserRoleMapper extends BaseMapper<UserRole> {
 
-    UserRolesVo getUserRoles(@Param("uid") String uid, @Param("username") String username);
+    UserRolesVO getUserRoles(@Param("uid") String uid, @Param("username") String username);
 
     List<Role> getRolesByUid(@Param("uid") String uid);
 
-    IPage<UserRolesVo> getUserList(Page<UserRolesVo> page, @Param("limit") int limit,
+    IPage<UserRolesVO> getUserList(Page<UserRolesVO> page, @Param("limit") int limit,
                                    @Param("currentPage") int currentPage,
                                    @Param("keyword") String keyword);
 
-    IPage<UserRolesVo> getAdminUserList(Page<UserRolesVo> page, @Param("limit") int limit,
+    IPage<UserRolesVO> getAdminUserList(Page<UserRolesVO> page, @Param("limit") int limit,
                                         @Param("currentPage") int currentPage,
                                         @Param("keyword") String keyword);
 }

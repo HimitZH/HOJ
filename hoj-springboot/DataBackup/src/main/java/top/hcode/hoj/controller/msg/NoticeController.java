@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.vo.SysMsgVo;
+import top.hcode.hoj.pojo.vo.SysMsgVO;
 import top.hcode.hoj.service.msg.NoticeService;
 
 import javax.annotation.Resource;
@@ -26,7 +26,7 @@ public class NoticeController {
 
     @RequestMapping(value = "/sys", method = RequestMethod.GET)
     @RequiresAuthentication
-    public CommonResult<IPage<SysMsgVo>> getSysNotice(@RequestParam(value = "limit", required = false) Integer limit,
+    public CommonResult<IPage<SysMsgVO>> getSysNotice(@RequestParam(value = "limit", required = false) Integer limit,
                                                       @RequestParam(value = "currentPage", required = false) Integer currentPage) {
 
         return noticeService.getSysNotice(limit, currentPage);
@@ -35,7 +35,7 @@ public class NoticeController {
 
     @RequestMapping(value = "/mine", method = RequestMethod.GET)
     @RequiresAuthentication
-    public CommonResult<IPage<SysMsgVo>> getMineNotice(@RequestParam(value = "limit", required = false) Integer limit,
+    public CommonResult<IPage<SysMsgVO>> getMineNotice(@RequestParam(value = "limit", required = false) Integer limit,
                                                        @RequestParam(value = "currentPage", required = false) Integer currentPage) {
 
         return noticeService.getMineNotice(limit, currentPage);

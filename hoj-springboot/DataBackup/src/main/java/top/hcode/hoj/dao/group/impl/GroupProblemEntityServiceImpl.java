@@ -3,7 +3,7 @@ package top.hcode.hoj.dao.group.impl;
 import top.hcode.hoj.dao.group.GroupProblemEntityService;
 import top.hcode.hoj.mapper.GroupProblemMapper;
 import top.hcode.hoj.pojo.entity.problem.Problem;
-import top.hcode.hoj.pojo.vo.ProblemVo;
+import top.hcode.hoj.pojo.vo.ProblemVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -24,10 +24,10 @@ public class GroupProblemEntityServiceImpl extends ServiceImpl<GroupProblemMappe
     private GroupProblemMapper groupProblemMapper;
 
     @Override
-    public IPage<ProblemVo> getProblemList(int limit, int currentPage, Long gid) {
-        IPage<ProblemVo> iPage = new Page<>(currentPage, limit);
+    public IPage<ProblemVO> getProblemList(int limit, int currentPage, Long gid) {
+        IPage<ProblemVO> iPage = new Page<>(currentPage, limit);
 
-        List<ProblemVo> problemList = groupProblemMapper.getProblemList(iPage, gid);
+        List<ProblemVO> problemList = groupProblemMapper.getProblemList(iPage, gid);
 
         return iPage.setRecords(problemList);
     }

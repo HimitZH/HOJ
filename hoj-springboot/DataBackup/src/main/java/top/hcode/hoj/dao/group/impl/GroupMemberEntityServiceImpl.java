@@ -8,7 +8,7 @@ import top.hcode.hoj.manager.msg.AdminNoticeManager;
 import top.hcode.hoj.mapper.GroupMemberMapper;
 import top.hcode.hoj.pojo.entity.group.GroupMember;
 import top.hcode.hoj.pojo.entity.user.UserInfo;
-import top.hcode.hoj.pojo.vo.GroupMemberVo;
+import top.hcode.hoj.pojo.vo.GroupMemberVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -36,17 +36,17 @@ public class GroupMemberEntityServiceImpl extends ServiceImpl<GroupMemberMapper,
     private UserInfoEntityService userInfoEntityService;
 
     @Override
-    public IPage<GroupMemberVo> getMemberList(int limit, int currentPage, String keyword, Integer auth, Long gid) {
-        IPage<GroupMemberVo> iPage = new Page<>(currentPage, limit);
-        List<GroupMemberVo> memberList = groupMemberMapper.getMemberList(iPage, keyword, auth, gid);
+    public IPage<GroupMemberVO> getMemberList(int limit, int currentPage, String keyword, Integer auth, Long gid) {
+        IPage<GroupMemberVO> iPage = new Page<>(currentPage, limit);
+        List<GroupMemberVO> memberList = groupMemberMapper.getMemberList(iPage, keyword, auth, gid);
 
         return iPage.setRecords(memberList);
     }
 
     @Override
-    public IPage<GroupMemberVo> getApplyList(int limit, int currentPage, String keyword, Integer auth, Long gid) {
-        IPage<GroupMemberVo> iPage = new Page<>(currentPage, limit);
-        List<GroupMemberVo> applyList = groupMemberMapper.getApplyList(iPage, keyword, auth, gid);
+    public IPage<GroupMemberVO> getApplyList(int limit, int currentPage, String keyword, Integer auth, Long gid) {
+        IPage<GroupMemberVO> iPage = new Page<>(currentPage, limit);
+        List<GroupMemberVO> applyList = groupMemberMapper.getApplyList(iPage, keyword, auth, gid);
 
         return iPage.setRecords(applyList);
     }

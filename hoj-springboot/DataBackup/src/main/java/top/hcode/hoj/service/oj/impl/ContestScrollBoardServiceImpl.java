@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.manager.oj.ContestScrollBoardManager;
-import top.hcode.hoj.pojo.vo.ContestScrollBoardInfoVo;
-import top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVo;
+import top.hcode.hoj.pojo.vo.ContestScrollBoardInfoVO;
+import top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVO;
 import top.hcode.hoj.service.oj.ContestScrollBoardService;
 
 import javax.annotation.Resource;
@@ -22,7 +22,7 @@ public class ContestScrollBoardServiceImpl implements ContestScrollBoardService{
     private ContestScrollBoardManager contestScrollBoardManager;
 
     @Override
-    public CommonResult<ContestScrollBoardInfoVo> getContestScrollBoardInfo(Long cid) {
+    public CommonResult<ContestScrollBoardInfoVO> getContestScrollBoardInfo(Long cid) {
         try {
             return CommonResult.successResponse(contestScrollBoardManager.getContestScrollBoardInfo(cid));
         } catch (StatusFailException e) {
@@ -31,7 +31,7 @@ public class ContestScrollBoardServiceImpl implements ContestScrollBoardService{
     }
 
     @Override
-    public CommonResult<List<ContestScrollBoardSubmissionVo>> getContestScrollBoardSubmission(Long cid) {
+    public CommonResult<List<ContestScrollBoardSubmissionVO>> getContestScrollBoardSubmission(Long cid) {
         try {
             return CommonResult.successResponse(contestScrollBoardManager.getContestScrollBoardSubmission(cid));
         } catch (StatusFailException e) {

@@ -96,20 +96,20 @@ public class JudgeManager {
     private AccessValidator accessValidator;
 
     @Autowired
-    private ConfigVo configVo;
+    private ConfigVO configVo;
 
     /**
      * @MethodName submitProblemJudge
      * @Description 核心方法 判题通过openfeign调用判题系统服务
      * @Since 2020/10/30
      */
-    public Judge submitProblemJudge(SubmitJudgeDto judgeDto) throws StatusForbiddenException, StatusFailException, StatusNotFoundException, StatusAccessDeniedException, AccessException {
+    public Judge submitProblemJudge(SubmitJudgeDTO judgeDto) throws StatusForbiddenException, StatusFailException, StatusNotFoundException, StatusAccessDeniedException, AccessException {
 
         judgeValidator.validateSubmissionInfo(judgeDto);
 
         // 需要获取一下该token对应用户的数据
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isContestSubmission = judgeDto.getCid() != 0;
         boolean isTrainingSubmission = judgeDto.getTid() != null && judgeDto.getTid() != 0;
@@ -165,12 +165,12 @@ public class JudgeManager {
         return judge;
     }
 
-    public String submitProblemTestJudge(TestJudgeDto testJudgeDto) throws AccessException,
+    public String submitProblemTestJudge(TestJudgeDTO testJudgeDto) throws AccessException,
             StatusFailException, StatusForbiddenException, StatusSystemErrorException {
         judgeValidator.validateTestJudgeInfo(testJudgeDto);
         // 需要获取一下该token对应用户的数据
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         String lockKey = Constants.Account.TEST_JUDGE_LOCK.getCode() + userRolesVo.getUid();
         long count = redisUtils.incr(lockKey, 1);
@@ -208,12 +208,12 @@ public class JudgeManager {
     }
 
 
-    public TestJudgeVo getTestJudgeResult(String testJudgeKey) throws StatusFailException {
+    public TestJudgeVO getTestJudgeResult(String testJudgeKey) throws StatusFailException {
         TestJudgeRes testJudgeRes = (TestJudgeRes) redisUtils.get(testJudgeKey);
         if (testJudgeRes == null) {
             throw new StatusFailException("查询错误！当前在线调试任务不存在！");
         }
-        TestJudgeVo testJudgeVo = new TestJudgeVo();
+        TestJudgeVO testJudgeVo = new TestJudgeVO();
         testJudgeVo.setStatus(testJudgeRes.getStatus());
         if (Constants.Judge.STATUS_PENDING.getStatus().equals(testJudgeRes.getStatus())) {
             return testJudgeVo;
@@ -310,7 +310,7 @@ public class JudgeManager {
      * @Description 获取单个提交记录的详情
      * @Since 2021/1/2
      */
-    public SubmissionInfoVo getSubmission(Long submitId) throws StatusNotFoundException, StatusAccessDeniedException {
+    public SubmissionInfoVO getSubmission(Long submitId) throws StatusNotFoundException, StatusAccessDeniedException {
 
         Judge judge = judgeEntityService.getById(submitId);
         if (judge == null) {
@@ -318,7 +318,7 @@ public class JudgeManager {
         }
 
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
 
@@ -332,7 +332,7 @@ public class JudgeManager {
         // 当此次提交代码不共享
         // 比赛提交只有比赛创建者和root账号可看代码
 
-        SubmissionInfoVo submissionInfoVo = new SubmissionInfoVo();
+        SubmissionInfoVO submissionInfoVo = new SubmissionInfoVO();
 
         if (judge.getCid() != 0) {
             if (userRolesVo == null) {
@@ -423,7 +423,7 @@ public class JudgeManager {
 
         // 需要获取一下该token对应用户的数据
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         if (!userRolesVo.getUid().equals(judge.getUid())) { // 判断该提交是否为当前用户的
             throw new StatusForbiddenException("对不起，您不能修改他人的代码分享权限！");
@@ -445,7 +445,7 @@ public class JudgeManager {
      * @Description 通用查询判题记录列表
      * @Since 2020/10/29
      */
-    public IPage<JudgeVo> getJudgeList(Integer limit,
+    public IPage<JudgeVO> getJudgeList(Integer limit,
                                        Integer currentPage,
                                        Boolean onlyMine,
                                        String searchPid,
@@ -462,7 +462,7 @@ public class JudgeManager {
         if (onlyMine) {
             // 需要获取一下该token对应用户的数据（有token便能获取到）
             Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
             if (userRolesVo == null) {
                 throw new StatusAccessDeniedException("当前用户数据为空，请您重新登陆！");
@@ -492,7 +492,7 @@ public class JudgeManager {
      * @Description 对提交列表状态为Pending和Judging的提交进行更新检查
      * @Since 2021/1/3
      */
-    public HashMap<Long, Object> checkCommonJudgeResult(SubmitIdListDto submitIdListDto) {
+    public HashMap<Long, Object> checkCommonJudgeResult(SubmitIdListDTO submitIdListDto) {
 
         List<Long> submitIds = submitIdListDto.getSubmitIds();
 
@@ -521,7 +521,7 @@ public class JudgeManager {
      * @Description 需要检查是否为封榜，是否可以查询结果，避免有人恶意查询
      * @Since 2021/6/11
      */
-    public HashMap<Long, Object> checkContestJudgeResult(SubmitIdListDto submitIdListDto) throws StatusNotFoundException {
+    public HashMap<Long, Object> checkContestJudgeResult(SubmitIdListDTO submitIdListDto) throws StatusNotFoundException {
 
         if (submitIdListDto.getCid() == null) {
             throw new StatusNotFoundException("查询比赛id不能为空");
@@ -532,7 +532,7 @@ public class JudgeManager {
         }
 
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
         boolean isRoot = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
 
         Contest contest = contestEntityService.getById(submitIdListDto.getCid());
@@ -575,7 +575,7 @@ public class JudgeManager {
      * @Since 2020/10/29
      */
     @GetMapping("/get-all-case-result")
-    public JudgeCaseVo getALLCaseResult(Long submitId) throws StatusNotFoundException, StatusForbiddenException {
+    public JudgeCaseVO getALLCaseResult(Long submitId) throws StatusNotFoundException, StatusForbiddenException {
 
         Judge judge = judgeEntityService.getById(submitId);
 
@@ -591,7 +591,7 @@ public class JudgeManager {
         }
 
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         QueryWrapper<JudgeCase> wrapper = new QueryWrapper<>();
         if (judge.getCid() == 0) { // 非比赛提交
@@ -639,7 +639,7 @@ public class JudgeManager {
         }
         // 当前所有测试点只支持 空间 时间 状态码 IO得分 和错误信息提示查看而已
         List<JudgeCase> judgeCaseList = judgeCaseEntityService.list(wrapper);
-        JudgeCaseVo judgeCaseVo = new JudgeCaseVo();
+        JudgeCaseVO judgeCaseVo = new JudgeCaseVO();
         if (!CollectionUtils.isEmpty(judgeCaseList)) {
             String mode = judgeCaseList.get(0).getMode();
             Constants.JudgeCaseMode judgeCaseMode = Constants.JudgeCaseMode.getJudgeCaseMode(mode);
@@ -650,7 +650,7 @@ public class JudgeManager {
                     break;
                 case SUBTASK_AVERAGE:
                 case SUBTASK_LOWEST:
-                    judgeCaseVo.setSubTaskJudgeCaseVoList(buildSubTaskDetail(judgeCaseList, judgeCaseMode));
+                    judgeCaseVo.setSubTaskJudgeCaseVOList(buildSubTaskDetail(judgeCaseList, judgeCaseMode));
                     break;
             }
             judgeCaseVo.setJudgeCaseMode(judgeCaseMode.getMode());
@@ -661,8 +661,8 @@ public class JudgeManager {
         return judgeCaseVo;
     }
 
-    private List<SubTaskJudgeCaseVo> buildSubTaskDetail(List<JudgeCase> judgeCaseList, Constants.JudgeCaseMode judgeCaseMode) {
-        List<SubTaskJudgeCaseVo> subTaskJudgeCaseVos = new ArrayList<>();
+    private List<SubTaskJudgeCaseVO> buildSubTaskDetail(List<JudgeCase> judgeCaseList, Constants.JudgeCaseMode judgeCaseMode) {
+        List<SubTaskJudgeCaseVO> subTaskJudgeCaseVOS = new ArrayList<>();
         LinkedHashMap<Integer, List<JudgeCase>> groupJudgeCaseMap = judgeCaseList.stream()
                 .sorted(Comparator.comparingInt(JudgeCase::getGroupNum).thenComparingInt(JudgeCase::getSeq))
                 .collect(Collectors.groupingBy(JudgeCase::getGroupNum, LinkedHashMap::new, Collectors.toList()));
@@ -679,7 +679,7 @@ public class JudgeManager {
                         acCount++;
                     }
                 }
-                SubTaskJudgeCaseVo subTaskJudgeCaseVo = new SubTaskJudgeCaseVo();
+                SubTaskJudgeCaseVO subTaskJudgeCaseVo = new SubTaskJudgeCaseVO();
                 subTaskJudgeCaseVo.setGroupNum(entry.getKey());
                 subTaskJudgeCaseVo.setSubtaskDetailList(entry.getValue());
                 subTaskJudgeCaseVo.setAc(acCount);
@@ -693,7 +693,7 @@ public class JudgeManager {
                 } else {
                     subTaskJudgeCaseVo.setStatus(Constants.Judge.STATUS_ACCEPTED.getStatus());
                 }
-                subTaskJudgeCaseVos.add(subTaskJudgeCaseVo);
+                subTaskJudgeCaseVOS.add(subTaskJudgeCaseVo);
             }
         } else {
             for (Map.Entry<Integer, List<JudgeCase>> entry : groupJudgeCaseMap.entrySet()) {
@@ -711,7 +711,7 @@ public class JudgeManager {
                         }
                     }
                 }
-                SubTaskJudgeCaseVo subTaskJudgeCaseVo = new SubTaskJudgeCaseVo();
+                SubTaskJudgeCaseVO subTaskJudgeCaseVo = new SubTaskJudgeCaseVO();
                 subTaskJudgeCaseVo.setGroupNum(entry.getKey());
                 subTaskJudgeCaseVo.setAc(acCount);
                 subTaskJudgeCaseVo.setTotal(entry.getValue().size());
@@ -722,9 +722,9 @@ public class JudgeManager {
                     subTaskJudgeCaseVo.setStatus(finalResJudgeCase.getStatus());
                 }
                 subTaskJudgeCaseVo.setSubtaskDetailList(entry.getValue());
-                subTaskJudgeCaseVos.add(subTaskJudgeCaseVo);
+                subTaskJudgeCaseVOS.add(subTaskJudgeCaseVo);
             }
         }
-        return subTaskJudgeCaseVos;
+        return subTaskJudgeCaseVOS;
     }
 }

@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.mapper.TrainingRecordMapper;
 import top.hcode.hoj.pojo.entity.training.TrainingRecord;
-import top.hcode.hoj.pojo.vo.TrainingRecordVo;
+import top.hcode.hoj.pojo.vo.TrainingRecordVO;
 import top.hcode.hoj.dao.training.TrainingRecordEntityService;
 
 import javax.annotation.Resource;
@@ -22,7 +22,7 @@ public class TrainingRecordEntityServiceImpl extends ServiceImpl<TrainingRecordM
     private TrainingRecordMapper trainingRecordMapper;
 
     @Override
-    public List<TrainingRecordVo> getTrainingRecord(Long tid){
+    public List<TrainingRecordVO> getTrainingRecord(Long tid){
         return trainingRecordMapper.getTrainingRecord(tid);
     }
 

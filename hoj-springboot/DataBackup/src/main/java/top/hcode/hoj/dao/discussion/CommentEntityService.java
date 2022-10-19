@@ -3,11 +3,7 @@ package top.hcode.hoj.dao.discussion;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import top.hcode.hoj.pojo.entity.discussion.Comment;
 import com.baomidou.mybatisplus.extension.service.IService;
-import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.pojo.vo.CommentVo;
-import top.hcode.hoj.pojo.vo.ReplyVo;
-
-import java.util.List;
 
 /**
  * <p>

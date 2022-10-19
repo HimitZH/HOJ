@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.mapper.DiscussionMapper">
 
-    <resultMap id="map_DiscussionVo" type="top.hcode.hoj.pojo.vo.DiscussionVo">
+    <resultMap id="map_DiscussionVo" type="top.hcode.hoj.pojo.vo.DiscussionVO">
         <id column="id" property="id"></id>
         <result column="content" property="content"></result>
         <result column="description" property="description"></result>
@@ -27,7 +27,7 @@
 
 
     <!-- 主查询  -->
-    <select id="getDiscussion" resultMap="map_DiscussionVo" resultType="top.hcode.hoj.pojo.vo.DiscussionVo">
+    <select id="getDiscussion" resultMap="map_DiscussionVo" resultType="top.hcode.hoj.pojo.vo.DiscussionVO">
         SELECT d.*,c.id as category_id,c.name as category_name,u.title_name,u.title_color,
         (SELECT 1 FROM discussion_like dl WHERE dl.uid = #{uid} AND dl.did = #{did} LIMIT 1) as has_like
         FROM discussion d,category c,user_info u

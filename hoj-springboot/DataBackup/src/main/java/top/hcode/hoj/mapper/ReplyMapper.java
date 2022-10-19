@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.discussion.Reply;
-import top.hcode.hoj.pojo.vo.ReplyVo;
+import top.hcode.hoj.pojo.vo.ReplyVO;
 
 import java.util.List;
 
@@ -19,6 +19,6 @@ import java.util.List;
 @Repository
 public interface ReplyMapper extends BaseMapper<Reply> {
 
-    public List<ReplyVo> getAllReplyByCommentId(@Param("commentId") Integer commentId,
+    public List<ReplyVO> getAllReplyByCommentId(@Param("commentId") Integer commentId,
                                                 @Param("myAndAdminUidList") List<String> myAndAdminUidList);
 }

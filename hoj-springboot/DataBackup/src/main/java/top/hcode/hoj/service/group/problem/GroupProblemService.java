@@ -1,12 +1,12 @@
 package top.hcode.hoj.service.group.problem;
 
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
 import top.hcode.hoj.pojo.dto.CompileDTO;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.ProblemCase;
 import top.hcode.hoj.pojo.entity.problem.Tag;
-import top.hcode.hoj.pojo.vo.ProblemVo;
+import top.hcode.hoj.pojo.vo.ProblemVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 import java.util.List;
@@ -18,15 +18,15 @@ import java.util.List;
  */
 public interface GroupProblemService {
 
-    public CommonResult<IPage<ProblemVo>> getProblemList(Integer limit, Integer currentPage, Long gid);
+    public CommonResult<IPage<ProblemVO>> getProblemList(Integer limit, Integer currentPage, Long gid);
 
     public CommonResult<IPage<Problem>> getAdminProblemList(Integer limit, Integer currentPage, Long gid);
 
     public CommonResult<Problem> getProblem(Long pid);
 
-    public CommonResult<Void> addProblem(ProblemDto problemDto);
+    public CommonResult<Void> addProblem(ProblemDTO problemDto);
 
-    public CommonResult<Void> updateProblem(ProblemDto problemDto);
+    public CommonResult<Void> updateProblem(ProblemDTO problemDto);
 
     public CommonResult<Void> deleteProblem(Long pid);
 

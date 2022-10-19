@@ -8,7 +8,7 @@ import top.hcode.hoj.mapper.TrainingProblemMapper;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
-import top.hcode.hoj.pojo.vo.ProblemVo;
+import top.hcode.hoj.pojo.vo.ProblemVO;
 import top.hcode.hoj.dao.training.TrainingProblemEntityService;
 
 import javax.annotation.Resource;
@@ -38,9 +38,9 @@ public class TrainingProblemEntityServiceImpl extends ServiceImpl<TrainingProble
     }
 
     @Override
-    public List<ProblemVo> getTrainingProblemList(Long tid) {
-        List<ProblemVo> trainingProblemList = trainingProblemMapper.getTrainingProblemList(tid);
-        return trainingProblemList.stream().filter(distinctByKey(ProblemVo::getPid)).collect(Collectors.toList());
+    public List<ProblemVO> getTrainingProblemList(Long tid) {
+        List<ProblemVO> trainingProblemList = trainingProblemMapper.getTrainingProblemList(tid);
+        return trainingProblemList.stream().filter(distinctByKey(ProblemVO::getPid)).collect(Collectors.toList());
     }
 
     static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {

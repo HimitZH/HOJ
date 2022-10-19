@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.common.Announcement;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.vo.AnnouncementVO;
 
 /**
  * <p>
@@ -20,6 +20,6 @@ import top.hcode.hoj.pojo.vo.AnnouncementVo;
 @Mapper
 @Repository
 public interface AnnouncementMapper extends BaseMapper<Announcement> {
-    IPage<AnnouncementVo> getAnnouncementList(Page<AnnouncementVo> page,@Param("notAdmin") Boolean notAdmin);
-    IPage<AnnouncementVo> getContestAnnouncement(Page<AnnouncementVo> page,@Param("cid")Long cid,@Param("notAdmin") Boolean notAdmin);
+    IPage<AnnouncementVO> getAnnouncementList(Page<AnnouncementVO> page, @Param("notAdmin") Boolean notAdmin);
+    IPage<AnnouncementVO> getContestAnnouncement(Page<AnnouncementVO> page, @Param("cid")Long cid, @Param("notAdmin") Boolean notAdmin);
 }

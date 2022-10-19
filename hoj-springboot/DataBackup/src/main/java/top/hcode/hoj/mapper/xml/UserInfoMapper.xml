@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.mapper.UserInfoMapper">
-    <insert id="addUser" parameterType="top.hcode.hoj.pojo.dto.RegisterDto">
+    <insert id="addUser" parameterType="top.hcode.hoj.pojo.dto.RegisterDTO">
         insert into user_info(uuid,username,password,email) values (
            #{uuid}, #{username},#{password},#{email}
         )

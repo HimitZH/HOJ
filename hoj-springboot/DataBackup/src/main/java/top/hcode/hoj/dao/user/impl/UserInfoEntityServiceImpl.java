@@ -1,7 +1,7 @@
 package top.hcode.hoj.dao.user.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import top.hcode.hoj.pojo.dto.RegisterDto;
+import top.hcode.hoj.pojo.dto.RegisterDTO;
 import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.mapper.UserInfoMapper;
 import top.hcode.hoj.dao.user.UserInfoEntityService;
@@ -30,7 +30,7 @@ public class UserInfoEntityServiceImpl extends ServiceImpl<UserInfoMapper, UserI
     private RedisUtils redisUtils;
 
     @Override
-    public Boolean addUser(RegisterDto registerDto) {
+    public Boolean addUser(RegisterDTO registerDto) {
         return userInfoMapper.addUser(registerDto) == 1;
     }
 

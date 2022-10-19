@@ -6,11 +6,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
-import top.hcode.hoj.pojo.vo.DiscussionReportVo;
+import top.hcode.hoj.pojo.vo.DiscussionReportVO;
 
 @Mapper
 @Repository
 public interface DiscussionReportMapper extends BaseMapper<DiscussionReport> {
 
-    IPage<DiscussionReportVo> getDiscussionReportList(Page<DiscussionReportVo> page);
+    IPage<DiscussionReportVO> getDiscussionReportList(Page<DiscussionReportVO> page);
 }

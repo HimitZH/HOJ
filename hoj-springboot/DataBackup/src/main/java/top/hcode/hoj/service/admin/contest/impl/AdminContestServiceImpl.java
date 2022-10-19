@@ -10,7 +10,7 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.admin.contest.AdminContestManager;
 import top.hcode.hoj.pojo.entity.contest.Contest;
-import top.hcode.hoj.pojo.vo.AdminContestVo;
+import top.hcode.hoj.pojo.vo.AdminContestVO;
 import top.hcode.hoj.service.admin.contest.AdminContestService;
 
 /**
@@ -31,9 +31,9 @@ public class AdminContestServiceImpl implements AdminContestService {
     }
 
     @Override
-    public CommonResult<AdminContestVo> getContest(Long cid) {
+    public CommonResult<AdminContestVO> getContest(Long cid) {
         try {
-            AdminContestVo adminContestVo = adminContestManager.getContest(cid);
+            AdminContestVO adminContestVo = adminContestManager.getContest(cid);
             return CommonResult.successResponse(adminContestVo);
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
@@ -53,7 +53,7 @@ public class AdminContestServiceImpl implements AdminContestService {
     }
 
     @Override
-    public CommonResult<Void> addContest(AdminContestVo adminContestVo) {
+    public CommonResult<Void> addContest(AdminContestVO adminContestVo) {
         try {
             adminContestManager.addContest(adminContestVo);
             return CommonResult.successResponse();
@@ -73,7 +73,7 @@ public class AdminContestServiceImpl implements AdminContestService {
     }
 
     @Override
-    public CommonResult<Void> updateContest(AdminContestVo adminContestVo) {
+    public CommonResult<Void> updateContest(AdminContestVO adminContestVo) {
 
         try {
             adminContestManager.updateContest(adminContestVo);

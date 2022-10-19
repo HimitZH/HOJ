@@ -13,7 +13,7 @@ import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.dao.user.UserRecordEntityService;
 import top.hcode.hoj.pojo.entity.group.GroupMember;
 import top.hcode.hoj.pojo.entity.user.UserInfo;
-import top.hcode.hoj.pojo.vo.OIRankVo;
+import top.hcode.hoj.pojo.vo.OIRankVO;
 import top.hcode.hoj.utils.Constants;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class GroupRankManager {
     private GroupMemberEntityService groupMemberEntityService;
 
 
-    public IPage<OIRankVo> getGroupRankList(Integer limit,
+    public IPage<OIRankVO> getGroupRankList(Integer limit,
                                             Integer currentPage,
                                             String searchUser,
                                             Integer type,
@@ -89,10 +89,10 @@ public class GroupRankManager {
             if (CollectionUtils.isEmpty(uidList)) {
                 return new Page<>(currentPage, limit);
             }
-            Page<OIRankVo> page = new Page<>(currentPage, limit);
+            Page<OIRankVO> page = new Page<>(currentPage, limit);
             return userRecordEntityService.getGroupRankList(page, gid, uidList, rankType, false);
         } else {
-            Page<OIRankVo> page = new Page<>(currentPage, limit);
+            Page<OIRankVO> page = new Page<>(currentPage, limit);
             return userRecordEntityService.getGroupRankList(page, gid, groupMemberUidList, rankType, true);
         }
 

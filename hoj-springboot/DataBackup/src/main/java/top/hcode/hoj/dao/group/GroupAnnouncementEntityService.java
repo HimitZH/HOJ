@@ -1,7 +1,7 @@
 package top.hcode.hoj.dao.group;
 
 import top.hcode.hoj.pojo.entity.common.Announcement;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.vo.AnnouncementVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -12,8 +12,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface GroupAnnouncementEntityService extends IService<Announcement> {
 
-    IPage<AnnouncementVo> getAnnouncementList(int limit, int currentPage, Long gid);
+    IPage<AnnouncementVO> getAnnouncementList(int limit, int currentPage, Long gid);
 
-    IPage<AnnouncementVo> getAdminAnnouncementList(int limit, int currentPage, Long gid);
+    IPage<AnnouncementVO> getAdminAnnouncementList(int limit, int currentPage, Long gid);
 
 }

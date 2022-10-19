@@ -2,7 +2,7 @@ package top.hcode.hoj.controller.group;
 
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.group.GroupMember;
-import top.hcode.hoj.pojo.vo.GroupMemberVo;
+import top.hcode.hoj.pojo.vo.GroupMemberVO;
 import top.hcode.hoj.service.group.member.GroupMemberService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -23,7 +23,7 @@ public class GroupMemberController {
     private GroupMemberService groupMemberService;
 
     @GetMapping("/get-member-list")
-    public CommonResult<IPage<GroupMemberVo>> getMemberList(@RequestParam(value = "limit", required = false) Integer limit,
+    public CommonResult<IPage<GroupMemberVO>> getMemberList(@RequestParam(value = "limit", required = false) Integer limit,
                                                             @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                                             @RequestParam(value = "keyword", required = false) String keyword,
                                                             @RequestParam(value = "auth", required = false) Integer auth,
@@ -32,7 +32,7 @@ public class GroupMemberController {
     }
 
     @GetMapping("/get-apply-list")
-    public CommonResult<IPage<GroupMemberVo>> getApplyList(@RequestParam(value = "limit", required = false) Integer limit,
+    public CommonResult<IPage<GroupMemberVO>> getApplyList(@RequestParam(value = "limit", required = false) Integer limit,
                                                            @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                                            @RequestParam(value = "keyword", required = false) String keyword,
                                                            @RequestParam(value = "auth", required = false) Integer auth,

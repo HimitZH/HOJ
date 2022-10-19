@@ -24,10 +24,10 @@ import top.hcode.hoj.dao.problem.ProblemCaseEntityService;
 import top.hcode.hoj.dao.problem.ProblemEntityService;
 import top.hcode.hoj.dao.problem.TagEntityService;
 import top.hcode.hoj.exception.ProblemIDRepeatException;
-import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
 import top.hcode.hoj.pojo.entity.problem.*;
-import top.hcode.hoj.pojo.vo.ImportProblemVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.ImportProblemVO;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.utils.Constants;
 
 import javax.servlet.http.HttpServletResponse;
@@ -117,7 +117,7 @@ public class ProblemFileManager {
         }
 
         // 读取json文件生成对象
-        HashMap<String, ImportProblemVo> problemVoMap = new HashMap<>();
+        HashMap<String, ImportProblemVO> problemVoMap = new HashMap<>();
         for (String key : problemInfo.keySet()) {
             // 若有名字不对应，直接返回失败
             if (testcaseInfo.getOrDefault(key, null) == null) {
@@ -126,7 +126,7 @@ public class ProblemFileManager {
             }
             try {
                 FileReader fileReader = new FileReader(problemInfo.get(key));
-                ImportProblemVo importProblemVo = JSONUtil.toBean(fileReader.readString(), ImportProblemVo.class);
+                ImportProblemVO importProblemVo = JSONUtil.toBean(fileReader.readString(), ImportProblemVO.class);
                 problemVoMap.put(key, importProblemVo);
             } catch (Exception e) {
                 FileUtil.del(fileDir);
@@ -145,16 +145,16 @@ public class ProblemFileManager {
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
-        List<ProblemDto> problemDtos = new LinkedList<>();
+        List<ProblemDTO> problemDTOS = new LinkedList<>();
         List<Tag> tagList = tagEntityService.list(new QueryWrapper<Tag>().eq("oj", "ME"));
         HashMap<String, Tag> tagMap = new HashMap<>();
         for (Tag tag : tagList) {
             tagMap.put(tag.getName().toUpperCase(), tag);
         }
         for (String key : problemInfo.keySet()) {
-            ImportProblemVo importProblemVo = problemVoMap.get(key);
+            ImportProblemVO importProblemVo = problemVoMap.get(key);
             // 格式化题目语言
             List<Language> languages = new LinkedList<>();
             for (String lang : importProblemVo.getLanguages()) {
@@ -211,7 +211,7 @@ public class ProblemFileManager {
             }
 
 
-            ProblemDto problemDto = new ProblemDto();
+            ProblemDTO problemDto = new ProblemDTO();
             problemDto.setProblem(problem)
                     .setCodeTemplates(codeTemplates)
                     .setTags(tags)
@@ -226,16 +226,16 @@ public class ProblemFileManager {
             } else {
                 problemDto.setJudgeMode(judgeMode.getMode());
             }
-            problemDtos.add(problemDto);
+            problemDTOS.add(problemDto);
         }
 
-        if (problemDtos.size() == 0) {
+        if (problemDTOS.size() == 0) {
             throw new StatusFailException("警告：未成功导入一道以上的题目，请检查文件格式是否正确！");
         } else {
             HashSet<String> repeatProblemIDSet = new HashSet<>();
             HashSet<String> failedProblemIDSet = new HashSet<>();
             int failedCount = 0;
-            for (ProblemDto problemDto : problemDtos) {
+            for (ProblemDTO problemDto : problemDTOS) {
                 try {
                     boolean isOk = problemEntityService.adminAddProblem(problemDto);
                     if (!isOk) {
@@ -251,7 +251,7 @@ public class ProblemFileManager {
                 }
             }
             if (failedCount > 0) {
-                int successCount = problemDtos.size() - failedCount;
+                int successCount = problemDTOS.size() - failedCount;
                 String errMsg = "[导入结果] 成功数：" + successCount + ",  失败数：" + failedCount +
                         ",  重复失败的题目ID：" + repeatProblemIDSet;
                 if (failedProblemIDSet.size() > 0) {
@@ -364,7 +364,7 @@ public class ProblemFileManager {
                         }
                         FileUtil.copy(testcaseWorkDir, workDir, true);
                     }
-                    ImportProblemVo importProblemVo = problemEntityService.buildExportProblem(pid, problemCases, languageMap, tagMap);
+                    ImportProblemVO importProblemVo = problemEntityService.buildExportProblem(pid, problemCases, languageMap, tagMap);
                     String content = JSONUtil.toJsonStr(importProblemVo);
                     FileWriter fileWriter = new FileWriter(workDir + File.separator + "problem_" + pid + ".json");
                     fileWriter.write(content);

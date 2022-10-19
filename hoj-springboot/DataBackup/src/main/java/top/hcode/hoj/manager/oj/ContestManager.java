@@ -16,10 +16,10 @@ import top.hcode.hoj.dao.group.GroupMemberEntityService;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.dao.problem.*;
 import top.hcode.hoj.dao.user.UserInfoEntityService;
-import top.hcode.hoj.pojo.dto.ContestPrintDto;
-import top.hcode.hoj.pojo.dto.ContestRankDto;
-import top.hcode.hoj.pojo.dto.RegisterContestDto;
-import top.hcode.hoj.pojo.dto.UserReadContestAnnouncementDto;
+import top.hcode.hoj.pojo.dto.ContestPrintDTO;
+import top.hcode.hoj.pojo.dto.ContestRankDTO;
+import top.hcode.hoj.pojo.dto.RegisterContestDTO;
+import top.hcode.hoj.pojo.dto.UserReadContestAnnouncementDTO;
 import top.hcode.hoj.pojo.entity.common.Announcement;
 import top.hcode.hoj.pojo.entity.contest.*;
 import top.hcode.hoj.pojo.entity.problem.*;
@@ -100,7 +100,7 @@ public class ContestManager {
     @Autowired
     private GroupValidator groupValidator;
 
-    public IPage<ContestVo> getContestList(Integer limit, Integer currentPage, Integer status, Integer type, String keyword) {
+    public IPage<ContestVO> getContestList(Integer limit, Integer currentPage, Integer status, Integer type, String keyword) {
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 10;
@@ -108,13 +108,13 @@ public class ContestManager {
     }
 
 
-    public ContestVo getContestInfo(Long cid) throws StatusFailException, StatusForbiddenException {
+    public ContestVO getContestInfo(Long cid) throws StatusFailException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
-        ContestVo contestInfo = contestEntityService.getContestInfoById(cid);
+        ContestVO contestInfo = contestEntityService.getContestInfoById(cid);
         if (contestInfo == null) {
             throw new StatusFailException("对不起，该比赛不存在!");
         }
@@ -134,7 +134,7 @@ public class ContestManager {
     }
 
 
-    public void toRegisterContest(RegisterContestDto registerContestDto) throws StatusFailException, StatusForbiddenException {
+    public void toRegisterContest(RegisterContestDTO registerContestDto) throws StatusFailException, StatusForbiddenException {
 
         Long cid = registerContestDto.getCid();
         String password = registerContestDto.getPassword();
@@ -144,7 +144,7 @@ public class ContestManager {
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -186,10 +186,10 @@ public class ContestManager {
         }
     }
 
-    public AccessVo getContestAccess(Long cid) throws StatusFailException {
+    public AccessVO getContestAccess(Long cid) throws StatusFailException {
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         QueryWrapper<ContestRegister> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("cid", cid).eq("uid", userRolesVo.getUid());
@@ -209,17 +209,17 @@ public class ContestManager {
             }
         }
 
-        AccessVo accessVo = new AccessVo();
+        AccessVO accessVo = new AccessVO();
         accessVo.setAccess(access);
         return accessVo;
     }
 
 
-    public List<ContestProblemVo> getContestProblem(Long cid) throws StatusFailException, StatusForbiddenException {
+    public List<ContestProblemVO> getContestProblem(Long cid) throws StatusFailException, StatusForbiddenException {
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(cid);
@@ -230,7 +230,7 @@ public class ContestManager {
         // 需要对该比赛做判断，是否处于开始或结束状态才可以获取题目列表，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
         contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
 
-        List<ContestProblemVo> contestProblemList;
+        List<ContestProblemVO> contestProblemList;
         boolean isAdmin = isRoot
                 || contest.getAuthor().equals(userRolesVo.getUsername())
                 || (contest.getIsGroup() && groupValidator.isGroupRoot(userRolesVo.getUid(), contest.getGid()));
@@ -262,11 +262,11 @@ public class ContestManager {
         return contestProblemList;
     }
 
-    public ProblemInfoVo getContestProblemDetails(Long cid, String displayId) throws StatusFailException, StatusForbiddenException, StatusNotFoundException {
+    public ProblemInfoVO getContestProblemDetails(Long cid, String displayId) throws StatusFailException, StatusForbiddenException, StatusNotFoundException {
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(cid);
@@ -339,7 +339,7 @@ public class ContestManager {
         superAdminUidList.add(contest.getUid());
 
         // 获取题目的提交记录
-        ProblemCountVo problemCount = judgeEntityService.getContestProblemCount(contestProblem.getPid(), contestProblem.getId(),
+        ProblemCountVO problemCount = judgeEntityService.getContestProblemCount(contestProblem.getPid(), contestProblem.getId(),
                 contestProblem.getCid(), contest.getStartTime(), sealRankTime, superAdminUidList);
 
         // 获取题目的代码模板
@@ -353,11 +353,11 @@ public class ContestManager {
             }
         }
         // 将数据统一写入到一个Vo返回数据实体类中
-        return new ProblemInfoVo(problem, tags, languagesStr, problemCount, LangNameAndCode);
+        return new ProblemInfoVO(problem, tags, languagesStr, problemCount, LangNameAndCode);
     }
 
 
-    public IPage<JudgeVo> getContestSubmissionList(Integer limit,
+    public IPage<JudgeVO> getContestSubmissionList(Integer limit,
                                                    Integer currentPage,
                                                    boolean onlyMine,
                                                    String displayId,
@@ -368,7 +368,7 @@ public class ContestManager {
                                                    boolean completeProblemID) throws StatusFailException, StatusForbiddenException {
 
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(searchCid);
 
@@ -402,7 +402,7 @@ public class ContestManager {
             sealRankTime = contest.getSealRankTime();
         }
         // OI比赛封榜期间不更新，ACM比赛封榜期间可看到自己的提交，但是其它人的不可见
-        IPage<JudgeVo> contestJudgeList = judgeEntityService.getContestJudgeList(limit,
+        IPage<JudgeVO> contestJudgeList = judgeEntityService.getContestJudgeList(limit,
                 currentPage,
                 displayId,
                 searchCid,
@@ -435,7 +435,7 @@ public class ContestManager {
     }
 
 
-    public IPage getContestRank(ContestRankDto contestRankDto) throws StatusFailException, StatusForbiddenException {
+    public IPage getContestRank(ContestRankDTO contestRankDto) throws StatusFailException, StatusForbiddenException {
 
         Long cid = contestRankDto.getCid();
         List<String> concernedList = contestRankDto.getConcernedList();
@@ -459,7 +459,7 @@ public class ContestManager {
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(contestRankDto.getCid());
@@ -503,10 +503,10 @@ public class ContestManager {
     }
 
 
-    public IPage<AnnouncementVo> getContestAnnouncement(Long cid, Integer limit, Integer currentPage) throws StatusFailException, StatusForbiddenException {
+    public IPage<AnnouncementVO> getContestAnnouncement(Long cid, Integer limit, Integer currentPage) throws StatusFailException, StatusForbiddenException {
 
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(cid);
 
@@ -523,7 +523,7 @@ public class ContestManager {
     }
 
 
-    public List<Announcement> getContestUserNotReadAnnouncement(UserReadContestAnnouncementDto userReadContestAnnouncementDto) {
+    public List<Announcement> getContestUserNotReadAnnouncement(UserReadContestAnnouncementDTO userReadContestAnnouncementDto) {
 
         Long cid = userReadContestAnnouncementDto.getCid();
         List<Long> readAnnouncementList = userReadContestAnnouncementDto.getReadAnnouncementList();
@@ -551,10 +551,10 @@ public class ContestManager {
     }
 
 
-    public void submitPrintText(ContestPrintDto contestPrintDto) throws StatusFailException, StatusForbiddenException {
+    public void submitPrintText(ContestPrintDTO contestPrintDto) throws StatusFailException, StatusForbiddenException {
 
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(contestPrintDto.getCid());

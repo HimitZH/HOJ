@@ -7,8 +7,8 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.AdminEditUserDto;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.dto.AdminEditUserDTO;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.service.admin.user.AdminUserService;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class AdminUserController {
     @GetMapping("/get-user-list")
     @RequiresAuthentication
     @RequiresPermissions("user_admin")
-    public CommonResult<IPage<UserRolesVo>> getUserList(@RequestParam(value = "limit", required = false) Integer limit,
+    public CommonResult<IPage<UserRolesVO>> getUserList(@RequestParam(value = "limit", required = false) Integer limit,
                                                         @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                                         @RequestParam(value = "onlyAdmin", defaultValue = "false") Boolean onlyAdmin,
                                                         @RequestParam(value = "keyword", required = false) String keyword) {
@@ -41,7 +41,7 @@ public class AdminUserController {
     @PutMapping("/edit-user")
     @RequiresPermissions("user_admin")
     @RequiresAuthentication
-    public CommonResult<Void> editUser(@RequestBody AdminEditUserDto adminEditUserDto) {
+    public CommonResult<Void> editUser(@RequestBody AdminEditUserDTO adminEditUserDto) {
         return adminUserService.editUser(adminEditUserDto);
     }
 

@@ -14,7 +14,7 @@
         <result column="like_num" property="likeNum"></result>
         <result column="total_reply_num" property="totalReplyNum"></result>
         <result column="gmt_create" property="gmtCreate"></result>
-        <collection property="replyList" ofType="top.hcode.hoj.pojo.vo.ReplyVo" select="getCommentListReply" column="id">
+        <collection property="replyList" ofType="top.hcode.hoj.pojo.vo.ReplyVO" select="getCommentListReply" column="id">
         </collection>
     </resultMap>
 
@@ -45,7 +45,7 @@
     </select>
 
     <!-- 子查询 -->
-    <select id="getCommentListReply" resultType="top.hcode.hoj.pojo.vo.ReplyVo">
+    <select id="getCommentListReply" resultType="top.hcode.hoj.pojo.vo.ReplyVO">
         select r.*,u.title_name as from_title_name,u.title_color as from_title_color from reply r,user_info u
         where
         r.comment_id=#{id} and r.status=0 and r.from_uid = u.uuid

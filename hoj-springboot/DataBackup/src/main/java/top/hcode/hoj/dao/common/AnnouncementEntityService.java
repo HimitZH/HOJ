@@ -3,7 +3,7 @@ package top.hcode.hoj.dao.common;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import top.hcode.hoj.pojo.entity.common.Announcement;
 import com.baomidou.mybatisplus.extension.service.IService;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.vo.AnnouncementVO;
 
 /**
  * <p>
@@ -15,7 +15,7 @@ import top.hcode.hoj.pojo.vo.AnnouncementVo;
  */
 public interface AnnouncementEntityService extends IService<Announcement> {
 
-    IPage<AnnouncementVo> getAnnouncementList(int limit, int currentPage, Boolean notAdmin);
+    IPage<AnnouncementVO> getAnnouncementList(int limit, int currentPage, Boolean notAdmin);
 
-    IPage<AnnouncementVo> getContestAnnouncement(Long cid,Boolean notAdmin,int limit, int currentPage);
+    IPage<AnnouncementVO> getContestAnnouncement(Long cid, Boolean notAdmin, int limit, int currentPage);
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.mapper.GroupContestMapper">
-    <select id="getContestList" resultType="top.hcode.hoj.pojo.vo.ContestVo" useCache="true">
+    <select id="getContestList" resultType="top.hcode.hoj.pojo.vo.ContestVO" useCache="true">
         SELECT c.id,c.author,c.title,c.description,c.type,c.status,c.source,c.auth,c.start_time,
         c.end_time,c.duration,c.open_rank,c.oi_rank_score_type
         FROM contest c

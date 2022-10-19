@@ -3,7 +3,7 @@ package top.hcode.hoj.dao.group.impl;
 import top.hcode.hoj.dao.group.GroupEntityService;
 import top.hcode.hoj.mapper.GroupMapper;
 import top.hcode.hoj.pojo.entity.group.Group;
-import top.hcode.hoj.pojo.vo.GroupVo;
+import top.hcode.hoj.pojo.vo.GroupVO;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -24,15 +24,15 @@ public class GroupEntityServiceImpl extends ServiceImpl<GroupMapper, Group> impl
     private GroupMapper groupMapper;
 
     @Override
-    public IPage<GroupVo> getGroupList(int limit,
+    public IPage<GroupVO> getGroupList(int limit,
                                        int currentPage,
                                        String keyword,
                                        Integer auth,
                                        String uid,
                                        Boolean onlyMine,
                                        Boolean isRoot) {
-        IPage<GroupVo> iPage = new Page<>(currentPage, limit);
-        List<GroupVo> groupList = groupMapper.getGroupList(iPage, keyword, auth, uid, onlyMine,isRoot);
+        IPage<GroupVO> iPage = new Page<>(currentPage, limit);
+        List<GroupVO> groupList = groupMapper.getGroupList(iPage, keyword, auth, uid, onlyMine,isRoot);
 
         return iPage.setRecords(groupList);
     }

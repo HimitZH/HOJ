@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.manager.admin.contest.AdminContestAnnouncementManager;
-import top.hcode.hoj.pojo.dto.AnnouncementDto;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.dto.AnnouncementDTO;
+import top.hcode.hoj.pojo.vo.AnnouncementVO;
 import top.hcode.hoj.service.admin.contest.AdminContestAnnouncementService;
 
 /**
@@ -23,8 +23,8 @@ public class AdminContestAnnouncementServiceImpl implements AdminContestAnnounce
     private AdminContestAnnouncementManager adminContestAnnouncementManager;
 
     @Override
-    public CommonResult<IPage<AnnouncementVo>> getAnnouncementList(Integer limit, Integer currentPage, Long cid) {
-        IPage<AnnouncementVo> announcementList = adminContestAnnouncementManager.getAnnouncementList(limit, currentPage, cid);
+    public CommonResult<IPage<AnnouncementVO>> getAnnouncementList(Integer limit, Integer currentPage, Long cid) {
+        IPage<AnnouncementVO> announcementList = adminContestAnnouncementManager.getAnnouncementList(limit, currentPage, cid);
         return CommonResult.successResponse(announcementList);
     }
 
@@ -39,7 +39,7 @@ public class AdminContestAnnouncementServiceImpl implements AdminContestAnnounce
     }
 
     @Override
-    public CommonResult<Void> addAnnouncement(AnnouncementDto announcementDto) {
+    public CommonResult<Void> addAnnouncement(AnnouncementDTO announcementDto) {
         try {
             adminContestAnnouncementManager.addAnnouncement(announcementDto);
             return CommonResult.successResponse();
@@ -49,7 +49,7 @@ public class AdminContestAnnouncementServiceImpl implements AdminContestAnnounce
     }
 
     @Override
-    public CommonResult<Void> updateAnnouncement(AnnouncementDto announcementDto) {
+    public CommonResult<Void> updateAnnouncement(AnnouncementDTO announcementDto) {
         try {
             adminContestAnnouncementManager.updateAnnouncement(announcementDto);
             return CommonResult.successResponse();

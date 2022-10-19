@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.training.TrainingRecord;
-import top.hcode.hoj.pojo.vo.TrainingRecordVo;
+import top.hcode.hoj.pojo.vo.TrainingRecordVO;
 
 import java.util.List;
 
@@ -19,5 +19,5 @@ import java.util.List;
 @Repository
 public interface TrainingRecordMapper extends BaseMapper<TrainingRecord> {
 
-    public List<TrainingRecordVo> getTrainingRecord(@Param("tid") Long tid);
+    public List<TrainingRecordVO> getTrainingRecord(@Param("tid") Long tid);
 }

@@ -7,12 +7,12 @@ import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.oj.PassportManager;
-import top.hcode.hoj.pojo.dto.ApplyResetPasswordDto;
-import top.hcode.hoj.pojo.dto.LoginDto;
-import top.hcode.hoj.pojo.dto.RegisterDto;
-import top.hcode.hoj.pojo.dto.ResetPasswordDto;
-import top.hcode.hoj.pojo.vo.RegisterCodeVo;
-import top.hcode.hoj.pojo.vo.UserInfoVo;
+import top.hcode.hoj.pojo.dto.ApplyResetPasswordDTO;
+import top.hcode.hoj.pojo.dto.LoginDTO;
+import top.hcode.hoj.pojo.dto.RegisterDTO;
+import top.hcode.hoj.pojo.dto.ResetPasswordDTO;
+import top.hcode.hoj.pojo.vo.RegisterCodeVO;
+import top.hcode.hoj.pojo.vo.UserInfoVO;
 import top.hcode.hoj.service.oj.PassportService;
 
 import javax.annotation.Resource;
@@ -31,7 +31,7 @@ public class PassportServiceImpl implements PassportService {
     private PassportManager passportManager;
 
     @Override
-    public CommonResult<UserInfoVo> login(LoginDto loginDto, HttpServletResponse response, HttpServletRequest request) {
+    public CommonResult<UserInfoVO> login(LoginDTO loginDto, HttpServletResponse response, HttpServletRequest request) {
         try {
             return CommonResult.successResponse(passportManager.login(loginDto, response, request));
         } catch (StatusFailException e) {
@@ -40,7 +40,7 @@ public class PassportServiceImpl implements PassportService {
     }
 
     @Override
-    public CommonResult<RegisterCodeVo> getRegisterCode(String email) {
+    public CommonResult<RegisterCodeVO> getRegisterCode(String email) {
         try {
             return CommonResult.successResponse(passportManager.getRegisterCode(email));
         } catch (StatusFailException e) {
@@ -53,7 +53,7 @@ public class PassportServiceImpl implements PassportService {
     }
 
     @Override
-    public CommonResult<Void> register(RegisterDto registerDto) {
+    public CommonResult<Void> register(RegisterDTO registerDto) {
         try {
             passportManager.register(registerDto);
             return CommonResult.successResponse();
@@ -65,7 +65,7 @@ public class PassportServiceImpl implements PassportService {
     }
 
     @Override
-    public CommonResult<Void> applyResetPassword(ApplyResetPasswordDto applyResetPasswordDto) {
+    public CommonResult<Void> applyResetPassword(ApplyResetPasswordDTO applyResetPasswordDto) {
         try {
             passportManager.applyResetPassword(applyResetPasswordDto);
             return CommonResult.successResponse();
@@ -75,7 +75,7 @@ public class PassportServiceImpl implements PassportService {
     }
 
     @Override
-    public CommonResult<Void> resetPassword(ResetPasswordDto resetPasswordDto) {
+    public CommonResult<Void> resetPassword(ResetPasswordDTO resetPasswordDto) {
         try {
             passportManager.resetPassword(resetPasswordDto);
             return CommonResult.successResponse();

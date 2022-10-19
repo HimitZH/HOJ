@@ -5,9 +5,8 @@ import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
-import top.hcode.hoj.manager.group.training.GroupTrainingManager;
 import top.hcode.hoj.manager.group.training.GroupTrainingProblemManager;
-import top.hcode.hoj.pojo.dto.TrainingProblemDto;
+import top.hcode.hoj.pojo.dto.TrainingProblemDTO;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
 import top.hcode.hoj.service.group.training.GroupTrainingProblemService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +65,7 @@ public class GroupTrainingProblemServiceImpl implements GroupTrainingProblemServ
     }
 
     @Override
-    public CommonResult<Void> addProblemFromPublic(TrainingProblemDto trainingProblemDto) {
+    public CommonResult<Void> addProblemFromPublic(TrainingProblemDTO trainingProblemDto) {
         try {
             groupTrainingProblemManager.addProblemFromPublic(trainingProblemDto);
             return CommonResult.successResponse();

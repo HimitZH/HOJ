@@ -7,8 +7,8 @@ import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.admin.contest.AdminContestProblemManager;
-import top.hcode.hoj.pojo.dto.ContestProblemDto;
-import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.dto.ContestProblemDTO;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
 import top.hcode.hoj.pojo.entity.contest.ContestProblem;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.service.admin.contest.AdminContestProblemService;
@@ -53,7 +53,7 @@ public class AdminContestProblemServiceImpl implements AdminContestProblemServic
     }
 
     @Override
-    public CommonResult<Map<Object, Object>> addProblem(ProblemDto problemDto) {
+    public CommonResult<Map<Object, Object>> addProblem(ProblemDTO problemDto) {
         try {
             Map<Object, Object> problemMap = adminContestProblemManager.addProblem(problemDto);
             return CommonResult.successResponse(problemMap);
@@ -63,7 +63,7 @@ public class AdminContestProblemServiceImpl implements AdminContestProblemServic
     }
 
     @Override
-    public CommonResult<Void> updateProblem(ProblemDto problemDto) {
+    public CommonResult<Void> updateProblem(ProblemDTO problemDto) {
         try {
             adminContestProblemManager.updateProblem(problemDto);
             return CommonResult.successResponse();
@@ -94,7 +94,7 @@ public class AdminContestProblemServiceImpl implements AdminContestProblemServic
     }
 
     @Override
-    public CommonResult<Void> addProblemFromPublic(ContestProblemDto contestProblemDto) {
+    public CommonResult<Void> addProblemFromPublic(ContestProblemDTO contestProblemDto) {
         try {
             adminContestProblemManager.addProblemFromPublic(contestProblemDto);
             return CommonResult.successResponse();

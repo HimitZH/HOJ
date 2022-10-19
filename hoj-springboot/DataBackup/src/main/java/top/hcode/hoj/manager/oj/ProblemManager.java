@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
-import top.hcode.hoj.pojo.dto.PidListDto;
+import top.hcode.hoj.pojo.dto.PidListDTO;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.*;
@@ -69,7 +69,7 @@ public class ProblemManager {
      * @Description 获取题目列表分页
      * @Since 2020/10/27
      */
-    public Page<ProblemVo> getProblemList(Integer limit, Integer currentPage,
+    public Page<ProblemVO> getProblemList(Integer limit, Integer currentPage,
                                           String keyword, List<Long> tagId, Integer difficulty, String oj) {
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
@@ -91,7 +91,7 @@ public class ProblemManager {
      * @Description 随机选取一道题目
      * @Since 2020/10/27
      */
-    public RandomProblemVo getRandomProblem() throws StatusFailException {
+    public RandomProblemVO getRandomProblem() throws StatusFailException {
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         // 必须是公开题目
         queryWrapper.select("problem_id").eq("auth", 1)
@@ -102,7 +102,7 @@ public class ProblemManager {
         }
         Random random = new Random();
         int index = random.nextInt(list.size());
-        RandomProblemVo randomProblemVo = new RandomProblemVo();
+        RandomProblemVO randomProblemVo = new RandomProblemVO();
         randomProblemVo.setProblemId(list.get(index).getProblemId());
         return randomProblemVo;
     }
@@ -112,11 +112,11 @@ public class ProblemManager {
      * @Description 获取用户对应该题目列表中各个题目的做题情况
      * @Since 2020/12/29
      */
-    public HashMap<Long, Object> getUserProblemStatus(PidListDto pidListDto) throws StatusNotFoundException {
+    public HashMap<Long, Object> getUserProblemStatus(PidListDTO pidListDto) throws StatusNotFoundException {
 
         // 需要获取一下该token对应用户的数据
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
         HashMap<Long, Object> result = new HashMap<>();
         // 先查询判断该用户对于这些题是否已经通过，若已通过，则无论后续再提交结果如何，该题都标记为通过
         QueryWrapper<Judge> queryWrapper = new QueryWrapper<>();
@@ -218,9 +218,9 @@ public class ProblemManager {
      * @Description 获取指定题目的详情信息，标签，所支持语言，做题情况（只能查询公开题目 也就是auth为1）
      * @Since 2020/10/27
      */
-    public ProblemInfoVo getProblemInfo(String problemId, Long gid) throws StatusNotFoundException, StatusForbiddenException {
+    public ProblemInfoVO getProblemInfo(String problemId, Long gid) throws StatusNotFoundException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -268,7 +268,7 @@ public class ProblemManager {
             });
         }
         // 获取题目的提交记录
-        ProblemCountVo problemCount = judgeEntityService.getProblemCount(problem.getId(), gid);
+        ProblemCountVO problemCount = judgeEntityService.getProblemCount(problem.getId(), gid);
 
         // 获取题目的代码模板
         QueryWrapper<CodeTemplate> codeTemplateQueryWrapper = new QueryWrapper<>();
@@ -286,7 +286,7 @@ public class ProblemManager {
                 .setSpjLanguage(null);
 
         // 将数据统一写入到一个Vo返回数据实体类中
-        return new ProblemInfoVo(problem, tags, languagesStr, problemCount, LangNameAndCode);
+        return new ProblemInfoVO(problem, tags, languagesStr, problemCount, LangNameAndCode);
     }
 
 }

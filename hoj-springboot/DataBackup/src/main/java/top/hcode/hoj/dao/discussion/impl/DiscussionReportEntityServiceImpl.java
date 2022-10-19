@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import top.hcode.hoj.dao.discussion.DiscussionReportEntityService;
 import top.hcode.hoj.mapper.DiscussionReportMapper;
 import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
-import top.hcode.hoj.pojo.vo.DiscussionReportVo;
+import top.hcode.hoj.pojo.vo.DiscussionReportVO;
 
 import javax.annotation.Resource;
 
@@ -23,8 +23,8 @@ public class DiscussionReportEntityServiceImpl extends ServiceImpl<DiscussionRep
     private DiscussionReportMapper discussionReportMapper;
 
     @Override
-    public IPage<DiscussionReportVo> getDiscussionReportList(Integer limit, Integer currentPage) {
-        Page<DiscussionReportVo> page = new Page<>(currentPage, limit);
+    public IPage<DiscussionReportVO> getDiscussionReportList(Integer limit, Integer currentPage) {
+        Page<DiscussionReportVO> page = new Page<>(currentPage, limit);
         return discussionReportMapper.getDiscussionReportList(page);
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.mapper.GroupAnnouncementMapper">
-    <resultMap id="map_AnnouncementVo" type="top.hcode.hoj.pojo.vo.AnnouncementVo">
+    <resultMap id="map_AnnouncementVo" type="top.hcode.hoj.pojo.vo.AnnouncementVO">
         <id column="id" property="id"></id>
         <result column="title" property="title"></result>
         <result column="content" property="content"></result>

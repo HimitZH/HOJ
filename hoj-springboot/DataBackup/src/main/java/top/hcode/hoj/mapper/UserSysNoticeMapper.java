@@ -7,12 +7,12 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.msg.UserSysNotice;
-import top.hcode.hoj.pojo.vo.SysMsgVo;
+import top.hcode.hoj.pojo.vo.SysMsgVO;
 
 
 @Mapper
 @Repository
 public interface UserSysNoticeMapper extends BaseMapper<UserSysNotice> {
 
-    IPage<SysMsgVo> getSysOrMineNotice(Page<SysMsgVo> page, @Param("uid") String uid, @Param("type") String type);
+    IPage<SysMsgVO> getSysOrMineNotice(Page<SysMsgVO> page, @Param("uid") String uid, @Param("type") String type);
 }

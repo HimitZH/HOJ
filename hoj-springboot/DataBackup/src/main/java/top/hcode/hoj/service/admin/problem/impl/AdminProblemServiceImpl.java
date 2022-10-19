@@ -8,7 +8,7 @@ import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.admin.problem.AdminProblemManager;
-import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
 import top.hcode.hoj.pojo.dto.CompileDTO;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.ProblemCase;
@@ -57,7 +57,7 @@ public class AdminProblemServiceImpl implements AdminProblemService {
     }
 
     @Override
-    public CommonResult<Void> addProblem(ProblemDto problemDto) {
+    public CommonResult<Void> addProblem(ProblemDTO problemDto) {
         try {
             adminProblemManager.addProblem(problemDto);
             return CommonResult.successResponse();
@@ -67,7 +67,7 @@ public class AdminProblemServiceImpl implements AdminProblemService {
     }
 
     @Override
-    public CommonResult<Void> updateProblem(ProblemDto problemDto) {
+    public CommonResult<Void> updateProblem(ProblemDTO problemDto) {
         try {
             adminProblemManager.updateProblem(problemDto);
             return CommonResult.successResponse();

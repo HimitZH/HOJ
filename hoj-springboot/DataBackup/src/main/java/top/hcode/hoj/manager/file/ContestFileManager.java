@@ -22,9 +22,9 @@ import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestPrint;
 import top.hcode.hoj.pojo.entity.contest.ContestProblem;
 import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.vo.ACMContestRankVo;
-import top.hcode.hoj.pojo.vo.OIContestRankVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.ACMContestRankVO;
+import top.hcode.hoj.pojo.vo.OIContestRankVO;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.dao.common.FileEntityService;
 import top.hcode.hoj.dao.contest.ContestPrintEntityService;
 import top.hcode.hoj.dao.contest.ContestProblemEntityService;
@@ -83,7 +83,7 @@ public class ContestFileManager {
     public void downloadContestRank(Long cid, Boolean forceRefresh, Boolean removeStar, HttpServletResponse response) throws IOException, StatusFailException, StatusForbiddenException {
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(cid);
@@ -120,7 +120,7 @@ public class ContestFileManager {
 
         if (contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) { // ACM比赛
 
-            List<ACMContestRankVo> acmContestRankVoList = contestCalculateRankManager.calcACMRank(
+            List<ACMContestRankVO> acmContestRankVOList = contestCalculateRankManager.calcACMRank(
                     isOpenSealRank,
                     removeStar,
                     contest,
@@ -130,9 +130,9 @@ public class ContestFileManager {
             EasyExcel.write(response.getOutputStream())
                     .head(fileEntityService.getContestRankExcelHead(contestProblemDisplayIDList, true))
                     .sheet("rank")
-                    .doWrite(fileEntityService.changeACMContestRankToExcelRowList(acmContestRankVoList, contestProblemDisplayIDList, contest.getRankShowName()));
+                    .doWrite(fileEntityService.changeACMContestRankToExcelRowList(acmContestRankVOList, contestProblemDisplayIDList, contest.getRankShowName()));
         } else {
-            List<OIContestRankVo> oiContestRankVoList = contestCalculateRankManager.calcOIRank(
+            List<OIContestRankVO> oiContestRankVOList = contestCalculateRankManager.calcOIRank(
                     isOpenSealRank,
                     removeStar,
                     contest,
@@ -142,7 +142,7 @@ public class ContestFileManager {
             EasyExcel.write(response.getOutputStream())
                     .head(fileEntityService.getContestRankExcelHead(contestProblemDisplayIDList, false))
                     .sheet("rank")
-                    .doWrite(fileEntityService.changOIContestRankToExcelRowList(oiContestRankVoList, contestProblemDisplayIDList, contest.getRankShowName()));
+                    .doWrite(fileEntityService.changOIContestRankToExcelRowList(oiContestRankVOList, contestProblemDisplayIDList, contest.getRankShowName()));
         }
     }
 
@@ -156,7 +156,7 @@ public class ContestFileManager {
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         // 除非是root 其它管理员只能下载自己的比赛ac记录
 
@@ -334,7 +334,7 @@ public class ContestFileManager {
     public void downloadContestPrintText(Long id, HttpServletResponse response) throws StatusForbiddenException {
         ContestPrint contestPrint = contestPrintEntityService.getById(id);
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long cid = contestPrint.getCid();

@@ -2,7 +2,7 @@ package top.hcode.hoj.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
-import top.hcode.hoj.pojo.dto.RegisterDto;
+import top.hcode.hoj.pojo.dto.RegisterDTO;
 import top.hcode.hoj.pojo.entity.user.UserInfo;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
@@ -20,7 +20,7 @@ import java.util.List;
 @Mapper
 @Repository
 public interface UserInfoMapper extends BaseMapper<UserInfo> {
-    int addUser(RegisterDto registerDto);
+    int addUser(RegisterDTO registerDto);
 
     List<String> getSuperAdminUidList();
 

@@ -6,7 +6,7 @@ import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.manager.msg.AdminNoticeManager;
 import top.hcode.hoj.pojo.entity.msg.AdminSysNotice;
-import top.hcode.hoj.pojo.vo.AdminSysNoticeVo;
+import top.hcode.hoj.pojo.vo.AdminSysNoticeVO;
 import top.hcode.hoj.service.msg.AdminNoticeService;
 
 import javax.annotation.Resource;
@@ -23,7 +23,7 @@ public class AdminNoticeServiceImpl implements AdminNoticeService {
     private AdminNoticeManager adminNoticeManager;
 
     @Override
-    public CommonResult<IPage<AdminSysNoticeVo>> getSysNotice(Integer limit, Integer currentPage, String type) {
+    public CommonResult<IPage<AdminSysNoticeVO>> getSysNotice(Integer limit, Integer currentPage, String type) {
 
         return CommonResult.successResponse(adminNoticeManager.getSysNotice(limit, currentPage, type));
     }

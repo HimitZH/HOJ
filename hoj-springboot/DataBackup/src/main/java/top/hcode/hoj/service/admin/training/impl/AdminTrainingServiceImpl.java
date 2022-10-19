@@ -8,7 +8,7 @@ import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.admin.training.AdminTrainingManager;
-import top.hcode.hoj.pojo.dto.TrainingDto;
+import top.hcode.hoj.pojo.dto.TrainingDTO;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.service.admin.training.AdminTrainingService;
 
@@ -29,9 +29,9 @@ public class AdminTrainingServiceImpl implements AdminTrainingService {
     }
 
     @Override
-    public CommonResult<TrainingDto> getTraining(Long tid) {
+    public CommonResult<TrainingDTO> getTraining(Long tid) {
         try {
-            TrainingDto training = adminTrainingManager.getTraining(tid);
+            TrainingDTO training = adminTrainingManager.getTraining(tid);
             return CommonResult.successResponse(training);
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
@@ -51,7 +51,7 @@ public class AdminTrainingServiceImpl implements AdminTrainingService {
     }
 
     @Override
-    public CommonResult<Void> addTraining(TrainingDto trainingDto) {
+    public CommonResult<Void> addTraining(TrainingDTO trainingDto) {
         try {
             adminTrainingManager.addTraining(trainingDto);
             return CommonResult.successResponse();
@@ -61,7 +61,7 @@ public class AdminTrainingServiceImpl implements AdminTrainingService {
     }
 
     @Override
-    public CommonResult<Void> updateTraining(TrainingDto trainingDto) {
+    public CommonResult<Void> updateTraining(TrainingDTO trainingDto) {
         try {
             adminTrainingManager.updateTraining(trainingDto);
             return CommonResult.successResponse();

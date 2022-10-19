@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.manager.msg.UserMessageManager;
-import top.hcode.hoj.pojo.vo.UserMsgVo;
-import top.hcode.hoj.pojo.vo.UserUnreadMsgCountVo;
+import top.hcode.hoj.pojo.vo.UserMsgVO;
+import top.hcode.hoj.pojo.vo.UserUnreadMsgCountVO;
 import top.hcode.hoj.service.msg.UserMessageService;
 
 import javax.annotation.Resource;
@@ -23,7 +23,7 @@ public class UserMessageServiceImpl implements UserMessageService {
     private UserMessageManager userMessageManager;
 
     @Override
-    public CommonResult<UserUnreadMsgCountVo> getUnreadMsgCount() {
+    public CommonResult<UserUnreadMsgCountVO> getUnreadMsgCount() {
         return CommonResult.successResponse(userMessageManager.getUnreadMsgCount());
     }
 
@@ -38,17 +38,17 @@ public class UserMessageServiceImpl implements UserMessageService {
     }
 
     @Override
-    public CommonResult<IPage<UserMsgVo>> getCommentMsg(Integer limit, Integer currentPage) {
+    public CommonResult<IPage<UserMsgVO>> getCommentMsg(Integer limit, Integer currentPage) {
         return CommonResult.successResponse(userMessageManager.getCommentMsg(limit, currentPage));
     }
 
     @Override
-    public CommonResult<IPage<UserMsgVo>> getReplyMsg(Integer limit, Integer currentPage) {
+    public CommonResult<IPage<UserMsgVO>> getReplyMsg(Integer limit, Integer currentPage) {
         return CommonResult.successResponse(userMessageManager.getReplyMsg(limit, currentPage));
     }
 
     @Override
-    public CommonResult<IPage<UserMsgVo>> getLikeMsg(Integer limit, Integer currentPage) {
+    public CommonResult<IPage<UserMsgVO>> getLikeMsg(Integer limit, Integer currentPage) {
         return CommonResult.successResponse(userMessageManager.getLikeMsg(limit, currentPage));
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.dao.problem.ProblemEntityService;
-import top.hcode.hoj.pojo.dto.ChangeGroupProblemProgressDto;
+import top.hcode.hoj.pojo.dto.ChangeGroupProblemProgressDTO;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 
 import javax.annotation.Resource;
@@ -42,7 +42,7 @@ public class AdminGroupProblemManager {
         return problemEntityService.page(iPage, problemQueryWrapper);
     }
 
-    public void changeProgress(ChangeGroupProblemProgressDto changeGroupProblemProgressDto) throws StatusFailException {
+    public void changeProgress(ChangeGroupProblemProgressDTO changeGroupProblemProgressDto) throws StatusFailException {
         Long pid = changeGroupProblemProgressDto.getPid();
         Integer progress = changeGroupProblemProgressDto.getProgress();
         if (pid == null || progress == null) {

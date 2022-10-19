@@ -8,10 +8,10 @@ import top.hcode.hoj.common.exception.StatusNotFoundException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.oj.ContestManager;
-import top.hcode.hoj.pojo.dto.ContestPrintDto;
-import top.hcode.hoj.pojo.dto.ContestRankDto;
-import top.hcode.hoj.pojo.dto.RegisterContestDto;
-import top.hcode.hoj.pojo.dto.UserReadContestAnnouncementDto;
+import top.hcode.hoj.pojo.dto.ContestPrintDTO;
+import top.hcode.hoj.pojo.dto.ContestRankDTO;
+import top.hcode.hoj.pojo.dto.RegisterContestDTO;
+import top.hcode.hoj.pojo.dto.UserReadContestAnnouncementDTO;
 import top.hcode.hoj.pojo.entity.common.Announcement;
 import top.hcode.hoj.pojo.vo.*;
 import top.hcode.hoj.service.oj.ContestService;
@@ -31,12 +31,12 @@ public class ContestServiceImpl implements ContestService {
     private ContestManager contestManager;
 
     @Override
-    public CommonResult<IPage<ContestVo>> getContestList(Integer limit, Integer currentPage, Integer status, Integer type, String keyword) {
+    public CommonResult<IPage<ContestVO>> getContestList(Integer limit, Integer currentPage, Integer status, Integer type, String keyword) {
         return CommonResult.successResponse(contestManager.getContestList(limit, currentPage, status, type, keyword));
     }
 
     @Override
-    public CommonResult<ContestVo> getContestInfo(Long cid) {
+    public CommonResult<ContestVO> getContestInfo(Long cid) {
         try {
             return CommonResult.successResponse(contestManager.getContestInfo(cid));
         } catch (StatusFailException e) {
@@ -47,7 +47,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public CommonResult<Void> toRegisterContest(RegisterContestDto registerContestDto) {
+    public CommonResult<Void> toRegisterContest(RegisterContestDTO registerContestDto) {
         try {
             contestManager.toRegisterContest(registerContestDto);
             return CommonResult.successResponse();
@@ -59,7 +59,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public CommonResult<AccessVo> getContestAccess(Long cid) {
+    public CommonResult<AccessVO> getContestAccess(Long cid) {
         try {
             return CommonResult.successResponse(contestManager.getContestAccess(cid));
         } catch (StatusFailException e) {
@@ -68,7 +68,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public CommonResult<List<ContestProblemVo>> getContestProblem(Long cid) {
+    public CommonResult<List<ContestProblemVO>> getContestProblem(Long cid) {
         try {
             return CommonResult.successResponse(contestManager.getContestProblem(cid));
         } catch (StatusFailException e) {
@@ -79,7 +79,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public CommonResult<ProblemInfoVo> getContestProblemDetails(Long cid, String displayId) {
+    public CommonResult<ProblemInfoVO> getContestProblemDetails(Long cid, String displayId) {
         try {
             return CommonResult.successResponse(contestManager.getContestProblemDetails(cid, displayId));
         } catch (StatusFailException e) {
@@ -92,7 +92,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public CommonResult<IPage<JudgeVo>> getContestSubmissionList(Integer limit,
+    public CommonResult<IPage<JudgeVO>> getContestSubmissionList(Integer limit,
                                                                  Integer currentPage,
                                                                  Boolean onlyMine,
                                                                  String displayId,
@@ -119,7 +119,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public CommonResult<IPage> getContestRank(ContestRankDto contestRankDto) {
+    public CommonResult<IPage> getContestRank(ContestRankDTO contestRankDto) {
         try {
             return CommonResult.successResponse(contestManager.getContestRank(contestRankDto));
         } catch (StatusFailException e) {
@@ -130,7 +130,7 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public CommonResult<IPage<AnnouncementVo>> getContestAnnouncement(Long cid, Integer limit, Integer currentPage) {
+    public CommonResult<IPage<AnnouncementVO>> getContestAnnouncement(Long cid, Integer limit, Integer currentPage) {
         try {
             return CommonResult.successResponse(contestManager.getContestAnnouncement(cid, limit, currentPage));
         } catch (StatusFailException e) {
@@ -141,13 +141,13 @@ public class ContestServiceImpl implements ContestService {
     }
 
     @Override
-    public CommonResult<List<Announcement>> getContestUserNotReadAnnouncement(UserReadContestAnnouncementDto userReadContestAnnouncementDto) {
+    public CommonResult<List<Announcement>> getContestUserNotReadAnnouncement(UserReadContestAnnouncementDTO userReadContestAnnouncementDto) {
 
         return CommonResult.successResponse(contestManager.getContestUserNotReadAnnouncement(userReadContestAnnouncementDto));
     }
 
     @Override
-    public CommonResult<Void> submitPrintText(ContestPrintDto contestPrintDto) {
+    public CommonResult<Void> submitPrintText(ContestPrintDTO contestPrintDto) {
         try {
             contestManager.submitPrintText(contestPrintDto);
             return CommonResult.successResponse();

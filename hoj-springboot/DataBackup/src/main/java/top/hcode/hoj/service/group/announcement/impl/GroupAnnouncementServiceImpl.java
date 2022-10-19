@@ -7,7 +7,7 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.group.announcement.GroupAnnouncementManager;
 import top.hcode.hoj.pojo.entity.common.Announcement;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.vo.AnnouncementVO;
 import top.hcode.hoj.service.group.announcement.GroupAnnouncementService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class GroupAnnouncementServiceImpl implements GroupAnnouncementService {
     private GroupAnnouncementManager groupAnnouncementManager;
 
     @Override
-    public CommonResult<IPage<AnnouncementVo>> getAnnouncementList(Integer limit, Integer currentPage, Long gid) {
+    public CommonResult<IPage<AnnouncementVO>> getAnnouncementList(Integer limit, Integer currentPage, Long gid) {
         try {
             return CommonResult.successResponse(groupAnnouncementManager.getAnnouncementList(limit, currentPage, gid));
         } catch (StatusForbiddenException e) {
@@ -36,7 +36,7 @@ public class GroupAnnouncementServiceImpl implements GroupAnnouncementService {
     }
 
     @Override
-    public CommonResult<IPage<AnnouncementVo>> getAdminAnnouncementList(Integer limit, Integer currentPage, Long gid) {
+    public CommonResult<IPage<AnnouncementVO>> getAdminAnnouncementList(Integer limit, Integer currentPage, Long gid) {
         try {
             return CommonResult.successResponse(groupAnnouncementManager.getAdminAnnouncementList(limit, currentPage, gid));
         } catch (StatusForbiddenException e) {

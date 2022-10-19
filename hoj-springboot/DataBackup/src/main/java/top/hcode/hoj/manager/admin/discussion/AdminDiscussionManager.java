@@ -8,7 +8,7 @@ import top.hcode.hoj.dao.discussion.DiscussionEntityService;
 import top.hcode.hoj.dao.discussion.DiscussionReportEntityService;
 import top.hcode.hoj.pojo.entity.discussion.Discussion;
 import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
-import top.hcode.hoj.pojo.vo.DiscussionReportVo;
+import top.hcode.hoj.pojo.vo.DiscussionReportVO;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class AdminDiscussionManager {
         }
     }
 
-    public IPage<DiscussionReportVo> getDiscussionReport(Integer limit, Integer currentPage) {
+    public IPage<DiscussionReportVO> getDiscussionReport(Integer limit, Integer currentPage) {
         return discussionReportEntityService.getDiscussionReportList(limit,currentPage);
     }
 

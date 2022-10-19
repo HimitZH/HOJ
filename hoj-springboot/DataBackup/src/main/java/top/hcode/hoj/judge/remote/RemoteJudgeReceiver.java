@@ -20,7 +20,7 @@ import top.hcode.hoj.pojo.dto.ToJudgeDTO;
 import top.hcode.hoj.pojo.entity.contest.ContestRecord;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
-import top.hcode.hoj.pojo.vo.ConfigVo;
+import top.hcode.hoj.pojo.vo.ConfigVO;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
@@ -47,7 +47,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
     private ChooseUtils chooseUtils;
 
     @Autowired
-    private ConfigVo configVo;
+    private ConfigVO configVo;
 
     @Autowired
     private ContestRecordEntityService contestRecordEntityService;

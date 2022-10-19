@@ -7,8 +7,7 @@ import org.springframework.util.CollectionUtils;
 import top.hcode.hoj.pojo.entity.contest.ContestProblem;
 import top.hcode.hoj.mapper.ContestProblemMapper;
 import top.hcode.hoj.pojo.entity.contest.ContestRecord;
-import top.hcode.hoj.pojo.entity.user.UserInfo;
-import top.hcode.hoj.pojo.vo.ContestProblemVo;
+import top.hcode.hoj.pojo.vo.ContestProblemVO;
 import top.hcode.hoj.dao.contest.ContestProblemEntityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -17,7 +16,6 @@ import top.hcode.hoj.dao.user.UserInfoEntityService;
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -40,7 +38,7 @@ public class ContestProblemEntityServiceImpl extends ServiceImpl<ContestProblemM
     private ContestRecordEntityService contestRecordEntityService;
 
     @Override
-    public List<ContestProblemVo> getContestProblemList(Long cid,
+    public List<ContestProblemVO> getContestProblemList(Long cid,
                                                         Date startTime,
                                                         Date endTime,
                                                         Date sealTime,

@@ -3,7 +3,7 @@ package top.hcode.hoj.service.admin.problem;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
 import top.hcode.hoj.pojo.dto.CompileDTO;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.ProblemCase;
@@ -18,9 +18,9 @@ public interface AdminProblemService {
 
     public CommonResult<Void> deleteProblem(Long pid);
 
-    public CommonResult<Void> addProblem(ProblemDto problemDto);
+    public CommonResult<Void> addProblem(ProblemDTO problemDto);
 
-    public CommonResult<Void> updateProblem(ProblemDto problemDto);
+    public CommonResult<Void> updateProblem(ProblemDTO problemDto);
 
     public CommonResult<List<ProblemCase>> getProblemCases(Long pid, Boolean isUpload);
 

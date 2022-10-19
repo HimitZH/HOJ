@@ -3,7 +3,7 @@ package top.hcode.hoj.dao.user;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import top.hcode.hoj.pojo.entity.user.UserRole;
 import com.baomidou.mybatisplus.extension.service.IService;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 
 /**
  * <p>
@@ -15,9 +15,9 @@ import top.hcode.hoj.pojo.vo.UserRolesVo;
  */
 public interface UserRoleEntityService extends IService<UserRole> {
 
-    UserRolesVo getUserRoles(String uid,String username);
+    UserRolesVO getUserRoles(String uid, String username);
 
-    IPage<UserRolesVo> getUserList(int limit, int currentPage, String keyword,Boolean onlyAdmin);
+    IPage<UserRolesVO> getUserList(int limit, int currentPage, String keyword, Boolean onlyAdmin);
 
     void deleteCache(String uid, boolean isRemoveSession);
 

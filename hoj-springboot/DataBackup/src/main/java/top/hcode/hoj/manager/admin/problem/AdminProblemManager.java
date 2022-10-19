@@ -18,11 +18,11 @@ import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.crawler.problem.ProblemStrategy;
 import top.hcode.hoj.judge.Dispatcher;
-import top.hcode.hoj.pojo.dto.ProblemDto;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
 import top.hcode.hoj.pojo.dto.CompileDTO;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.*;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.dao.problem.ProblemCaseEntityService;
 import top.hcode.hoj.dao.problem.ProblemEntityService;
@@ -100,7 +100,7 @@ public class AdminProblemManager {
         if (problem != null) { // 查询成功
             // 获取当前登录的用户
             Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
             boolean isRoot = SecurityUtils.getSubject().hasRole("root");
             boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
@@ -127,7 +127,7 @@ public class AdminProblemManager {
         }
     }
 
-    public void addProblem(ProblemDto problemDto) throws StatusFailException {
+    public void addProblem(ProblemDTO problemDto) throws StatusFailException {
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("problem_id", problemDto.getProblem().getProblemId().toUpperCase());
         Problem problem = problemEntityService.getOne(queryWrapper);
@@ -142,10 +142,10 @@ public class AdminProblemManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateProblem(ProblemDto problemDto) throws StatusForbiddenException, StatusFailException {
+    public void updateProblem(ProblemDTO problemDto) throws StatusForbiddenException, StatusFailException {
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
@@ -220,7 +220,7 @@ public class AdminProblemManager {
         }
 
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
         try {
             ProblemStrategy.RemoteProblemInfo otherOJProblemInfo = remoteProblemManager.getOtherOJProblemInfo(name.toUpperCase(), problemId, userRolesVo.getUsername());
             if (otherOJProblemInfo != null) {
@@ -247,7 +247,7 @@ public class AdminProblemManager {
         }
 
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         UpdateWrapper<Problem> problemUpdateWrapper = new UpdateWrapper<>();
         problemUpdateWrapper.eq("id", problem.getId())

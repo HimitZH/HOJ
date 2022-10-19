@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.hcode.hoj.mapper.UserRecordMapper">
-    <select id="getACMRankList" resultType="top.hcode.hoj.pojo.vo.ACMRankVo" useCache="true">
+    <select id="getACMRankList" resultType="top.hcode.hoj.pojo.vo.ACMRankVO" useCache="true">
         SELECT u.uuid as uid,u.nickname,u.username,left(u.signature,100) as signature,u.avatar,
         u.title_name,u.title_color,
         (SELECT COUNT( DISTINCT pid ) FROM user_acproblem WHERE uid = u.uuid) AS ac,
@@ -19,7 +19,7 @@
         ORDER BY ac DESC,total ASC
     </select>
 
-    <select id="getRecent7ACRank" resultType="top.hcode.hoj.pojo.vo.ACMRankVo">
+    <select id="getRecent7ACRank" resultType="top.hcode.hoj.pojo.vo.ACMRankVO">
         SELECT u.uuid as uid,u.nickname,u.username,u.avatar,u.title_name,u.title_color,
         (SELECT COUNT( DISTINCT pid ) FROM user_acproblem WHERE uid =u.uuid
         and DATE(gmt_create) >= DATE_SUB(CURDATE(),INTERVAL 7 DAY)) AS ac
@@ -27,7 +27,7 @@
         ORDER BY ac DESC,u.gmt_create DESC LIMIT 10
     </select>
 
-    <select id="getOIRankList" resultType="top.hcode.hoj.pojo.vo.OIRankVo" useCache="true">
+    <select id="getOIRankList" resultType="top.hcode.hoj.pojo.vo.OIRankVO" useCache="true">
         SELECT ui.uuid AS uid, ui.nickname, ui.username, left(ui.signature,100) as signature, ui.avatar,
             ui.title_name,ui.title_color
             , (
@@ -64,7 +64,7 @@
         ORDER BY score DESC, ac DESC
     </select>
 
-    <resultMap id="map_UserHomeVo" type="top.hcode.hoj.pojo.vo.UserHomeVo">
+    <resultMap id="map_UserHomeVo" type="top.hcode.hoj.pojo.vo.UserHomeVO">
         <id column="uid" property="uid"></id>
         <result column="username" property="username"></result>
         <result column="school" property="school"></result>
@@ -104,7 +104,7 @@
     </select>
 
 
-    <select id="getGroupRankList" resultType="top.hcode.hoj.pojo.vo.OIRankVo" useCache="true">
+    <select id="getGroupRankList" resultType="top.hcode.hoj.pojo.vo.OIRankVO" useCache="true">
         SELECT ui.uuid AS uid, ui.nickname, ui.username, ui.avatar,
         ui.title_name,ui.title_color
         , (

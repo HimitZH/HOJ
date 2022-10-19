@@ -8,11 +8,11 @@ import top.hcode.hoj.dao.group.GroupEntityService;
 import top.hcode.hoj.dao.group.GroupTrainingEntityService;
 import top.hcode.hoj.dao.training.*;
 import top.hcode.hoj.manager.admin.training.AdminTrainingRecordManager;
-import top.hcode.hoj.pojo.dto.TrainingDto;
+import top.hcode.hoj.pojo.dto.TrainingDTO;
 import top.hcode.hoj.pojo.entity.group.Group;
 import top.hcode.hoj.pojo.entity.training.*;
-import top.hcode.hoj.pojo.vo.TrainingVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.TrainingVO;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.validator.GroupValidator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -57,9 +57,9 @@ public class GroupTrainingManager {
     @Autowired
     private GroupValidator groupValidator;
 
-    public IPage<TrainingVo> getTrainingList(Integer limit, Integer currentPage, Long gid) throws StatusNotFoundException, StatusForbiddenException {
+    public IPage<TrainingVO> getTrainingList(Integer limit, Integer currentPage, Long gid) throws StatusNotFoundException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -81,7 +81,7 @@ public class GroupTrainingManager {
 
     public IPage<Training> getAdminTrainingList(Integer limit, Integer currentPage, Long gid) throws StatusNotFoundException, StatusForbiddenException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -101,9 +101,9 @@ public class GroupTrainingManager {
         return groupTrainingEntityService.getAdminTrainingList(limit, currentPage, gid);
     }
 
-    public TrainingDto getTraining(Long tid) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
+    public TrainingDTO getTraining(Long tid) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -126,7 +126,7 @@ public class GroupTrainingManager {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
-        TrainingDto trainingDto = new TrainingDto();
+        TrainingDTO trainingDto = new TrainingDTO();
         trainingDto.setTraining(training);
 
         QueryWrapper<MappingTrainingCategory> mappingTrainingCategoryQueryWrapper = new QueryWrapper<>();
@@ -143,9 +143,9 @@ public class GroupTrainingManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void addTraining(TrainingDto trainingDto) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
+    public void addTraining(TrainingDTO trainingDto) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -191,9 +191,9 @@ public class GroupTrainingManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void updateTraining(TrainingDto trainingDto) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
+    public void updateTraining(TrainingDTO trainingDto) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -271,7 +271,7 @@ public class GroupTrainingManager {
 
     public void deleteTraining(Long tid) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -302,7 +302,7 @@ public class GroupTrainingManager {
 
     public void changeTrainingStatus(Long tid, Boolean status) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 

@@ -43,12 +43,12 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public CommonResult<WebConfigDto> getWebConfig() {
+    public CommonResult<WebConfigDTO> getWebConfig() {
         return CommonResult.successResponse(configManager.getWebConfig());
     }
 
     @Override
-    public CommonResult<Void> setWebConfig(WebConfigDto config) {
+    public CommonResult<Void> setWebConfig(WebConfigDTO config) {
         try {
             configManager.setWebConfig(config);
             return CommonResult.successResponse();
@@ -58,12 +58,12 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public CommonResult<EmailConfigDto> getEmailConfig() {
+    public CommonResult<EmailConfigDTO> getEmailConfig() {
         return CommonResult.successResponse(configManager.getEmailConfig());
     }
 
     @Override
-    public CommonResult<Void> setEmailConfig(EmailConfigDto config) {
+    public CommonResult<Void> setEmailConfig(EmailConfigDTO config) {
         try {
             configManager.setEmailConfig(config);
             return CommonResult.successResponse();
@@ -73,7 +73,7 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public CommonResult<Void> testEmail(TestEmailDto testEmailDto) {
+    public CommonResult<Void> testEmail(TestEmailDTO testEmailDto) {
         try {
             configManager.testEmail(testEmailDto);
             return CommonResult.successResponse();
@@ -83,12 +83,12 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public CommonResult<DBAndRedisConfigDto> getDBAndRedisConfig() {
+    public CommonResult<DBAndRedisConfigDTO> getDBAndRedisConfig() {
         return CommonResult.successResponse(configManager.getDBAndRedisConfig());
     }
 
     @Override
-    public CommonResult<Void> setDBAndRedisConfig(DBAndRedisConfigDto config) {
+    public CommonResult<Void> setDBAndRedisConfig(DBAndRedisConfigDTO config) {
         try {
             configManager.setDBAndRedisConfig(config);
             return CommonResult.successResponse();
@@ -98,12 +98,12 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public CommonResult<SwitchConfigDto> getSwitchConfig() {
+    public CommonResult<SwitchConfigDTO> getSwitchConfig() {
         return CommonResult.successResponse(configManager.getSwitchConfig());
     }
 
     @Override
-    public CommonResult<Void> setSwitchConfig(SwitchConfigDto config) {
+    public CommonResult<Void> setSwitchConfig(SwitchConfigDTO config) {
         try {
             configManager.setSwitchConfig(config);
             return CommonResult.successResponse();

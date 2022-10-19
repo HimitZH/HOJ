@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.user.RoleAuth;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import top.hcode.hoj.pojo.vo.RoleAuthsVo;
+import top.hcode.hoj.pojo.vo.RoleAuthsVO;
 
 
 /**
@@ -19,5 +19,5 @@ import top.hcode.hoj.pojo.vo.RoleAuthsVo;
 @Mapper
 @Repository
 public interface RoleAuthMapper extends BaseMapper<RoleAuth> {
-    RoleAuthsVo getRoleAuths(@Param("rid") long rid);
+    RoleAuthsVO getRoleAuths(@Param("rid") long rid);
 }

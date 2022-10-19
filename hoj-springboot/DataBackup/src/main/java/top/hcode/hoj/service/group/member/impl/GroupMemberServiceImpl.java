@@ -7,7 +7,7 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.group.member.GroupMemberManager;
 import top.hcode.hoj.pojo.entity.group.GroupMember;
-import top.hcode.hoj.pojo.vo.GroupMemberVo;
+import top.hcode.hoj.pojo.vo.GroupMemberVO;
 import top.hcode.hoj.service.group.member.GroupMemberService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class GroupMemberServiceImpl implements GroupMemberService {
     private GroupMemberManager groupMemberManager;
 
     @Override
-    public CommonResult<IPage<GroupMemberVo>> getMemberList(Integer limit, Integer currentPage, String keyword, Integer auth, Long gid) {
+    public CommonResult<IPage<GroupMemberVO>> getMemberList(Integer limit, Integer currentPage, String keyword, Integer auth, Long gid) {
         try {
             return CommonResult.successResponse(groupMemberManager.getMemberList(limit, currentPage, keyword, auth, gid));
         } catch (StatusForbiddenException e) {
@@ -36,7 +36,7 @@ public class GroupMemberServiceImpl implements GroupMemberService {
     }
 
     @Override
-    public CommonResult<IPage<GroupMemberVo>> getApplyList(Integer limit, Integer currentPage, String keyword, Integer auth, Long gid) {
+    public CommonResult<IPage<GroupMemberVO>> getApplyList(Integer limit, Integer currentPage, String keyword, Integer auth, Long gid) {
         try {
             return CommonResult.successResponse(groupMemberManager.getApplyList(limit, currentPage, keyword, auth, gid));
         } catch (StatusForbiddenException e) {

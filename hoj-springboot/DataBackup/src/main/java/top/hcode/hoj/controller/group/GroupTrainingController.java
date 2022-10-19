@@ -1,11 +1,11 @@
 package top.hcode.hoj.controller.group;
 
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.TrainingDto;
-import top.hcode.hoj.pojo.dto.TrainingProblemDto;
+import top.hcode.hoj.pojo.dto.TrainingDTO;
+import top.hcode.hoj.pojo.dto.TrainingProblemDTO;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
-import top.hcode.hoj.pojo.vo.TrainingVo;
+import top.hcode.hoj.pojo.vo.TrainingVO;
 import top.hcode.hoj.service.group.training.GroupTrainingProblemService;
 import top.hcode.hoj.service.group.training.GroupTrainingService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -32,9 +32,9 @@ public class GroupTrainingController {
     private GroupTrainingProblemService groupTrainingProblemService;
 
     @GetMapping("/get-training-list")
-    public CommonResult<IPage<TrainingVo>> getTrainingList(@RequestParam(value = "limit", required = false) Integer limit,
-                                                          @RequestParam(value = "currentPage", required = false) Integer currentPage,
-                                                          @RequestParam(value = "gid", required = true) Long gid) {
+    public CommonResult<IPage<TrainingVO>> getTrainingList(@RequestParam(value = "limit", required = false) Integer limit,
+                                                           @RequestParam(value = "currentPage", required = false) Integer currentPage,
+                                                           @RequestParam(value = "gid", required = true) Long gid) {
         return groupTrainingService.getTrainingList(limit, currentPage, gid);
     }
 
@@ -46,17 +46,17 @@ public class GroupTrainingController {
     }
 
     @GetMapping("/training")
-    public CommonResult<TrainingDto> getTraining(@RequestParam("tid") Long tid) {
+    public CommonResult<TrainingDTO> getTraining(@RequestParam("tid") Long tid) {
         return groupTrainingService.getTraining(tid);
     }
 
     @PostMapping("/training")
-    public CommonResult<Void> addTraining(@RequestBody TrainingDto trainingDto) {
+    public CommonResult<Void> addTraining(@RequestBody TrainingDTO trainingDto) {
         return groupTrainingService.addTraining(trainingDto);
     }
 
     @PutMapping("/training")
-    public CommonResult<Void> updateTraining(@RequestBody TrainingDto trainingDto) {
+    public CommonResult<Void> updateTraining(@RequestBody TrainingDTO trainingDto) {
         return groupTrainingService.updateTraining(trainingDto);
     }
 
@@ -92,7 +92,7 @@ public class GroupTrainingController {
     }
 
     @PostMapping("/add-training-problem-from-public")
-    public CommonResult<Void> addProblemFromPublic(@RequestBody TrainingProblemDto trainingProblemDto) {
+    public CommonResult<Void> addProblemFromPublic(@RequestBody TrainingProblemDTO trainingProblemDto) {
         return groupTrainingProblemService.addProblemFromPublic(trainingProblemDto);
     }
 

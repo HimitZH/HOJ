@@ -11,11 +11,11 @@ import top.hcode.hoj.common.exception.StatusAccessDeniedException;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.dao.user.SessionEntityService;
 import top.hcode.hoj.dao.user.UserRoleEntityService;
-import top.hcode.hoj.pojo.dto.LoginDto;
+import top.hcode.hoj.pojo.dto.LoginDTO;
 import top.hcode.hoj.pojo.entity.user.Role;
 import top.hcode.hoj.pojo.entity.user.Session;
-import top.hcode.hoj.pojo.vo.UserInfoVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.UserInfoVO;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.JwtUtils;
@@ -48,7 +48,7 @@ public class AdminAccountManager {
     @Autowired
     private UserRoleEntityService userRoleEntityService;
 
-    public UserInfoVo login(LoginDto loginDto) throws StatusFailException, StatusAccessDeniedException {
+    public UserInfoVO login(LoginDTO loginDto) throws StatusFailException, StatusAccessDeniedException {
 
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = servletRequestAttributes.getRequest();
@@ -62,7 +62,7 @@ public class AdminAccountManager {
             throw new StatusFailException("对不起！登录失败次数过多！您的账号有风险，半个小时内暂时无法登录！");
         }
 
-        UserRolesVo userRolesVo = userRoleEntityService.getUserRoles(null, loginDto.getUsername());
+        UserRolesVO userRolesVo = userRoleEntityService.getUserRoles(null, loginDto.getUsername());
 
         if (userRolesVo == null) {
             throw new StatusFailException("用户名或密码错误");
@@ -103,7 +103,7 @@ public class AdminAccountManager {
             // 异步检查是否异地登录
             sessionEntityService.checkRemoteLogin(userRolesVo.getUid());
 
-            UserInfoVo userInfoVo = new UserInfoVo();
+            UserInfoVO userInfoVo = new UserInfoVO();
             BeanUtil.copyProperties(userRolesVo, userInfoVo, "roles");
             userInfoVo.setRoleList(userRolesVo.getRoles()
                     .stream()

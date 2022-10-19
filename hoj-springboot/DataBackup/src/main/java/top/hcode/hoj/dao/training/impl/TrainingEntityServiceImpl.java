@@ -9,7 +9,7 @@ import top.hcode.hoj.dao.training.TrainingProblemEntityService;
 import top.hcode.hoj.mapper.TrainingMapper;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
-import top.hcode.hoj.pojo.vo.TrainingVo;
+import top.hcode.hoj.pojo.vo.TrainingVO;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class TrainingEntityServiceImpl extends ServiceImpl<TrainingMapper, Train
 
 
     @Override
-    public Page<TrainingVo> getTrainingList(int limit,
+    public Page<TrainingVO> getTrainingList(int limit,
                                             int currentPage,
                                             Long categoryId,
                                             String auth,
@@ -42,13 +42,13 @@ public class TrainingEntityServiceImpl extends ServiceImpl<TrainingMapper, Train
                                             String currentUid) {
 
         //新建分页
-        Page<TrainingVo> page = new Page<>(currentPage, limit);
+        Page<TrainingVO> page = new Page<>(currentPage, limit);
 
-        List<TrainingVo> trainingList = trainingMapper.getTrainingList(page, categoryId, auth, keyword);
+        List<TrainingVO> trainingList = trainingMapper.getTrainingList(page, categoryId, auth, keyword);
 
         // 当前用户有登录，且训练列表不为空，则查询用户对于每个训练的做题进度
         if (!StringUtils.isEmpty(currentUid) && trainingList.size() > 0) {
-            List<Long> tidList = trainingList.stream().map(TrainingVo::getId).collect(Collectors.toList());
+            List<Long> tidList = trainingList.stream().map(TrainingVO::getId).collect(Collectors.toList());
             List<TrainingProblem> trainingProblemList = trainingProblemEntityService.getTrainingListAcceptedCountByUid(tidList, currentUid);
 
             HashMap<Long, Integer> tidMapCount = new HashMap<>(trainingList.size());
@@ -58,7 +58,7 @@ public class TrainingEntityServiceImpl extends ServiceImpl<TrainingMapper, Train
                 tidMapCount.put(trainingProblem.getTid(), count);
             }
 
-            for (TrainingVo trainingVo : trainingList) {
+            for (TrainingVO trainingVo : trainingList) {
                 Integer count = tidMapCount.getOrDefault(trainingVo.getId(), 0);
                 trainingVo.setAcCount(count);
             }

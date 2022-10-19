@@ -49,5 +49,5 @@ public class CommentVo {
     private Date gmtCreate;
 
     @ApiModelProperty(value = "该评论回复列表")
-    private List<ReplyVo> replyList;
+    private List<ReplyVO> replyList;
 }

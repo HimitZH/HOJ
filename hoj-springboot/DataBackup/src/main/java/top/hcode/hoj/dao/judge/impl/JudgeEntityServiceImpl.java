@@ -16,9 +16,9 @@ import top.hcode.hoj.mapper.ProblemMapper;
 import top.hcode.hoj.pojo.entity.contest.ContestRecord;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.Problem;
-import top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVo;
-import top.hcode.hoj.pojo.vo.JudgeVo;
-import top.hcode.hoj.pojo.vo.ProblemCountVo;
+import top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVO;
+import top.hcode.hoj.pojo.vo.JudgeVO;
+import top.hcode.hoj.pojo.vo.ProblemCountVO;
 import top.hcode.hoj.utils.Constants;
 
 import java.util.Date;
@@ -50,7 +50,7 @@ public class JudgeEntityServiceImpl extends ServiceImpl<JudgeMapper, Judge> impl
 
 
     @Override
-    public IPage<JudgeVo> getCommonJudgeList(Integer limit,
+    public IPage<JudgeVO> getCommonJudgeList(Integer limit,
                                              Integer currentPage,
                                              String searchPid,
                                              Integer status,
@@ -59,18 +59,18 @@ public class JudgeEntityServiceImpl extends ServiceImpl<JudgeMapper, Judge> impl
                                              Boolean completeProblemID,
                                              Long gid) {
         //新建分页
-        Page<JudgeVo> page = new Page<>(currentPage, limit);
+        Page<JudgeVO> page = new Page<>(currentPage, limit);
 
-        IPage<JudgeVo> commonJudgeList = judgeMapper.getCommonJudgeList(page, searchPid, status, username, uid, completeProblemID, gid);
-        List<JudgeVo> records = commonJudgeList.getRecords();
+        IPage<JudgeVO> commonJudgeList = judgeMapper.getCommonJudgeList(page, searchPid, status, username, uid, completeProblemID, gid);
+        List<JudgeVO> records = commonJudgeList.getRecords();
         if (!CollectionUtils.isEmpty(records)) {
-            List<Long> pidList = records.stream().map(JudgeVo::getPid).collect(Collectors.toList());
+            List<Long> pidList = records.stream().map(JudgeVO::getPid).collect(Collectors.toList());
             QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
             problemQueryWrapper.select("id", "title")
                     .in("id", pidList);
             List<Problem> problemList = problemMapper.selectList(problemQueryWrapper);
             HashMap<Long, String> storeMap = new HashMap<>(limit);
-            for (JudgeVo judgeVo : records) {
+            for (JudgeVO judgeVo : records) {
                 judgeVo.setTitle(getProblemTitleByPid(judgeVo.getPid(), problemList, storeMap));
             }
         }
@@ -92,7 +92,7 @@ public class JudgeEntityServiceImpl extends ServiceImpl<JudgeMapper, Judge> impl
     }
 
     @Override
-    public IPage<JudgeVo> getContestJudgeList(Integer limit,
+    public IPage<JudgeVO> getContestJudgeList(Integer limit,
                                               Integer currentPage,
                                               String displayId,
                                               Long cid,
@@ -106,7 +106,7 @@ public class JudgeEntityServiceImpl extends ServiceImpl<JudgeMapper, Judge> impl
                                               String sealTimeUid,
                                               Boolean completeProblemID) {
         //新建分页
-        Page<JudgeVo> page = new Page<>(currentPage, limit);
+        Page<JudgeVO> page = new Page<>(currentPage, limit);
 
         return judgeMapper.getContestJudgeList(page, displayId, cid, status, username, uid, beforeContestSubmit,
                 rule, startTime, sealRankTime, sealTimeUid, completeProblemID);
@@ -131,12 +131,12 @@ public class JudgeEntityServiceImpl extends ServiceImpl<JudgeMapper, Judge> impl
     }
 
     @Override
-    public ProblemCountVo getContestProblemCount(Long pid, Long cpid, Long cid, Date startTime, Date sealRankTime, List<String> adminList) {
+    public ProblemCountVO getContestProblemCount(Long pid, Long cpid, Long cid, Date startTime, Date sealRankTime, List<String> adminList) {
         return judgeMapper.getContestProblemCount(pid, cpid, cid, startTime, sealRankTime, adminList);
     }
 
     @Override
-    public ProblemCountVo getProblemCount(Long pid, Long gid) {
+    public ProblemCountVO getProblemCount(Long pid, Long gid) {
         return judgeMapper.getProblemCount(pid, gid);
     }
 
@@ -146,12 +146,12 @@ public class JudgeEntityServiceImpl extends ServiceImpl<JudgeMapper, Judge> impl
     }
 
     @Override
-    public List<ProblemCountVo> getProblemListCount(List<Long> pidList) {
+    public List<ProblemCountVO> getProblemListCount(List<Long> pidList) {
         return judgeMapper.getProblemListCount(pidList);
     }
 
 
-    public List<ContestScrollBoardSubmissionVo> getContestScrollBoardSubmission(Long cid, List<String> uidList) {
+    public List<ContestScrollBoardSubmissionVO> getContestScrollBoardSubmission(Long cid, List<String> uidList) {
         return judgeMapper.getContestScrollBoardSubmission(cid, uidList);
     }
 

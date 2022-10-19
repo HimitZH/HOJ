@@ -1,12 +1,8 @@
 package top.hcode.hoj.service.group.training;
 
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.TrainingDto;
-import top.hcode.hoj.pojo.dto.TrainingProblemDto;
-import top.hcode.hoj.pojo.entity.training.Training;
+import top.hcode.hoj.pojo.dto.TrainingProblemDTO;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
-import top.hcode.hoj.pojo.vo.TrainingVo;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 
 import java.util.HashMap;
 
@@ -23,7 +19,7 @@ public interface GroupTrainingProblemService {
 
     public CommonResult<Void> deleteTrainingProblem(Long pid, Long tid);
 
-    public CommonResult<Void> addProblemFromPublic(TrainingProblemDto trainingProblemDto);
+    public CommonResult<Void> addProblemFromPublic(TrainingProblemDTO trainingProblemDto);
 
     public CommonResult<Void> addProblemFromGroup(String problemId, Long tid);
 

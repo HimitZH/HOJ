@@ -10,8 +10,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.pojo.entity.msg.AdminSysNotice;
 import top.hcode.hoj.pojo.entity.msg.UserSysNotice;
-import top.hcode.hoj.pojo.vo.SysMsgVo;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.SysMsgVO;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.dao.msg.AdminSysNoticeEntityService;
 import top.hcode.hoj.dao.msg.UserSysNoticeEntityService;
 
@@ -38,42 +38,42 @@ public class NoticeManager {
     @Resource
     private ApplicationContext applicationContext;
 
-    public IPage<SysMsgVo> getSysNotice(Integer limit,Integer currentPage) {
+    public IPage<SysMsgVO> getSysNotice(Integer limit, Integer currentPage) {
 
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 5;
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
-        IPage<SysMsgVo> sysNotice = userSysNoticeEntityService.getSysNotice(limit, currentPage, userRolesVo.getUid());
+        IPage<SysMsgVO> sysNotice = userSysNoticeEntityService.getSysNotice(limit, currentPage, userRolesVo.getUid());
         applicationContext.getBean(NoticeManager.class).updateSysOrMineMsgRead(sysNotice);
         return sysNotice;
     }
 
 
 
-    public IPage<SysMsgVo> getMineNotice(Integer limit, Integer currentPage) {
+    public IPage<SysMsgVO> getMineNotice(Integer limit, Integer currentPage) {
 
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 5;
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
-        IPage<SysMsgVo> mineNotice = userSysNoticeEntityService.getMineNotice(limit, currentPage, userRolesVo.getUid());
+        IPage<SysMsgVO> mineNotice = userSysNoticeEntityService.getMineNotice(limit, currentPage, userRolesVo.getUid());
         applicationContext.getBean(NoticeManager.class).updateSysOrMineMsgRead(mineNotice);
         return mineNotice;
     }
 
 
     @Async
-    public void updateSysOrMineMsgRead(IPage<SysMsgVo> userMsgList) {
+    public void updateSysOrMineMsgRead(IPage<SysMsgVO> userMsgList) {
         List<Long> idList = userMsgList.getRecords().stream()
                 .filter(userMsgVo -> !userMsgVo.getState())
-                .map(SysMsgVo::getId)
+                .map(SysMsgVO::getId)
                 .collect(Collectors.toList());
         if (idList.size() == 0) {
             return;

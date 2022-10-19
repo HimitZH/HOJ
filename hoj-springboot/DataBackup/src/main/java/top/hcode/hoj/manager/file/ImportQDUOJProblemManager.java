@@ -21,13 +21,13 @@ import top.hcode.hoj.dao.problem.LanguageEntityService;
 import top.hcode.hoj.dao.problem.ProblemEntityService;
 import top.hcode.hoj.dao.problem.TagEntityService;
 import top.hcode.hoj.exception.ProblemIDRepeatException;
-import top.hcode.hoj.pojo.dto.ProblemDto;
-import top.hcode.hoj.pojo.dto.QDOJProblemDto;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
+import top.hcode.hoj.pojo.dto.QDOJProblemDTO;
 import top.hcode.hoj.pojo.entity.problem.Language;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.ProblemCase;
 import top.hcode.hoj.pojo.entity.problem.Tag;
-import top.hcode.hoj.pojo.vo.UserRolesVo;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.utils.Constants;
 
 import java.io.File;
@@ -117,12 +117,12 @@ public class ImportQDUOJProblemManager {
         }
 
         // 读取json文件生成对象
-        HashMap<String, QDOJProblemDto> problemVoMap = new HashMap<>();
+        HashMap<String, QDOJProblemDTO> problemVoMap = new HashMap<>();
         for (String key : problemInfo.keySet()) {
             try {
                 FileReader fileReader = new FileReader(problemInfo.get(key));
                 JSONObject problemJson = JSONUtil.parseObj(fileReader.readString());
-                QDOJProblemDto qdojProblemDto = QDOJProblemToProblemVo(problemJson);
+                QDOJProblemDTO qdojProblemDto = QDOJProblemToProblemVo(problemJson);
                 problemVoMap.put(key, qdojProblemDto);
             } catch (Exception e) {
                 FileUtil.del(fileDir);
@@ -141,7 +141,7 @@ public class ImportQDUOJProblemManager {
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVo userRolesVo = (UserRolesVo) session.getAttribute("userInfo");
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
 
         List<Tag> tagList = tagEntityService.list(new QueryWrapper<Tag>().eq("oj", "ME"));
         HashMap<String, Tag> tagMap = new HashMap<>();
@@ -149,9 +149,9 @@ public class ImportQDUOJProblemManager {
             tagMap.put(tag.getName().toUpperCase(), tag);
         }
 
-        List<ProblemDto> problemDtos = new LinkedList<>();
+        List<ProblemDTO> problemDTOS = new LinkedList<>();
         for (String key : problemInfo.keySet()) {
-            QDOJProblemDto qdojProblemDto = problemVoMap.get(key);
+            QDOJProblemDTO qdojProblemDto = problemVoMap.get(key);
             // 格式化题目语言
             List<Language> languages = new LinkedList<>();
             for (String lang : qdojProblemDto.getLanguages()) {
@@ -174,7 +174,7 @@ public class ImportQDUOJProblemManager {
             if (problem.getAuthor() == null) {
                 problem.setAuthor(userRolesVo.getUsername());
             }
-            ProblemDto problemDto = new ProblemDto();
+            ProblemDTO problemDto = new ProblemDTO();
 
             String mode = Constants.JudgeMode.DEFAULT.getMode();
             if (qdojProblemDto.getIsSpj()) {
@@ -190,15 +190,15 @@ public class ImportQDUOJProblemManager {
                     .setIsUploadTestCase(true)
                     .setSamples(qdojProblemDto.getSamples());
 
-            problemDtos.add(problemDto);
+            problemDTOS.add(problemDto);
         }
-        if (problemDtos.size() == 0) {
+        if (problemDTOS.size() == 0) {
             throw new StatusFailException("警告：未成功导入一道以上的题目，请检查文件格式是否正确！");
         } else {
             HashSet<String> repeatProblemTitleSet = new HashSet<>();
             HashSet<String> failedProblemTitleSet = new HashSet<>();
             int failedCount = 0;
-            for (ProblemDto problemDto : problemDtos) {
+            for (ProblemDTO problemDto : problemDTOS) {
                 try {
                     boolean isOk = problemEntityService.adminAddProblem(problemDto);
                     if (!isOk) {
@@ -214,7 +214,7 @@ public class ImportQDUOJProblemManager {
                 }
             }
             if (failedCount > 0) {
-                int successCount = problemDtos.size() - failedCount;
+                int successCount = problemDTOS.size() - failedCount;
                 String errMsg = "[导入结果] 成功数：" + successCount + ",  失败数：" + failedCount +
                         ",  重复失败的题目标题：" + repeatProblemTitleSet;
                 if (failedProblemTitleSet.size() > 0) {
@@ -225,8 +225,8 @@ public class ImportQDUOJProblemManager {
         }
     }
 
-    private QDOJProblemDto QDOJProblemToProblemVo(JSONObject problemJson) {
-        QDOJProblemDto qdojProblemDto = new QDOJProblemDto();
+    private QDOJProblemDTO QDOJProblemToProblemVo(JSONObject problemJson) {
+        QDOJProblemDTO qdojProblemDto = new QDOJProblemDTO();
         List<String> tags = (List<String>) problemJson.get("tags");
         qdojProblemDto.setTags(tags.stream().map(UnicodeUtil::toString).collect(Collectors.toList()));
         qdojProblemDto.setLanguages(Arrays.asList("C", "C With O2", "C++", "C++ With O2", "Java", "Python3", "Python2", "Golang", "C#"));

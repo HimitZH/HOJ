@@ -6,7 +6,7 @@ import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.admin.problem.AdminGroupProblemManager;
-import top.hcode.hoj.pojo.dto.ChangeGroupProblemProgressDto;
+import top.hcode.hoj.pojo.dto.ChangeGroupProblemProgressDTO;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.service.admin.problem.AdminGroupProblemService;
 
@@ -28,7 +28,7 @@ public class AdminGroupProblemServiceImpl implements AdminGroupProblemService {
     }
 
     @Override
-    public CommonResult<Void> changeProgress(ChangeGroupProblemProgressDto changeGroupProblemProgressDto) {
+    public CommonResult<Void> changeProgress(ChangeGroupProblemProgressDTO changeGroupProblemProgressDto) {
         try {
             adminGroupProblemManager.changeProgress(changeGroupProblemProgressDto);
             return CommonResult.successResponse();

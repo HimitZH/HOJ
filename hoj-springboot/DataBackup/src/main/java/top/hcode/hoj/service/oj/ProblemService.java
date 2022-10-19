@@ -2,10 +2,10 @@ package top.hcode.hoj.service.oj;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import top.hcode.hoj.common.result.CommonResult;
-import top.hcode.hoj.pojo.dto.PidListDto;
-import top.hcode.hoj.pojo.vo.ProblemInfoVo;
-import top.hcode.hoj.pojo.vo.ProblemVo;
-import top.hcode.hoj.pojo.vo.RandomProblemVo;
+import top.hcode.hoj.pojo.dto.PidListDTO;
+import top.hcode.hoj.pojo.vo.ProblemInfoVO;
+import top.hcode.hoj.pojo.vo.ProblemVO;
+import top.hcode.hoj.pojo.vo.RandomProblemVO;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,13 +17,13 @@ import java.util.List;
  */
 public interface ProblemService {
 
-    public CommonResult<Page<ProblemVo>> getProblemList(Integer limit, Integer currentPage,
+    public CommonResult<Page<ProblemVO>> getProblemList(Integer limit, Integer currentPage,
                                                         String keyword, List<Long> tagId, Integer difficulty, String oj);
 
-    public CommonResult<RandomProblemVo> getRandomProblem();
+    public CommonResult<RandomProblemVO> getRandomProblem();
 
-    public CommonResult<HashMap<Long, Object>> getUserProblemStatus(PidListDto pidListDto);
+    public CommonResult<HashMap<Long, Object>> getUserProblemStatus(PidListDTO pidListDto);
 
-    public CommonResult<ProblemInfoVo> getProblemInfo(String problemId, Long gid);
+    public CommonResult<ProblemInfoVO> getProblemInfo(String problemId, Long gid);
 
 }

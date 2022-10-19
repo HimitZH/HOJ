@@ -12,7 +12,7 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.problem.Category;
 import top.hcode.hoj.pojo.entity.discussion.Discussion;
 import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
-import top.hcode.hoj.pojo.vo.DiscussionVo;
+import top.hcode.hoj.pojo.vo.DiscussionVO;
 import top.hcode.hoj.service.oj.DiscussionService;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public class DiscussionController {
     }
 
     @GetMapping("/get-discussion-detail")
-    public CommonResult<DiscussionVo> getDiscussion(@RequestParam(value = "did", required = true) Integer did) {
+    public CommonResult<DiscussionVO> getDiscussion(@RequestParam(value = "did", required = true) Integer did) {
         return discussionService.getDiscussion(did);
     }
 

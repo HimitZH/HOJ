@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.manager.admin.training.AdminTrainingProblemManager;
-import top.hcode.hoj.pojo.dto.TrainingProblemDto;
+import top.hcode.hoj.pojo.dto.TrainingProblemDTO;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
 import top.hcode.hoj.service.admin.training.AdminTrainingProblemService;
 
@@ -49,7 +49,7 @@ public class AdminTrainingProblemServiceImpl implements AdminTrainingProblemServ
     }
 
     @Override
-    public CommonResult<Void> addProblemFromPublic(TrainingProblemDto trainingProblemDto) {
+    public CommonResult<Void> addProblemFromPublic(TrainingProblemDTO trainingProblemDto) {
         try {
             adminTrainingProblemManager.addProblemFromPublic(trainingProblemDto);
             return CommonResult.successResponse();

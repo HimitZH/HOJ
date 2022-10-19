@@ -8,9 +8,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
 
-import top.hcode.hoj.pojo.dto.LoginDto;
+import top.hcode.hoj.pojo.dto.LoginDTO;
 
-import top.hcode.hoj.pojo.vo.UserInfoVo;
+import top.hcode.hoj.pojo.vo.UserInfoVO;
 import top.hcode.hoj.service.admin.account.AdminAccountService;
 
 
@@ -28,7 +28,7 @@ public class AdminAccountController {
     private AdminAccountService adminAccountService;
 
     @PostMapping("/login")
-    public CommonResult<UserInfoVo> login(@Validated @RequestBody LoginDto loginDto){
+    public CommonResult<UserInfoVO> login(@Validated @RequestBody LoginDTO loginDto){
        return adminAccountService.login(loginDto);
     }
 

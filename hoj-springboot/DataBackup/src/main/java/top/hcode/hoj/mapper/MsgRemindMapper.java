@@ -7,14 +7,14 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.msg.MsgRemind;
-import top.hcode.hoj.pojo.vo.UserMsgVo;
-import top.hcode.hoj.pojo.vo.UserUnreadMsgCountVo;
+import top.hcode.hoj.pojo.vo.UserMsgVO;
+import top.hcode.hoj.pojo.vo.UserUnreadMsgCountVO;
 
 @Mapper
 @Repository
 public interface MsgRemindMapper extends BaseMapper<MsgRemind> {
-    UserUnreadMsgCountVo getUserUnreadMsgCount(@Param("uid") String uid);
+    UserUnreadMsgCountVO getUserUnreadMsgCount(@Param("uid") String uid);
 
-    IPage<UserMsgVo> getUserMsg(Page<UserMsgVo> page, @Param("uid") String uid,
+    IPage<UserMsgVO> getUserMsg(Page<UserMsgVO> page, @Param("uid") String uid,
                                 @Param("action") String action);
 }

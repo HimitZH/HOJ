@@ -12,7 +12,7 @@ import top.hcode.hoj.manager.oj.DiscussionManager;
 import top.hcode.hoj.pojo.entity.discussion.Discussion;
 import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
 import top.hcode.hoj.pojo.entity.problem.Category;
-import top.hcode.hoj.pojo.vo.DiscussionVo;
+import top.hcode.hoj.pojo.vo.DiscussionVO;
 import top.hcode.hoj.service.oj.DiscussionService;
 
 import javax.annotation.Resource;
@@ -35,7 +35,7 @@ public class DiscussionServiceImpl implements DiscussionService {
     }
 
     @Override
-    public CommonResult<DiscussionVo> getDiscussion(Integer did) {
+    public CommonResult<DiscussionVO> getDiscussion(Integer did) {
         try {
             return CommonResult.successResponse(discussionManager.getDiscussion(did));
         } catch (StatusNotFoundException e) {

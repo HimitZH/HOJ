@@ -14,7 +14,7 @@ import top.hcode.hoj.pojo.entity.msg.MsgRemind;
 import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.dao.discussion.ReplyEntityService;
 import top.hcode.hoj.dao.msg.MsgRemindEntityService;
-import top.hcode.hoj.pojo.vo.ReplyVo;
+import top.hcode.hoj.pojo.vo.ReplyVO;
 import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
@@ -44,7 +44,7 @@ public class ReplyEntityServiceImpl extends ServiceImpl<ReplyMapper, Reply> impl
     private ReplyMapper replyMapper;
 
     @Override
-    public List<ReplyVo> getAllReplyByCommentId(Long cid, String uid, Boolean isRoot, Integer commentId) {
+    public List<ReplyVO> getAllReplyByCommentId(Long cid, String uid, Boolean isRoot, Integer commentId) {
 
 
         if (cid != null) {

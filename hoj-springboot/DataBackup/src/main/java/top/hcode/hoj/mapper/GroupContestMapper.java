@@ -1,7 +1,7 @@
 package top.hcode.hoj.mapper;
 
 import top.hcode.hoj.pojo.entity.contest.Contest;
-import top.hcode.hoj.pojo.vo.ContestVo;
+import top.hcode.hoj.pojo.vo.ContestVO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.ibatis.annotations.Mapper;
@@ -19,7 +19,7 @@ import java.util.List;
 @Repository
 public interface GroupContestMapper extends BaseMapper<Contest> {
 
-    List<ContestVo> getContestList(IPage iPage, @Param("gid") Long gid);
+    List<ContestVO> getContestList(IPage iPage, @Param("gid") Long gid);
 
     List<Contest> getAdminContestList(IPage iPage, @Param("gid") Long gid);
 

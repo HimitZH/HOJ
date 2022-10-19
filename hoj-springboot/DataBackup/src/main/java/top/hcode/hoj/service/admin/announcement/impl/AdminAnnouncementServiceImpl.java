@@ -6,7 +6,7 @@ import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.manager.admin.announcement.AdminAnnouncementManager;
 import top.hcode.hoj.pojo.entity.common.Announcement;
-import top.hcode.hoj.pojo.vo.AnnouncementVo;
+import top.hcode.hoj.pojo.vo.AnnouncementVO;
 import top.hcode.hoj.service.admin.announcement.AdminAnnouncementService;
 
 import javax.annotation.Resource;
@@ -23,7 +23,7 @@ public class AdminAnnouncementServiceImpl implements AdminAnnouncementService {
     private AdminAnnouncementManager adminAnnouncementManager;
 
     @Override
-    public CommonResult<IPage<AnnouncementVo>> getAnnouncementList(Integer limit, Integer currentPage) {
+    public CommonResult<IPage<AnnouncementVO>> getAnnouncementList(Integer limit, Integer currentPage) {
         return CommonResult.successResponse(adminAnnouncementManager.getAnnouncementList(limit, currentPage));
     }
 
