@@ -197,22 +197,22 @@ public class HomeManager {
      * @return
      */
     public SubmissionStatisticsVO getLastWeekSubmissionStatistics(Boolean forceRefresh) {
-        SubmissionStatisticsVO submissionStatisticsVo = (SubmissionStatisticsVO) redisUtils.get(SUBMISSION_STATISTICS_KEY);
+        SubmissionStatisticsVO submissionStatisticsVO = (SubmissionStatisticsVO) redisUtils.get(SUBMISSION_STATISTICS_KEY);
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         forceRefresh = forceRefresh && isRoot;
 
-        if (submissionStatisticsVo == null || forceRefresh) {
+        if (submissionStatisticsVO == null || forceRefresh) {
             DateTime dateTime = DateUtil.offsetDay(new Date(), -6);
             String strTime = DateFormatUtils.format(dateTime, "yyyy-MM-dd") + " 00:00:00";
             QueryWrapper<Judge> judgeQueryWrapper = new QueryWrapper<>();
             judgeQueryWrapper.select("submit_id", "status", "gmt_create");
             judgeQueryWrapper.apply("UNIX_TIMESTAMP(gmt_create) >= UNIX_TIMESTAMP('" + strTime + "')");
             List<Judge> judgeList = judgeEntityService.list(judgeQueryWrapper);
-            submissionStatisticsVo = buildSubmissionStatisticsVo(judgeList);
-            redisUtils.set(SUBMISSION_STATISTICS_KEY, submissionStatisticsVo, 60 * 30);
+            submissionStatisticsVO = buildSubmissionStatisticsVo(judgeList);
+            redisUtils.set(SUBMISSION_STATISTICS_KEY, submissionStatisticsVO, 60 * 30);
         }
-        return submissionStatisticsVo;
+        return submissionStatisticsVO;
     }
 
     private SubmissionStatisticsVO buildSubmissionStatisticsVo(List<Judge> judgeList) {
@@ -302,8 +302,8 @@ public class HomeManager {
             }
         }
 
-        SubmissionStatisticsVO submissionStatisticsVo = new SubmissionStatisticsVO();
-        submissionStatisticsVo.setDateStrList(Arrays.asList(
+        SubmissionStatisticsVO submissionStatisticsVO = new SubmissionStatisticsVO();
+        submissionStatisticsVO.setDateStrList(Arrays.asList(
                 sixDaysAgoStr,
                 fiveDaysAgoStr,
                 fourDaysAgoStr,
@@ -312,7 +312,7 @@ public class HomeManager {
                 oneDayAgoStr,
                 todayStr));
 
-        submissionStatisticsVo.setAcCountList(Arrays.asList(
+        submissionStatisticsVO.setAcCountList(Arrays.asList(
                 acSixDaysAgoCount,
                 acFiveDaysAgoCount,
                 acFourDaysAgoCount,
@@ -321,7 +321,7 @@ public class HomeManager {
                 acOneDayAgoCount,
                 acTodayCount));
 
-        submissionStatisticsVo.setTotalCountList(Arrays.asList(
+        submissionStatisticsVO.setTotalCountList(Arrays.asList(
                 totalSixDaysAgoCount,
                 totalFiveDaysAgoCount,
                 totalFourDaysAgoCount,
@@ -330,6 +330,6 @@ public class HomeManager {
                 totalOneDayAgoCount,
                 totalTodayCount));
 
-        return submissionStatisticsVo;
+        return submissionStatisticsVO;
     }
 }
