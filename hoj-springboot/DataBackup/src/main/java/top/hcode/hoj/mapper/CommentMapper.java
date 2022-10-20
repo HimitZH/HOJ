@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.discussion.Comment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import top.hcode.hoj.pojo.vo.CommentVo;
+import top.hcode.hoj.pojo.vo.CommentVO;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ import java.util.List;
 @Repository
 public interface CommentMapper extends BaseMapper<Comment> {
 
-    IPage<CommentVo> getCommentList(Page<CommentVo> page,
+    IPage<CommentVO> getCommentList(Page<CommentVO> page,
                                     @Param("cid") Long cid,
                                     @Param("did") Integer did,
                                     @Param("onlyMineAndAdmin") Boolean onlyMineAndAdmin,

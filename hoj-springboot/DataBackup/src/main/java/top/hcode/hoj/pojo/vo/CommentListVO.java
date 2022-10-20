@@ -13,7 +13,7 @@ import java.util.HashMap;
 @Data
 public class CommentListVO {
 
-    private IPage<CommentVo> commentList;
+    private IPage<CommentVO> commentList;
 
     private HashMap<Integer, Boolean>  commentLikeMap;
 }

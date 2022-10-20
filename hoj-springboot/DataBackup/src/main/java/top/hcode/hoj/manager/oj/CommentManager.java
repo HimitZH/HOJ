@@ -103,7 +103,7 @@ public class CommentManager {
             accessValidator.validateAccess(HOJAccessEnum.CONTEST_COMMENT);
         }
 
-        IPage<CommentVo> commentList = commentEntityService.getCommentList(limit, currentPage, cid, did, isRoot,
+        IPage<CommentVO> commentList = commentEntityService.getCommentList(limit, currentPage, cid, did, isRoot,
                 userRolesVo != null ? userRolesVo.getUid() : null);
 
         HashMap<Integer, Boolean> commentLikeMap = new HashMap<>();
@@ -112,7 +112,7 @@ public class CommentManager {
             // 如果是有登录 需要检查是否对评论有点赞
             List<Integer> commentIdList = new LinkedList<>();
 
-            for (CommentVo commentVo : commentList.getRecords()) {
+            for (CommentVO commentVo : commentList.getRecords()) {
                 commentIdList.add(commentVo.getId());
             }
 
@@ -138,7 +138,7 @@ public class CommentManager {
 
 
     @Transactional
-    public CommentVo addComment(Comment comment) throws StatusFailException, StatusForbiddenException, AccessException {
+    public CommentVO addComment(Comment comment) throws StatusFailException, StatusForbiddenException, AccessException {
 
         if (StringUtils.isEmpty(comment.getContent().trim())) {
             throw new StatusFailException("评论内容不能为空！");
@@ -207,7 +207,7 @@ public class CommentManager {
         boolean isOk = commentEntityService.saveOrUpdate(comment);
 
         if (isOk) {
-            CommentVo commentVo = new CommentVo();
+            CommentVO commentVo = new CommentVO();
             commentVo.setContent(comment.getContent());
             commentVo.setId(comment.getId());
             commentVo.setFromAvatar(comment.getFromAvatar());

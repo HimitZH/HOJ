@@ -20,7 +20,7 @@ public class JudgeCaseVO {
     /**
      * 当judgeCaseMode为subtask_lowest,subtask_average时
      */
-    private List<SubTaskJudgeCaseVO> subTaskJudgeCaseVOList;
+    private List<SubTaskJudgeCaseVO> subTaskJudgeCaseVoList;
 
     /**
      * default,subtask_lowest,subtask_average

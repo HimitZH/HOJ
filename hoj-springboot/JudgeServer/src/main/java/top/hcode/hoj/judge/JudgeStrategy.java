@@ -75,13 +75,16 @@ public class JudgeStrategy {
                 result.put("memory", 0);
                 return result;
             }
-
             // 更新状态为评测数据中
             UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
             judgeUpdateWrapper.set("status", Constants.Judge.STATUS_JUDGING.getStatus())
                     .eq("submit_id", judge.getSubmitId());
             judgeEntityService.update(judgeUpdateWrapper);
-            String judgeCaseMode = testCasesInfo.getStr("judgeCaseMode", Constants.JudgeCaseMode.DEFAULT.getMode());
+
+            // 获取题目数据的评测模式
+            String infoJudgeCaseMode = testCasesInfo.getStr("judgeCaseMode", Constants.JudgeCaseMode.DEFAULT.getMode());
+            String judgeCaseMode = getFinalJudgeCaseMode(problem.getType(), problem.getJudgeCaseMode(), infoJudgeCaseMode);
+
             // 开始测试每个测试点
             List<JSONObject> allCaseResultList = judgeRun.judgeAllCase(judge.getSubmitId(),
                     problem,
@@ -449,7 +452,7 @@ public class JudgeStrategy {
     }
 
     public String mergeNonEmptyStrings(String... strings) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (String str : strings) {
             if (!StringUtils.isEmpty(str)) {
                 sb.append(str.substring(0, Math.min(1024 * 1024, str.length()))).append("\n");
@@ -458,4 +461,16 @@ public class JudgeStrategy {
         return sb.toString();
     }
 
+    private String getFinalJudgeCaseMode(Integer type, String problemJudgeCaseMode, String infoJudgeCaseMode) {
+        if (problemJudgeCaseMode == null) {
+            return infoJudgeCaseMode;
+        }
+        if (Objects.equals(type, Constants.Contest.TYPE_ACM.getCode())) {
+            // ACM题目 以题目现有的judgeCaseMode为准
+            return problemJudgeCaseMode;
+        } else {
+            // OI题目 涉及到可能有子任务分组评测，还是依赖info文件的配置为准
+            return infoJudgeCaseMode;
+        }
+    }
 }

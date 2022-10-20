@@ -8,7 +8,7 @@ import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ReplyDTO;
 import top.hcode.hoj.pojo.entity.discussion.Comment;
 import top.hcode.hoj.pojo.vo.CommentListVO;
-import top.hcode.hoj.pojo.vo.CommentVo;
+import top.hcode.hoj.pojo.vo.CommentVO;
 import top.hcode.hoj.pojo.vo.ReplyVO;
 import top.hcode.hoj.service.oj.CommentService;
 
@@ -39,7 +39,7 @@ public class CommentController {
     @PostMapping("/comment")
     @RequiresPermissions("comment_add")
     @RequiresAuthentication
-    public CommonResult<CommentVo> addComment(@RequestBody Comment comment) {
+    public CommonResult<CommentVO> addComment(@RequestBody Comment comment) {
         return commentService.addComment(comment);
     }
 

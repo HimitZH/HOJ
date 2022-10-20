@@ -650,7 +650,7 @@ public class JudgeManager {
                     break;
                 case SUBTASK_AVERAGE:
                 case SUBTASK_LOWEST:
-                    judgeCaseVo.setSubTaskJudgeCaseVOList(buildSubTaskDetail(judgeCaseList, judgeCaseMode));
+                    judgeCaseVo.setSubTaskJudgeCaseVoList(buildSubTaskDetail(judgeCaseList, judgeCaseMode));
                     break;
             }
             judgeCaseVo.setJudgeCaseMode(judgeCaseMode.getMode());

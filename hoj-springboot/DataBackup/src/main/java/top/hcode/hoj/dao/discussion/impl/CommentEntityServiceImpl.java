@@ -13,7 +13,7 @@ import top.hcode.hoj.mapper.CommentMapper;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.discussion.Comment;
 import top.hcode.hoj.pojo.entity.msg.MsgRemind;
-import top.hcode.hoj.pojo.vo.CommentVo;
+import top.hcode.hoj.pojo.vo.CommentVO;
 import top.hcode.hoj.dao.contest.ContestEntityService;
 import top.hcode.hoj.dao.discussion.CommentEntityService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -55,9 +55,9 @@ public class CommentEntityServiceImpl extends ServiceImpl<CommentMapper, Comment
     private GroupMemberEntityService groupMemberEntityService;
 
     @Override
-    public IPage<CommentVo> getCommentList(int limit, int currentPage, Long cid, Integer did, Boolean isRoot, String uid) {
+    public IPage<CommentVO> getCommentList(int limit, int currentPage, Long cid, Integer did, Boolean isRoot, String uid) {
         //新建分页
-        Page<CommentVo> page = new Page<>(currentPage, limit);
+        Page<CommentVO> page = new Page<>(currentPage, limit);
 
         if (cid != null) {
             Contest contest = contestEntityService.getById(cid);

@@ -10,7 +10,7 @@ import top.hcode.hoj.manager.oj.CommentManager;
 import top.hcode.hoj.pojo.dto.ReplyDTO;
 import top.hcode.hoj.pojo.entity.discussion.Comment;
 import top.hcode.hoj.pojo.vo.CommentListVO;
-import top.hcode.hoj.pojo.vo.CommentVo;
+import top.hcode.hoj.pojo.vo.CommentVO;
 import top.hcode.hoj.pojo.vo.ReplyVO;
 import top.hcode.hoj.service.oj.CommentService;
 
@@ -38,7 +38,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommonResult<CommentVo> addComment(Comment comment) {
+    public CommonResult<CommentVO> addComment(Comment comment) {
         try {
             return CommonResult.successResponse(commentManager.addComment(comment));
         } catch (StatusFailException e) {
