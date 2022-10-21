@@ -590,7 +590,9 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
 
             // 读取输入文件
             FileReader inputFile = new FileReader(testCasesDir + File.separator + problemCase.getInput(), CharsetUtil.UTF_8);
-            String input = inputFile.readString().replaceAll("\r\n", "\n");
+            String input = inputFile.readString()
+                    .replaceAll("\r\n", "\n") // 避免window系统的换行问题
+                    .replaceAll("\r", "\n"); // 避免mac系统的换行问题
 
             FileWriter inputFileWriter = new FileWriter(testCasesDir + File.separator + problemCase.getInput(), CharsetUtil.UTF_8);
             inputFileWriter.write(input);
@@ -600,7 +602,9 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
             String outputFilePath = testCasesDir + File.separator + problemCase.getOutput();
             if (FileUtil.exist(outputFilePath)) {
                 FileReader outputFile = new FileReader(outputFilePath, CharsetUtil.UTF_8);
-                output = outputFile.readString().replaceAll("\r\n", "\n");
+                output = outputFile.readString()
+                        .replaceAll("\r\n", "\n") // 避免window系统的换行问题
+                        .replaceAll("\r", "\n"); // 避免mac系统的换行问题
                 FileWriter outFileWriter = new FileWriter(testCasesDir + File.separator + problemCase.getOutput(), CharsetUtil.UTF_8);
                 outFileWriter.write(output);
             } else {
@@ -674,13 +678,21 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
             // 生成对应文件
             FileWriter infileWriter = new FileWriter(testCasesDir + "/" + inputName, CharsetUtil.UTF_8);
             // 将该测试数据的输入写入到文件
-            String inputData = problemCaseList.get(index).getInput().replaceAll("\r\n", "\n");
+            String inputData = problemCaseList
+                    .get(index)
+                    .getInput()
+                    .replaceAll("\r\n", "\n") // 避免window系统的换行问题
+                    .replaceAll("\r", "\n"); // 避免mac系统的换行问题
             infileWriter.write(inputData);
 
             String outputName = (index + 1) + ".out";
             jsonObject.set("outputName", outputName);
             // 生成对应文件
-            String outputData = problemCaseList.get(index).getOutput().replaceAll("\r\n", "\n");
+            String outputData = problemCaseList
+                    .get(index)
+                    .getOutput()
+                    .replaceAll("\r\n", "\n") // 避免window系统的换行问题
+                    .replaceAll("\r", "\n"); // 避免mac系统的换行问题
             FileWriter outFile = new FileWriter(testCasesDir + "/" + outputName, CharsetUtil.UTF_8);
             outFile.write(outputData);
 
