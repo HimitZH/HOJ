@@ -46,7 +46,8 @@ axios.interceptors.request.use(
       Vue.prototype.$notify.error({
         title: i18n.t('m.Error'),
         message: error.response.data.msg,
-        duration: 6000
+        duration: 5000,
+        offset: 50
       });
     }
     return Promise.error(error);
@@ -67,7 +68,8 @@ axios.interceptors.response.use(
         Vue.prototype.$notify.error({
           title: i18n.t('m.Error'),
           message: response.data.msg,
-          duration: 6000
+          duration: 5000,
+          offset: 50
         });
       }
       return Promise.reject(response);
@@ -95,7 +97,8 @@ axios.interceptors.response.use(
               Vue.prototype.$notify.error({
                 title: i18n.t('m.Error'),
                 message: error.response.data.msg,
-                duration: 6000
+                duration: 5000,
+                offset: 50
               });
             }
           }
@@ -115,7 +118,8 @@ axios.interceptors.response.use(
               Vue.prototype.$notify.error({
                 title: i18n.t('m.Error'),
                 message: error.response.data.msg,
-                duration: 6000
+                duration: 5000,
+                offset: 50
               });
             }
           }
@@ -136,7 +140,8 @@ axios.interceptors.response.use(
                 Vue.prototype.$notify.error({
                   title: i18n.t('m.Error'),
                   message: error.response.data.msg,
-                  duration: 6000
+                  duration: 5000,
+                  offset: 50
                 });
               }
             } else {
@@ -344,6 +349,17 @@ const ojApi = {
       params: {
         testJudgeKey
       }
+    })
+  },
+  getUserLastAccepetedCode(pid, cid){
+    let params = {
+      pid
+    }
+    if(cid){
+      params.cid = cid
+    }
+    return ajax('/api/get-last-ac-code', 'get', {
+      params: params
     })
   },
   // 获取单个提交的全部测试点详情

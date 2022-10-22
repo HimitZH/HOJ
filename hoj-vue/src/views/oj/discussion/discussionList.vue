@@ -685,6 +685,41 @@ export default {
     },
 
     submitDiscussion() {
+      if (!this.discussion.title || this.discussion.title.trim() === "") {
+        myMessage.error(this.$i18n.t("m.Discussion_title") + " " +this.$i18n.t("m.is_required"));
+        return;
+      }
+
+      if (this.discussion.title.length > 255) {
+        myMessage.error(this.$i18n.t("m.Discussion_title") + " " + this.$i18n.t("m.Can_not_exceed_255"));
+        return;
+      }
+
+      if (!this.discussion.description || this.discussion.description.trim() === "") {
+        myMessage.error(this.$i18n.t("m.Discussion_Desc") + " " +this.$i18n.t("m.is_required"));
+        return;
+      }
+
+      if (this.discussion.description.length > 255) {
+        myMessage.error(this.$i18n.t("m.Discussion_Desc") + " " + this.$i18n.t("m.Can_not_exceed_255"));
+        return;
+      }
+
+      if(!this.discussion.categoryId){
+        myMessage.error(this.$i18n.t("m.Discussion_Category")+ " " +this.$i18n.t("m.is_required"));
+        return;
+      }
+
+      if (!this.discussion.content || this.discussion.content.trim() === "") {
+        myMessage.error(this.$i18n.t("m.Discussion_content") + " " +this.$i18n.t("m.is_required"));
+        return;
+      }
+
+      if (this.discussion.content.length > 65535) {
+        myMessage.error(this.$i18n.t("m.Discussion_content") + " " + this.$i18n.t("m.Can_not_exceed_65535"));
+        return;
+      }
+      
       // 默认为题目的讨论添加题号格式
       let discussion = Object.assign({}, this.discussion);
       if (this.discussionDialogTitle == this.$i18n.t("m.Create_Discussion")) {

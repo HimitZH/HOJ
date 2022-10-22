@@ -10,7 +10,6 @@ import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import top.hcode.hoj.annotation.HOJAccessEnum;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
@@ -30,6 +29,7 @@ import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.pojo.entity.user.UserAcproblem;
 import top.hcode.hoj.pojo.vo.*;
 import top.hcode.hoj.validator.AccessValidator;
+import top.hcode.hoj.validator.CommonValidator;
 import top.hcode.hoj.validator.ContestValidator;
 import top.hcode.hoj.validator.GroupValidator;
 
@@ -73,6 +73,9 @@ public class CommentManager {
 
     @Autowired
     private AccessValidator accessValidator;
+
+    @Autowired
+    private CommonValidator commonValidator;
 
     @Autowired
     private ConfigVO configVo;
@@ -140,9 +143,7 @@ public class CommentManager {
     @Transactional
     public CommentVO addComment(Comment comment) throws StatusFailException, StatusForbiddenException, AccessException {
 
-        if (StringUtils.isEmpty(comment.getContent().trim())) {
-            throw new StatusFailException("评论内容不能为空！");
-        }
+        commonValidator.validateContent(comment.getContent(), "评论",10000);
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
@@ -384,9 +385,7 @@ public class CommentManager {
 
     public ReplyVO addReply(ReplyDTO replyDto) throws StatusFailException, StatusForbiddenException, AccessException {
 
-        if (StringUtils.isEmpty(replyDto.getReply().getContent().trim())) {
-            throw new StatusFailException("回复内容不能为空！");
-        }
+        commonValidator.validateContent(replyDto.getReply().getContent(), "回复",10000);
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();

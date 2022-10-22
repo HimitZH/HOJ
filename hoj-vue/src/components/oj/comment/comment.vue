@@ -671,6 +671,10 @@ export default {
         myMessage.warning(this.$i18n.t('m.Content_cannot_be_empty'));
         return;
       }
+      if(this.ownInputComment.length > 10000){
+        myMessage.error(this.$i18n.t("m.Comment_Content") + " " +this.$i18n.t("m.Can_not_exceed_10000"));
+        return;
+      }
       let comment = {
         content: this.ownInputComment,
         cid: this.cid,
@@ -700,6 +704,10 @@ export default {
       }
       if (this.replyInputComment.replace(/(^s*)|(s*$)/g, '').length == 0) {
         myMessage.warning(this.$i18n.t('m.Content_cannot_be_empty'));
+        return;
+      }
+      if(this.replyInputComment.length > 10000){
+        myMessage.error(this.$i18n.t("m.Reply_Content") + " " +this.$i18n.t("m.Can_not_exceed_10000"));
         return;
       }
       this.replyObj.content = this.replyInputComment;

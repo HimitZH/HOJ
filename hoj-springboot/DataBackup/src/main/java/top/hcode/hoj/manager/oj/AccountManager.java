@@ -13,17 +13,21 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusSystemErrorException;
+import top.hcode.hoj.dao.problem.ProblemEntityService;
+import top.hcode.hoj.dao.user.*;
 import top.hcode.hoj.pojo.dto.ChangeEmailDTO;
 import top.hcode.hoj.pojo.dto.ChangePasswordDTO;
 import top.hcode.hoj.pojo.dto.CheckUsernameOrEmailDTO;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.Problem;
-import top.hcode.hoj.pojo.entity.user.*;
+import top.hcode.hoj.pojo.entity.user.Role;
+import top.hcode.hoj.pojo.entity.user.Session;
+import top.hcode.hoj.pojo.entity.user.UserAcproblem;
+import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.vo.*;
-import top.hcode.hoj.dao.problem.ProblemEntityService;
-import top.hcode.hoj.dao.user.*;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
+import top.hcode.hoj.validator.CommonValidator;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -58,6 +62,8 @@ public class AccountManager {
     @Autowired
     private SessionEntityService sessionEntityService;
 
+    @Autowired
+    private CommonValidator commonValidator;
 
     /**
      * @MethodName checkUsernameOrEmail
@@ -378,10 +384,6 @@ public class AccountManager {
 
     public UserInfoVO changeUserInfo(UserInfoVO userInfoVo) throws StatusFailException {
 
-        // 获取当前登录的用户
-        org.apache.shiro.session.Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
-
         String realname = userInfoVo.getRealname();
         String nickname = userInfoVo.getNickname();
         if (!StringUtils.isEmpty(realname) && realname.length() > 50) {
@@ -390,6 +392,18 @@ public class AccountManager {
         if (!StringUtils.isEmpty(nickname) && nickname.length() > 20) {
             throw new StatusFailException("昵称的长度不能超过20位");
         }
+
+        commonValidator.validateContent(userInfoVo.getSignature(), "个性简介");
+        commonValidator.validateContent(userInfoVo.getBlog(), "博客",255);
+        commonValidator.validateContent(userInfoVo.getGithub(), "Github",255);
+        commonValidator.validateContent(userInfoVo.getSchool(), "学校",100);
+        commonValidator.validateContent(userInfoVo.getNumber(), "学号",200);
+        commonValidator.validateContent(userInfoVo.getCfUsername(), "Codeforces Username",255);
+
+        // 获取当前登录的用户
+        org.apache.shiro.session.Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+
         UserInfo userInfo = new UserInfo();
         userInfo.setUuid(userRolesVo.getUid())
                 .setCfUsername(userInfoVo.getCfUsername())

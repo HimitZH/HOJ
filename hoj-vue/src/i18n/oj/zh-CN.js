@@ -265,7 +265,9 @@ export const m = {
   Judging: '正在评测',
   Wrong_Answer: '答案错误',
   View_Contest: '查看比赛',
-  Are_you_sure_you_want_to_reset_your_code: '您确定要重置代码吗？',
+  Are_you_sure_you_want_to_reset_your_code: '你是否确定要重置原始代码？如果该题有代码模板，则还原为原始模板的代码，否则正在编辑的代码将清空。',
+  Are_you_sure_you_want_to_get_your_recent_accepted_code:'你是否确定要获取最近通过的代码并填充至代码框内？注意：该操作会覆盖正在编辑的代码！',
+  You_havenot_passed_the_problem_so_you_cannot_get_the_code_passed_recently:'你还未通过该题目，无法获取最近通过的代码！',
   Code_can_not_be_empty: '代码不能为空',
   Code_Length_can_not_exceed_65535: '代码的字符长度不能超过65535！',
   Submit_code_successfully: '提交代码成功',
@@ -364,6 +366,9 @@ export const m = {
   Delete_successfully: '删除成功',
   Post_successfully: '发布成功',
   Send_successfully: '发送成功',
+  Can_not_exceed_255:'的长度不能超过255',
+  Can_not_exceed_65535:'的长度不能超过65535',
+  Can_not_exceed_10000:'的长度不能超过10000',
 
   // /views/oj/discussion/discussion.vue
   Report: '举报',
@@ -527,7 +532,7 @@ export const m = {
   Two_Spaces:'2个空格',
   Four_Spaces:'4个空格',
   Eight_Spaces:'8个空格',
-  Reset_Code: '重置代码',
+  Reset_Code: '重置原始代码',
   Upload_file: '上传文件',
   monokai: 'Monokai',
   solarized: 'Molarized Light',
@@ -548,6 +553,7 @@ export const m = {
   Expected_Output: '预期输出',
   Real_Output: '实际输出',
   Pass_Test_Case: '通过测试用例',
+  Get_Recently_Passed_Code:'获取最近通过的代码',
 
   // /components/oj/comment/Comment.vue
   Announcement_of_contest_Q_and_A_area: '比赛评论区公告',
@@ -572,6 +578,8 @@ export const m = {
   Load_More: '加载更多',
   Delete_Comment_Tips: '此操作将删除该评论及其所有回复, 是否继续?',
   Delete_Reply_Tips: '此操作将删除该回复, 是否继续?',
+  Reply_Content:'回复内容',
+  Comment_Content:'评论内容',
 
   // /views/oj/message/message.vue
   Message_Center: '消息中心',

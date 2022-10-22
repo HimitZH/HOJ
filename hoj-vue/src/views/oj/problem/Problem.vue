@@ -514,6 +514,7 @@
               @resetCode="onResetToTemplate"
               @changeTheme="onChangeTheme"
               @changeLang="onChangeLang"
+              @getUserLastAccepetedCode="getUserLastAccepetedCode"
               :openTestCaseDrawer.sync="openTestCaseDrawer"
               :problemTestCase="problemData.problem.examples"
               :pid="problemData.problem.id"
@@ -1282,6 +1283,37 @@ export default {
           } else {
             this.code = "";
           }
+        })
+        .catch(() => {});
+    },
+    getUserLastAccepetedCode(){
+      if(this.problemData.myStatus != 0){
+        this.$notify.error({
+          title: this.$i18n.t('m.Error'),
+          message: this.$i18n.t("m.You_havenot_passed_the_problem_so_you_cannot_get_the_code_passed_recently"),
+          duration: 4000,
+          offset: 50
+        });
+        return;
+      }
+      this.$confirm(
+        this.$i18n.t("m.Are_you_sure_you_want_to_get_your_recent_accepted_code"),
+        "Tips",
+        {
+          cancelButtonText: this.$i18n.t("m.Cancel"),
+          confirmButtonText: this.$i18n.t("m.OK"),
+          type: "warning",
+        }
+      )
+        .then(() => {
+          api.getUserLastAccepetedCode(this.problemData.problem.id,this.contestID)
+          .then((res)=>{
+            this.code = res.data.data.code;
+            let lang = res.data.data.language;
+            if(lang && this.problemData.languages.includes(lang)){
+              this.language = lang;
+            }
+          })
         })
         .catch(() => {});
     },

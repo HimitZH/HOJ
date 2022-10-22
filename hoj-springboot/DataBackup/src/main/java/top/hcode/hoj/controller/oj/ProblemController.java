@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.hcode.hoj.common.result.CommonResult;
+import top.hcode.hoj.pojo.dto.LastAcceptedCodeVO;
 import top.hcode.hoj.pojo.dto.PidListDTO;
 import top.hcode.hoj.pojo.vo.*;
 import top.hcode.hoj.service.oj.ProblemService;
@@ -81,8 +82,21 @@ public class ProblemController {
     @RequestMapping(value = "/get-problem-detail", method = RequestMethod.GET)
     public CommonResult<ProblemInfoVO> getProblemInfo(@RequestParam(value = "problemId", required = true) String problemId,
                                                       @RequestParam(value = "gid", required = false) Long gid) {
-        return problemService.getProblemInfo(problemId,gid);
+        return problemService.getProblemInfo(problemId, gid);
     }
 
+    /**
+     * 获取用户对于该题最近AC的代码
+     *
+     * @param pid
+     * @param cid
+     * @return
+     */
+    @RequiresAuthentication
+    @GetMapping("/get-last-ac-code")
+    public CommonResult<LastAcceptedCodeVO> getUserLastAcceptedCode(@RequestParam(value = "pid") Long pid,
+                                                                    @RequestParam(value = "cid", required = false) Long cid) {
+        return problemService.getUserLastAcceptedCode(pid, cid);
+    }
 
 }

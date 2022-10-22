@@ -8,6 +8,7 @@ import top.hcode.hoj.common.exception.StatusNotFoundException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.oj.ProblemManager;
+import top.hcode.hoj.pojo.dto.LastAcceptedCodeVO;
 import top.hcode.hoj.pojo.dto.PidListDTO;
 import top.hcode.hoj.pojo.vo.ProblemInfoVO;
 import top.hcode.hoj.pojo.vo.ProblemVO;
@@ -61,5 +62,10 @@ public class ProblemServiceImpl implements ProblemService {
         } catch (StatusForbiddenException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
         }
+    }
+
+    @Override
+    public CommonResult<LastAcceptedCodeVO> getUserLastAcceptedCode(Long pid, Long cid) {
+        return CommonResult.successResponse(problemManager.getUserLastAcceptedCode(pid, cid));
     }
 }

@@ -34,6 +34,7 @@ import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 import top.hcode.hoj.validator.AccessValidator;
+import top.hcode.hoj.validator.CommonValidator;
 import top.hcode.hoj.validator.GroupValidator;
 
 import java.util.List;
@@ -75,6 +76,9 @@ public class DiscussionManager {
 
     @Autowired
     private ConfigVO configVo;
+
+    @Autowired
+    private CommonValidator commonValidator;
 
     public IPage<Discussion> getDiscussionList(Integer limit,
                                                Integer currentPage,
@@ -185,6 +189,11 @@ public class DiscussionManager {
     }
 
     public void addDiscussion(Discussion discussion) throws StatusFailException, StatusForbiddenException, StatusNotFoundException {
+
+        commonValidator.validateContent(discussion.getTitle(), "讨论标题", 255);
+        commonValidator.validateContent(discussion.getDescription(), "讨论描述", 255);
+        commonValidator.validateContent(discussion.getContent(), "讨论", 65535);
+        commonValidator.validateNotEmpty(discussion.getCategoryId(), "讨论分类");
 
         // 获取当前登录的用户
         Session session = SecurityUtils.getSubject().getSession();
@@ -360,7 +369,7 @@ public class DiscussionManager {
                         && !category.getName().trim().isEmpty())
                 .collect(Collectors.toList());
         boolean isOk = categoryEntityService.saveOrUpdateBatch(categories);
-        if (!isOk){
+        if (!isOk) {
             throw new StatusFailException("修改失败");
         }
         return categoryEntityService.list();
