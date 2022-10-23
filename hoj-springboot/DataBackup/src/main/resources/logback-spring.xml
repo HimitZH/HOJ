@@ -2,10 +2,32 @@
 <configuration>
     <!-- 属性文件:在properties文件中找到对应的配置项 -->
     <springProperty scope="context" name="logging.path" source="logging.file.path"/>
+    <springProperty scope="context" name="logging.level.root" source="logging.level.root"/>
     <contextName>hoj</contextName>
+    <property name="LOG_LEVEL" value="${logging.level.root}"/>
+    <property name="LOG_PATH" value="${logging.path}"/>
+    <property name="LOG_FILE" value="${LOG_PATH}/application.log"/>
+    <property name="ERROR_FILE" value="${LOG_PATH}/error.log"/>
 
-    <!--控制台打印-->
-    <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
+    <!--控制台打印全部日志-->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出（配色）：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%yellow(%d{yyyy-MM-dd HH:mm:ss}) %red([%thread]) %highlight(%-5level) %cyan(%logger{50}) - %magenta(%msg) %n
+            </pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!--控制台只打印ERROR-->
+    <appender name="CONSOLE_ERROR" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <!--表示匹配该级别以上的日志-->
+            <onMatch>ACCEPT</onMatch>
+            <!--表示不匹配该级别以下的日志-->
+            <onMismatch>DENY</onMismatch>
+        </filter>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--格式化输出（配色）：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
             <pattern>%yellow(%d{yyyy-MM-dd HH:mm:ss}) %red([%thread]) %highlight(%-5level) %cyan(%logger{50}) - %magenta(%msg) %n
@@ -15,14 +37,8 @@
     </appender>
 
     <!--根据日志级别分离日志，分别输出到不同的文件-->
-    <appender name="fileInfoLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <filter class="ch.qos.logback.classic.filter.LevelFilter">
-            <level>info</level>
-            <!--表示不匹配该级别以上的日志-->
-            <onMatch>DENY</onMatch>
-            <!--表示匹配该级别以下的日志-->
-            <onMismatch>ACCEPT</onMismatch>
-        </filter>
+    <appender name="APPLICATION" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>
                 %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n
@@ -32,19 +48,30 @@
         <!--滚动策略-->
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!--按时间保存日志 修改格式可以按小时、按天、月来保存-->
-            <fileNamePattern>${logging.path}/hoj.info.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <!--保存时长-->
-            <maxHistory>7</maxHistory>
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <!--保存时长 天-->
+            <maxHistory>15</maxHistory>
             <!-- 单个文件最大-->
             <maxFileSize>200MB</maxFileSize>
             <!--总大小-->
             <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
     </appender>
+    <appender name="APPLICATION_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="APPLICATION"/>
+    </appender>
 
-    <appender name="fileErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>error</level>
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${ERROR_FILE}</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <!--表示匹配该级别以上的日志-->
+            <onMatch>ACCEPT</onMatch>
+            <!--表示不匹配该级别以下的日志-->
+            <onMismatch>DENY</onMismatch>
         </filter>
         <encoder>
             <pattern>
@@ -54,25 +81,48 @@
         <!--滚动策略-->
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!--路径-->
-            <fileNamePattern>${logging.path}/hoj.error.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-            <!--保存时长-->
-            <maxHistory>7</maxHistory>
+            <fileNamePattern>${ERROR_FILE}.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <!--保存时长 天-->
+            <maxHistory>15</maxHistory>
             <!-- 单个文件最大-->
             <maxFileSize>200MB</maxFileSize>
             <!--总大小-->
             <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
     </appender>
+    <appender name="ERROR_ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <queueSize>512</queueSize>
+        <includeCallerData>true</includeCallerData>
+        <appender-ref ref="ERROR"/>
+    </appender>
 
-    <root level="info">
-        <appender-ref ref="consoleLog"/>
-        <appender-ref ref="fileInfoLog"/>
-        <appender-ref ref="fileErrorLog"/>
-    </root>
+    <!--开发环境-->
+    <springProfile name="dev">
+        <logger name="top.hcode.hoj" level="${LOG_LEVEL}" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="APPLICATION_ASYNC"/>
+            <appender-ref ref="ERROR_ASYNC"/>
+        </logger>
+        <root level="${LOG_LEVEL}">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="APPLICATION_ASYNC"/>
+            <appender-ref ref="ERROR_ASYNC"/>
+        </root>
+    </springProfile>
 
-    <root level="error">
-        <appender-ref ref="consoleLog"/>
-        <appender-ref ref="fileErrorLog"/>
-    </root>
+    <!--生产环境-->
+    <springProfile name="prod">
+        <logger name="top.hcode.hoj" level="${LOG_LEVEL}" additivity="false">
+            <appender-ref ref="CONSOLE_ERROR"/>
+            <appender-ref ref="APPLICATION_ASYNC"/>
+            <appender-ref ref="ERROR_ASYNC"/>
+        </logger>
+        <root level="${LOG_LEVEL}">
+            <appender-ref ref="CONSOLE_ERROR"/>
+            <appender-ref ref="APPLICATION_ASYNC"/>
+            <appender-ref ref="ERROR_ASYNC"/>
+        </root>
+    </springProfile>
 
 </configuration>

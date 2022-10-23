@@ -118,7 +118,7 @@ logging:
           client:
             naming: error
       gargoylesoftware: off
-    root: error
+    root: info
   config: classpath:logback-spring.xml
   file:
     path: /hoj/log/backend

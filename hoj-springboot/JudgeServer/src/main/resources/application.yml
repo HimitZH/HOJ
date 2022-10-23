@@ -42,7 +42,7 @@ logging:
       alibaba:
         nacos: error
       gargoylesoftware: off
-    root: error
+    root: info
   config: classpath:logback-spring.xml
   file:
     path: /judge/log/judgeserver
