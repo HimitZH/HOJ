@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-row :gutter="30">
+    <el-row :gutter="20">
       <el-col
         :md="15"
         :sm="24"

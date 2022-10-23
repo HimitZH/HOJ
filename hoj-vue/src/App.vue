@@ -272,15 +272,15 @@ samp {
 ::-webkit-scrollbar {
   width: 10px;
   height: 12px;
-  background-color: #fff;
+  -webkit-box-shadow: inset 0 0 6px rgb(0 0 0 / 20%);
 }
 
 ::-webkit-scrollbar-thumb {
   display: block;
   min-height: 12px;
   min-width: 10px;
-  border-radius: 6px;
-  background-color: rgb(217, 217, 217);
+  border-radius: 8px;
+  background-color: #bbb;
 }
 
 ::-webkit-scrollbar-thumb:hover {
