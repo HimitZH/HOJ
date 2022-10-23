@@ -1,6 +1,9 @@
 package top.hcode.hoj.manager.admin.discussion;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.common.exception.StatusFailException;
@@ -9,6 +12,7 @@ import top.hcode.hoj.dao.discussion.DiscussionReportEntityService;
 import top.hcode.hoj.pojo.entity.discussion.Discussion;
 import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
 import top.hcode.hoj.pojo.vo.DiscussionReportVO;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 
 import java.util.List;
 
@@ -18,6 +22,7 @@ import java.util.List;
  * @Description:
  */
 @Component
+@Slf4j(topic = "hoj")
 public class AdminDiscussionManager {
 
     @Autowired
@@ -38,6 +43,10 @@ public class AdminDiscussionManager {
         if (!isOk) {
             throw new StatusFailException("删除失败");
         }
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        log.info("[{}],[{}],didList:[{}],operatorUid:[{}],operatorUsername:[{}]",
+                "Admin_Discussion", "Delete", didList, userRolesVo.getUid(), userRolesVo.getUsername());
     }
 
     public IPage<DiscussionReportVO> getDiscussionReport(Integer limit, Integer currentPage) {

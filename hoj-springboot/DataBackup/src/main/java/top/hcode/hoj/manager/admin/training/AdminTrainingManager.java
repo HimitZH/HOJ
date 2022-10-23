@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,7 @@ import java.util.Objects;
  */
 
 @Component
+@Slf4j(topic = "hoj")
 public class AdminTrainingManager {
 
     @Resource
@@ -110,6 +112,11 @@ public class AdminTrainingManager {
         if (!isOk) {
             throw new StatusFailException("删除失败！");
         }
+        // 获取当前登录的用户
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        log.info("[{}],[{}],tid:[{}],operatorUid:[{}],operatorUsername:[{}]",
+                "Admin_Training", "Delete", tid, userRolesVo.getUid(), userRolesVo.getUsername());
     }
 
     @Transactional(rollbackFor = Exception.class)

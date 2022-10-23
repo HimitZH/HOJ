@@ -7,6 +7,7 @@ import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
  * @Description:
  */
 @Component
+@Slf4j(topic = "hoj")
 public class AdminUserManager {
 
     @Autowired
@@ -142,6 +144,10 @@ public class AdminUserManager {
         if (!isOk) {
             throw new StatusFailException("删除失败！");
         }
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        log.info("[{}],[{}],uidList:[{}],operatorUid:[{}],operatorUsername:[{}]",
+                "Admin_User", "Delete", deleteUserIdList, userRolesVo.getUid(), userRolesVo.getUsername());
     }
 
     public void insertBatchUser(List<List<String>> users) throws StatusFailException {

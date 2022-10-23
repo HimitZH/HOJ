@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ import java.util.List;
 
 @Component
 @RefreshScope
+@Slf4j(topic = "hoj")
 public class AdminProblemManager {
     @Autowired
     private ProblemEntityService problemEntityService;
@@ -122,6 +124,10 @@ public class AdminProblemManager {
          */
         if (isOk) { // 删除成功
             FileUtil.del(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid);
+            Session session = SecurityUtils.getSubject().getSession();
+            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            log.info("[{}],[{}],pid:[{}],operatorUid:[{}],operatorUsername:[{}]",
+                    "Admin_Problem", "Delete", pid, userRolesVo.getUid(), userRolesVo.getUsername());
         } else {
             throw new StatusFailException("删除失败！");
         }
@@ -258,6 +264,8 @@ public class AdminProblemManager {
         if (!isOk) {
             throw new StatusFailException("修改失败");
         }
+        log.info("[{}],[{}],value:[{}],pid:[{}],operatorUid:[{}],operatorUsername:[{}]",
+                "Admin_Problem", "Change_Auth", problem.getAuth(), problem.getId(), userRolesVo.getUid(), userRolesVo.getUsername());
     }
 
 

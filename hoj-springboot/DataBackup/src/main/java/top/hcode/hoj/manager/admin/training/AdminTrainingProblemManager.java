@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.stereotype.Component;
@@ -33,6 +34,7 @@ import java.util.stream.Collectors;
  * @Description:
  */
 @Component
+@Slf4j(topic = "hoj")
 public class AdminTrainingProblemManager {
 
     @Resource
@@ -117,7 +119,7 @@ public class AdminTrainingProblemManager {
         }
     }
 
-    public void deleteProblem(Long pid,Long tid) throws StatusFailException {
+    public void deleteProblem(Long pid, Long tid) throws StatusFailException {
         boolean isOk = false;
         //  训练id不为null，表示就是从比赛列表移除而已
         if (tid != null) {
@@ -132,8 +134,16 @@ public class AdminTrainingProblemManager {
         }
 
         if (isOk) { // 删除成功
+            // 获取当前登录的用户
+            Session session = SecurityUtils.getSubject().getSession();
+            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
             if (tid == null) {
                 FileUtil.del(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid);
+                log.info("[{}],[{}],tid:[{}],pid:[{}],operatorUid:[{}],operatorUsername:[{}]",
+                        "Admin_Training", "Delete_Problem", tid, pid, userRolesVo.getUid(), userRolesVo.getUsername());
+            } else {
+                log.info("[{}],[{}],tid:[{}],pid:[{}],operatorUid:[{}],operatorUsername:[{}]",
+                        "Admin_Training", "Remove_Problem", tid, pid, userRolesVo.getUid(), userRolesVo.getUsername());
             }
             // 更新训练最近更新时间
             UpdateWrapper<Training> trainingUpdateWrapper = new UpdateWrapper<>();
@@ -142,7 +152,7 @@ public class AdminTrainingProblemManager {
             trainingEntityService.update(trainingUpdateWrapper);
         } else {
             String msg = "删除失败！";
-            if (tid != null){
+            if (tid != null) {
                 msg = "移除失败！";
             }
             throw new StatusFailException(msg);
@@ -175,6 +185,12 @@ public class AdminTrainingProblemManager {
             trainingUpdateWrapper.set("gmt_modified", new Date())
                     .eq("id", tid);
             trainingEntityService.update(trainingUpdateWrapper);
+
+            // 获取当前登录的用户
+            Session session = SecurityUtils.getSubject().getSession();
+            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            log.info("[{}],[{}],tid:[{}],pid:[{}],operatorUid:[{}],operatorUsername:[{}]",
+                    "Admin_Training", "Add_Public_Problem", tid, pid, userRolesVo.getUid(), userRolesVo.getUsername());
 
             // 异步地同步用户对该题目的提交数据
             adminTrainingRecordManager.syncAlreadyRegisterUserRecord(tid, pid, newTProblem.getId());
@@ -228,6 +244,13 @@ public class AdminTrainingProblemManager {
             trainingUpdateWrapper.set("gmt_modified", new Date())
                     .eq("id", tid);
             trainingEntityService.update(trainingUpdateWrapper);
+
+            // 获取当前登录的用户
+            Session session = SecurityUtils.getSubject().getSession();
+            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            log.info("[{}],[{}],tid:[{}],pid:[{}],problemId:[{}],operatorUid:[{}],operatorUsername:[{}]",
+                    "Admin_Training", "Add_Remote_Problem", tid, problem.getId(), problem.getProblemId(),
+                    userRolesVo.getUid(), userRolesVo.getUsername());
 
             // 异步地同步用户对该题目的提交数据
             adminTrainingRecordManager.syncAlreadyRegisterUserRecord(tid, problem.getId(), newTProblem.getId());

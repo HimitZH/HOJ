@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import java.util.Objects;
  * @Description:
  */
 @Component
+@Slf4j(topic = "hoj")
 public class AdminContestManager {
 
     @Autowired
@@ -112,6 +114,10 @@ public class AdminContestManager {
         if (!isOk) { // 删除成功
             throw new StatusFailException("删除失败");
         }
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        log.info("[{}],[{}],cid:[{}],operatorUid:[{}],operatorUsername:[{}]",
+                "Admin_Contest", "Delete", cid, userRolesVo.getUid(), userRolesVo.getUsername());
     }
 
     public void addContest(AdminContestVO adminContestVo) throws StatusFailException {
@@ -211,6 +217,8 @@ public class AdminContestManager {
         if (!isOK) {
             throw new StatusFailException("修改失败");
         }
+        log.info("[{}],[{}],value:[{}],cid:[{}],operatorUid:[{}],operatorUsername:[{}]",
+                "Admin_Contest", "Change_Visible", visible, cid, userRolesVo.getUid(), userRolesVo.getUsername());
     }
 
 }

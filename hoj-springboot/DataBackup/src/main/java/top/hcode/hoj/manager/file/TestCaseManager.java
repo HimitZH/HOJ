@@ -269,6 +269,8 @@ public class TestCaseManager {
             }
             // 清空临时文件
             FileUtil.del(Constants.File.FILE_DOWNLOAD_TMP_FOLDER.getPath() + File.separator + fileName);
+            log.info("[{}],[{}],pid:[{}],operatorUid:[{}],operatorUsername:[{}]",
+                    "Test_Case", "Download", pid, userRolesVo.getUid(), userRolesVo.getUsername());
         }
     }
 }

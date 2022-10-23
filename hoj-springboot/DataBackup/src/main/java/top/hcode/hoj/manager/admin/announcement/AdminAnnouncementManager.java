@@ -1,12 +1,16 @@
 package top.hcode.hoj.manager.admin.announcement;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.pojo.entity.common.Announcement;
 import top.hcode.hoj.pojo.vo.AnnouncementVO;
 import top.hcode.hoj.dao.common.AnnouncementEntityService;
+import top.hcode.hoj.pojo.vo.UserRolesVO;
 
 
 /**
@@ -15,6 +19,7 @@ import top.hcode.hoj.dao.common.AnnouncementEntityService;
  * @Description:
  */
 @Component
+@Slf4j
 public class AdminAnnouncementManager {
 
     @Autowired
@@ -33,6 +38,11 @@ public class AdminAnnouncementManager {
         if (!isOk) {
             throw new StatusFailException("删除失败");
         }
+        // 获取当前登录的用户
+        Session session = SecurityUtils.getSubject().getSession();
+        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        log.info("[{}],[{}],id:[{}],operatorUid:[{}],operatorUsername:[{}]",
+                "Admin_Announcement", "Delete", aid, userRolesVo.getUid(), userRolesVo.getUsername());
     }
 
 
