@@ -591,9 +591,11 @@ export default {
       });
     },
     ProblemListChangeFilter() {
+      this.query.currentPage = 1;
       this.pushRouter();
     },
     filterByKeyword() {
+      this.query.currentPage = 1;
       this.pushRouter();
     },
     addRemoteOJProblem() {

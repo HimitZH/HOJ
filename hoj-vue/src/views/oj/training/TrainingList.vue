@@ -9,8 +9,8 @@
           type="search"
           size="medium"
           style="width:230px"
-          @keyup.enter.native="filterByChange"
-          @search-click="filterByChange"
+          @keyup.enter.native="filterByKeyword"
+          @search-click="filterByKeyword"
         ></vxe-input>
       </section>
       <section>
@@ -256,11 +256,18 @@ export default {
 
     filterByCategory(categoryId) {
       this.query.categoryId = categoryId;
+      this.currentPage = 1;
       this.filterByChange();
     },
 
     filterByAuthType(auth) {
       this.query.auth = auth;
+      this.currentPage = 1;
+      this.filterByChange();
+    },
+
+    filterByKeyword() {
+      this.currentPage = 1;
       this.filterByChange();
     },
 

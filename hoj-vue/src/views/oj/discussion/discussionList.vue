@@ -637,6 +637,7 @@ export default {
     },
 
     handleQueryChange() {
+      this.query.currentPage = 1;
       this.pushRouter(
         this.query,
         { problemID: this.query.pid },

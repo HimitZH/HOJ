@@ -75,8 +75,8 @@
                     :placeholder="$t('m.Enter_keyword')"
                     type="search"
                     size="medium"
-                    @keyup.enter.native="filterByChange"
-                    @search-click="filterByChange"
+                    @keyup.enter.native="onKeywordChange"
+                    @search-click="onKeywordChange"
                   ></vxe-input>
                 </span>
               </div>
@@ -366,7 +366,6 @@ export default {
       this.currentPage = page;
       this.filterByChange();
     },
-
     onRuleChange(rule) {
       this.query.type = rule;
       this.currentPage = 1;
@@ -374,6 +373,10 @@ export default {
     },
     onStatusChange(status) {
       this.query.status = status;
+      this.currentPage = 1;
+      this.filterByChange();
+    },
+    onKeywordChange() {
       this.currentPage = 1;
       this.filterByChange();
     },

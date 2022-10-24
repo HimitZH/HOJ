@@ -172,6 +172,7 @@ export default {
       }
     },
     filterByKeyword() {
+      this.page = 1;
       this.getPublicProblem(this.page);
     },
   },
