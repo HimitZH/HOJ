@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.crawler.problem.ProblemStrategy;
@@ -159,6 +160,7 @@ public class AdminTrainingProblemManager {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void addProblemFromPublic(TrainingProblemDTO trainingProblemDto) throws StatusFailException {
 
         Long pid = trainingProblemDto.getPid();
@@ -199,6 +201,7 @@ public class AdminTrainingProblemManager {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void importTrainingRemoteOJProblem(String name, String problemId, Long tid) throws StatusFailException {
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("problem_id", name.toUpperCase() + "-" + problemId);

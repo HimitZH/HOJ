@@ -226,7 +226,6 @@ export default {
     let route = this.$route.query;
     this.currentPage = parseInt(route.currentPage) || 1;
     this.TRAINING_TYPE = Object.assign({}, TRAINING_TYPE);
-
     if(!this.isAuthenticated){
       setTimeout(() => {
         // 将指定列设置为隐藏状态
@@ -246,6 +245,7 @@ export default {
       this.query.keyword = route.keyword || '';
       this.query.categoryId = route.categoryId || null;
       this.query.auth = route.auth || null;
+      this.currentPage = parseInt(route.currentPage) || 1;
       this.getTrainingList();
     },
 

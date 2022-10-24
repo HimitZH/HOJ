@@ -328,6 +328,7 @@ export default {
       this.query.status = route.status || '';
       this.query.type = route.type || '';
       this.query.keyword = route.keyword || '';
+      this.currentPage = parseInt(route.currentPage) || 1;
       this.getContestList();
     },
     getContestList() {

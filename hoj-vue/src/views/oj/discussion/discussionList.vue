@@ -549,6 +549,10 @@ export default {
       } else {
         this.discussion.pid = null;
       }
+      this.query.currentPage = parseInt(query.currentPage) || 1;
+      if (this.query.currentPage < 1) {
+        this.query.currentPage = 1;
+      }
       this.getDiscussionList();
     },
 

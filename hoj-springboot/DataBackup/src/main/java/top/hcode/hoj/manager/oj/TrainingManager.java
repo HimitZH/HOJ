@@ -78,7 +78,11 @@ public class TrainingManager {
      * @Return
      * @Since 2021/11/20
      */
-    public IPage<TrainingVO> getTrainingList(Integer limit, Integer currentPage, String keyword, Long categoryId, String auth) {
+    public IPage<TrainingVO> getTrainingList(Integer limit,
+                                             Integer currentPage,
+                                             String keyword,
+                                             Long categoryId,
+                                             String auth) {
 
         // 页数，每页题数若为空，设置默认值
         if (currentPage == null || currentPage < 1) currentPage = 1;
