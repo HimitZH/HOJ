@@ -20,21 +20,21 @@ import java.util.Optional;
 @Slf4j(topic = "hoj")
 @RefreshScope
 @Data
-public class DruidConfigure {
+public class DruidConfig {
 
-    @Value("${mysql-username}")
+    @Value("${hoj.db.username:}")
     private String username;
 
-    @Value("${mysql-password}")
+    @Value("${hoj.db.password}")
     private String password;
 
-    @Value("${mysql-host}")
+    @Value("${hoj.db.public-host:172.20.0.3}")
     private String host;
 
-    @Value("${mysql-port}")
+    @Value("${hoj.db.public-port:3306}")
     private Integer port;
 
-    @Value("${mysql-name}")
+    @Value("${hoj.db.name:hoj}")
     private String name;
 
     @Value("${spring.datasource.driver-class-name}")
@@ -82,7 +82,7 @@ public class DruidConfigure {
     @Value("${spring.datasource.min-idle:20}")
     private Integer minIdle;
 
-    @Value("${spring.datasource.maxActive:200}")
+    @Value("${spring.datasource.maxActive:40}")
     private Integer maxActive;
 
     @Value("${spring.datasource.maxWait:60000}")
@@ -105,7 +105,7 @@ public class DruidConfigure {
                 mysqlName, mysqlHost, mysqlPort, mysqlUsername, mysqlUserPassword);
 
         DruidDataSource datasource = new DruidDataSource();
-        String url = "jdbc:mysql://" + mysqlHost + ":" + mysqlPort + "/" + mysqlName + "?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&rewriteBatchedStatements=true";
+        String url = "jdbc:mysql://" + host + ":" + port + "/" + name + "?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&rewriteBatchedStatements=true";
         datasource.setUrl(url);
         datasource.setUsername(mysqlUsername);
         datasource.setPassword(mysqlUserPassword);

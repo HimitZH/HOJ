@@ -49,8 +49,8 @@ public class SwaggerConfig {
                 "https://docs.hdoi.cn",
                 "372347736@qq.com");
         return new ApiInfo(
-                "HOJ-Backend的API文档",
-                "HCODE ONLINE JUDGE(HOJ)的后端接口文档",
+                "HOJ-JudgeServer的API文档",
+                "HCODE ONLINE JUDGE(HOJ)的判题端接口文档",
                 "v4.4",
                 "https://docs.hdoi.cn",
                 contact,
