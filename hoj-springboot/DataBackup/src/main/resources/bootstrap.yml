@@ -1,0 +1,33 @@
+# nacos配置
+nacos-url: ${NACOS_URL:127.0.0.1:8848}
+nacos-username: ${NACOS_USERNAME:root}
+nacos-password: ${NACOS_PASSWORD:hoj123456}
+nacos-switch-config: hoj-switch.yml
+nacos-web-config: hoj-web.yml
+
+spring:
+  profiles:
+    active: prod
+  application:
+    name: hoj-data-backup
+  cloud:
+    nacos:
+      discovery:
+        username: ${nacos-username}
+        password: ${nacos-password}
+        server-addr: ${nacos-url} # Nacos 作为服务注册中心 nacos的地址
+      config:
+        username: ${nacos-username}
+        password: ${nacos-password}
+        server-addr: ${nacos-url}  #Nacos 作为配置中心地址 nacos的地址
+        file-extension: yml #指定yaml格式的配置
+        group: DEFAULT_GROUP  # 指定分组
+        type: yaml
+        #namespace:命名空间ID  默认为public
+        prefix: hoj
+      url: http://${nacos-url}
+
+# ${spring.application.name}-${spring.profile.active}.${spring.cloud.naces.config.file-extension}
+# ${spring.cloud.nacos.config.prefix}-${spring.profile.active}.${spring.cloud.naces.config.file-extension}
+# hoj-prod.yml
+
