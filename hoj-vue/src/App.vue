@@ -8,7 +8,7 @@
           <router-view></router-view>
         </transition>
       </div>
-      <footer>
+      <footer v-if="showFooter">
         <div class="mundb-footer">
           <el-row>
             <el-col
@@ -137,6 +137,7 @@ export default {
   data() {
     return {
       isAdminView: false,
+      showFooter: true,
     };
   },
   methods: {
@@ -218,6 +219,11 @@ export default {
       } else {
         this.isAdminView = false;
       }
+      if(newVal.name == 'ProblemDetails'){
+        this.showFooter = false;
+      }else{
+        this.showFooter = true;
+      }
     },
     websiteConfig() {
       this.changeDomTitle();
@@ -239,6 +245,7 @@ export default {
     } else {
       this.isAdminView = true;
     }
+    this.showFooter = this.$route.name != 'ProblemDetails';
     window.addEventListener("visibilitychange", this.autoRefreshUserInfo);
   },
   mounted() {

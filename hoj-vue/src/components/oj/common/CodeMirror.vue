@@ -1,6 +1,6 @@
 <template>
   <div style="margin: 0px 0px 15px 0px;font-size: 14px;position: relative">
-    <el-row class="header">
+    <el-row class="header" id="js-right-header">
       <el-col
         :xs="24"
         :sm="15"
@@ -212,6 +212,7 @@
     </el-row>
     <div :style="'line-height: 1.5;font-size:'+fontSize">
       <codemirror
+        id="js-right"
         :value="value"
         :options="options"
         @change="onEditorCodeChange"
@@ -938,7 +939,7 @@ export default {
 
 <style>
 .CodeMirror {
-  height: 630px !important;
+  height: 100% !important;
 }
 .CodeMirror-scroll {
   min-height: 549px;
