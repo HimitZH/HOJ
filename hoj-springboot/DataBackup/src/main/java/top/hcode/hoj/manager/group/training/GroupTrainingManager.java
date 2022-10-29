@@ -1,27 +1,32 @@
 package top.hcode.hoj.manager.group.training;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.apache.shiro.SecurityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
 import top.hcode.hoj.dao.group.GroupEntityService;
 import top.hcode.hoj.dao.group.GroupTrainingEntityService;
-import top.hcode.hoj.dao.training.*;
+import top.hcode.hoj.dao.training.MappingTrainingCategoryEntityService;
+import top.hcode.hoj.dao.training.TrainingCategoryEntityService;
+import top.hcode.hoj.dao.training.TrainingEntityService;
+import top.hcode.hoj.dao.training.TrainingRegisterEntityService;
 import top.hcode.hoj.manager.admin.training.AdminTrainingRecordManager;
 import top.hcode.hoj.pojo.dto.TrainingDTO;
 import top.hcode.hoj.pojo.entity.group.Group;
-import top.hcode.hoj.pojo.entity.training.*;
+import top.hcode.hoj.pojo.entity.training.MappingTrainingCategory;
+import top.hcode.hoj.pojo.entity.training.Training;
+import top.hcode.hoj.pojo.entity.training.TrainingCategory;
+import top.hcode.hoj.pojo.entity.training.TrainingRegister;
 import top.hcode.hoj.pojo.vo.TrainingVO;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.validator.GroupValidator;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
@@ -58,8 +63,7 @@ public class GroupTrainingManager {
     private GroupValidator groupValidator;
 
     public IPage<TrainingVO> getTrainingList(Integer limit, Integer currentPage, Long gid) throws StatusNotFoundException, StatusForbiddenException {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -80,8 +84,7 @@ public class GroupTrainingManager {
     }
 
     public IPage<Training> getAdminTrainingList(Integer limit, Integer currentPage, Long gid) throws StatusNotFoundException, StatusForbiddenException {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -102,8 +105,7 @@ public class GroupTrainingManager {
     }
 
     public TrainingDTO getTraining(Long tid) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -144,8 +146,7 @@ public class GroupTrainingManager {
 
     @Transactional(rollbackFor = Exception.class)
     public void addTraining(TrainingDTO trainingDto) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -192,8 +193,7 @@ public class GroupTrainingManager {
 
     @Transactional(rollbackFor = Exception.class)
     public void updateTraining(TrainingDTO trainingDto) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -270,8 +270,7 @@ public class GroupTrainingManager {
     }
 
     public void deleteTraining(Long tid) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -301,8 +300,7 @@ public class GroupTrainingManager {
     }
 
     public void changeTrainingStatus(Long tid, Boolean status) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 

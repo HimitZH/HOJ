@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +16,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import top.hcode.hoj.annotation.HOJAccessEnum;
 import top.hcode.hoj.common.exception.*;
+import top.hcode.hoj.config.NacosSwitchConfig;
+import top.hcode.hoj.config.SwitchConfig;
 import top.hcode.hoj.dao.contest.ContestEntityService;
 import top.hcode.hoj.dao.contest.ContestRecordEntityService;
 import top.hcode.hoj.dao.judge.JudgeCaseEntityService;
@@ -34,6 +35,7 @@ import top.hcode.hoj.pojo.entity.judge.JudgeCase;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.user.UserAcproblem;
 import top.hcode.hoj.pojo.vo.*;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.RedisUtils;
@@ -96,7 +98,7 @@ public class JudgeManager {
     private AccessValidator accessValidator;
 
     @Autowired
-    private ConfigVO configVo;
+    private NacosSwitchConfig nacosSwitchConfig;
 
     /**
      * @MethodName submitProblemJudge
@@ -108,19 +110,19 @@ public class JudgeManager {
         judgeValidator.validateSubmissionInfo(judgeDto);
 
         // 需要获取一下该token对应用户的数据
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isContestSubmission = judgeDto.getCid() != 0;
         boolean isTrainingSubmission = judgeDto.getTid() != null && judgeDto.getTid() != 0;
 
-        if (!isContestSubmission && configVo.getDefaultSubmitInterval() > 0) { // 非比赛提交有限制限制
+        SwitchConfig switchConfig = nacosSwitchConfig.getSwitchConfig();
+        if (!isContestSubmission && switchConfig.getDefaultSubmitInterval() > 0) { // 非比赛提交有限制限制
             String lockKey = Constants.Account.SUBMIT_NON_CONTEST_LOCK.getCode() + userRolesVo.getUid();
             long count = redisUtils.incr(lockKey, 1);
             if (count > 1) {
                 throw new StatusForbiddenException("对不起，您的提交频率过快，请稍后再尝试！");
             }
-            redisUtils.expire(lockKey, configVo.getDefaultSubmitInterval());
+            redisUtils.expire(lockKey, switchConfig.getDefaultSubmitInterval());
         }
 
         HttpServletRequest request = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
@@ -169,8 +171,7 @@ public class JudgeManager {
             StatusFailException, StatusForbiddenException, StatusSystemErrorException {
         judgeValidator.validateTestJudgeInfo(testJudgeDto);
         // 需要获取一下该token对应用户的数据
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         String lockKey = Constants.Account.TEST_JUDGE_LOCK.getCode() + userRolesVo.getUid();
         long count = redisUtils.incr(lockKey, 1);
@@ -317,8 +318,7 @@ public class JudgeManager {
             throw new StatusNotFoundException("此提交数据不存在！");
         }
 
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
 
@@ -422,8 +422,7 @@ public class JudgeManager {
     public void updateSubmission(Judge judge) throws StatusForbiddenException, StatusFailException {
 
         // 需要获取一下该token对应用户的数据
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         if (!userRolesVo.getUid().equals(judge.getUid())) { // 判断该提交是否为当前用户的
             throw new StatusForbiddenException("对不起，您不能修改他人的代码分享权限！");
@@ -461,8 +460,7 @@ public class JudgeManager {
         // 只查看当前用户的提交
         if (onlyMine) {
             // 需要获取一下该token对应用户的数据（有token便能获取到）
-            Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
             if (userRolesVo == null) {
                 throw new StatusAccessDeniedException("当前用户数据为空，请您重新登陆！");
@@ -531,8 +529,7 @@ public class JudgeManager {
             return new HashMap<>();
         }
 
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         boolean isRoot = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
 
         Contest contest = contestEntityService.getById(submitIdListDto.getCid());
@@ -590,8 +587,7 @@ public class JudgeManager {
             return null;
         }
 
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         QueryWrapper<JudgeCase> wrapper = new QueryWrapper<>();
         if (judge.getCid() == 0) { // 非比赛提交

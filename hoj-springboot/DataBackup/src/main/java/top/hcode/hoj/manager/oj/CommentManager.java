@@ -6,13 +6,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import top.hcode.hoj.annotation.HOJAccessEnum;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
+import top.hcode.hoj.config.NacosSwitchConfig;
+import top.hcode.hoj.config.SwitchConfig;
 import top.hcode.hoj.dao.contest.ContestEntityService;
 import top.hcode.hoj.dao.discussion.CommentEntityService;
 import top.hcode.hoj.dao.discussion.CommentLikeEntityService;
@@ -27,7 +28,10 @@ import top.hcode.hoj.pojo.entity.discussion.CommentLike;
 import top.hcode.hoj.pojo.entity.discussion.Discussion;
 import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.pojo.entity.user.UserAcproblem;
-import top.hcode.hoj.pojo.vo.*;
+import top.hcode.hoj.pojo.vo.CommentListVO;
+import top.hcode.hoj.pojo.vo.CommentVO;
+import top.hcode.hoj.pojo.vo.ReplyVO;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.validator.AccessValidator;
 import top.hcode.hoj.validator.CommonValidator;
 import top.hcode.hoj.validator.ContestValidator;
@@ -78,15 +82,14 @@ public class CommentManager {
     private CommonValidator commonValidator;
 
     @Autowired
-    private ConfigVO configVo;
+    private NacosSwitchConfig nacosSwitchConfig;
 
     private final static Pattern pattern = Pattern.compile("<.*?([a,A][u,U][t,T][o,O][p,P][l,L][a,A][y,Y]).*?>");
 
     public CommentListVO getComments(Long cid, Integer did, Integer limit, Integer currentPage) throws StatusForbiddenException, AccessException {
 
         // 如果有登录，则获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -143,11 +146,10 @@ public class CommentManager {
     @Transactional
     public CommentVO addComment(Comment comment) throws StatusFailException, StatusForbiddenException, AccessException {
 
-        commonValidator.validateContent(comment.getContent(), "评论",10000);
+        commonValidator.validateContent(comment.getContent(), "评论", 10000);
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
@@ -177,9 +179,10 @@ public class CommentManager {
                 queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
                 int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
 
-                if (userAcProblemCount < configVo.getDefaultCreateCommentACInitValue()) {
+                SwitchConfig switchConfig = nacosSwitchConfig.getSwitchConfig();
+                if (userAcProblemCount < switchConfig.getDefaultCreateCommentACInitValue()) {
                     throw new StatusForbiddenException("对不起，您暂时不能评论！请先去提交题目通过"
-                            + configVo.getDefaultCreateCommentACInitValue() + "道以上!");
+                            + switchConfig.getDefaultCreateCommentACInitValue() + "道以上!");
                 }
             }
 
@@ -242,8 +245,7 @@ public class CommentManager {
     @Transactional(rollbackFor = Exception.class)
     public void deleteComment(Comment comment) throws StatusForbiddenException, StatusFailException, AccessException {
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
@@ -307,8 +309,7 @@ public class CommentManager {
     public void addCommentLike(Integer cid, Boolean toLike, Integer sourceId, String sourceType) throws StatusFailException {
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         QueryWrapper<CommentLike> commentLikeQueryWrapper = new QueryWrapper<>();
         commentLikeQueryWrapper.eq("cid", cid).eq("uid", userRolesVo.getUid());
@@ -352,8 +353,7 @@ public class CommentManager {
     public List<ReplyVO> getAllReply(Integer commentId, Long cid) throws StatusForbiddenException, StatusFailException, AccessException {
 
         // 如果有登录，则获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         if (cid == null) {
@@ -385,11 +385,10 @@ public class CommentManager {
 
     public ReplyVO addReply(ReplyDTO replyDto) throws StatusFailException, StatusForbiddenException, AccessException {
 
-        commonValidator.validateContent(replyDto.getReply().getContent(), "回复",10000);
+        commonValidator.validateContent(replyDto.getReply().getContent(), "回复", 10000);
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
@@ -419,10 +418,10 @@ public class CommentManager {
                 QueryWrapper<UserAcproblem> queryWrapper = new QueryWrapper<>();
                 queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
                 int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
-
-                if (userAcProblemCount < configVo.getDefaultCreateCommentACInitValue()) {
+                SwitchConfig switchConfig = nacosSwitchConfig.getSwitchConfig();
+                if (userAcProblemCount < switchConfig.getDefaultCreateCommentACInitValue()) {
                     throw new StatusForbiddenException("对不起，您暂时不能回复！请先去提交题目通过" +
-                            configVo.getDefaultCreateCommentACInitValue() + "道以上!");
+                            switchConfig.getDefaultCreateCommentACInitValue() + "道以上!");
                 }
             }
         } else {
@@ -482,8 +481,7 @@ public class CommentManager {
 
     public void deleteReply(ReplyDTO replyDto) throws StatusForbiddenException, StatusFailException, AccessException {
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");

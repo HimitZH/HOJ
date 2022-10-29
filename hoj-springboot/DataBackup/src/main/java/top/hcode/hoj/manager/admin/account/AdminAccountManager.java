@@ -16,6 +16,7 @@ import top.hcode.hoj.pojo.entity.user.Role;
 import top.hcode.hoj.pojo.entity.user.Session;
 import top.hcode.hoj.pojo.vo.UserInfoVO;
 import top.hcode.hoj.pojo.vo.UserRolesVO;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.JwtUtils;
@@ -116,7 +117,9 @@ public class AdminAccountManager {
         }
     }
 
-    public void logout(){
+    public void logout() {
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+        jwtUtils.cleanToken(userRolesVo.getUid());
         SecurityUtils.getSubject().logout();
     }
 }

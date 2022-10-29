@@ -2,11 +2,8 @@ package top.hcode.hoj.manager.oj;
 
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
-import top.hcode.hoj.validator.GroupValidator;
-import top.hcode.hoj.validator.TrainingValidator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,15 +11,6 @@ import top.hcode.hoj.common.exception.StatusAccessDeniedException;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
-import top.hcode.hoj.pojo.entity.contest.Contest;
-import top.hcode.hoj.pojo.entity.contest.ContestProblem;
-import top.hcode.hoj.pojo.entity.contest.ContestRecord;
-import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.entity.problem.Problem;
-import top.hcode.hoj.pojo.entity.training.Training;
-import top.hcode.hoj.pojo.entity.training.TrainingProblem;
-import top.hcode.hoj.pojo.entity.training.TrainingRecord;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.dao.contest.ContestEntityService;
 import top.hcode.hoj.dao.contest.ContestProblemEntityService;
 import top.hcode.hoj.dao.contest.ContestRecordEntityService;
@@ -31,8 +19,19 @@ import top.hcode.hoj.dao.problem.ProblemEntityService;
 import top.hcode.hoj.dao.training.TrainingEntityService;
 import top.hcode.hoj.dao.training.TrainingProblemEntityService;
 import top.hcode.hoj.dao.training.TrainingRecordEntityService;
+import top.hcode.hoj.pojo.entity.contest.Contest;
+import top.hcode.hoj.pojo.entity.contest.ContestProblem;
+import top.hcode.hoj.pojo.entity.contest.ContestRecord;
+import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.pojo.entity.training.Training;
+import top.hcode.hoj.pojo.entity.training.TrainingProblem;
+import top.hcode.hoj.pojo.entity.training.TrainingRecord;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.validator.ContestValidator;
+import top.hcode.hoj.validator.GroupValidator;
+import top.hcode.hoj.validator.TrainingValidator;
 
 import javax.annotation.Resource;
 
@@ -81,11 +80,10 @@ public class BeforeDispatchInitManager {
     private GroupValidator groupValidator;
 
     public void initCommonSubmission(String problemId, Judge judge) throws StatusForbiddenException {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
-        problemQueryWrapper.select("id","problem_id","auth","is_group","gid");
+        problemQueryWrapper.select("id", "problem_id", "auth", "is_group", "gid");
         problemQueryWrapper.eq("problem_id", problemId);
         Problem problem = problemEntityService.getOne(problemQueryWrapper, false);
 
@@ -107,12 +105,12 @@ public class BeforeDispatchInitManager {
         // 将新提交数据插入数据库
         judgeEntityService.save(judge);
 
-        trainingManager.checkAndSyncTrainingRecord(problem.getId(),judge.getSubmitId(),judge.getUid());
+        trainingManager.checkAndSyncTrainingRecord(problem.getId(), judge.getSubmitId(), judge.getUid());
     }
 
 
     @Transactional(rollbackFor = Exception.class)
-    public void initContestSubmission(Long cid, String displayId, UserRolesVO userRolesVo, Judge judge) throws StatusNotFoundException, StatusForbiddenException {
+    public void initContestSubmission(Long cid, String displayId, AccountProfile userRolesVo, Judge judge) throws StatusNotFoundException, StatusForbiddenException {
         // 首先判断一下比赛的状态是否是正在进行，结束状态都不能提交，比赛前比赛管理员可以提交
         Contest contest = contestEntityService.getById(cid);
 
@@ -181,7 +179,7 @@ public class BeforeDispatchInitManager {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public void initTrainingSubmission(Long tid, String displayId, UserRolesVO userRolesVo, Judge judge) throws StatusForbiddenException, StatusFailException, StatusAccessDeniedException {
+    public void initTrainingSubmission(Long tid, String displayId, AccountProfile userRolesVo, Judge judge) throws StatusForbiddenException, StatusFailException, StatusAccessDeniedException {
 
         Training training = trainingEntityService.getById(tid);
         if (training == null || !training.getStatus()) {

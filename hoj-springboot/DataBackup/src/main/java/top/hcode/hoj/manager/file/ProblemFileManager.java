@@ -12,7 +12,6 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,7 +26,7 @@ import top.hcode.hoj.exception.ProblemIDRepeatException;
 import top.hcode.hoj.pojo.dto.ProblemDTO;
 import top.hcode.hoj.pojo.entity.problem.*;
 import top.hcode.hoj.pojo.vo.ImportProblemVO;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 
 import javax.servlet.http.HttpServletResponse;
@@ -144,8 +143,7 @@ public class ProblemFileManager {
         }
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         List<ProblemDTO> problemDTOS = new LinkedList<>();
         List<Tag> tagList = tagEntityService.list(new QueryWrapper<Tag>().eq("oj", "ME"));
@@ -356,7 +354,7 @@ public class ProblemFileManager {
                                 if (score != null && score > 0) {
                                     problemCaseMap.put("score", score);
                                 }
-                                if (groupNum != null){
+                                if (groupNum != null) {
                                     problemCaseMap.put("groupNum", groupNum);
                                 }
                                 problemCases.add(problemCaseMap);

@@ -1,9 +1,12 @@
 package top.hcode.hoj.dao.user;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import top.hcode.hoj.pojo.entity.user.Role;
 import top.hcode.hoj.pojo.entity.user.UserRole;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.hcode.hoj.pojo.vo.UserRolesVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,6 +19,8 @@ import top.hcode.hoj.pojo.vo.UserRolesVO;
 public interface UserRoleEntityService extends IService<UserRole> {
 
     UserRolesVO getUserRoles(String uid, String username);
+
+    List<Role> getRolesByUid(String uid);
 
     IPage<UserRolesVO> getUserList(int limit, int currentPage, String keyword, Boolean onlyAdmin);
 

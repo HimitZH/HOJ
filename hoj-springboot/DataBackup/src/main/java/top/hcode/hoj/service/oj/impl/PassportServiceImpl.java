@@ -83,4 +83,10 @@ public class PassportServiceImpl implements PassportService {
             return CommonResult.errorResponse(e.getMessage());
         }
     }
+
+    @Override
+    public CommonResult<Void> logout() {
+        passportManager.logout();
+        return CommonResult.successResponse("登出成功");
+    }
 }

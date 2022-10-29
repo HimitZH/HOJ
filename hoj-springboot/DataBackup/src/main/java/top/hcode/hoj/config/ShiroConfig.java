@@ -1,30 +1,23 @@
 package top.hcode.hoj.config;
 
-/**
- * @Author: Himit_ZH
- * @Date: 2020/7/19 22:53
- * @Description:
- */
-
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
-import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
-import org.crazycake.shiro.RedisCacheManager;
-import org.crazycake.shiro.RedisSessionDAO;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.hcode.hoj.shiro.AccountRealm;
 import top.hcode.hoj.shiro.JwtFilter;
-
+import top.hcode.hoj.shiro.ShiroCacheManager;
+import top.hcode.hoj.shiro.ShiroConstant;
+import top.hcode.hoj.utils.RedisUtils;
 
 import javax.servlet.Filter;
 import java.util.HashMap;
@@ -32,28 +25,31 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * shiro启用注解拦截控制器
+ * @Author: Himit_ZH
+ * @Date: 2020/7/19 22:53
+ * @Description: shiro启用注解拦截控制器
  */
 @Configuration
 public class ShiroConfig {
+
     @Autowired
-    JwtFilter jwtFilter;
+    private JwtFilter jwtFilter;
+
+    @Autowired
+    private RedisUtils redisUtils;
+
+    @Value("${hoj.jwt.expire:86400}")
+    private long expire;
 
     @Bean
-    public SessionManager sessionManager(RedisSessionDAO redisSessionDAO) {
-        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
-        sessionManager.setSessionDAO(redisSessionDAO);
-        return sessionManager;
-    }
-
-
-    @Bean
-    public DefaultWebSecurityManager securityManager(AccountRealm accountRealm,
-                                                     SessionManager sessionManager,
-                                                     RedisCacheManager redisCacheManager) {
+    public DefaultWebSecurityManager securityManager(AccountRealm accountRealm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager(accountRealm);
-        securityManager.setSessionManager(sessionManager);
-        securityManager.setCacheManager(redisCacheManager);
+
+        ShiroCacheManager shiroCacheManager = new ShiroCacheManager();
+        shiroCacheManager.setCacheLive(expire);
+        shiroCacheManager.setCacheKeyPrefix(ShiroConstant.SHIRO_AUTHORIZATION_CACHE);
+        shiroCacheManager.setRedisUtils(redisUtils);
+        securityManager.setCacheManager(shiroCacheManager);
         /*
          * 关闭shiro自带的session，详情见文档
          */
@@ -64,6 +60,7 @@ public class ShiroConfig {
         securityManager.setSubjectDAO(subjectDAO);
         return securityManager;
     }
+
     @Bean
     public ShiroFilterChainDefinition shiroFilterChainDefinition() {
         DefaultShiroFilterChainDefinition chainDefinition = new DefaultShiroFilterChainDefinition();
@@ -72,6 +69,7 @@ public class ShiroConfig {
         chainDefinition.addPathDefinitions(filterMap);
         return chainDefinition;
     }
+
     @Bean("shiroFilterFactoryBean")
     public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager,
                                                          ShiroFilterChainDefinition shiroFilterChainDefinition) {
@@ -85,7 +83,8 @@ public class ShiroConfig {
         return shiroFilter;
     }
 
-     //开启注解代理（默认好像已经开启，可以不要）
+
+    //开启注解代理
     @Bean
     public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager){
         AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();

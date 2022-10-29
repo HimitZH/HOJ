@@ -4,6 +4,7 @@ package top.hcode.hoj.controller.oj;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import top.hcode.hoj.annotation.AnonApi;
 import top.hcode.hoj.pojo.dto.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.vo.*;
@@ -28,6 +29,7 @@ public class AccountController {
      * @Since 2020/11/5
      */
     @RequestMapping(value = "/check-username-or-email", method = RequestMethod.POST)
+    @AnonApi
     public CommonResult<CheckUsernameOrEmailVO> checkUsernameOrEmail(@RequestBody CheckUsernameOrEmailDTO checkUsernameOrEmailDto) {
         return accountService.checkUsernameOrEmail(checkUsernameOrEmailDto);
     }
@@ -53,6 +55,7 @@ public class AccountController {
      * @Description 获取用户最近一年的提交热力图数据
      */
     @GetMapping("/get-user-calendar-heatmap")
+    @AnonApi
     public CommonResult<UserCalendarHeatmapVO> getUserCalendarHeatmap(@RequestParam(value = "uid", required = false) String uid,
                                                                       @RequestParam(value = "username", required = false) String username) {
         return accountService.getUserCalendarHeatmap(uid, username);

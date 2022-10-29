@@ -11,6 +11,7 @@ import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.crazycake.shiro.RedisSessionDAO;
 import org.springframework.beans.factory.annotation.Autowired;
+import top.hcode.hoj.pojo.entity.user.Role;
 import top.hcode.hoj.pojo.entity.user.UserRole;
 import top.hcode.hoj.mapper.UserRoleMapper;
 import top.hcode.hoj.pojo.vo.UserRolesVO;
@@ -43,6 +44,11 @@ public class UserRoleEntityServiceImpl extends ServiceImpl<UserRoleMapper, UserR
     @Override
     public UserRolesVO getUserRoles(String uid, String username) {
         return userRoleMapper.getUserRoles(uid, username);
+    }
+
+    @Override
+    public List<Role> getRolesByUid(String uid) {
+        return userRoleMapper.getRolesByUid(uid);
     }
 
     @Override

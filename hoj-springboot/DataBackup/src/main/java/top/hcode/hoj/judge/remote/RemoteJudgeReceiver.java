@@ -10,6 +10,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import top.hcode.hoj.config.NacosSwitchConfig;
+import top.hcode.hoj.config.SwitchConfig;
 import top.hcode.hoj.dao.contest.ContestRecordEntityService;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.dao.judge.RemoteJudgeAccountEntityService;
@@ -20,7 +22,6 @@ import top.hcode.hoj.pojo.dto.ToJudgeDTO;
 import top.hcode.hoj.pojo.entity.contest.ContestRecord;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
-import top.hcode.hoj.pojo.vo.ConfigVO;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
@@ -47,7 +48,7 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
     private ChooseUtils chooseUtils;
 
     @Autowired
-    private ConfigVO configVo;
+    private NacosSwitchConfig nacosSwitchConfig;
 
     @Autowired
     private ContestRecordEntityService contestRecordEntityService;
@@ -311,18 +312,19 @@ public class RemoteJudgeReceiver extends AbstractReceiver {
         if (remoteOJ == null) {
             return false;
         }
+        SwitchConfig switchConfig = nacosSwitchConfig.getSwitchConfig();
         switch (remoteOJ) {
             case GYM:
             case CODEFORCES:
-                return !CollectionUtils.isEmpty(configVo.getCfUsernameList());
+                return !CollectionUtils.isEmpty(switchConfig.getCfUsernameList());
             case POJ:
-                return !CollectionUtils.isEmpty(configVo.getPojUsernameList());
+                return !CollectionUtils.isEmpty(switchConfig.getPojUsernameList());
             case HDU:
-                return !CollectionUtils.isEmpty(configVo.getHduUsernameList());
+                return !CollectionUtils.isEmpty(switchConfig.getHduUsernameList());
             case SPOJ:
-                return !CollectionUtils.isEmpty(configVo.getSpojUsernameList());
+                return !CollectionUtils.isEmpty(switchConfig.getSpojUsernameList());
             case ATCODER:
-                return !CollectionUtils.isEmpty(configVo.getAtcoderUsernameList());
+                return !CollectionUtils.isEmpty(switchConfig.getAtcoderUsernameList());
         }
         return false;
     }

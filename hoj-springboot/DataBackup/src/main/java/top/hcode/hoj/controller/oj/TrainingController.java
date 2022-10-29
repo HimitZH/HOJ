@@ -4,6 +4,7 @@ package top.hcode.hoj.controller.oj;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.web.bind.annotation.*;
+import top.hcode.hoj.annotation.AnonApi;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.RegisterTrainingDTO;
 import top.hcode.hoj.pojo.vo.*;
@@ -37,6 +38,7 @@ public class TrainingController {
      * @Since 2021/11/20
      */
     @GetMapping("/get-training-list")
+    @AnonApi
     public CommonResult<IPage<TrainingVO>> getTrainingList(@RequestParam(value = "limit", required = false) Integer limit,
                                                            @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                                            @RequestParam(value = "keyword", required = false) String keyword,

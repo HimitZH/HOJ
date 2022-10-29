@@ -2,7 +2,6 @@ package top.hcode.hoj.validator;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.common.exception.StatusAccessDeniedException;
@@ -10,7 +9,7 @@ import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.dao.training.TrainingRegisterEntityService;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingRegister;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
@@ -30,13 +29,12 @@ public class TrainingValidator {
     private GroupValidator groupValidator;
 
     public void validateTrainingAuth(Training training) throws StatusAccessDeniedException, StatusForbiddenException {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+      AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         validateTrainingAuth(training, userRolesVo);
     }
 
 
-    public void validateTrainingAuth(Training training, UserRolesVO userRolesVo) throws StatusAccessDeniedException, StatusForbiddenException {
+    public void validateTrainingAuth(Training training, AccountProfile userRolesVo) throws StatusAccessDeniedException, StatusForbiddenException {
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root"); // 是否为超级管理员
 
@@ -80,7 +78,7 @@ public class TrainingValidator {
         }
     }
 
-    public boolean isInTrainingOrAdmin(Training training, UserRolesVO userRolesVo) throws StatusAccessDeniedException {
+    public boolean isInTrainingOrAdmin(Training training, AccountProfile userRolesVo) throws StatusAccessDeniedException {
         if (Constants.Training.AUTH_PRIVATE.getValue().equals(training.getAuth())) {
             if (userRolesVo == null) {
                 throw new StatusAccessDeniedException("该训练属于私有题单，请先登录以校验权限！");

@@ -4,11 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.common.exception.StatusFailException;
+import top.hcode.hoj.dao.contest.ContestEntityService;
+import top.hcode.hoj.dao.discussion.CommentEntityService;
+import top.hcode.hoj.dao.discussion.DiscussionEntityService;
+import top.hcode.hoj.dao.discussion.ReplyEntityService;
+import top.hcode.hoj.dao.msg.MsgRemindEntityService;
+import top.hcode.hoj.dao.msg.UserSysNoticeEntityService;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.discussion.Comment;
 import top.hcode.hoj.pojo.entity.discussion.Discussion;
@@ -16,14 +21,8 @@ import top.hcode.hoj.pojo.entity.discussion.Reply;
 import top.hcode.hoj.pojo.entity.msg.MsgRemind;
 import top.hcode.hoj.pojo.entity.msg.UserSysNotice;
 import top.hcode.hoj.pojo.vo.UserMsgVO;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.pojo.vo.UserUnreadMsgCountVO;
-import top.hcode.hoj.dao.contest.ContestEntityService;
-import top.hcode.hoj.dao.discussion.CommentEntityService;
-import top.hcode.hoj.dao.discussion.DiscussionEntityService;
-import top.hcode.hoj.dao.discussion.ReplyEntityService;
-import top.hcode.hoj.dao.msg.MsgRemindEntityService;
-import top.hcode.hoj.dao.msg.UserSysNoticeEntityService;
+import top.hcode.hoj.shiro.AccountProfile;
 
 import javax.annotation.Resource;
 import java.util.Collection;
@@ -62,8 +61,7 @@ public class UserMessageManager {
 
     public UserUnreadMsgCountVO getUnreadMsgCount() {
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         UserUnreadMsgCountVO userUnreadMsgCount = msgRemindEntityService.getUserUnreadMsgCount(userRolesVo.getUid());
         if (userUnreadMsgCount == null) {
             userUnreadMsgCount = new UserUnreadMsgCountVO(0, 0, 0, 0, 0);
@@ -72,11 +70,10 @@ public class UserMessageManager {
     }
 
 
-    public void cleanMsg( String type, Long id) throws StatusFailException {
+    public void cleanMsg(String type, Long id) throws StatusFailException {
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         boolean isOk = cleanMsgByType(type, id, userRolesVo.getUid());
         if (!isOk) {
             throw new StatusFailException("清空失败");
@@ -90,8 +87,7 @@ public class UserMessageManager {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 5;
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         return getUserMsgList(userRolesVo.getUid(), "Discuss", limit, currentPage);
     }
@@ -104,8 +100,7 @@ public class UserMessageManager {
         if (limit == null || limit < 1) limit = 5;
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         return getUserMsgList(userRolesVo.getUid(), "Reply", limit, currentPage);
     }
@@ -118,8 +113,7 @@ public class UserMessageManager {
         if (limit == null || limit < 1) limit = 5;
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         return getUserMsgList(userRolesVo.getUid(), "Like", limit, currentPage);
     }

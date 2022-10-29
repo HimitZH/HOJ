@@ -114,7 +114,7 @@ logging:
       alibaba:
         nacos:
           client:
-            naming: debug
-    root: debug
+            naming: info
+    root: info
   file:
     path: ./hoj_backend

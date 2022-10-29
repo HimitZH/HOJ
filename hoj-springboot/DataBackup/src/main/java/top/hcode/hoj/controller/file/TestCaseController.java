@@ -28,6 +28,7 @@ public class TestCaseController {
 
     @PostMapping("/upload-testcase-zip")
     @ResponseBody
+    @RequiresAuthentication
     public CommonResult<Map<Object, Object>> uploadTestcaseZip(@RequestParam("file") MultipartFile file,
                                                                @RequestParam(value = "mode", defaultValue = "default") String mode,
                                                                @RequestParam(value = "gid", required = false) Long gid) {

@@ -3,12 +3,11 @@ package top.hcode.hoj.manager.admin.training;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.dao.training.TrainingCategoryEntityService;
 import top.hcode.hoj.pojo.entity.training.TrainingCategory;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
+import top.hcode.hoj.shiro.AccountProfile;
 
 import javax.annotation.Resource;
 
@@ -55,8 +54,7 @@ public class AdminTrainingCategoryManager {
             throw new StatusFailException("删除失败！");
         }
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         log.info("[{}],[{}],categoryId:[{}],operatorUid:[{}],operatorUsername:[{}]",
                 "Admin_Training", "Delete_Category", cid, userRolesVo.getUid(), userRolesVo.getUsername());
     }

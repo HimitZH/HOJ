@@ -68,7 +68,7 @@ public class AdminTrainingRecordManager {
     @Async
     public void syncAlreadyRegisterUserRecord(Long tid, Long pid, Long tpId) {
         Training training = trainingEntityService.getById(tid);
-        if (!Constants.Training.AUTH_PRIVATE.getValue().equals(training.getAuth())){
+        if (!Constants.Training.AUTH_PRIVATE.getValue().equals(training.getAuth())) {
             return;
         }
         List<String> uidList = trainingRegisterEntityService.getAlreadyRegisterUidList(tid);

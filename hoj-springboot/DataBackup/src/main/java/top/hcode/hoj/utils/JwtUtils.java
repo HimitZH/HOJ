@@ -5,26 +5,27 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import top.hcode.hoj.shiro.ShiroConstant;
 
 import java.util.Date;
 
 
-@Slf4j
+@Slf4j(topic = "hoj")
 @Data
 @Component
 @ConfigurationProperties(prefix = "hoj.jwt")
 public class JwtUtils {
 
     private String secret;
+
     private long expire;
+
     private String header;
+
     private long checkRefreshExpire;
-    private final static String TOKEN_KEY = "token-key:";
-    private final static String TOKEN_REFRESH = "token-refresh:";
 
     @Autowired
     private RedisUtils redisUtils;
@@ -44,8 +45,8 @@ public class JwtUtils {
                 .setExpiration(expireDate)
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
-        redisUtils.set(TOKEN_REFRESH + userId, token, checkRefreshExpire);
-        redisUtils.set(TOKEN_KEY + userId, token, expire);
+        redisUtils.set(ShiroConstant.SHIRO_TOKEN_KEY + userId, token, expire);
+        redisUtils.set(ShiroConstant.SHIRO_TOKEN_REFRESH + userId, "1", checkRefreshExpire);
         return token;
     }
 
@@ -59,6 +60,14 @@ public class JwtUtils {
             log.debug("validate is token error ", e);
             return null;
         }
+    }
+
+    public void cleanToken(String uid) {
+        redisUtils.del(ShiroConstant.SHIRO_TOKEN_KEY + uid, ShiroConstant.SHIRO_TOKEN_REFRESH + uid);
+    }
+
+    public boolean hasToken(String uid) {
+        return redisUtils.hasKey(ShiroConstant.SHIRO_TOKEN_KEY + uid);
     }
 
     /**

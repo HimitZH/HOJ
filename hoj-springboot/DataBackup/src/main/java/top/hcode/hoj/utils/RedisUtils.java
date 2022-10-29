@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,8 +22,13 @@ import java.util.concurrent.TimeUnit;
 @Slf4j(topic = "hoj")
 public final class RedisUtils {
 
+    private static RedisTemplate<String, Object> redisTemplate;
+
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    public void setRedisTemplate(RedisTemplate redisTemplate) {
+        RedisUtils.redisTemplate = redisTemplate;
+    }
+
     // =============================common============================
 
     public boolean getLock(String lockName, int expireTime) {
@@ -105,6 +112,18 @@ public final class RedisUtils {
             } else {
                 redisTemplate.delete(CollectionUtils.arrayToList(key));
             }
+        }
+    }
+
+    /**
+     * 删除缓存
+     *
+     * @param keys 需要删除的key列表
+     */
+    @SuppressWarnings("unchecked")
+    public void del(Collection<String> keys) {
+        if (keys != null && keys.size() > 0) {
+            redisTemplate.delete(keys);
         }
     }
 
@@ -660,5 +679,14 @@ public final class RedisUtils {
         redisTemplate.convertAndSend(channel, message);
     }
 
+    /**
+     * 获取指定的key集合
+     *
+     * @param key
+     * @return
+     */
+    public Set<String> keys(String key) {
+        return redisTemplate.keys(key + "*");
+    }
 
 }

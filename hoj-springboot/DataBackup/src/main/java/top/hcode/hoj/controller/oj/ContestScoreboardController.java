@@ -2,6 +2,7 @@ package top.hcode.hoj.controller.oj;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.springframework.web.bind.annotation.*;
+import top.hcode.hoj.annotation.AnonApi;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ContestRankDTO;
 import top.hcode.hoj.pojo.vo.ContestOutsideInfoVO;
@@ -17,6 +18,7 @@ import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("/api")
+@AnonApi
 public class ContestScoreboardController {
 
     @Resource

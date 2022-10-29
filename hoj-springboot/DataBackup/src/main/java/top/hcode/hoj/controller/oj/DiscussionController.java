@@ -6,6 +6,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import top.hcode.hoj.annotation.AnonApi;
 import top.hcode.hoj.annotation.HOJAccess;
 import top.hcode.hoj.annotation.HOJAccessEnum;
 import top.hcode.hoj.common.result.CommonResult;
@@ -31,6 +32,7 @@ public class DiscussionController {
 
 
     @GetMapping("/get-discussion-list")
+    @AnonApi
     @HOJAccess({HOJAccessEnum.PUBLIC_DISCUSSION})
     public CommonResult<IPage<Discussion>> getDiscussionList(@RequestParam(value = "limit", required = false, defaultValue = "10") Integer limit,
                                                              @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage,
@@ -45,6 +47,7 @@ public class DiscussionController {
     }
 
     @GetMapping("/get-discussion-detail")
+    @AnonApi
     public CommonResult<DiscussionVO> getDiscussion(@RequestParam(value = "did", required = true) Integer did) {
         return discussionService.getDiscussion(did);
     }
@@ -81,6 +84,7 @@ public class DiscussionController {
     }
 
     @GetMapping("/discussion-category")
+    @AnonApi
     public CommonResult<List<Category>> getDiscussionCategory() {
         return discussionService.getDiscussionCategory();
     }

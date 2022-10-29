@@ -2,15 +2,12 @@ package top.hcode.hoj.manager.admin.contest;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.map.MapUtil;
-import lombok.extern.slf4j.Slf4j;
-import top.hcode.hoj.dao.contest.ContestEntityService;
-import top.hcode.hoj.pojo.entity.contest.Contest;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,16 +15,18 @@ import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.crawler.problem.ProblemStrategy;
-import top.hcode.hoj.manager.admin.problem.RemoteProblemManager;
-import top.hcode.hoj.pojo.dto.ContestProblemDTO;
-import top.hcode.hoj.pojo.dto.ProblemDTO;
-import top.hcode.hoj.pojo.entity.contest.ContestProblem;
-import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.entity.problem.Problem;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
+import top.hcode.hoj.dao.contest.ContestEntityService;
 import top.hcode.hoj.dao.contest.ContestProblemEntityService;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.dao.problem.ProblemEntityService;
+import top.hcode.hoj.manager.admin.problem.RemoteProblemManager;
+import top.hcode.hoj.pojo.dto.ContestProblemDTO;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
+import top.hcode.hoj.pojo.entity.contest.Contest;
+import top.hcode.hoj.pojo.entity.contest.ContestProblem;
+import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 
 import java.io.File;
@@ -151,8 +150,7 @@ public class AdminContestProblemManager {
 
         if (problem != null) { // 查询成功
             // 获取当前登录的用户
-            Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
             boolean isRoot = SecurityUtils.getSubject().hasRole("root");
             boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
@@ -179,8 +177,7 @@ public class AdminContestProblemManager {
             judgeEntityService.remove(judgeUpdateWrapper);
 
             // 获取当前登录的用户
-            Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
             log.info("[{}],[{}],cid:[{}],pid:[{}],operatorUid:[{}],operatorUsername:[{}]",
                     "Admin_Contest", "Remove_Problem", cid, pid, userRolesVo.getUid(), userRolesVo.getUsername());
@@ -192,8 +189,7 @@ public class AdminContestProblemManager {
             FileUtil.del(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid);
 
             // 获取当前登录的用户
-            Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
             log.info("[{}],[{}],cid:[{}],pid:[{}],operatorUid:[{}],operatorUsername:[{}]",
                     "Admin_Contest", "Delete_Problem", cid, pid, userRolesVo.getUid(), userRolesVo.getUsername());
@@ -221,8 +217,7 @@ public class AdminContestProblemManager {
 
     public void updateProblem(ProblemDTO problemDto) throws StatusForbiddenException, StatusFailException {
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
@@ -264,8 +259,7 @@ public class AdminContestProblemManager {
         if (isOk) {
             contestProblemEntityService.syncContestRecord(contestProblem.getPid(), contestProblem.getCid(), contestProblem.getDisplayId());
             // 获取当前登录的用户
-            Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
             log.info("[{}],[{}],cid:[{}],ContestProblem:[{}],operatorUid:[{}],operatorUsername:[{}]",
                     "Admin_Contest", "Update_Problem", contestProblem.getCid(), contestProblem, userRolesVo.getUid(), userRolesVo.getUsername());
             return contestProblem;
@@ -305,8 +299,7 @@ public class AdminContestProblemManager {
         }
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         log.info("[{}],[{}],cid:[{}],pid:[{}],operatorUid:[{}],operatorUsername:[{}]",
                 "Admin_Contest", "Add_Public_Problem", cid, pid, userRolesVo.getUid(), userRolesVo.getUsername());
     }
@@ -319,8 +312,7 @@ public class AdminContestProblemManager {
 
         // 如果该题目不存在，需要先导入
         if (problem == null) {
-            Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
             try {
                 ProblemStrategy.RemoteProblemInfo otherOJProblemInfo = remoteProblemManager.getOtherOJProblemInfo(name.toUpperCase(), problemId, userRolesVo.getUsername());
                 if (otherOJProblemInfo != null) {
@@ -362,8 +354,7 @@ public class AdminContestProblemManager {
         }
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         log.info("[{}],[{}],cid:[{}],pid:[{}],problemId:[{}],operatorUid:[{}],operatorUsername:[{}]",
                 "Admin_Contest", "Add_Remote_Problem", cid, problem.getId(), problem.getProblemId(),
                 userRolesVo.getUid(), userRolesVo.getUsername());

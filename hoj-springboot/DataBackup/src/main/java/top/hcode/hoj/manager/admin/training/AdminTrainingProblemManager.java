@@ -7,21 +7,20 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.crawler.problem.ProblemStrategy;
+import top.hcode.hoj.dao.problem.ProblemEntityService;
+import top.hcode.hoj.dao.training.TrainingEntityService;
+import top.hcode.hoj.dao.training.TrainingProblemEntityService;
 import top.hcode.hoj.manager.admin.problem.RemoteProblemManager;
 import top.hcode.hoj.pojo.dto.TrainingProblemDTO;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
-import top.hcode.hoj.dao.problem.ProblemEntityService;
-import top.hcode.hoj.dao.training.TrainingProblemEntityService;
-import top.hcode.hoj.dao.training.TrainingEntityService;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
@@ -136,8 +135,7 @@ public class AdminTrainingProblemManager {
 
         if (isOk) { // 删除成功
             // 获取当前登录的用户
-            Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
             if (tid == null) {
                 FileUtil.del(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid);
                 log.info("[{}],[{}],tid:[{}],pid:[{}],operatorUid:[{}],operatorUsername:[{}]",
@@ -189,8 +187,7 @@ public class AdminTrainingProblemManager {
             trainingEntityService.update(trainingUpdateWrapper);
 
             // 获取当前登录的用户
-            Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
             log.info("[{}],[{}],tid:[{}],pid:[{}],operatorUid:[{}],operatorUsername:[{}]",
                     "Admin_Training", "Add_Public_Problem", tid, pid, userRolesVo.getUid(), userRolesVo.getUsername());
 
@@ -209,8 +206,7 @@ public class AdminTrainingProblemManager {
 
         // 如果该题目不存在，需要先导入
         if (problem == null) {
-            Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
             try {
                 ProblemStrategy.RemoteProblemInfo otherOJProblemInfo = remoteProblemManager.getOtherOJProblemInfo(name.toUpperCase(), problemId, userRolesVo.getUsername());
                 if (otherOJProblemInfo != null) {
@@ -249,8 +245,7 @@ public class AdminTrainingProblemManager {
             trainingEntityService.update(trainingUpdateWrapper);
 
             // 获取当前登录的用户
-            Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
             log.info("[{}],[{}],tid:[{}],pid:[{}],problemId:[{}],operatorUid:[{}],operatorUsername:[{}]",
                     "Admin_Training", "Add_Remote_Problem", tid, problem.getId(), problem.getProblemId(),
                     userRolesVo.getUid(), userRolesVo.getUsername());

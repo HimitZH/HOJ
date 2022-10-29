@@ -3,7 +3,6 @@ package top.hcode.hoj.manager.admin.tag;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.common.exception.StatusFailException;
@@ -11,7 +10,7 @@ import top.hcode.hoj.dao.problem.TagClassificationEntityService;
 import top.hcode.hoj.dao.problem.TagEntityService;
 import top.hcode.hoj.pojo.entity.problem.Tag;
 import top.hcode.hoj.pojo.entity.problem.TagClassification;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
+import top.hcode.hoj.shiro.AccountProfile;
 
 import java.util.List;
 
@@ -60,8 +59,7 @@ public class AdminTagManager {
         if (!isOk) {
             throw new StatusFailException("删除失败");
         }
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         log.info("[{}],[{}],tid:[{}],operatorUid:[{}],operatorUsername:[{}]",
                 "Admin_Tag", "Delete", tid, userRolesVo.getUid(), userRolesVo.getUsername());
     }
@@ -105,8 +103,7 @@ public class AdminTagManager {
         if (!isOk) {
             throw new StatusFailException("删除失败");
         }
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         log.info("[{}],[{}],tcid:[{}],operatorUid:[{}],operatorUsername:[{}]",
                 "Admin_Tag_Classification", "Delete", tcid, userRolesVo.getUid(), userRolesVo.getUsername());
     }

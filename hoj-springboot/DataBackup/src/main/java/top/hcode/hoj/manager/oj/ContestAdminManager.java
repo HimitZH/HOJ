@@ -1,25 +1,24 @@
 package top.hcode.hoj.manager.oj;
 
 
-import top.hcode.hoj.validator.GroupValidator;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
+import top.hcode.hoj.dao.contest.ContestEntityService;
+import top.hcode.hoj.dao.contest.ContestPrintEntityService;
+import top.hcode.hoj.dao.contest.ContestRecordEntityService;
 import top.hcode.hoj.pojo.dto.CheckACDTO;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestPrint;
 import top.hcode.hoj.pojo.entity.contest.ContestRecord;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
-import top.hcode.hoj.dao.contest.ContestEntityService;
-import top.hcode.hoj.dao.contest.ContestPrintEntityService;
-import top.hcode.hoj.dao.contest.ContestRecordEntityService;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.validator.GroupValidator;
 
 
 /**
@@ -44,8 +43,7 @@ public class ContestAdminManager {
 
     public IPage<ContestRecord> getContestACInfo(Long cid, Integer currentPage, Integer limit) throws StatusForbiddenException {
 
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(cid);
@@ -74,8 +72,7 @@ public class ContestAdminManager {
 
     public void checkContestACInfo(CheckACDTO checkACDto) throws StatusFailException, StatusForbiddenException {
 
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(checkACDto.getCid());
@@ -100,8 +97,7 @@ public class ContestAdminManager {
 
     public IPage<ContestPrint> getContestPrint(Long cid, Integer currentPage, Integer limit) throws StatusForbiddenException {
 
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(cid);
 
@@ -133,8 +129,7 @@ public class ContestAdminManager {
 
     public void checkContestPrintStatus(Long id, Long cid) throws StatusFailException, StatusForbiddenException {
 
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(cid);
 

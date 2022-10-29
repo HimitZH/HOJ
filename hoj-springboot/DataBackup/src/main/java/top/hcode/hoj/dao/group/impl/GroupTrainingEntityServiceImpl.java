@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.dao.group.GroupTrainingEntityService;
@@ -13,7 +12,7 @@ import top.hcode.hoj.mapper.GroupTrainingMapper;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
 import top.hcode.hoj.pojo.vo.TrainingVO;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
+import top.hcode.hoj.shiro.AccountProfile;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -43,8 +42,7 @@ public class GroupTrainingEntityServiceImpl extends ServiceImpl<GroupTrainingMap
         // 当前用户有登录，且训练列表不为空，则查询用户对于每个训练的做题进度
         if (trainingList.size() > 0) {
 
-            Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
             List<Long> tidList = trainingList.stream().map(TrainingVO::getId).collect(Collectors.toList());
             List<TrainingProblem> trainingProblemList = trainingProblemEntityService.getGroupTrainingListAcceptedCountByUid(tidList, gid, userRolesVo.getUid());

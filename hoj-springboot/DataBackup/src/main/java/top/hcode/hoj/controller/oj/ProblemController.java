@@ -5,6 +5,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import top.hcode.hoj.annotation.AnonApi;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.LastAcceptedCodeVO;
 import top.hcode.hoj.pojo.dto.PidListDTO;
@@ -38,6 +39,7 @@ public class ProblemController {
      * @Since 2020/10/27
      */
     @RequestMapping(value = "/get-problem-list", method = RequestMethod.GET)
+    @AnonApi
     public CommonResult<Page<ProblemVO>> getProblemList(@RequestParam(value = "limit", required = false) Integer limit,
                                                         @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                                         @RequestParam(value = "keyword", required = false) String keyword,
@@ -55,6 +57,7 @@ public class ProblemController {
      * @Since 2020/10/27
      */
     @GetMapping("/get-random-problem")
+    @AnonApi
     public CommonResult<RandomProblemVO> getRandomProblem() {
         return problemService.getRandomProblem();
     }
@@ -80,6 +83,7 @@ public class ProblemController {
      * @Since 2020/10/27
      */
     @RequestMapping(value = "/get-problem-detail", method = RequestMethod.GET)
+    @AnonApi
     public CommonResult<ProblemInfoVO> getProblemInfo(@RequestParam(value = "problemId", required = true) String problemId,
                                                       @RequestParam(value = "gid", required = false) Long gid) {
         return problemService.getProblemInfo(problemId, gid);

@@ -1,5 +1,6 @@
 package top.hcode.hoj.controller.group;
 
+import top.hcode.hoj.annotation.AnonApi;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.entity.group.Group;
 import top.hcode.hoj.pojo.vo.AccessVO;
@@ -24,6 +25,7 @@ public class GroupController {
     private GroupService groupService;
 
     @GetMapping("/get-group-list")
+    @AnonApi
     public CommonResult<IPage<GroupVO>> getGroupList(@RequestParam(value = "limit", required = false) Integer limit,
                                                      @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                                      @RequestParam(value = "keyword", required = false) String keyword,
@@ -33,6 +35,7 @@ public class GroupController {
     }
 
     @GetMapping("/get-group-detail")
+    @RequiresAuthentication
     public CommonResult<Group> getGroup(@RequestParam(value = "gid", required = true) Long gid) {
         return groupService.getGroup(gid);
     }

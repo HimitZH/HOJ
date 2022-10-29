@@ -9,7 +9,6 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +23,7 @@ import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.entity.user.UserRecord;
 import top.hcode.hoj.pojo.entity.user.UserRole;
 import top.hcode.hoj.pojo.vo.UserRolesVO;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 
@@ -130,8 +130,7 @@ public class AdminUserManager {
 
         if (changeUserRole) {
             // 获取当前登录的用户
-            Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
             String title = "权限变更通知(Authority Change Notice)";
             String content = userRoleEntityService.getAuthChangeContent(oldType, type);
             adminNoticeManager.addSingleNoticeToUser(userRolesVo.getUid(), uid, title, content, "Sys");
@@ -144,8 +143,7 @@ public class AdminUserManager {
         if (!isOk) {
             throw new StatusFailException("删除失败！");
         }
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         log.info("[{}],[{}],uidList:[{}],operatorUid:[{}],operatorUsername:[{}]",
                 "Admin_User", "Delete", deleteUserIdList, userRolesVo.getUid(), userRolesVo.getUsername());
     }
@@ -159,7 +157,7 @@ public class AdminUserManager {
                     String uuid = addNewUser(user);
                     if (uuid != null) {
                         successUidList.add(uuid);
-                    }else{
+                    } else {
                         failedUserNameSet.add(user.get(0));
                     }
                 } catch (Exception e) {

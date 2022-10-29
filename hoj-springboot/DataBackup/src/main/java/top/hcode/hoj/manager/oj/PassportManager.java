@@ -7,12 +7,15 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusAccessDeniedException;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
+import top.hcode.hoj.config.NacosSwitchConfig;
+import top.hcode.hoj.config.WebConfig;
 import top.hcode.hoj.dao.user.SessionEntityService;
 import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.dao.user.UserRecordEntityService;
@@ -25,10 +28,10 @@ import top.hcode.hoj.pojo.dto.LoginDTO;
 import top.hcode.hoj.pojo.dto.RegisterDTO;
 import top.hcode.hoj.pojo.dto.ResetPasswordDTO;
 import top.hcode.hoj.pojo.entity.user.*;
-import top.hcode.hoj.pojo.vo.ConfigVO;
 import top.hcode.hoj.pojo.vo.RegisterCodeVO;
 import top.hcode.hoj.pojo.vo.UserInfoVO;
 import top.hcode.hoj.pojo.vo.UserRolesVO;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.IpUtils;
 import top.hcode.hoj.utils.JwtUtils;
@@ -54,7 +57,7 @@ public class PassportManager {
     private JwtUtils jwtUtils;
 
     @Resource
-    private ConfigVO configVo;
+    private NacosSwitchConfig nacosSwitchConfig;
 
     @Resource
     private EmailRuleBO emailRuleBO;
@@ -70,7 +73,6 @@ public class PassportManager {
 
     @Resource
     private SessionEntityService sessionEntityService;
-
 
     @Resource
     private EmailManager emailManager;
@@ -151,7 +153,8 @@ public class PassportManager {
 
     public RegisterCodeVO getRegisterCode(String email) throws StatusAccessDeniedException, StatusFailException, StatusForbiddenException {
 
-        if (!configVo.getRegister()) { // 需要判断一下网站是否开启注册
+        WebConfig webConfig = nacosSwitchConfig.getWebConfig();
+        if (!webConfig.getRegister()) { // 需要判断一下网站是否开启注册
             throw new StatusAccessDeniedException("对不起！本站暂未开启注册功能！");
         }
         if (!emailManager.isOk()) {
@@ -197,8 +200,8 @@ public class PassportManager {
 
     @Transactional(rollbackFor = Exception.class)
     public void register(RegisterDTO registerDto) throws StatusAccessDeniedException, StatusFailException {
-
-        if (!configVo.getRegister()) { // 需要判断一下网站是否开启注册
+        WebConfig webConfig = nacosSwitchConfig.getWebConfig();
+        if (!webConfig.getRegister()) { // 需要判断一下网站是否开启注册
             throw new StatusAccessDeniedException("对不起！本站暂未开启注册功能！");
         }
 
@@ -321,5 +324,11 @@ public class PassportManager {
             throw new StatusFailException("重置密码失败");
         }
         redisUtils.del(codeKey);
+    }
+
+    public void logout() {
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+        jwtUtils.cleanToken(userRolesVo.getUid());
+        SecurityUtils.getSubject().logout();
     }
 }

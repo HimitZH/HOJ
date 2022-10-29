@@ -6,17 +6,21 @@ import cn.hutool.core.io.file.FileWriter;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ZipUtil;
 import cn.hutool.json.JSONUtil;
-import top.hcode.hoj.validator.GroupValidator;
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.result.ResultStatus;
+import top.hcode.hoj.dao.common.FileEntityService;
+import top.hcode.hoj.dao.contest.ContestEntityService;
+import top.hcode.hoj.dao.contest.ContestPrintEntityService;
+import top.hcode.hoj.dao.contest.ContestProblemEntityService;
+import top.hcode.hoj.dao.judge.JudgeEntityService;
+import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.manager.oj.ContestCalculateRankManager;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestPrint;
@@ -24,15 +28,10 @@ import top.hcode.hoj.pojo.entity.contest.ContestProblem;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.vo.ACMContestRankVO;
 import top.hcode.hoj.pojo.vo.OIContestRankVO;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
-import top.hcode.hoj.dao.common.FileEntityService;
-import top.hcode.hoj.dao.contest.ContestPrintEntityService;
-import top.hcode.hoj.dao.contest.ContestProblemEntityService;
-import top.hcode.hoj.dao.contest.ContestEntityService;
-import top.hcode.hoj.dao.judge.JudgeEntityService;
-import top.hcode.hoj.dao.user.UserInfoEntityService;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.validator.ContestValidator;
+import top.hcode.hoj.validator.GroupValidator;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -82,8 +81,7 @@ public class ContestFileManager {
 
     public void downloadContestRank(Long cid, Boolean forceRefresh, Boolean removeStar, HttpServletResponse response) throws IOException, StatusFailException, StatusForbiddenException {
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(cid);
@@ -104,7 +102,7 @@ public class ContestFileManager {
         }
 
         // 检查是否需要开启封榜模式
-        Boolean isOpenSealRank = contestValidator.isSealRank(userRolesVo.getUid(), contest, forceRefresh, isRoot);
+        boolean isOpenSealRank = contestValidator.isSealRank(userRolesVo.getUid(), contest, forceRefresh, isRoot);
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding("utf-8");
         // 这里URLEncoder.encode可以防止中文乱码
@@ -155,8 +153,7 @@ public class ContestFileManager {
         }
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         // 除非是root 其它管理员只能下载自己的比赛ac记录
 
@@ -333,8 +330,7 @@ public class ContestFileManager {
 
     public void downloadContestPrintText(Long id, HttpServletResponse response) throws StatusForbiddenException {
         ContestPrint contestPrint = contestPrintEntityService.getById(id);
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long cid = contestPrint.getCid();

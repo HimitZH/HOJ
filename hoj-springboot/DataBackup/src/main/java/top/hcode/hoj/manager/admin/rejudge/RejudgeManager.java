@@ -3,7 +3,6 @@ package top.hcode.hoj.manager.admin.rejudge;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -20,7 +19,7 @@ import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.judge.JudgeCase;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.user.UserAcproblem;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
@@ -225,8 +224,7 @@ public class RejudgeManager {
         if (judge.getStatus().equals(Constants.Judge.STATUS_COMPILE_ERROR.getStatus())) {
             throw new StatusFailException("错误：编译失败的提交无法修改！");
         }
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
         judgeUpdateWrapper
@@ -315,8 +313,7 @@ public class RejudgeManager {
                 && !StringUtils.isEmpty(judge.getJudger()))) {
             throw new StatusFailException("错误：该提交正在评测中，无法取消，请稍后再尝试！");
         }
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
         judgeUpdateWrapper

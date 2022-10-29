@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -18,15 +17,16 @@ import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.crawler.problem.ProblemStrategy;
-import top.hcode.hoj.judge.Dispatcher;
-import top.hcode.hoj.pojo.dto.ProblemDTO;
-import top.hcode.hoj.pojo.dto.CompileDTO;
-import top.hcode.hoj.pojo.entity.judge.Judge;
-import top.hcode.hoj.pojo.entity.problem.*;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.dao.problem.ProblemCaseEntityService;
 import top.hcode.hoj.dao.problem.ProblemEntityService;
+import top.hcode.hoj.judge.Dispatcher;
+import top.hcode.hoj.pojo.dto.CompileDTO;
+import top.hcode.hoj.pojo.dto.ProblemDTO;
+import top.hcode.hoj.pojo.entity.judge.Judge;
+import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.pojo.entity.problem.ProblemCase;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
@@ -101,8 +101,7 @@ public class AdminProblemManager {
 
         if (problem != null) { // 查询成功
             // 获取当前登录的用户
-            Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
             boolean isRoot = SecurityUtils.getSubject().hasRole("root");
             boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
@@ -124,8 +123,7 @@ public class AdminProblemManager {
          */
         if (isOk) { // 删除成功
             FileUtil.del(Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + pid);
-            Session session = SecurityUtils.getSubject().getSession();
-            UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+            AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
             log.info("[{}],[{}],pid:[{}],operatorUid:[{}],operatorUsername:[{}]",
                     "Admin_Problem", "Delete", pid, userRolesVo.getUid(), userRolesVo.getUsername());
         } else {
@@ -150,8 +148,7 @@ public class AdminProblemManager {
     @Transactional(rollbackFor = Exception.class)
     public void updateProblem(ProblemDTO problemDto) throws StatusForbiddenException, StatusFailException {
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
@@ -225,8 +222,7 @@ public class AdminProblemManager {
             throw new StatusFailException("该题目已添加，请勿重复添加！");
         }
 
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         try {
             ProblemStrategy.RemoteProblemInfo otherOJProblemInfo = remoteProblemManager.getOtherOJProblemInfo(name.toUpperCase(), problemId, userRolesVo.getUsername());
             if (otherOJProblemInfo != null) {
@@ -252,8 +248,7 @@ public class AdminProblemManager {
             throw new StatusForbiddenException("修改失败！你无权限公开题目！");
         }
 
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         UpdateWrapper<Problem> problemUpdateWrapper = new UpdateWrapper<>();
         problemUpdateWrapper.eq("id", problem.getId())

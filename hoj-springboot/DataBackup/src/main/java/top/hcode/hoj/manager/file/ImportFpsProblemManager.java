@@ -7,7 +7,6 @@ import cn.hutool.core.util.XmlUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -24,7 +23,7 @@ import top.hcode.hoj.pojo.entity.problem.CodeTemplate;
 import top.hcode.hoj.pojo.entity.problem.Language;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.ProblemCase;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
@@ -78,8 +77,7 @@ public class ImportFpsProblemManager {
             throw new StatusFailException("请上传xml后缀格式的fps题目文件！");
         }
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         List<ProblemDTO> problemDTOList = parseFps(file.getInputStream(), userRolesVo.getUsername());
         if (problemDTOList.size() == 0) {
@@ -223,7 +221,7 @@ public class ImportFpsProblemManager {
             problem.setTimeLimit(timeLimit);
 
             // mb
-            Integer memoryLimit = getMemoryLimit(version,item);
+            Integer memoryLimit = getMemoryLimit(version, item);
             problem.setMemoryLimit(memoryLimit);
 
             // 题面用例
@@ -323,7 +321,7 @@ public class ImportFpsProblemManager {
         String timeLimit = timeLimitNode.getTextContent();
         int index = timeUnits.indexOf(timeUnit.toLowerCase());
         if ("1.1".equals(version)) {
-            if (index == -1){
+            if (index == -1) {
                 index = 1;
             }
             return Integer.parseInt(timeLimit) * (int) Math.pow(1000, index);
@@ -336,13 +334,13 @@ public class ImportFpsProblemManager {
         }
     }
 
-    private Integer getMemoryLimit(String version,Element item) {
+    private Integer getMemoryLimit(String version, Element item) {
         Element memoryLimitNode = XmlUtil.getElement(item, "memory_limit");
         String memoryUnit = memoryLimitNode.getAttribute("unit");
         String memoryLimit = memoryLimitNode.getTextContent();
         int index;
         index = memoryUnits.indexOf(memoryUnit.toLowerCase());
-        if ("1.1".equals(version)){
+        if ("1.1".equals(version)) {
             index = 1;
         }
         if (index == -1) {

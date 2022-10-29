@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +14,8 @@ import top.hcode.hoj.annotation.HOJAccessEnum;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
+import top.hcode.hoj.config.NacosSwitchConfig;
+import top.hcode.hoj.config.SwitchConfig;
 import top.hcode.hoj.dao.discussion.DiscussionEntityService;
 import top.hcode.hoj.dao.discussion.DiscussionLikeEntityService;
 import top.hcode.hoj.dao.discussion.DiscussionReportEntityService;
@@ -28,9 +29,8 @@ import top.hcode.hoj.pojo.entity.discussion.DiscussionReport;
 import top.hcode.hoj.pojo.entity.problem.Category;
 import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.user.UserAcproblem;
-import top.hcode.hoj.pojo.vo.ConfigVO;
 import top.hcode.hoj.pojo.vo.DiscussionVO;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 import top.hcode.hoj.validator.AccessValidator;
@@ -75,7 +75,7 @@ public class DiscussionManager {
     private AccessValidator accessValidator;
 
     @Autowired
-    private ConfigVO configVo;
+    private NacosSwitchConfig nacosSwitchConfig;
 
     @Autowired
     private CommonValidator commonValidator;
@@ -87,8 +87,7 @@ public class DiscussionManager {
                                                boolean onlyMine,
                                                String keyword,
                                                boolean admin) {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
 
@@ -147,8 +146,7 @@ public class DiscussionManager {
     public DiscussionVO getDiscussion(Integer did) throws StatusNotFoundException, StatusForbiddenException, AccessException {
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -196,8 +194,7 @@ public class DiscussionManager {
         commonValidator.validateNotEmpty(discussion.getCategoryId(), "讨论分类");
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
@@ -224,17 +221,17 @@ public class DiscussionManager {
             QueryWrapper<UserAcproblem> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("uid", userRolesVo.getUid()).select("distinct pid");
             int userAcProblemCount = userAcproblemEntityService.count(queryWrapper);
-
-            if (userAcProblemCount < configVo.getDefaultCreateDiscussionACInitValue()) {
-                throw new StatusForbiddenException("对不起，您暂时不能评论！请先去提交题目通过" + configVo.getDefaultCreateDiscussionACInitValue() + "道以上!");
+            SwitchConfig switchConfig = nacosSwitchConfig.getSwitchConfig();
+            if (userAcProblemCount < switchConfig.getDefaultCreateDiscussionACInitValue()) {
+                throw new StatusForbiddenException("对不起，您暂时不能评论！请先去提交题目通过" + switchConfig.getDefaultCreateDiscussionACInitValue() + "道以上!");
             }
 
             String lockKey = Constants.Account.DISCUSSION_ADD_NUM_LOCK.getCode() + userRolesVo.getUid();
             Integer num = (Integer) redisUtils.get(lockKey);
             if (num == null) {
                 redisUtils.set(lockKey, 1, 3600 * 24);
-            } else if (num >= configVo.getDefaultCreateDiscussionDailyLimit()) {
-                throw new StatusForbiddenException("对不起，您今天发帖次数已超过" + configVo.getDefaultCreateDiscussionDailyLimit() + "次，已被限制！");
+            } else if (num >= switchConfig.getDefaultCreateDiscussionDailyLimit()) {
+                throw new StatusForbiddenException("对不起，您今天发帖次数已超过" + switchConfig.getDefaultCreateDiscussionDailyLimit() + "次，已被限制！");
             } else {
                 redisUtils.incr(lockKey, 1);
             }
@@ -262,8 +259,7 @@ public class DiscussionManager {
 
 
     public void updateDiscussion(Discussion discussion) throws StatusFailException, StatusForbiddenException {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -280,8 +276,7 @@ public class DiscussionManager {
 
     public void removeDiscussion(Integer did) throws StatusFailException, StatusForbiddenException {
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -309,8 +304,7 @@ public class DiscussionManager {
     @Transactional(rollbackFor = Exception.class)
     public void addDiscussionLike(Integer did, boolean toLike) throws StatusFailException, StatusForbiddenException {
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         Discussion discussion = discussionEntityService.getById(did);
         if (discussion.getGid() != null) {

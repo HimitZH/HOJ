@@ -1,22 +1,21 @@
 package top.hcode.hoj.shiro;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
-import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
+import top.hcode.hoj.dao.user.UserInfoEntityService;
+import top.hcode.hoj.dao.user.UserRoleEntityService;
 import top.hcode.hoj.mapper.RoleAuthMapper;
-import top.hcode.hoj.mapper.UserRoleMapper;
 import top.hcode.hoj.pojo.entity.user.Auth;
 import top.hcode.hoj.pojo.entity.user.Role;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
+import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.utils.JwtUtils;
 
 import java.util.LinkedList;
@@ -35,7 +34,10 @@ public class AccountRealm extends AuthorizingRealm {
     private JwtUtils jwtUtils;
 
     @Autowired
-    private UserRoleMapper userRoleMapper;
+    private UserRoleEntityService userRoleEntityService;
+
+    @Autowired
+    private UserInfoEntityService userInfoEntityService;
 
     @Autowired
     private RoleAuthMapper roleAuthMapper;
@@ -44,6 +46,7 @@ public class AccountRealm extends AuthorizingRealm {
     public boolean supports(AuthenticationToken token) {
         return token instanceof JwtToken;
     }
+
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         AccountProfile user = (AccountProfile) principals.getPrimaryPrincipal();
@@ -52,13 +55,8 @@ public class AccountRealm extends AuthorizingRealm {
         //用户角色列表
         List<String> roleNameList = new LinkedList<>();
         //获取该用户角色所有的权限
-        List<Role> roles = userRoleMapper.getRolesByUid(user.getUid());
-        // 角色变动，同时需要修改会话里面的数据
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userInfo = (UserRolesVO) session.getAttribute("userInfo");
-        userInfo.setRoles(roles);
-        session.setAttribute("userInfo",userInfo);
-        for (Role role:roles) {
+        List<Role> roles = userRoleEntityService.getRolesByUid(user.getUid());
+        for (Role role : roles) {
             roleNameList.add(role.getRole());
             for (Auth auth : roleAuthMapper.getRoleAuths(role.getId()).getAuths()) {
                 permissionsNameList.add(auth.getPermission());
@@ -71,22 +69,28 @@ public class AccountRealm extends AuthorizingRealm {
         authorizationInfo.addStringPermissions(permissionsNameList);
         return authorizationInfo;
     }
+
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
+
         JwtToken jwt = (JwtToken) token;
+
         String userId = jwtUtils.getClaimByToken((String) jwt.getPrincipal()).getSubject();
-        UserRolesVO userRoles = userRoleMapper.getUserRoles(userId, null);
-        if(userRoles == null) {
+
+        QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("uuid", userId)
+                .select("uuid", "username", "nickname", "realname", "title_name", "title_color", "avatar", "status");
+
+        UserInfo userInfo = userInfoEntityService.getOne(queryWrapper, false);
+        if (userInfo == null) {
             throw new UnknownAccountException("账户不存在！");
         }
-        if(userRoles.getStatus() == 1) {
+        if (userInfo.getStatus() == 1) {
             throw new LockedAccountException("该账户已被封禁，请联系管理员进行处理！");
         }
         AccountProfile profile = new AccountProfile();
-        BeanUtil.copyProperties(userRoles, profile);
-        // 写入会话，后续不必重复查询
-        Session session = SecurityUtils.getSubject().getSession();
-        session.setAttribute("userInfo", userRoles);
+        BeanUtil.copyProperties(userInfo, profile);
+        profile.setUid(userInfo.getUuid());
         return new SimpleAuthenticationInfo(profile, jwt.getCredentials(), getName());
     }
 }

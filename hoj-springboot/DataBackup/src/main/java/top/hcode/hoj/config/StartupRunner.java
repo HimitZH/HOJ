@@ -1,6 +1,7 @@
 package top.hcode.hoj.config;
 
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +19,7 @@ import top.hcode.hoj.pojo.entity.problem.Language;
 import top.hcode.hoj.pojo.vo.ConfigVO;
 import top.hcode.hoj.utils.Constants;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +36,9 @@ public class StartupRunner implements CommandLineRunner {
 
     @Autowired
     private ConfigManager configManager;
+
+    @Autowired
+    private NacosSwitchConfig nacosSwitchConfig;
 
     @Autowired
     private RemoteJudgeAccountEntityService remoteJudgeAccountEntityService;
@@ -142,7 +143,22 @@ public class StartupRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        // 动态修改nacos上的配置文件
+        // 修改nacos上的默认、web、switch配置文件
+        initDefaultConfig();
+
+        initWebConfig();
+
+        initSwitchConfig();
+
+//      upsertHOJLanguage("PHP", "PyPy2", "PyPy3", "JavaScript Node", "JavaScript V8");
+//      checkAllLanguageUpdate();
+    }
+
+
+    /**
+     * 更新修改基础的配置
+     */
+    private void initDefaultConfig() {
         if (judgeToken.equals("default")) {
             configVo.setJudgeToken(IdUtil.fastSimpleUUID());
         } else {
@@ -150,7 +166,9 @@ public class StartupRunner implements CommandLineRunner {
         }
 
         if (tokenSecret.equals("default")) {
-            configVo.setTokenSecret(IdUtil.fastSimpleUUID());
+            if (StrUtil.isBlank(configVo.getTokenSecret())) {
+                configVo.setTokenSecret(IdUtil.fastSimpleUUID());
+            }
         } else {
             configVo.setTokenSecret(tokenSecret);
         }
@@ -169,84 +187,116 @@ public class StartupRunner implements CommandLineRunner {
         configVo.setRedisPort(redisPort);
         configVo.setRedisPassword(redisPassword);
 
-        if (configVo.getEmailHost() == null || !"your_email_host".equals(emailHost)) {
-            configVo.setEmailHost(emailHost);
-        }
-        if (configVo.getEmailPort() == null || emailPort != 456) {
-            configVo.setEmailPort(emailPort);
-        }
-        if (configVo.getEmailUsername() == null || !"your_email_username".equals(emailUsername)) {
-            configVo.setEmailUsername(emailUsername);
-        }
-        if (configVo.getEmailPassword() == null || !"your_email_password".equals(emailPassword)) {
-            configVo.setEmailPassword(emailPassword);
-        }
-
-        if (CollectionUtils.isEmpty(configVo.getHduUsernameList()) || forcedUpdateRemoteJudgeAccount) {
-            configVo.setHduUsernameList(hduUsernameList);
-        }else {
-            hduUsernameList = configVo.getHduUsernameList();
-        }
-
-        if (CollectionUtils.isEmpty(configVo.getHduPasswordList()) || forcedUpdateRemoteJudgeAccount) {
-            configVo.setHduPasswordList(hduPasswordList);
-        }else {
-            hduPasswordList = configVo.getHduPasswordList();
-        }
-
-        if (CollectionUtils.isEmpty(configVo.getCfUsernameList()) || forcedUpdateRemoteJudgeAccount) {
-            configVo.setCfUsernameList(cfUsernameList);
-        }else {
-            cfUsernameList = configVo.getCfUsernameList();
-        }
-
-        if (CollectionUtils.isEmpty(configVo.getCfPasswordList()) || forcedUpdateRemoteJudgeAccount) {
-            configVo.setCfPasswordList(cfPasswordList);
-        }else {
-            cfPasswordList = configVo.getCfPasswordList();
-        }
-
-        if (CollectionUtils.isEmpty(configVo.getPojUsernameList()) || forcedUpdateRemoteJudgeAccount) {
-            configVo.setPojUsernameList(pojUsernameList);
-        }else {
-            pojUsernameList = configVo.getPojUsernameList();
-        }
-
-        if (CollectionUtils.isEmpty(configVo.getPojPasswordList()) || forcedUpdateRemoteJudgeAccount) {
-            configVo.setPojPasswordList(pojPasswordList);
-        }else {
-            pojPasswordList = configVo.getPojPasswordList();
-        }
-
-        if (CollectionUtils.isEmpty(configVo.getAtcoderUsernameList()) || forcedUpdateRemoteJudgeAccount) {
-            configVo.setAtcoderUsernameList(atcoderUsernameList);
-        }else {
-            atcoderUsernameList = configVo.getAtcoderUsernameList();
-        }
-
-        if (CollectionUtils.isEmpty(configVo.getAtcoderPasswordList()) || forcedUpdateRemoteJudgeAccount) {
-            configVo.setAtcoderPasswordList(atcoderPasswordList);
-        }else {
-            atcoderPasswordList = configVo.getAtcoderPasswordList();
-        }
-
-        if (CollectionUtils.isEmpty(configVo.getSpojUsernameList()) || forcedUpdateRemoteJudgeAccount) {
-            configVo.setSpojUsernameList(spojUsernameList);
-        }else {
-            spojUsernameList = configVo.getSpojUsernameList();
-        }
-
-        if (CollectionUtils.isEmpty(configVo.getSpojPasswordList()) || forcedUpdateRemoteJudgeAccount) {
-            configVo.setSpojPasswordList(spojPasswordList);
-        }else {
-            spojPasswordList = configVo.getSpojPasswordList();
-        }
-
         configManager.sendNewConfigToNacos();
+    }
 
-        upsertHOJLanguage("PHP", "PyPy2", "PyPy3", "JavaScript Node", "JavaScript V8");
 
-        checkAllLanguageUpdate();
+    private void initWebConfig() {
+        WebConfig webConfig = nacosSwitchConfig.getWebConfig();
+        boolean isChanged = false;
+        if (!Objects.equals(webConfig.getEmailHost(), emailHost)
+                && (webConfig.getEmailHost() == null || !"your_email_host".equals(emailHost))) {
+            webConfig.setEmailHost(emailHost);
+            isChanged = true;
+        }
+        if (!Objects.equals(webConfig.getEmailPort(), emailPort)
+                && (webConfig.getEmailPort() == null || emailPort != 456)) {
+            webConfig.setEmailPort(emailPort);
+            isChanged = true;
+        }
+        if (!Objects.equals(webConfig.getEmailUsername(), emailUsername)
+                && (webConfig.getEmailUsername() == null || !"your_email_username".equals(emailUsername))) {
+            webConfig.setEmailUsername(emailUsername);
+            isChanged = true;
+        }
+        if (!Objects.equals(webConfig.getEmailPassword(), emailPassword)
+                && (webConfig.getEmailPassword() == null || !"your_email_password".equals(emailPassword))) {
+            webConfig.setEmailPassword(emailPassword);
+            isChanged = true;
+        }
+        if (isChanged) {
+            nacosSwitchConfig.publishWebConfig();
+        }
+    }
+
+    private void initSwitchConfig() {
+
+        SwitchConfig switchConfig = nacosSwitchConfig.getSwitchConfig();
+
+        boolean isChanged = false;
+        if ((CollectionUtils.isEmpty(switchConfig.getHduUsernameList())
+                && !CollectionUtils.isEmpty(hduUsernameList))
+                || forcedUpdateRemoteJudgeAccount) {
+            switchConfig.setHduUsernameList(hduUsernameList);
+            isChanged = true;
+        }
+
+        if ((CollectionUtils.isEmpty(switchConfig.getHduPasswordList())
+                && !CollectionUtils.isEmpty(hduPasswordList))
+                || forcedUpdateRemoteJudgeAccount) {
+            switchConfig.setHduPasswordList(hduPasswordList);
+            isChanged = true;
+        }
+
+        if ((CollectionUtils.isEmpty(switchConfig.getCfUsernameList())
+                && !CollectionUtils.isEmpty(cfUsernameList))
+                || forcedUpdateRemoteJudgeAccount) {
+            switchConfig.setCfUsernameList(cfUsernameList);
+            isChanged = true;
+        }
+
+        if ((CollectionUtils.isEmpty(switchConfig.getCfPasswordList())
+                && !CollectionUtils.isEmpty(cfPasswordList))
+                || forcedUpdateRemoteJudgeAccount) {
+            switchConfig.setCfPasswordList(cfPasswordList);
+            isChanged = true;
+        }
+
+        if ((CollectionUtils.isEmpty(switchConfig.getPojUsernameList())
+                && !CollectionUtils.isEmpty(pojUsernameList))
+                || forcedUpdateRemoteJudgeAccount) {
+            switchConfig.setPojUsernameList(pojUsernameList);
+            isChanged = true;
+        }
+
+        if ((CollectionUtils.isEmpty(switchConfig.getPojPasswordList())
+                && !CollectionUtils.isEmpty(pojPasswordList))
+                || forcedUpdateRemoteJudgeAccount) {
+            switchConfig.setPojPasswordList(pojPasswordList);
+            isChanged = true;
+        }
+
+        if ((CollectionUtils.isEmpty(switchConfig.getAtcoderUsernameList())
+                && !CollectionUtils.isEmpty(atcoderUsernameList))
+                || forcedUpdateRemoteJudgeAccount) {
+            switchConfig.setAtcoderUsernameList(atcoderUsernameList);
+            isChanged = true;
+        }
+
+        if ((CollectionUtils.isEmpty(switchConfig.getAtcoderPasswordList())
+                && !CollectionUtils.isEmpty(atcoderPasswordList))
+                || forcedUpdateRemoteJudgeAccount) {
+            switchConfig.setAtcoderPasswordList(atcoderPasswordList);
+            isChanged = true;
+        }
+
+        if ((CollectionUtils.isEmpty(switchConfig.getSpojUsernameList())
+                && !CollectionUtils.isEmpty(spojUsernameList))
+                || forcedUpdateRemoteJudgeAccount) {
+            switchConfig.setSpojUsernameList(spojUsernameList);
+            isChanged = true;
+        }
+
+        if ((CollectionUtils.isEmpty(switchConfig.getSpojPasswordList())
+                && !CollectionUtils.isEmpty(spojPasswordList))
+                || forcedUpdateRemoteJudgeAccount) {
+            switchConfig.setSpojPasswordList(spojPasswordList);
+            isChanged = true;
+        }
+
+        if (isChanged) {
+            nacosSwitchConfig.publishWebConfig();
+        }
 
         if (openRemoteJudge.equals("true")) {
             // 初始化清空表
@@ -256,11 +306,10 @@ public class StartupRunner implements CommandLineRunner {
             addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.CODEFORCES.getName(), cfUsernameList, cfPasswordList);
             addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.SPOJ.getName(), spojUsernameList, spojPasswordList);
             addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.ATCODER.getName(), atcoderUsernameList, atcoderPasswordList);
-
             checkRemoteOJLanguage(Constants.RemoteOJ.SPOJ, Constants.RemoteOJ.ATCODER);
         }
-
     }
+
 
     /**
      * @param oj
@@ -301,6 +350,7 @@ public class StartupRunner implements CommandLineRunner {
     }
 
 
+    @Deprecated
     private void upsertHOJLanguage(String... languageList) {
         /**
          * 2022.02.25 新增js、pypy、php语言
@@ -320,6 +370,7 @@ public class StartupRunner implements CommandLineRunner {
         }
     }
 
+    @Deprecated
     private void checkAllLanguageUpdate() {
 
         /**
@@ -344,13 +395,13 @@ public class StartupRunner implements CommandLineRunner {
          */
         List<Language> newHduLanguageList = new ArrayList<>();
         QueryWrapper<Language> languageQueryWrapper = new QueryWrapper<>();
-        languageQueryWrapper.select("id","name");
+        languageQueryWrapper.select("id", "name");
         languageQueryWrapper.eq("oj", "HDU");
         List<Language> hduLanguageList = languageEntityService.list(languageQueryWrapper);
         List<String> collect = hduLanguageList.stream()
                 .map(Language::getName)
                 .collect(Collectors.toList());
-        if(!collect.contains("Java")) {
+        if (!collect.contains("Java")) {
             Language hduJavaLanguage = new Language();
             hduJavaLanguage.setContentType("text/x-java")
                     .setName("Java")
@@ -359,7 +410,7 @@ public class StartupRunner implements CommandLineRunner {
                     .setOj("HDU");
             newHduLanguageList.add(hduJavaLanguage);
         }
-        if(!collect.contains("C#")) {
+        if (!collect.contains("C#")) {
             Language hduCSharpLanguage = new Language();
             hduCSharpLanguage.setContentType("text/x-csharp")
                     .setName("C#")
@@ -387,7 +438,6 @@ public class StartupRunner implements CommandLineRunner {
             }
         }
     }
-
 
     private Language buildHOJLanguage(String lang) {
         Language language = new Language();

@@ -449,7 +449,7 @@ export default {
         if (key == 'register') {
           continue;
         } else {
-          if (!this.websiteConfig[key].replace(/(^\s*)|(\s*$)/g, '')) {
+          if (this.websiteConfig[key] == null || !this.websiteConfig[key].replace(/(^\s*)|(\s*$)/g, '')) {
             this.websiteConfig[key] = 'None';
           }
         }

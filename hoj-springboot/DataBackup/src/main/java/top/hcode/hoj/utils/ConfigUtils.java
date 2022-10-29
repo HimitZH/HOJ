@@ -1,13 +1,9 @@
 package top.hcode.hoj.utils;
 
-import cn.hutool.core.text.UnicodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import top.hcode.hoj.pojo.vo.ConfigVO;
-
-import java.util.List;
 
 /**
  * @Author: Himit_ZH
@@ -45,84 +41,10 @@ public class ConfigUtils {
                 "    name: " + configVo.getMysqlDBName() + "\n" +
                 "    username: " + configVo.getMysqlUsername() + "\n" +
                 "    password: " + configVo.getMysqlPassword() + "\n" +
-                "  mail:\n" +
-                "    ssl: " + configVo.getEmailSsl() + "\n" +
-                "    username: " + configVo.getEmailUsername() + "\n" +
-                "    password: " + configVo.getEmailPassword() + "\n" +
-                "    host: " + configVo.getEmailHost() + "\n" +
-                "    port: " + configVo.getEmailPort() + "\n" +
-                "    background-img: " + configVo.getEmailBGImg() + "\n" +
                 "  redis:\n" +
                 "    host: " + configVo.getRedisHost() + "\n" +
                 "    port: " + configVo.getRedisPort() + "\n" +
-                "    password: " + configVo.getRedisPassword() + "\n" +
-                "  web-config:\n" +
-                "    base-url: \"" + UnicodeUtil.toUnicode(configVo.getBaseUrl(), false) + "\"\n" +
-                "    name: \"" + UnicodeUtil.toUnicode(configVo.getName(), false) + "\"\n" +
-                "    short-name: \"" + UnicodeUtil.toUnicode(configVo.getShortName(), false) + "\"\n" +
-                "    description: \"" + UnicodeUtil.toUnicode(configVo.getDescription(), false) + "\"\n" +
-                "    register: " + configVo.getRegister() + "\n" +
-                "    footer:\n" +
-                "      record:\n" +
-                "        name: \"" + UnicodeUtil.toUnicode(configVo.getRecordName(), false) + "\"\n" +
-                "        url: \"" + UnicodeUtil.toUnicode(configVo.getRecordUrl(), false) + "\"\n" +
-                "      project:\n" +
-                "        name: \"" + UnicodeUtil.toUnicode(configVo.getProjectName(), false) + "\"\n" +
-                "        url: \"" + UnicodeUtil.toUnicode(configVo.getProjectUrl(), false) + "\"\n" +
-                "  hdu:\n" +
-                "    account:\n" +
-                "      username: " + listToStr(configVo.getHduUsernameList()) + "\n" +
-                "      password: " + listToStr(configVo.getHduPasswordList()) + "\n" +
-                "  cf:\n" +
-                "    account:\n" +
-                "      username: " + listToStr(configVo.getCfUsernameList()) + "\n" +
-                "      password: " + listToStr(configVo.getCfPasswordList()) + "\n" +
-                "  poj:\n" +
-                "    account:\n" +
-                "      username: " + listToStr(configVo.getPojUsernameList()) + "\n" +
-                "      password: " + listToStr(configVo.getPojPasswordList()) + "\n" +
-                "  atcoder:\n" +
-                "    account:\n" +
-                "      username: " + listToStr(configVo.getAtcoderUsernameList()) + "\n" +
-                "      password: " + listToStr(configVo.getAtcoderPasswordList()) + "\n" +
-                "  spoj:\n" +
-                "    account:\n" +
-                "      username: " + listToStr(configVo.getSpojUsernameList()) + "\n" +
-                "      password: " + listToStr(configVo.getSpojPasswordList()) + "\n" +
-                "  switch:\n" +
-                "    judge:\n" +
-                "      public: " + configVo.getOpenPublicJudge() + "\n" +
-                "      group: " + configVo.getOpenGroupJudge() + "\n" +
-                "      contest: " + configVo.getOpenContestJudge() + "\n" +
-                "      hide-non-contest-code: " + configVo.getHideNonContestSubmissionCode() + "\n" +
-                "      submit-interval: " + configVo.getDefaultSubmitInterval() + "\n" +
-                "    discussion:\n" +
-                "      public: " + configVo.getOpenPublicDiscussion() + "\n" +
-                "      group: " + configVo.getOpenGroupDiscussion() + "\n" +
-                "      ac-initial-value: " + configVo.getDefaultCreateDiscussionACInitValue() + "\n" +
-                "      create-daily: " + configVo.getDefaultCreateDiscussionDailyLimit() + "\n" +
-                "    comment:\n" +
-                "      contest: " + configVo.getOpenContestComment() + "\n" +
-                "      ac-initial-value: " + configVo.getDefaultCreateCommentACInitValue() + "\n" +
-                "    group:\n" +
-                "      ac-initial-value: " + configVo.getDefaultCreateGroupACInitValue() + "\n" +
-                "      create-daily: " + configVo.getDefaultCreateGroupDailyLimit() + "\n" +
-                "      create-total: " + configVo.getDefaultCreateGroupLimit();
-    }
-
-    private String listToStr(List<String> list) {
-        if (CollectionUtils.isEmpty(list)) {
-            return "";
-        }
-        StringBuilder listStr = new StringBuilder();
-        for (int i = 0; i < list.size(); i++) {
-            if (i != list.size() - 1) {
-                listStr.append(list.get(i)).append(",");
-            } else {
-                listStr.append(list.get(i));
-            }
-        }
-        return listStr.toString();
+                "    password: " + configVo.getRedisPassword();
     }
 
 }

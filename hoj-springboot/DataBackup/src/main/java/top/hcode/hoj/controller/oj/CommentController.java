@@ -4,6 +4,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import top.hcode.hoj.annotation.AnonApi;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.ReplyDTO;
 import top.hcode.hoj.pojo.entity.discussion.Comment;
@@ -28,6 +29,7 @@ public class CommentController {
 
 
     @GetMapping("/comments")
+    @AnonApi
     public CommonResult<CommentListVO> getComments(@RequestParam(value = "cid", required = false) Long cid,
                                                    @RequestParam(value = "did", required = false) Integer did,
                                                    @RequestParam(value = "limit", required = false, defaultValue = "20") Integer limit,
@@ -59,6 +61,7 @@ public class CommentController {
     }
 
     @GetMapping("/reply")
+    @AnonApi
     public CommonResult<List<ReplyVO>> getAllReply(@RequestParam("commentId") Integer commentId,
                                                    @RequestParam(value = "cid", required = false) Long cid) {
         return commentService.getAllReply(commentId, cid);

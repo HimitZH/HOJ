@@ -210,7 +210,7 @@
         <vxe-table-column type="seq" width="50"></vxe-table-column>
         <vxe-table-column :title="$t('m.Name')" min-width="150">
           <template v-slot="{ row }">
-            <span>{{ row.service['serviceId'] }}</span>
+            <span>{{ row.service.metadata.judgeName }}</span>
           </template>
         </vxe-table-column>
         <vxe-table-column :title="$t('m.Host')" min-width="80">

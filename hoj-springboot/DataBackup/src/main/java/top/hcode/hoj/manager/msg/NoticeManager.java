@@ -4,16 +4,15 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import top.hcode.hoj.dao.msg.AdminSysNoticeEntityService;
+import top.hcode.hoj.dao.msg.UserSysNoticeEntityService;
 import top.hcode.hoj.pojo.entity.msg.AdminSysNotice;
 import top.hcode.hoj.pojo.entity.msg.UserSysNotice;
 import top.hcode.hoj.pojo.vo.SysMsgVO;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
-import top.hcode.hoj.dao.msg.AdminSysNoticeEntityService;
-import top.hcode.hoj.dao.msg.UserSysNoticeEntityService;
+import top.hcode.hoj.shiro.AccountProfile;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -44,14 +43,12 @@ public class NoticeManager {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 5;
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         IPage<SysMsgVO> sysNotice = userSysNoticeEntityService.getSysNotice(limit, currentPage, userRolesVo.getUid());
         applicationContext.getBean(NoticeManager.class).updateSysOrMineMsgRead(sysNotice);
         return sysNotice;
     }
-
 
 
     public IPage<SysMsgVO> getMineNotice(Integer limit, Integer currentPage) {
@@ -60,8 +57,7 @@ public class NoticeManager {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 5;
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         IPage<SysMsgVO> mineNotice = userSysNoticeEntityService.getMineNotice(limit, currentPage, userRolesVo.getUid());
         applicationContext.getBean(NoticeManager.class).updateSysOrMineMsgRead(mineNotice);

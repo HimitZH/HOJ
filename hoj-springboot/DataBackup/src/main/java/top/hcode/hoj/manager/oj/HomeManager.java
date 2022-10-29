@@ -11,6 +11,9 @@ import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import top.hcode.hoj.config.NacosSwitchConfig;
+import top.hcode.hoj.config.SwitchConfig;
+import top.hcode.hoj.config.WebConfig;
 import top.hcode.hoj.dao.common.AnnouncementEntityService;
 import top.hcode.hoj.dao.common.FileEntityService;
 import top.hcode.hoj.dao.contest.ContestEntityService;
@@ -59,6 +62,9 @@ public class HomeManager {
 
     @Autowired
     private JudgeEntityService judgeEntityService;
+
+    @Autowired
+    private NacosSwitchConfig nacosSwitchConfig;
 
     private final static String SUBMISSION_STATISTICS_KEY = "home_submission_statistics";
 
@@ -141,20 +147,21 @@ public class HomeManager {
      * @Since 2020/12/29
      */
     public Map<Object, Object> getWebConfig() {
-
-        return MapUtil.builder().put("baseUrl", UnicodeUtil.toString(configVo.getBaseUrl()))
-                .put("name", UnicodeUtil.toString(configVo.getName()))
-                .put("shortName", UnicodeUtil.toString(configVo.getShortName()))
-                .put("register", configVo.getRegister())
-                .put("recordName", UnicodeUtil.toString(configVo.getRecordName()))
-                .put("recordUrl", UnicodeUtil.toString(configVo.getRecordUrl()))
-                .put("description", UnicodeUtil.toString(configVo.getDescription()))
-                .put("email", UnicodeUtil.toString(configVo.getEmailUsername()))
-                .put("projectName", UnicodeUtil.toString(configVo.getProjectName()))
-                .put("projectUrl", UnicodeUtil.toString(configVo.getProjectUrl()))
-                .put("openPublicDiscussion", configVo.getOpenPublicDiscussion())
-                .put("openGroupDiscussion", configVo.getOpenGroupDiscussion())
-                .put("openContestComment", configVo.getOpenContestComment())
+        SwitchConfig switchConfig = nacosSwitchConfig.getSwitchConfig();
+        WebConfig webConfig = nacosSwitchConfig.getWebConfig();
+        return MapUtil.builder().put("baseUrl", UnicodeUtil.toString(webConfig.getBaseUrl()))
+                .put("name", UnicodeUtil.toString(webConfig.getName()))
+                .put("shortName", UnicodeUtil.toString(webConfig.getShortName()))
+                .put("register", webConfig.getRegister())
+                .put("recordName", UnicodeUtil.toString(webConfig.getRecordName()))
+                .put("recordUrl", UnicodeUtil.toString(webConfig.getRecordUrl()))
+                .put("description", UnicodeUtil.toString(webConfig.getDescription()))
+                .put("email", UnicodeUtil.toString(webConfig.getEmailUsername()))
+                .put("projectName", UnicodeUtil.toString(webConfig.getProjectName()))
+                .put("projectUrl", UnicodeUtil.toString(webConfig.getProjectUrl()))
+                .put("openPublicDiscussion", switchConfig.getOpenPublicDiscussion())
+                .put("openGroupDiscussion", switchConfig.getOpenGroupDiscussion())
+                .put("openContestComment", switchConfig.getOpenContestComment())
                 .map();
     }
 

@@ -28,4 +28,6 @@ public interface PassportService {
     public CommonResult<Void> applyResetPassword(ApplyResetPasswordDTO applyResetPasswordDto);
 
     public CommonResult<Void> resetPassword(ResetPasswordDTO resetPasswordDto);
+
+    public CommonResult<Void> logout();
 }

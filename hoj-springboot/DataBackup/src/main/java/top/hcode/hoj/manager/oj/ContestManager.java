@@ -3,7 +3,6 @@ package top.hcode.hoj.manager.oj;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -24,6 +23,7 @@ import top.hcode.hoj.pojo.entity.common.Announcement;
 import top.hcode.hoj.pojo.entity.contest.*;
 import top.hcode.hoj.pojo.entity.problem.*;
 import top.hcode.hoj.pojo.vo.*;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 import top.hcode.hoj.validator.ContestValidator;
@@ -109,8 +109,7 @@ public class ContestManager {
 
 
     public ContestVO getContestInfo(Long cid) throws StatusFailException, StatusForbiddenException {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -143,8 +142,7 @@ public class ContestManager {
         }
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -188,8 +186,7 @@ public class ContestManager {
 
     public AccessVO getContestAccess(Long cid) throws StatusFailException {
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         QueryWrapper<ContestRegister> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("cid", cid).eq("uid", userRolesVo.getUid());
@@ -218,8 +215,7 @@ public class ContestManager {
     public List<ContestProblemVO> getContestProblem(Long cid) throws StatusFailException, StatusForbiddenException {
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(cid);
@@ -265,8 +261,7 @@ public class ContestManager {
     public ProblemInfoVO getContestProblemDetails(Long cid, String displayId) throws StatusFailException, StatusForbiddenException, StatusNotFoundException {
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(cid);
@@ -367,8 +362,7 @@ public class ContestManager {
                                                    boolean beforeContestSubmit,
                                                    boolean completeProblemID) throws StatusFailException, StatusForbiddenException {
 
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(searchCid);
 
@@ -458,8 +452,7 @@ public class ContestManager {
         if (limit == null || limit < 1) limit = 50;
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(contestRankDto.getCid());
@@ -505,8 +498,7 @@ public class ContestManager {
 
     public IPage<AnnouncementVO> getContestAnnouncement(Long cid, Integer limit, Integer currentPage) throws StatusFailException, StatusForbiddenException {
 
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(cid);
 
@@ -553,8 +545,7 @@ public class ContestManager {
 
     public void submitPrintText(ContestPrintDTO contestPrintDto) throws StatusFailException, StatusForbiddenException {
 
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(contestPrintDto.getCid());

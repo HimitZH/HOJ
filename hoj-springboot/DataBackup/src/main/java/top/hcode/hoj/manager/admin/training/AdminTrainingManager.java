@@ -6,19 +6,21 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
+import top.hcode.hoj.dao.training.MappingTrainingCategoryEntityService;
+import top.hcode.hoj.dao.training.TrainingCategoryEntityService;
+import top.hcode.hoj.dao.training.TrainingEntityService;
+import top.hcode.hoj.dao.training.TrainingRegisterEntityService;
 import top.hcode.hoj.pojo.dto.TrainingDTO;
 import top.hcode.hoj.pojo.entity.training.MappingTrainingCategory;
 import top.hcode.hoj.pojo.entity.training.Training;
 import top.hcode.hoj.pojo.entity.training.TrainingCategory;
 import top.hcode.hoj.pojo.entity.training.TrainingRegister;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
-import top.hcode.hoj.dao.training.*;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
@@ -79,8 +81,7 @@ public class AdminTrainingManager {
         }
 
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         // 是否为超级管理员
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         // 只有超级管理员和训练拥有者才能操作
@@ -113,8 +114,7 @@ public class AdminTrainingManager {
             throw new StatusFailException("删除失败！");
         }
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         log.info("[{}],[{}],tid:[{}],operatorUid:[{}],operatorUsername:[{}]",
                 "Admin_Training", "Delete", tid, userRolesVo.getUid(), userRolesVo.getUsername());
     }
@@ -146,8 +146,7 @@ public class AdminTrainingManager {
     @Transactional(rollbackFor = Exception.class)
     public void updateTraining(TrainingDTO trainingDto) throws StatusForbiddenException, StatusFailException {
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         // 是否为超级管理员
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         // 只有超级管理员和训练拥有者才能操作
@@ -204,8 +203,7 @@ public class AdminTrainingManager {
 
     public void changeTrainingStatus(Long tid, String author, Boolean status) throws StatusForbiddenException, StatusFailException {
         // 获取当前登录的用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         // 是否为超级管理员
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         // 只有超级管理员和训练拥有者才能操作

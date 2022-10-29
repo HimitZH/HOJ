@@ -6,6 +6,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import top.hcode.hoj.annotation.AnonApi;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.SubmitIdListDTO;
 import top.hcode.hoj.pojo.dto.SubmitJudgeDTO;
@@ -46,6 +47,7 @@ public class JudgeController {
      * @Since 2020/10/29
      */
     @GetMapping("/get-submission-list")
+    @AnonApi
     public CommonResult<IPage<JudgeVO>> getJudgeList(@RequestParam(value = "limit", required = false) Integer limit,
                                                      @RequestParam(value = "currentPage", required = false) Integer currentPage,
                                                      @RequestParam(value = "onlyMine", required = false) Boolean onlyMine,
@@ -65,6 +67,7 @@ public class JudgeController {
      * @Since 2021/1/2
      */
     @GetMapping("/get-submission-detail")
+    @AnonApi
     public CommonResult<SubmissionInfoVO> getSubmission(@RequestParam(value = "submitId", required = true) Long submitId) {
         return judgeService.getSubmission(submitId);
     }
@@ -127,6 +130,7 @@ public class JudgeController {
      * @Since 2021/1/3
      */
     @RequestMapping(value = "/check-submissions-status", method = RequestMethod.POST)
+    @AnonApi
     public CommonResult<HashMap<Long, Object>> checkCommonJudgeResult(@RequestBody SubmitIdListDTO submitIdListDto) {
         return judgeService.checkCommonJudgeResult(submitIdListDto);
     }
@@ -153,6 +157,7 @@ public class JudgeController {
      * @Since 2020/10/29
      */
     @GetMapping("/get-all-case-result")
+    @AnonApi
     public CommonResult<JudgeCaseVO> getALLCaseResult(@RequestParam(value = "submitId", required = true) Long submitId) {
         return judgeService.getALLCaseResult(submitId);
     }

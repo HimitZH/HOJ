@@ -3,26 +3,27 @@ package top.hcode.hoj.manager.file;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.IdUtil;
-import top.hcode.hoj.common.exception.StatusForbiddenException;
-import top.hcode.hoj.dao.group.GroupEntityService;
-import top.hcode.hoj.pojo.entity.group.Group;
-import top.hcode.hoj.validator.GroupValidator;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.session.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import top.hcode.hoj.common.exception.StatusFailException;
+import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusSystemErrorException;
+import top.hcode.hoj.dao.common.FileEntityService;
+import top.hcode.hoj.dao.group.GroupEntityService;
+import top.hcode.hoj.dao.user.UserInfoEntityService;
+import top.hcode.hoj.dao.user.UserRoleEntityService;
+import top.hcode.hoj.pojo.entity.group.Group;
 import top.hcode.hoj.pojo.entity.user.Role;
 import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.vo.UserRolesVO;
-import top.hcode.hoj.dao.common.FileEntityService;
-import top.hcode.hoj.dao.user.UserInfoEntityService;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.validator.GroupValidator;
 
 import java.io.File;
 import java.util.Map;
@@ -47,6 +48,9 @@ public class ImageManager {
 
     @Autowired
     private GroupValidator groupValidator;
+
+    @Autowired
+    private UserRoleEntityService userRoleEntityService;
 
     @Transactional(rollbackFor = Exception.class)
     public Map<Object, Object> uploadAvatar(MultipartFile image) throws StatusFailException, StatusSystemErrorException {
@@ -74,17 +78,15 @@ public class ImageManager {
         }
 
         // 获取当前登录用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
-
+        AccountProfile accountProfile = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         // 将当前用户所属的file表中avatar类型的实体的delete设置为1；
-        fileEntityService.updateFileToDeleteByUidAndType(userRolesVo.getUid(), "avatar");
+        fileEntityService.updateFileToDeleteByUidAndType(accountProfile.getUid(), "avatar");
 
         //更新user_info里面的avatar
         UpdateWrapper<UserInfo> userInfoUpdateWrapper = new UpdateWrapper<>();
         userInfoUpdateWrapper.set("avatar", Constants.File.IMG_API.getPath() + filename)
-                .eq("uuid", userRolesVo.getUid());
+                .eq("uuid", accountProfile.getUid());
         userInfoEntityService.update(userInfoUpdateWrapper);
 
         // 插入file表记录
@@ -93,12 +95,13 @@ public class ImageManager {
                 .setFilePath(Constants.File.USER_AVATAR_FOLDER.getPath() + File.separator + filename)
                 .setSuffix(suffix)
                 .setType("avatar")
-                .setUid(userRolesVo.getUid());
+                .setUid(accountProfile.getUid());
         fileEntityService.saveOrUpdate(imgFile);
-
         // 更新session
-        userRolesVo.setAvatar(Constants.File.IMG_API.getPath() + filename);
-        session.setAttribute("userInfo", userRolesVo);
+        accountProfile.setAvatar(Constants.File.IMG_API.getPath() + filename);
+
+        UserRolesVO userRolesVo = userRoleEntityService.getUserRoles(accountProfile.getUid(), null);
+
         return MapUtil.builder()
                 .put("uid", userRolesVo.getUid())
                 .put("username", userRolesVo.getUsername())
@@ -119,8 +122,7 @@ public class ImageManager {
 
     @Transactional(rollbackFor = Exception.class)
     public Group uploadGroupAvatar(MultipartFile image, Long gid) throws StatusFailException, StatusSystemErrorException, StatusForbiddenException {
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         if (!isRoot && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
@@ -194,8 +196,7 @@ public class ImageManager {
         }
 
         // 获取当前登录用户
-        Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
 
         // 插入file表记录

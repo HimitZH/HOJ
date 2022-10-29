@@ -1,5 +1,6 @@
 package top.hcode.hoj.manager.admin.system;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.text.UnicodeUtil;
@@ -15,11 +16,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import top.hcode.hoj.common.exception.StatusFailException;
+import top.hcode.hoj.config.NacosSwitchConfig;
+import top.hcode.hoj.config.SwitchConfig;
+import top.hcode.hoj.config.WebConfig;
 import top.hcode.hoj.dao.common.FileEntityService;
 import top.hcode.hoj.dao.judge.RemoteJudgeAccountEntityService;
 import top.hcode.hoj.manager.email.EmailManager;
@@ -61,6 +64,9 @@ public class ConfigManager {
 
     @Autowired
     private DiscoveryClient discoveryClient;
+
+    @Autowired
+    private NacosSwitchConfig nacosSwitchConfig;
 
     @Value("${service-url.name}")
     private String judgeServiceName;
@@ -142,17 +148,17 @@ public class ConfigManager {
 
 
     public WebConfigDTO getWebConfig() {
-
+        WebConfig webConfig = nacosSwitchConfig.getWebConfig();
         return WebConfigDTO.builder()
-                .baseUrl(UnicodeUtil.toString(configVo.getBaseUrl()))
-                .name(UnicodeUtil.toString(configVo.getName()))
-                .shortName(UnicodeUtil.toString(configVo.getShortName()))
-                .description(UnicodeUtil.toString(configVo.getDescription()))
-                .register(configVo.getRegister())
-                .recordName(UnicodeUtil.toString(configVo.getRecordName()))
-                .recordUrl(UnicodeUtil.toString(configVo.getRecordUrl()))
-                .projectName(UnicodeUtil.toString(configVo.getProjectName()))
-                .projectUrl(UnicodeUtil.toString(configVo.getProjectUrl()))
+                .baseUrl(UnicodeUtil.toString(webConfig.getBaseUrl()))
+                .name(UnicodeUtil.toString(webConfig.getName()))
+                .shortName(UnicodeUtil.toString(webConfig.getShortName()))
+                .description(UnicodeUtil.toString(webConfig.getDescription()))
+                .register(webConfig.getRegister())
+                .recordName(UnicodeUtil.toString(webConfig.getRecordName()))
+                .recordUrl(UnicodeUtil.toString(webConfig.getRecordUrl()))
+                .projectName(UnicodeUtil.toString(webConfig.getProjectName()))
+                .projectUrl(UnicodeUtil.toString(webConfig.getProjectUrl()))
                 .build();
     }
 
@@ -173,77 +179,80 @@ public class ConfigManager {
 
     public void setWebConfig(WebConfigDTO config) throws StatusFailException {
 
+        WebConfig webConfig = nacosSwitchConfig.getWebConfig();
+
         if (!StringUtils.isEmpty(config.getBaseUrl())) {
-            configVo.setBaseUrl(config.getBaseUrl());
+            webConfig.setBaseUrl(config.getBaseUrl());
         }
         if (!StringUtils.isEmpty(config.getName())) {
-            configVo.setName(config.getName());
+            webConfig.setName(config.getName());
         }
         if (!StringUtils.isEmpty(config.getShortName())) {
-            configVo.setShortName(config.getShortName());
+            webConfig.setShortName(config.getShortName());
         }
         if (!StringUtils.isEmpty(config.getDescription())) {
-            configVo.setDescription(config.getDescription());
+            webConfig.setDescription(config.getDescription());
         }
         if (config.getRegister() != null) {
-            configVo.setRegister(config.getRegister());
+            webConfig.setRegister(config.getRegister());
         }
         if (!StringUtils.isEmpty(config.getRecordName())) {
-            configVo.setRecordName(config.getRecordName());
+            webConfig.setRecordName(config.getRecordName());
         }
         if (!StringUtils.isEmpty(config.getRecordUrl())) {
-            configVo.setRecordUrl(config.getRecordUrl());
+            webConfig.setRecordUrl(config.getRecordUrl());
         }
         if (!StringUtils.isEmpty(config.getProjectName())) {
-            configVo.setProjectName(config.getProjectName());
+            webConfig.setProjectName(config.getProjectName());
         }
         if (!StringUtils.isEmpty(config.getProjectUrl())) {
-            configVo.setProjectUrl(config.getProjectUrl());
+            webConfig.setProjectUrl(config.getProjectUrl());
         }
-        boolean isOk = sendNewConfigToNacos();
+        boolean isOk = nacosSwitchConfig.publishWebConfig();
         if (!isOk) {
             throw new StatusFailException("修改失败");
         }
     }
 
     public EmailConfigDTO getEmailConfig() {
+        WebConfig webConfig = nacosSwitchConfig.getWebConfig();
         return EmailConfigDTO.builder()
-                .emailUsername(configVo.getEmailUsername())
-                .emailPassword(configVo.getEmailPassword())
-                .emailHost(configVo.getEmailHost())
-                .emailPort(configVo.getEmailPort())
-                .emailBGImg(configVo.getEmailBGImg())
-                .emailSsl(configVo.getEmailSsl())
+                .emailUsername(webConfig.getEmailUsername())
+                .emailPassword(webConfig.getEmailPassword())
+                .emailHost(webConfig.getEmailHost())
+                .emailPort(webConfig.getEmailPort())
+                .emailBGImg(webConfig.getEmailBGImg())
+                .emailSsl(webConfig.getEmailSsl())
                 .build();
     }
 
 
     public void setEmailConfig(EmailConfigDTO config) throws StatusFailException {
-
+        WebConfig webConfig = nacosSwitchConfig.getWebConfig();
         if (!StringUtils.isEmpty(config.getEmailHost())) {
-            configVo.setEmailHost(config.getEmailHost());
+            webConfig.setEmailHost(config.getEmailHost());
         }
         if (!StringUtils.isEmpty(config.getEmailPassword())) {
-            configVo.setEmailPassword(config.getEmailPassword());
+            webConfig.setEmailPassword(config.getEmailPassword());
         }
 
         if (config.getEmailPort() != null) {
-            configVo.setEmailPort(config.getEmailPort());
+            webConfig.setEmailPort(config.getEmailPort());
         }
 
         if (!StringUtils.isEmpty(config.getEmailUsername())) {
-            configVo.setEmailUsername(config.getEmailUsername());
+            webConfig.setEmailUsername(config.getEmailUsername());
         }
 
         if (!StringUtils.isEmpty(config.getEmailBGImg())) {
-            configVo.setEmailBGImg(config.getEmailBGImg());
+            webConfig.setEmailBGImg(config.getEmailBGImg());
         }
 
         if (config.getEmailSsl() != null) {
-            configVo.setEmailSsl(config.getEmailSsl());
+            webConfig.setEmailSsl(config.getEmailSsl());
         }
 
-        boolean isOk = sendNewConfigToNacos();
+        boolean isOk = nacosSwitchConfig.publishWebConfig();
         if (!isOk) {
             throw new StatusFailException("修改失败");
         }
@@ -315,137 +324,117 @@ public class ConfigManager {
     }
 
     public SwitchConfigDTO getSwitchConfig() {
-        return SwitchConfigDTO.builder()
-                .openPublicDiscussion(configVo.getOpenPublicDiscussion())
-                .openGroupDiscussion(configVo.getOpenGroupDiscussion())
-                .openContestComment(configVo.getOpenContestComment())
-                .openPublicJudge(configVo.getOpenPublicJudge())
-                .openContestJudge(configVo.getOpenContestJudge())
-                .openGroupJudge(configVo.getOpenGroupJudge())
-                .hideNonContestSubmissionCode(configVo.getHideNonContestSubmissionCode())
-                .defaultCreateCommentACInitValue(configVo.getDefaultCreateCommentACInitValue())
-                .defaultCreateDiscussionACInitValue(configVo.getDefaultCreateDiscussionACInitValue())
-                .defaultCreateDiscussionDailyLimit(configVo.getDefaultCreateDiscussionDailyLimit())
-                .defaultCreateGroupACInitValue(configVo.getDefaultCreateGroupACInitValue())
-                .defaultSubmitInterval(configVo.getDefaultSubmitInterval())
-                .defaultCreateGroupDailyLimit(configVo.getDefaultCreateGroupDailyLimit())
-                .defaultCreateGroupLimit(configVo.getDefaultCreateGroupLimit())
-                .hduUsernameList(configVo.getHduUsernameList())
-                .hduPasswordList(configVo.getHduPasswordList())
-                .cfUsernameList(configVo.getCfUsernameList())
-                .cfPasswordList(configVo.getCfPasswordList())
-                .pojUsernameList(configVo.getPojUsernameList())
-                .pojPasswordList(configVo.getPojPasswordList())
-                .atcoderUsernameList(configVo.getAtcoderUsernameList())
-                .atcoderPasswordList(configVo.getAtcoderPasswordList())
-                .spojUsernameList(configVo.getSpojUsernameList())
-                .spojPasswordList(configVo.getSpojPasswordList())
-                .build();
+        SwitchConfig switchConfig = nacosSwitchConfig.getSwitchConfig();
+        SwitchConfigDTO switchConfigDTO = new SwitchConfigDTO();
+        BeanUtil.copyProperties(switchConfig, switchConfigDTO);
+        return switchConfigDTO;
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void setSwitchConfig(SwitchConfigDTO config) throws StatusFailException {
+
+        SwitchConfig switchConfig = nacosSwitchConfig.getSwitchConfig();
+
         if (config.getOpenPublicDiscussion() != null) {
-            configVo.setOpenPublicDiscussion(config.getOpenPublicDiscussion());
+            switchConfig.setOpenPublicDiscussion(config.getOpenPublicDiscussion());
         }
         if (config.getOpenGroupDiscussion() != null) {
-            configVo.setOpenGroupDiscussion(config.getOpenGroupDiscussion());
+            switchConfig.setOpenGroupDiscussion(config.getOpenGroupDiscussion());
         }
         if (config.getOpenContestComment() != null) {
-            configVo.setOpenContestComment(config.getOpenContestComment());
+            switchConfig.setOpenContestComment(config.getOpenContestComment());
         }
         if (config.getOpenPublicJudge() != null) {
-            configVo.setOpenPublicJudge(config.getOpenPublicJudge());
+            switchConfig.setOpenPublicJudge(config.getOpenPublicJudge());
         }
         if (config.getOpenGroupJudge() != null) {
-            configVo.setOpenGroupJudge(config.getOpenGroupJudge());
+            switchConfig.setOpenGroupJudge(config.getOpenGroupJudge());
         }
         if (config.getOpenContestJudge() != null) {
-            configVo.setOpenContestJudge(config.getOpenContestJudge());
+            switchConfig.setOpenContestJudge(config.getOpenContestJudge());
         }
 
         if (config.getHideNonContestSubmissionCode() != null) {
-            configVo.setHideNonContestSubmissionCode(config.getHideNonContestSubmissionCode());
+            switchConfig.setHideNonContestSubmissionCode(config.getHideNonContestSubmissionCode());
         }
 
         if (config.getDefaultCreateDiscussionACInitValue() != null) {
-            configVo.setDefaultCreateDiscussionACInitValue(config.getDefaultCreateDiscussionACInitValue());
+            switchConfig.setDefaultCreateDiscussionACInitValue(config.getDefaultCreateDiscussionACInitValue());
         }
 
         if (config.getDefaultCreateDiscussionDailyLimit() != null) {
-            configVo.setDefaultCreateDiscussionDailyLimit(config.getDefaultCreateDiscussionDailyLimit());
+            switchConfig.setDefaultCreateDiscussionDailyLimit(config.getDefaultCreateDiscussionDailyLimit());
         }
 
         if (config.getDefaultCreateCommentACInitValue() != null) {
-            configVo.setDefaultCreateCommentACInitValue(config.getDefaultCreateCommentACInitValue());
+            switchConfig.setDefaultCreateCommentACInitValue(config.getDefaultCreateCommentACInitValue());
         }
 
         if (config.getDefaultSubmitInterval() != null) {
             if (config.getDefaultSubmitInterval() >= 0) {
-                configVo.setDefaultSubmitInterval(config.getDefaultSubmitInterval());
+                switchConfig.setDefaultSubmitInterval(config.getDefaultSubmitInterval());
             } else {
-                configVo.setDefaultSubmitInterval(0);
+                switchConfig.setDefaultSubmitInterval(0);
             }
         }
 
         if (config.getDefaultCreateGroupACInitValue() != null) {
-            configVo.setDefaultCreateGroupACInitValue(config.getDefaultCreateGroupACInitValue());
+            switchConfig.setDefaultCreateGroupACInitValue(config.getDefaultCreateGroupACInitValue());
         }
 
         if (config.getDefaultCreateGroupDailyLimit() != null) {
-            configVo.setDefaultCreateGroupDailyLimit(config.getDefaultCreateGroupDailyLimit());
+            switchConfig.setDefaultCreateGroupDailyLimit(config.getDefaultCreateGroupDailyLimit());
         }
 
         if (config.getDefaultCreateGroupLimit() != null) {
-            configVo.setDefaultCreateGroupLimit(config.getDefaultCreateGroupLimit());
+            switchConfig.setDefaultCreateGroupLimit(config.getDefaultCreateGroupLimit());
         }
 
-        if (checkListDiff(config.getCfUsernameList(), configVo.getCfUsernameList()) ||
-                checkListDiff(config.getCfPasswordList(), configVo.getCfPasswordList())) {
-            configVo.setCfUsernameList(config.getCfUsernameList());
-            configVo.setCfPasswordList(config.getCfPasswordList());
+        if (checkListDiff(config.getCfUsernameList(), switchConfig.getCfUsernameList()) ||
+                checkListDiff(config.getCfPasswordList(), switchConfig.getCfPasswordList())) {
+            switchConfig.setCfUsernameList(config.getCfUsernameList());
+            switchConfig.setCfPasswordList(config.getCfPasswordList());
             changeRemoteJudgeAccount(config.getCfUsernameList(),
                     config.getCfPasswordList(),
                     Constants.RemoteOJ.CODEFORCES.getName());
         }
 
-        if (checkListDiff(config.getHduUsernameList(), configVo.getHduUsernameList()) ||
-                checkListDiff(config.getHduPasswordList(), configVo.getHduPasswordList())) {
-            configVo.setHduUsernameList(config.getHduUsernameList());
-            configVo.setHduPasswordList(config.getHduPasswordList());
+        if (checkListDiff(config.getHduUsernameList(), switchConfig.getHduUsernameList()) ||
+                checkListDiff(config.getHduPasswordList(), switchConfig.getHduPasswordList())) {
+            switchConfig.setHduUsernameList(config.getHduUsernameList());
+            switchConfig.setHduPasswordList(config.getHduPasswordList());
             changeRemoteJudgeAccount(config.getHduUsernameList(),
                     config.getHduPasswordList(),
                     Constants.RemoteOJ.HDU.getName());
         }
 
-        if (checkListDiff(config.getPojUsernameList(), configVo.getPojUsernameList()) ||
-                checkListDiff(config.getPojPasswordList(), configVo.getPojPasswordList())) {
-            configVo.setPojUsernameList(config.getPojUsernameList());
-            configVo.setPojPasswordList(config.getPojPasswordList());
+        if (checkListDiff(config.getPojUsernameList(), switchConfig.getPojUsernameList()) ||
+                checkListDiff(config.getPojPasswordList(), switchConfig.getPojPasswordList())) {
+            switchConfig.setPojUsernameList(config.getPojUsernameList());
+            switchConfig.setPojPasswordList(config.getPojPasswordList());
             changeRemoteJudgeAccount(config.getPojUsernameList(),
                     config.getPojPasswordList(),
                     Constants.RemoteOJ.POJ.getName());
         }
 
-        if (checkListDiff(config.getSpojUsernameList(), configVo.getSpojUsernameList()) ||
-                checkListDiff(config.getSpojPasswordList(), configVo.getSpojPasswordList())) {
-            configVo.setSpojUsernameList(config.getSpojUsernameList());
-            configVo.setSpojPasswordList(config.getSpojPasswordList());
+        if (checkListDiff(config.getSpojUsernameList(), switchConfig.getSpojUsernameList()) ||
+                checkListDiff(config.getSpojPasswordList(), switchConfig.getSpojPasswordList())) {
+            switchConfig.setSpojUsernameList(config.getSpojUsernameList());
+            switchConfig.setSpojPasswordList(config.getSpojPasswordList());
             changeRemoteJudgeAccount(config.getSpojUsernameList(),
                     config.getSpojPasswordList(),
                     Constants.RemoteOJ.SPOJ.getName());
         }
 
-        if (checkListDiff(config.getAtcoderUsernameList(), configVo.getAtcoderUsernameList()) ||
-                checkListDiff(config.getAtcoderPasswordList(), configVo.getAtcoderPasswordList())) {
-            configVo.setAtcoderUsernameList(config.getAtcoderUsernameList());
-            configVo.setAtcoderPasswordList(config.getAtcoderPasswordList());
+        if (checkListDiff(config.getAtcoderUsernameList(), switchConfig.getAtcoderUsernameList()) ||
+                checkListDiff(config.getAtcoderPasswordList(), switchConfig.getAtcoderPasswordList())) {
+            switchConfig.setAtcoderUsernameList(config.getAtcoderUsernameList());
+            switchConfig.setAtcoderPasswordList(config.getAtcoderPasswordList());
             changeRemoteJudgeAccount(config.getAtcoderUsernameList(),
                     config.getAtcoderPasswordList(),
                     Constants.RemoteOJ.ATCODER.getName());
         }
 
-        boolean isOk = sendNewConfigToNacos();
+        boolean isOk = nacosSwitchConfig.publishSwitchConfig();
         if (!isOk) {
             throw new StatusFailException("修改失败");
         }

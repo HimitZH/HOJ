@@ -25,6 +25,7 @@ import top.hcode.hoj.pojo.entity.user.Session;
 import top.hcode.hoj.pojo.entity.user.UserAcproblem;
 import top.hcode.hoj.pojo.entity.user.UserInfo;
 import top.hcode.hoj.pojo.vo.*;
+import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
 import top.hcode.hoj.validator.CommonValidator;
@@ -123,8 +124,8 @@ public class AccountManager {
      */
     public UserHomeVO getUserHomeInfo(String uid, String username) throws StatusFailException {
 
-        org.apache.shiro.session.Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+
         // 如果没有uid和username，默认查询当前登录用户的
         if (StringUtils.isEmpty(uid) && StringUtils.isEmpty(username)) {
             if (userRolesVo != null) {
@@ -187,8 +188,7 @@ public class AccountManager {
      * @Description 获取用户最近一年的提交热力图数据
      */
     public UserCalendarHeatmapVO getUserCalendarHeatmap(String uid, String username) throws StatusFailException {
-        org.apache.shiro.session.Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         if (StringUtils.isEmpty(uid) && StringUtils.isEmpty(username)) {
             if (userRolesVo != null) {
                 uid = userRolesVo.getUid();
@@ -239,10 +239,9 @@ public class AccountManager {
             throw new StatusFailException("新密码长度应该为6~20位！");
         }
         // 获取当前登录的用户
-        org.apache.shiro.session.Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
-        // 如果已经被锁定半小时不能修改
+        // 如果已经被锁定半小时，则不能修改
         String lockKey = Constants.Account.CODE_CHANGE_PASSWORD_LOCK + userRolesVo.getUid();
         // 统计失败的key
         String countKey = Constants.Account.CODE_CHANGE_PASSWORD_FAIL + userRolesVo.getUid();
@@ -260,8 +259,12 @@ public class AccountManager {
             resp.setMsg(msg);
             return resp;
         }
+        QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
+        userInfoQueryWrapper.select("uuid", "password")
+                .eq("uuid", userRolesVo.getUid());
+        UserInfo userInfo = userInfoEntityService.getOne(userInfoQueryWrapper, false);
         // 与当前登录用户的密码进行比较判断
-        if (userRolesVo.getPassword().equals(SecureUtil.md5(oldPassword))) { // 如果相同，则进行修改密码操作
+        if (userInfo.getPassword().equals(SecureUtil.md5(oldPassword))) { // 如果相同，则进行修改密码操作
             UpdateWrapper<UserInfo> updateWrapper = new UpdateWrapper<>();
             updateWrapper.set("password", SecureUtil.md5(newPassword))// 数据库用户密码全部用md5加密
                     .eq("uuid", userRolesVo.getUid());
@@ -271,9 +274,6 @@ public class AccountManager {
                 resp.setMsg("修改密码成功！您将于5秒钟后退出进行重新登录操作！");
                 // 清空记录
                 redisUtils.del(countKey);
-                // 更新session
-                userRolesVo.setPassword(SecureUtil.md5(newPassword));
-                session.setAttribute("userInfo", userRolesVo);
                 return resp;
             } else {
                 throw new StatusSystemErrorException("系统错误：修改密码失败！");
@@ -315,9 +315,7 @@ public class AccountManager {
             throw new StatusFailException("邮箱格式错误！");
         }
         // 获取当前登录的用户
-        org.apache.shiro.session.Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
-
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         // 如果已经被锁定半小时不能修改
         String lockKey = Constants.Account.CODE_CHANGE_EMAIL_LOCK + userRolesVo.getUid();
         // 统计失败的key
@@ -336,8 +334,14 @@ public class AccountManager {
             resp.setMsg(msg);
             return resp;
         }
+
+        QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
+        userInfoQueryWrapper.select("uuid", "password")
+                .eq("uuid", userRolesVo.getUid());
+        UserInfo userInfo = userInfoEntityService.getOne(userInfoQueryWrapper, false);
+
         // 与当前登录用户的密码进行比较判断
-        if (userRolesVo.getPassword().equals(SecureUtil.md5(password))) { // 如果相同，则进行修改操作
+        if (userInfo.getPassword().equals(SecureUtil.md5(password))) { // 如果相同，则进行修改操作
             UpdateWrapper<UserInfo> updateWrapper = new UpdateWrapper<>();
             updateWrapper.set("email", newEmail)
                     .eq("uuid", userRolesVo.getUid());
@@ -345,18 +349,20 @@ public class AccountManager {
             boolean isOk = userInfoEntityService.update(updateWrapper);
             if (isOk) {
 
+                UserRolesVO userRoles = userRoleEntityService.getUserRoles(userRolesVo.getUid(), null);
                 UserInfoVO userInfoVo = new UserInfoVO();
-                BeanUtil.copyProperties(userRolesVo, userInfoVo, "roles");
-                userInfoVo.setRoleList(userRolesVo.getRoles().stream().map(Role::getRole).collect(Collectors.toList()));
 
+                BeanUtil.copyProperties(userRoles, userInfoVo, "roles");
+                userInfoVo.setRoleList(userRoles
+                        .getRoles()
+                        .stream()
+                        .map(Role::getRole)
+                        .collect(Collectors.toList()));
                 resp.setCode(200);
                 resp.setMsg("修改邮箱成功！");
                 resp.setUserInfo(userInfoVo);
                 // 清空记录
                 redisUtils.del(countKey);
-                // 更新session
-                userRolesVo.setEmail(newEmail);
-                session.setAttribute("userInfo", userRolesVo);
                 return resp;
             } else {
                 throw new StatusSystemErrorException("系统错误：修改邮箱失败！");
@@ -394,41 +400,37 @@ public class AccountManager {
         }
 
         commonValidator.validateContent(userInfoVo.getSignature(), "个性简介");
-        commonValidator.validateContent(userInfoVo.getBlog(), "博客",255);
-        commonValidator.validateContent(userInfoVo.getGithub(), "Github",255);
-        commonValidator.validateContent(userInfoVo.getSchool(), "学校",100);
-        commonValidator.validateContent(userInfoVo.getNumber(), "学号",200);
-        commonValidator.validateContent(userInfoVo.getCfUsername(), "Codeforces Username",255);
+        commonValidator.validateContent(userInfoVo.getBlog(), "博客", 255);
+        commonValidator.validateContent(userInfoVo.getGithub(), "Github", 255);
+        commonValidator.validateContent(userInfoVo.getSchool(), "学校", 100);
+        commonValidator.validateContent(userInfoVo.getNumber(), "学号", 200);
+        commonValidator.validateContent(userInfoVo.getCfUsername(), "Codeforces Username", 255);
 
         // 获取当前登录的用户
-        org.apache.shiro.session.Session session = SecurityUtils.getSubject().getSession();
-        UserRolesVO userRolesVo = (UserRolesVO) session.getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUuid(userRolesVo.getUid())
-                .setCfUsername(userInfoVo.getCfUsername())
-                .setRealname(realname)
-                .setNickname(nickname)
-                .setSignature(userInfoVo.getSignature())
-                .setBlog(userInfoVo.getBlog())
-                .setGender(userInfoVo.getGender())
-                .setEmail(userRolesVo.getEmail())
-                .setGithub(userInfoVo.getGithub())
-                .setSchool(userInfoVo.getSchool())
-                .setNumber(userInfoVo.getNumber());
+        UpdateWrapper<UserInfo> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("uuid", userRolesVo.getUid())
+                .set("cf_username", userInfoVo.getCfUsername())
+                .set("realname", realname)
+                .set("nickname", nickname)
+                .set("signature", userInfoVo.getSignature())
+                .set("blog", userInfoVo.getBlog())
+                .set("gender", userInfoVo.getGender())
+                .set("github", userInfoVo.getGithub())
+                .set("school", userInfoVo.getSchool())
+                .set("number", userInfoVo.getNumber());
 
-        boolean isOk = userInfoEntityService.updateById(userInfo);
+        boolean isOk = userInfoEntityService.update(updateWrapper);
 
         if (isOk) {
-            // 更新session
             UserRolesVO userRoles = userRoleEntityService.getUserRoles(userRolesVo.getUid(), null);
-            session.setAttribute("userInfo", userRoles);
-
-            UserInfoVO userInfoRes = new UserInfoVO();
-            BeanUtil.copyProperties(userRoles, userInfoRes, "roles");
-            userInfoRes.setRoleList(userRoles.getRoles().stream().map(Role::getRole).collect(Collectors.toList()));
-
-            return userInfoRes;
+            // 更新session
+            BeanUtil.copyProperties(userRoles, userRolesVo);
+            UserInfoVO userInfoVO = new UserInfoVO();
+            BeanUtil.copyProperties(userRoles, userInfoVO, "roles");
+            userInfoVO.setRoleList(userRoles.getRoles().stream().map(Role::getRole).collect(Collectors.toList()));
+            return userInfoVO;
         } else {
             throw new StatusFailException("更新个人信息失败！");
         }
