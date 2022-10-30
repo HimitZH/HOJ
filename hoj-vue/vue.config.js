@@ -17,17 +17,23 @@ const cdn = {
     vuex:'Vuex',
     'element-ui':'ELEMENT',
     'highlight.js': 'hljs',
-    'vxe-table':'VXETable',
     "moment": "moment",
     'vue-echarts': 'VueECharts',
     "echarts":"echarts",
+    katex:'katex',
+    'muse-ui':'MuseUI',
+    jquery:'$',
+    // 'vxe-table':'VXETable',
     // "mavon-editor": "mavonEditor",
   },
   // cdn的css链接
   css: [
       "https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/element-ui/2.14.0/theme-chalk/index.min.css",
       "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/github-markdown-css/4.0.0/github-markdown.min.css",
-      "https://unpkg.com/vxe-table@2.9.26/lib/style.min.css",
+      "https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/KaTeX/0.12.0/katex.min.css",
+      'https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/muse-ui/3.0.2/muse-ui.min.css',
+      // "https://unpkg.com/vxe-table@2.9.26/lib/style.min.css",
+      // "https://cdn.jsdelivr.net/npm/vxe-table@2.9.26/lib/style.min.css",
   ],
   // cdn的js链接
   js: [
@@ -42,8 +48,14 @@ const cdn = {
       "https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/echarts/4.9.0-rc.1/echarts.min.js",
       "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue-echarts/5.0.0-beta.0/vue-echarts.min.js",
       "https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/vuex/3.5.1/vuex.min.js",
-      "https://unpkg.com/xe-utils@3.4.3/dist/xe-utils.umd.min.js",
-      "https://unpkg.com/vxe-table@2.9.26/lib/index.umd.min.js",
+      "https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/KaTeX/0.12.0/katex.min.js",
+      "https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/KaTeX/0.12.0/contrib/auto-render.min.js",
+      'https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/muse-ui/3.0.2/muse-ui.min.js',
+      'https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.5.1/jquery.min.js',
+      // "https://unpkg.com/xe-utils@3.4.3/dist/xe-utils.umd.min.js",
+      // "https://unpkg.com/vxe-table@2.9.26/lib/index.umd.min.js",
+      // "https://cdn.jsdelivr.net/npm/xe-utils@3.4.3/dist/xe-utils.umd.min.js",
+      // "https://cdn.jsdelivr.net/npm/vxe-table@2.9.26/lib/index.umd.min.js"
       // "https://unpkg.com/mavon-editor@2.9.1/dist/mavon-editor.js"
   ]
 }

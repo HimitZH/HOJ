@@ -13,9 +13,9 @@ import axios from 'axios'
 import Md_Katex from '@iktakahiro/markdown-it-katex'
 
 // 注释表示使用cdn引入
-// import 'xe-utils' 
+import 'xe-utils'
 import VXETable from 'vxe-table'
-// import 'vxe-table/lib/style.css'
+import 'vxe-table/lib/style.css'
 
 import Katex from '@/common/katex'
 
@@ -52,20 +52,14 @@ import mavonEditor from 'mavon-editor'  //引入markdown编辑器
 import 'mavon-editor/dist/css/index.css';
 Vue.use(mavonEditor)
 
-import {Drawer,List,Menu,Icon,AppBar,Button,Divider} from 'muse-ui';
-import 'muse-ui/dist/muse-ui.css';
+// import 'muse-ui/dist/muse-ui.css';
+import MuseUI from 'muse-ui'
+Vue.use(MuseUI)
 
 import VueDOMPurifyHTML from 'vue-dompurify-html'
 Vue.use(VueDOMPurifyHTML)
 
 import router from './router'
-Vue.use(Drawer)
-Vue.use(List)
-Vue.use(Menu)
-Vue.use(Icon)
-Vue.use(AppBar)
-Vue.use(Button)
-Vue.use(Divider)
 
 Object.keys(filters).forEach(key => {   // 注册全局过滤器
   Vue.filter(key, filters[key])
