@@ -294,6 +294,13 @@ export const JUDGE_CASE_MODE = {
   ERGODIC_WITHOUT_ERROR: 'ergodic_without_error'
 }
 
+export const FOCUS_MODE_ROUTE_NAME = {
+  'TrainingFullProblemDetails': 'TrainingProblemDetails',
+  'ContestFullProblemDetails': 'ContestProblemDetails',
+  'GroupFullProblemDetails':'GroupProblemDetails',
+  'GroupTrainingFullProblemDetails': 'GroupTrainingProblemDetails'
+}
+
 
 export const STORAGE_KEY = {
   AUTHED: 'authed',

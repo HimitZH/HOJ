@@ -24,7 +24,8 @@
               <div
                 :padding="10"
                 shadow
-                id="js-left"
+                :id="'js-left'+'-'+ $route.name"
+                class="js-left"
               >
                 <div
                   slot="header"
@@ -264,7 +265,10 @@
             <el-tab-pane name="mySubmission">
               <span slot="label"><i class="el-icon-time"></i> {{ $t('m.My_Submission') }}</span>
               <template v-if="!isAuthenticated">
-                <div style="margin:20px 0px;margin-left:-20px;" id="js-submission">
+                <div
+                  style="margin:20px 0px;margin-left:-20px;"
+                  id="js-submission"
+                >
                   <el-alert
                     :title="$t('m.Please_login_first')"
                     type="warning"
@@ -277,7 +281,10 @@
                 </div>
               </template>
               <template v-else>
-                <div style="margin-right:10px;" id="js-submission">
+                <div
+                  style="margin-right:10px;"
+                  id="js-submission"
+                >
                   <vxe-table
                     align="center"
                     :data="mySubmissions"
@@ -459,7 +466,7 @@
         </el-col>
         <div
           class="problem-resize hidden-sm-and-down"
-          id="js-center"
+          :id="'js-center'+'-'+ $route.name"
           :title="$t('m.Shrink_Sidebar')"
         >
           <span>⋮</span>
@@ -516,6 +523,8 @@
               @changeTheme="onChangeTheme"
               @changeLang="onChangeLang"
               @getUserLastAccepetedCode="getUserLastAccepetedCode"
+              @switchFocusMode="switchFocusMode"
+              :openFocusMode.sync="openFocusMode"
               :openTestCaseDrawer.sync="openTestCaseDrawer"
               :problemTestCase="problemData.problem.examples"
               :pid="problemData.problem.id"
@@ -858,6 +867,7 @@ export default {
       fileContent: "",
       fileName: "",
       openTestCaseDrawer: false,
+      openFocusMode: false,
     };
   },
   created() {
@@ -866,7 +876,10 @@ export default {
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
     this.PROBLEM_LEVEL = Object.assign({}, PROBLEM_LEVEL);
     this.RULE_TYPE = Object.assign({}, RULE_TYPE);
-    if (this.$route.name === "ProblemDetails") {
+    if (
+      this.$route.name === "ProblemDetails" ||
+      utils.isFocusModePage(this.$route.name)
+    ) {
       this.bodyClass = "problem-body";
     }
   },
@@ -1045,7 +1058,7 @@ export default {
       for (let i = 0; i < resize.length; i++) {
         resize[i].style.left = box[i].clientWidth - 11;
         for (let j = 0; j < left.length; j++) {
-          left[j].style.width = (box[i].clientWidth - 20) + "px";
+          left[j].style.width = box[i].clientWidth - 20 + "px";
           right[j].style.width = "0px";
         }
       }
@@ -1077,58 +1090,64 @@ export default {
         let totalHeight = window.innerHeight;
         let problemLeftHight = totalHeight - (headerHeight + 77);
 
-        let jsRHeaderHeight = document.getElementById("js-right-header").offsetHeight;
-        let jsRBottomHeight = document.getElementById("js-right-bottom").offsetHeight;
+        let jsRHeaderHeight =
+          document.getElementById("js-right-header").offsetHeight;
+        let jsRBottomHeight =
+          document.getElementById("js-right-bottom").offsetHeight;
 
-        if(jsRBottomHeight < 48){
+        if (jsRBottomHeight < 48) {
           jsRBottomHeight = 48;
         }
 
-        let problemRightHight = problemLeftHight - 95 -(jsRHeaderHeight - 36) - (jsRBottomHeight - 48);
+        let problemRightHight =
+          problemLeftHight -
+          95 -
+          (jsRHeaderHeight - 36) -
+          (jsRBottomHeight - 48);
         if (problemLeftHight < 0) {
           problemLeftHight = 0;
         }
         if (problemRightHight < 0) {
           problemRightHight = 0;
         }
-        if(this.activeName == 'problemDetail'){
+        if (this.activeName == "problemDetail") {
           document
-          .getElementById("js-left")
-          .setAttribute(
-            "style",
-            "height:" + problemLeftHight + "px !important"
-          );
-        }else if(this.activeName == 'mySubmission'){
+            .getElementById("js-left" + "-" + this.$route.name)
+            .setAttribute(
+              "style",
+              "height:" + problemLeftHight + "px !important"
+            );
+        } else if (this.activeName == "mySubmission") {
           document
-          .getElementById("js-submission")
-          .setAttribute(
-            "style",
-            "height:" + problemLeftHight + "px !important"
-          );
-        }else if(this.activeName == 'extraFile'){
+            .getElementById("js-submission")
+            .setAttribute(
+              "style",
+              "height:" + problemLeftHight + "px !important"
+            );
+        } else if (this.activeName == "extraFile") {
           document
-          .getElementById("js-extraFile")
-          .setAttribute(
-            "style",
-            "height:" + problemLeftHight + "px !important"
-          );
+            .getElementById("js-extraFile")
+            .setAttribute(
+              "style",
+              "height:" + problemLeftHight + "px !important"
+            );
         }
         document
-          .getElementById("js-right")
+          .getElementById("js-right" + "-" + this.$route.name)
           .setAttribute(
             "style",
             "height:" + problemRightHight + "px !important"
           );
-
         document
-          .getElementById("js-center")
+          .getElementById("js-center" + "-" + this.$route.name)
           .setAttribute(
             "style",
-            "top:" + (problemLeftHight *0.5) + "px !important"
+            "top:" + problemLeftHight * 0.5 + "px !important"
           );
       } catch (e) {}
     },
     init() {
+      this.openFocusMode = utils.isFocusModePage(this.$route.name);
       if (this.$route.params.contestID) {
         this.contestID = this.$route.params.contestID;
       }
@@ -1140,7 +1159,8 @@ export default {
         this.trainingID = this.$route.params.trainingID;
       }
       let func =
-        this.$route.name === "ContestProblemDetails"
+        this.$route.name === "ContestProblemDetails" ||
+        this.$route.name === "ContestFullProblemDetails"
           ? "getContestProblem"
           : "getProblem";
       this.loading = true;
@@ -1599,6 +1619,18 @@ export default {
     openTestJudgeDrawer() {
       this.openTestCaseDrawer = !this.openTestCaseDrawer;
     },
+    switchFocusMode(isOpen) {
+      this.openFocusMode = isOpen;
+      this.$router.push({
+        name: utils.getSwitchFoceusModeRouteName(this.$route.name),
+        params: {
+          trainingID: this.trainingID,
+          contestID: this.contestID,
+          problemID: this.problemID,
+          groupID: this.groupID,
+        },
+      });
+    },
   },
   computed: {
     ...mapGetters([
@@ -1711,9 +1743,9 @@ export default {
         this.init();
       }
     },
-    activeName(){
+    activeName() {
       this.resizeWatchHeight();
-    }
+    },
   },
 };
 </script>
@@ -1782,27 +1814,27 @@ a {
   padding-right: 0px;
 }
 
-#js-left {
+.js-left {
   padding-right: 15px;
 }
 @media screen and (min-width: 992px) {
-  #js-left {
+  .js-left {
     height: 730px !important;
     overflow-y: auto;
   }
-  #js-extraFile{
+  #js-extraFile {
     overflow-y: auto;
   }
-  #js-submission{
+  #js-submission {
     overflow-y: auto;
   }
   .submit-detail {
     overflow-y: auto;
   }
-  #js-right {
+  .js-right {
     height: 635px !important;
   }
-  #js-right-bottom{
+  #js-right-bottom {
     height: 49px;
   }
   .problem-tag {

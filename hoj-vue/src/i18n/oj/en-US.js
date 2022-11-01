@@ -35,6 +35,12 @@ export const m = {
   Dialog_Register: 'Register',
   Dialog_Reset_Password: 'Reset Password',
   Click_To_Change_Web_Language: 'Click to change web language',
+  NavBar_Back_Home:'Back Home',
+  NavBar_Training_Home:'Training Home',
+  NavBar_Contest_Home: 'Contest Home',
+  NavBar_Contest_Own_Submission: 'My Submission',
+  NavBar_Contest_Rank: 'Contest Rank',
+  NavBar_Group_Home: 'Group Home',
 
   //  /components/oj/common/Login.vue 登录弹窗
   Login_Username: 'Username',
@@ -551,6 +557,8 @@ export const m = {
   Real_Output: 'Real Output',
   Pass_Test_Case: 'Pass Test Case',
   Get_Recently_Passed_Code:'Get Recently Passed Code',
+  Enter_Focus_Mode:'Enter Focus Mode',
+  Exit_Focus_Mode:'Exit Focus Mode',
 
   // /components/oj/comment/Comment.vue
   Announcement_of_contest_Q_and_A_area: 'Announcement of Contest Q & A Area',

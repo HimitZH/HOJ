@@ -11,7 +11,7 @@
     >
       <!-- OI赛制的最近提交显示 -->
       <vxe-table-column
-        field="status"
+        field="oi-status"
         title=""
         width="50"
         v-if="isAuthenticated && contestRuleType == RULE_TYPE.OI"
@@ -45,7 +45,7 @@
 
       <!-- ACM赛制的最近提交显示 -->
       <vxe-table-column
-        field="status"
+        field="acm-status"
         title=""
         width="50"
         v-if="isAuthenticated && contestRuleType == RULE_TYPE.ACM"

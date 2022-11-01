@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import storage from '@/common/storage'
-import { STORAGE_KEY,PROBLEM_LEVEL } from '@/common/constants'
+import { STORAGE_KEY,PROBLEM_LEVEL,FOCUS_MODE_ROUTE_NAME } from '@/common/constants'
 import myMessage from '@/common/message'
 import api from "@/common/api";
 import store from '@/store'
@@ -169,6 +169,31 @@ function getLevelName(difficulty) {
     return 'unknown [' + difficulty + ']';
   }
 }
+function isFocusModePage(routeName){
+  for(let keyName in FOCUS_MODE_ROUTE_NAME){
+    if(keyName == routeName){
+      return true;
+    }
+  }
+  return false;
+}
+
+function getFocusModeOriPage(routeName){
+  return FOCUS_MODE_ROUTE_NAME[routeName]
+}
+
+function supportFocusMode(routeName){
+  return routeName != 'ProblemDetails';
+}
+function getSwitchFoceusModeRouteName(routeName){
+  for(let keyName in FOCUS_MODE_ROUTE_NAME){
+    if(keyName == routeName){
+      return FOCUS_MODE_ROUTE_NAME[keyName];
+    }else if(FOCUS_MODE_ROUTE_NAME[keyName] == routeName){
+      return keyName;
+    }
+  }
+}
 
 export default {
   submissionMemoryFormat: submissionMemoryFormat,
@@ -183,5 +208,9 @@ export default {
   stringToExamples:stringToExamples,
   examplesToString:examplesToString,
   getLevelColor:getLevelColor,
-  getLevelName:getLevelName
+  getLevelName:getLevelName,
+  isFocusModePage:isFocusModePage,
+  getFocusModeOriPage:getFocusModeOriPage,
+  supportFocusMode:supportFocusMode,
+  getSwitchFoceusModeRouteName:getSwitchFoceusModeRouteName
 }

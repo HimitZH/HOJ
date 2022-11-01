@@ -35,6 +35,12 @@ export const m = {
   Dialog_Register: '注册',
   Dialog_Reset_Password: '重置密码',
   Click_To_Change_Web_Language: '点击切换网站语言',
+  NavBar_Back_Home:'前往首页',
+  NavBar_Training_Home: '训练主页',
+  NavBar_Contest_Home: '比赛主页',
+  NavBar_Contest_Own_Submission: '我的提交',
+  NavBar_Contest_Rank: '比赛榜单',
+  NavBar_Group_Home: '团队主页',
 
   //  /components/oj/common/Login.vue 登录弹窗
   Login_Username: '用户名',
@@ -554,6 +560,8 @@ export const m = {
   Real_Output: '实际输出',
   Pass_Test_Case: '通过测试用例',
   Get_Recently_Passed_Code:'获取最近通过的代码',
+  Enter_Focus_Mode:'进入专注模式',
+  Exit_Focus_Mode:'退出专注模式',
 
   // /components/oj/comment/Comment.vue
   Announcement_of_contest_Q_and_A_area: '比赛评论区公告',
@@ -671,7 +679,7 @@ export const m = {
   Disband_Successfully:'解散成功',
   
   Group_Number: '团队编号',
-  Group_Home: '主页 ',
+  Group_Home: '主页',
   Group_Problem: '题目',
   Group_Training: '训练',
   Group_Contest: '比赛',

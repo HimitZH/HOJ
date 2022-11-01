@@ -71,6 +71,30 @@ const ojRoutes = [
     meta: { title: 'Problem Details' }
   },
   {
+    name: 'TrainingFullProblemDetails',
+    path: '/training/:trainingID/problem/:problemID/full-screen',
+    component: Problem,
+    meta: { title: 'Training Problem Details', fullScreenSource: 'training'}
+  },
+  {
+    name: 'ContestFullProblemDetails',
+    path: '/contest/:contestID/problem/:problemID/full-screen',
+    component: Problem,
+    meta: { title: 'Contest Problem Details', fullScreenSource: 'contest'}
+  },
+  {
+    name: 'GroupFullProblemDetails',
+    path: '/group/:groupID/problem/:problemID/full-screen',
+    component: Problem,
+    meta: { title: 'Group Problem Details', fullScreenSource: 'group' }
+  },
+  {
+    name: 'GroupTrainingFullProblemDetails',
+    path: '/group/:groupID/training/:trainingID/problem/:problemID/full-screen',
+    component: Problem,
+    meta: { title: 'Group Training Problem Details', fullScreenSource: 'training'}
+  },
+  {
     path: '/training',
     name: 'TrainingList',
     component: TrainingList,
@@ -90,7 +114,7 @@ const ojRoutes = [
       },
       {
         name: 'TrainingProblemDetails',
-        path: 'problem/:problemID/',
+        path: 'problem/:problemID',
         component: Problem,
         meta: { title: 'Training Problem Details' }
       },

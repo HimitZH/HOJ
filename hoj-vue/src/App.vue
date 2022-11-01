@@ -129,6 +129,7 @@ import NavBar from "@/components/oj/common/NavBar";
 import { mapActions, mapState, mapGetters } from "vuex";
 import { LOGO, MOTTO } from "@/common/logo";
 import storage from "@/common/storage";
+import utils from "@/common/utils";
 export default {
   name: "app-content",
   components: {
@@ -219,7 +220,7 @@ export default {
       } else {
         this.isAdminView = false;
       }
-      if(newVal.name == 'ProblemDetails'){
+      if(newVal.name == 'ProblemDetails' || utils.isFocusModePage(newVal.name)){
         this.showFooter = false;
       }else{
         this.showFooter = true;
@@ -245,7 +246,7 @@ export default {
     } else {
       this.isAdminView = true;
     }
-    this.showFooter = this.$route.name != 'ProblemDetails';
+    this.showFooter = !(this.$route.name == 'ProblemDetails'|| utils.isFocusModePage(this.$route.name)) ;
     window.addEventListener("visibilitychange", this.autoRefreshUserInfo);
   },
   mounted() {

@@ -1,11 +1,14 @@
 <template>
   <div style="margin: 0px 0px 15px 0px;font-size: 14px;position: relative">
-    <el-row class="header" id="js-right-header">
+    <el-row
+      class="header"
+      id="js-right-header"
+    >
       <el-col
         :xs="24"
-        :sm="15"
-        :md="15"
-        :lg="15"
+        :sm="16"
+        :md="16"
+        :lg="16"
       >
         <div class="select-row">
           <span>{{ $t('m.Lang') }}:</span>
@@ -53,15 +56,15 @@
       </el-col>
       <el-col
         :xs="24"
-        :sm="9"
-        :md="9"
-        :lg="9"
+        :sm="8"
+        :md="8"
+        :lg="8"
       >
         <div class="select-row fl-right">
           <span>
             <el-tooltip
               :content="$t('m.Upload_file')"
-              placement="top"
+              placement="bottom"
             >
               <el-button
                 icon="el-icon-upload"
@@ -207,12 +210,56 @@
               </el-popover>
             </el-tooltip>
           </span>
+          <template v-if="supportFocusMode">
+            <span
+              v-if="!openFocusMode"
+              class="hidden-sm-and-down"
+            >
+              <el-tooltip
+                :content="$t('m.Enter_Focus_Mode')"
+                placement="bottom"
+              >
+                <el-button
+                  icon="el-icon-full-screen"
+                  @click="switchFocusMode(true)"
+                  size="small"
+                ></el-button>
+              </el-tooltip>
+            </span>
+            <span
+              v-else
+              class="hidden-sm-and-down"
+            >
+              <el-tooltip
+                :content="$t('m.Exit_Focus_Mode')"
+                placement="bottom"
+              >
+                <el-button
+                  @click="switchFocusMode(false)"
+                  size="small"
+                >
+                  <svg
+                    focusable="false"
+                    viewBox="0 0 1024 1024"
+                    fill="currentColor"
+                    width="0.95em"
+                    height="0.95em"
+                    aria-hidden="true"
+                  >
+                    <path d="M463.04 863.32h-88.51V641.14H152.35v-88.87H463.4l-.36 311.05zM863.32 463.4H552.27l.31-311.05h88.56v222.18h222.18v88.87z">
+                    </path>
+                  </svg>
+                </el-button>
+              </el-tooltip>
+            </span>
+          </template>
         </div>
       </el-col>
     </el-row>
     <div :style="'line-height: 1.5;font-size:'+fontSize">
       <codemirror
-        id="js-right"
+        :id="'js-right'+'-'+ $route.name"
+        class="js-right"
         :value="value"
         :options="options"
         @change="onEditorCodeChange"
@@ -548,6 +595,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    openFocusMode: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -770,6 +821,9 @@ export default {
     getUserLastAccepetedCode() {
       this.$emit("getUserLastAccepetedCode");
     },
+    switchFocusMode(isOpen) {
+      this.$emit("switchFocusMode", isOpen);
+    },
   },
   computed: {
     editor() {
@@ -785,6 +839,9 @@ export default {
         statusName: JUDGE_STATUS[this.testJudgeRes.status].name,
         color: JUDGE_STATUS[this.testJudgeRes.status].rgb,
       };
+    },
+    supportFocusMode() {
+      return utils.supportFocusMode(this.$route.name);
     },
   },
   watch: {

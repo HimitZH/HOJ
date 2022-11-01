@@ -23,62 +23,110 @@
               ></el-image>
             </el-tooltip>
           </div>
+          <template v-if="mode == 'defalut'">
+            <el-menu-item index="/home"
+              ><i class="el-icon-s-home"></i>{{ $t('m.NavBar_Home') }}</el-menu-item
+            >
+            <el-menu-item index="/problem"
+              ><i class="el-icon-s-grid"></i
+              >{{ $t('m.NavBar_Problem') }}</el-menu-item
+            >
+            <el-menu-item index="/training"
+              ><i class="el-icon-s-claim"></i
+              >{{ $t('m.NavBar_Training') }}</el-menu-item
+            >
+            <el-menu-item index="/contest"
+              ><i class="el-icon-trophy"></i
+              >{{ $t('m.NavBar_Contest') }}</el-menu-item
+            >
+            <el-menu-item index="/status"
+              ><i class="el-icon-s-marketing"></i
+              >{{ $t('m.NavBar_Status') }}</el-menu-item
+            >
+            <el-submenu index="rank">
+              <template slot="title"
+                ><i class="el-icon-s-data"></i>{{ $t('m.NavBar_Rank') }}</template
+              >
+              <el-menu-item index="/acm-rank">{{
+                $t('m.NavBar_ACM_Rank')
+              }}</el-menu-item>
+              <el-menu-item index="/oi-rank">{{
+                $t('m.NavBar_OI_Rank')
+              }}</el-menu-item>
+            </el-submenu>
+            <el-menu-item index="/discussion"
+              v-if="websiteConfig.openPublicDiscussion"
+              ><i class="el-icon-s-comment"></i
+              >{{ $t('m.NavBar_Discussion') }}</el-menu-item
+            >
+            <el-menu-item index="/group"
+              ><i
+                class="fa fa-users navbar-icon"
+              ></i
+              >{{ $t('m.NavBar_Group') }}</el-menu-item
+            >
+            <el-submenu index="about">
+              <template slot="title"
+                ><i class="el-icon-info"></i>{{ $t('m.NavBar_About') }}</template
+              >
+              <el-menu-item index="/introduction">{{
+                $t('m.NavBar_Introduction')
+              }}</el-menu-item>
+              <el-menu-item index="/developer">{{
+                $t('m.NavBar_Developer')
+              }}</el-menu-item>
+            </el-submenu>
+        </template>
+        <template v-else-if="mode == 'training'">
           <el-menu-item index="/home"
-            ><i class="el-icon-s-home"></i>{{ $t('m.NavBar_Home') }}</el-menu-item
-          >
-          <el-menu-item index="/problem"
-            ><i class="el-icon-s-grid"></i
-            >{{ $t('m.NavBar_Problem') }}</el-menu-item
-          >
-          <el-menu-item index="/training"
-            ><i class="el-icon-s-claim"></i
-            >{{ $t('m.NavBar_Training') }}</el-menu-item
-          >
-          <el-menu-item index="/contest"
-            ><i class="el-icon-trophy"></i
-            >{{ $t('m.NavBar_Contest') }}</el-menu-item
-          >
-          <el-menu-item index="/status"
-            ><i class="el-icon-s-marketing"></i
-            >{{ $t('m.NavBar_Status') }}</el-menu-item
-          >
-          <el-submenu index="rank">
-            <template slot="title"
-              ><i class="el-icon-s-data"></i>{{ $t('m.NavBar_Rank') }}</template
+              ><i class="el-icon-s-home"></i>{{ $t('m.NavBar_Back_Home') }}</el-menu-item
             >
-            <el-menu-item index="/acm-rank">{{
-              $t('m.NavBar_ACM_Rank')
-            }}</el-menu-item>
-            <el-menu-item index="/oi-rank">{{
-              $t('m.NavBar_OI_Rank')
-            }}</el-menu-item>
-          </el-submenu>
-
-          <el-menu-item index="/discussion"
-            v-if="websiteConfig.openPublicDiscussion"
-            ><i class="el-icon-s-comment"></i
-            >{{ $t('m.NavBar_Discussion') }}</el-menu-item
-          >
-
-          <el-menu-item index="/group"
-            ><i
-              class="fa fa-users"
-              style="margin-right: 5px;width: 24px;text-align: center;"
-            ></i
-            >{{ $t('m.NavBar_Group') }}</el-menu-item
-          >
-
-          <el-submenu index="about">
-            <template slot="title"
-              ><i class="el-icon-info"></i>{{ $t('m.NavBar_About') }}</template
+            <template v-if="$route.params.groupID">
+              <el-menu-item :index="'/group/' + $route.params.groupID"
+              ><i
+                class="fa fa-users navbar-icon"
+              ></i
+              >{{ $t('m.NavBar_Group_Home') }}</el-menu-item>
+            </template>
+            <el-menu-item :index="getTrainingHomePath()"
+              ><i class="el-icon-s-claim"></i>{{ $t('m.NavBar_Training_Home') }}</el-menu-item
             >
-            <el-menu-item index="/introduction">{{
-              $t('m.NavBar_Introduction')
-            }}</el-menu-item>
-            <el-menu-item index="/developer">{{
-              $t('m.NavBar_Developer')
-            }}</el-menu-item>
-          </el-submenu>
+            <el-menu-item :index="getTrainingProblemListPath()"
+              ><i class="fa fa-list navbar-icon"></i>{{ $t('m.Problem_List') }}</el-menu-item
+            >
+        </template>
+        <template v-else-if="mode == 'contest'">
+          <el-menu-item index="/home"
+              ><i class="el-icon-s-home"></i>{{ $t('m.NavBar_Back_Home') }}</el-menu-item
+            >
+            <el-menu-item :index="'/contest/' + $route.params.contestID"
+              ><i class="el-icon-trophy"></i>{{ $t('m.NavBar_Contest_Home') }}</el-menu-item
+            >
+            <el-menu-item :index="'/contest/' + $route.params.contestID + '/problems'"
+              ><i class="fa fa-list navbar-icon"></i>{{ $t('m.Problem_List') }}</el-menu-item
+            >
+            <el-menu-item :index="'/contest/' + $route.params.contestID + '/submissions?onlyMine=true'"
+              ><i class="el-icon-menu"></i>{{ $t('m.NavBar_Contest_Own_Submission') }}</el-menu-item
+            >
+            <el-menu-item :index="'/contest/' + $route.params.contestID + '/rank'"
+              ><i class="fa fa-bar-chart navbar-icon"></i>{{ $t('m.NavBar_Contest_Rank') }}</el-menu-item
+            >
+        </template>
+        <template v-else-if="mode == 'group'">
+          <el-menu-item index="/home"
+              ><i class="el-icon-s-home"></i>{{ $t('m.NavBar_Back_Home') }}</el-menu-item
+            >
+            <template v-if="$route.params.groupID">
+              <el-menu-item :index="'/group/' + $route.params.groupID"
+              ><i
+                class="fa fa-users navbar-icon"
+              ></i
+              >{{ $t('m.NavBar_Group_Home') }}</el-menu-item>
+            </template>
+            <el-menu-item :index="'/group/' + $route.params.groupID + '/problem'"
+              ><i class="fa fa-list navbar-icon"></i>{{ $t('m.Problem_List') }}</el-menu-item
+            >
+        </template>
 
           <template v-if="!isAuthenticated">
             <div class="btn-menu">
@@ -591,6 +639,7 @@ export default {
     };
   },
   mounted() {
+    this.switchMode();
     this.setHiddenHeaderHeight();
     if (this.isAuthenticated) {
       this.getUnreadMsgCount();
@@ -604,6 +653,7 @@ export default {
   },
   data() {
     return {
+      mode:'defalut',
       centerDialogVisible: false,
       mobileNar: false,
       opendrawer: false,
@@ -619,7 +669,7 @@ export default {
     ...mapActions(['changeModalStatus']),
     page_width() {
       let screenWidth = window.screen.width;
-      if (screenWidth < 1050) {
+      if (screenWidth < 992) {
         this.mobileNar = true;
       } else {
         this.mobileNar = false;
@@ -694,6 +744,31 @@ export default {
           document.getElementById('header-hidden').setAttribute('style','height:'+ headerHeight + 'px')
         } catch (e) {}
       }
+    },
+    switchMode(){
+      if(this.$route.meta.fullScreenSource){
+        this.mode = this.$route.meta.fullScreenSource;
+      }else{
+        this.mode = 'defalut';
+      }
+    },
+    getTrainingHomePath(){
+      let tid = this.$route.params.trainingID
+      let gid = this.$route.params.groupID
+      if(gid){
+        return `/group/${gid}/training/${tid}`;
+      }else{
+        return `/training/${tid}`;
+      }
+    },
+    getTrainingProblemListPath(){
+      let tid = this.$route.params.trainingID
+      let gid = this.$route.params.groupID
+      if(gid){
+        return `/group/${gid}/training/${tid}/problems`;
+      }else{
+        return `/training/${tid}/problems`;
+      }
     }
   },
   computed: {
@@ -755,6 +830,9 @@ export default {
         clearInterval(this.msgTimer);
       }
     },
+    $route(){
+      this.switchMode();
+    }
   },
 };
 </script>
@@ -859,5 +937,10 @@ export default {
 }
 .el-menu-item.is-active i {
   color: #2196f3 !important;
+}
+.navbar-icon{
+  margin-right: 5px !important;
+  width: 24px !important;
+  text-align: center !important;
 }
 </style>
