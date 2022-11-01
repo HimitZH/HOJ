@@ -928,6 +928,33 @@ export default {
 .el-submenu__title i {
   color: #495060 !important;
 }
+.el-menu-item {
+  padding: 0 13px;
+}
+.el-menu-item:hover, .el-menu .el-menu-item:hover{
+  border-bottom: 2px solid #2474b5 !important;
+}
+.el-menu .el-menu-item:hover, 
+.el-menu .el-menu-item:hover i,
+.el-submenu .el-submenu__title:hover,
+.el-submenu .el-submenu__title:hover i{
+  outline: 0 !important;
+  color: #2E95FB !important;
+  background: linear-gradient(270deg, #F2F7FC 0%, #FEFEFE 100%)!important;
+}
+.el-menu .el-menu-item.is-active, 
+.el-menu .el-menu-item.is-active i,
+.el-submenu.is-active,
+.el-submenu.is-active i
+{
+  color: #2E95FB !important;
+  background: linear-gradient(270deg, #F2F7FC 0%, #FEFEFE 100%)!important;
+}
+.el-menu--horizontal .el-menu .el-menu-item:hover, 
+.el-submenu /deep/.el-submenu__title:hover {
+  color: #2E95FB !important;
+  background: linear-gradient(270deg, #F2F7FC 0%, #FEFEFE 100%)!important;
+}
 .el-menu-item i {
   color: #495060;
 }
