@@ -145,7 +145,9 @@ public class ProblemTestCaseUtils {
             String outputFilePath = testCasesDir + File.separator + problemCase.getOutput();
             if (FileUtil.exist(outputFilePath)) {
                 FileReader outputFile = new FileReader(outputFilePath, CharsetUtil.UTF_8);
-                output = outputFile.readString().replaceAll("\r\n", "\n");
+                output = outputFile.readString()
+                        .replaceAll("\r\n", "\n") // 避免window系统的换行问题
+                        .replaceAll("\r", "\n"); // 避免mac系统的换行问题
                 FileWriter outFileWriter = new FileWriter(testCasesDir + File.separator + problemCase.getOutput(), CharsetUtil.UTF_8);
                 outFileWriter.write(output);
             } else {
@@ -211,8 +213,9 @@ public class ProblemTestCaseUtils {
         if (StringUtils.isEmpty(problemCases.get(0).getInput())
                 || StringUtils.isEmpty(problemCases.get(0).getOutput())
                 || (problemCases.get(0).getInput().endsWith(".in")
-                && (problemCases.get(0).getOutput().endsWith(".out")
-                || problemCases.get(0).getOutput().endsWith(".ans")))) {
+                        && (problemCases.get(0).getOutput().endsWith(".out") || problemCases.get(0).getOutput().endsWith(".ans"))
+                    )
+                || (problemCases.get(0).getInput().endsWith(".txt") && problemCases.get(0).getOutput().endsWith(".txt"))) {
 
             if (FileUtil.isEmpty(new File(testCasesDir))) { //如果本地对应文件夹也为空，说明文件丢失了
                 throw new SystemError("problemID:[" + problemId + "] test case has not found.", null, null);

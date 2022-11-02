@@ -3,13 +3,12 @@ package top.hcode.hoj.config;
 import com.alibaba.druid.pool.DruidDataSource;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Optional;
+import java.util.Objects;
 
 /**
  * @Author: Himit_ZH
@@ -22,17 +21,23 @@ import java.util.Optional;
 @Data
 public class DruidConfig {
 
-    @Value("${hoj.db.username:}")
+    @Value("${hoj.db.username:root}")
     private String username;
 
-    @Value("${hoj.db.password}")
+    @Value("${hoj.db.password:hoj123456}")
     private String password;
 
-    @Value("${hoj.db.public-host:172.20.0.3}")
+    @Value("${hoj.db.host:172.20.0.3}")
     private String host;
 
-    @Value("${hoj.db.public-port:3306}")
+    @Value("${hoj.db.port:3306}")
     private Integer port;
+
+    @Value("${hoj.db.public-host:172.20.0.3}")
+    private String publicHost;
+
+    @Value("${hoj.db.public-port:3306}")
+    private Integer publicPort;
 
     @Value("${hoj.db.name:hoj}")
     private String name;
@@ -88,24 +93,25 @@ public class DruidConfig {
     @Value("${spring.datasource.maxWait:60000}")
     private Integer maxWait;
 
-    @Autowired
-    private DataSourceConfigure dataSourceConfigure;
-
     @Bean(name = "datasource")
     @RefreshScope
     public DruidDataSource dataSource() {
 
-        String mysqlHost = Optional.ofNullable(dataSourceConfigure.getHost()).orElseGet(() -> host);
-        Integer mysqlPort = Optional.ofNullable(dataSourceConfigure.getPort()).orElseGet(() -> port);
-        String mysqlName = Optional.ofNullable(dataSourceConfigure.getName()).orElseGet(() -> name);
-        String mysqlUsername = Optional.ofNullable(dataSourceConfigure.getUsername()).orElseGet(() -> username);
-        String mysqlUserPassword = Optional.ofNullable(dataSourceConfigure.getPassword()).orElseGet(() -> password);
+        String mysqlHost = publicHost;
+        Integer mysqlPort = publicPort;
+        if (Objects.equals(publicHost, host)) {
+            // 如果judgeServer访问的mysql的host与backend访问的一致，则用backend的端口号
+            mysqlPort = port;
+        }
+        String mysqlName = name;
+        String mysqlUsername = username;
+        String mysqlUserPassword = password;
 
         log.warn("[MySQL] [Config Init] name:[{}], host:[{}], port:[{}], username:[{}], password:[{}]",
                 mysqlName, mysqlHost, mysqlPort, mysqlUsername, mysqlUserPassword);
 
         DruidDataSource datasource = new DruidDataSource();
-        String url = "jdbc:mysql://" + host + ":" + port + "/" + name + "?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&rewriteBatchedStatements=true";
+        String url = "jdbc:mysql://" + mysqlHost + ":" + mysqlPort + "/" + mysqlName + "?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowMultiQueries=true&rewriteBatchedStatements=true";
         datasource.setUrl(url);
         datasource.setUsername(mysqlUsername);
         datasource.setPassword(mysqlUserPassword);
