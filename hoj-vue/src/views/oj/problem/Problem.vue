@@ -470,6 +470,7 @@
           :title="$t('m.Shrink_Sidebar')"
         >
           <span>⋮</span>
+          <span>
           <el-tooltip
             :content="
               toWatchProblem
@@ -477,6 +478,7 @@
                 : $t('m.Only_View_Problem')
             "
             placement="right"
+            v-if="!toResetWatch"
           >
             <el-button
               icon="el-icon-caret-right"
@@ -489,6 +491,7 @@
           <el-tooltip
             :content="$t('m.Put_away_the_full_screen_and_write_the_code')"
             placement="left"
+            v-else
           >
             <el-button
               icon="el-icon-caret-left"
@@ -496,9 +499,9 @@
               class="left-fold fold"
               @click.stop="resetWatch(false)"
               size="mini"
-              v-show="toResetWatch"
             ></el-button>
           </el-tooltip>
+        </span>
         </div>
         <el-col
           :sm="24"
@@ -1017,7 +1020,12 @@ export default {
             var endX = e.clientX;
             var moveLen = resize[i].left + (endX - startX); // （endx-startx）=移动的距离。resize[i].left+移动的距离=左边区域最后的宽度
             var maxT = box[i].clientWidth - resize[i].offsetWidth; // 容器宽度 - 左边区域的宽度 = 右边区域的宽度
-            if (moveLen < 420) moveLen = 0; // 左边区域的最小宽度为420px
+            if (moveLen < 420){
+              moveLen = 0; // 左边区域的最小宽度为420px
+              _this.toWatchProblem = true;
+            }else{
+              _this.toWatchProblem = false;
+            }
             if (moveLen > maxT - 580) moveLen = maxT - 580; //右边区域最小宽度为580px
             resize[i].style.left = moveLen; // 设置左侧区域的宽度
             for (let j = 0; j < left.length; j++) {
@@ -1026,9 +1034,7 @@ export default {
               right[j].style.width = tmp + "px";
               if (tmp > 0) {
                 _this.toResetWatch = false;
-              }
-              if (moveLen == 0) {
-                _this.toWatchProblem = true;
+                right[j].style.display = "";
               }
             }
           };
@@ -1056,10 +1062,10 @@ export default {
       var right = document.getElementsByClassName("problem-right");
       var box = document.getElementsByClassName("problem-box");
       for (let i = 0; i < resize.length; i++) {
-        resize[i].style.left = box[i].clientWidth - 11;
         for (let j = 0; j < left.length; j++) {
           left[j].style.width = box[i].clientWidth - 20 + "px";
           right[j].style.width = "0px";
+          right[j].style.display = "none";
         }
       }
       this.toResetWatch = true;
@@ -1076,10 +1082,10 @@ export default {
         } else {
           leftWidth = box[i].clientWidth - 580; // 右边最小580px
         }
-        resize[i].style.left = leftWidth - 11;
         for (let j = 0; j < left.length; j++) {
-          left[j].style.width = leftWidth - 11 + "px";
+          left[j].style.width = leftWidth - 20 + "px";
           right[j].style.width = box[i].clientWidth - leftWidth + "px";
+          right[j].style.display = "";
         }
       }
       this.toResetWatch = false;
@@ -1858,7 +1864,7 @@ a {
     overflow: hidden;
   }
   .problem-left {
-    width: calc(50% - 10px); /*左侧初始化宽度*/
+    width: calc(50% - 13px); /*左侧初始化宽度*/
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
@@ -1875,7 +1881,6 @@ a {
     height: 50px;
     background-size: cover;
     background-position: center;
-    /*z-index: 99999;*/
     font-size: 32px;
     color: white;
   }

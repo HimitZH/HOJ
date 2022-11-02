@@ -941,6 +941,7 @@ export default {
   outline: 0 !important;
   color: #2E95FB !important;
   background: linear-gradient(270deg, #F2F7FC 0%, #FEFEFE 100%)!important;
+  transition: all .2s ease;
 }
 .el-menu .el-menu-item.is-active, 
 .el-menu .el-menu-item.is-active i,
@@ -949,6 +950,7 @@ export default {
 {
   color: #2E95FB !important;
   background: linear-gradient(270deg, #F2F7FC 0%, #FEFEFE 100%)!important;
+  transition: all .2s ease;
 }
 .el-menu--horizontal .el-menu .el-menu-item:hover, 
 .el-submenu /deep/.el-submenu__title:hover {
