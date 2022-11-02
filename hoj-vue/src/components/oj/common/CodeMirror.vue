@@ -39,7 +39,7 @@
               ></el-button>
             </el-tooltip>
           </span>
-          <span>
+          <span v-if="isAuthenticated">
             <el-tooltip
               :content="$t('m.Get_Recently_Passed_Code')"
               placement="top"
