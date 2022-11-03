@@ -21,6 +21,7 @@ import top.hcode.hoj.pojo.entity.user.UserAcproblem;
 import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.utils.RedisUtils;
+import top.hcode.hoj.validator.CommonValidator;
 import top.hcode.hoj.validator.GroupValidator;
 
 /**
@@ -48,6 +49,9 @@ public class GroupDiscussionManager {
 
     @Autowired
     private RedisUtils redisUtils;
+
+    @Autowired
+    private CommonValidator commonValidator;
 
     public IPage<Discussion> getDiscussionList(Integer limit,
                                                Integer currentPage,
@@ -116,8 +120,13 @@ public class GroupDiscussionManager {
     }
 
     public void addDiscussion(Discussion discussion) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
-        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
+        commonValidator.validateContent(discussion.getTitle(), "讨论标题", 255);
+        commonValidator.validateContent(discussion.getDescription(), "讨论描述", 255);
+        commonValidator.validateContent(discussion.getContent(), "讨论", 65535);
+        commonValidator.validateNotEmpty(discussion.getCategoryId(), "讨论分类");
+
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
         boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
@@ -186,8 +195,13 @@ public class GroupDiscussionManager {
     }
 
     public void updateDiscussion(Discussion discussion) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
-        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
+        commonValidator.validateContent(discussion.getTitle(), "讨论标题", 255);
+        commonValidator.validateContent(discussion.getDescription(), "讨论描述", 255);
+        commonValidator.validateContent(discussion.getContent(), "讨论", 65535);
+        commonValidator.validateNotEmpty(discussion.getCategoryId(), "讨论分类");
+
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long gid = discussion.getGid();

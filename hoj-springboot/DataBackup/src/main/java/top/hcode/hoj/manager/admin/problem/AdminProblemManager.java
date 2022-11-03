@@ -28,6 +28,7 @@ import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.ProblemCase;
 import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.validator.ProblemValidator;
 
 import javax.annotation.Resource;
 import java.io.File;
@@ -57,6 +58,9 @@ public class AdminProblemManager {
 
     @Resource
     private JudgeEntityService judgeEntityService;
+
+    @Resource
+    private ProblemValidator problemValidator;
 
     @Autowired
     private RemoteProblemManager remoteProblemManager;
@@ -132,6 +136,9 @@ public class AdminProblemManager {
     }
 
     public void addProblem(ProblemDTO problemDto) throws StatusFailException {
+
+        problemValidator.validateProblem(problemDto.getProblem());
+
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("problem_id", problemDto.getProblem().getProblemId().toUpperCase());
         Problem problem = problemEntityService.getOne(queryWrapper);
@@ -147,6 +154,9 @@ public class AdminProblemManager {
 
     @Transactional(rollbackFor = Exception.class)
     public void updateProblem(ProblemDTO problemDto) throws StatusForbiddenException, StatusFailException {
+
+        problemValidator.validateProblemUpdate(problemDto.getProblem());
+
         // 获取当前登录的用户
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 

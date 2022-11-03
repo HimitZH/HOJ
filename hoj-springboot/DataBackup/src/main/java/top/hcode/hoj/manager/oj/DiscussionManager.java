@@ -259,6 +259,12 @@ public class DiscussionManager {
 
 
     public void updateDiscussion(Discussion discussion) throws StatusFailException, StatusForbiddenException {
+
+        commonValidator.validateContent(discussion.getTitle(), "讨论标题", 255);
+        commonValidator.validateContent(discussion.getDescription(), "讨论描述", 255);
+        commonValidator.validateContent(discussion.getContent(), "讨论", 65535);
+        commonValidator.validateNotEmpty(discussion.getCategoryId(), "讨论分类");
+
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");

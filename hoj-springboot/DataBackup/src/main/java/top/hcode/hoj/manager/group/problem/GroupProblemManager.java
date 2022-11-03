@@ -31,6 +31,7 @@ import top.hcode.hoj.pojo.vo.ProblemVO;
 import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.validator.GroupValidator;
+import top.hcode.hoj.validator.ProblemValidator;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -68,6 +69,9 @@ public class GroupProblemManager {
 
     @Autowired
     private Dispatcher dispatcher;
+
+    @Autowired
+    private ProblemValidator problemValidator;
 
     @Value("${hoj.judge.token}")
     private String judgeToken;
@@ -142,8 +146,10 @@ public class GroupProblemManager {
     }
 
     public void addProblem(ProblemDTO problemDto) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
-        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
+        problemValidator.validateGroupProblem(problemDto.getProblem());
+
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long gid = problemDto.getProblem().getGid();
@@ -191,8 +197,10 @@ public class GroupProblemManager {
     }
 
     public void updateProblem(ProblemDTO problemDto) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
-        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
+        problemValidator.validateGroupProblemUpdate(problemDto.getProblem());
+
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long pid = problemDto.getProblem().getId();

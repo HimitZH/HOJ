@@ -29,6 +29,12 @@ public class CommonValidator {
         }
     }
 
+    public void validateContentLength(String content, String item, int length) throws StatusFailException {
+        if (content != null && content.length() > length) {
+            throw new StatusFailException(item + "的内容长度超过限制，请重新编辑！");
+        }
+    }
+
 
 
     public void validateNotEmpty(Object value, String item) throws StatusFailException {
