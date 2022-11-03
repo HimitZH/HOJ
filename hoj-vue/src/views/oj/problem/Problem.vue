@@ -471,37 +471,37 @@
         >
           <span>⋮</span>
           <span>
-          <el-tooltip
-            :content="
+            <el-tooltip
+              :content="
               toWatchProblem
                 ? $t('m.View_Problem_Content')
                 : $t('m.Only_View_Problem')
             "
-            placement="right"
-            v-if="!toResetWatch"
-          >
-            <el-button
-              icon="el-icon-caret-right"
-              circle
-              class="right-fold fold"
-              @click.stop="onlyWatchProblem"
-              size="mini"
-            ></el-button>
-          </el-tooltip>
-          <el-tooltip
-            :content="$t('m.Put_away_the_full_screen_and_write_the_code')"
-            placement="left"
-            v-else
-          >
-            <el-button
-              icon="el-icon-caret-left"
-              circle
-              class="left-fold fold"
-              @click.stop="resetWatch(false)"
-              size="mini"
-            ></el-button>
-          </el-tooltip>
-        </span>
+              placement="right"
+              v-if="!toResetWatch"
+            >
+              <el-button
+                icon="el-icon-caret-right"
+                circle
+                class="right-fold fold"
+                @click.stop="onlyWatchProblem"
+                size="mini"
+              ></el-button>
+            </el-tooltip>
+            <el-tooltip
+              :content="$t('m.Put_away_the_full_screen_and_write_the_code')"
+              placement="left"
+              v-else
+            >
+              <el-button
+                icon="el-icon-caret-left"
+                circle
+                class="left-fold fold"
+                @click.stop="resetWatch(false)"
+                size="mini"
+              ></el-button>
+            </el-tooltip>
+          </span>
         </div>
         <el-col
           :sm="24"
@@ -1003,53 +1003,53 @@ export default {
     },
 
     dragControllerDiv() {
-      var resize = document.getElementsByClassName("problem-resize");
+      var resize = document.getElementById(
+        "js-center" + "-" + this.$route.name
+      );
       var left = document.getElementsByClassName("problem-left");
       var right = document.getElementsByClassName("problem-right");
       var box = document.getElementsByClassName("problem-box");
       const _this = this;
-      for (let i = 0; i < resize.length; i++) {
-        // 鼠标按下事件
-        resize[i].onmousedown = function (e) {
-          //颜色改变提醒
-          resize[i].style.background = "#818181";
-          var startX = e.clientX;
-          // 鼠标拖动事件
-          document.onmousemove = function (e) {
-            resize[i].left = startX;
-            var endX = e.clientX;
-            var moveLen = resize[i].left + (endX - startX); // （endx-startx）=移动的距离。resize[i].left+移动的距离=左边区域最后的宽度
-            var maxT = box[i].clientWidth - resize[i].offsetWidth; // 容器宽度 - 左边区域的宽度 = 右边区域的宽度
-            if (moveLen < 420){
-              moveLen = 0; // 左边区域的最小宽度为420px
-              _this.toWatchProblem = true;
-            }else{
-              _this.toWatchProblem = false;
+      // 鼠标按下事件
+      resize.onmousedown = function (e) {
+        //颜色改变提醒
+        resize.style.background = "#818181";
+        var startX = e.clientX;
+        // 鼠标拖动事件
+        document.onmousemove = function (e) {
+          resize.left = startX;
+          var endX = e.clientX;
+          var moveLen = resize.left + (endX - startX); // （endx-startx）=移动的距离。resize.left+移动的距离=左边区域最后的宽度
+          var maxT = box[0].clientWidth - resize.offsetWidth; // 容器宽度 - 左边区域的宽度 = 右边区域的宽度
+          if (moveLen < 420) {
+            moveLen = 0; // 左边区域的最小宽度为420px
+            _this.toWatchProblem = true;
+          } else {
+            _this.toWatchProblem = false;
+          }
+          if (moveLen > maxT - 580) moveLen = maxT - 580; //右边区域最小宽度为580px
+          resize.style.left = moveLen; // 设置左侧区域的宽度
+          for (let j = 0; j < left.length; j++) {
+            left[j].style.width = moveLen + "px";
+            let tmp = box[0].clientWidth - moveLen - 11;
+            right[j].style.width = tmp + "px";
+            if (tmp > 0) {
+              _this.toResetWatch = false;
+              right[j].style.display = "";
             }
-            if (moveLen > maxT - 580) moveLen = maxT - 580; //右边区域最小宽度为580px
-            resize[i].style.left = moveLen; // 设置左侧区域的宽度
-            for (let j = 0; j < left.length; j++) {
-              left[j].style.width = moveLen + "px";
-              let tmp = box[i].clientWidth - moveLen - 11;
-              right[j].style.width = tmp + "px";
-              if (tmp > 0) {
-                _this.toResetWatch = false;
-                right[j].style.display = "";
-              }
-            }
-          };
-          // 鼠标松开事件
-          document.onmouseup = function (evt) {
-            //颜色恢复
-            resize[i].style.background = "#d6d6d6";
-            document.onmousemove = null;
-            document.onmouseup = null;
-            resize[i].releaseCapture && resize[i].releaseCapture(); //当你不在需要继续获得鼠标消息就要应该调用ReleaseCapture()释放掉
-          };
-          resize[i].setCapture && resize[i].setCapture(); //该函数在属于当前线程的指定窗口里设置鼠标捕获
-          return false;
+          }
         };
-      }
+        // 鼠标松开事件
+        document.onmouseup = function (evt) {
+          //颜色恢复
+          resize.style.background = "#d6d6d6";
+          document.onmousemove = null;
+          document.onmouseup = null;
+          resize.releaseCapture && resize.releaseCapture(); //当你不在需要继续获得鼠标消息就要应该调用ReleaseCapture()释放掉
+        };
+        resize.setCapture && resize.setCapture(); //该函数在属于当前线程的指定窗口里设置鼠标捕获
+        return false;
+      };
     },
     onlyWatchProblem() {
       if (this.toWatchProblem) {
