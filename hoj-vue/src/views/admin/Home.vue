@@ -111,7 +111,7 @@
       </el-menu>
       <div id="header">
         <el-row>
-          <el-col :span="20">
+          <el-col :span="18">
             <div class="breadcrumb-container">
               <el-breadcrumb separator-class="el-icon-arrow-right">
                 <el-breadcrumb-item :to="{ path: '/admin/' }">{{
@@ -123,7 +123,7 @@
               </el-breadcrumb>
             </div>
           </el-col>
-          <el-col :span="4" v-show="isAuthenticated">
+          <el-col :span="6" v-show="isAuthenticated">
             <i
               class="fa fa-font katex-editor fa-size"
               @click="katexVisible = true"
@@ -577,7 +577,7 @@ export default {
     },
     page_width() {
       let screenWidth = window.screen.width;
-      if (screenWidth < 1150) {
+      if (screenWidth < 992) {
         this.mobileNar = true;
       } else {
         this.mobileNar = false;
@@ -601,7 +601,7 @@ export default {
       'webLanguage',
     ]),
     'window.screen.width'(newVal, oldVal) {
-      if (newVal < 1150) {
+      if (newVal < 992) {
         this.mobileNar = true;
       } else {
         this.mobileNar = false;
@@ -619,7 +619,7 @@ export default {
 <style scoped>
 .vertical_menu {
   overflow: auto;
-  width: 205px;
+  width: 15%;
   height: 100%;
   position: fixed !important;
   z-index: 100;
@@ -676,7 +676,7 @@ img {
 
 #header {
   text-align: right;
-  padding-left: 210px;
+  margin-left: 15%;
   padding-right: 30px;
   line-height: 50px;
   height: 50px;
@@ -687,20 +687,39 @@ img {
   text-align: center;
   font-size: small;
 }
-
-@media screen and (min-width: 1150px) {
-  .content-app {
-    padding-top: 20px;
-    padding-right: 10px;
-    padding-left: 210px;
-  }
-}
-@media screen and (max-width: 1150px) {
+@media screen and (max-width: 992px) {
   .content-app {
     padding: 0 5px;
     margin-top: 20px;
   }
 }
+@media screen and (min-width: 992px) {
+  .content-app {
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-left: calc(20% + 10px);;
+  }
+  .vertical_menu {
+    width: 20%;
+  }
+  #header {
+    margin-left: 20%;
+  }
+}
+@media screen and (min-width: 1150px) {
+  .content-app {
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-left: 220px;
+  }
+  .vertical_menu {
+    width: 210px;
+  }
+  #header {
+    margin-left: 210px;
+  }
+}
+
 
 @keyframes fadeInUp {
   from {
@@ -722,7 +741,6 @@ img {
   margin-right: 5px;
   cursor: pointer;
   vertical-align: middle;
-  /*font-size: 18px;*/
   margin-right: 10px;
 }
 .drop-avatar {
