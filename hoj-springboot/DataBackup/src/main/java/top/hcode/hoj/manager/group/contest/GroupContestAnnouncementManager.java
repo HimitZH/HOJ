@@ -19,6 +19,7 @@ import top.hcode.hoj.pojo.entity.contest.ContestAnnouncement;
 import top.hcode.hoj.pojo.entity.group.Group;
 import top.hcode.hoj.pojo.vo.AnnouncementVO;
 import top.hcode.hoj.shiro.AccountProfile;
+import top.hcode.hoj.validator.CommonValidator;
 import top.hcode.hoj.validator.GroupValidator;
 
 /**
@@ -43,6 +44,9 @@ public class GroupContestAnnouncementManager {
 
     @Autowired
     private GroupValidator groupValidator;
+
+    @Autowired
+    private CommonValidator commonValidator;
 
     public IPage<AnnouncementVO> getContestAnnouncementList(Integer limit, Integer currentPage, Long cid) throws StatusNotFoundException, StatusForbiddenException {
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
@@ -75,6 +79,10 @@ public class GroupContestAnnouncementManager {
 
     @Transactional(rollbackFor = Exception.class)
     public void addContestAnnouncement(AnnouncementDTO announcementDto) throws StatusNotFoundException, StatusForbiddenException, StatusFailException {
+
+        commonValidator.validateContent(announcementDto.getAnnouncement().getTitle(), "公告标题", 255);
+        commonValidator.validateContent(announcementDto.getAnnouncement().getContent(), "公告", 65535);
+
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
@@ -113,6 +121,10 @@ public class GroupContestAnnouncementManager {
     }
 
     public void updateContestAnnouncement(AnnouncementDTO announcementDto) throws StatusNotFoundException, StatusForbiddenException, StatusFailException {
+
+        commonValidator.validateContent(announcementDto.getAnnouncement().getTitle(), "公告标题", 255);
+        commonValidator.validateContent(announcementDto.getAnnouncement().getContent(), "公告", 65535);
+
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
