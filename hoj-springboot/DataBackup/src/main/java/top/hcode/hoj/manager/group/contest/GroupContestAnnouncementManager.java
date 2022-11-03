@@ -81,7 +81,7 @@ public class GroupContestAnnouncementManager {
     public void addContestAnnouncement(AnnouncementDTO announcementDto) throws StatusNotFoundException, StatusForbiddenException, StatusFailException {
 
         commonValidator.validateContent(announcementDto.getAnnouncement().getTitle(), "公告标题", 255);
-        commonValidator.validateContent(announcementDto.getAnnouncement().getContent(), "公告", 65535);
+        commonValidator.validateContentLength(announcementDto.getAnnouncement().getContent(), "公告", 65535);
 
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
@@ -123,7 +123,7 @@ public class GroupContestAnnouncementManager {
     public void updateContestAnnouncement(AnnouncementDTO announcementDto) throws StatusNotFoundException, StatusForbiddenException, StatusFailException {
 
         commonValidator.validateContent(announcementDto.getAnnouncement().getTitle(), "公告标题", 255);
-        commonValidator.validateContent(announcementDto.getAnnouncement().getContent(), "公告", 65535);
+        commonValidator.validateContentLength(announcementDto.getAnnouncement().getContent(), "公告", 65535);
 
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
