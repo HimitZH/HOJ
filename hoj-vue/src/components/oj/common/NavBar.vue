@@ -130,13 +130,17 @@
 
           <template v-if="!isAuthenticated">
             <div class="btn-menu">
-              <el-button type="primary" round @click="handleBtnClick('Login')"
+              <el-button 
+                type="primary" 
+                size="medium" 
+                round
+                @click="handleBtnClick('Login')"
                 >{{ $t('m.NavBar_Login') }}
               </el-button>
               <el-button
                 v-if="websiteConfig.register"
+                size="medium"
                 round
-                type="danger"
                 @click="handleBtnClick('Register')"
                 style="margin-left: 5px"
                 >{{ $t('m.NavBar_Register') }}
@@ -912,7 +916,7 @@ export default {
   font-size: 16px;
   float: right;
   margin-right: 10px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 /deep/ .el-dialog {
   border-radius: 10px !important;

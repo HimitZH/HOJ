@@ -1093,6 +1093,7 @@ export default {
     resizeWatchHeight() {
       try {
         let headerHeight = document.getElementById("header").offsetHeight;
+        let headerWidth = document.getElementById("header").offsetWidth;
         let totalHeight = window.innerHeight;
         let problemLeftHight = totalHeight - (headerHeight + 77);
 
@@ -1105,11 +1106,7 @@ export default {
           jsRBottomHeight = 48;
         }
 
-        let problemRightHight =
-          problemLeftHight -
-          95 -
-          (jsRHeaderHeight - 36) -
-          (jsRBottomHeight - 48);
+        let problemRightHight = problemLeftHight - 95 - (jsRHeaderHeight - 36) - (jsRBottomHeight - 48);
         if (problemLeftHight < 0) {
           problemLeftHight = 0;
         }
@@ -1117,12 +1114,21 @@ export default {
           problemRightHight = 0;
         }
         if (this.activeName == "problemDetail") {
-          document
+          if(headerWidth >= 992){
+            document
             .getElementById("js-left" + "-" + this.$route.name)
             .setAttribute(
               "style",
               "height:" + problemLeftHight + "px !important"
             );
+          }else{
+            document
+            .getElementById("js-left" + "-" + this.$route.name)
+            .setAttribute(
+              "style",
+              "height: auto"
+            );
+          }
         } else if (this.activeName == "mySubmission") {
           document
             .getElementById("js-submission")
