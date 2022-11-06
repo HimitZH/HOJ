@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import top.hcode.hoj.dao.contest.ContestRecordEntityService;
 import top.hcode.hoj.dao.user.UserInfoEntityService;
+import top.hcode.hoj.pojo.vo.ProblemFullScreenListVO;
 
 import java.util.Date;
 import java.util.List;
@@ -54,6 +55,10 @@ public class ContestProblemEntityServiceImpl extends ServiceImpl<ContestProblemM
         }
 
         return contestProblemMapper.getContestProblemList(cid, startTime, endTime, sealTime, isAdmin, superAdminUidList);
+    }
+    @Override
+    public List<ProblemFullScreenListVO> getContestFullScreenProblemList(Long cid){
+        return contestProblemMapper.getContestFullScreenProblemList(cid);
     }
 
     @Async

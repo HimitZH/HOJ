@@ -732,6 +732,14 @@
         </el-col>
       </el-row>
     </div>
+    <ProblemHorizontalMenu
+      v-if="showProblemHorizontalMenu"
+      :pid="problemData.problem.id" 
+      :cid="contestID"
+      :tid="trainingID"
+      ref="problemHorizontalMenu"
+      :gid="groupID">
+    </ProblemHorizontalMenu>
 
     <el-dialog
       :visible.sync="graphVisible"
@@ -801,6 +809,7 @@ import myMessage from "@/common/message";
 import { addCodeBtn } from "@/common/codeblock";
 import CodeMirror from "@/components/oj/common/CodeMirror.vue";
 import Pagination from "@/components/oj/common/Pagination";
+import ProblemHorizontalMenu from "@/components/oj/common/ProblemHorizontalMenu";
 // 只显示这些状态的图形占用
 const filtedStatus = ["wa", "ce", "ac", "pa", "tle", "mle", "re", "pe"];
 
@@ -809,6 +818,7 @@ export default {
   components: {
     CodeMirror,
     Pagination,
+    ProblemHorizontalMenu
   },
   data() {
     return {
@@ -871,6 +881,7 @@ export default {
       fileName: "",
       openTestCaseDrawer: false,
       openFocusMode: false,
+      showProblemHorizontalMenu: false,
     };
   },
   created() {
@@ -879,11 +890,16 @@ export default {
     this.JUDGE_STATUS = Object.assign({}, JUDGE_STATUS);
     this.PROBLEM_LEVEL = Object.assign({}, PROBLEM_LEVEL);
     this.RULE_TYPE = Object.assign({}, RULE_TYPE);
+    let isFocusModePage = utils.isFocusModePage(this.$route.name);
     if (
-      this.$route.name === "ProblemDetails" ||
-      utils.isFocusModePage(this.$route.name)
+      this.$route.name === "ProblemDetails" || isFocusModePage
     ) {
       this.bodyClass = "problem-body";
+    }
+    if(isFocusModePage && (this.$route.params.contestID || this.$route.params.trainingID)){
+      this.contestID = this.$route.params.contestID;
+      this.trainingID = this.$route.params.trainingID;
+      this.showProblemHorizontalMenu = true;
     }
   },
 
@@ -1095,8 +1111,11 @@ export default {
         let headerHeight = document.getElementById("header").offsetHeight;
         let headerWidth = document.getElementById("header").offsetWidth;
         let totalHeight = window.innerHeight;
-        let problemLeftHight = totalHeight - (headerHeight + 77);
-
+        let problemLeftHight = totalHeight - (headerHeight + 64);
+        if(this.showProblemHorizontalMenu){
+          let footerMenuHeight = document.getElementById("problem-footer").offsetHeight;
+          problemLeftHight = problemLeftHight - footerMenuHeight;
+        }
         let jsRHeaderHeight =
           document.getElementById("js-right-header").offsetHeight;
         let jsRBottomHeight =
@@ -1156,7 +1175,8 @@ export default {
             "style",
             "top:" + problemLeftHight * 0.5 + "px !important"
           );
-      } catch (e) {}
+      } catch (e) {
+      }
     },
     init() {
       this.openFocusMode = utils.isFocusModePage(this.$route.name);
@@ -1446,6 +1466,9 @@ export default {
                 this.submitted = false;
                 clearTimeout(this.refreshStatus);
                 this.init();
+                if(this.showProblemHorizontalMenu){
+                  this.$refs.problemHorizontalMenu.getFullScreenProblemList();
+                }
               } else {
                 this.refreshStatus = setTimeout(checkStatus, 2000);
               }
@@ -1824,6 +1847,7 @@ a {
 /deep/.el-tabs--border-card > .el-tabs__content {
   padding-top: 0px;
   padding-right: 0px;
+  padding-bottom: 0px;
 }
 
 .js-left {
@@ -1947,6 +1971,9 @@ a {
 /deep/ .el-card__header {
   border-bottom: 0px;
   padding-bottom: 0px;
+}
+/deep/ .el-card__body{
+  padding-bottom: 5px !important;
 }
 #right-column {
   flex: none;

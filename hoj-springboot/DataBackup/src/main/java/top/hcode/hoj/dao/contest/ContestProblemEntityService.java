@@ -3,6 +3,7 @@ package top.hcode.hoj.dao.contest;
 import top.hcode.hoj.pojo.entity.contest.ContestProblem;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.hcode.hoj.pojo.vo.ContestProblemVO;
+import top.hcode.hoj.pojo.vo.ProblemFullScreenListVO;
 
 import java.util.Date;
 import java.util.List;
@@ -23,6 +24,8 @@ public interface ContestProblemEntityService extends IService<ContestProblem> {
                                                  Boolean isAdmin,
                                                  String contestAuthorUid,
                                                  List<String> groupRootUidList);
+
+    List<ProblemFullScreenListVO> getContestFullScreenProblemList(Long cid);
 
     void syncContestRecord(Long pid, Long cid, String displayId);
 }

@@ -29,7 +29,7 @@ public class TrainingValidator {
     private GroupValidator groupValidator;
 
     public void validateTrainingAuth(Training training) throws StatusAccessDeniedException, StatusForbiddenException {
-      AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         validateTrainingAuth(training, userRolesVo);
     }
 
@@ -52,9 +52,7 @@ public class TrainingValidator {
 
             boolean isAuthor = training.getAuthor().equals(userRolesVo.getUsername()); // 是否为该私有训练的创建者
 
-            if (isRoot
-                    || isAuthor
-                    || (training.getIsGroup() && groupValidator.isGroupRoot(userRolesVo.getUid(), training.getGid()))) {
+            if (isRoot || isAuthor || (training.getIsGroup() && groupValidator.isGroupRoot(userRolesVo.getUid(), training.getGid()))) {
                 return;
             }
 

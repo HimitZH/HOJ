@@ -111,4 +111,17 @@
         where b.pid is not null
     </select>
 
+
+    <select id="getTrainingFullScreenProblemList" resultType="top.hcode.hoj.pojo.vo.ProblemFullScreenListVO">
+        SELECT p.id AS pid,
+               p.problem_id,
+               p.title
+        FROM problem p,
+             training_problem tp
+        where p.id = tp.pid
+          and p.auth = 1
+          and tp.tid = #{tid}
+        order by tp.`rank` asc
+    </select>
+
 </mapper>

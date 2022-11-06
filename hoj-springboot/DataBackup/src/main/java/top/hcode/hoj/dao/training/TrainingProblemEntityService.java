@@ -2,6 +2,7 @@ package top.hcode.hoj.dao.training;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
+import top.hcode.hoj.pojo.vo.ProblemFullScreenListVO;
 import top.hcode.hoj.pojo.vo.ProblemVO;
 
 import java.util.List;
@@ -23,4 +24,6 @@ public interface TrainingProblemEntityService extends IService<TrainingProblem> 
     public List<TrainingProblem> getTrainingListAcceptedCountByUid(List<Long> tidList, String uid);
 
     public List<TrainingProblem> getGroupTrainingListAcceptedCountByUid(List<Long> tidList, Long gid, String uid);
+
+    public List<ProblemFullScreenListVO> getTrainingFullScreenProblemList(Long tid);
 }

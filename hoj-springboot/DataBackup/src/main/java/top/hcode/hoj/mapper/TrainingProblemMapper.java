@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
+import top.hcode.hoj.pojo.vo.ProblemFullScreenListVO;
 import top.hcode.hoj.pojo.vo.ProblemVO;
 
 import java.util.List;
@@ -25,4 +26,6 @@ public interface TrainingProblemMapper extends BaseMapper<TrainingProblem> {
     public List<TrainingProblem> getGroupTrainingListAcceptedCountByUid(@Param("tidList") List<Long> tidList,
                                                                         @Param("gid") Long gid,
                                                                         @Param("uid") String uid);
+
+    public List<ProblemFullScreenListVO> getTrainingFullScreenProblemList(@Param("tid") Long tid);
 }

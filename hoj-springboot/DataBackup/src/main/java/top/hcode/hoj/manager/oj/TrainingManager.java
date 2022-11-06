@@ -14,10 +14,13 @@ import top.hcode.hoj.common.exception.StatusAccessDeniedException;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.dao.group.GroupMemberEntityService;
+import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.dao.training.*;
 import top.hcode.hoj.dao.user.UserInfoEntityService;
 import top.hcode.hoj.manager.admin.training.AdminTrainingRecordManager;
+import top.hcode.hoj.pojo.bo.Pair_;
 import top.hcode.hoj.pojo.dto.RegisterTrainingDTO;
+import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.training.*;
 import top.hcode.hoj.pojo.vo.*;
 import top.hcode.hoj.shiro.AccountProfile;
@@ -61,6 +64,9 @@ public class TrainingManager {
     @Resource
     private GroupMemberEntityService groupMemberEntityService;
 
+    @Resource
+    private JudgeEntityService judgeEntityService;
+
     @Autowired
     private GroupValidator groupValidator;
 
@@ -88,7 +94,7 @@ public class TrainingManager {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 20;
 
-      AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         String currentUid = null;
         if (userRolesVo != null) {
@@ -107,7 +113,7 @@ public class TrainingManager {
      * @Since 2021/11/20
      */
     public TrainingVO getTraining(Long tid) throws StatusFailException, StatusAccessDeniedException, StatusForbiddenException {
-      AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -158,7 +164,6 @@ public class TrainingManager {
         trainingValidator.validateTrainingAuth(training);
 
         return trainingProblemEntityService.getTrainingProblemList(tid);
-
     }
 
     /**
@@ -188,7 +193,7 @@ public class TrainingManager {
         }
 
         // 获取当前登录的用户
-      AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         QueryWrapper<TrainingRegister> registerQueryWrapper = new QueryWrapper<>();
         registerQueryWrapper.eq("tid", tid).eq("uid", userRolesVo.getUid());
@@ -218,7 +223,7 @@ public class TrainingManager {
     public AccessVO getTrainingAccess(Long tid) throws StatusFailException {
 
         // 获取当前登录的用户
-      AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         QueryWrapper<TrainingRegister> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("tid", tid).eq("uid", userRolesVo.getUid());
@@ -387,5 +392,55 @@ public class TrainingManager {
             }
             trainingRecordEntityService.saveBatch(trainingRecordList);
         }
+    }
+
+    public List<ProblemFullScreenListVO> getProblemFullScreenList(Long tid)
+            throws StatusFailException, StatusForbiddenException, StatusAccessDeniedException {
+        Training training = trainingEntityService.getById(tid);
+        if (training == null || !training.getStatus()) {
+            throw new StatusFailException("该训练不存在或不允许显示！");
+        }
+        trainingValidator.validateTrainingAuth(training);
+        List<ProblemFullScreenListVO> problemList = trainingProblemEntityService.getTrainingFullScreenProblemList(tid);
+
+        List<Long> pidList = problemList.stream().map(ProblemFullScreenListVO::getPid).collect(Collectors.toList());
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+
+        QueryWrapper<Judge> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("distinct pid,status,score,submit_time")
+                .in("pid", pidList)
+                .eq("uid", userRolesVo.getUid())
+                .orderByDesc("submit_time");
+
+        queryWrapper.eq("cid", 0);
+        if (training.getGid() != null && training.getIsGroup()) {
+            queryWrapper.eq("gid", training.getGid());
+        } else {
+            queryWrapper.isNull("gid");
+        }
+        List<Judge> judges = judgeEntityService.list(queryWrapper);
+        HashMap<Long, Pair_<Integer, Integer>> pidMap = new HashMap<>();
+        for (Judge judge : judges) {
+            if (Objects.equals(judge.getStatus(), Constants.Judge.STATUS_PENDING.getStatus())
+                    || Objects.equals(judge.getStatus(), Constants.Judge.STATUS_COMPILING.getStatus())
+                    || Objects.equals(judge.getStatus(), Constants.Judge.STATUS_JUDGING.getStatus())) {
+                continue;
+            }
+            if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+                // 如果该题目已通过，则强制写为通过（0）
+                pidMap.put(judge.getPid(), new Pair_<>(judge.getStatus(), judge.getScore()));
+            } else if (!pidMap.containsKey(judge.getPid())) {
+                // 还未写入，则使用最新一次提交的结果
+                pidMap.put(judge.getPid(), new Pair_<>(judge.getStatus(), judge.getScore()));
+            }
+        }
+        for (ProblemFullScreenListVO problemVO : problemList) {
+            Pair_<Integer, Integer> pair_ = pidMap.get(problemVO.getPid());
+            if (pair_ != null) {
+                problemVO.setStatus(pair_.getKey());
+                problemVO.setScore(pair_.getValue());
+            }
+        }
+        return problemList;
     }
 }

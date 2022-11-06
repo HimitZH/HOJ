@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.annotation.HOJAccessEnum;
+import top.hcode.hoj.common.exception.StatusAccessDeniedException;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
@@ -21,10 +22,7 @@ import top.hcode.hoj.pojo.dto.PidListDTO;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.*;
-import top.hcode.hoj.pojo.vo.ProblemCountVO;
-import top.hcode.hoj.pojo.vo.ProblemInfoVO;
-import top.hcode.hoj.pojo.vo.ProblemVO;
-import top.hcode.hoj.pojo.vo.RandomProblemVO;
+import top.hcode.hoj.pojo.vo.*;
 import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.validator.AccessValidator;
@@ -73,6 +71,12 @@ public class ProblemManager {
 
     @Autowired
     private AccessValidator accessValidator;
+
+    @Autowired
+    private TrainingManager trainingManager;
+
+    @Autowired
+    private ContestManager contestManager;
 
     /**
      * @MethodName getProblemList
@@ -157,17 +161,21 @@ public class ProblemManager {
             }
             isACMContest = contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode();
         }
-
+        boolean isSealRank = false;
+        if (!isACMContest && CollectionUtil.isNotEmpty(judges)){
+            isSealRank = contestValidator.isSealRank(userRolesVo.getUid(), contest, false,
+                    SecurityUtils.getSubject().hasRole("root"));
+        }
         for (Judge judge : judges) {
             // 如果是比赛的题目列表状态
             HashMap<String, Object> temp = new HashMap<>();
             if (pidListDto.getIsContestProblemList()) {
                 if (!isACMContest) {
-                    if (!result.containsKey(judge.getPid())) { // IO比赛的，如果还未写入，则使用最新一次提交的结果
+                    if (!result.containsKey(judge.getPid())) {
+                        // IO比赛的，如果还未写入，则使用最新一次提交的结果
                         // 判断该提交是否为封榜之后的提交,OI赛制封榜后的提交看不到提交结果，
                         // 只有比赛结束可以看到,比赛管理员与超级管理员的提交除外
-                        if (contestValidator.isSealRank(userRolesVo.getUid(), contest, false,
-                                SecurityUtils.getSubject().hasRole("root"))) {
+                        if (isSealRank) {
                             temp.put("status", Constants.Judge.STATUS_SUBMITTED_UNKNOWN_RESULT.getStatus());
                             temp.put("score", null);
                         } else {
@@ -177,12 +185,13 @@ public class ProblemManager {
                         result.put(judge.getPid(), temp);
                     }
                 } else {
-                    // 如果该题目已通过，且同时是为不封榜前提交的，则强制写为通过（0）
                     if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+                        // 如果该题目已通过，且同时是为不封榜前提交的，则强制写为通过（0）
                         temp.put("status", Constants.Judge.STATUS_ACCEPTED.getStatus());
                         temp.put("score", null);
                         result.put(judge.getPid(), temp);
-                    } else if (!result.containsKey(judge.getPid())) { // 还未写入，则使用最新一次提交的结果
+                    } else if (!result.containsKey(judge.getPid())) {
+                        // 还未写入，则使用最新一次提交的结果
                         temp.put("status", judge.getStatus());
                         temp.put("score", null);
                         result.put(judge.getPid(), temp);
@@ -190,10 +199,12 @@ public class ProblemManager {
                 }
 
             } else { // 不是比赛题目
-                if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) { // 如果该题目已通过，则强制写为通过（0）
+                if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+                    // 如果该题目已通过，则强制写为通过（0）
                     temp.put("status", Constants.Judge.STATUS_ACCEPTED.getStatus());
                     result.put(judge.getPid(), temp);
-                } else if (!result.containsKey(judge.getPid())) { // 还未写入，则使用最新一次提交的结果
+                } else if (!result.containsKey(judge.getPid())) {
+                    // 还未写入，则使用最新一次提交的结果
                     temp.put("status", judge.getStatus());
                     result.put(judge.getPid(), temp);
                 }
@@ -202,7 +213,6 @@ public class ProblemManager {
 
         // 再次检查，应该可能从未提交过该题，则状态写为-10
         for (Long pid : pidListDto.getPidList()) {
-
             // 如果是比赛的题目列表状态
             if (pidListDto.getIsContestProblemList()) {
                 if (!result.containsKey(pid)) {
@@ -355,6 +365,17 @@ public class ProblemManager {
                     "    @author: " + judge.getUsername() + "\n" +
                     "    @submitTime: " + DateUtil.format(judge.getSubmitTime(), "yyyy-MM-dd HH:mm:ss") + "\n" +
                     "'''";
+        }
+    }
+
+    public List<ProblemFullScreenListVO> getFullScreenProblemList(Long tid, Long cid)
+            throws StatusFailException, StatusForbiddenException, StatusAccessDeniedException {
+        if (tid != null) {
+            return trainingManager.getProblemFullScreenList(tid);
+        } else if (cid != null && cid != 0) {
+            return contestManager.getContestFullScreenProblemList(cid);
+        } else {
+            throw new StatusFailException("请求参数错误：tid或cid不能为空");
         }
     }
 }

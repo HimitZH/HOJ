@@ -351,6 +351,7 @@ const ojApi = {
       }
     })
   },
+  // 获取最近一次通过的代码
   getUserLastAccepetedCode(pid, cid){
     let params = {
       pid
@@ -359,6 +360,13 @@ const ojApi = {
       params.cid = cid
     }
     return ajax('/api/get-last-ac-code', 'get', {
+      params: params
+    })
+  },
+  // 获取题目专注模式底部题目列表
+  getFullScreenProblemList(tid, cid){
+    let params = {tid, cid}
+    return ajax('/api/get-full-screen-problem-list', 'get', {
       params: params
     })
   },

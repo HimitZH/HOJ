@@ -103,4 +103,18 @@ public class ProblemController {
         return problemService.getUserLastAcceptedCode(pid, cid);
     }
 
+    /**
+     * 获取专注模式页面底部的题目列表
+     *
+     * @param tid
+     * @param cid
+     * @return
+     */
+    @RequiresAuthentication
+    @GetMapping("/get-full-screen-problem-list")
+    public CommonResult<List<ProblemFullScreenListVO>> getFullScreenProblemList(@RequestParam(value = "tid", required = false) Long tid,
+                                                                                @RequestParam(value = "cid", required = false) Long cid) {
+        return problemService.getFullScreenProblemList(tid, cid);
+    }
+
 }

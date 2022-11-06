@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.pojo.dto.LastAcceptedCodeVO;
 import top.hcode.hoj.pojo.dto.PidListDTO;
+import top.hcode.hoj.pojo.vo.ProblemFullScreenListVO;
 import top.hcode.hoj.pojo.vo.ProblemInfoVO;
 import top.hcode.hoj.pojo.vo.ProblemVO;
 import top.hcode.hoj.pojo.vo.RandomProblemVO;
@@ -28,5 +29,7 @@ public interface ProblemService {
     public CommonResult<ProblemInfoVO> getProblemInfo(String problemId, Long gid);
 
     public CommonResult<LastAcceptedCodeVO> getUserLastAcceptedCode(Long pid, Long cid);
+
+    public CommonResult<List<ProblemFullScreenListVO>> getFullScreenProblemList(Long tid, Long cid);
 
 }

@@ -112,7 +112,7 @@ public class JudgeManager {
         // 需要获取一下该token对应用户的数据
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
-        boolean isContestSubmission = judgeDto.getCid() != 0;
+        boolean isContestSubmission = judgeDto.getCid() != null && judgeDto.getCid() != 0;
         boolean isTrainingSubmission = judgeDto.getTid() != null && judgeDto.getTid() != 0;
 
         SwitchConfig switchConfig = nacosSwitchConfig.getSwitchConfig();

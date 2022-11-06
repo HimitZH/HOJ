@@ -2,6 +2,7 @@ package top.hcode.hoj.service.oj.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.stereotype.Service;
+import top.hcode.hoj.common.exception.StatusAccessDeniedException;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.common.exception.StatusNotFoundException;
@@ -10,6 +11,7 @@ import top.hcode.hoj.common.result.ResultStatus;
 import top.hcode.hoj.manager.oj.ProblemManager;
 import top.hcode.hoj.pojo.dto.LastAcceptedCodeVO;
 import top.hcode.hoj.pojo.dto.PidListDTO;
+import top.hcode.hoj.pojo.vo.ProblemFullScreenListVO;
 import top.hcode.hoj.pojo.vo.ProblemInfoVO;
 import top.hcode.hoj.pojo.vo.ProblemVO;
 import top.hcode.hoj.pojo.vo.RandomProblemVO;
@@ -67,5 +69,18 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public CommonResult<LastAcceptedCodeVO> getUserLastAcceptedCode(Long pid, Long cid) {
         return CommonResult.successResponse(problemManager.getUserLastAcceptedCode(pid, cid));
+    }
+
+    @Override
+    public CommonResult<List<ProblemFullScreenListVO>> getFullScreenProblemList(Long tid, Long cid) {
+        try {
+            return CommonResult.successResponse(problemManager.getFullScreenProblemList(tid, cid));
+        } catch (StatusFailException e) {
+            return CommonResult.errorResponse(e.getMessage());
+        } catch (StatusForbiddenException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
+        } catch (StatusAccessDeniedException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.ACCESS_DENIED);
+        }
     }
 }

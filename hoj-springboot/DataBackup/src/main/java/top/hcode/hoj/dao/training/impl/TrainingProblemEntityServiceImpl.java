@@ -8,6 +8,7 @@ import top.hcode.hoj.mapper.TrainingProblemMapper;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.training.TrainingProblem;
+import top.hcode.hoj.pojo.vo.ProblemFullScreenListVO;
 import top.hcode.hoj.pojo.vo.ProblemVO;
 import top.hcode.hoj.dao.training.TrainingProblemEntityService;
 
@@ -82,6 +83,11 @@ public class TrainingProblemEntityServiceImpl extends ServiceImpl<TrainingProble
     @Override
     public List<TrainingProblem> getGroupTrainingListAcceptedCountByUid(List<Long> tidList, Long gid, String uid) {
         return trainingProblemMapper.getGroupTrainingListAcceptedCountByUid(tidList, gid, uid);
+    }
+
+    @Override
+    public List<ProblemFullScreenListVO> getTrainingFullScreenProblemList(Long tid) {
+        return trainingProblemMapper.getTrainingFullScreenProblemList(tid);
     }
 
 }

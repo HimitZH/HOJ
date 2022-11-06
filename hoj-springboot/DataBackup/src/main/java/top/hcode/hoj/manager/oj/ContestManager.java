@@ -1,5 +1,6 @@
 package top.hcode.hoj.manager.oj;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.shiro.SecurityUtils;
@@ -15,12 +16,14 @@ import top.hcode.hoj.dao.group.GroupMemberEntityService;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
 import top.hcode.hoj.dao.problem.*;
 import top.hcode.hoj.dao.user.UserInfoEntityService;
+import top.hcode.hoj.pojo.bo.Pair_;
 import top.hcode.hoj.pojo.dto.ContestPrintDTO;
 import top.hcode.hoj.pojo.dto.ContestRankDTO;
 import top.hcode.hoj.pojo.dto.RegisterContestDTO;
 import top.hcode.hoj.pojo.dto.UserReadContestAnnouncementDTO;
 import top.hcode.hoj.pojo.entity.common.Announcement;
 import top.hcode.hoj.pojo.entity.contest.*;
+import top.hcode.hoj.pojo.entity.judge.Judge;
 import top.hcode.hoj.pojo.entity.problem.*;
 import top.hcode.hoj.pojo.vo.*;
 import top.hcode.hoj.shiro.AccountProfile;
@@ -256,6 +259,76 @@ public class ContestManager {
         }
 
         return contestProblemList;
+    }
+
+    public List<ProblemFullScreenListVO> getContestFullScreenProblemList(Long cid) throws StatusForbiddenException, StatusFailException {
+        // 获取当前登录的用户
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+
+        // 获取本场比赛的状态
+        Contest contest = contestEntityService.getById(cid);
+
+        // 超级管理员或者该比赛的创建者，则为比赛管理者
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        // 需要对该比赛做判断，是否处于开始或结束状态才可以获取题目列表，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
+        contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
+
+        List<ProblemFullScreenListVO> problemList = contestProblemEntityService.getContestFullScreenProblemList(cid);
+        List<Long> pidList = problemList.stream().map(ProblemFullScreenListVO::getPid).collect(Collectors.toList());
+
+        QueryWrapper<Judge> queryWrapper = new QueryWrapper<>();
+        queryWrapper.select("distinct pid,status,score,submit_time")
+                .in("pid", pidList)
+                .eq("uid", userRolesVo.getUid())
+                .orderByDesc("submit_time");
+        queryWrapper.eq("cid", cid);
+
+        boolean isACMContest = contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode();
+
+        List<Judge> judges = judgeEntityService.list(queryWrapper);
+
+        boolean isSealRank = false;
+        if (!isACMContest && CollectionUtil.isNotEmpty(judges)) {
+            isSealRank = contestValidator.isSealRank(userRolesVo.getUid(), contest, false, isRoot);
+        }
+
+        HashMap<Long, Pair_<Integer, Integer>> pidMap = new HashMap<>();
+        for (Judge judge : judges) {
+            if (Objects.equals(judge.getStatus(), Constants.Judge.STATUS_PENDING.getStatus())
+                    || Objects.equals(judge.getStatus(), Constants.Judge.STATUS_COMPILING.getStatus())
+                    || Objects.equals(judge.getStatus(), Constants.Judge.STATUS_JUDGING.getStatus())) {
+                continue;
+            }
+            if (!isACMContest) {
+                if (!pidMap.containsKey(judge.getPid())) {
+                    // IO比赛的，如果还未写入，则使用最新一次提交的结果
+                    // 判断该提交是否为封榜之后的提交,OI赛制封榜后的提交看不到提交结果，
+                    // 只有比赛结束可以看到,比赛管理员与超级管理员的提交除外
+                    if (isSealRank) {
+                        pidMap.put(judge.getPid(), new Pair_<>(Constants.Judge.STATUS_SUBMITTED_UNKNOWN_RESULT.getStatus(), null));
+                    } else {
+                        pidMap.put(judge.getPid(), new Pair_<>(judge.getStatus(), judge.getScore()));
+                    }
+                }
+            } else {
+                if (judge.getStatus().intValue() == Constants.Judge.STATUS_ACCEPTED.getStatus()) {
+                    // 如果该题目已通过，且同时是为不封榜前提交的，则强制写为通过（0）
+                    pidMap.put(judge.getPid(), new Pair_<>(judge.getStatus(), judge.getScore()));
+                } else if (!pidMap.containsKey(judge.getPid())) {
+                    // 还未写入，则使用最新一次提交的结果
+                    pidMap.put(judge.getPid(), new Pair_<>(judge.getStatus(), judge.getScore()));
+                }
+            }
+        }
+        for (ProblemFullScreenListVO problemVO : problemList) {
+            Pair_<Integer, Integer> pair_ = pidMap.get(problemVO.getPid());
+            if (pair_ != null) {
+                problemVO.setStatus(pair_.getKey());
+                problemVO.setScore(pair_.getValue());
+            }
+        }
+        return problemList;
     }
 
     public ProblemInfoVO getContestProblemDetails(Long cid, String displayId) throws StatusFailException, StatusForbiddenException, StatusNotFoundException {
