@@ -144,7 +144,7 @@ public class ConfigManager {
                 jsonObject.put("service", serviceInstance);
                 serviceInfoList.add(jsonObject);
             } catch (Exception e) {
-                log.error("[Admin Dashboard] get judge service info error, uri={},error={}", serviceInstance.getUri(), e);
+                log.error("[Admin Dashboard] get judge service info error, uri={}, error={}", serviceInstance.getUri(), e);
             }
         }
         return serviceInfoList;

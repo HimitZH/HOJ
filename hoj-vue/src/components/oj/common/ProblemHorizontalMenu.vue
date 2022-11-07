@@ -139,7 +139,6 @@ export default {
       let index = this.getCurrentProblemInListIndex();
       if (index != -1 && index > num) {
         this.move = this.moveLen + (index - num) * 100;
-        console.log(this.move)
       }
       window.addEventListener("resize", () => this.recalcMoveLen());
     },
