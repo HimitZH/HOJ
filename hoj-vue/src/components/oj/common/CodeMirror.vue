@@ -675,6 +675,9 @@ export default {
         });
       }
     });
+    this.$nextTick(() => {
+      this.editor.refresh();
+    })
   },
   methods: {
     onEditorCodeChange(newCode) {
@@ -690,6 +693,9 @@ export default {
     },
     onFontSizeChange(fontSize) {
       this.fontSize = fontSize;
+      this.$nextTick(() => {
+        this.editor.refresh();
+      })
       this.$emit("update:fontSize", fontSize);
     },
     onTabSizeChange(tabSize) {
@@ -847,9 +853,6 @@ export default {
   watch: {
     theme(newVal, oldVal) {
       this.editor.setOption("theme", newVal);
-    },
-    fontSize(newVal, oldVal) {
-      this.editor.refresh();
     },
     userInput(newVal, oldVal) {
       this.expectedOutput = null;

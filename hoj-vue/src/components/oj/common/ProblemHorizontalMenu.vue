@@ -123,7 +123,6 @@ export default {
           this.$nextTick(() => {
             this.calcMoveLen();
           });
-          this.$emit("update:reload", false);
         },
         (err) => {}
       );
@@ -140,6 +139,7 @@ export default {
       let index = this.getCurrentProblemInListIndex();
       if (index != -1 && index > num) {
         this.move = this.moveLen + (index - num) * 100;
+        console.log(this.move)
       }
       window.addEventListener("resize", () => this.recalcMoveLen());
     },
@@ -176,7 +176,7 @@ export default {
     getCurrentProblemInListIndex() {
       var len = this.navList.length;
       for (var i = 0; i < len; i++) {
-        if (this.navList[i].pid === this.pid) {
+        if (this.navList[i].pid == this.pid) {
           return i;
         }
       }
@@ -207,6 +207,14 @@ export default {
     $route() {
       this.getFullScreenProblemList();
     },
+    pid(){
+      // 避免pid传递过慢，导致当前题目移动居中失败，需要监听pid变化再次判断
+      let num = Math.floor((this.dataNavListViewWidth - 70) / 100);
+      let index = this.getCurrentProblemInListIndex();
+      if (index != -1 && index > num) {
+        this.move = this.moveLen + (index - num) * 100;
+      }
+    }
   },
 };
 </script>

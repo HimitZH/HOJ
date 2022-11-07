@@ -138,10 +138,14 @@ public class ConfigManager {
         List<JSONObject> serviceInfoList = new LinkedList<>();
         List<ServiceInstance> serviceInstances = discoveryClient.getInstances(judgeServiceName);
         for (ServiceInstance serviceInstance : serviceInstances) {
-            String result = restTemplate.getForObject(serviceInstance.getUri() + "/get-sys-config", String.class);
-            JSONObject jsonObject = JSONUtil.parseObj(result);
-            jsonObject.put("service", serviceInstance);
-            serviceInfoList.add(jsonObject);
+            try {
+                String result = restTemplate.getForObject(serviceInstance.getUri() + "/get-sys-config", String.class);
+                JSONObject jsonObject = JSONUtil.parseObj(result);
+                jsonObject.put("service", serviceInstance);
+                serviceInfoList.add(jsonObject);
+            } catch (Exception e) {
+                log.error("[Admin Dashboard] get judge service info error, uri={},error={}", serviceInstance.getUri(), e);
+            }
         }
         return serviceInfoList;
     }

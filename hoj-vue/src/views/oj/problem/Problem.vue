@@ -734,7 +734,7 @@
     </div>
     <ProblemHorizontalMenu
       v-if="showProblemHorizontalMenu"
-      :pid="problemData.problem.id" 
+      :pid.sync="problemData.problem.id" 
       :cid="contestID"
       :tid="trainingID"
       ref="problemHorizontalMenu"
