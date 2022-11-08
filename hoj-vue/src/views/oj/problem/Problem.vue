@@ -840,7 +840,7 @@ export default {
       theme: "solarized",
       fontSize: "14px",
       tabSize: 4,
-      height:0,
+      height: 550,
       submissionId: "",
       submitted: false,
       submitPwdVisible: false,
