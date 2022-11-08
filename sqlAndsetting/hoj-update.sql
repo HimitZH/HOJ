@@ -807,9 +807,11 @@ IF NOT EXISTS (
 	FROM
 		information_schema.`COLUMNS`
 	WHERE
-		table_name = 'problem'
-	AND column_name = 'input' AND CHARACTER_SET_NAME = 'utf8mb4'
+		table_name = 'announcement'
+	AND column_name = 'title' AND CHARACTER_SET_NAME = 'utf8mb4'
 ) THEN
+	ALTER TABLE hoj.announcement MODIFY COLUMN `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;	
+	ALTER TABLE hoj.announcement MODIFY COLUMN `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 	ALTER TABLE hoj.admin_sys_notice MODIFY COLUMN `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 	ALTER TABLE hoj.admin_sys_notice MODIFY COLUMN `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 	ALTER TABLE hoj.contest MODIFY COLUMN `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;

@@ -139,7 +139,7 @@
           <vxe-table-column
             field="submitId"
             :title="$t('m.Run_ID')"
-            width="100"
+            width="80"
           ></vxe-table-column>
           <vxe-table-column
             field="pid"
@@ -356,7 +356,7 @@
             field="language"
             :title="$t('m.Language')"
             show-overflow
-            min-width="130"
+            min-width="96"
           >
             <template v-slot="{ row }">
               <el-tooltip
@@ -365,19 +365,18 @@
                 :content="$t('m.View_submission_details')"
                 placement="top"
               >
-                <el-button
-                  type="text"
+                <span
                   @click="showSubmitDetail(row)"
-                >{{
-                  row.language
-                }}</el-button>
+                  style="color: rgb(87, 163, 243); font-size: .8125rem;"
+                >{{ row.language }}
+                </span>
               </el-tooltip>
             </template>
           </vxe-table-column>
           <vxe-table-column
             field="judger"
             :title="$t('m.Judger')"
-            min-width="100"
+            min-width="96"
             show-overflow
           >
             <template v-slot="{ row }">
@@ -1113,10 +1112,13 @@ export default {
     padding-top: 10px;
   }
 }
-@media screen and (min-width: 1050px) {
+@media screen and (min-width: 1350px) {
   /deep/ .vxe-table--body-wrapper {
     overflow-x: hidden !important;
   }
+}
+/deep/.vxe-table .vxe-cell{
+  padding: 0 !important;
 }
 /deep/.el-dialog--center .el-dialog__body {
   padding-bottom: 0px !important;

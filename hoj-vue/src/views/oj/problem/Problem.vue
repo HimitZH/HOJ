@@ -520,6 +520,7 @@
               :languages="problemData.languages"
               :language.sync="language"
               :theme.sync="theme"
+              :height.sync="height"
               :fontSize.sync="fontSize"
               :tabSize.sync="tabSize"
               @resetCode="onResetToTemplate"
@@ -839,6 +840,7 @@ export default {
       theme: "solarized",
       fontSize: "14px",
       tabSize: 4,
+      height:0,
       submissionId: "",
       submitted: false,
       submitPwdVisible: false,
@@ -1132,6 +1134,7 @@ export default {
         if (problemRightHight < 0) {
           problemRightHight = 0;
         }
+        this.height = problemRightHight;
         if (this.activeName == "problemDetail") {
           if(headerWidth >= 992){
             document
@@ -1163,12 +1166,6 @@ export default {
               "height:" + problemLeftHight + "px !important"
             );
         }
-        document
-          .getElementById("js-right" + "-" + this.$route.name)
-          .setAttribute(
-            "style",
-            "height:" + problemRightHight + "px !important"
-          );
         document
           .getElementById("js-center" + "-" + this.$route.name)
           .setAttribute(

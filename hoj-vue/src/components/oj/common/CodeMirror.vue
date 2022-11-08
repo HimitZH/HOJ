@@ -258,7 +258,6 @@
     </el-row>
     <div :style="'line-height: 1.5;font-size:'+fontSize">
       <codemirror
-        :id="'js-right'+'-'+ $route.name"
         class="js-right"
         :value="value"
         :options="options"
@@ -561,6 +560,10 @@ export default {
       type: String,
       default: "C",
     },
+    height:{
+      type:Number,
+      default: 600
+    },
     theme: {
       type: String,
       default: "solarized",
@@ -657,6 +660,11 @@ export default {
     };
   },
   mounted() {
+    // window.addEventListener("resize", () =>{
+    //   this.$nextTick(() => {
+    //     this.editor.refresh();
+    //   })
+    // });
     utils.getLanguages().then((languages) => {
       let mode = {};
       languages.forEach((lang) => {
@@ -851,6 +859,12 @@ export default {
     },
   },
   watch: {
+    height(newVal){
+      this.editor.setSize('100%', newVal);
+      this.$nextTick(() => {
+        this.editor.refresh();
+      })
+    },
     theme(newVal, oldVal) {
       this.editor.setOption("theme", newVal);
     },
@@ -998,12 +1012,10 @@ export default {
 </style>
 
 <style>
-.CodeMirror {
-  height: 100% !important;
-}
-.CodeMirror-scroll {
-  min-height: 549px;
-  max-height: 1000px;
+@media screen and (max-width: 992px) {
+  .CodeMirror{
+    height: 550px;
+  }
 }
 .cm-s-monokai .cm-matchhighlight {
   background-color: rgba(73, 72, 62, 0.99);
