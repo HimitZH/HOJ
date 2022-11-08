@@ -562,7 +562,7 @@ export default {
     },
     height:{
       type:Number,
-      default: 600
+      default: 550
     },
     theme: {
       type: String,
@@ -660,11 +660,6 @@ export default {
     };
   },
   mounted() {
-    // window.addEventListener("resize", () =>{
-    //   this.$nextTick(() => {
-    //     this.editor.refresh();
-    //   })
-    // });
     utils.getLanguages().then((languages) => {
       let mode = {};
       languages.forEach((lang) => {
@@ -674,6 +669,7 @@ export default {
       this.editor.setOption("mode", this.mode[this.language]);
     });
     this.editor.setOption("theme", this.theme);
+    this.editor.setSize('100%', this.height);
     this.editor.on("inputRead", (instance, changeObj) => {
       if (/\w|\./g.test(changeObj.text[0]) && changeObj.origin !== "complete") {
         instance.showHint({
