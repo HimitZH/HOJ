@@ -916,6 +916,7 @@ export default {
   methods: {
     ...mapActions(["changeDomTitle"]),
     initProblemCodeAndSetting() {
+      this.code = "";
       // 获取缓存中的该题的做题代码，代码语言，代码风格
       let problemCodeAndSetting = storage.get(
         buildProblemCodeAndSettingKey(
@@ -1663,6 +1664,26 @@ export default {
         },
       });
     },
+    beforeLeaveDo(cid){
+      clearInterval(this.refreshStatus);
+      storage.set(
+        buildProblemCodeAndSettingKey(this.problemID, cid),
+        {
+          code: this.code,
+          language: this.language,
+          theme: this.theme,
+          fontSize: this.fontSize,
+          tabSize: this.tabSize,
+        }
+      );
+
+      storage.set(buildIndividualLanguageAndSettingKey(), {
+        language: this.language,
+        theme: this.theme,
+        fontSize: this.fontSize,
+        tabSize: this.tabSize,
+      });
+    }
   },
   computed: {
     ...mapGetters([
@@ -1744,30 +1765,16 @@ export default {
     },
   },
   beforeRouteLeave(to, from, next) {
-    // 防止切换组件后仍然不断请求
-    clearInterval(this.refreshStatus);
-    storage.set(
-      buildProblemCodeAndSettingKey(this.problemID, from.params.contestID),
-      {
-        code: this.code,
-        language: this.language,
-        theme: this.theme,
-        fontSize: this.fontSize,
-        tabSize: this.tabSize,
-      }
-    );
-
-    storage.set(buildIndividualLanguageAndSettingKey(), {
-      language: this.language,
-      theme: this.theme,
-      fontSize: this.fontSize,
-      tabSize: this.tabSize,
-    });
-
+    this.beforeLeaveDo(from.params.contestID)
+    next();
+  },
+  beforeRouteUpdate (to, from, next) {
+    this.beforeLeaveDo(from.params.contestID)
     next();
   },
   watch: {
     $route() {
+      this.initProblemCodeAndSetting();
       this.init();
     },
     isAuthenticated(newVal) {
