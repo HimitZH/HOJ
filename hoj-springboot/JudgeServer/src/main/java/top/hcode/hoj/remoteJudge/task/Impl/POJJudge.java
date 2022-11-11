@@ -56,11 +56,11 @@ public class POJJudge extends RemoteJudgeStrategy {
                 .cookie(cookies);
 
         HttpResponse response = request.form(MapUtil.builder(new HashMap<String, Object>())
-                .put("language", getLanguage(remoteJudgeDTO.getLanguage()))
-                .put("submit", "Submit")
-                .put("problem_id", remoteJudgeDTO.getCompleteProblemId())
-                .put("source", Base64.encode(remoteJudgeDTO.getUserCode() + getRandomBlankString()))
-                .put("encoded", 1).map())
+                        .put("language", getLanguage(remoteJudgeDTO.getLanguage()))
+                        .put("submit", "Submit")
+                        .put("problem_id", remoteJudgeDTO.getCompleteProblemId())
+                        .put("source", Base64.encode(remoteJudgeDTO.getUserCode() + getRandomBlankString()))
+                        .put("encoded", 1).map())
                 .execute();
         remoteJudgeDTO.setSubmitStatus(response.getStatus());
         if (response.getStatus() != 302 && response.getStatus() != 200) {
@@ -139,7 +139,6 @@ public class POJJudge extends RemoteJudgeStrategy {
         return remoteJudgeRes;
     }
 
-
     @Override
     public void login() {
         // 清除当前线程的cookies缓存
@@ -156,6 +155,14 @@ public class POJJudge extends RemoteJudgeStrategy {
 
         if (response.getStatus() != 302) {
             throw new RuntimeException("[POJ] Failed to login! The possible cause is connection failure, and the returned status code is " + response.getStatus());
+        }
+
+        HttpRequest homeRequest = HttpUtil.createGet(HOST);
+        homeRequest.cookie(response.getCookies());
+        HttpResponse homeResponse = homeRequest.execute();
+        String body = homeResponse.body();
+        if (!body.contains(remoteJudgeDTO.getUsername()) || !body.contains("Log Out")) {
+            throw new RuntimeException("[POJ] Failed to login! The possible cause is wrong account or password, account: " + remoteJudgeDTO.getUsername());
         }
         remoteJudgeDTO.setCookies(response.getCookies())
                 .setLoginStatus(response.getStatus());
