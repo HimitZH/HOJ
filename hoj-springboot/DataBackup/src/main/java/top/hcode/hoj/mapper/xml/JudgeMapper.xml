@@ -196,8 +196,8 @@
         )  ju
         right join
         (
-            select id, display_id from contest_problem
-            where cid = #{cid}
+            select cp_.id, cp_.display_id from contest_problem cp_, problem p
+            where cp_.cid = #{cid} and cp_.pid = p.id and p.auth != 2
         ) cp
         on ju.cpid = cp.id
         where ju.submit_id is not null

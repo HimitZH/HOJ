@@ -4,13 +4,16 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.dao.contest.ContestEntityService;
 import top.hcode.hoj.dao.contest.ContestProblemEntityService;
 import top.hcode.hoj.dao.judge.JudgeEntityService;
+import top.hcode.hoj.dao.problem.ProblemEntityService;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestProblem;
+import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.vo.ContestScrollBoardInfoVO;
 import top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVO;
 import top.hcode.hoj.utils.Constants;
@@ -20,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @Author Himit_ZH
@@ -36,6 +40,9 @@ public class ContestScrollBoardManager {
 
     @Resource
     private JudgeEntityService judgeEntityService;
+
+    @Resource
+    private ProblemEntityService problemEntityService;
 
     @Resource
     private ContestCalculateRankManager contestCalculateRankManager;
@@ -62,6 +69,20 @@ public class ContestScrollBoardManager {
         QueryWrapper<ContestProblem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("cid", cid);
         List<ContestProblem> contestProblemList = contestProblemEntityService.list(queryWrapper);
+
+        List<Long> pidList = contestProblemList.stream().map(ContestProblem::getPid).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(pidList)) {
+            QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
+            problemQueryWrapper.select("id", "auth")
+                    .ne("auth", 2)
+                    .in("id", pidList);
+            List<Problem> problemList = problemEntityService.list(problemQueryWrapper);
+            List<Long> idList = problemList.stream().map(Problem::getId).collect(Collectors.toList());
+            contestProblemList = contestProblemList.stream()
+                    .filter(p -> idList.contains(p.getPid()))
+                    .collect(Collectors.toList());
+        }
+
         HashMap<String, String> balloonColor = new HashMap<>();
         for (ContestProblem contestProblem : contestProblemList) {
             balloonColor.put(contestProblem.getDisplayId(), contestProblem.getColor());

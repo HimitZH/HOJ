@@ -901,8 +901,8 @@ Team.prototype.countUnkonwnProblme = function() {
  * @return {boolean} true:当前队伍排名上升,false:排名无变化
  */
 Team.prototype.updateOneProblem = function() {
-    for (var key = 0 ; key < board.problemCount ; key++) {
-		var subProblem = this.submitProblemList[String.fromCharCode(key+65)];
+    for (let key in board.balloonColor) {
+		var subProblem = this.submitProblemList[key];
 		if (!subProblem) continue;
 		//如果题目结果未知
         if (subProblem.isUnkonwn) {
@@ -966,10 +966,9 @@ function Board(contestInfo, medalCounts) {
 	this.FBList = [];
     this.nowPos = 0;
     //根据题目数量设置alphabetId
-    var ACode = 65;
-    for (var i = 0; i < this.problemCount; i++)
+    for (let key in this.balloonColor)
 	{
-        this.problemList.push(String.fromCharCode(ACode + i));
+        this.problemList.push(key);
 		this.FBList.push(0);
 	}
 
