@@ -65,7 +65,7 @@
         <div
           v-katex
           v-highlight
-          v-html="announcement.content"
+          v-dompurify-html="announcement.content"
           key="content"
           class="content-container markdown-body"
         ></div>

@@ -281,7 +281,7 @@
                         v-highlight
                         ></p>
                       </template>
-                      <template>
+                      <template v-else>
                         <p
                           class="hint-content markdown-body"
                           v-html="problemData.problem.hint"
