@@ -149,11 +149,20 @@
             </el-form>
           </el-card>
           <el-card class="box-card">
-            <div
-              v-html="descriptionHtml"
-              v-highlight
-              class="markdown-body"
-            ></div>
+            <template v-if="contest.gid != null">
+                <div
+                v-dompurify-html="descriptionHtml"
+                v-highlight
+                class="markdown-body"
+              ></div>
+            </template>
+            <template>
+              <div
+                v-html="descriptionHtml"
+                v-highlight
+                class="markdown-body"
+              ></div>
+            </template>
           </el-card>
         </el-tab-pane>
 

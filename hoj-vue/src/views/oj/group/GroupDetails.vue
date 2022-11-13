@@ -127,7 +127,7 @@
                 <div class="description-body">
                   <div
                     class="markdown-body"
-                    v-html="descriptionHtml"
+                    v-dompurify-html="descriptionHtml"
                     v-katex
                     v-highlight
                     v-if="descriptionHtml"

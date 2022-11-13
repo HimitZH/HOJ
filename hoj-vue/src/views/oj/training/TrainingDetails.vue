@@ -149,11 +149,20 @@
                     $t('m.Training_Introduction')
                   }}</span>
                 </div>
-                <div
+                <template v-if="groupID">
+                  <div
+                    v-dompurify-html="descriptionHtml"
+                    v-highlight
+                    class="markdown-body"
+                  ></div>
+                </template>
+                <template v-else>
+                  <div
                   v-html="descriptionHtml"
                   v-highlight
                   class="markdown-body"
                 ></div>
+                </template>
               </el-card>
             </el-col>
           </el-row>

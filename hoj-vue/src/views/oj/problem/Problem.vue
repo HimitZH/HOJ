@@ -174,32 +174,62 @@
                 <div id="problem-content">
                   <template v-if="problemData.problem.description">
                     <p class="title">{{ $t('m.Description') }}</p>
-                    <p
-                      class="content markdown-body"
-                      v-html="problemData.problem.description"
-                      v-katex
-                      v-highlight
-                    ></p>
+                    <template v-if="groupID">
+                      <p
+                        class="content markdown-body"
+                        v-dompurify-html="problemData.problem.description"
+                        v-katex
+                        v-highlight
+                      ></p>
+                    </template>
+                    <template v-else>
+                        <p
+                        class="content markdown-body"
+                        v-html="problemData.problem.description"
+                        v-katex
+                        v-highlight
+                      ></p>
+                    </template>
                   </template>
 
                   <template v-if="problemData.problem.input">
                     <p class="title">{{ $t('m.Input') }}</p>
-                    <p
+                    <template v-if="groupID">
+                      <p
+                      class="content markdown-body"
+                      v-dompurify-html="problemData.problem.input"
+                      v-katex
+                      v-highlight
+                      ></p>
+                    </template>
+                    <template v-else>
+                      <p
                       class="content markdown-body"
                       v-html="problemData.problem.input"
                       v-katex
                       v-highlight
-                    ></p>
+                      ></p>
+                    </template>
                   </template>
 
                   <template v-if="problemData.problem.output">
                     <p class="title">{{ $t('m.Output') }}</p>
-                    <p
+                    <template v-if="groupID">
+                      <p
+                      class="content markdown-body"
+                      v-dompurify-html="problemData.problem.output"
+                      v-katex
+                      v-highlight
+                    ></p>
+                    </template>
+                    <template v-else>
+                      <p
                       class="content markdown-body"
                       v-html="problemData.problem.output"
                       v-katex
                       v-highlight
                     ></p>
+                    </template>
                   </template>
 
                   <template v-if="problemData.problem.examples">
@@ -243,21 +273,39 @@
                   <template v-if="problemData.problem.hint">
                     <p class="title">{{ $t('m.Hint') }}</p>
                     <el-card dis-hover>
-                      <p
+                      <template v-if="groupID">
+                        <p
                         class="hint-content markdown-body"
-                        v-html="problemData.problem.hint"
+                        v-dompurify-html="problemData.problem.hint"
                         v-katex
                         v-highlight
-                      ></p>
+                        ></p>
+                      </template>
+                      <template>
+                        <p
+                          class="hint-content markdown-body"
+                          v-html="problemData.problem.hint"
+                          v-katex
+                          v-highlight
+                        ></p>
+                      </template>
                     </el-card>
                   </template>
 
                   <template v-if="problemData.problem.source && !contestID">
                     <p class="title">{{ $t('m.Source') }}</p>
-                    <p
+                    <template v-if="groupID">
+                      <p
+                      class="content"
+                      v-dompurify-html="problemData.problem.source"
+                      ></p>
+                    </template>
+                    <template v-else>
+                      <p
                       class="content"
                       v-html="problemData.problem.source"
-                    ></p>
+                      ></p>
+                    </template>
                   </template>
                 </div>
               </div>
