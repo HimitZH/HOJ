@@ -176,6 +176,7 @@ public class HomeManager {
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
         problemQueryWrapper.select("id", "problem_id", "title", "type", "gmt_modified", "gmt_create");
         problemQueryWrapper.eq("auth", 1);
+        problemQueryWrapper.eq("is_group", false);
         problemQueryWrapper.orderByDesc("gmt_create");
         problemQueryWrapper.last("limit 10");
         List<Problem> problemList = problemEntityService.list(problemQueryWrapper);

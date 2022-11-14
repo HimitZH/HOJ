@@ -109,8 +109,12 @@ public class HDUJudge extends RemoteJudgeStrategy {
         // 找到时
         Validate.isTrue(matcher.find());
         String rawStatus = matcher.group(1).replaceAll("<[\\s\\S]*?>", "").trim();
-        Constants.Judge judgeStatus = statusTypeMap.getOrDefault(rawStatus, Constants.Judge.STATUS_PENDING);
-
+        Constants.Judge judgeStatus;
+        if (rawStatus.contains("Runtime Error")){
+            judgeStatus = Constants.Judge.STATUS_RUNTIME_ERROR;
+        }else{
+            judgeStatus = statusTypeMap.getOrDefault(rawStatus, Constants.Judge.STATUS_PENDING);
+        }
         RemoteJudgeRes remoteJudgeRes = RemoteJudgeRes.builder()
                 .status(judgeStatus.getStatus())
                 .build();

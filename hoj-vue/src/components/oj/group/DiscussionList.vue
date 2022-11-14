@@ -78,7 +78,7 @@
             <el-button
               icon="el-icon-delete-solid"
               size="mini"
-              @click.native="deleteGroupDiscussion([row.id])"
+              @click.native="deleteGroupDiscussion(row.id)"
               type="danger"
             >
             </el-button>
@@ -181,7 +181,7 @@ export default {
         this.currentChange(1);
       });
     },
-    deleteGroupDiscussion(uid, gid) {
+    deleteGroupDiscussion(did) {
       this.$confirm(
         this.$i18n.t('m.Delete_Discussion_Tips'),
         this.$i18n.t('m.Warning'),
@@ -193,7 +193,7 @@ export default {
       )
         .then(() => {
           this.loading = true;
-          api.deleteGroupDiscussion(uid, gid).then((res) => {
+          api.deleteGroupDiscussion(did).then((res) => {
             this.loading = true;
             mMessage.success(this.$i18n.t('m.Delete_successfully'));
             this.$emit('currentChange', 1);
