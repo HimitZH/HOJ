@@ -110,12 +110,22 @@
                 :body-style="{ padding: '0px' }"
                 style="border-radius: 10px; height: 170px"
               >
-                <el-image
-                  :src="group.avatar ? group.avatar : defaultAvatar"
-                  @click="toGroup(group.id)"
-                  fit="cover"
-                  style="height: 135px; width: 100%"
-                ></el-image>
+                <template v-if="group.avatar">
+                  <el-image
+                    :src="group.avatar"
+                    @click="toGroup(group.id)"
+                    fit="cover"
+                    style="height: 135px; width: 100%"
+                  ></el-image>
+                </template>
+                <template v-else>
+                  <el-image
+                    :src="defaultAvatar"
+                    @click="toGroup(group.id)"
+                    fit="cover"
+                    style="height: 135px; width: 100%"
+                  ></el-image>
+                </template>
                 <el-link
                   style="font-size: 16px"
                   type="primary"
@@ -326,7 +336,6 @@
 import { GROUP_TYPE_REVERSE } from '@/common/constants';
 import api from '@/common/api';
 import mMessage from '@/common/message';
-import Avatar from 'vue-avatar';
 import { mapGetters } from 'vuex';
 import Pagination from '@/components/oj/common/Pagination';
 import Editor from '@/components/admin/Editor';
@@ -334,7 +343,6 @@ import Marquee from '@/components/oj/common/Marquee';
 export default {
   name: 'GroupList',
   components: {
-    Avatar,
     Pagination,
     Editor,
     Marquee,

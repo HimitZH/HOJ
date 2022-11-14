@@ -76,7 +76,6 @@
 
 <script>
 import api from '@/common/api';
-import mMessage from '@/common/message';
 import { addCodeBtn } from '@/common/codeblock';
 import Pagination from '@/components/oj/common/Pagination';
 export default {

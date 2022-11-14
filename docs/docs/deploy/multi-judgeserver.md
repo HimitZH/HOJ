@@ -61,7 +61,19 @@
       git clone https://gitee.com/himitzh0730/hoj-deploy.git && cd hoj-deploy/distributed/judgeserver
       ```
 
-   2. 修改配置`.env`文件,里面的nacos参数，judgeServer，rsync的参数请正确修改！
+   2. 修改配置`.env`文件。
+
+      重点按照提示修改这些配置项：
+
+      - `NACOS_HOST`：**修改为nacos所在服务的ip，一般就是主服务器的ip**
+      - `NACOS_PORT` ：**修改为nacos启动端口号，默认为8848**
+      - `NACOS_USERNAME`：**修改为nacos的管理员账号**
+      -  `NACOS_PASSWORD`：**修改为nacos的管理员密码**
+      - `JUDGE_SERVER_IP`：**提供当前判题机服务器的公网ip**
+      - `RSYNC_MASTER_ADDR`：**修改为主服务器的ip**
+      - `RSYNC_PASSWORD`：**在主服务配置rsync的密码**
+
+      **其他配置项详情请按照文件内提示进行修改**
 
       ```properties
       # nacos的配置
@@ -119,6 +131,18 @@
    ```
 
 2. 修改`.env`文件的配置
+
+   重点按照提示修改这些配置项：
+
+   - `NACOS_HOST`：**修改为nacos所在服务的ip，一般就是主服务器的ip**
+   - `NACOS_PORT` ：**修改为nacos启动端口号，默认为8848**
+   - `NACOS_USERNAME`：**修改为nacos的管理员账号**
+   -  `NACOS_PASSWORD`：**修改为nacos的管理员密码**
+   - `JUDGE_SERVER_IP`：**提供当前判题机服务器的公网ip**
+   - `RSYNC_MASTER_ADDR`：**修改为主服务器的ip**
+   - `RSYNC_PASSWORD`：**在主服务配置rsync的密码**
+
+   **其他配置项详情请按照文件内提示进行修改**
 
    ```properties
    # nacos的配置

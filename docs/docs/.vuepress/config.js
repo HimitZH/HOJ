@@ -85,7 +85,8 @@ module.exports = context => config({
                 children: [
                     'develop/db',
 					'develop/judge_dispatcher',
-					'develop/sandbox'
+					'develop/sandbox',
+					'develop/backend'
                 ]
             },
 			{

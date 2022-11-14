@@ -150,7 +150,7 @@
             <span class="pr">
               <label class="fw">
                 <i class="el-icon-folder-opened"></i>
-                {{ discussion.categoryName }}
+                {{ cidMapName[discussion.categoryId] }}
               </label>
             </span>
             <span class="pr pl hidden-xs-only">
@@ -339,6 +339,7 @@ export default {
       backupDiscussion: null,
       discussionList: [],
       categoryList: [],
+      cidMapName:{},
       showTags: false,
       loading: false,
       adminPage: false,
@@ -351,6 +352,9 @@ export default {
     api.getCategoryList().then(
       (res) => {
         this.categoryList = res.data.data;
+        for (let i = 0; i < this.categoryList.length; i++) {
+          this.cidMapName[this.categoryList[i].id] = this.categoryList[i].name;
+        }
       },
       () => {}
     );
