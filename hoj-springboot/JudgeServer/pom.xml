@@ -5,7 +5,7 @@
     <parent>
         <artifactId>hoj-springboot</artifactId>
         <groupId>top.hcode</groupId>
-        <version>4.4</version>
+        <version>4.5</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>hoj-judgeServer</artifactId>
@@ -48,7 +48,7 @@
         <dependency>
             <groupId>top.hcode</groupId>
             <artifactId>hoj-api</artifactId>
-            <version>4.4</version>
+            <version>4.5</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba.cloud</groupId>

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>hoj-springboot</artifactId>
         <groupId>top.hcode</groupId>
-        <version>4.4</version>
+        <version>4.5</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
