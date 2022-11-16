@@ -35,6 +35,10 @@ dist
 
 修改 `docker-compose.yml`，在 `hoj-frontend` 模块中的 `volumes` 中添加如下：
 
+注意：冒号前面的是你主机实际存储图片文件的路径，主要是确定是否需要修改这个；冒号后面的是映射的docker容器内的文件路径，**不要修改**！！！
+
+例如：`/usr/share/nginx/html/assets/img/logo.a0924d7d.png`这个不要修改，主要修改`./logo.png`，确定图片文件的路径即可！
+
 ```yaml
 - ./logo.png:/usr/share/nginx/html/assets/img/logo.a0924d7d.png
 - ./backstage.png:/usr/share/nginx/html/assets/img/backstage.8bce8c6e.png
@@ -44,4 +48,6 @@ dist
 `logo.png`为前台导航栏左边的logo，`backstage.png`为后台侧边导航栏上方的logo，`favicon.ico`为小图标
 
 **图片文件需放在与docker-compose.yml同个目录下，或者提供绝对路径也可。**
+
+修改保存完成，使用`docker-compose up -d`重启`hoj-frontend`即可，前端浏览器有缓存，可以刷新浏览器或者换别的浏览器进行查看！
 

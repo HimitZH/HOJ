@@ -1159,6 +1159,12 @@ export default {
     },
     resizeWatchHeight() {
       try {
+        var left = document.getElementsByClassName("problem-left");
+        var right = document.getElementsByClassName("problem-right");
+        var box = document.getElementsByClassName("problem-box");
+        let tmp = box[0].clientWidth - left[0].clientWidth - 11;
+        right[0].style.width = tmp + "px";
+
         let headerHeight = document.getElementById("header").offsetHeight;
         let headerWidth = document.getElementById("header").offsetWidth;
         let totalHeight = window.innerHeight;
@@ -1177,13 +1183,13 @@ export default {
         }
 
         let problemRightHight = problemLeftHight - 95 - (jsRHeaderHeight - 36) - (jsRBottomHeight - 48);
-        if (problemLeftHight < 0) {
-          problemLeftHight = 0;
-        }
         if (problemRightHight < 0) {
           problemRightHight = 0;
         }
         this.height = problemRightHight;
+        if (problemLeftHight < 0) {
+          problemLeftHight = 0;
+        }
         if (this.activeName == "problemDetail") {
           if(headerWidth >= 992){
             document
