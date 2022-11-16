@@ -1159,15 +1159,21 @@ export default {
     },
     resizeWatchHeight() {
       try {
-        var left = document.getElementsByClassName("problem-left");
-        var right = document.getElementsByClassName("problem-right");
-        var box = document.getElementsByClassName("problem-box");
-        let tmp = box[0].clientWidth - left[0].clientWidth - 11;
-        right[0].style.width = tmp + "px";
-
         let headerHeight = document.getElementById("header").offsetHeight;
         let headerWidth = document.getElementById("header").offsetWidth;
         let totalHeight = window.innerHeight;
+
+        if(headerWidth >= 992){
+          let left = document.getElementsByClassName("problem-left");
+          let right = document.getElementsByClassName("problem-right");
+          let box = document.getElementsByClassName("problem-box");
+          let tmp = box[0].clientWidth - left[0].clientWidth - 11;
+          right[0].style.width = tmp + "px";
+        }else{
+          let right = document.getElementsByClassName("problem-right");
+          right[0].style.width = "100%";
+        }
+
         let problemLeftHight = totalHeight - (headerHeight + 64);
         if(this.showProblemHorizontalMenu){
           let footerMenuHeight = document.getElementById("problem-footer").offsetHeight;
