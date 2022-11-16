@@ -538,6 +538,7 @@ import "codemirror/addon/fold/indent-fold.js";
 import "codemirror/addon/hint/show-hint.css";
 import "codemirror/addon/hint/show-hint.js";
 import "codemirror/addon/hint/anyword-hint.js";
+import 'codemirror/addon/hint/javascript-hint'
 import "codemirror/addon/selection/mark-selection.js";
 
 export default {
@@ -671,13 +672,32 @@ export default {
     this.editor.setOption("theme", this.theme);
     this.editor.setSize('100%', this.height);
     this.editor.on("inputRead", (instance, changeObj) => {
-      if (/\w|\./g.test(changeObj.text[0]) && changeObj.origin !== "complete") {
-        instance.showHint({
-          hint: CodeMirror.hint.anyword,
-          completeSingle: false,
-          range: 1000, // 附近多少行代码匹配
-        });
+      if (changeObj.text && changeObj.text.length > 0) {
+      let c = changeObj.text[0].charAt(changeObj.text[0].length - 1)
+        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+          instance.showHint({ completeSingle:false });
+          try{
+            let headerWidth = document.getElementById("header").offsetWidth;
+            if(headerWidth >= 992){
+              let left = document.getElementsByClassName("problem-left");
+              let right = document.getElementsByClassName("problem-right");
+              let box = document.getElementsByClassName("problem-box");
+              let tmp = box[0].clientWidth - left[0].clientWidth - 11;
+              right[0].style.width = tmp + "px";
+            }else{
+              let right = document.getElementsByClassName("problem-right");
+              right[0].style.width = "100%";
+            }
+          }catch(e){}
+        }
       }
+      // if (/\w|\./g.test(changeObj.text) && changeObj.origin !== "complete") {
+      //   instance.showHint({
+      //     hint: CodeMirror.hint.anyword,
+      //     completeSingle: false,
+      //     range: 1000, // 附近多少行代码匹配
+      //   });
+      // }
     });
     this.$nextTick(() => {
       this.editor.refresh();
@@ -1021,5 +1041,8 @@ export default {
 }
 .cm-s-material .cm-matchhighlight {
   background-color: rgba(128, 203, 196, 0.2);
+}
+.CodeMirror-hints{
+  max-height: 6em;
 }
 </style>
