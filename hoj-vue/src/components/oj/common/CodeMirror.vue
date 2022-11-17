@@ -676,19 +676,6 @@ export default {
       let c = changeObj.text[0].charAt(changeObj.text[0].length - 1)
         if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
           instance.showHint({ completeSingle:false });
-          try{
-            let headerWidth = document.getElementById("header").offsetWidth;
-            if(headerWidth >= 992){
-              let left = document.getElementsByClassName("problem-left");
-              let right = document.getElementsByClassName("problem-right");
-              let box = document.getElementsByClassName("problem-box");
-              let tmp = box[0].clientWidth - left[0].clientWidth - 11;
-              right[0].style.width = tmp + "px";
-            }else{
-              let right = document.getElementsByClassName("problem-right");
-              right[0].style.width = "100%";
-            }
-          }catch(e){}
         }
       }
       // if (/\w|\./g.test(changeObj.text) && changeObj.origin !== "complete") {
@@ -1041,8 +1028,5 @@ export default {
 }
 .cm-s-material .cm-matchhighlight {
   background-color: rgba(128, 203, 196, 0.2);
-}
-.CodeMirror-hints{
-  max-height: 6em;
 }
 </style>

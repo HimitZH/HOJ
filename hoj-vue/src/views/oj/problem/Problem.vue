@@ -2,12 +2,14 @@
   <div :class="bodyClass">
     <div id="problem-main">
       <!--problem main-->
-      <el-row class="problem-box">
+      <el-row class="problem-box" 
+        :id="'problem-box' + '-' + $route.name">
         <el-col
           :sm="24"
           :md="12"
           :lg="12"
           class="problem-left"
+          :id="'problem-left'+'-'+ $route.name"
         >
           <el-tabs
             v-model="activeName"
@@ -556,6 +558,7 @@
           :md="12"
           :lg="12"
           class="problem-right"
+          :id="'problem-right' + '-' + $route.name"
         >
           <el-card
             :padding="10"
@@ -1073,9 +1076,15 @@ export default {
       var resize = document.getElementById(
         "js-center" + "-" + this.$route.name
       );
-      var left = document.getElementsByClassName("problem-left");
-      var right = document.getElementsByClassName("problem-right");
-      var box = document.getElementsByClassName("problem-box");
+      var left = document.getElementById(
+        "problem-left" + "-" + this.$route.name
+      );
+      var right = document.getElementById(
+        "problem-right" + "-" + this.$route.name
+      );
+      var box = document.getElementById(
+        "problem-box" + "-" + this.$route.name
+      );
       const _this = this;
       // 鼠标按下事件
       resize.onmousedown = function (e) {
@@ -1087,7 +1096,7 @@ export default {
           resize.left = startX;
           var endX = e.clientX;
           var moveLen = resize.left + (endX - startX); // （endx-startx）=移动的距离。resize.left+移动的距离=左边区域最后的宽度
-          var maxT = box[0].clientWidth - resize.offsetWidth; // 容器宽度 - 左边区域的宽度 = 右边区域的宽度
+          var maxT = box.offsetWidth - resize.offsetWidth; // 容器宽度 - 左边区域的宽度 = 右边区域的宽度
           if (moveLen < 420) {
             moveLen = 0; // 左边区域的最小宽度为420px
             _this.toWatchProblem = true;
@@ -1095,15 +1104,13 @@ export default {
             _this.toWatchProblem = false;
           }
           if (moveLen > maxT - 580) moveLen = maxT - 580; //右边区域最小宽度为580px
-          resize.style.left = moveLen; // 设置左侧区域的宽度
-          for (let j = 0; j < left.length; j++) {
-            left[j].style.width = moveLen + "px";
-            let tmp = box[0].clientWidth - moveLen - 11;
-            right[j].style.width = tmp + "px";
-            if (tmp > 0) {
-              _this.toResetWatch = false;
-              right[j].style.display = "";
-            }
+          resize.style.left = moveLen +"px"; // 设置左侧区域的宽度
+          let leftRadio = (moveLen / box.offsetWidth) *100;
+          left.style.width = leftRadio + "%";
+          right.style.width = (100 - leftRadio) + "%";
+          if (leftRadio < 100) {
+            _this.toResetWatch = false;
+            right.style.display = "";
           }
         };
         // 鼠标松开事件
@@ -1124,37 +1131,49 @@ export default {
         this.toWatchProblem = false;
         return;
       }
-      var resize = document.getElementsByClassName("problem-resize");
-      var left = document.getElementsByClassName("problem-left");
-      var right = document.getElementsByClassName("problem-right");
-      var box = document.getElementsByClassName("problem-box");
-      for (let i = 0; i < resize.length; i++) {
-        for (let j = 0; j < left.length; j++) {
-          left[j].style.width = box[i].clientWidth - 20 + "px";
-          right[j].style.width = "0px";
-          right[j].style.display = "none";
-        }
-      }
+      var resize = document.getElementById(
+        "js-center" + "-" + this.$route.name
+      );
+      var left = document.getElementById(
+        "problem-left" + "-" + this.$route.name
+      );
+      var right = document.getElementById(
+        "problem-right" + "-" + this.$route.name
+      );
+      var box = document.getElementById(
+        "problem-box" + "-" + this.$route.name
+      );
+      resize.style.left = box.clientWidth - 10 + "px";
+      left.style.width = box.clientWidth - 10 + "px";
+      right.style.width = "0px";
+      right.style.display = "none";
       this.toResetWatch = true;
     },
     resetWatch(minLeft = false) {
-      var resize = document.getElementsByClassName("problem-resize");
-      var left = document.getElementsByClassName("problem-left");
-      var right = document.getElementsByClassName("problem-right");
-      var box = document.getElementsByClassName("problem-box");
-      for (let i = 0; i < resize.length; i++) {
-        let leftWidth = 0;
-        if (minLeft) {
-          leftWidth = 431; // 恢复左边最小420px+滑块11px
-        } else {
-          leftWidth = box[i].clientWidth - 580; // 右边最小580px
-        }
-        for (let j = 0; j < left.length; j++) {
-          left[j].style.width = leftWidth - 20 + "px";
-          right[j].style.width = box[i].clientWidth - leftWidth + "px";
-          right[j].style.display = "";
-        }
+      var resize = document.getElementById(
+        "js-center" + "-" + this.$route.name
+      );
+      var left = document.getElementById(
+        "problem-left" + "-" + this.$route.name
+      );
+      var right = document.getElementById(
+        "problem-right" + "-" + this.$route.name
+      );
+      var box = document.getElementById(
+        "problem-box" + "-" + this.$route.name
+      );
+
+      let leftWidth = 0;
+      if (minLeft) {
+        leftWidth = 431; // 恢复左边最小420px+滑块11px
+      } else {
+        leftWidth = box.clientWidth - 580; // 右边最小580px
       }
+      let leftRadio = (leftWidth / box.offsetWidth) * 100;
+      resize.style.left = leftRadio + "%";
+      left.style.width = leftRadio + "%";
+      right.style.width = (100 - leftRadio)  + "%";
+      right.style.display = "";
       this.toResetWatch = false;
     },
     resizeWatchHeight() {
@@ -1163,15 +1182,20 @@ export default {
         let headerWidth = document.getElementById("header").offsetWidth;
         let totalHeight = window.innerHeight;
 
+        let left = document.getElementById(
+            "problem-left" + "-" + this.$route.name
+          );
+        let right = document.getElementById(
+            "problem-right" + "-" + this.$route.name
+          );
         if(headerWidth >= 992){
-          let left = document.getElementsByClassName("problem-left");
-          let right = document.getElementsByClassName("problem-right");
-          let box = document.getElementsByClassName("problem-box");
-          let tmp = box[0].clientWidth - left[0].clientWidth - 11;
-          right[0].style.width = tmp + "px";
+          let box = document.getElementById(
+            "problem-box" + "-" + this.$route.name
+          );
+          let tmp = ((box.offsetWidth - left.offsetWidth) / box.offsetWidth) * 100;
+          right.style.width = tmp + "%";
         }else{
-          let right = document.getElementsByClassName("problem-right");
-          right[0].style.width = "100%";
+          right.style.width = "100%";
         }
 
         let problemLeftHight = totalHeight - (headerHeight + 64);
@@ -1231,7 +1255,8 @@ export default {
           .getElementById("js-center" + "-" + this.$route.name)
           .setAttribute(
             "style",
-            "top:" + problemLeftHight * 0.5 + "px !important"
+            "top:" + problemLeftHight * 0.5 + "px !important; left:" 
+            + left.style.width
           );
       } catch (e) {
       }
@@ -1855,17 +1880,6 @@ export default {
 </style>
 
 <style scoped>
-@media screen and (min-width: 1050px) {
-  .problem-body {
-    margin-left: -2%;
-    margin-right: -2%;
-  }
-}
-
-#problem-main {
-  flex: auto;
-}
-
 .problem-menu {
   float: left;
 }
@@ -1918,6 +1932,10 @@ a {
   padding-right: 15px;
 }
 @media screen and (min-width: 992px) {
+  .problem-body {
+    margin-left: -2% ;
+    margin-right: -2%;
+  }
   .js-left {
     height: 730px !important;
     overflow-y: auto;
@@ -1958,7 +1976,7 @@ a {
     overflow: hidden;
   }
   .problem-left {
-    width: calc(50% - 13px); /*左侧初始化宽度*/
+    width: 50%; /*左侧初始化宽度*/
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
@@ -1966,9 +1984,9 @@ a {
   }
   .problem-resize {
     cursor: col-resize;
-    float: left;
-    position: relative;
+    position: absolute;
     top: 330px;
+    left: 50%;
     background-color: #d6d6d6;
     border-radius: 5px;
     width: 10px;
