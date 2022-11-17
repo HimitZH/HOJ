@@ -1104,9 +1104,9 @@ export default {
             _this.toWatchProblem = false;
           }
           if (moveLen > maxT - 580) moveLen = maxT - 580; //右边区域最小宽度为580px
-          resize.style.left = moveLen +"px"; // 设置左侧区域的宽度
           let leftRadio = (moveLen / box.offsetWidth) *100;
-          left.style.width = leftRadio + "%";
+          resize.style.left = leftRadio + "%"; 
+          left.style.width = leftRadio + "%"; // 设置左侧区域的宽度
           right.style.width = (100 - leftRadio) + "%";
           if (leftRadio < 100) {
             _this.toResetWatch = false;
@@ -1192,8 +1192,9 @@ export default {
           let box = document.getElementById(
             "problem-box" + "-" + this.$route.name
           );
-          let tmp = ((box.offsetWidth - left.offsetWidth) / box.offsetWidth) * 100;
-          right.style.width = tmp + "%";
+          let tmp = (left.clientWidth / box.clientWidth) * 100;
+          left.style.width = tmp + "%";
+          right.style.width = (100 - tmp) + "%";
         }else{
           right.style.width = "100%";
         }
