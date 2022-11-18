@@ -175,6 +175,8 @@ public class GroupProblemManager {
 
         problemDto.getProblem().setIsGroup(true);
 
+        problemDto.getProblem().setApplyPublicProgress(null);
+
         List<Tag> tagList = new LinkedList<>();
         for (Tag tag : problemDto.getTags()) {
             if (tag.getGid() != null && tag.getGid().longValue() != gid) {
@@ -254,6 +256,8 @@ public class GroupProblemManager {
         }
 
         problemDto.setTags(tagList);
+
+        problemDto.getProblem().setApplyPublicProgress(null);
 
         boolean isOk = problemEntityService.adminUpdateProblem(problemDto);
         if (isOk) {

@@ -14,7 +14,7 @@ public class Constants {
     public enum Judge {
         STATUS_NOT_SUBMITTED(-10, "Not Submitted", null),
         STATUS_SUBMITTED_UNKNOWN_RESULT(-5, "Submitted Unknown Result", null),
-        STATUS_CANCELLED(-4, "Cancelled","ca"),
+        STATUS_CANCELLED(-4, "Cancelled", "ca"),
         STATUS_PRESENTATION_ERROR(-3, "Presentation Error", "pe"),
         STATUS_COMPILE_ERROR(-2, "Compile Error", "ce"),
         STATUS_WRONG_ANSWER(-1, "Wrong Answer", "wa"),
@@ -57,10 +57,11 @@ public class Constants {
 
     /**
      * 等待判题的redis队列
+     *
      * @Since 2021/12/22
      */
 
-    public enum Queue{
+    public enum Queue {
         CONTEST_JUDGE_WAITING("Contest_Waiting_Handle_Queue"),
         GENERAL_JUDGE_WAITING("General_Waiting_Handle_Queue"),
         TEST_JUDGE_WAITING("Test_Judge_Waiting_Handle_Queue"),
@@ -70,7 +71,9 @@ public class Constants {
         private Queue(String name) {
             this.name = name;
         }
+
         private final String name;
+
         public String getName() {
             return name;
         }
@@ -103,7 +106,8 @@ public class Constants {
             return false;
 
         }
-        public static RemoteOJ getRemoteOJ(String name){
+
+        public static RemoteOJ getRemoteOJ(String name) {
             for (RemoteOJ remoteOJ : RemoteOJ.values()) {
                 if (remoteOJ.getName().equals(name)) {
                     return remoteOJ;
@@ -134,12 +138,12 @@ public class Constants {
         RECORD_NOT_AC_NOT_PENALTY(0, "未AC通过不罚时"),
         RECORD_AC(1, "AC通过"),
 
-        OI_CONTEST_RANK_CACHE(null,"oi_contest_rank_cache"),
+        OI_CONTEST_RANK_CACHE(null, "oi_contest_rank_cache"),
 
-        CONTEST_RANK_CAL_RESULT_CACHE(null,"contest_rank_cal_result_cache"),
+        CONTEST_RANK_CAL_RESULT_CACHE(null, "contest_rank_cal_result_cache"),
 
-        OI_RANK_RECENT_SCORE(null,"Recent"),
-        OI_RANK_HIGHEST_SCORE(null,"Highest");
+        OI_RANK_RECENT_SCORE(null, "Recent"),
+        OI_RANK_HIGHEST_SCORE(null, "Highest");
 
         private final Integer code;
         private final String name;
@@ -306,6 +310,54 @@ public class Constants {
         }
     }
 
+    public enum ProblemType {
+        ACM(0),
+        OI(1);
+        private final Integer type;
+
+        ProblemType(Integer type) {
+            this.type = type;
+        }
+
+        public Integer getType() {
+            return type;
+        }
+
+        public static ProblemType getProblemType(Integer type) {
+            for (ProblemType problemType : ProblemType.values()) {
+                if (problemType.getType().equals(type)) {
+                    return problemType;
+                }
+            }
+            return null;
+        }
+    }
+
+    public enum ProblemAuth {
+        PUBLIC(1),
+        PRIVATE(2),
+        CONTEST(3);
+
+        private final Integer auth;
+
+        ProblemAuth(Integer auth) {
+            this.auth = auth;
+        }
+
+        public Integer getAuth() {
+            return auth;
+        }
+
+        public static ProblemAuth getProblemAuth(Integer auth) {
+            for (ProblemAuth problemAuth : ProblemAuth.values()) {
+                if (problemAuth.getAuth().equals(auth)) {
+                    return problemAuth;
+                }
+            }
+            return null;
+        }
+    }
+
     public enum JudgeMode {
         DEFAULT("default"),
         SPJ("spj"),
@@ -321,7 +373,7 @@ public class Constants {
             return mode;
         }
 
-        public static JudgeMode getJudgeMode(String mode){
+        public static JudgeMode getJudgeMode(String mode) {
             for (JudgeMode judgeMode : JudgeMode.values()) {
                 if (judgeMode.getMode().equals(mode)) {
                     return judgeMode;
@@ -331,7 +383,7 @@ public class Constants {
         }
     }
 
-    public enum JudgeCaseMode{
+    public enum JudgeCaseMode {
         DEFAULT("default"),
         SUBTASK_LOWEST("subtask_lowest"),
         SUBTASK_AVERAGE("subtask_average"),
@@ -348,7 +400,7 @@ public class Constants {
         }
 
 
-        public static JudgeCaseMode getJudgeCaseMode(String mode){
+        public static JudgeCaseMode getJudgeCaseMode(String mode) {
             for (JudgeCaseMode judgeCaseMode : JudgeCaseMode.values()) {
                 if (judgeCaseMode.getMode().equals(mode)) {
                     return judgeCaseMode;
@@ -358,7 +410,7 @@ public class Constants {
         }
     }
 
-    public enum TaskType{
+    public enum TaskType {
         /**
          * 自身评测
          */

@@ -5,6 +5,7 @@ import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import top.hcode.hoj.common.exception.StatusAccessDeniedException;
+import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.dao.training.TrainingRegisterEntityService;
 import top.hcode.hoj.pojo.entity.training.Training;
@@ -13,6 +14,7 @@ import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
+import java.util.Objects;
 
 /**
  * @Author: Himit_ZH
@@ -27,6 +29,18 @@ public class TrainingValidator {
 
     @Autowired
     private GroupValidator groupValidator;
+
+    @Resource
+    private CommonValidator commonValidator;
+
+    public void validateTraining(Training training) throws StatusFailException {
+        commonValidator.validateContent(training.getTitle(), "训练标题", 500);
+        commonValidator.validateContentLength(training.getDescription(), "训练描述", 65535);
+        if (!Objects.equals(training.getAuth(), "Public")
+                && !Objects.equals(training.getAuth(), "Private")) {
+            throw new StatusFailException("训练的权限类型必须为公开训练(Public)、私有训练(Private)！");
+        }
+    }
 
     public void validateTrainingAuth(Training training) throws StatusAccessDeniedException, StatusForbiddenException {
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();

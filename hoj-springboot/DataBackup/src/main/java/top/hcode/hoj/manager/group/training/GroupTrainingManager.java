@@ -27,6 +27,7 @@ import top.hcode.hoj.pojo.vo.TrainingVO;
 import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.validator.GroupValidator;
+import top.hcode.hoj.validator.TrainingValidator;
 
 import java.util.Objects;
 
@@ -61,6 +62,9 @@ public class GroupTrainingManager {
 
     @Autowired
     private GroupValidator groupValidator;
+
+    @Autowired
+    private TrainingValidator trainingValidator;
 
     public IPage<TrainingVO> getTrainingList(Integer limit, Integer currentPage, Long gid) throws StatusNotFoundException, StatusForbiddenException {
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
@@ -146,6 +150,9 @@ public class GroupTrainingManager {
 
     @Transactional(rollbackFor = Exception.class)
     public void addTraining(TrainingDTO trainingDto) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
+
+        trainingValidator.validateTraining(trainingDto.getTraining());
+
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
@@ -193,6 +200,9 @@ public class GroupTrainingManager {
 
     @Transactional(rollbackFor = Exception.class)
     public void updateTraining(TrainingDTO trainingDto) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
+
+        trainingValidator.validateTraining(trainingDto.getTraining());
+
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");

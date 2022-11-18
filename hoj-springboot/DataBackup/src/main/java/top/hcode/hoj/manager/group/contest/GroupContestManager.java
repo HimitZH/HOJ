@@ -24,7 +24,7 @@ import top.hcode.hoj.pojo.vo.ContestAwardConfigVO;
 import top.hcode.hoj.pojo.vo.ContestVO;
 import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
-import top.hcode.hoj.validator.CommonValidator;
+import top.hcode.hoj.validator.ContestValidator;
 import top.hcode.hoj.validator.GroupValidator;
 
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class GroupContestManager {
     private GroupValidator groupValidator;
 
     @Autowired
-    private CommonValidator commonValidator;
+    private ContestValidator contestValidator;
 
     public IPage<ContestVO> getContestList(Integer limit, Integer currentPage, Long gid) throws StatusNotFoundException, StatusForbiddenException {
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
@@ -153,9 +153,7 @@ public class GroupContestManager {
 
     public void addContest(AdminContestVO adminContestVo) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
 
-        commonValidator.validateContent(adminContestVo.getTitle(), "比赛标题", 500);
-        commonValidator.validateContentLength(adminContestVo.getDescription(), "比赛描述", 65535);
-
+        contestValidator.validateContest(adminContestVo);
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -198,8 +196,7 @@ public class GroupContestManager {
 
     public void updateContest(AdminContestVO adminContestVo) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
 
-        commonValidator.validateContent(adminContestVo.getTitle(), "比赛标题", 500);
-        commonValidator.validateContentLength(adminContestVo.getDescription(), "比赛描述", 65535);
+        contestValidator.validateContest(adminContestVo);
 
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 

@@ -24,6 +24,7 @@ import top.hcode.hoj.pojo.vo.ContestAwardConfigVO;
 import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.validator.ContestValidator;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -44,6 +45,9 @@ public class AdminContestManager {
 
     @Autowired
     private ContestRegisterEntityService contestRegisterEntityService;
+
+    @Autowired
+    private ContestValidator contestValidator;
 
     public IPage<Contest> getContestList(Integer limit, Integer currentPage, String keyword) {
 
@@ -120,6 +124,8 @@ public class AdminContestManager {
     }
 
     public void addContest(AdminContestVO adminContestVo) throws StatusFailException {
+        contestValidator.validateContest(adminContestVo);
+
         Contest contest = BeanUtil.copyProperties(adminContestVo, Contest.class, "starAccount");
         JSONObject accountJson = new JSONObject();
         if (adminContestVo.getStarAccount() == null) {
@@ -161,6 +167,8 @@ public class AdminContestManager {
     }
 
     public void updateContest(AdminContestVO adminContestVo) throws StatusForbiddenException, StatusFailException {
+        contestValidator.validateContest(adminContestVo);
+
         // 获取当前登录的用户
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         // 是否为超级管理员

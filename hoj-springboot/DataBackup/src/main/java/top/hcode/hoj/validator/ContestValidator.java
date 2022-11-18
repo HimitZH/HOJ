@@ -10,11 +10,13 @@ import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.dao.contest.ContestRegisterEntityService;
 import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestRegister;
+import top.hcode.hoj.pojo.vo.AdminContestVO;
 import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * @Author: Himit_ZH
@@ -30,8 +32,34 @@ public class ContestValidator {
     @Autowired
     private GroupValidator groupValidator;
 
+    @Resource
+    private CommonValidator commonValidator;
+
+    public void validateContest(AdminContestVO adminContestVO) throws StatusFailException {
+        commonValidator.validateContent(adminContestVO.getTitle(), "比赛标题", 500);
+        commonValidator.validateContentLength(adminContestVO.getDescription(), "比赛描述", 65535);
+
+        if (!Objects.equals(Constants.Contest.TYPE_OI.getCode(), adminContestVO.getType())
+                && !Objects.equals(Constants.Contest.TYPE_ACM.getCode(), adminContestVO.getType())) {
+            throw new StatusFailException("比赛的赛制必须为ACM(0)、OI(1)！");
+        }
+
+        if (Objects.equals(Constants.Contest.TYPE_OI.getCode(), adminContestVO.getType())) {
+            if (!Objects.equals(Constants.Contest.OI_RANK_RECENT_SCORE.getName(), adminContestVO.getOiRankScoreType())
+                    && !Objects.equals(Constants.Contest.OI_RANK_HIGHEST_SCORE.getName(), adminContestVO.getOiRankScoreType())) {
+                throw new StatusFailException("OI比赛排行榜得分类型必须为最近得分(Recent)、最高得分(Highest)！");
+            }
+        }
+
+        if (!Objects.equals(Constants.Contest.AUTH_PUBLIC.getCode(), adminContestVO.getAuth())
+                && !Objects.equals(Constants.Contest.AUTH_PRIVATE.getCode(), adminContestVO.getAuth())
+                && !Objects.equals(Constants.Contest.AUTH_PROTECT.getCode(), adminContestVO.getAuth())) {
+            throw new StatusFailException("比赛的权限必须为公开赛(0)、私有赛(1)、保护赛(2)！");
+        }
+    }
+
     public boolean isSealRank(String uid, Contest contest, Boolean forceRefresh, Boolean isRoot) {
-        if (!contest.getSealRank()){
+        if (!contest.getSealRank()) {
             return false;
         }
         // 如果是管理员同时选择强制刷新榜单，则封榜无效

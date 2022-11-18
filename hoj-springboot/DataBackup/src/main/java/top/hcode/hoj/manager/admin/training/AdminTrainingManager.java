@@ -22,6 +22,7 @@ import top.hcode.hoj.pojo.entity.training.TrainingCategory;
 import top.hcode.hoj.pojo.entity.training.TrainingRegister;
 import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
+import top.hcode.hoj.validator.TrainingValidator;
 
 import javax.annotation.Resource;
 import java.util.Objects;
@@ -50,6 +51,9 @@ public class AdminTrainingManager {
 
     @Resource
     private AdminTrainingRecordManager adminTrainingRecordManager;
+
+    @Resource
+    private TrainingValidator trainingValidator;
 
     public IPage<Training> getTrainingList(Integer limit, Integer currentPage, String keyword) {
 
@@ -121,8 +125,8 @@ public class AdminTrainingManager {
 
     @Transactional(rollbackFor = Exception.class)
     public void addTraining(TrainingDTO trainingDto) throws StatusFailException {
-
         Training training = trainingDto.getTraining();
+        trainingValidator.validateTraining(training);
         trainingEntityService.save(training);
         TrainingCategory trainingCategory = trainingDto.getTrainingCategory();
         if (trainingCategory.getId() == null) {
@@ -145,6 +149,9 @@ public class AdminTrainingManager {
 
     @Transactional(rollbackFor = Exception.class)
     public void updateTraining(TrainingDTO trainingDto) throws StatusForbiddenException, StatusFailException {
+        Training training = trainingDto.getTraining();
+        trainingValidator.validateTraining(training);
+
         // 获取当前登录的用户
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         // 是否为超级管理员
@@ -153,7 +160,6 @@ public class AdminTrainingManager {
         if (!isRoot && !userRolesVo.getUsername().equals(trainingDto.getTraining().getAuthor())) {
             throw new StatusForbiddenException("对不起，你无权限操作！");
         }
-        Training training = trainingDto.getTraining();
         Training oldTraining = trainingEntityService.getById(training.getId());
         trainingEntityService.updateById(training);
 
