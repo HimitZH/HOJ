@@ -286,7 +286,7 @@ export default {
     },
     goGroupProblem(event) {
       this.$router.push({
-        name: 'GroupProblemDetails',
+        name: 'GroupFullProblemDetails',
         params: {
           problemID: event.row.problemId,
         },
