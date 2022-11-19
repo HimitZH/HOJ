@@ -283,6 +283,9 @@ public class DiscussionManager {
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
+        boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
+
         if (!isRoot
                 && !oriDiscussion.getUid().equals(userRolesVo.getUid())
                 && !(oriDiscussion.getGid() != null
@@ -294,6 +297,8 @@ public class DiscussionManager {
                 .set("content", discussion.getContent())
                 .set("description", discussion.getDescription())
                 .set("category_id", discussion.getCategoryId())
+                .set(isRoot || isProblemAdmin || isAdmin,
+                        "top_priority", discussion.getTopPriority())
                 .eq("id", discussion.getId());
         boolean isOk = discussionEntityService.update(discussionUpdateWrapper);
         if (!isOk) {

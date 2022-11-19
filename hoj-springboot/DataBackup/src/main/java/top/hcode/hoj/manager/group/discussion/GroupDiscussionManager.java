@@ -204,9 +204,6 @@ public class GroupDiscussionManager {
         commonValidator.validateContent(discussion.getContent(), "讨论", 65535);
         commonValidator.validateNotEmpty(discussion.getCategoryId(), "讨论分类");
 
-        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
-        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-
         QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
         discussionQueryWrapper
                 .select("id", "uid", "gid")
@@ -218,11 +215,16 @@ public class GroupDiscussionManager {
         }
 
         Long gid = oriDiscussion.getGid();
-        if (gid == null){
+        if (gid == null) {
             throw new StatusNotFoundException("更新失败，该讨论非团队讨论！");
         }
 
         Group group = groupEntityService.getById(gid);
+
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+        boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
+        boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
             throw new StatusNotFoundException("更新失败，该团队不存在或已被封禁！");
@@ -239,6 +241,8 @@ public class GroupDiscussionManager {
                 .set("content", discussion.getContent())
                 .set("description", discussion.getDescription())
                 .set("category_id", discussion.getCategoryId())
+                .set(isRoot || isProblemAdmin || isAdmin,
+                        "top_priority", discussion.getTopPriority())
                 .eq("id", discussion.getId());
 
         boolean isOk = discussionEntityService.update(discussionUpdateWrapper);
@@ -255,7 +259,7 @@ public class GroupDiscussionManager {
         Discussion discussion = discussionEntityService.getById(did);
 
         Long gid = discussion.getGid();
-        if (gid == null){
+        if (gid == null) {
             throw new StatusNotFoundException("删除失败，该讨论非团队讨论！");
         }
         Group group = groupEntityService.getById(gid);
