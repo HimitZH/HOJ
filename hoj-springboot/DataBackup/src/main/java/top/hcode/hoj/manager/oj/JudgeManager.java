@@ -441,8 +441,10 @@ public class JudgeManager {
         if (judgeInfo.getCid() != 0) { // 如果是比赛提交，不可分享！
             throw new StatusForbiddenException("对不起，您不能分享比赛题目的提交代码！");
         }
-        judgeInfo.setShare(judge.getShare());
-        boolean isOk = judgeEntityService.updateById(judgeInfo);
+        UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
+        judgeUpdateWrapper.set("share", judge.getShare())
+                .eq("submit_id", judge.getSubmitId());
+        boolean isOk = judgeEntityService.update(judgeUpdateWrapper);
         if (!isOk) {
             throw new StatusFailException("修改代码权限失败！");
         }
