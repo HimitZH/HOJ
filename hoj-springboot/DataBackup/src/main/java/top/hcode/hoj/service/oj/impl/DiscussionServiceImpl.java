@@ -92,6 +92,8 @@ public class DiscussionServiceImpl implements DiscussionService {
             return CommonResult.errorResponse(e.getMessage());
         } catch (StatusForbiddenException e) {
             return CommonResult.errorResponse(e.getMessage(), ResultStatus.FORBIDDEN);
+        } catch (StatusNotFoundException e) {
+            return CommonResult.errorResponse(e.getMessage(), ResultStatus.NOT_FOUND);
         }
     }
 

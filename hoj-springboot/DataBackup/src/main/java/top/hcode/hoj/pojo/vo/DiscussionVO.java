@@ -66,6 +66,9 @@ public class DiscussionVO {
     @ApiModelProperty(value = "优先级，是否置顶")
     private Boolean topPriority;
 
+    @ApiModelProperty(value = "团队ID")
+    private Long gid;
+
     @ApiModelProperty(value = "是否封禁 0正常，1封禁")
     @TableLogic
     private Integer status;

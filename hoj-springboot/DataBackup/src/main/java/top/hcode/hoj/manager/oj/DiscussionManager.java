@@ -88,7 +88,6 @@ public class DiscussionManager {
                                                String keyword,
                                                boolean admin) {
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
-
         QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
 
         IPage<Discussion> iPage = new Page<>(currentPage, limit);
@@ -150,17 +149,6 @@ public class DiscussionManager {
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
-        Discussion discussion = discussionEntityService.getById(did);
-
-        if (discussion.getGid() != null) {
-            accessValidator.validateAccess(HOJAccessEnum.GROUP_DISCUSSION);
-            if (!isRoot && !discussion.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupMember(userRolesVo.getUid(), discussion.getGid())) {
-                throw new StatusForbiddenException("对不起，您无权限操作！");
-            }
-        } else {
-            accessValidator.validateAccess(HOJAccessEnum.PUBLIC_DISCUSSION);
-        }
-
         String uid = null;
 
         if (userRolesVo != null) {
@@ -173,8 +161,22 @@ public class DiscussionManager {
             throw new StatusNotFoundException("对不起，该讨论不存在！");
         }
 
+        if (discussionVo.getGid() != null && uid == null) {
+            throw new StatusNotFoundException("对不起，请先登录后再访问团队讨论！");
+        }
+
         if (discussionVo.getStatus() == 1) {
             throw new StatusForbiddenException("对不起，该讨论已被封禁！");
+        }
+
+        if (discussionVo.getGid() != null) {
+            accessValidator.validateAccess(HOJAccessEnum.GROUP_DISCUSSION);
+            if (!isRoot && !discussionVo.getUid().equals(uid)
+                    && !groupValidator.isGroupMember(uid, discussionVo.getGid())) {
+                throw new StatusForbiddenException("对不起，您无权限操作！");
+            }
+        } else {
+            accessValidator.validateAccess(HOJAccessEnum.PUBLIC_DISCUSSION);
         }
 
         // 浏览量+1
@@ -211,7 +213,9 @@ public class DiscussionManager {
         }
 
         if (discussion.getGid() != null) {
-            if (!isRoot && !discussion.getUid().equals(userRolesVo.getUid()) && !groupValidator.isGroupMember(userRolesVo.getUid(), discussion.getGid())) {
+            if (!isRoot
+                    && !discussion.getUid().equals(userRolesVo.getUid())
+                    && !groupValidator.isGroupMember(userRolesVo.getUid(), discussion.getGid())) {
                 throw new StatusForbiddenException("对不起，您无权限操作！");
             }
         }
@@ -269,8 +273,10 @@ public class DiscussionManager {
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
-        if (!isRoot && !discussion.getUid().equals(userRolesVo.getUid())
-                && !(discussion.getGid() != null && groupValidator.isGroupAdmin(userRolesVo.getUid(), discussion.getGid()))) {
+        if (!isRoot
+                && !discussion.getUid().equals(userRolesVo.getUid())
+                && !(discussion.getGid() != null
+                && groupValidator.isGroupAdmin(userRolesVo.getUid(), discussion.getGid()))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -288,8 +294,14 @@ public class DiscussionManager {
 
         Discussion discussion = discussionEntityService.getById(did);
 
-        if (!isRoot && !discussion.getUid().equals(userRolesVo.getUid())
-                && !(discussion.getGid() != null && groupValidator.isGroupAdmin(userRolesVo.getUid(), discussion.getGid()))) {
+        if (discussion == null) {
+            throw new StatusForbiddenException("删除失败，该讨论已不存在！");
+        }
+
+        if (!isRoot
+                && !discussion.getUid().equals(userRolesVo.getUid())
+                && !(discussion.getGid() != null
+                && groupValidator.isGroupAdmin(userRolesVo.getUid(), discussion.getGid()))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -308,11 +320,16 @@ public class DiscussionManager {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void addDiscussionLike(Integer did, boolean toLike) throws StatusFailException, StatusForbiddenException {
+    public void addDiscussionLike(Integer did, boolean toLike) throws StatusFailException, StatusForbiddenException, StatusNotFoundException {
         // 获取当前登录的用户
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         Discussion discussion = discussionEntityService.getById(did);
+
+        if (discussion == null){
+            throw new StatusNotFoundException("对不起，该讨论不存在！");
+        }
+
         if (discussion.getGid() != null) {
             boolean isRoot = SecurityUtils.getSubject().hasRole("root");
             if (!isRoot && !discussion.getUid().equals(userRolesVo.getUid())
