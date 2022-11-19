@@ -163,7 +163,9 @@ public class CommentManager {
             QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
             discussionQueryWrapper.select("id", "gid").eq("id", comment.getDid());
             Discussion discussion = discussionEntityService.getOne(discussionQueryWrapper);
-
+            if (discussion == null) {
+                throw new StatusFailException("评论失败，该讨论已不存在！");
+            }
             Long gid = discussion.getGid();
             if (gid != null) {
                 accessValidator.validateAccess(HOJAccessEnum.GROUP_DISCUSSION);
@@ -189,6 +191,9 @@ public class CommentManager {
         } else {
             accessValidator.validateAccess(HOJAccessEnum.CONTEST_COMMENT);
             Contest contest = contestEntityService.getById(cid);
+            if (contest == null) {
+                throw new StatusFailException("评论失败，该比赛已不存在！");
+            }
             contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
         }
 
@@ -397,6 +402,11 @@ public class CommentManager {
         Reply reply = replyDto.getReply();
 
         Comment comment = commentEntityService.getById(reply.getCommentId());
+
+        if (comment == null){
+            throw new StatusFailException("回复失败，当前评论已不存在！");
+        }
+
         Long cid = comment.getCid();
         if (cid == null) {
 
@@ -490,6 +500,10 @@ public class CommentManager {
         Reply reply = replyDto.getReply();
 
         Comment comment = commentEntityService.getById(reply.getCommentId());
+
+        if (comment == null){
+            throw new StatusFailException("删除失败，当前评论已不存在！");
+        }
 
         Long cid = comment.getCid();
 
