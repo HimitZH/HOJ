@@ -897,12 +897,12 @@ export default {
         });
       } else if (this.groupID != null) {
         this.$router.push({
-          name: "GroupSubmissionDeatil",
+          name: "GroupSubmissionDetail",
           params: { submitID: row.submitId },
         });
       } else {
         this.$router.push({
-          name: "SubmissionDeatil",
+          name: "SubmissionDetail",
           params: { submitID: row.submitId },
         });
       }

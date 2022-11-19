@@ -1059,14 +1059,14 @@ export default {
         });
       } else if (this.groupID) {
         this.$router.push({
-          name: "GroupSubmissionDeatil",
+          name: "GroupSubmissionDetail",
           params: {
             submitID: row.submitId,
           },
         });
       } else {
         this.$router.push({
-          name: "SubmissionDeatil",
+          name: "SubmissionDetail",
           params: { submitID: row.submitId },
         });
       }
@@ -1806,12 +1806,12 @@ export default {
         });
       } else if (this.groupID) {
         this.$router.push({
-          name: "GroupSubmissionDeatil",
+          name: "GroupSubmissionDetail",
           params: { submitID: this.submissionId, gid: this.groupID },
         });
       } else {
         this.$router.push({
-          name: "SubmissionDeatil",
+          name: "SubmissionDetail",
           params: { submitID: this.submissionId },
         });
       }
