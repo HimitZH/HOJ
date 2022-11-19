@@ -119,6 +119,8 @@ export const m = {
   Update_Successfully: '更新成功',
   Update_Failed: '更新失败',
   Guess_robot: '您的操作太快啦，可能是机器操作！请再次验证！',
+  The_current_password_cannot_be_empty: '当前密码不能为空',
+  The_new_password_cannot_be_empty: '新密码不能为空',
 
 
   // /components/oj/setting/UserInfo.vue

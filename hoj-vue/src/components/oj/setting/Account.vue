@@ -160,6 +160,7 @@ export default {
       {
         required: true,
         trigger: 'blur',
+        message: this.$i18n.t('m.The_current_password_cannot_be_empty'),
       },
       {
         trigger: 'blur',
@@ -242,6 +243,7 @@ export default {
           {
             required: true,
             trigger: 'blur',
+            message: this.$i18n.t('m.The_new_password_cannot_be_empty'),
           },
           {
             trigger: 'blur',
