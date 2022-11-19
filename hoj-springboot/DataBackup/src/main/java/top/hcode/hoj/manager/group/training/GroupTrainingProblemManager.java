@@ -96,6 +96,10 @@ public class GroupTrainingProblemManager {
 
         Long gid = training.getGid();
 
+        if (gid == null){
+            throw new StatusForbiddenException("更新失败，不可操作非团队内的训练题目！");
+        }
+
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
@@ -125,6 +129,10 @@ public class GroupTrainingProblemManager {
         }
 
         Long gid = training.getGid();
+
+        if (gid == null){
+            throw new StatusForbiddenException("删除失败，不可操作非团队内的训练题目！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
@@ -169,6 +177,10 @@ public class GroupTrainingProblemManager {
         }
 
         Long gid = training.getGid();
+
+        if (gid == null){
+            throw new StatusForbiddenException("添加失败，不可操作非团队内的训练题目！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
@@ -224,6 +236,10 @@ public class GroupTrainingProblemManager {
         }
 
         Long gid = training.getGid();
+
+        if (gid == null){
+            throw new StatusForbiddenException("添加失败，不可操作非团队内的训练题目！");
+        }
 
         Group group = groupEntityService.getById(gid);
 

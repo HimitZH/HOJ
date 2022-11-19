@@ -262,21 +262,31 @@ public class DiscussionManager {
     }
 
 
-    public void updateDiscussion(Discussion discussion) throws StatusFailException, StatusForbiddenException {
+    public void updateDiscussion(Discussion discussion) throws StatusFailException, StatusForbiddenException, StatusNotFoundException {
 
+        commonValidator.validateNotEmpty(discussion.getId(), "讨论ID");
         commonValidator.validateContent(discussion.getTitle(), "讨论标题", 255);
         commonValidator.validateContent(discussion.getDescription(), "讨论描述", 255);
         commonValidator.validateContent(discussion.getContent(), "讨论", 65535);
         commonValidator.validateNotEmpty(discussion.getCategoryId(), "讨论分类");
 
+        QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
+        discussionQueryWrapper
+                .select("id", "uid", "gid")
+                .eq("id", discussion.getId());
+
+        Discussion oriDiscussion = discussionEntityService.getOne(discussionQueryWrapper);
+        if (oriDiscussion == null) {
+            throw new StatusNotFoundException("更新失败，该讨论不存在！");
+        }
+
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-
         if (!isRoot
-                && !discussion.getUid().equals(userRolesVo.getUid())
-                && !(discussion.getGid() != null
-                && groupValidator.isGroupAdmin(userRolesVo.getUid(), discussion.getGid()))) {
+                && !oriDiscussion.getUid().equals(userRolesVo.getUid())
+                && !(oriDiscussion.getGid() != null
+                && groupValidator.isGroupAdmin(userRolesVo.getUid(), oriDiscussion.getGid()))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -286,17 +296,21 @@ public class DiscussionManager {
         }
     }
 
-    public void removeDiscussion(Integer did) throws StatusFailException, StatusForbiddenException {
+    public void removeDiscussion(Integer did) throws StatusFailException, StatusForbiddenException, StatusNotFoundException {
+
+        QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
+        discussionQueryWrapper
+                .select("id", "uid", "gid")
+                .eq("id", did);
+
+        Discussion discussion = discussionEntityService.getOne(discussionQueryWrapper);
+        if (discussion == null) {
+            throw new StatusNotFoundException("删除失败，该讨论已不存在！");
+        }
+
         // 获取当前登录的用户
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
-
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-
-        Discussion discussion = discussionEntityService.getById(did);
-
-        if (discussion == null) {
-            throw new StatusForbiddenException("删除失败，该讨论已不存在！");
-        }
 
         if (!isRoot
                 && !discussion.getUid().equals(userRolesVo.getUid())
@@ -326,7 +340,7 @@ public class DiscussionManager {
 
         Discussion discussion = discussionEntityService.getById(did);
 
-        if (discussion == null){
+        if (discussion == null) {
             throw new StatusNotFoundException("对不起，该讨论不存在！");
         }
 

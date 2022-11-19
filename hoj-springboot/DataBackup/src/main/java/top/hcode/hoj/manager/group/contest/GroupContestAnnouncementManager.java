@@ -61,6 +61,10 @@ public class GroupContestAnnouncementManager {
 
         Long gid = contest.getGid();
 
+        if (gid == null){
+            throw new StatusForbiddenException("获取失败，不可获取非团队内的比赛公告！");
+        }
+
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
@@ -82,6 +86,7 @@ public class GroupContestAnnouncementManager {
 
         commonValidator.validateContent(announcementDto.getAnnouncement().getTitle(), "公告标题", 255);
         commonValidator.validateContentLength(announcementDto.getAnnouncement().getContent(), "公告", 65535);
+        commonValidator.validateNotEmpty(announcementDto.getCid(), "比赛ID");
 
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
@@ -96,6 +101,10 @@ public class GroupContestAnnouncementManager {
         }
 
         Long gid = contest.getGid();
+
+        if (gid == null){
+            throw new StatusForbiddenException("添加失败，不可操作非团队内的比赛公告！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
@@ -124,6 +133,7 @@ public class GroupContestAnnouncementManager {
 
         commonValidator.validateContent(announcementDto.getAnnouncement().getTitle(), "公告标题", 255);
         commonValidator.validateContentLength(announcementDto.getAnnouncement().getContent(), "公告", 65535);
+        commonValidator.validateNotEmpty(announcementDto.getCid(), "比赛ID");
 
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
@@ -138,6 +148,9 @@ public class GroupContestAnnouncementManager {
         }
 
         Long gid = contest.getGid();
+        if (gid == null){
+            throw new StatusForbiddenException("更新失败，不可操作非团队内的比赛公告！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
@@ -168,6 +181,10 @@ public class GroupContestAnnouncementManager {
         }
 
         Long gid = contest.getGid();
+
+        if (gid == null){
+            throw new StatusForbiddenException("删除失败，不可操作非团队内的比赛公告！");
+        }
 
         Group group = groupEntityService.getById(gid);
 

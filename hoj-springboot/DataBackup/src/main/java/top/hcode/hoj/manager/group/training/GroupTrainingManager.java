@@ -121,13 +121,18 @@ public class GroupTrainingManager {
 
         Long gid = training.getGid();
 
+        if (gid == null){
+            throw new StatusForbiddenException("获取失败，不可访问非团队内的训练！");
+        }
+
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!userRolesVo.getUsername().equals(training.getAuthor()) && !isRoot
+        if (!userRolesVo.getUsername().equals(training.getAuthor())
+                && !isRoot
                 && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
@@ -158,6 +163,9 @@ public class GroupTrainingManager {
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long gid = trainingDto.getTraining().getGid();
+        if (gid == null){
+            throw new StatusForbiddenException("添加失败，训练所属的团队ID不可为空！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
@@ -175,7 +183,7 @@ public class GroupTrainingManager {
         trainingEntityService.save(training);
         TrainingCategory trainingCategory = trainingDto.getTrainingCategory();
 
-        if (trainingCategory.getGid() != null && trainingCategory.getGid() != gid) {
+        if (trainingCategory.getGid() != null && !Objects.equals(trainingCategory.getGid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -209,6 +217,10 @@ public class GroupTrainingManager {
 
         Long tid = trainingDto.getTraining().getId();
 
+        if (tid == null){
+            throw new StatusForbiddenException("更新失败，训练ID不能为空！");
+        }
+
         Training training = trainingEntityService.getById(tid);
 
         if (training == null) {
@@ -216,6 +228,10 @@ public class GroupTrainingManager {
         }
 
         Long gid = training.getGid();
+
+        if (gid == null){
+            throw new StatusForbiddenException("更新失败，不可操作非团队内的训练！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
@@ -292,6 +308,10 @@ public class GroupTrainingManager {
 
         Long gid = training.getGid();
 
+        if (gid == null){
+            throw new StatusForbiddenException("删除失败，不可操作非团队内的训练！");
+        }
+
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
@@ -321,6 +341,10 @@ public class GroupTrainingManager {
         }
 
         Long gid = training.getGid();
+
+        if (gid == null){
+            throw new StatusForbiddenException("修改失败，不可操作非团队内的训练！");
+        }
 
         Group group = groupEntityService.getById(gid);
 

@@ -125,6 +125,7 @@ public class GroupDiscussionManager {
         commonValidator.validateContent(discussion.getDescription(), "讨论描述", 255);
         commonValidator.validateContent(discussion.getContent(), "讨论", 65535);
         commonValidator.validateNotEmpty(discussion.getCategoryId(), "讨论分类");
+        commonValidator.validateNotEmpty(discussion.getGid(), "讨论所属团队ID");
 
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
@@ -196,6 +197,7 @@ public class GroupDiscussionManager {
 
     public void updateDiscussion(Discussion discussion) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
 
+        commonValidator.validateNotEmpty(discussion.getId(), "讨论ID");
         commonValidator.validateContent(discussion.getTitle(), "讨论标题", 255);
         commonValidator.validateContent(discussion.getDescription(), "讨论描述", 255);
         commonValidator.validateContent(discussion.getContent(), "讨论", 65535);
@@ -204,15 +206,30 @@ public class GroupDiscussionManager {
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
-        Long gid = discussion.getGid();
+        QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
+        discussionQueryWrapper
+                .select("id", "uid", "gid")
+                .eq("id", discussion.getId());
+
+        Discussion oriDiscussion = discussionEntityService.getOne(discussionQueryWrapper);
+        if (oriDiscussion == null) {
+            throw new StatusNotFoundException("更新失败，该讨论不存在！");
+        }
+
+        Long gid = oriDiscussion.getGid();
+        if (gid == null){
+            throw new StatusNotFoundException("更新失败，该讨论非团队讨论！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("更新失败，该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid) && !discussion.getUid().equals(userRolesVo.getUid()) && !isRoot) {
+        if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)
+                && !oriDiscussion.getUid().equals(userRolesVo.getUid())
+                && !isRoot) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -230,11 +247,13 @@ public class GroupDiscussionManager {
         Discussion discussion = discussionEntityService.getById(did);
 
         Long gid = discussion.getGid();
-
+        if (gid == null){
+            throw new StatusNotFoundException("删除失败，该讨论非团队讨论！");
+        }
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("删除失败，该团队不存在或已被封禁！");
         }
 
         if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid) && !discussion.getUid().equals(userRolesVo.getUid()) && !isRoot) {

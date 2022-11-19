@@ -249,16 +249,22 @@ public class CommentManager {
 
     @Transactional(rollbackFor = Exception.class)
     public void deleteComment(Comment comment) throws StatusForbiddenException, StatusFailException, AccessException {
+
+        commonValidator.validateNotEmpty(comment.getId(), "评论ID");
+        // 如果不是评论本人 或者不是管理员 无权限删除该评论
+        comment = commentEntityService.getById(comment.getId());
+        if (comment == null) {
+            throw new StatusFailException("删除失败，当前评论已不存在！");
+        }
+
         // 获取当前登录的用户
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
         boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
-        // 如果不是评论本人 或者不是管理员 无权限删除该评论
 
         Long cid = comment.getCid();
-
         if (cid == null) {
             QueryWrapper<Discussion> discussionQueryWrapper = new QueryWrapper<>();
             discussionQueryWrapper.select("id", "gid").eq("id", comment.getDid());
@@ -401,9 +407,13 @@ public class CommentManager {
 
         Reply reply = replyDto.getReply();
 
+        if (reply == null || reply.getCommentId() == null){
+            throw new StatusFailException("回复失败，当前请求的参数错误！");
+        }
+
         Comment comment = commentEntityService.getById(reply.getCommentId());
 
-        if (comment == null){
+        if (comment == null) {
             throw new StatusFailException("回复失败，当前评论已不存在！");
         }
 
@@ -490,23 +500,31 @@ public class CommentManager {
     }
 
     public void deleteReply(ReplyDTO replyDto) throws StatusForbiddenException, StatusFailException, AccessException {
+
+        Reply reply = replyDto.getReply();
+
+        if (reply == null || reply.getId() == null){
+            throw new StatusFailException("删除失败，删除的回复不可为空！");
+        }
+
+        reply = replyEntityService.getById(reply.getId());
+
+        if (reply == null) {
+            throw new StatusFailException("删除失败，当前回复的数据已不存在！");
+        }
+
+        Comment comment = commentEntityService.getById(reply.getCommentId());
+        if (comment == null) {
+            throw new StatusFailException("删除失败，当前回复所属的评论已不存在！");
+        }
+
         // 获取当前登录的用户
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
-
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         boolean isProblemAdmin = SecurityUtils.getSubject().hasRole("problem_admin");
         boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
 
-        Reply reply = replyDto.getReply();
-
-        Comment comment = commentEntityService.getById(reply.getCommentId());
-
-        if (comment == null){
-            throw new StatusFailException("删除失败，当前评论已不存在！");
-        }
-
         Long cid = comment.getCid();
-
         if (cid == null) {
             Discussion discussion = discussionEntityService.getById(comment.getDid());
             Long gid = discussion.getGid();

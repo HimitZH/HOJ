@@ -132,6 +132,10 @@ public class GroupProblemManager {
 
         Long gid = problem.getGid();
 
+        if (gid == null){
+            throw new StatusForbiddenException("获取失败，不可访问非团队内的题目！");
+        }
+
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
@@ -153,6 +157,10 @@ public class GroupProblemManager {
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long gid = problemDto.getProblem().getGid();
+
+        if (gid == null){
+            throw new StatusForbiddenException("添加失败，题目所属团队ID不可为空！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
@@ -215,13 +223,18 @@ public class GroupProblemManager {
 
         Long gid = problem.getGid();
 
+        if (gid == null){
+            throw new StatusForbiddenException("更新失败，不可操作非团队内的题目！");
+        }
+
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!userRolesVo.getUsername().equals(problem.getAuthor()) && !isRoot
+        if (!userRolesVo.getUsername().equals(problem.getAuthor())
+                && !isRoot
                 && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
@@ -285,13 +298,19 @@ public class GroupProblemManager {
 
         Long gid = problem.getGid();
 
+        if (gid == null){
+            throw new StatusForbiddenException("删除失败，不可操作非团队内的题目！");
+        }
+
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");
         }
 
-        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUsername().equals(problem.getAuthor()) && !isRoot) {
+        if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid)
+                && !userRolesVo.getUsername().equals(problem.getAuthor())
+                && !isRoot) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
@@ -315,6 +334,10 @@ public class GroupProblemManager {
         }
 
         Long gid = problem.getGid();
+
+        if (gid == null){
+            throw new StatusForbiddenException("获取失败，不可获取非团队内的题目的题目数据！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
@@ -419,6 +442,10 @@ public class GroupProblemManager {
 
         Long gid = problem.getGid();
 
+        if (gid == null){
+            throw new StatusForbiddenException("更新失败，不可操作非团队内的题目！");
+        }
+
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
@@ -451,7 +478,12 @@ public class GroupProblemManager {
         if (problem == null) {
             throw new StatusNotFoundException("该题目不存在！");
         }
+
         Long gid = problem.getGid();
+        if (gid == null){
+            throw new StatusForbiddenException("申请失败，不可操作非团队内的题目！");
+        }
+
         Group group = groupEntityService.getById(gid);
         if (group == null || group.getStatus() == 1 && !isRoot) {
             throw new StatusNotFoundException("该团队不存在或已被封禁！");

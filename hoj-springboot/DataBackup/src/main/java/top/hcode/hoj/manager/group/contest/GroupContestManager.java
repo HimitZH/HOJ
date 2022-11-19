@@ -112,6 +112,10 @@ public class GroupContestManager {
 
         Long gid = contest.getGid();
 
+        if (gid == null){
+            throw new StatusForbiddenException("获取失败，不可访问非团队内的比赛！");
+        }
+
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
@@ -159,6 +163,10 @@ public class GroupContestManager {
 
         Long gid = adminContestVo.getGid();
 
+        if (gid == null){
+            throw new StatusNotFoundException("添加失败，比赛所属的团队ID不可为空！");
+        }
+
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
@@ -204,6 +212,10 @@ public class GroupContestManager {
 
         Long cid = adminContestVo.getId();
 
+        if (cid == null){
+            throw new StatusNotFoundException("更新失败，比赛ID不可为空！");
+        }
+
         Contest oldContest = contestEntityService.getById(cid);
 
         if (oldContest == null) {
@@ -211,6 +223,10 @@ public class GroupContestManager {
         }
 
         Long gid = oldContest.getGid();
+
+        if (gid == null){
+            throw new StatusForbiddenException("更新失败，不可操作非团队内的比赛！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
@@ -263,6 +279,10 @@ public class GroupContestManager {
 
         Long gid = contest.getGid();
 
+        if (gid == null){
+            throw new StatusForbiddenException("删除失败，不可操作非团队内的比赛！");
+        }
+
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
@@ -292,6 +312,10 @@ public class GroupContestManager {
         }
 
         Long gid = contest.getGid();
+
+        if (gid == null){
+            throw new StatusForbiddenException("修改失败，不可操作非团队内的比赛！");
+        }
 
         Group group = groupEntityService.getById(gid);
 

@@ -26,6 +26,7 @@ import top.hcode.hoj.pojo.entity.problem.Problem;
 import top.hcode.hoj.pojo.entity.problem.Tag;
 import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.validator.GroupValidator;
+import top.hcode.hoj.validator.ProblemValidator;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -61,6 +62,9 @@ public class GroupContestProblemManager {
     @Autowired
     private GroupValidator groupValidator;
 
+    @Autowired
+    private ProblemValidator problemValidator;
+
     public HashMap<String, Object> getContestProblemList(Integer limit, Integer currentPage, String keyword, Long cid, Integer problemType, String oj) throws StatusNotFoundException, StatusForbiddenException {
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
@@ -73,6 +77,10 @@ public class GroupContestProblemManager {
         }
 
         Long gid = contest.getGid();
+
+        if (gid == null){
+            throw new StatusForbiddenException("获取失败，不可获取非团队内的比赛题目列表！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
@@ -88,11 +96,18 @@ public class GroupContestProblemManager {
     }
 
     public Map<Object, Object> addProblem(ProblemDTO problemDto) throws StatusNotFoundException, StatusForbiddenException, StatusFailException {
+
+        problemValidator.validateGroupProblem(problemDto.getProblem());
+
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long gid = problemDto.getProblem().getGid();
+
+        if (gid == null){
+            throw new StatusNotFoundException("添加失败，题目所属的团队ID不可为空！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
@@ -153,6 +168,9 @@ public class GroupContestProblemManager {
 
         Long gid = contest.getGid();
 
+        if (gid == null){
+            throw new StatusForbiddenException("获取失败，不可获取非团队内的比赛题目！");
+        }
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
@@ -188,14 +206,18 @@ public class GroupContestProblemManager {
         }
 
         Long gid = contest.getGid();
+        if (gid == null){
+            throw new StatusForbiddenException("更新失败，不可操作非团队内的比赛题目！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("更新失败，该团队不存在或已被封禁！");
         }
 
-        if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
+        if (!userRolesVo.getUid().equals(contest.getUid())
+                && !isRoot
                 && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
@@ -220,11 +242,14 @@ public class GroupContestProblemManager {
         }
 
         Long gid = contest.getGid();
+        if (gid == null){
+            throw new StatusForbiddenException("删除失败，不可操作非团队内的比赛题目！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("删除失败，该团队不存在或已被封禁！");
         }
 
         if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
@@ -264,16 +289,18 @@ public class GroupContestProblemManager {
         if (contest == null) {
             throw new StatusNotFoundException("该比赛不存在！");
         }
-
         Long gid = contest.getGid();
-
+        if (gid == null){
+            throw new StatusForbiddenException("添加失败，不可操作非团队内的比赛！");
+        }
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("添加题目失败，该团队不存在或已被封禁！");
         }
 
-        if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
+        if (!userRolesVo.getUid().equals(contest.getUid())
+                && !isRoot
                 && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
@@ -310,15 +337,18 @@ public class GroupContestProblemManager {
         Contest contest = contestEntityService.getById(cid);
 
         if (contest == null) {
-            throw new StatusNotFoundException("该训练不存在！");
+            throw new StatusNotFoundException("添加失败，该比赛不存在！");
         }
 
         Long gid = contest.getGid();
+        if (gid == null){
+            throw new StatusForbiddenException("添加失败，不可操作非团队内的比赛！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("添加失败，该团队不存在或已被封禁！");
         }
 
         if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot

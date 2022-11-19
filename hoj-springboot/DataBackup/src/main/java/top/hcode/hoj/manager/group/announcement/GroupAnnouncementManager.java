@@ -86,12 +86,17 @@ public class GroupAnnouncementManager {
 
         commonValidator.validateContent(announcement.getTitle(), "公告标题", 255);
         commonValidator.validateContentLength(announcement.getContent(), "公告", 65535);
+        commonValidator.validateNotEmpty(announcement.getGid(), "团队ID");
 
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
         Long gid = announcement.getGid();
+
+        if (gid == null){
+            throw new StatusFailException("添加失败，公告所属团队ID不能为空！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
@@ -111,22 +116,35 @@ public class GroupAnnouncementManager {
 
     public void updateAnnouncement(Announcement announcement) throws StatusForbiddenException, StatusNotFoundException, StatusFailException {
 
+        commonValidator.validateNotEmpty(announcement.getId(), "公告ID");
         commonValidator.validateContent(announcement.getTitle(), "公告标题", 255);
         commonValidator.validateContentLength(announcement.getContent(), "公告", 65535);
+        commonValidator.validateNotEmpty(announcement.getGid(), "团队ID");
 
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
+        Announcement oriAnnouncement = announcementEntityService.getById(announcement.getId());
+
+        if (oriAnnouncement == null){
+            throw new StatusFailException("修改失败，该公告已不存在！");
+        }
+
         Long gid = announcement.getGid();
+
+        if (gid == null){
+            throw new StatusForbiddenException("更新失败，不可操作非团队内的公告！");
+        }
 
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("修改公告失败，该团队不存在或已被封禁！");
         }
 
-        if (!userRolesVo.getUid().equals(announcement.getUid()) && !isRoot
+        if (!userRolesVo.getUid().equals(oriAnnouncement.getUid())
+                && !isRoot
                 && !groupValidator.isGroupRoot(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
@@ -149,6 +167,10 @@ public class GroupAnnouncementManager {
         }
 
         Long gid = announcement.getGid();
+
+        if (gid == null){
+            throw new StatusForbiddenException("删除失败，不可操作非团队内的公告！");
+        }
 
         Group group = groupEntityService.getById(gid);
 

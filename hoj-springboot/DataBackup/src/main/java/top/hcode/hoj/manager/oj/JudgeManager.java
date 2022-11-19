@@ -421,14 +421,23 @@ public class JudgeManager {
      */
     public void updateSubmission(Judge judge) throws StatusForbiddenException, StatusFailException {
 
+        if (judge == null || judge.getSubmitId() == null || judge.getShare() == null) {
+            throw new StatusFailException("修改失败，请求参数错误！");
+        }
+
+        QueryWrapper<Judge> judgeQueryWrapper = new QueryWrapper<>();
+        judgeQueryWrapper.select("submit_id", "cid", "uid")
+                .eq("submit_id", judge.getSubmitId());
+
+        Judge judgeInfo = judgeEntityService.getOne(judgeQueryWrapper);
+
         // 需要获取一下该token对应用户的数据
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
-        if (!userRolesVo.getUid().equals(judge.getUid())) { // 判断该提交是否为当前用户的
+        if (!userRolesVo.getUid().equals(judgeInfo.getUid())) { // 判断该提交是否为当前用户的
             throw new StatusForbiddenException("对不起，您不能修改他人的代码分享权限！");
         }
 
-        Judge judgeInfo = judgeEntityService.getById(judge.getSubmitId());
         if (judgeInfo.getCid() != 0) { // 如果是比赛提交，不可分享！
             throw new StatusForbiddenException("对不起，您不能分享比赛题目的提交代码！");
         }

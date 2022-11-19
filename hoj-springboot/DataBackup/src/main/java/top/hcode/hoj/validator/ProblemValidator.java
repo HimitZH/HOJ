@@ -19,6 +19,10 @@ public class ProblemValidator {
     private CommonValidator commonValidator;
 
     public void validateProblem(Problem problem) throws StatusFailException {
+        if (problem == null) {
+            throw new StatusFailException("题目的配置项不能为空！");
+        }
+
         if (StrUtil.isBlank(problem.getProblemId())) {
             throw new StatusFailException("题目的展示ID不能为空！");
         }
@@ -72,6 +76,9 @@ public class ProblemValidator {
     }
 
     public void validateProblemUpdate(Problem problem) throws StatusFailException {
+        if (problem == null) {
+            throw new StatusFailException("题目的配置项不能为空！");
+        }
         if (problem.getId() == null) {
             throw new StatusFailException("题目的id不能为空！");
         }
@@ -79,6 +86,11 @@ public class ProblemValidator {
     }
 
     public void validateGroupProblem(Problem problem) throws StatusFailException {
+
+        if (problem == null) {
+            throw new StatusFailException("题目的配置项不能为空！");
+        }
+
         if (StrUtil.isBlank(problem.getProblemId())) {
             throw new StatusFailException("题目的展示ID不能为空！");
         }
@@ -112,6 +124,11 @@ public class ProblemValidator {
     }
 
     public void validateGroupProblemUpdate(Problem problem) throws StatusFailException {
+
+        if (problem == null) {
+            throw new StatusFailException("题目的配置项不能为空！");
+        }
+
         if (problem.getId() == null) {
             throw new StatusFailException("题目的id不能为空！");
         }
