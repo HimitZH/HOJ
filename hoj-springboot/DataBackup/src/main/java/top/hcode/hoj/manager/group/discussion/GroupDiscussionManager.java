@@ -1,6 +1,7 @@
 package top.hcode.hoj.manager.group.discussion;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.shiro.SecurityUtils;
@@ -233,7 +234,14 @@ public class GroupDiscussionManager {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
 
-        boolean isOk = discussionEntityService.updateById(discussion);
+        UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<>();
+        discussionUpdateWrapper.set("title", discussion.getTitle())
+                .set("content", discussion.getContent())
+                .set("description", discussion.getDescription())
+                .set("category_id", discussion.getCategoryId())
+                .eq("id", discussion.getId());
+
+        boolean isOk = discussionEntityService.update(discussionUpdateWrapper);
         if (!isOk) {
             throw new StatusFailException("修改失败");
         }

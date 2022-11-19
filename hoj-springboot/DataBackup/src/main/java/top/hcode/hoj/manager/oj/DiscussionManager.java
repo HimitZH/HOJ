@@ -289,8 +289,13 @@ public class DiscussionManager {
                 && groupValidator.isGroupAdmin(userRolesVo.getUid(), oriDiscussion.getGid()))) {
             throw new StatusForbiddenException("对不起，您无权限操作！");
         }
-
-        boolean isOk = discussionEntityService.updateById(discussion);
+        UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<>();
+        discussionUpdateWrapper.set("title", discussion.getTitle())
+                .set("content", discussion.getContent())
+                .set("description", discussion.getDescription())
+                .set("category_id", discussion.getCategoryId())
+                .eq("id", discussion.getId());
+        boolean isOk = discussionEntityService.update(discussionUpdateWrapper);
         if (!isOk) {
             throw new StatusFailException("修改失败");
         }
