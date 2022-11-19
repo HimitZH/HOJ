@@ -48,7 +48,7 @@ public class GroupAnnouncementManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("获取公告失败，该团队不存在或已被封禁！");
         }
 
         if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), gid)) {
@@ -69,7 +69,7 @@ public class GroupAnnouncementManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("获取公告失败，该团队不存在或已被封禁！");
         }
 
         if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
@@ -101,7 +101,7 @@ public class GroupAnnouncementManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("添加失败，该团队不存在或已被封禁！");
         }
 
         if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
@@ -134,7 +134,7 @@ public class GroupAnnouncementManager {
         Long gid = announcement.getGid();
 
         if (gid == null){
-            throw new StatusForbiddenException("更新失败，不可操作非团队内的公告！");
+            throw new StatusForbiddenException("修改失败，不可操作非团队内的公告！");
         }
 
         Group group = groupEntityService.getById(gid);
@@ -163,7 +163,7 @@ public class GroupAnnouncementManager {
         Announcement announcement = announcementEntityService.getById(aid);
 
         if (announcement == null) {
-            throw new StatusNotFoundException("该公告不存在！");
+            throw new StatusNotFoundException("删除失败，该公告不存在！");
         }
 
         Long gid = announcement.getGid();
@@ -175,7 +175,7 @@ public class GroupAnnouncementManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("删除失败，该团队不存在或已被封禁！");
         }
 
         if (!userRolesVo.getUid().equals(announcement.getUid()) && !isRoot

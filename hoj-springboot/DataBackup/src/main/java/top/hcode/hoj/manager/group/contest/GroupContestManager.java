@@ -65,7 +65,7 @@ public class GroupContestManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("获取比赛列表失败，该团队不存在或已被封禁！");
         }
 
         if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), gid)) {
@@ -86,7 +86,7 @@ public class GroupContestManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("获取比赛列表失败，该团队不存在或已被封禁！");
         }
 
         if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
@@ -107,19 +107,19 @@ public class GroupContestManager {
         Contest contest = contestEntityService.getById(cid);
 
         if (contest == null) {
-            throw new StatusNotFoundException("该比赛不存在！");
+            throw new StatusNotFoundException("获取失败，该比赛不存在！");
         }
 
         Long gid = contest.getGid();
 
         if (gid == null){
-            throw new StatusForbiddenException("获取失败，不可访问非团队内的比赛！");
+            throw new StatusForbiddenException("获取比赛失败，不可访问非团队内的比赛！");
         }
 
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("获取比赛失败，该团队不存在或已被封禁！");
         }
 
         if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
@@ -170,7 +170,7 @@ public class GroupContestManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("添加失败，该团队不存在或已被封禁！");
         }
 
         if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
@@ -219,7 +219,7 @@ public class GroupContestManager {
         Contest oldContest = contestEntityService.getById(cid);
 
         if (oldContest == null) {
-            throw new StatusNotFoundException("该比赛不存在！");
+            throw new StatusNotFoundException("更新失败，该比赛不存在！");
         }
 
         Long gid = oldContest.getGid();
@@ -231,7 +231,7 @@ public class GroupContestManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("更新失败，该团队不存在或已被封禁！");
         }
 
         if (!userRolesVo.getUid().equals(oldContest.getUid()) && !isRoot
@@ -274,7 +274,7 @@ public class GroupContestManager {
         Contest contest = contestEntityService.getById(cid);
 
         if (contest == null) {
-            throw new StatusNotFoundException("该比赛不存在！");
+            throw new StatusNotFoundException("删除失败，该比赛不存在！");
         }
 
         Long gid = contest.getGid();
@@ -286,7 +286,7 @@ public class GroupContestManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("删除失败，该团队不存在或已被封禁！");
         }
 
         if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
@@ -308,7 +308,7 @@ public class GroupContestManager {
         Contest contest = contestEntityService.getById(cid);
 
         if (contest == null) {
-            throw new StatusNotFoundException("该比赛不存在！");
+            throw new StatusNotFoundException("修改失败，该比赛不存在！");
         }
 
         Long gid = contest.getGid();
@@ -320,7 +320,7 @@ public class GroupContestManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("修改失败，该团队不存在或已被封禁！");
         }
 
         if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot

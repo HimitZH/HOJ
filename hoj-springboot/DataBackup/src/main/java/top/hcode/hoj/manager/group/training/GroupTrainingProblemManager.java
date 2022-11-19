@@ -64,7 +64,7 @@ public class GroupTrainingProblemManager {
         Training training = trainingEntityService.getById(tid);
 
         if (training == null) {
-            throw new StatusNotFoundException("该训练不存在！");
+            throw new StatusNotFoundException("获取失败，该训练不存在！");
         }
 
         Long gid = training.getGid();
@@ -72,7 +72,7 @@ public class GroupTrainingProblemManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("获取失败，该团队不存在或已被封禁！");
         }
 
         if (!userRolesVo.getUsername().equals(training.getAuthor()) && !isRoot
@@ -91,7 +91,7 @@ public class GroupTrainingProblemManager {
         Training training = trainingEntityService.getById(trainingProblem.getTid());
 
         if (training == null) {
-            throw new StatusNotFoundException("该训练不存在！");
+            throw new StatusNotFoundException("更新失败，该训练不存在！");
         }
 
         Long gid = training.getGid();
@@ -103,7 +103,7 @@ public class GroupTrainingProblemManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("更新失败，该团队不存在或已被封禁！");
         }
 
         if (!userRolesVo.getUsername().equals(training.getAuthor()) && !isRoot
@@ -137,7 +137,7 @@ public class GroupTrainingProblemManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("删除失败，该团队不存在或已被封禁！");
         }
 
         if (!userRolesVo.getUsername().equals(training.getAuthor()) && !isRoot
@@ -173,7 +173,7 @@ public class GroupTrainingProblemManager {
         Training training = trainingEntityService.getById(tid);
 
         if (training == null) {
-            throw new StatusNotFoundException("该训练不存在！");
+            throw new StatusNotFoundException("添加题目失败，该训练不存在！");
         }
 
         Long gid = training.getGid();
@@ -185,7 +185,7 @@ public class GroupTrainingProblemManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("添加失败，该团队不存在或已被封禁！");
         }
 
         if (!userRolesVo.getUsername().equals(training.getAuthor()) && !isRoot
@@ -232,7 +232,7 @@ public class GroupTrainingProblemManager {
         Training training = trainingEntityService.getById(tid);
 
         if (training == null) {
-            throw new StatusNotFoundException("该训练不存在！");
+            throw new StatusNotFoundException("添加题目失败，该训练不存在！");
         }
 
         Long gid = training.getGid();
@@ -244,7 +244,7 @@ public class GroupTrainingProblemManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("添加失败，该团队不存在或已被封禁！");
         }
 
         if (!userRolesVo.getUsername().equals(training.getAuthor()) && !isRoot
@@ -258,7 +258,7 @@ public class GroupTrainingProblemManager {
         Problem problem = problemEntityService.getOne(problemQueryWrapper);
 
         if (problem == null) {
-            throw new StatusNotFoundException("该题目不存在或不是团队题目！");
+            throw new StatusNotFoundException("添加失败，该题目不存在或不是团队题目！");
         }
 
         QueryWrapper<TrainingProblem> queryWrapper = new QueryWrapper<>();

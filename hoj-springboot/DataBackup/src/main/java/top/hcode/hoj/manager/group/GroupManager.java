@@ -81,7 +81,7 @@ public class GroupManager {
 
         Group group = groupEntityService.getById(gid);
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("访问团队失败，该团队不存在或已被封禁！");
         }
         if (!group.getVisible() && !isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), gid)) {
             throw new StatusForbiddenException("该团队并非公开团队，不支持访问！");
@@ -105,7 +105,7 @@ public class GroupManager {
             access = true;
             Group group = groupEntityService.getById(gid);
             if (group == null || group.getStatus() == 1 && !isRoot) {
-                throw new StatusNotFoundException("该团队不存在或已被封禁！");
+                throw new StatusNotFoundException("获取权限失败，该团队不存在或已被封禁！");
             }
             if (!isRoot && !group.getVisible() && !groupValidator.isGroupMember(userRolesVo.getUid(), gid)) {
                 throw new StatusForbiddenException("该团队并非公开团队，不支持访问！");
@@ -283,7 +283,7 @@ public class GroupManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("删除失败，该团队不存在或已被封禁！");
         }
 
         if (!isRoot && !userRolesVo.getUid().equals(group.getUid())) {

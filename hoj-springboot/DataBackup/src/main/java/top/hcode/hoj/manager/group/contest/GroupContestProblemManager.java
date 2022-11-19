@@ -73,7 +73,7 @@ public class GroupContestProblemManager {
         Contest contest = contestEntityService.getById(cid);
 
         if (contest == null) {
-            throw new StatusNotFoundException("该比赛不存在！");
+            throw new StatusNotFoundException("获取失败，该比赛不存在！");
         }
 
         Long gid = contest.getGid();
@@ -85,7 +85,7 @@ public class GroupContestProblemManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("获取比赛题目列表失败，该团队不存在或已被封禁！");
         }
 
         if (!groupValidator.isGroupRoot(userRolesVo.getUid(), gid) && !userRolesVo.getUid().equals(contest.getUid()) && !isRoot) {
@@ -112,7 +112,7 @@ public class GroupContestProblemManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("添加失败，该团队不存在或已被封禁！");
         }
 
         if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
@@ -163,18 +163,18 @@ public class GroupContestProblemManager {
         Contest contest = contestEntityService.getById(cid);
 
         if (contest == null) {
-            throw new StatusNotFoundException("该比赛不存在！");
+            throw new StatusNotFoundException("获取比赛题目失败，该比赛不存在！");
         }
 
         Long gid = contest.getGid();
 
         if (gid == null){
-            throw new StatusForbiddenException("获取失败，不可获取非团队内的比赛题目！");
+            throw new StatusForbiddenException("获取比赛题目失败，不可获取非团队内的比赛题目！");
         }
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("获取失败，该团队不存在或已被封禁！");
         }
 
         if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
@@ -187,7 +187,7 @@ public class GroupContestProblemManager {
 
         ContestProblem contestProblem = contestProblemEntityService.getOne(queryWrapper);
         if (contestProblem == null) {
-            throw new StatusFailException("该比赛题目不存在！");
+            throw new StatusFailException("获取失败，该比赛题目不存在！");
         }
         return contestProblem;
     }
@@ -238,7 +238,7 @@ public class GroupContestProblemManager {
         Contest contest = contestEntityService.getById(cid);
 
         if (contest == null) {
-            throw new StatusNotFoundException("该比赛不存在！");
+            throw new StatusNotFoundException("删除失败，该比赛不存在！");
         }
 
         Long gid = contest.getGid();

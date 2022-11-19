@@ -43,7 +43,7 @@ public class GroupMemberManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("获取成员列表失败，该团队不存在或已被封禁！");
         }
 
         if (!groupValidator.isGroupMember(userRolesVo.getUid(), gid) && !isRoot) {
@@ -69,7 +69,7 @@ public class GroupMemberManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("获取失败，该团队不存在或已被封禁！");
         }
 
         if (!groupValidator.isGroupAdmin(userRolesVo.getUid(), gid) && !isRoot) {
@@ -95,11 +95,11 @@ public class GroupMemberManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null) {
-            throw new StatusNotFoundException("该团队不存在!");
+            throw new StatusNotFoundException("添加成员失败，该团队不存在!");
         }
 
         if (!isRoot && (group.getStatus() == 1 || !group.getVisible())) {
-            throw new StatusNotFoundException("该团队已被封禁或未公开显示！");
+            throw new StatusNotFoundException("添加成员失败，该团队已被封禁或未公开显示！");
         }
 
         if (group.getAuth() == 3 && !code.equals(group.getCode())) {
@@ -154,7 +154,7 @@ public class GroupMemberManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("更新成员失败，该团队不存在或已被封禁！");
         }
 
         if (group.getUid().equals(groupMemberDto.getUid())) {
@@ -207,7 +207,7 @@ public class GroupMemberManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("删除成员失败，该团队不存在或已被封禁！");
         }
 
         if (userRolesVo.getUid().equals(uid)) {
@@ -260,7 +260,7 @@ public class GroupMemberManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("退出团队失败，该团队不存在或已被封禁！");
         }
 
         if (userRolesVo.getUid().equals(group.getUid())) {

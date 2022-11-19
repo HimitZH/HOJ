@@ -65,7 +65,7 @@ public class GroupDiscussionManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("获取讨论列表失败，该团队不存在或已被封禁！");
         }
 
         if (!groupValidator.isGroupMember(userRolesVo.getUid(), gid) && !isRoot) {
@@ -99,7 +99,7 @@ public class GroupDiscussionManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("获取讨论列表失败，该团队不存在或已被封禁！");
         }
 
         if (!isRoot && !groupValidator.isGroupAdmin(userRolesVo.getUid(), gid)) {
@@ -138,7 +138,7 @@ public class GroupDiscussionManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("添加失败，该团队不存在或已被封禁！");
         }
 
         if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), gid)) {

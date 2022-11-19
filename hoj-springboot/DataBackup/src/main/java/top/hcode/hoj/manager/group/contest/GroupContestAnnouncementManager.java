@@ -56,7 +56,7 @@ public class GroupContestAnnouncementManager {
         Contest contest = contestEntityService.getById(cid);
 
         if (contest == null) {
-            throw new StatusNotFoundException("该比赛不存在！");
+            throw new StatusNotFoundException("获取失败，该比赛不存在！");
         }
 
         Long gid = contest.getGid();
@@ -68,7 +68,7 @@ public class GroupContestAnnouncementManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("获取失败，该团队不存在或已被封禁！");
         }
 
         if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
@@ -97,7 +97,7 @@ public class GroupContestAnnouncementManager {
         Contest contest = contestEntityService.getById(cid);
 
         if (contest == null) {
-            throw new StatusNotFoundException("该比赛不存在！");
+            throw new StatusNotFoundException("添加失败，该比赛不存在！");
         }
 
         Long gid = contest.getGid();
@@ -109,7 +109,7 @@ public class GroupContestAnnouncementManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("添加失败，该团队不存在或已被封禁！");
         }
 
         if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
@@ -144,7 +144,7 @@ public class GroupContestAnnouncementManager {
         Contest contest = contestEntityService.getById(cid);
 
         if (contest == null) {
-            throw new StatusNotFoundException("该比赛不存在！");
+            throw new StatusNotFoundException("更新失败，该比赛不存在！");
         }
 
         Long gid = contest.getGid();
@@ -155,7 +155,7 @@ public class GroupContestAnnouncementManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("更新失败，该团队不存在或已被封禁！");
         }
 
         if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
@@ -177,7 +177,7 @@ public class GroupContestAnnouncementManager {
         Contest contest = contestEntityService.getById(cid);
 
         if (contest == null) {
-            throw new StatusNotFoundException("该比赛不存在！");
+            throw new StatusNotFoundException("删除失败，该比赛不存在！");
         }
 
         Long gid = contest.getGid();
@@ -189,13 +189,13 @@ public class GroupContestAnnouncementManager {
         Group group = groupEntityService.getById(gid);
 
         if (group == null || group.getStatus() == 1 && !isRoot) {
-            throw new StatusNotFoundException("该团队不存在或已被封禁！");
+            throw new StatusNotFoundException("删除失败，该团队不存在或已被封禁！");
         }
 
         Announcement announcement = announcementEntityService.getById(aid);
 
         if (announcement == null) {
-            throw new StatusNotFoundException("该公告不存在！");
+            throw new StatusNotFoundException("删除失败，该公告不存在！");
         }
 
         if (!userRolesVo.getUid().equals(contest.getUid()) && !isRoot
