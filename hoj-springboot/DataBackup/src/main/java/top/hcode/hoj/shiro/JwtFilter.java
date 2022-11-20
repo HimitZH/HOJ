@@ -60,7 +60,6 @@ public class JwtFilter extends AuthenticatingFilter {
             AnonApi anonApi = ServiceContextUtils.getAnnotation(handlerClazz.getMethod(),
                     handlerClazz.getBeanType(),
                     AnonApi.class);
-
             if (anonApi != null) {
                 // 即使api标记了不用登录，但如果请求头携带了token，可以尝试着进行登录验证。
                 String jwt = httpRequest.getHeader("Authorization");
