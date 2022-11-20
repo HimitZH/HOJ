@@ -30,7 +30,8 @@ public class TrainingServiceImpl implements TrainingService {
     private TrainingManager trainingManager;
 
     @Override
-    public CommonResult<IPage<TrainingVO>> getTrainingList(Integer limit, Integer currentPage, String keyword, Long categoryId, String auth) {
+    public CommonResult<IPage<TrainingVO>> getTrainingList(Integer limit, Integer currentPage,
+                                                           String keyword, Long categoryId, String auth) {
         return CommonResult.successResponse(trainingManager.getTrainingList(limit, currentPage, keyword, categoryId, auth));
     }
 

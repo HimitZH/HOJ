@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
@@ -59,7 +60,37 @@ public class JwtFilter extends AuthenticatingFilter {
             AnonApi anonApi = ServiceContextUtils.getAnnotation(handlerClazz.getMethod(),
                     handlerClazz.getBeanType(),
                     AnonApi.class);
-            return anonApi != null;
+
+            if (anonApi != null) {
+                // 即使api标记了不用登录，但如果请求头携带了token，可以尝试着进行登录验证。
+                String jwt = httpRequest.getHeader("Authorization");
+                if (StrUtil.isNotBlank(jwt)) {
+                    try {
+                        Claims claim = jwtUtils.getClaimByToken(jwt);
+                        if (claim == null || jwtUtils.isTokenExpired(claim.getExpiration())) {
+                            // 如果已经过期，则不进行登录尝试
+                            return true;
+                        }
+                        String userId = claim.getSubject();
+                        boolean hasToken = jwtUtils.hasToken(userId);
+                        // 缓存中不存在，说明了token失效，则不进行登录尝试
+                        if (!hasToken) {
+                            return true;
+                        }
+                        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+                        if (userRolesVo == null) {
+                            // 尝试手动登录
+                            JwtToken jwtToken = new JwtToken(jwt);
+                            SecurityUtils.getSubject().login(jwtToken);
+                        }
+                    } catch (Exception ignored) {
+                        // 即使出错，也不影响正常访问无鉴权接口
+                    }
+                }
+                return true;
+            } else {
+                return false;
+            }
         } catch (Exception e) {
             return true;
         }
