@@ -314,8 +314,23 @@ public class AccountManager {
         if (!Validator.isEmail(newEmail)) {
             throw new StatusFailException("邮箱格式错误！");
         }
+
         // 获取当前登录的用户
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+
+        QueryWrapper<UserInfo> emailUserInfoQueryWrapper = new QueryWrapper<>();
+        emailUserInfoQueryWrapper.select("uuid", "email")
+                .eq("email", changeEmailDto.getNewEmail());
+        UserInfo emailUserInfo = userInfoEntityService.getOne(emailUserInfoQueryWrapper, false);
+
+        if (emailUserInfo != null) {
+            if (Objects.equals(emailUserInfo.getUuid(), userRolesVo.getUid())) {
+                throw new StatusFailException("新邮箱与当前邮箱一致，请不要重复设置！");
+            }else{
+                throw new StatusFailException("该邮箱已被他人使用，请重新设置其它邮箱！");
+            }
+        }
+
         // 如果已经被锁定半小时不能修改
         String lockKey = Constants.Account.CODE_CHANGE_EMAIL_LOCK + userRolesVo.getUid();
         // 统计失败的key
