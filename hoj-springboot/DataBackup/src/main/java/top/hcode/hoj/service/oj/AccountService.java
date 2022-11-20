@@ -17,6 +17,8 @@ public interface AccountService {
 
     public CommonResult<ChangeAccountVO> changePassword(ChangePasswordDTO changePasswordDto);
 
+    public CommonResult<Void> getChangeEmailCode(String email);
+
     public CommonResult<ChangeAccountVO> changeEmail(ChangeEmailDTO changeEmailDto);
 
     public CommonResult<UserInfoVO> changeUserInfo(UserInfoVO userInfoVo);

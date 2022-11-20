@@ -13,4 +13,6 @@ public class ChangeEmailDTO {
     private String password;
 
     private String newEmail;
+
+    private String code;
 }

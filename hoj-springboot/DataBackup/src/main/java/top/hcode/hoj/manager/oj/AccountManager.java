@@ -3,6 +3,7 @@ package top.hcode.hoj.manager.oj;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Validator;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -15,6 +16,7 @@ import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusSystemErrorException;
 import top.hcode.hoj.dao.problem.ProblemEntityService;
 import top.hcode.hoj.dao.user.*;
+import top.hcode.hoj.manager.email.EmailManager;
 import top.hcode.hoj.pojo.dto.ChangeEmailDTO;
 import top.hcode.hoj.pojo.dto.ChangePasswordDTO;
 import top.hcode.hoj.pojo.dto.CheckUsernameOrEmailDTO;
@@ -65,6 +67,9 @@ public class AccountManager {
 
     @Autowired
     private CommonValidator commonValidator;
+
+    @Autowired
+    private EmailManager emailManager;
 
     /**
      * @MethodName checkUsernameOrEmail
@@ -297,6 +302,37 @@ public class AccountManager {
         }
     }
 
+
+    public void getChangeEmailCode(String email) throws StatusFailException {
+
+        String lockKey = Constants.Email.CHANGE_EMAIL_LOCK + email;
+        if (redisUtils.hasKey(lockKey)) {
+            throw new StatusFailException("对不起，您的操作频率过快，请在" + redisUtils.getExpire(lockKey) + "秒后再次发送修改邮件！");
+        }
+
+        // 获取当前登录的用户
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+
+        QueryWrapper<UserInfo> emailUserInfoQueryWrapper = new QueryWrapper<>();
+        emailUserInfoQueryWrapper.select("uuid", "email")
+                .eq("email", email);
+        UserInfo emailUserInfo = userInfoEntityService.getOne(emailUserInfoQueryWrapper, false);
+
+        if (emailUserInfo != null) {
+            if (Objects.equals(emailUserInfo.getUuid(), userRolesVo.getUid())) {
+                throw new StatusFailException("新邮箱与当前邮箱一致，请不要重复设置！");
+            } else {
+                throw new StatusFailException("该邮箱已被他人使用，请重新设置其它邮箱！");
+            }
+        }
+
+        String numbers = RandomUtil.randomNumbers(6); // 随机生成6位数字的组合
+        redisUtils.set(Constants.Email.CHANGE_EMAIL_KEY_PREFIX.getValue() + email, numbers, 10 * 60); //默认验证码有效10分钟
+        emailManager.sendChangeEmailCode(email, userRolesVo.getUsername(), numbers);
+        redisUtils.set(lockKey, 0, 30);
+    }
+
+
     /**
      * @MethodName changeEmail
      * @Description 修改邮箱的操作，连续半小时内密码错误5次，则需要半个小时后才可以再次尝试修改
@@ -307,30 +343,18 @@ public class AccountManager {
 
         String password = changeEmailDto.getPassword();
         String newEmail = changeEmailDto.getNewEmail();
+        String code = changeEmailDto.getCode();
         // 数据可用性判断
-        if (StringUtils.isEmpty(password) || StringUtils.isEmpty(newEmail)) {
-            throw new StatusFailException("错误：密码或新邮箱不能为空！");
+        if (StringUtils.isEmpty(password) || StringUtils.isEmpty(newEmail) || StringUtils.isEmpty(code)) {
+            throw new StatusFailException("错误：密码、新邮箱或验证码不能为空！");
         }
+
         if (!Validator.isEmail(newEmail)) {
             throw new StatusFailException("邮箱格式错误！");
         }
 
         // 获取当前登录的用户
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
-
-        QueryWrapper<UserInfo> emailUserInfoQueryWrapper = new QueryWrapper<>();
-        emailUserInfoQueryWrapper.select("uuid", "email")
-                .eq("email", changeEmailDto.getNewEmail());
-        UserInfo emailUserInfo = userInfoEntityService.getOne(emailUserInfoQueryWrapper, false);
-
-        if (emailUserInfo != null) {
-            if (Objects.equals(emailUserInfo.getUuid(), userRolesVo.getUid())) {
-                throw new StatusFailException("新邮箱与当前邮箱一致，请不要重复设置！");
-            }else{
-                throw new StatusFailException("该邮箱已被他人使用，请重新设置其它邮箱！");
-            }
-        }
-
         // 如果已经被锁定半小时不能修改
         String lockKey = Constants.Account.CODE_CHANGE_EMAIL_LOCK + userRolesVo.getUid();
         // 统计失败的key
@@ -350,10 +374,48 @@ public class AccountManager {
             return resp;
         }
 
+        QueryWrapper<UserInfo> emailUserInfoQueryWrapper = new QueryWrapper<>();
+        emailUserInfoQueryWrapper.select("uuid", "email")
+                .eq("email", changeEmailDto.getNewEmail());
+        UserInfo emailUserInfo = userInfoEntityService.getOne(emailUserInfoQueryWrapper, false);
+
+        if (emailUserInfo != null) {
+            if (Objects.equals(emailUserInfo.getUuid(), userRolesVo.getUid())) {
+                throw new StatusFailException("新邮箱与当前邮箱一致，请不要重复设置！");
+            } else {
+                throw new StatusFailException("该邮箱已被他人使用，请重新设置其它邮箱！");
+            }
+        }
+
         QueryWrapper<UserInfo> userInfoQueryWrapper = new QueryWrapper<>();
         userInfoQueryWrapper.select("uuid", "password")
                 .eq("uuid", userRolesVo.getUid());
         UserInfo userInfo = userInfoEntityService.getOne(userInfoQueryWrapper, false);
+
+        String cacheCodeKey = Constants.Email.CHANGE_EMAIL_KEY_PREFIX.getValue() + newEmail;
+        String cacheCode = (String) redisUtils.get(cacheCodeKey);
+        if (cacheCode == null) {
+            throw new StatusFailException("修改邮箱验证码不存在或已过期，请重新发送！");
+        }
+
+        if (!Objects.equals(cacheCode, code)) {
+            Integer count = (Integer) redisUtils.get(countKey);
+            if (count == null) {
+                redisUtils.set(countKey, 1, 60 * 30); // 三十分钟不尝试，该限制会自动清空消失
+                count = 0;
+            } else if (count < 5) {
+                redisUtils.incr(countKey, 1);
+            }
+            count++;
+            if (count == 5) {
+                redisUtils.del(countKey); // 清空统计
+                redisUtils.set(lockKey, "lock", 60 * 30); // 设置锁定更改
+            }
+
+            resp.setCode(400);
+            resp.setMsg("验证码错误！您已累计修改邮箱失败" + count + "次...");
+            return resp;
+        }
 
         // 与当前登录用户的密码进行比较判断
         if (userInfo.getPassword().equals(SecureUtil.md5(password))) { // 如果相同，则进行修改操作
@@ -377,7 +439,7 @@ public class AccountManager {
                 resp.setMsg("修改邮箱成功！");
                 resp.setUserInfo(userInfoVo);
                 // 清空记录
-                redisUtils.del(countKey);
+                redisUtils.del(countKey, cacheCodeKey);
                 return resp;
             } else {
                 throw new StatusSystemErrorException("系统错误：修改邮箱失败！");

@@ -186,8 +186,8 @@ public class PassportManager {
         }
 
         String numbers = RandomUtil.randomNumbers(6); // 随机生成6位数字的组合
-        redisUtils.set(Constants.Email.REGISTER_KEY_PREFIX.getValue() + email, numbers, 5 * 60);//默认验证码有效5分钟
-        emailManager.sendCode(email, numbers);
+        redisUtils.set(Constants.Email.REGISTER_KEY_PREFIX.getValue() + email, numbers, 10 * 60);//默认验证码有效10分钟
+        emailManager.sendRegisterCode(email, numbers);
         redisUtils.set(lockKey, 0, 60);
 
         RegisterCodeVO registerCodeVo = new RegisterCodeVO();

@@ -94,12 +94,21 @@ public class AdminUserManager {
             throw new StatusFailException("用户名长度建议不能超过20位!");
         }
 
+        // 获取当前登录的用户
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+        if (StrUtil.isBlank(email)) {
+            email = null;
+        } else {
+            QueryWrapper<UserInfo> emailUserInfoQueryWrapper = new QueryWrapper<>();
+            emailUserInfoQueryWrapper.select("uuid", "email")
+                    .eq("email", email);
+            UserInfo userInfo = userInfoEntityService.getOne(emailUserInfoQueryWrapper, false);
+            if (userInfo != null && !Objects.equals(userInfo.getUuid(), userRolesVo.getUid())) {
+                throw new StatusFailException("修改失败，邮箱已被使用，请重新设置其他邮箱！");
+            }
+        }
 
         UpdateWrapper<UserInfo> userInfoUpdateWrapper = new UpdateWrapper<>();
-
-        if(StrUtil.isBlank(email)){
-            email = null;
-        }
         userInfoUpdateWrapper.eq("uuid", uid)
                 .set("username", username)
                 .set("realname", realname)
@@ -133,8 +142,6 @@ public class AdminUserManager {
         }
 
         if (changeUserRole) {
-            // 获取当前登录的用户
-            AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
             String title = "权限变更通知(Authority Change Notice)";
             String content = userRoleEntityService.getAuthChangeContent(oldType, type);
             adminNoticeManager.addSingleNoticeToUser(userRolesVo.getUid(), uid, title, content, "Sys");

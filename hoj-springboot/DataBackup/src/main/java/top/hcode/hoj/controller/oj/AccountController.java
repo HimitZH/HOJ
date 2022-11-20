@@ -77,6 +77,17 @@ public class AccountController {
     }
 
     /**
+     * 获取修改邮箱的验证码
+     * @param email
+     * @return
+     */
+    @GetMapping("/get-change-email-code")
+    @RequiresAuthentication
+    public CommonResult<Void> getChangeEmailCode(@RequestParam("email") String email) {
+        return accountService.getChangeEmailCode(email);
+    }
+
+    /**
      * @MethodName changeEmail
      * @Params * @param null
      * @Description 修改邮箱的操作，连续半小时内密码错误5次，则需要半个小时后才可以再次尝试修改

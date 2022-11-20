@@ -683,6 +683,11 @@ const ojApi = {
       data
     })
   },
+  getChangeEmailCode(email) {
+    return ajax("/api/get-change-email-code", 'get',  {
+      params: { email }
+    })
+  },
   changeEmail(data) {
     return ajax("/api/change-email", 'post', {
       data

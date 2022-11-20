@@ -239,8 +239,14 @@ export default {
               mMessage.message(
                 'success',
                 this.$i18n.t('m.Register_Send_Email_Msg'),
-                10000
+                5000
               );
+              this.$notify.success({
+                title: this.$i18n.t('m.Success'),
+                message: this.$i18n.t('m.Register_Send_Email_Msg'),
+                duration: 5000,
+                offset: 50
+              });
               this.countDown();
               this.startTimeOut({ name: 'registerTimeOut' });
             }

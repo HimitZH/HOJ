@@ -98,6 +98,8 @@ export const m = {
   Current_Password: 'Current Password',
   Old_Email: 'Old Email',
   New_Email: 'New Email',
+  Captcha:'Captcha',
+  Get_Captcha: 'Get Captcha',
   Old_Mobile: 'Old Mobile',
   New_Mobile: 'New Mobile',
   Change_Password: 'Change Password',

@@ -260,9 +260,11 @@ public class Constants {
         EMAIL_FROM("EMAIL_FROM"),
         EMAIL_BACKGROUND_IMG("EMAIL_BACKGROUND_IMG"),
         REGISTER_KEY_PREFIX("register-user:"),
+        CHANGE_EMAIL_KEY_PREFIX("change-email:"),
         RESET_PASSWORD_KEY_PREFIX("reset-password:"),
         RESET_EMAIL_LOCK("reset-email-lock:"),
-        REGISTER_EMAIL_LOCK("register-email-lock:");
+        REGISTER_EMAIL_LOCK("register-email-lock:"),
+        CHANGE_EMAIL_LOCK("change-email-lock:");
 
         private final String value;
 

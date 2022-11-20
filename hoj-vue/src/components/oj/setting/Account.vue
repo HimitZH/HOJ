@@ -93,7 +93,17 @@
               <el-input v-model="formEmail.oldEmail" disabled />
             </el-form-item>
             <el-form-item :label="$t('m.New_Email')" prop="newEmail">
-              <el-input v-model="formEmail.newEmail" />
+              <el-input v-model="formEmail.newEmail">
+                <el-button slot="append"
+                @click="getChangeEmailCode"
+                :loading="loading.btnSendEmail"
+                icon="el-icon-message">
+                {{$t('m.Get_Captcha')}}
+              </el-button>
+              </el-input>
+            </el-form-item>
+            <el-form-item :label="$t('m.Captcha')" prop="code">
+              <el-input v-model="formEmail.code" />
             </el-form-item>
           </el-form>
           <el-popover
@@ -200,6 +210,7 @@ export default {
       loading: {
         btnPassword: false,
         btnEmail: false,
+        btnSendEmail: false,
       },
       disabled: {
         btnPassword: false,
@@ -277,6 +288,13 @@ export default {
           },
           { validator: CheckEmail, trigger: 'blur' },
         ],
+        code:[
+          {
+              required: true,
+              message: this.$i18n.t('m.Code_Check_Required'),
+              trigger: 'blur',
+          },
+        ]
       },
     };
   },
@@ -336,6 +354,32 @@ export default {
         }
       });
     },
+    getChangeEmailCode(){
+      if(!this.formEmail.newEmail){
+        myMessage.error(this.$i18n.t('m.The_new_password_cannot_be_empty'));
+      }
+      var emailReg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (!emailReg.test(this.formEmail.newEmail)) {
+        mMessage.error(this.$i18n.t('m.Email_Check_Format'));
+        return;
+      }
+      if (this.formEmail.oldEmail === this.formEmail.newEmail) {
+        myMessage.error(this.$i18n.t('m.The_new_email_does_not_change'));
+      }
+      this.loading.btnSendEmail = true;
+      api.getChangeEmailCode(this.formEmail.newEmail).then((res)=>{
+        myMessage.success(this.$i18n.t('m.Change_Send_Email_Msg'));
+        this.$notify.success({
+          title: this.$i18n.t('m.Success'),
+          message: this.$i18n.t('m.Change_Send_Email_Msg'),
+          duration: 5000,
+          offset: 50
+        });
+        this.loading.btnSendEmail = false;
+      },(_)=>{
+        this.loading.btnSendEmail = false;
+      })
+    },
     changeEmail(times) {
       this.verify.emailSuccess = true;
       let time = (times / 1000).toFixed(1);
@@ -366,7 +410,7 @@ export default {
                 this.$refs['formEmail'].resetFields();
                 this.formEmail.oldEmail = res.data.data.userInfo.email;
               } else {
-                myMessage.error(res.data.msg);
+                myMessage.error(res.data.data.msg);
                 this.visible.emailAlert = {
                   show: true,
                   title: this.$i18n.t('m.Update_Failed'),

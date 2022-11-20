@@ -2,7 +2,7 @@
 <html lang="zh" xmlns:th=http://www.thymeleaf.org>
     <head>
         <meta charset="UTF-8">
-        <title>[[${OJ_SHORT_NAME}]]用户注册验证码</title>
+        <title>[[${OJ_SHORT_NAME}]]用户修改邮箱验证码</title>
     </head>
     <body>
         <div style="background: white;
@@ -29,7 +29,7 @@
                  padding: 5px 30px;      
                  margin: -25px auto 0 ;      
                  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.30) ">
-                    Dear New [[${OJ_SHORT_NAME}]]er
+                    Dear [[${USERNAME}]]
                 </p>
                 <br>
                 <center>
@@ -38,11 +38,11 @@
                     </h3>
                     <p style="text-indent:2em;">
                         您收到这封电子邮件是因为您 (也可能是某人冒充您的名义) 在<a style=" text-decoration: none;color: #1bc3fb "
-                                                         target="_blank" th:href="${OJ_URL}" rel="noopener">&nbsp;[[${OJ_SHORT_NAME}]]&nbsp;</a>上进行注册。假如这不是您本人所申请,
+                                                         target="_blank" th:href="${OJ_URL}" rel="noopener">&nbsp;[[${OJ_SHORT_NAME}]]&nbsp;</a>上进行邮箱修改操作。假如这不是您本人所操作,
                         请不用理会这封电子邮件, 但是如果您持续收到这类的信件骚扰, 请您尽快联络管理员。
                     </p>
                     <div style="background: #fafafa repeating-linear-gradient(-45deg,#fff,#fff 1.125rem,transparent 1.125rem,transparent 2.25rem);box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);margin:20px 0px;padding:15px;border-radius:5px;font-size:14px;color:#555555;text-align: center; ">
-                        请使用以下验证码完成后续注册流程：<br>
+                        请使用以下验证码完成后续邮箱修改流程：<br>
                         <span style=" color: #FF779A;font-weight: bolder;font-size: 25px;" th:text="${CODE}"></span><br>
                         注意:请您在收到邮件10分钟内([[${EXPIRE_TIME}]]前)使用，否则该验证码将会失效。
                     </div>
