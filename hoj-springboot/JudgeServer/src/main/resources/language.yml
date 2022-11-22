@@ -23,3 +23,221 @@ compile:
   maxMemory: 256mb
 run:
   command: /w/{exeName}
+
+---
+language: C++14
+srcName: main.cpp
+exeName: main
+env: default
+compile:
+  command: /usr/bin/g++ -DONLINE_JUDGE -w -fmax-errors=1 -std=c++14 {srcName} -lm -o {exeName}
+  maxCpuTime: 5s
+  maxRealTime: 10s
+  maxMemory: 256mb
+run:
+  command: /w/{exeName}
+
+---
+language: C++14 With O2
+srcName: main.cpp
+exeName: main
+env: default
+compile:
+  command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c++14 {srcName} -lm -o {exeName}
+  maxCpuTime: 5s
+  maxRealTime: 10s
+  maxMemory: 256mb
+run:
+  command: /w/{exeName}
+
+---
+language: C++17 With O2
+srcName: main.cpp
+exeName: main
+env: default
+compile:
+  command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c++17 {srcName} -lm -o {exeName}
+  maxCpuTime: 5s
+  maxRealTime: 10s
+  maxMemory: 256mb
+run:
+  command: /w/{exeName}
+
+---
+language: C++20 With O2
+srcName: main.cpp
+exeName: main
+env: default
+compile:
+  command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c++20 {srcName} -lm -o {exeName}
+  maxCpuTime: 5s
+  maxRealTime: 10s
+  maxMemory: 256mb
+run:
+  command: /w/{exeName}
+
+---
+language: Java
+srcName: Main.java
+exeName: Main.jar
+env: default
+compile:
+  command: javac -encoding utf-8 {srcName} && jar -cvf {exeName} *.class
+  maxCpuTime: 5s
+  maxRealTime: 10s
+  maxMemory: 512mb
+run:
+  command: /usr/bin/java -Dfile.encoding=UTF-8 -cp /w/{exeName} Main
+
+---
+language: Python2
+srcName: main.py
+exeName: main.pyc
+env: default
+compile:
+  command: /usr/bin/python -m py_compile /w/{srcName}
+  maxCpuTime: 5s
+  maxRealTime: 10s
+  maxMemory: 256mb
+run:
+  command: /usr/bin/python /w/{exeName}
+
+---
+language: Python3
+srcName: main.py
+exeName: __pycache__/main.cpython-37.pyc
+env: python3
+compile:
+  command: /usr/bin/python3.7 -m py_compile /w/{srcName}
+  maxCpuTime: 5s
+  maxRealTime: 10s
+  maxMemory: 256mb
+run:
+  command: /usr/bin/python3.7 /w/{exeName}
+
+---
+language: PyPy2
+srcName: main.py
+exeName: __pycache__/main.pypy-73.pyc
+env: default
+compile:
+  command: /usr/bin/pypy -m py_compile /w/{srcName}
+  maxCpuTime: 5s
+  maxRealTime: 10s
+  maxMemory: 256mb
+run:
+  command: /usr/bin/pypy /w/{exeName}
+
+---
+language: PyPy3
+srcName: main.py
+exeName: __pycache__/main.pypy38.pyc
+env: python3
+compile:
+  command: /usr/bin/pypy3 -m py_compile /w/{srcName}
+  maxCpuTime: 5s
+  maxRealTime: 10s
+  maxMemory: 256mb
+run:
+  command: /usr/bin/pypy3 /w/{exeName}
+
+
+---
+language: Golang
+srcName: main.go
+exeName: main
+env: Golang
+compile:
+  command: /usr/bin/go build -o {exeName} {srcName}
+  maxCpuTime: 3s
+  maxRealTime: 5s
+  maxMemory: 256mb
+run:
+  command: /w/{exeName}
+
+---
+language: C#
+srcName: Main.cs
+exeName: main
+env: default
+compile:
+  command: /usr/bin/mcs -optimize+ -out:{exeName} {srcName}
+  maxCpuTime: 5s
+  maxRealTime: 10s
+  maxMemory: 512mb
+run:
+  command: /usr/bin/mono /w/{exeName}
+
+---
+language: PHP
+exeName: main.php
+env: default
+run:
+  command: /usr/bin/php /w/{exeName}
+
+---
+language: JavaScript Node
+exeName: main.js
+env: default
+run:
+  command: /usr/bin/node /w/{exeName}
+
+---
+language: JavaScript V8
+exeName: main.js
+env: default
+run:
+  command: /usr/bin/jsv8/d8 /w/{exeName}
+
+# 以下为特殊评测或交互评测使用的语言
+---
+language: SPJ-C
+srcName: spj.c
+exeName: spj
+env: default
+compile:
+  command: /usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {srcName} -lm -o {exeName}
+  maxCpuTime: 3s
+  maxRealTime: 10s
+  maxMemory: 256mb
+run:
+  command: /w/{exeName} {std_input} {user_output} {std_output}
+
+---
+language: SPJ-C++
+srcName: spj.cpp
+exeName: spj
+env: default
+compile:
+  command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {srcName} -lm -o {exeName}
+  maxCpuTime: 5s
+  maxRealTime: 10s
+  maxMemory: 256mb
+run:
+  command: /w/{exeName} {std_input} {user_output} {std_output}
+
+---
+language: INTERACTIVE-C
+srcName: interactive.c
+exeName: interactive
+env: default
+compile:
+  command: /usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {srcName} -lm -o {exeName}
+  maxCpuTime: 3s
+  maxRealTime: 10s
+  maxMemory: 256mb
+run:
+  command: /w/{exeName} {std_input} {user_output} {std_output}
+
+---
+language: INTERACTIVE-C++
+srcName: interactive.cpp
+exeName: interactive
+env: default
+compile:
+  command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {srcName} -lm -o {exeName}
+  maxCpuTime: 5s
+  maxRealTime: 10s
+  maxMemory: 256mb
+run:
+  command: /w/{exeName} {std_input} {user_output} {std_output}

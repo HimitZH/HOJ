@@ -4,6 +4,7 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ResourceUtils;
 import org.yaml.snakeyaml.Yaml;
@@ -22,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @Date 2022/11/22
  */
 @Configuration
+@Slf4j(topic = "hoj")
 public class LanguageConfigLoader {
 
     private static List<String> defaultEnv = Arrays.asList(
@@ -46,21 +48,21 @@ public class LanguageConfigLoader {
     public void init() {
         if (init.compareAndSet(false, true)) {
             Iterable<Object> languageConfigIter = loadYml("language.yml");
+            languageConfigMap = new HashMap<>();
             for (Object configObj : languageConfigIter) {
                 JSONObject configJson = JSONUtil.parseObj(configObj);
+                LanguageConfig languageConfig = buildLanguageConfig(configJson);
+                languageConfigMap.put(languageConfig.getLanguage(), languageConfig);
             }
+            log.info("load language config: {}", languageConfigMap);
         }
     }
 
-    public static void main(String[] args) {
-        Iterable<Object> languageConfigIter = loadYml("language.yml");
-        for (Object configObj : languageConfigIter) {
-            JSONObject configJson = JSONUtil.parseObj(configObj);
-            System.out.println(buildLanguageConfig(configJson));
-        }
+    public LanguageConfig getLanguageConfigByName(String langName) {
+        return languageConfigMap.get(langName);
     }
 
-    private static Iterable<Object> loadYml(String fileName) {
+    private Iterable<Object> loadYml(String fileName) {
         try {
             Yaml yaml = new Yaml();
             File ymlFile = ResourceUtils.getFile("classpath:" + fileName);
@@ -71,7 +73,7 @@ public class LanguageConfigLoader {
         }
     }
 
-    private static LanguageConfig buildLanguageConfig(JSONObject configJson) {
+    private LanguageConfig buildLanguageConfig(JSONObject configJson) {
         LanguageConfig languageConfig = new LanguageConfig();
         languageConfig.setLanguage(configJson.getStr("language"));
         languageConfig.setSrcName(configJson.getStr("srcName"));
@@ -79,7 +81,7 @@ public class LanguageConfigLoader {
 
         JSONObject compileJson = configJson.getJSONObject("compile");
         if (compileJson != null) {
-            String command  = compileJson.getStr("command");
+            String command = compileJson.getStr("command");
             command = command.replace("{srcName}", languageConfig.getSrcName())
                     .replace("{exeName}", languageConfig.getExeName());
             languageConfig.setCompileCommand(command);
@@ -96,8 +98,8 @@ public class LanguageConfigLoader {
         }
 
         String env = configJson.getStr("env");
-        env =  env.toLowerCase();
-        switch (env){
+        env = env.toLowerCase();
+        switch (env) {
             case "python3":
                 languageConfig.setEnvs(python3Env);
                 break;
@@ -111,7 +113,7 @@ public class LanguageConfigLoader {
     }
 
 
-    private static Long parseTimeStr(String timeStr) {
+    private Long parseTimeStr(String timeStr) {
         if (StrUtil.isBlank(timeStr)) {
             return 3000L;
         }
@@ -125,7 +127,7 @@ public class LanguageConfigLoader {
         }
     }
 
-    private static Long parseMemoryStr(String memoryStr) {
+    private Long parseMemoryStr(String memoryStr) {
         if (StrUtil.isBlank(memoryStr)) {
             return 256 * 1024 * 1024L;
         }
