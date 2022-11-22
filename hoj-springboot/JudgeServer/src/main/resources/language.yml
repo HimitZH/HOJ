@@ -1,0 +1,25 @@
+---
+language: C
+srcName: main.c
+exeName: main
+env: default
+compile:
+  command: /usr/bin/gcc -DONLINE_JUDGE -w -fmax-errors=1 -std=c11 {srcName} -lm -o {exeName}
+  maxCpuTime: 3s
+  maxRealTime: 10s
+  maxMemory: 256mb
+run:
+  command: /w/{exeName}
+
+---
+language: C With O2
+srcName: main.c
+exeName: main
+env: default
+compile:
+  command: /usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c11 {srcName} -lm -o {exeName}
+  maxCpuTime: 3s
+  maxRealTime: 10s
+  maxMemory: 256mb
+run:
+  command: /w/{exeName}

@@ -1263,6 +1263,9 @@ export default {
       }
     },
     init() {
+      if(this.$route.name === "ContestFullProblemDetails"){
+        this.$store.dispatch('getContest');
+      }
       this.openFocusMode = utils.isFocusModePage(this.$route.name);
       if (this.$route.params.contestID) {
         this.contestID = this.$route.params.contestID;
@@ -1274,6 +1277,7 @@ export default {
       if (this.$route.params.trainingID) {
         this.trainingID = this.$route.params.trainingID;
       }
+
       let func =
         this.$route.name === "ContestProblemDetails" ||
         this.$route.name === "ContestFullProblemDetails"
@@ -1852,6 +1856,9 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     this.beforeLeaveDo(from.params.contestID)
+    if(this.$route.name === "ContestFullProblemDetails"){
+      this.$store.commit('clearContest');
+    }
     next();
   },
   beforeRouteUpdate (to, from, next) {
