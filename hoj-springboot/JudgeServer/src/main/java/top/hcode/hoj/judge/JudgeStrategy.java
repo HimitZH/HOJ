@@ -13,6 +13,7 @@ import top.hcode.hoj.common.exception.SubmitError;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.dao.JudgeCaseEntityService;
 import top.hcode.hoj.dao.JudgeEntityService;
+import top.hcode.hoj.judge.entity.LanguageConfig;
 import top.hcode.hoj.judge.entity.Pair_;
 import top.hcode.hoj.pojo.dto.TestJudgeReq;
 import top.hcode.hoj.pojo.dto.TestJudgeRes;
@@ -40,6 +41,9 @@ public class JudgeStrategy {
     private JudgeCaseEntityService JudgeCaseEntityService;
 
     @Resource
+    private LanguageConfigLoader languageConfigLoader;
+
+    @Resource
     private JudgeRun judgeRun;
 
     public HashMap<String, Object> judge(Problem problem, Judge judge) {
@@ -49,10 +53,10 @@ public class JudgeStrategy {
         String userFileId = null;
         try {
             // 对用户源代码进行编译 获取tmpfs中的fileId
-            Constants.CompileConfig compileConfig = Constants.CompileConfig.getCompilerByLanguage(judge.getLanguage());
+            LanguageConfig languageConfig = languageConfigLoader.getLanguageConfigByName(judge.getLanguage());
             // 有的语言可能不支持编译, 目前有js、php不支持编译
-            if (compileConfig != null) {
-                userFileId = Compiler.compile(compileConfig,
+            if (languageConfig.getCompileCommand() != null) {
+                userFileId = Compiler.compile(languageConfig,
                         judge.getCode(),
                         judge.getLanguage(),
                         JudgeUtils.getProblemExtraFileMap(problem, "user"));
@@ -145,10 +149,10 @@ public class JudgeStrategy {
         String userFileId = null;
         try {
             // 对源代码进行编译 获取tmpfs中的fileId
-            Constants.CompileConfig compileConfig = Constants.CompileConfig.getCompilerByLanguage(testJudgeReq.getLanguage());
+            LanguageConfig languageConfig = languageConfigLoader.getLanguageConfigByName(testJudgeReq.getLanguage());
             // 有的语言可能不支持编译,目前有js、php不支持编译，需要提供源代码
-            if (compileConfig != null) {
-                userFileId = Compiler.compile(compileConfig,
+            if (languageConfig.getCompileCommand() != null) {
+                userFileId = Compiler.compile(languageConfig,
                         testJudgeReq.getCode(),
                         testJudgeReq.getLanguage(),
                         testJudgeReq.getExtraFile());
@@ -199,7 +203,7 @@ public class JudgeStrategy {
 
         String currentVersion = problem.getCaseVersion();
 
-        Constants.CompileConfig compiler;
+        LanguageConfig languageConfig;
 
         String programFilePath;
 
@@ -209,10 +213,10 @@ public class JudgeStrategy {
             case DEFAULT:
                 return true;
             case SPJ:
-                compiler = Constants.CompileConfig.getCompilerByLanguage("SPJ-" + problem.getSpjLanguage());
+                languageConfig = languageConfigLoader.getLanguageConfigByName("SPJ-" + problem.getSpjLanguage());
 
                 programFilePath = Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + File.separator +
-                        problem.getId() + File.separator + compiler.getExeName();
+                        problem.getId() + File.separator + languageConfig.getExeName();
 
                 programVersionPath = Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + File.separator +
                         problem.getId() + File.separator + "version";
@@ -241,9 +245,9 @@ public class JudgeStrategy {
 
                 break;
             case INTERACTIVE:
-                compiler = Constants.CompileConfig.getCompilerByLanguage("INTERACTIVE-" + problem.getSpjLanguage());
+                languageConfig = languageConfigLoader.getLanguageConfigByName("INTERACTIVE-" + problem.getSpjLanguage());
                 programFilePath = Constants.JudgeDir.INTERACTIVE_WORKPLACE_DIR.getContent() + File.separator +
-                        problem.getId() + File.separator + compiler.getExeName();
+                        problem.getId() + File.separator + languageConfig.getExeName();
 
                 programVersionPath = Constants.JudgeDir.INTERACTIVE_WORKPLACE_DIR.getContent() + File.separator +
                         problem.getId() + File.separator + "version";

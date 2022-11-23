@@ -10,6 +10,7 @@ import top.hcode.hoj.judge.AbstractJudge;
 import top.hcode.hoj.judge.SandboxRun;
 import top.hcode.hoj.judge.entity.JudgeDTO;
 import top.hcode.hoj.judge.entity.JudgeGlobalDTO;
+import top.hcode.hoj.judge.entity.LanguageConfig;
 import top.hcode.hoj.judge.entity.SandBoxRes;
 import top.hcode.hoj.util.Constants;
 
@@ -26,8 +27,8 @@ public class InteractiveJudge extends AbstractJudge {
     @Override
     public JSONArray judgeCase(JudgeDTO judgeDTO, JudgeGlobalDTO judgeGlobalDTO) throws SystemError {
 
-        Constants.RunConfig runConfig = judgeGlobalDTO.getRunConfig();
-        Constants.RunConfig interactiveRunConfig = judgeGlobalDTO.getInteractiveRunConfig();
+        LanguageConfig runConfig = judgeGlobalDTO.getRunConfig();
+        LanguageConfig interactiveRunConfig = judgeGlobalDTO.getInteractiveRunConfig();
 
         // 交互程序的路径
         String interactiveExeSrc = Constants.JudgeDir.INTERACTIVE_WORKPLACE_DIR.getContent()
@@ -39,8 +40,8 @@ public class InteractiveJudge extends AbstractJudge {
         String userOutputFileName = judgeGlobalDTO.getProblemId() + "_user_output";
 
         return SandboxRun.interactTestCase(
-                parseRunCommand(runConfig.getCommand(), runConfig, null, null, null),
-                runConfig.getEnvs(),
+                parseRunCommand(runConfig.getRunCommand(), null, null, null),
+                runConfig.getRunEnvs(),
                 runConfig.getExeName(),
                 judgeGlobalDTO.getUserFileId(),
                 judgeGlobalDTO.getUserFileContent(),
@@ -52,8 +53,8 @@ public class InteractiveJudge extends AbstractJudge {
                 judgeDTO.getTestCaseOutputPath(),
                 testCaseOutputFileName,
                 userOutputFileName,
-                parseRunCommand(interactiveRunConfig.getCommand(), interactiveRunConfig, testCaseInputFileName, userOutputFileName, testCaseOutputFileName),
-                interactiveRunConfig.getEnvs(),
+                parseRunCommand(interactiveRunConfig.getRunCommand(), testCaseInputFileName, userOutputFileName, testCaseOutputFileName),
+                interactiveRunConfig.getRunEnvs(),
                 interactiveExeSrc,
                 interactiveRunConfig.getExeName());
     }
@@ -147,7 +148,7 @@ public class InteractiveJudge extends AbstractJudge {
         } else if (interactiveSandBoxRes.getStatus().equals(Constants.Judge.STATUS_RUNTIME_ERROR.getStatus())) {
             if (exitCode == SPJ_WA || exitCode == SPJ_ERROR || exitCode == SPJ_AC || exitCode == SPJ_PE) {
                 result.set("code", exitCode);
-            }else if (exitCode == SPJ_PC) {
+            } else if (exitCode == SPJ_PC) {
                 result.set("code", exitCode);
                 String stdout = interactiveSandBoxRes.getStdout();
                 if (NumberUtil.isNumber(stdout)) {

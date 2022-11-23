@@ -281,7 +281,11 @@ public class ProblemManager {
         List<Long> lidList = problemLanguageEntityService.list(problemLanguageQueryWrapper)
                 .stream().map(ProblemLanguage::getLid).collect(Collectors.toList());
         if (CollectionUtil.isNotEmpty(lidList)) {
-            languageEntityService.listByIds(lidList).forEach(language -> {
+            Collection<Language> languages = languageEntityService.listByIds(lidList);
+            languages = languages.stream().sorted(Comparator.comparing(Language::getSeq, Comparator.reverseOrder())
+                            .thenComparing(Language::getId))
+                    .collect(Collectors.toList());
+            languages.forEach(language -> {
                 languagesStr.add(language.getName());
                 tmpMap.put(language.getId(), language.getName());
             });

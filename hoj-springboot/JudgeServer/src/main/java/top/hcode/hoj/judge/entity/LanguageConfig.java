@@ -52,8 +52,13 @@ public class LanguageConfig {
     private String runCommand;
 
     /**
-     * 运行环境
+     * 编译运行环境
      */
-    private List<String> envs;
+    private List<String> compileEnvs;
+
+    /**
+     * 执行程序环境
+     */
+    private List<String> runEnvs;
 
 }

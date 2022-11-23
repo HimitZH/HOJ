@@ -1,18 +1,15 @@
 package top.hcode.hoj.judge;
 
-import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.util.ResourceUtils;
+import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 import top.hcode.hoj.judge.entity.LanguageConfig;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @Author Himit_ZH
  * @Date 2022/11/22
  */
-@Configuration
+@Component
 @Slf4j(topic = "hoj")
 public class LanguageConfigLoader {
 
@@ -36,8 +33,13 @@ public class LanguageConfigLoader {
     private static List<String> python3Env = Arrays.asList("LANG=en_US.UTF-8",
             "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8", "PYTHONIOENCODING=utf-8");
 
-    private static List<String> golangEnv = Arrays.asList("GODEBUG=madvdontneed=1",
-            "GOCACHE=off", "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    private static List<String> golangCompileEnv = Arrays.asList(
+            "GOCACHE=/w", "GOPATH=/w/go", "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+            "LANG=en_US.UTF-8", "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8");
+
+    private static List<String> golangRunEnv = Arrays.asList(
+            "GOCACHE=off", "GODEBUG=madvdontneed=1",
+            "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
             "LANG=en_US.UTF-8", "LANGUAGE=en_US:en", "LC_ALL=en_US.UTF-8");
 
     private static AtomicBoolean init = new AtomicBoolean(false);
@@ -65,10 +67,10 @@ public class LanguageConfigLoader {
     private Iterable<Object> loadYml(String fileName) {
         try {
             Yaml yaml = new Yaml();
-            File ymlFile = ResourceUtils.getFile("classpath:" + fileName);
-            return yaml.loadAll(FileUtil.readUtf8String(ymlFile));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            String ymlContent = ResourceUtil.readUtf8Str(fileName);
+            return yaml.loadAll(ymlContent);
+        } catch (Exception e) {
+            log.error("load language yaml error:", e);
             throw new RuntimeException(e);
         }
     }
@@ -76,15 +78,27 @@ public class LanguageConfigLoader {
     private LanguageConfig buildLanguageConfig(JSONObject configJson) {
         LanguageConfig languageConfig = new LanguageConfig();
         languageConfig.setLanguage(configJson.getStr("language"));
-        languageConfig.setSrcName(configJson.getStr("srcName"));
-        languageConfig.setExeName(configJson.getStr("exeName"));
+        languageConfig.setSrcName(configJson.getStr("src_path"));
+        languageConfig.setExeName(configJson.getStr("exe_path"));
 
         JSONObject compileJson = configJson.getJSONObject("compile");
         if (compileJson != null) {
             String command = compileJson.getStr("command");
-            command = command.replace("{srcName}", languageConfig.getSrcName())
-                    .replace("{exeName}", languageConfig.getExeName());
+            command = command.replace("{src_path}", languageConfig.getSrcName())
+                    .replace("{exe_path}", languageConfig.getExeName());
             languageConfig.setCompileCommand(command);
+            String env = compileJson.getStr("env");
+            env = env.toLowerCase();
+            switch (env) {
+                case "python3":
+                    languageConfig.setCompileEnvs(python3Env);
+                    break;
+                case "golang_compile":
+                    languageConfig.setCompileEnvs(golangCompileEnv);
+                    break;
+                default:
+                    languageConfig.setCompileEnvs(defaultEnv);
+            }
             languageConfig.setMaxCpuTime(parseTimeStr(compileJson.getStr("maxCpuTime")));
             languageConfig.setMaxRealTime(parseTimeStr(compileJson.getStr("maxRealTime")));
             languageConfig.setMaxMemory(parseMemoryStr(compileJson.getStr("maxMemory")));
@@ -93,21 +107,20 @@ public class LanguageConfigLoader {
         JSONObject runJson = configJson.getJSONObject("run");
         if (runJson != null) {
             String command = runJson.getStr("command");
-            command = command.replace("{exeName}", languageConfig.getExeName());
+            command = command.replace("{exe_path}", languageConfig.getExeName());
             languageConfig.setRunCommand(command);
-        }
-
-        String env = configJson.getStr("env");
-        env = env.toLowerCase();
-        switch (env) {
-            case "python3":
-                languageConfig.setEnvs(python3Env);
-                break;
-            case "golang":
-                languageConfig.setEnvs(golangEnv);
-                break;
-            default:
-                languageConfig.setEnvs(defaultEnv);
+            String env = runJson.getStr("env");
+            env = env.toLowerCase();
+            switch (env) {
+                case "python3":
+                    languageConfig.setRunEnvs(python3Env);
+                    break;
+                case "golang_run":
+                    languageConfig.setRunEnvs(golangRunEnv);
+                    break;
+                default:
+                    languageConfig.setRunEnvs(defaultEnv);
+            }
         }
         return languageConfig;
     }

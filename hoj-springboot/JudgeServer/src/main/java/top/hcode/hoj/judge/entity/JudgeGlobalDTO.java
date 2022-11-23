@@ -82,17 +82,17 @@ public class JudgeGlobalDTO implements Serializable {
     /**
      * 普通评测的命令配置
      */
-    Constants.RunConfig runConfig;
+    private LanguageConfig runConfig;
 
     /**
      * 特殊判题的命令配置
      */
-    Constants.RunConfig spjRunConfig;
+    private LanguageConfig spjRunConfig;
 
     /**
      * 交互判题的命令配置
      */
-    Constants.RunConfig interactiveRunConfig;
+    private LanguageConfig interactiveRunConfig;
 
     /**
      * 是否需要生成用户程序输出的文件

@@ -25,7 +25,8 @@ public class JudgeValidator {
     @Autowired
     private AccessValidator accessValidator;
 
-    private final static List<String> HOJ_LANGUAGE_LIST = Arrays.asList("C++", "C++ With O2",
+    private final static List<String> HOJ_LANGUAGE_LIST = Arrays.asList(
+            "C++", "C++ With O2", "C++ 17", "C++ 17 With O2","C++ 20", "C++ 20 With O2",
             "C", "C With O2", "Python3", "Python2", "Java", "Golang", "C#", "PHP", "PyPy2", "PyPy3",
             "JavaScript Node", "JavaScript V8");
 

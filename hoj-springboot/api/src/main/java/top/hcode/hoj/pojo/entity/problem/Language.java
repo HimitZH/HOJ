@@ -51,6 +51,9 @@ public class Language {
     @ApiModelProperty(value = "该语言属于哪个oj，自身oj用ME")
     private String oj;
 
+    @ApiModelProperty(value = "语言顺序")
+    private Integer seq;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 

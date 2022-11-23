@@ -1,243 +1,288 @@
 ---
 language: C
-srcName: main.c
-exeName: main
-env: default
+src_path: main.c
+exe_path: main
 compile:
-  command: /usr/bin/gcc -DONLINE_JUDGE -w -fmax-errors=1 -std=c11 {srcName} -lm -o {exeName}
+  env: default
+  command: /usr/bin/gcc -DONLINE_JUDGE -w -fmax-errors=1 -std=c11 {src_path} -lm -o {exe_path}
   maxCpuTime: 3s
   maxRealTime: 10s
   maxMemory: 256mb
 run:
-  command: /w/{exeName}
+  env: default
+  command: /w/{exe_path}
 
 ---
 language: C With O2
-srcName: main.c
-exeName: main
-env: default
+src_path: main.c
+exe_path: main
 compile:
-  command: /usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c11 {srcName} -lm -o {exeName}
+  env: default
+  command: /usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c11 {src_path} -lm -o {exe_path}
   maxCpuTime: 3s
   maxRealTime: 10s
   maxMemory: 256mb
 run:
-  command: /w/{exeName}
+  env: default
+  command: /w/{exe_path}
 
 ---
-language: C++14
-srcName: main.cpp
-exeName: main
-env: default
+language: C++
+src_path: main.cpp
+exe_path: main
 compile:
-  command: /usr/bin/g++ -DONLINE_JUDGE -w -fmax-errors=1 -std=c++14 {srcName} -lm -o {exeName}
-  maxCpuTime: 5s
-  maxRealTime: 10s
-  maxMemory: 256mb
+  command: /usr/bin/g++ -DONLINE_JUDGE -w -fmax-errors=1 -std=c++14 {src_path} -lm -o {exe_path}
+  env: default
+  maxCpuTime: 10s
+  maxRealTime: 20s
+  maxMemory: 512mb
 run:
-  command: /w/{exeName}
+  env: default
+  command: /w/{exe_path}
 
 ---
-language: C++14 With O2
-srcName: main.cpp
-exeName: main
-env: default
+language: C++ With O2
+src_path: main.cpp
+exe_path: main
 compile:
-  command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c++14 {srcName} -lm -o {exeName}
-  maxCpuTime: 5s
-  maxRealTime: 10s
-  maxMemory: 256mb
+  env: default
+  command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c++14 {src_path} -lm -o {exe_path}
+  maxCpuTime: 10s
+  maxRealTime: 20s
+  maxMemory: 512mb
 run:
-  command: /w/{exeName}
+  env: default
+  command: /w/{exe_path}
 
 ---
-language: C++17 With O2
-srcName: main.cpp
-exeName: main
-env: default
+language: C++ 17
+src_path: main.cpp
+exe_path: main
 compile:
-  command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c++17 {srcName} -lm -o {exeName}
-  maxCpuTime: 5s
-  maxRealTime: 10s
-  maxMemory: 256mb
+  env: default
+  command: /usr/bin/g++ -DONLINE_JUDGE -w -fmax-errors=1 -std=c++17 {src_path} -lm -o {exe_path}
+  maxCpuTime: 10s
+  maxRealTime: 20s
+  maxMemory: 512mb
 run:
-  command: /w/{exeName}
+  env: default
+  command: /w/{exe_path}
 
 ---
-language: C++20 With O2
-srcName: main.cpp
-exeName: main
-env: default
+language: C++ 17 With O2
+src_path: main.cpp
+exe_path: main
 compile:
-  command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c++20 {srcName} -lm -o {exeName}
-  maxCpuTime: 5s
-  maxRealTime: 10s
-  maxMemory: 256mb
+  env: default
+  command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c++17 {src_path} -lm -o {exe_path}
+  maxCpuTime: 10s
+  maxRealTime: 20s
+  maxMemory: 512mb
 run:
-  command: /w/{exeName}
+  env: default
+  command: /w/{exe_path}
+
+---
+language: C++ 20
+src_path: main.cpp
+exe_path: main
+compile:
+  env: default
+  command: /usr/bin/g++ -DONLINE_JUDGE -w -fmax-errors=1 -std=c++2a {src_path} -lm -o {exe_path}
+  maxCpuTime: 10s
+  maxRealTime: 20s
+  maxMemory: 512mb
+run:
+  env: default
+  command: /w/{exe_path}
+
+---
+language: C++ 20 With O2
+src_path: main.cpp
+exe_path: main
+compile:
+  env: default
+  command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c++2a {src_path} -lm -o {exe_path}
+  maxCpuTime: 10s
+  maxRealTime: 20s
+  maxMemory: 512mb
+run:
+  env: default
+  command: /w/{exe_path}
 
 ---
 language: Java
-srcName: Main.java
-exeName: Main.jar
-env: default
+src_path: Main.java
+exe_path: Main.jar
 compile:
-  command: javac -encoding utf-8 {srcName} && jar -cvf {exeName} *.class
-  maxCpuTime: 5s
-  maxRealTime: 10s
+  env: default
+  command: /bin/bash -c "javac -encoding utf-8 {src_path} && jar -cvf {exe_path} *.class"
+  maxCpuTime: 10s
+  maxRealTime: 20s
   maxMemory: 512mb
 run:
-  command: /usr/bin/java -Dfile.encoding=UTF-8 -cp /w/{exeName} Main
+  env: default
+  command: /usr/bin/java -Dfile.encoding=UTF-8 -cp /w/{exe_path} Main
 
 ---
 language: Python2
-srcName: main.py
-exeName: main.pyc
-env: default
+src_path: main.py
+exe_path: main.pyc
 compile:
-  command: /usr/bin/python -m py_compile /w/{srcName}
+  env: default
+  command: /usr/bin/python -m py_compile /w/{src_path}
   maxCpuTime: 5s
   maxRealTime: 10s
   maxMemory: 256mb
 run:
-  command: /usr/bin/python /w/{exeName}
+  env: default
+  command: /usr/bin/python /w/{exe_path}
 
 ---
 language: Python3
-srcName: main.py
-exeName: __pycache__/main.cpython-37.pyc
-env: python3
+src_path: main.py
+exe_path: __pycache__/main.cpython-37.pyc
 compile:
-  command: /usr/bin/python3.7 -m py_compile /w/{srcName}
+  env: python3
+  command: /usr/bin/python3.7 -m py_compile /w/{src_path}
   maxCpuTime: 5s
   maxRealTime: 10s
   maxMemory: 256mb
 run:
-  command: /usr/bin/python3.7 /w/{exeName}
+  env: python3
+  command: /usr/bin/python3.7 /w/{exe_path}
 
 ---
 language: PyPy2
-srcName: main.py
-exeName: __pycache__/main.pypy-73.pyc
-env: default
+src_path: main.py
+exe_path: __pycache__/main.pypy-73.pyc
 compile:
-  command: /usr/bin/pypy -m py_compile /w/{srcName}
+  env: default
+  command: /usr/bin/pypy -m py_compile /w/{src_path}
   maxCpuTime: 5s
   maxRealTime: 10s
   maxMemory: 256mb
 run:
-  command: /usr/bin/pypy /w/{exeName}
+  env: default
+  command: /usr/bin/pypy /w/{exe_path}
 
 ---
 language: PyPy3
-srcName: main.py
-exeName: __pycache__/main.pypy38.pyc
-env: python3
+src_path: main.py
+exe_path: __pycache__/main.pypy38.pyc
 compile:
-  command: /usr/bin/pypy3 -m py_compile /w/{srcName}
+  env: python3
+  command: /usr/bin/pypy3 -m py_compile /w/{src_path}
   maxCpuTime: 5s
   maxRealTime: 10s
   maxMemory: 256mb
 run:
-  command: /usr/bin/pypy3 /w/{exeName}
+  env: python3
+  command: /usr/bin/pypy3 /w/{exe_path}
 
 
 ---
 language: Golang
-srcName: main.go
-exeName: main
-env: Golang
+src_path: main.go
+exe_path: main
 compile:
-  command: /usr/bin/go build -o {exeName} {srcName}
+  env: golang_compile
+  command: /usr/bin/go build -o {exe_path} {src_path}
   maxCpuTime: 3s
   maxRealTime: 5s
-  maxMemory: 256mb
+  maxMemory: 512mb
 run:
-  command: /w/{exeName}
+  env: golang_run
+  command: /w/{exe_path}
 
 ---
 language: C#
-srcName: Main.cs
-exeName: main
-env: default
+src_path: Main.cs
+exe_path: main
 compile:
-  command: /usr/bin/mcs -optimize+ -out:{exeName} {srcName}
+  env: default
+  command: /usr/bin/mcs -optimize+ -out:{exe_path} {src_path}
   maxCpuTime: 5s
   maxRealTime: 10s
   maxMemory: 512mb
 run:
-  command: /usr/bin/mono /w/{exeName}
+  env: default
+  command: /usr/bin/mono /w/{exe_path}
 
 ---
 language: PHP
-exeName: main.php
-env: default
+exe_path: main.php
 run:
-  command: /usr/bin/php /w/{exeName}
+  env: default
+  command: /usr/bin/php /w/{exe_path}
 
 ---
 language: JavaScript Node
-exeName: main.js
-env: default
+exe_path: main.js
 run:
-  command: /usr/bin/node /w/{exeName}
+  env: default
+  command: /usr/bin/node /w/{exe_path}
 
 ---
 language: JavaScript V8
-exeName: main.js
-env: default
+exe_path: main.js
 run:
-  command: /usr/bin/jsv8/d8 /w/{exeName}
+  env: default
+  command: /usr/bin/jsv8/d8 /w/{exe_path}
 
 # 以下为特殊评测或交互评测使用的语言
 ---
 language: SPJ-C
-srcName: spj.c
-exeName: spj
-env: default
+src_path: spj.c
+exe_path: spj
 compile:
-  command: /usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {srcName} -lm -o {exeName}
+  env: default
+  command: /usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {src_path} -lm -o {exe_path}
   maxCpuTime: 3s
   maxRealTime: 10s
-  maxMemory: 256mb
+  maxMemory: 512mb
 run:
-  command: /w/{exeName} {std_input} {user_output} {std_output}
+  env: default
+  command: /w/{exe_path} {std_input} {user_output} {std_output}
 
 ---
 language: SPJ-C++
-srcName: spj.cpp
-exeName: spj
-env: default
+src_path: spj.cpp
+exe_path: spj
 compile:
-  command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {srcName} -lm -o {exeName}
-  maxCpuTime: 5s
-  maxRealTime: 10s
-  maxMemory: 256mb
+  env: default
+  command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {src_path} -lm -o {exe_path}
+  maxCpuTime: 10s
+  maxRealTime: 20s
+  maxMemory: 512mb
 run:
-  command: /w/{exeName} {std_input} {user_output} {std_output}
+  env: default
+  command: /w/{exe_path} {std_input} {user_output} {std_output}
 
 ---
 language: INTERACTIVE-C
-srcName: interactive.c
-exeName: interactive
-env: default
+src_path: interactive.c
+exe_path: interactive
 compile:
-  command: /usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {srcName} -lm -o {exeName}
+  env: default
+  command: /usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {src_path} -lm -o {exe_path}
   maxCpuTime: 3s
   maxRealTime: 10s
-  maxMemory: 256mb
+  maxMemory: 512mb
 run:
-  command: /w/{exeName} {std_input} {user_output} {std_output}
+  env: default
+  command: /w/{exe_path} {std_input} {user_output} {std_output}
 
 ---
 language: INTERACTIVE-C++
-srcName: interactive.cpp
-exeName: interactive
-env: default
+src_path: interactive.cpp
+exe_path: interactive
 compile:
-  command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {srcName} -lm -o {exeName}
-  maxCpuTime: 5s
-  maxRealTime: 10s
-  maxMemory: 256mb
+  env: default
+  command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {src_path} -lm -o {exe_path}
+  maxCpuTime: 10s
+  maxRealTime: 20s
+  maxMemory: 512mb
 run:
-  command: /w/{exeName} {std_input} {user_output} {std_output}
+  env: default
+  command: /w/{exe_path} {std_input} {user_output} {std_output}

@@ -178,7 +178,10 @@ public class CommonManager {
         QueryWrapper<Language> queryWrapper = new QueryWrapper<>();
         // 获取对应OJ支持的语言列表
         queryWrapper.eq(all != null && !all, "oj", oj);
-        return languageEntityService.list(queryWrapper);
+        List<Language> languageList = languageEntityService.list(queryWrapper);
+        return languageList.stream().sorted(Comparator.comparing(Language::getSeq, Comparator.reverseOrder())
+                        .thenComparing(Language::getId))
+                .collect(Collectors.toList());
     }
 
     public Collection<Language> getProblemLanguages(Long pid) {
@@ -186,8 +189,10 @@ public class CommonManager {
         queryWrapper.eq("pid", pid).select("lid");
         List<Long> idList = problemLanguageEntityService.list(queryWrapper)
                 .stream().map(ProblemLanguage::getLid).collect(Collectors.toList());
-        return languageEntityService.listByIds(idList);
-
+        Collection<Language> languages = languageEntityService.listByIds(idList);
+        return languages.stream().sorted(Comparator.comparing(Language::getSeq, Comparator.reverseOrder())
+                        .thenComparing(Language::getId))
+                .collect(Collectors.toList());
     }
 
     public List<CodeTemplate> getProblemCodeTemplate(Long pid) {

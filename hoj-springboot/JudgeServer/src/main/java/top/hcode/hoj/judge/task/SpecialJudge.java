@@ -12,6 +12,7 @@ import top.hcode.hoj.judge.AbstractJudge;
 import top.hcode.hoj.judge.SandboxRun;
 import top.hcode.hoj.judge.entity.JudgeDTO;
 import top.hcode.hoj.judge.entity.JudgeGlobalDTO;
+import top.hcode.hoj.judge.entity.LanguageConfig;
 import top.hcode.hoj.judge.entity.SandBoxRes;
 import top.hcode.hoj.util.Constants;
 
@@ -27,11 +28,11 @@ import java.io.File;
 public class SpecialJudge extends AbstractJudge {
     @Override
     public JSONArray judgeCase(JudgeDTO judgeDTO, JudgeGlobalDTO judgeGlobalDTO) throws SystemError {
-        Constants.RunConfig runConfig = judgeGlobalDTO.getRunConfig();
+        LanguageConfig runConfig = judgeGlobalDTO.getRunConfig();
         // 调用安全沙箱使用测试点对程序进行测试
         return SandboxRun.testCase(
-                parseRunCommand(runConfig.getCommand(), runConfig, null, null, null),
-                runConfig.getEnvs(),
+                parseRunCommand(runConfig.getRunCommand(), null, null, null),
+                runConfig.getRunEnvs(),
                 judgeDTO.getTestCaseInputPath(),
                 null,
                 judgeGlobalDTO.getTestTime(),
@@ -69,7 +70,7 @@ public class SpecialJudge extends AbstractJudge {
                 FileWriter stdWriter = new FileWriter(userOutputFilePath);
                 stdWriter.write(sandBoxRes.getStdout());
 
-                Constants.RunConfig spjRunConfig = judgeGlobalDTO.getSpjRunConfig();
+                LanguageConfig spjRunConfig = judgeGlobalDTO.getSpjRunConfig();
 
                 // 特判程序的路径
                 String spjExeSrc = Constants.JudgeDir.SPJ_WORKPLACE_DIR.getContent() + File.separator
@@ -123,7 +124,7 @@ public class SpecialJudge extends AbstractJudge {
         } else {
             result.set("status", sandBoxRes.getStatus());
             // 输出超限的特别提示
-            if ("Output Limit Exceeded".equals(sandBoxRes.getOriginalStatus())){
+            if ("Output Limit Exceeded".equals(sandBoxRes.getOriginalStatus())) {
                 errMsg.append("The output character length of the program exceeds the limit");
             }
         }
@@ -150,12 +151,12 @@ public class SpecialJudge extends AbstractJudge {
                                             String testCaseOutputFilePath,
                                             String testCaseOutputFileName,
                                             String spjExeSrc,
-                                            Constants.RunConfig spjRunConfig) throws SystemError {
+                                            LanguageConfig spjRunConfig) throws SystemError {
 
         // 调用安全沙箱运行spj程序
         JSONArray spjJudgeResultList = SandboxRun.spjCheckResult(
-                parseRunCommand(spjRunConfig.getCommand(), spjRunConfig, testCaseInputFileName, userOutputFileName, testCaseOutputFileName),
-                spjRunConfig.getEnvs(),
+                parseRunCommand(spjRunConfig.getRunCommand(), testCaseInputFileName, userOutputFileName, testCaseOutputFileName),
+                spjRunConfig.getRunEnvs(),
                 userOutputFilePath,
                 userOutputFileName,
                 testCaseInputFilePath,

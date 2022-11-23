@@ -1,17 +1,17 @@
 package top.hcode.hoj.judge;
 
+import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.CompileError;
 import top.hcode.hoj.common.exception.SubmitError;
 import top.hcode.hoj.common.exception.SystemError;
+import top.hcode.hoj.judge.entity.LanguageConfig;
 import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.JudgeUtils;
 
 import java.io.File;
-import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,22 +21,23 @@ import java.util.List;
  * @Description: 判题流程解耦重构2.0，该类只负责编译
  */
 public class Compiler {
-    public static String compile(Constants.CompileConfig compileConfig, String code,
+
+    public static String compile(LanguageConfig languageConfig, String code,
                                  String language, HashMap<String, String> extraFiles) throws SystemError, CompileError, SubmitError {
 
-        if (compileConfig == null) {
+        if (languageConfig == null) {
             throw new RuntimeException("Unsupported language " + language);
         }
 
         // 调用安全沙箱进行编译
-        JSONArray result = SandboxRun.compile(compileConfig.getMaxCpuTime(),
-                compileConfig.getMaxRealTime(),
-                compileConfig.getMaxMemory(),
+        JSONArray result = SandboxRun.compile(languageConfig.getMaxCpuTime(),
+                languageConfig.getMaxRealTime(),
+                languageConfig.getMaxMemory(),
                 256 * 1024 * 1024L,
-                compileConfig.getSrcName(),
-                compileConfig.getExeName(),
-                parseCompileCommand(compileConfig.getCommand(), compileConfig),
-                compileConfig.getEnvs(),
+                languageConfig.getSrcName(),
+                languageConfig.getExeName(),
+                parseCompileCommand(languageConfig.getCompileCommand()),
+                languageConfig.getCompileEnvs(),
                 code,
                 extraFiles,
                 true,
@@ -49,7 +50,7 @@ public class Compiler {
                     ((JSONObject) compileResult.get("files")).getStr("stderr"));
         }
 
-        String fileId = ((JSONObject) compileResult.get("fileIds")).getStr(compileConfig.getExeName());
+        String fileId = ((JSONObject) compileResult.get("fileIds")).getStr(languageConfig.getExeName());
         if (StringUtils.isEmpty(fileId)) {
             throw new SubmitError("Executable file not found.", ((JSONObject) compileResult.get("files")).getStr("stdout"),
                     ((JSONObject) compileResult.get("files")).getStr("stderr"));
@@ -59,8 +60,10 @@ public class Compiler {
 
     public static Boolean compileSpj(String code, Long pid, String language, HashMap<String, String> extraFiles) throws SystemError {
 
-        Constants.CompileConfig spjCompiler = Constants.CompileConfig.getCompilerByLanguage("SPJ-" + language);
-        if (spjCompiler == null) {
+        LanguageConfigLoader languageConfigLoader = SpringUtil.getBean(LanguageConfigLoader.class);
+        LanguageConfig languageConfig = languageConfigLoader.getLanguageConfigByName("SPJ-" + language);
+
+        if (languageConfig == null) {
             throw new RuntimeException("Unsupported SPJ language:" + language);
         }
 
@@ -70,14 +73,14 @@ public class Compiler {
         }
 
         // 调用安全沙箱对特别判题程序进行编译
-        JSONArray res = SandboxRun.compile(spjCompiler.getMaxCpuTime(),
-                spjCompiler.getMaxRealTime(),
-                spjCompiler.getMaxMemory(),
+        JSONArray res = SandboxRun.compile(languageConfig.getMaxCpuTime(),
+                languageConfig.getMaxRealTime(),
+                languageConfig.getMaxMemory(),
                 256 * 1024 * 1024L,
-                spjCompiler.getSrcName(),
-                spjCompiler.getExeName(),
-                parseCompileCommand(spjCompiler.getCommand(), spjCompiler),
-                spjCompiler.getEnvs(),
+                languageConfig.getSrcName(),
+                languageConfig.getExeName(),
+                parseCompileCommand(languageConfig.getCompileCommand()),
+                languageConfig.getCompileEnvs(),
                 code,
                 extraFiles,
                 false,
@@ -95,8 +98,10 @@ public class Compiler {
 
     public static Boolean compileInteractive(String code, Long pid, String language, HashMap<String, String> extraFiles) throws SystemError {
 
-        Constants.CompileConfig interactiveCompiler = Constants.CompileConfig.getCompilerByLanguage("INTERACTIVE-" + language);
-        if (interactiveCompiler == null) {
+        LanguageConfigLoader languageConfigLoader = SpringUtil.getBean(LanguageConfigLoader.class);
+        LanguageConfig languageConfig = languageConfigLoader.getLanguageConfigByName("INTERACTIVE-" + language);
+
+        if (languageConfig == null) {
             throw new RuntimeException("Unsupported interactive language:" + language);
         }
 
@@ -106,14 +111,14 @@ public class Compiler {
         }
 
         // 调用安全沙箱对特别判题程序进行编译
-        JSONArray res = SandboxRun.compile(interactiveCompiler.getMaxCpuTime(),
-                interactiveCompiler.getMaxRealTime(),
-                interactiveCompiler.getMaxMemory(),
+        JSONArray res = SandboxRun.compile(languageConfig.getMaxCpuTime(),
+                languageConfig.getMaxRealTime(),
+                languageConfig.getMaxMemory(),
                 256 * 1024 * 1024L,
-                interactiveCompiler.getSrcName(),
-                interactiveCompiler.getExeName(),
-                parseCompileCommand(interactiveCompiler.getCommand(), interactiveCompiler),
-                interactiveCompiler.getEnvs(),
+                languageConfig.getSrcName(),
+                languageConfig.getExeName(),
+                parseCompileCommand(languageConfig.getCompileCommand()),
+                languageConfig.getCompileEnvs(),
                 code,
                 extraFiles,
                 false,
@@ -128,10 +133,7 @@ public class Compiler {
         return true;
     }
 
-    private static List<String> parseCompileCommand(String command, Constants.CompileConfig compileConfig) {
-
-        command = MessageFormat.format(command, Constants.JudgeDir.TMPFS_DIR.getContent(),
-                compileConfig.getSrcName(), compileConfig.getExeName());
+    private static List<String> parseCompileCommand(String command) {
         return JudgeUtils.translateCommandline(command);
     }
 }

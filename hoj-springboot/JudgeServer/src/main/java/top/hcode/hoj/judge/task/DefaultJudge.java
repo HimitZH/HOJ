@@ -10,6 +10,7 @@ import top.hcode.hoj.judge.AbstractJudge;
 import top.hcode.hoj.judge.SandboxRun;
 import top.hcode.hoj.judge.entity.JudgeDTO;
 import top.hcode.hoj.judge.entity.JudgeGlobalDTO;
+import top.hcode.hoj.judge.entity.LanguageConfig;
 import top.hcode.hoj.judge.entity.SandBoxRes;
 import top.hcode.hoj.util.Constants;
 
@@ -24,11 +25,11 @@ import java.nio.charset.StandardCharsets;
 public class DefaultJudge extends AbstractJudge {
     @Override
     public JSONArray judgeCase(JudgeDTO judgeDTO, JudgeGlobalDTO judgeGlobalDTO) throws SystemError {
-        Constants.RunConfig runConfig = judgeGlobalDTO.getRunConfig();
+        LanguageConfig runConfig = judgeGlobalDTO.getRunConfig();
         // 调用安全沙箱使用测试点对程序进行测试
         return SandboxRun.testCase(
-                parseRunCommand(runConfig.getCommand(), runConfig, null, null, null),
-                runConfig.getEnvs(),
+                parseRunCommand(runConfig.getRunCommand(),  null, null, null),
+                runConfig.getRunEnvs(),
                 judgeDTO.getTestCaseInputPath(),
                 judgeDTO.getTestCaseInputContent(),
                 judgeGlobalDTO.getTestTime(),

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.judge.entity.JudgeDTO;
 import top.hcode.hoj.judge.entity.JudgeGlobalDTO;
+import top.hcode.hoj.judge.entity.LanguageConfig;
 import top.hcode.hoj.judge.task.DefaultJudge;
 import top.hcode.hoj.judge.task.InteractiveJudge;
 import top.hcode.hoj.judge.task.SpecialJudge;
@@ -43,6 +44,9 @@ public class JudgeRun {
     @Resource
     private TestJudge testJudge;
 
+    @Resource
+    private LanguageConfigLoader languageConfigLoader;
+
     public List<JSONObject> judgeAllCase(Long submitId,
                                          Problem problem,
                                          String judgeLanguage,
@@ -72,9 +76,9 @@ public class JudgeRun {
         // 用户输出的文件夹
         String runDir = Constants.JudgeDir.RUN_WORKPLACE_DIR.getContent() + File.separator + submitId;
 
-        Constants.RunConfig runConfig = Constants.RunConfig.getRunnerByLanguage(judgeLanguage);
-        Constants.RunConfig spjConfig = Constants.RunConfig.getRunnerByLanguage("SPJ-" + problem.getSpjLanguage());
-        Constants.RunConfig interactiveConfig = Constants.RunConfig.getRunnerByLanguage("INTERACTIVE-" + problem.getSpjLanguage());
+        LanguageConfig runConfig = languageConfigLoader.getLanguageConfigByName(judgeLanguage);
+        LanguageConfig spjConfig = languageConfigLoader.getLanguageConfigByName("SPJ-" + problem.getSpjLanguage());
+        LanguageConfig interactiveConfig = languageConfigLoader.getLanguageConfigByName("INTERACTIVE-" + problem.getSpjLanguage());
 
         final AbstractJudge abstractJudge = getAbstractJudge(judgeMode);
 
@@ -350,7 +354,7 @@ public class JudgeRun {
         // 默认给限制时间+200ms用来测评
         Long testTime = testJudgeReq.getTimeLimit() + 200L;
 
-        Constants.RunConfig runConfig = Constants.RunConfig.getRunnerByLanguage(testJudgeReq.getLanguage());
+        LanguageConfig runConfig = languageConfigLoader.getLanguageConfigByName(testJudgeReq.getLanguage());
 
         JudgeGlobalDTO judgeGlobalDTO = JudgeGlobalDTO.builder()
                 .judgeMode(Constants.JudgeMode.TEST)

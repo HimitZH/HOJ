@@ -9,6 +9,7 @@ import top.hcode.hoj.judge.AbstractJudge;
 import top.hcode.hoj.judge.SandboxRun;
 import top.hcode.hoj.judge.entity.JudgeDTO;
 import top.hcode.hoj.judge.entity.JudgeGlobalDTO;
+import top.hcode.hoj.judge.entity.LanguageConfig;
 import top.hcode.hoj.judge.entity.SandBoxRes;
 import top.hcode.hoj.util.Constants;
 
@@ -23,11 +24,11 @@ import java.util.Objects;
 public class TestJudge extends AbstractJudge {
     @Override
     public JSONArray judgeCase(JudgeDTO judgeDTO, JudgeGlobalDTO judgeGlobalDTO) throws SystemError {
-        Constants.RunConfig runConfig = judgeGlobalDTO.getRunConfig();
+        LanguageConfig runConfig = judgeGlobalDTO.getRunConfig();
         // 调用安全沙箱使用测试点对程序进行测试
         return SandboxRun.testCase(
-                parseRunCommand(runConfig.getCommand(), runConfig, null, null, null),
-                runConfig.getEnvs(),
+                parseRunCommand(runConfig.getRunCommand(), null, null, null),
+                runConfig.getRunEnvs(),
                 judgeDTO.getTestCaseInputPath(),
                 judgeDTO.getTestCaseInputContent(),
                 judgeGlobalDTO.getTestTime(),
@@ -83,7 +84,7 @@ public class TestJudge extends AbstractJudge {
         } else {
             result.set("status", sandBoxRes.getStatus());
             // 输出超限的特别提示
-            if ("Output Limit Exceeded".equals(sandBoxRes.getOriginalStatus())){
+            if ("Output Limit Exceeded".equals(sandBoxRes.getOriginalStatus())) {
                 errMsg.append("The output character length of the program exceeds the limit");
             }
         }

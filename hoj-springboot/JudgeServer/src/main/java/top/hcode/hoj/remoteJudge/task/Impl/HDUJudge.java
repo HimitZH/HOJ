@@ -3,7 +3,10 @@ package top.hcode.hoj.remoteJudge.task.Impl;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ReUtil;
-import cn.hutool.http.*;
+import cn.hutool.http.HtmlUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.helper.Validate;
 import top.hcode.hoj.remoteJudge.entity.RemoteJudgeDTO;
@@ -211,7 +214,7 @@ public class HDUJudge extends RemoteJudgeStrategy {
         }
     };
 
-    protected String getRandomBlankString() {
+    protected static String getRandomBlankString() {
         StringBuilder string = new StringBuilder("\n");
         int random = new Random().nextInt(Integer.MAX_VALUE);
         while (random > 0) {

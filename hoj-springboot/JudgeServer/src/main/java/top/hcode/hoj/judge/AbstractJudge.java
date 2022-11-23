@@ -13,7 +13,6 @@ import top.hcode.hoj.util.Constants;
 import top.hcode.hoj.util.JudgeUtils;
 
 import java.io.File;
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -102,15 +101,24 @@ public abstract class AbstractJudge {
     public abstract JSONObject checkMultipleResult(SandBoxRes userSandBoxRes, SandBoxRes interactiveSandBoxRes, JudgeDTO judgeDTO, JudgeGlobalDTO judgeGlobalDTO);
 
     protected static List<String> parseRunCommand(String command,
-                                                  Constants.RunConfig runConfig,
                                                   String testCaseInputName,
                                                   String userOutputName,
                                                   String testCaseOutputName) {
 
-        command = MessageFormat.format(command, Constants.JudgeDir.TMPFS_DIR.getContent(),
-                runConfig.getExeName(), Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + testCaseInputName,
-                Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + userOutputName,
-                Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + testCaseOutputName);
+        if (testCaseInputName != null) {
+            command = command.replace("{std_input}",
+                    Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + testCaseInputName);
+        }
+
+        if (userOutputName != null) {
+            command = command.replace("{user_output}",
+                    Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + userOutputName);
+        }
+
+        if (userOutputName != null) {
+            command = command.replace("{std_output}",
+                    Constants.JudgeDir.TMPFS_DIR.getContent() + File.separator + testCaseOutputName);
+        }
 
         return JudgeUtils.translateCommandline(command);
     }
