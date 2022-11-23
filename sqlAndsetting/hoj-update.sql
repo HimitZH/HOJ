@@ -991,3 +991,41 @@ DELIMITER ;
 CALL add_Contest_Award ;
 
 DROP PROCEDURE add_Contest_Award;
+
+/*
+* 2022.11.23  调整增加C++语言
+			 
+*/
+DROP PROCEDURE
+IF EXISTS add_Language_Change;
+DELIMITER $$
+ 
+CREATE PROCEDURE add_Language_Change ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'language'
+	AND column_name = 'seq'
+) THEN
+	
+	ALTER TABLE `hoj`.`language`  ADD COLUMN `seq` int(11) DEFAULT '0' COMMENT '语言排序';
+	UPDATE `language` set `seq` = 5, `description` = 'G++ 9.4.0' WHERE (`name` = 'C++ With O2' OR `name` = 'C++') AND `oj`='ME';
+	UPDATE `language` set `seq` = 10, `description` = 'GCC 9.4.0' WHERE (`name` = 'C With O2' OR `name` = 'C') AND `oj`='ME';
+	UPDATE `language` set `description` = 'Golang 1.19' WHERE `name`='Golang' AND `oj`='ME';
+	INSERT INTO `language`(`content_type`,`description`,`name`,`compile_command`,`template`, `code_template`, `is_spj`, `oj`, `seq`) VALUES ('text/x-c++src', 'G++ 9.4.0', 'C++ 17', '/usr/bin/g++ -DONLINE_JUDGE -w -fmax-errors=1 -std=c++17 {src_path} -lm -o {exe_path}', '#include<iostream>\r\nusing namespace std;\r\nint main()\r\n{\r\n    int a,b;\r\n    cin >> a >> b;\r\n    cout << a + b;\r\n    return 0;\r\n}', '//PREPEND BEGIN\r\n#include <iostream>\r\nusing namespace std;\r\n//PREPEND END\r\n\r\n//TEMPLATE BEGIN\r\nint add(int a, int b) {\r\n  // Please fill this blank\r\n  return ___________;\r\n}\r\n//TEMPLATE END\r\n\r\n//APPEND BEGIN\r\nint main() {\r\n  cout << add(1, 2);\r\n  return 0;\r\n}\r\n//APPEND END', 0, 'ME', 5);
+	INSERT INTO `language`(`content_type`,`description`,`name`,`compile_command`,`template`, `code_template`, `is_spj`, `oj`, `seq`) VALUES ('text/x-c++src', 'G++ 9.4.0', 'C++ 17 With O2', '/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c++17 {src_path} -lm -o {exe_path}', '#include<iostream>\r\nusing namespace std;\r\nint main()\r\n{\r\n    int a,b;\r\n    cin >> a >> b;\r\n    cout << a + b;\r\n    return 0;\r\n}', '//PREPEND BEGIN\r\n#include <iostream>\r\nusing namespace std;\r\n//PREPEND END\r\n\r\n//TEMPLATE BEGIN\r\nint add(int a, int b) {\r\n  // Please fill this blank\r\n  return ___________;\r\n}\r\n//TEMPLATE END\r\n\r\n//APPEND BEGIN\r\nint main() {\r\n  cout << add(1, 2);\r\n  return 0;\r\n}\r\n//APPEND END', 0, 'ME', 5);
+	INSERT INTO `language`(`content_type`,`description`,`name`,`compile_command`,`template`, `code_template`, `is_spj`, `oj`, `seq`) VALUES ('text/x-c++src', 'G++ 9.4.0', 'C++ 20', '/usr/bin/g++ -DONLINE_JUDGE -w -fmax-errors=1 -std=c++20 {src_path} -lm -o {exe_path}', '#include<iostream>\r\nusing namespace std;\r\nint main()\r\n{\r\n    int a,b;\r\n    cin >> a >> b;\r\n    cout << a + b;\r\n    return 0;\r\n}', '//PREPEND BEGIN\r\n#include <iostream>\r\nusing namespace std;\r\n//PREPEND END\r\n\r\n//TEMPLATE BEGIN\r\nint add(int a, int b) {\r\n  // Please fill this blank\r\n  return ___________;\r\n}\r\n//TEMPLATE END\r\n\r\n//APPEND BEGIN\r\nint main() {\r\n  cout << add(1, 2);\r\n  return 0;\r\n}\r\n//APPEND END', 0, 'ME', 5);
+	INSERT INTO `language`(`content_type`,`description`,`name`,`compile_command`,`template`, `code_template`, `is_spj`, `oj`, `seq`) VALUES ('text/x-c++src', 'G++ 9.4.0', 'C++ 20 With O2', '/usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c++20 {src_path} -lm -o {exe_path}', '#include<iostream>\r\nusing namespace std;\r\nint main()\r\n{\r\n    int a,b;\r\n    cin >> a >> b;\r\n    cout << a + b;\r\n    return 0;\r\n}', '//PREPEND BEGIN\r\n#include <iostream>\r\nusing namespace std;\r\n//PREPEND END\r\n\r\n//TEMPLATE BEGIN\r\nint add(int a, int b) {\r\n  // Please fill this blank\r\n  return ___________;\r\n}\r\n//TEMPLATE END\r\n\r\n//APPEND BEGIN\r\nint main() {\r\n  cout << add(1, 2);\r\n  return 0;\r\n}\r\n//APPEND END', 0, 'ME', 5);
+	
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL add_Language_Change ;
+
+DROP PROCEDURE add_Language_Change;
