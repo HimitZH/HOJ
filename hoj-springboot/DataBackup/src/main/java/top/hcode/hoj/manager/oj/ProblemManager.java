@@ -252,8 +252,14 @@ public class ProblemManager {
             throw new StatusForbiddenException("该题号对应题目并非公开题目，不支持访问！");
         }
 
-        if (problem.getIsGroup() && gid == null && !isRoot) {
-            throw new StatusForbiddenException("题目为团队所属，此处不支持访问，请前往团队查看！");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+        if (problem.getIsGroup() && !isRoot) {
+            if (gid == null){
+                throw new StatusForbiddenException("题目为团队所属，此处不支持访问，请前往团队查看！");
+            }
+            if(!groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid())) {
+                throw new StatusForbiddenException("对不起，您并非该题目所属的团队内成员，无权查看题目！");
+            }
         }
 
         QueryWrapper<ProblemTag> problemTagQueryWrapper = new QueryWrapper<>();
