@@ -133,25 +133,25 @@
 
 10. 使用了第5步的就可以启动判题服务和判题安全沙盒了，操作如下：
 
-   - 启动沙盒，确保不要出错，不然无法进行自身题目判题（远程虚拟判题vj无影响）,Judger-SandBox为文件名，即是刚刚上传的。
+  - 启动沙盒，确保不要出错，不然无法进行自身题目判题（远程虚拟判题vj无影响）,Judger-SandBox为文件名，即是刚刚上传的。
 
-     ```shell
-     pm2 start Judger-SandBox
-     ```
+    ```shell
+    pm2 start Judger-SandBox
+    ```
 
-   - 查看是否正常,status的状态是online就是正常
+  - 查看是否正常,status的状态是online就是正常
 
-     ```shell
-     pm2 list 
-     ```
+    ```shell
+    pm2 list 
+    ```
 
-   - 启动判题服务，JudgeServer.json是我们在第四步配置创建放在与jar包同个文件夹里面的json文件，启动后也使用`pm2 list`查看
+  - 启动判题服务，JudgeServer.json是我们在第四步配置创建放在与jar包同个文件夹里面的json文件，启动后也使用`pm2 list`查看
 
-     ```shell
-     pm2 start JudgeServer.json
-     ```
+    ```shell
+    pm2 start JudgeServer.json
+    ```
 
-   - 如果两者pm2 list里面的status都是online则说明此次判题服务部署成功。
+  - 如果两者pm2 list里面的status都是online则说明此次判题服务部署成功。
 
 
 
@@ -278,8 +278,11 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Shanghai
 
 RUN buildDeps='software-properties-common libtool wget unzip' && \
-    apt-get update && apt-get install -y python python3.7 gcc g++ mono-devel $buildDeps curl bash && \
-    add-apt-repository ppa:openjdk-r/ppa && add-apt-repository ppa:longsleep/golang-backports && apt-get update && apt-get install -y golang-go openjdk-8-jdk && \
+    apt-get update && apt-get install -y python python3.7 mono-devel $buildDeps curl bash && \
+    add-apt-repository ppa:openjdk-r/ppa && add-apt-repository ppa:longsleep/golang-backports && add-apt-repository ppa:ubuntu-toolchain-r/test && \
+	apt-get update && apt-get install -y golang-go openjdk-8-jdk gcc-9 g++-9 && \
+    update-alternatives --install  /usr/bin/gcc gcc /usr/bin/gcc-9 40 && \
+    update-alternatives --install  /usr/bin/g++ g++ /usr/bin/g++-9 40 && \
 	add-apt-repository ppa:pypy/ppa && apt-get update && apt install -y pypy pypy3 && \
 	add-apt-repository ppa:ondrej/php && apt-get update && apt-get install -y php7.3-cli && \
 	cd /tmp && wget -O jsv8.zip  https://storage.googleapis.com/chromium-v8/official/canary/v8-linux64-dbg-8.4.109.zip && \

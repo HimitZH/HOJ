@@ -147,7 +147,7 @@ public class JudgeManager {
         } else if (isTrainingSubmission) {
             beforeDispatchInitManager.initTrainingSubmission(judgeDto.getTid(), judgeDto.getPid(), userRolesVo, judge);
         } else { // 如果不是比赛提交和训练提交
-            beforeDispatchInitManager.initCommonSubmission(judgeDto.getPid(), judge);
+            beforeDispatchInitManager.initCommonSubmission(judgeDto.getPid(), judgeDto.getGid(), judge);
 
         }
 

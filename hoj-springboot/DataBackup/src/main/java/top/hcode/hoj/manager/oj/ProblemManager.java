@@ -162,7 +162,7 @@ public class ProblemManager {
             isACMContest = contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode();
         }
         boolean isSealRank = false;
-        if (!isACMContest && CollectionUtil.isNotEmpty(judges)){
+        if (!isACMContest && CollectionUtil.isNotEmpty(judges)) {
             isSealRank = contestValidator.isSealRank(userRolesVo.getUid(), contest, false,
                     SecurityUtils.getSubject().hasRole("root"));
         }
@@ -239,7 +239,6 @@ public class ProblemManager {
      * @Since 2020/10/27
      */
     public ProblemInfoVO getProblemInfo(String problemId, Long gid) throws StatusNotFoundException, StatusForbiddenException {
-        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
 
@@ -253,10 +252,8 @@ public class ProblemManager {
             throw new StatusForbiddenException("该题号对应题目并非公开题目，不支持访问！");
         }
 
-        if (problem.getIsGroup()) {
-            if (!isRoot && !groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid())) {
-                throw new StatusForbiddenException("该题号对应题目并非公开题目，不支持访问！");
-            }
+        if (problem.getIsGroup() && gid == null && !isRoot) {
+            throw new StatusForbiddenException("题目为团队所属，此处不支持访问，请前往团队查看！");
         }
 
         QueryWrapper<ProblemTag> problemTagQueryWrapper = new QueryWrapper<>();
