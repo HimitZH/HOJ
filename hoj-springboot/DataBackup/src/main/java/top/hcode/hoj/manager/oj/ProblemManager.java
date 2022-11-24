@@ -239,9 +239,6 @@ public class ProblemManager {
      * @Since 2020/10/27
      */
     public ProblemInfoVO getProblemInfo(String problemId, Long gid) throws StatusNotFoundException, StatusForbiddenException {
-
-        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-
         QueryWrapper<Problem> wrapper = new QueryWrapper<Problem>().eq("problem_id", problemId);
         //查询题目详情，题目标签，题目语言，题目做题情况
         Problem problem = problemEntityService.getOne(wrapper, false);
@@ -252,6 +249,7 @@ public class ProblemManager {
             throw new StatusForbiddenException("该题号对应题目并非公开题目，不支持访问！");
         }
 
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         if (problem.getIsGroup() && !isRoot) {
             if (gid == null){
