@@ -39,7 +39,7 @@
               ></el-button>
             </el-tooltip>
           </span>
-          <span v-if="isAuthenticated">
+          <span v-if="isAuthenticated && !submitDisabled">
             <el-tooltip
               :content="$t('m.Get_Recently_Passed_Code')"
               placement="top"
@@ -600,6 +600,10 @@ export default {
       default: false,
     },
     openFocusMode: {
+      type: Boolean,
+      default: false,
+    },
+    submitDisabled: {
       type: Boolean,
       default: false,
     },

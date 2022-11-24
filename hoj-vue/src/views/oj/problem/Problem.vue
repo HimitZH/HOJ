@@ -586,6 +586,7 @@
               :type="problemType"
               :isAuthenticated="isAuthenticated"
               :isRemoteJudge="problemData.problem.isRemote"
+              :submitDisabled="submitDisabled"
             ></CodeMirror>
             <div id="js-right-bottom">
               <el-row>
@@ -743,7 +744,7 @@
                     size="small"
                     :loading="submitting"
                     @click.native="submitCode"
-                    :disabled="problemSubmitDisabled || submitted"
+                    :disabled="problemSubmitDisabled || submitted || submitDisabled"
                     class="fl-right"
                   >
                     <span v-if="submitting">{{ $t('m.Submitting') }}</span>
@@ -753,6 +754,7 @@
                     type="success"
                     :class="openTestCaseDrawer?'tj-btn active':'tj-btn non-active'"
                     @click.native="openTestJudgeDrawer"
+                    v-if="!submitDisabled"
                     effect="plain"
                   >
                     <svg
@@ -894,6 +896,7 @@ export default {
       height: 550,
       submissionId: "",
       submitted: false,
+      submitDisabled: false,
       submitPwdVisible: false,
       submitPwd: "",
       result: {
@@ -1368,6 +1371,7 @@ export default {
           });
         },
         (err) => {
+          this.submitDisabled = true;
           this.loading = false;
         }
       );

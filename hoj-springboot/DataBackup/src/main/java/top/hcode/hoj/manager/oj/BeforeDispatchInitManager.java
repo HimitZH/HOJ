@@ -87,6 +87,10 @@ public class BeforeDispatchInitManager {
         problemQueryWrapper.eq("problem_id", problemId);
         Problem problem = problemEntityService.getOne(problemQueryWrapper, false);
 
+        if (problem == null){
+            throw new StatusForbiddenException("错误！当前题目已不存在，不可提交！");
+        }
+
         if (problem.getAuth() == 2) {
             throw new StatusForbiddenException("错误！当前题目不可提交！");
         }
@@ -154,6 +158,10 @@ public class BeforeDispatchInitManager {
 
         Problem problem = problemEntityService.getById(contestProblem.getPid());
 
+        if (problem == null){
+            throw new StatusForbiddenException("错误！当前题目已不存在，不可提交！");
+        }
+
         if (problem.getAuth() == 2) {
             throw new StatusForbiddenException("错误！当前题目已被隐藏，不可提交！");
         }
@@ -206,6 +214,10 @@ public class BeforeDispatchInitManager {
         judge.setPid(trainingProblem.getPid());
 
         Problem problem = problemEntityService.getById(trainingProblem.getPid());
+
+        if (problem == null){
+            throw new StatusForbiddenException("错误！当前题目已不存在，不可提交！");
+        }
 
         if (problem.getAuth() == 2) {
             throw new StatusForbiddenException("错误！当前题目不可提交！");
