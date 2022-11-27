@@ -149,20 +149,10 @@
                     $t('m.Training_Introduction')
                   }}</span>
                 </div>
-                <template v-if="groupID">
-                  <div
-                    v-dompurify-html="descriptionHtml"
-                    v-highlight
-                    class="markdown-body"
-                  ></div>
-                </template>
-                <template v-else>
-                  <div
-                  v-html="descriptionHtml"
-                  v-highlight
-                  class="markdown-body"
-                ></div>
-                </template>
+                <Markdown 
+                  :isAvoidXss="groupID" 
+                  :content="training.description">
+                </Markdown>
               </el-card>
             </el-col>
           </el-row>
@@ -210,7 +200,11 @@ import { TRAINING_TYPE } from '@/common/constants';
 import { mapState, mapGetters, mapActions } from 'vuex';
 import myMessage from '@/common/message';
 import api from '@/common/api';
+import Markdown from '@/components/oj/common/Markdown';
 export default {
+  components: { 
+    Markdown
+  },
   data() {
     return {
       route_name: 'TrainingDetails',
@@ -299,11 +293,6 @@ export default {
       'isPrivateTraining',
       'isAuthenticated',
     ]),
-    descriptionHtml() {
-      if (this.training.description) {
-        return this.$markDown.render(this.training.description);
-      }
-    },
   },
   watch: {
     $route(newVal) {

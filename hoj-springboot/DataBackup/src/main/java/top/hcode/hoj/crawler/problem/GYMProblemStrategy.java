@@ -117,26 +117,35 @@ public class GYMProblemStrategy extends CFProblemStrategy {
         regex = "\\/gym\\/" + contestNum + "\\/attachments\\/download\\S*?\\.pdf";
 
         matcher = Pattern.compile(regex).matcher(html);
-        matcher.find();
-
-        String pdfURI;
-        try {
-            String fileName = IdUtil.fastSimpleUUID() + ".pdf";
-            String filePath = Constants.File.PROBLEM_FILE_FOLDER.getPath() + File.separator + fileName;
-            HttpUtil.downloadFile(IMAGE_HOST + matcher.group(0), filePath);
-            pdfURI = Constants.File.FILE_API.getPath() + fileName;
-        } catch (Exception e1) {
+        StringBuilder description = new StringBuilder();
+        while (matcher.find()) {
+            String pdfURI = "";
             try {
-                pdfURI = HOST + matcher.group(0);
-            } catch (Exception e2) {
                 String fileName = IdUtil.fastSimpleUUID() + ".pdf";
                 String filePath = Constants.File.PROBLEM_FILE_FOLDER.getPath() + File.separator + fileName;
-                CodeForcesUtils.downloadPDF(HOST + "/gym/" + contestNum + "/problem/" + problemNum, filePath);
+                CodeForcesUtils.downloadPDF(IMAGE_HOST + matcher.group(0), filePath);
                 pdfURI = Constants.File.FILE_API.getPath() + fileName;
+
+                String[] split = matcher.group(0).split("/");
+                String fileRealName = split[split.length - 1];
+                description.append("<p><a href=\"")
+                        .append(pdfURI).append("\">")
+                        .append(fileRealName)
+                        .append("</a></p>");
+            } catch (Exception e1) {
+                try {
+                    String fileName = IdUtil.fastSimpleUUID() + ".pdf";
+                    String filePath = Constants.File.PROBLEM_FILE_FOLDER.getPath() + File.separator + fileName;
+                    CodeForcesUtils.downloadPDF(HOST + "/gym/" + contestNum + "/problem/" + problemNum, filePath);
+                    pdfURI = Constants.File.FILE_API.getPath() + fileName;
+                } catch (Exception e2) {
+                    pdfURI = HOST + matcher.group(0);
+                }
+                description.append("<p><a href=\"")
+                        .append(pdfURI).append("\">").append(problemId).append("</a></p>");
             }
         }
-        String description = "<p><a style='color:#3091f2' href=\"" + pdfURI + "\">Click here to download the PDF file.</a></p>";
-        problem.setDescription(description);
+        problem.setDescription(description.toString());
         problem.setType(0)
                 .setIsRemote(true)
                 .setAuth(1)

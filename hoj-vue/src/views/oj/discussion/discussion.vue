@@ -109,18 +109,10 @@
         </div>
       </div>
       <div class="body-article">
-        <template
-          v-if="discussion.role == 'root' || discussion.role == 'admin'"
-        >
-          <div class="markdown-body" v-html="contentHtml" v-highlight></div>
-        </template>
-        <template v-else>
-          <div
-            class="markdown-body"
-            v-dompurify-html="contentHtml"
-            v-highlight
-          ></div>
-        </template>
+        <Markdown 
+          :isAvoidXss="discussion.role != 'root'&&discussion.role != 'admin'" 
+          :content="discussion.content">
+        </Markdown>
       </div>
     </div>
     <el-dialog
@@ -228,10 +220,12 @@ import Avatar from 'vue-avatar';
 import { mapGetters, mapActions } from 'vuex';
 const Editor = () => import('@/components/admin/Editor.vue');
 const comment = () => import('@/components/oj/comment/comment');
+import Markdown from '@/components/oj/common/Markdown';
 export default {
   components: {
     comment,
     Avatar,
+    Markdown,
     Editor,
   },
   data() {
@@ -366,13 +360,6 @@ export default {
   },
   computed: {
     ...mapGetters(['isAuthenticated', 'isAdminRole', 'userInfo']),
-    contentHtml() {
-      if (this.discussion.content) {
-        return this.$markDown.render(this.discussion.content);
-      } else {
-        return null;
-      }
-    },
   },
   watch: {
     isAuthenticated(newVal, oldVal) {

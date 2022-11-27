@@ -1,6 +1,8 @@
 package top.hcode.hoj.utils;
 
 import cn.hutool.core.io.resource.ResourceUtil;
+import cn.hutool.core.util.ReUtil;
+import cn.hutool.http.HttpRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.script.*;
@@ -11,6 +13,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j(topic = "hoj")
@@ -18,6 +21,13 @@ public class CodeForcesUtils {
     private static String RCPC;
 
     public static String getRCPC() {
+        if (RCPC == null){
+            HttpRequest request = HttpRequest.get("https://codeforces.com")
+                    .timeout(20000);
+            String html = request.execute().body();
+            List<String> list = ReUtil.findAll("[a-z0-9]+[a-z0-9]{31}", html, 0, new ArrayList<>());
+            updateRCPC(list);
+        }
         return RCPC;
     }
 

@@ -149,20 +149,10 @@
             </el-form>
           </el-card>
           <el-card class="box-card">
-            <template v-if="contest.gid != null">
-                <div
-                v-dompurify-html="descriptionHtml"
-                v-highlight
-                class="markdown-body"
-              ></div>
-            </template>
-            <template>
-              <div
-                v-html="descriptionHtml"
-                v-highlight
-                class="markdown-body"
-              ></div>
-            </template>
+            <Markdown 
+              :isAvoidXss="contest.gid != null" 
+              :content="contest.description">
+            </Markdown>
           </el-card>
         </el-tab-pane>
 
@@ -344,8 +334,12 @@ import {
 } from '@/common/constants';
 import myMessage from '@/common/message';
 import storage from '@/common/storage';
+import Markdown from "@/components/oj/common/Markdown";
 export default {
-  name: '',
+  name: 'ContestDetails',
+  components: {
+    Markdown
+  },
   data() {
     return {
       route_name: 'contestDetails',
@@ -503,11 +497,6 @@ export default {
     },
     showScrollBoard(){
       return this.isContestAdmin && this.contestRuleType === RULE_TYPE.ACM;
-    },
-    descriptionHtml() {
-      if (this.contest.description) {
-        return this.$markDown.render(this.contest.description);
-      }
     },
     contestEnded() {
       return this.contestStatus === CONTEST_STATUS.ENDED;

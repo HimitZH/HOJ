@@ -176,62 +176,29 @@
                 <div id="problem-content">
                   <template v-if="problemData.problem.description">
                     <p class="title">{{ $t('m.Description') }}</p>
-                    <template v-if="groupID">
-                      <p
-                        class="content markdown-body"
-                        v-dompurify-html="problemData.problem.description"
-                        v-katex
-                        v-highlight
-                      ></p>
-                    </template>
-                    <template v-else>
-                        <p
-                        class="content markdown-body"
-                        v-html="problemData.problem.description"
-                        v-katex
-                        v-highlight
-                      ></p>
-                    </template>
+                    <Markdown 
+                      class="md-content"
+                      :isAvoidXss="groupID" 
+                      :content="problemData.problem.description">
+                    </Markdown>
                   </template>
 
                   <template v-if="problemData.problem.input">
                     <p class="title">{{ $t('m.Input') }}</p>
-                    <template v-if="groupID">
-                      <p
-                      class="content markdown-body"
-                      v-dompurify-html="problemData.problem.input"
-                      v-katex
-                      v-highlight
-                      ></p>
-                    </template>
-                    <template v-else>
-                      <p
-                      class="content markdown-body"
-                      v-html="problemData.problem.input"
-                      v-katex
-                      v-highlight
-                      ></p>
-                    </template>
+                    <Markdown 
+                      class="md-content"
+                      :isAvoidXss="groupID" 
+                      :content="problemData.problem.input">
+                    </Markdown>
                   </template>
 
                   <template v-if="problemData.problem.output">
                     <p class="title">{{ $t('m.Output') }}</p>
-                    <template v-if="groupID">
-                      <p
-                      class="content markdown-body"
-                      v-dompurify-html="problemData.problem.output"
-                      v-katex
-                      v-highlight
-                    ></p>
-                    </template>
-                    <template v-else>
-                      <p
-                      class="content markdown-body"
-                      v-html="problemData.problem.output"
-                      v-katex
-                      v-highlight
-                    ></p>
-                    </template>
+                    <Markdown 
+                      class="md-content"
+                      :isAvoidXss="groupID" 
+                      :content="problemData.problem.output">
+                    </Markdown>
                   </template>
 
                   <template v-if="problemData.problem.examples">
@@ -275,22 +242,11 @@
                   <template v-if="problemData.problem.hint">
                     <p class="title">{{ $t('m.Hint') }}</p>
                     <el-card dis-hover>
-                      <template v-if="groupID">
-                        <p
-                        class="hint-content markdown-body"
-                        v-dompurify-html="problemData.problem.hint"
-                        v-katex
-                        v-highlight
-                        ></p>
-                      </template>
-                      <template v-else>
-                        <p
-                          class="hint-content markdown-body"
-                          v-html="problemData.problem.hint"
-                          v-katex
-                          v-highlight
-                        ></p>
-                      </template>
+                      <Markdown 
+                      class="hint-content"
+                      :isAvoidXss="groupID" 
+                      :content="problemData.problem.hint">
+                    </Markdown>
                     </el-card>
                   </template>
 
@@ -298,13 +254,13 @@
                     <p class="title">{{ $t('m.Source') }}</p>
                     <template v-if="groupID">
                       <p
-                      class="content"
+                      class="md-content"
                       v-dompurify-html="problemData.problem.source"
                       ></p>
                     </template>
                     <template v-else>
                       <p
-                      class="content"
+                      class="md-content"
                       v-html="problemData.problem.source"
                       ></p>
                     </template>
@@ -864,6 +820,7 @@ import { addCodeBtn } from "@/common/codeblock";
 import CodeMirror from "@/components/oj/common/CodeMirror.vue";
 import Pagination from "@/components/oj/common/Pagination";
 import ProblemHorizontalMenu from "@/components/oj/common/ProblemHorizontalMenu";
+import Markdown from "@/components/oj/common/Markdown";
 // 只显示这些状态的图形占用
 const filtedStatus = ["wa", "ce", "ac", "pa", "tle", "mle", "re", "pe"];
 
@@ -872,7 +829,8 @@ export default {
   components: {
     CodeMirror,
     Pagination,
-    ProblemHorizontalMenu
+    ProblemHorizontalMenu,
+    Markdown
   },
   data() {
     return {
@@ -1296,26 +1254,6 @@ export default {
           result.problem.examples = utils.stringToExamples(
             result.problem.examples
           );
-          if (result.problem.description) {
-            result.problem.description = this.$markDown.render(
-              result.problem.description.toString()
-            );
-          }
-          if (result.problem.input) {
-            result.problem.input = this.$markDown.render(
-              result.problem.input.toString()
-            );
-          }
-          if (result.problem.output) {
-            result.problem.output = this.$markDown.render(
-              result.problem.output.toString()
-            );
-          }
-          if (result.problem.hint) {
-            result.problem.hint = this.$markDown.render(
-              result.problem.hint.toString()
-            );
-          }
           if (result.problem.userExtraFile) {
             this.userExtraFile = JSON.parse(result.problem.userExtraFile);
           }
@@ -2088,12 +2026,12 @@ a {
 }
 
 .hint-content {
+  margin: 1em 0;
   font-size: 15px !important;
 }
 
-p.content {
-  margin-left: 25px;
-  margin-right: 20px;
+.md-content {
+  margin: 1em;
   font-size: 15px;
 }
 .flex-container {

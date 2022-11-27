@@ -138,12 +138,11 @@
         <el-tabs type="card" style="margin-top:1rem;">
           <el-tab-pane :label="$t('m.Personal_Profile')">
             <div class="signature-body">
-              <div
-                class="markdown-body"
-                v-dompurify-html="contentHtml"
-                v-highlight
-                v-if="contentHtml"
-              ></div>
+              <Markdown 
+                v-if="profile.signature"
+                :isAvoidXss="true" 
+                :content="profile.signature">
+              </Markdown>
               <div class="markdown-body" v-else>
                 <p>{{ $t('m.Not_set_yet') }}</p>
               </div>
@@ -236,10 +235,12 @@ import 'vue-calendar-heatmap/dist/vue-calendar-heatmap.css'
 import { CalendarHeatmap } from 'vue-calendar-heatmap'
 import { PROBLEM_LEVEL } from '@/common/constants';
 import utils from '@/common/utils';
+import Markdown from '@/components/oj/common/Markdown';
 export default {
   components: {
     Avatar,
-    CalendarHeatmap
+    CalendarHeatmap,
+    Markdown
   },
   data() {
     return {
@@ -398,15 +399,6 @@ export default {
           more: this.$i18n.t('m.More')
       }
     }
-  },
-  computed: {
-    contentHtml() {
-      if (this.profile.signature) {
-        return this.$markDown.render(this.profile.signature);
-      } else {
-        return null;
-      }
-    },
   },
 };
 </script>

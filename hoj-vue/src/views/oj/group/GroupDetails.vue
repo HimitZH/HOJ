@@ -126,13 +126,11 @@
                 :xs="24"
               >
                 <div class="description-body">
-                  <div
-                    class="markdown-body"
-                    v-dompurify-html="descriptionHtml"
-                    v-katex
-                    v-highlight
-                    v-if="descriptionHtml"
-                  ></div>
+                  <Markdown
+                    v-if="group.description"
+                    :isAvoidXss="true" 
+                    :content="group.description">
+                  </Markdown>
                   <div class="markdown-body" v-else>
                     <p>{{ $t('m.Not_set_yet') }}</p>
                   </div>
@@ -336,11 +334,13 @@ import Avatar from 'vue-avatar';
 import Announcement from '@/components/oj/group/Announcement.vue';
 import api from '@/common/api';
 import mMessage from '@/common/message';
+import Markdown from '@/components/oj/common/Markdown';
 export default {
   name: 'GroupDetails',
   components: {
     Avatar,
     Announcement,
+    Markdown
   },
   data() {
     var checkGroupReason = (rule, value, callback) => {
@@ -515,13 +515,6 @@ export default {
       'isSuperAdmin',
       'websiteConfig'
     ]),
-    descriptionHtml() {
-      if (this.group.description) {
-        return this.$markDown.render(this.group.description);
-      } else {
-        return null;
-      }
-    },
   },
   filters: {
     //文字数超出时，超出部分使用...

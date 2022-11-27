@@ -226,12 +226,11 @@
           </div>
         </div>
         <div class="info-bottom">
-          <div
-            class="content markdown-content markdown-body"
-            v-dompurify-html="mdToHtml(item.content)"
-            v-katex
-            v-highlight
-          ></div>
+          <Markdown
+            class="content markdown-content"
+            :isAvoidXss="true" 
+            :content="item.content">
+          </Markdown>
           <div class="control">
             <span
               class="like"
@@ -320,12 +319,11 @@
                 >
               </div>
               <div style="padding: 8px 0;margin-left: 34px;">
-                <span
-                  v-dompurify-html="mdToHtml(reply.content)"
-                  class="markdown-content markdown-body"
-                  v-katex
-                  v-highlight
-                ></span>
+                <Markdown
+                  class="markdown-content"
+                  :isAvoidXss="true" 
+                  :content="reply.content">
+                </Markdown>
               </div>
               <div class="reply-bottom">
                 <el-tooltip
@@ -532,6 +530,7 @@ import { mapGetters, mapState } from 'vuex';
 import myMessage from '@/common/message';
 import api from '@/common/api';
 import { addCodeBtn } from '@/common/codeblock';
+import Markdown from '@/components/oj/common/Markdown';
 export default {
   props: {
     did: {
@@ -545,7 +544,10 @@ export default {
       default: null,
     },
   },
-  components: { Avatar },
+  components: { 
+    Avatar,
+    Markdown
+  },
   data() {
     return {
       replyInputComment: '',
