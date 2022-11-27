@@ -121,12 +121,16 @@ public class GYMProblemStrategy extends CFProblemStrategy {
         while (matcher.find()) {
             String pdfURI = "";
             try {
+                String uri = matcher.group(0);
+                if (uri.toLowerCase().contains("tutorials")){
+                    continue;
+                }
                 String fileName = IdUtil.fastSimpleUUID() + ".pdf";
                 String filePath = Constants.File.PROBLEM_FILE_FOLDER.getPath() + File.separator + fileName;
-                CodeForcesUtils.downloadPDF(IMAGE_HOST + matcher.group(0), filePath);
+                CodeForcesUtils.downloadPDF(IMAGE_HOST + uri, filePath);
                 pdfURI = Constants.File.FILE_API.getPath() + fileName;
 
-                String[] split = matcher.group(0).split("/");
+                String[] split = uri.split("/");
                 String fileRealName = split[split.length - 1];
                 description.append("<p><a href=\"")
                         .append(pdfURI).append("\">")
