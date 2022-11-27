@@ -803,7 +803,7 @@ footer h1 {
 }
 .markdown-body h1 {
   padding-bottom: 0.3em;
-  font-size: 2.25em;
+  font-size: 1.86em;
   line-height: 1.2;
   border-bottom: 1px solid #eee;
 }
