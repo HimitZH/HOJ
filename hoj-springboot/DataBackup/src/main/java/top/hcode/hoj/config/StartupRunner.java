@@ -301,11 +301,21 @@ public class StartupRunner implements CommandLineRunner {
         if (openRemoteJudge.equals("true")) {
             // 初始化清空表
             remoteJudgeAccountEntityService.remove(new QueryWrapper<>());
-            addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.HDU.getName(), hduUsernameList, hduPasswordList);
-            addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.POJ.getName(), pojUsernameList, pojPasswordList);
-            addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.CODEFORCES.getName(), cfUsernameList, cfPasswordList);
-            addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.SPOJ.getName(), spojUsernameList, spojPasswordList);
-            addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.ATCODER.getName(), atcoderUsernameList, atcoderPasswordList);
+            addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.HDU.getName(),
+                    switchConfig.getHduUsernameList(),
+                    switchConfig.getHduPasswordList());
+            addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.POJ.getName(),
+                    switchConfig.getPojUsernameList(),
+                    switchConfig.getPojPasswordList());
+            addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.CODEFORCES.getName(),
+                    switchConfig.getCfUsernameList(),
+                    switchConfig.getCfPasswordList());
+            addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.SPOJ.getName(),
+                    switchConfig.getSpojUsernameList(),
+                    switchConfig.getSpojPasswordList());
+            addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.ATCODER.getName(),
+                    switchConfig.getAtcoderUsernameList(),
+                    switchConfig.getAtcoderPasswordList());
             checkRemoteOJLanguage(Constants.RemoteOJ.SPOJ, Constants.RemoteOJ.ATCODER);
         }
     }
