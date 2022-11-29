@@ -467,21 +467,14 @@ public class AccountManager {
 
     public UserInfoVO changeUserInfo(UserInfoVO userInfoVo) throws StatusFailException {
 
-        String realname = userInfoVo.getRealname();
-        String nickname = userInfoVo.getNickname();
-        if (!StringUtils.isEmpty(realname) && realname.length() > 50) {
-            throw new StatusFailException("真实姓名的长度不能超过50位");
-        }
-        if (!StringUtils.isEmpty(nickname) && nickname.length() > 20) {
-            throw new StatusFailException("昵称的长度不能超过20位");
-        }
-
-        commonValidator.validateContent(userInfoVo.getSignature(), "个性简介");
-        commonValidator.validateContent(userInfoVo.getBlog(), "博客", 255);
-        commonValidator.validateContent(userInfoVo.getGithub(), "Github", 255);
-        commonValidator.validateContent(userInfoVo.getSchool(), "学校", 100);
-        commonValidator.validateContent(userInfoVo.getNumber(), "学号", 200);
-        commonValidator.validateContent(userInfoVo.getCfUsername(), "Codeforces Username", 255);
+        commonValidator.validateContentLength(userInfoVo.getRealname(), "真实姓名",50);
+        commonValidator.validateContentLength(userInfoVo.getNickname(), "昵称",20);
+        commonValidator.validateContentLength(userInfoVo.getSignature(), "个性简介",65535);
+        commonValidator.validateContentLength(userInfoVo.getBlog(), "博客", 255);
+        commonValidator.validateContentLength(userInfoVo.getGithub(), "Github", 255);
+        commonValidator.validateContentLength(userInfoVo.getSchool(), "学校", 100);
+        commonValidator.validateContentLength(userInfoVo.getNumber(), "学号", 200);
+        commonValidator.validateContentLength(userInfoVo.getCfUsername(), "Codeforces用户名", 255);
 
         // 获取当前登录的用户
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
@@ -489,8 +482,8 @@ public class AccountManager {
         UpdateWrapper<UserInfo> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("uuid", userRolesVo.getUid())
                 .set("cf_username", userInfoVo.getCfUsername())
-                .set("realname", realname)
-                .set("nickname", nickname)
+                .set("realname", userInfoVo.getRealname())
+                .set("nickname", userInfoVo.getNickname())
                 .set("signature", userInfoVo.getSignature())
                 .set("blog", userInfoVo.getBlog())
                 .set("gender", userInfoVo.getGender())
