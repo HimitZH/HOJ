@@ -304,7 +304,6 @@ public class AdminContestProblemManager {
                 "Admin_Contest", "Add_Public_Problem", cid, pid, userRolesVo.getUid(), userRolesVo.getUsername());
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void importContestRemoteOJProblem(String name, String problemId, Long cid, String displayId) throws StatusFailException {
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("problem_id", name.toUpperCase() + "-" + problemId);

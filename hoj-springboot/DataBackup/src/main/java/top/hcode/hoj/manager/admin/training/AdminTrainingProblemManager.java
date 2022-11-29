@@ -198,7 +198,6 @@ public class AdminTrainingProblemManager {
         }
     }
 
-    @Transactional(rollbackFor = Exception.class)
     public void importTrainingRemoteOJProblem(String name, String problemId, Long tid) throws StatusFailException {
         QueryWrapper<Problem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("problem_id", name.toUpperCase() + "-" + problemId);
