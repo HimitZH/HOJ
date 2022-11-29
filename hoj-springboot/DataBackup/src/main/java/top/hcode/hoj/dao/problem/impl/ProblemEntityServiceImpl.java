@@ -292,8 +292,8 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
                     needDeleteProblemCases.remove(problemCase.getId());
                     // 跟原先的数据做对比，如果变动 则加入需要修改的case列表
                     ProblemCase oldProblemCase = oldProblemMap.get(problemCase.getId());
-                    if (!oldProblemCase.getInput().equals(problemCase.getInput()) ||
-                            !oldProblemCase.getOutput().equals(problemCase.getOutput())) {
+                    if (!Objects.equals(oldProblemCase.getInput(), problemCase.getInput()) ||
+                            !Objects.equals(oldProblemCase.getOutput(), problemCase.getOutput())) {
                         needUpdateProblemCaseList.add(problemCase);
                     } else if (problem.getType().intValue() == Constants.Contest.TYPE_OI.getCode()) {
                         // 分数变动 或者 subtask分组编号变更
