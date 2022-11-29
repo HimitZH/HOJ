@@ -116,7 +116,7 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        Long maxRunId = getMaxIdByParseHtml();
+        Long maxRunId = getMaxIdByParseHtmlWithRetry();
         remoteJudgeDTO.setSubmitId(maxRunId);
     }
 
@@ -175,7 +175,26 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
                 .execute();
     }
 
-    public Long getMaxIdByParseHtml() {
+    private Long getMaxIdByParseHtmlWithRetry() {
+        int count = 0;
+        while (count < 3) {
+            try {
+                return getMaxIdByParseHtml();
+            } catch (Exception e) {
+                count++;
+                if (count == 3) {
+                    throw e;
+                }
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (InterruptedException ignored) {
+                }
+            }
+        }
+        return null;
+    }
+
+    private Long getMaxIdByParseHtml() {
         // 清除当前线程的cookies缓存
         HttpRequest.getCookieManager().getCookieStore().removeAll();
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();

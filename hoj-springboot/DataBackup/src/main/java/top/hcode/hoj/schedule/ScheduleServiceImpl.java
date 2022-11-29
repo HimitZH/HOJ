@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -103,6 +104,9 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Resource
     private AdminNoticeManager adminNoticeManager;
+
+    @Resource
+    private ApplicationContext applicationContext;
 
     /**
      * @MethodName deleteAvatar
@@ -256,7 +260,8 @@ public class ScheduleServiceImpl implements ScheduleService {
             String ratingAPI = String.format(codeforcesUserInfoAPI, cfUsername);
             try {
                 // 连接api，获取json格式对象
-                JSONObject resultObject = getCFUserInfo(ratingAPI);
+                ScheduleServiceImpl service = applicationContext.getBean(ScheduleServiceImpl.class);
+                JSONObject resultObject = service.getCFUserInfo(ratingAPI);
                 // 获取状态码
                 String status = resultObject.getStr("status");
                 // 如果查无此用户，则跳过

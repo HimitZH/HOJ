@@ -3,11 +3,12 @@ package top.hcode.hoj.dao.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
+import top.hcode.hoj.dao.ContestRecordEntityService;
 import top.hcode.hoj.mapper.ContestRecordMapper;
 import top.hcode.hoj.pojo.entity.contest.ContestRecord;
-import top.hcode.hoj.dao.ContestRecordEntityService;
 import top.hcode.hoj.util.Constants;
 
 import java.util.Arrays;
@@ -24,9 +25,6 @@ import java.util.List;
 @Service
 public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMapper, ContestRecord> implements ContestRecordEntityService {
 
-    @Autowired
-    private ContestRecordMapper contestRecordMapper;
-
     private static List<Integer> penaltyStatus = Arrays.asList(
             Constants.Judge.STATUS_PRESENTATION_ERROR.getStatus(),
             Constants.Judge.STATUS_WRONG_ANSWER.getStatus(),
@@ -36,6 +34,9 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
 
 
     @Override
+    @Retryable(value = Exception.class,
+            maxAttempts = 5,
+            backoff = @Backoff(delay = 500, multiplier = 1.4))
     public void updateContestRecord(Integer score, Integer status, Long submitId, Integer useTime) {
         UpdateWrapper<ContestRecord> updateWrapper = new UpdateWrapper<>();
         // 如果是AC
@@ -59,32 +60,6 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
         updateWrapper.set("use_time", useTime);
 
         updateWrapper.eq("submit_id", submitId); // submit_id一定只有一个
-        boolean result = contestRecordMapper.update(null, updateWrapper) > 0;
-        if (!result) {
-            tryAgainUpdate(updateWrapper);
-        }
-    }
-
-    public void tryAgainUpdate(UpdateWrapper<ContestRecord> updateWrapper) {
-        boolean retryable;
-        int attemptNumber = 0;
-        do {
-            boolean result = contestRecordMapper.update(null, updateWrapper) > 0;
-            if (result) {
-                break;
-            } else {
-                attemptNumber++;
-                retryable = attemptNumber < 8;
-                if (attemptNumber == 8) {
-                    log.error("更新contest_record表超过最大重试次数");
-                    break;
-                }
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    log.error(e.getMessage());
-                }
-            }
-        } while (retryable);
+        update(null, updateWrapper);
     }
 }
