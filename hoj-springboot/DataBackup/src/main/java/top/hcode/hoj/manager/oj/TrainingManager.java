@@ -1,6 +1,7 @@
 package top.hcode.hoj.manager.oj;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -248,12 +249,13 @@ public class TrainingManager {
      * @param tid
      * @param limit
      * @param currentPage
+     * @param keyword     搜索关键词 可过滤用户名、真实姓名、学校
      * @MethodName getTrainingRnk
      * @Description 获取训练的排行榜分页
      * @Return
      * @Since 2021/11/22
      */
-    public IPage<TrainingRankVO> getTrainingRank(Long tid, Integer limit, Integer currentPage) throws
+    public IPage<TrainingRankVO> getTrainingRank(Long tid, Integer limit, Integer currentPage, String keyword) throws
             StatusAccessDeniedException, StatusForbiddenException, StatusFailException {
 
         Training training = trainingEntityService.getById(tid);
@@ -267,10 +269,17 @@ public class TrainingManager {
         if (currentPage == null || currentPage < 1) currentPage = 1;
         if (limit == null || limit < 1) limit = 30;
 
-        return getTrainingRank(tid, training.getIsGroup() ? training.getGid() : null, training.getAuthor(), currentPage, limit);
+        if (StrUtil.isNotBlank(keyword)) {
+            keyword = keyword.toLowerCase();
+        }
+        return getTrainingRank(tid, training.getIsGroup() ? training.getGid() : null,
+                training.getAuthor(),
+                currentPage,
+                limit,
+                keyword);
     }
 
-    private IPage<TrainingRankVO> getTrainingRank(Long tid, Long gid, String username, int currentPage, int limit) {
+    private IPage<TrainingRankVO> getTrainingRank(Long tid, Long gid, String username, int currentPage, int limit, String keyword) {
 
         Map<Long, String> tpIdMapDisplayId = getTPIdMapDisplayId(tid);
         List<TrainingRecordVO> trainingRecordVOList = trainingRecordEntityService.getTrainingRecord(tid);
@@ -290,6 +299,16 @@ public class TrainingManager {
             if (username.equals(trainingRecordVo.getUsername())
                     || superAdminUidList.contains(trainingRecordVo.getUid())) {
                 continue;
+            }
+
+            // 如果有搜索关键词则 需要符合模糊匹配 用户名、真实姓名、学校的用户可进行榜单记录
+            if (StrUtil.isNotBlank(keyword)) {
+                boolean isMatchKeyword = matchKeywordIgnoreCase(keyword, trainingRecordVo.getUsername())
+                        || matchKeywordIgnoreCase(keyword, trainingRecordVo.getRealname())
+                        || matchKeywordIgnoreCase(keyword, trainingRecordVo.getSchool());
+                if (!isMatchKeyword) {
+                    continue;
+                }
             }
 
             TrainingRankVO trainingRankVo;
@@ -364,6 +383,10 @@ public class TrainingManager {
         page.setTotal(count);
         page.setRecords(pageList);
         return page;
+    }
+
+    private boolean matchKeywordIgnoreCase(String keyword, String content) {
+        return content != null && content.toLowerCase().contains(keyword);
     }
 
     private Map<Long, String> getTPIdMapDisplayId(Long tid) {

@@ -116,8 +116,9 @@ public class TrainingController {
     @RequiresAuthentication
     public CommonResult<IPage<TrainingRankVO>> getTrainingRank(@RequestParam(value = "tid", required = true) Long tid,
                                                                @RequestParam(value = "limit", required = false) Integer limit,
-                                                               @RequestParam(value = "currentPage", required = false) Integer currentPage) {
-        return trainingService.getTrainingRank(tid, limit, currentPage);
+                                                               @RequestParam(value = "currentPage", required = false) Integer currentPage,
+                                                               @RequestParam(value = "keyword", required = false) String keyword) {
+        return trainingService.getTrainingRank(tid, limit, currentPage, keyword);
     }
 
 }

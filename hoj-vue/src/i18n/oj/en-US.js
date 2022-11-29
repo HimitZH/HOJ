@@ -635,6 +635,7 @@ export const m = {
 
   // /views/oj/training/TrainingRank.vue
   Total_AC: 'Total  AC',
+  Training_Rank_Search_Placeholder:'Please enter the user name, real name or school.',
 
   // /views/oj/group/GroupList.vue
   Search_Group: 'Search Group',

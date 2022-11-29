@@ -83,9 +83,9 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
-    public CommonResult<IPage<TrainingRankVO>> getTrainingRank(Long tid, Integer limit, Integer currentPage) {
+    public CommonResult<IPage<TrainingRankVO>> getTrainingRank(Long tid, Integer limit, Integer currentPage, String keyword) {
         try {
-            return CommonResult.successResponse(trainingManager.getTrainingRank(tid, limit, currentPage));
+            return CommonResult.successResponse(trainingManager.getTrainingRank(tid, limit, currentPage, keyword));
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
         } catch (StatusAccessDeniedException e) {

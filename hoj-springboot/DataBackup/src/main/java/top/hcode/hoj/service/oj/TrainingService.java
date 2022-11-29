@@ -28,5 +28,5 @@ public interface TrainingService {
 
     public CommonResult<AccessVO> getTrainingAccess(Long tid);
 
-    public CommonResult<IPage<TrainingRankVO>> getTrainingRank(Long tid, Integer limit, Integer currentPage);
+    public CommonResult<IPage<TrainingRankVO>> getTrainingRank(Long tid, Integer limit, Integer currentPage,String keyword);
 }

@@ -637,6 +637,7 @@ export const m = {
 
   // /views/oj/training/TrainingRank.vue
   Total_AC: 'AC总数',
+  Training_Rank_Search_Placeholder:'请输入查询的用户名、真实姓名或学校',
 
   // /views/oj/group/GroupList.vue
   Search_Group: '搜索团队',

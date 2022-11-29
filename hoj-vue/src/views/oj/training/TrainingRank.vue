@@ -7,6 +7,20 @@
       >
         <span class="panel-title">{{ $t('m.Record_List') }}</span>
       </div>
+      <div class="training-rank-search">
+        <el-input
+          :placeholder="$t('m.Training_Rank_Search_Placeholder')"
+          v-model="keyword"
+          @keyup.enter.native="getTrainingRankData"
+        >
+          <el-button
+            slot="append"
+            icon="el-icon-search"
+            class="search-btn"
+            @click="getTrainingRankData"
+          ></el-button>
+        </el-input>
+      </div>
       <vxe-table
         round
         border
@@ -18,6 +32,7 @@
         ref="TraningtRank"
         :seq-config="{ startIndex: (this.page - 1) * this.limit }"
         @cell-click="getUserProblemSubmission"
+        :loading="loading"
       >
         <vxe-table-column
           field="rank"
@@ -48,13 +63,18 @@
               </span>
               <span class="contest-rank-user-info">
                 <a @click="getUserHomeByUsername(row.uid, row.username)">
-                  <span class="contest-username" :title="row.username">
-                    <span class="contest-rank-flag" v-if="row.uid == userInfo.uid"
-                      >Own</span
-                    >
-                    <span class="contest-rank-flag" v-if="row.gender == 'female'"
-                      >Girl</span
-                    >
+                  <span
+                    class="contest-username"
+                    :title="row.username"
+                  >
+                    <span
+                      class="contest-rank-flag"
+                      v-if="row.uid == userInfo.uid"
+                    >Own</span>
+                    <span
+                      class="contest-rank-flag"
+                      v-if="row.gender == 'female'"
+                    >Girl</span>
                     {{ row.username }}</span>
                   <span
                     class="contest-school"
@@ -90,13 +110,18 @@
               </span>
               <span class="contest-rank-user-info">
                 <a @click="getUserHomeByUsername(row.uid, row.username)">
-                  <span class="contest-username" :title="row.username">
-                    <span class="contest-rank-flag" v-if="row.uid == userInfo.uid"
-                      >Own</span
-                    >
-                    <span class="contest-rank-flag" v-if="row.gender == 'female'"
-                      >Girl</span
-                    >
+                  <span
+                    class="contest-username"
+                    :title="row.username"
+                  >
+                    <span
+                      class="contest-rank-flag"
+                      v-if="row.uid == userInfo.uid"
+                    >Own</span>
+                    <span
+                      class="contest-rank-flag"
+                      v-if="row.gender == 'female'"
+                    >Girl</span>
                     {{ row.username }}</span>
                   <span
                     class="contest-school"
@@ -215,10 +240,12 @@ export default {
       total: 0,
       page: 1,
       limit: 30,
+      keyword: '',
       trainingID: "",
       dataRank: [],
       JUDGE_STATUS: {},
       groupID: null,
+      loading: false,
     };
   },
   mounted() {
@@ -240,13 +267,18 @@ export default {
         tid: this.trainingID,
         limit: this.limit,
         currentPage: this.page,
+        keyword: this.keyword
       };
+      this.loading = true;
       api.getTrainingRank(data).then(
         (res) => {
           this.total = res.data.data.total;
           this.applyToTable(res.data.data.records);
+          this.loading = false;
         },
-        (err) => {}
+        (err) => {
+          this.loading = false;
+        }
       );
     },
 
@@ -314,11 +346,11 @@ export default {
     cellClassName({ row, rowIndex, column, columnIndex }) {
       if (row.username == this.userInfo.username) {
         if (
-          column.property == 'rank' ||
-          column.property == 'username' ||
-          column.property == 'realname'
+          column.property == "rank" ||
+          column.property == "username" ||
+          column.property == "realname"
         ) {
-          return 'own-submit-row';
+          return "own-submit-row";
         }
       }
       if (column.property === "username" && row.userCellClassName) {
@@ -341,7 +373,7 @@ export default {
     ...mapState({
       trainingProblemList: (state) => state.training.trainingProblemList,
     }),
-    ...mapGetters(["isTrainingAdmin","userInfo"]),
+    ...mapGetters(["isTrainingAdmin", "userInfo"]),
     training() {
       return this.$store.state.training.training;
     },
@@ -357,6 +389,21 @@ export default {
 }
 /deep/.el-card__body {
   padding: 20px !important;
+}
+.training-rank-search{
+  text-align: center;
+  margin: 10px auto;
+  width: 90%;
+}
+@media screen and (min-width: 768px){
+  .training-rank-search{
+    width: 50%;
+  }
+}
+@media screen and (min-width: 1050px){
+  .training-rank-search{
+    width: 30%;
+  }
 }
 
 .vxe-cell p,
