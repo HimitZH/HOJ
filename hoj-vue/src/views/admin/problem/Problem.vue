@@ -1226,7 +1226,7 @@ export default {
       var results = queryString
         ? restaurants.filter(
             (item) =>
-              item.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
+              item.value.toLowerCase().indexOf(queryString.toLowerCase()) >= 0
           )
         : restaurants;
       cb(results);
