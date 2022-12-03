@@ -26,10 +26,15 @@ public class GYMJudge extends CodeForcesJudge {
 
     private final static String JUDGE_PROTOCOL = "/data/judgeProtocol";
 
-
     @Override
     protected String getSubmitUrl(String contestNum) {
         return IMAGE_HOST + "/gym/" + contestNum + "/submit";
+    }
+
+    @Override
+    protected String getRunIdUrl() {
+        RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
+        return IMAGE_HOST + String.format("/gym/%s/my", remoteJudgeDTO.getContestId());
     }
 
     public static void main(String[] args) {
@@ -65,7 +70,7 @@ public class GYMJudge extends CodeForcesJudge {
         if (remoteJudgeDTO.getCookies() == null) {
             login();
         }
-        String url = String.format(HOST + SUBMISSION_BY_USERNAME, remoteJudgeDTO.getUsername());
+        String url = getRunIdUrl();
         HttpRequest homeRequest = HttpUtil.createGet(url);
         homeRequest.cookie(remoteJudgeDTO.getCookies());
         HttpResponse homeResponse = homeRequest.execute();

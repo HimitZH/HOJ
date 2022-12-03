@@ -33,7 +33,7 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
     public static final String SUBMISSION_RESULT_URL = "/api/user.status?handle=%s&from=1&count=%s";
     public static final String SUBMIT_SOURCE_URL = "/data/submitSource";
     public static final String MY_SUBMISSION = "/problemset/status?my=on";
-    public static final String SUBMISSION_BY_USERNAME = "/submissions/%s";
+    public static final String SUBMISSION_RUN_ID_URL = "/problemset/status?my=on";
 
     protected static final Map<String, Constants.Judge> statusMap = new HashMap<String, Constants.Judge>() {{
         put("FAILED", Constants.Judge.STATUS_SUBMITTED_FAILED);
@@ -194,12 +194,15 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
         return null;
     }
 
+    protected String getRunIdUrl(){
+        return HOST + SUBMISSION_RUN_ID_URL;
+    }
+
     private Long getMaxIdByParseHtml() {
         // 清除当前线程的cookies缓存
         HttpRequest.getCookieManager().getCookieStore().removeAll();
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
-        String url = HOST + String.format(SUBMISSION_BY_USERNAME, remoteJudgeDTO.getUsername());
-        HttpRequest request = HttpUtil.createGet(url);
+        HttpRequest request = HttpUtil.createGet(getRunIdUrl());
         request.cookie(remoteJudgeDTO.getCookies());
         HttpResponse response = request.execute();
         String csrfToken = ReUtil.get("data-csrf='(\\w+)'", response.body(), 1);
