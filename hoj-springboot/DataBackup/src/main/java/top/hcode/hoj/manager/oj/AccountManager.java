@@ -506,4 +506,15 @@ public class AccountManager {
         }
 
     }
+
+    public UserAuthInfoVO getUserAuthInfo(){
+        // 获取当前登录的用户
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+        //获取该用户角色所有的权限
+        List<Role> roles = userRoleEntityService.getRolesByUid(userRolesVo.getUid());
+        UserAuthInfoVO authInfoVO = new UserAuthInfoVO();
+        authInfoVO.setRoles(roles.stream().map(Role::getRole).collect(Collectors.toList()));
+        return authInfoVO;
+    }
+
 }

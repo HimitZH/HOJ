@@ -41,7 +41,7 @@
         :data="userList"
         ref="xTable"
         :loading="loadingTable"
-        :checkbox-config="{ labelField: 'id', highlight: true, range: true }"
+        :checkbox-config="{ labelField: 'id', highlight: true, range: true, checkMethod: checCheckboxkMethod }"
         @checkbox-change="handleSelectionChange"
         @checkbox-all="handlechangeAll"
       >
@@ -442,14 +442,14 @@
                   :key="1000"
                 ></el-option>
                 <el-option
-                  label="普通管理员"
-                  :value="1001"
-                  :key="1001"
-                ></el-option>
-                <el-option
                   label="题目管理员"
                   :value="1008"
                   :key="1008"
+                ></el-option>
+                <el-option
+                  label="普通管理员"
+                  :value="1001"
+                  :key="1001"
                 ></el-option>
                 <el-option
                   label="用户(默认)"
@@ -787,7 +787,9 @@ export default {
         );
       }
     },
-
+    checCheckboxkMethod({ row }){
+      return row.uid != this.userInfo.uid;
+    },
     // 用户表部分勾选 改变选中的内容
     handleSelectionChange({ records }) {
       this.selectedUsers = [];
@@ -868,6 +870,9 @@ export default {
         ids.push(user.id);
       }
       return ids;
+    },
+    userInfo() {
+      return this.$store.getters.userInfo;
     },
   },
   watch: {

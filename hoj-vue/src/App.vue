@@ -180,11 +180,11 @@ export default {
       }
     },
     autoRefreshUserInfo() {
+      this.$store.dispatch("setUserInfo", storage.get("userInfo"));
       let strogeToken = localStorage.getItem("token");
       if (document.hidden == false && this.token != strogeToken) {
         if (strogeToken) {
           this.$store.commit("changeUserToken", strogeToken);
-          this.$store.dispatch("setUserInfo", storage.get("userInfo"));
           // if(this.$route.path.startsWith('/admin')){
           //   this.$router.replace({
           //     path: "/home",
@@ -232,7 +232,7 @@ export default {
   },
   computed: {
     ...mapState(["websiteConfig"]),
-    ...mapGetters(["webLanguage", "token"]),
+    ...mapGetters(["webLanguage", "token", "isAuthenticated"]),
   },
   created: function () {
     this.$nextTick(function () {
@@ -246,7 +246,12 @@ export default {
     } else {
       this.isAdminView = true;
     }
-    this.showFooter = !(this.$route.name == 'ProblemDetails'|| utils.isFocusModePage(this.$route.name)) ;
+
+    if(this.isAuthenticated){
+      this.$store.dispatch("refreshUserAuthInfo");
+    }
+
+    this.showFooter = !(this.$route.name == 'ProblemDetails'|| utils.isFocusModePage(this.$route.name));
     window.addEventListener("visibilitychange", this.autoRefreshUserInfo);
   },
   mounted() {

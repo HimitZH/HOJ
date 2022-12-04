@@ -91,6 +91,9 @@ public class UserInfo implements Serializable {
     @ApiModelProperty(value = "0可用，-1不可用")
     private int status;
 
+//    @ApiModelProperty(value = "是否为比赛账号")
+//    private Boolean isContest;
+
     @ApiModelProperty(value = "创建时间")
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;

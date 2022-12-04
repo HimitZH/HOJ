@@ -30,7 +30,7 @@ axios.interceptors.request.use(
     if(config.url != '/api/login' && config.url != '/api/admin/login'){
       token && (config.headers.Authorization = token);
     }
-    let type = config.url.split("/")[1];
+    let type = config.url.split("/")[2];
     if (type === 'admin') { // 携带请求区别是否为admin
       config.headers['Url-Type'] = type
     } else {
@@ -103,7 +103,7 @@ axios.interceptors.response.use(
             }
           }
           if (error.response.config.headers['Url-Type'] === 'admin') {
-            router.push("/api/admin/login")
+            router.push("/admin/login")
           } else {
             store.commit('changeModalStatus', { mode: 'Login', visible: true });
           }
@@ -123,9 +123,12 @@ axios.interceptors.response.use(
               });
             }
           }
-          if(error.response.config.url.startsWith('/api/admin')){
-            router.push("/admin")
-          }
+          let isAdminApi = error.response.config.url.startsWith('/api/admin');
+          store.dispatch('refreshUserAuthInfo').then((res)=>{
+            if(isAdminApi){
+              router.push("/admin")
+            }
+          })
           break;
         // 404请求不存在
         case 404:
@@ -244,6 +247,11 @@ const ojApi = {
   },
   logout() {
     return ajax('/api/logout', 'get')
+  },
+
+  // 账户的相关操作
+  getUserAuthInfo() {
+    return ajax('/api/get-user-auth-info', 'get')
   },
 
   // 账户的相关操作

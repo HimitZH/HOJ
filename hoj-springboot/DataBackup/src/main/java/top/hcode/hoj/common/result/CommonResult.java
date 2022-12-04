@@ -3,7 +3,7 @@ package top.hcode.hoj.common.result;
 import lombok.Data;
 
 @Data
-public class CommonResult<T>{
+public class CommonResult<T> {
 
     private final Integer status;   // 状态码
 

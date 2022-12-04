@@ -2,28 +2,22 @@ package top.hcode.hoj.dao.user.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.Authenticator;
-import org.apache.shiro.authc.LogoutAware;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.session.Session;
-import org.apache.shiro.subject.SimplePrincipalCollection;
-import org.apache.shiro.subject.support.DefaultSubjectContext;
-import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.crazycake.shiro.RedisSessionDAO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import top.hcode.hoj.dao.user.UserRoleEntityService;
+import top.hcode.hoj.mapper.UserRoleMapper;
 import top.hcode.hoj.pojo.entity.user.Role;
 import top.hcode.hoj.pojo.entity.user.UserRole;
-import top.hcode.hoj.mapper.UserRoleMapper;
 import top.hcode.hoj.pojo.vo.UserRolesVO;
-import top.hcode.hoj.dao.user.UserRoleEntityService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
-import top.hcode.hoj.shiro.AccountProfile;
+import top.hcode.hoj.shiro.ShiroConstant;
+import top.hcode.hoj.utils.RedisUtils;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * <p>
@@ -34,12 +28,16 @@ import java.util.Objects;
  * @since 2020-10-23
  */
 @Service
+@Slf4j(topic = "hoj")
 public class UserRoleEntityServiceImpl extends ServiceImpl<UserRoleMapper, UserRole> implements UserRoleEntityService {
     @Autowired
     private UserRoleMapper userRoleMapper;
 
     @Autowired
     private RedisSessionDAO redisSessionDAO;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
     @Override
     public UserRolesVO getUserRoles(String uid, String username) {
@@ -73,36 +71,45 @@ public class UserRoleEntityServiceImpl extends ServiceImpl<UserRoleMapper, UserR
     @Override
     public void deleteCache(String uid, boolean isRemoveSession) {
         //从缓存中获取Session
-        Collection<Session> sessions = redisSessionDAO.getActiveSessions();
-        for (Session sessionInfo : sessions) {
-            //遍历Session,找到该用户名称对应的Session
-            Object attribute = sessionInfo.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY);
-            if (attribute == null) {
-                continue;
-            }
-            AccountProfile accountProfile = (AccountProfile) ((SimplePrincipalCollection) attribute).getPrimaryPrincipal();
-            if (accountProfile == null) {
-                continue;
-            }
-            // 如果该session是指定的uid用户的
-            if (Objects.equals(accountProfile.getUid(), uid)) {
-                deleteSession(isRemoveSession, sessionInfo, attribute);
-            }
+//        Collection<Session> sessions = redisSessionDAO.getActiveSessions();
+//        for (Session sessionInfo : sessions) {
+//            //遍历Session,找到该用户名称对应的Session
+//            Object attribute = sessionInfo.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY);
+//            if (attribute == null) {
+//                continue;
+//            }
+//            AccountProfile accountProfile = (AccountProfile) ((SimplePrincipalCollection) attribute).getPrimaryPrincipal();
+//            if (accountProfile == null) {
+//                continue;
+//            }
+//            // 如果该session是指定的uid用户的
+//            if (Objects.equals(accountProfile.getUid(), uid)) {
+//                deleteSession(isRemoveSession, sessionInfo, uid);
+//            }
+//        }
+
+        if (isRemoveSession) {
+            redisUtils.del(ShiroConstant.SHIRO_TOKEN_KEY + uid,
+                    ShiroConstant.SHIRO_TOKEN_REFRESH + uid,
+                    ShiroConstant.SHIRO_AUTHORIZATION_CACHE + uid);
+        }else{
+            redisUtils.del(ShiroConstant.SHIRO_AUTHORIZATION_CACHE + uid);
         }
 
     }
 
 
-    private void deleteSession(boolean isRemoveSession, Session session, Object attribute) {
+    private void deleteSession(boolean isRemoveSession, Session session, String uid) {
         //删除session 会强制退出！主要是在禁用用户或角色时，强制用户退出的
         if (isRemoveSession) {
             redisSessionDAO.delete(session);
         }
 
         //删除Cache，在访问受限接口时会重新授权
-        DefaultWebSecurityManager securityManager = (DefaultWebSecurityManager) SecurityUtils.getSecurityManager();
-        Authenticator authc = securityManager.getAuthenticator();
-        ((LogoutAware) authc).onLogout((SimplePrincipalCollection) attribute);
+        redisUtils.del(ShiroConstant.SHIRO_AUTHORIZATION_CACHE + uid);
+//        DefaultWebSecurityManager securityManager = (DefaultWebSecurityManager) SecurityUtils.getSecurityManager();
+//        Authenticator authc = securityManager.getAuthenticator();
+//        ((LogoutAware) authc).onLogout((SimplePrincipalCollection) attribute);
     }
 
 

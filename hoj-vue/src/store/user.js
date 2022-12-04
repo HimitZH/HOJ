@@ -1,5 +1,6 @@
 import { USER_TYPE } from '@/common/constants'
 import storage from '@/common/storage'
+import api from '@/common/api'
 const state = {
   userInfo:  storage.get('userInfo'),
   token: localStorage.getItem('token'),
@@ -75,6 +76,10 @@ const mutations = {
   substractUnreadMessageCount(state,{needSubstractMsg}){
     // 负数也没关系
     state.unreadMessage[needSubstractMsg.name] = state.unreadMessage[needSubstractMsg.name]-needSubstractMsg.num;
+  },
+  changeUserAuthInfo(state, {roles}){
+    state.userInfo.roleList = roles;
+    storage.set('userInfo', state.userInfo);
   }
 }
 
@@ -98,6 +103,16 @@ const actions = {
   substractUnreadMessageCount({commit},needSubstractMsg){
     commit('substractUnreadMessageCount', {
       needSubstractMsg: needSubstractMsg
+    })
+  },
+  refreshUserAuthInfo({commit,dispatch}){
+    return new Promise((resolve, reject) => {
+      api.getUserAuthInfo().then((res) => {
+        commit('changeUserAuthInfo', {roles: res.data.data.roles})
+        resolve(res)
+      })
+    }, err => {
+      reject(err)
     })
   }
 }

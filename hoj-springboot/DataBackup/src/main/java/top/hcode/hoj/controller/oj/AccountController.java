@@ -106,4 +106,10 @@ public class AccountController {
         return accountService.changeUserInfo(userInfoVo);
     }
 
+    @GetMapping("/get-user-auth-info")
+    @RequiresAuthentication
+    public CommonResult<UserAuthInfoVO> getUserAuthInfo() {
+        return accountService.getUserAuthInfo();
+    }
+
 }

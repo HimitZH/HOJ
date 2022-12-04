@@ -8,6 +8,7 @@ import org.apache.shiro.ShiroException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthenticatedException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import top.hcode.hoj.common.exception.*;
 import top.hcode.hoj.common.result.CommonResult;
 import top.hcode.hoj.common.result.ResultStatus;
+import top.hcode.hoj.dao.user.UserRoleEntityService;
 import top.hcode.hoj.exception.AccessException;
 
 import javax.mail.MessagingException;
@@ -46,6 +48,8 @@ import java.util.Set;
 @RestControllerAdvice
 public class GlobalExceptionAdvice {
 
+    @Autowired
+    private UserRoleEntityService userRoleEntityService;
 
     /**
      * 400 - Internal Server Error 自定义通用异常
@@ -91,9 +95,9 @@ public class GlobalExceptionAdvice {
      */
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = AuthorizationException.class)
-    public CommonResult<Void> handleAuthenticationException(AuthorizationException e,
-                                                            HttpServletRequest httpRequest,
-                                                            HttpServletResponse httpResponse) {
+    public CommonResult<String> handleAuthenticationException(AuthorizationException e,
+                                                              HttpServletRequest httpRequest,
+                                                              HttpServletResponse httpResponse) {
         httpResponse.setHeader("Url-Type", httpRequest.getHeader("Url-Type")); // 为了前端能区别请求来源
         return CommonResult.errorResponse("对不起，您无权限进行此操作！", ResultStatus.FORBIDDEN);
     }

@@ -88,4 +88,9 @@ public class AccountServiceImpl implements AccountService {
             return CommonResult.errorResponse(e.getMessage());
         }
     }
+
+    @Override
+    public CommonResult<UserAuthInfoVO> getUserAuthInfo() {
+        return CommonResult.successResponse(accountManager.getUserAuthInfo());
+    }
 }
