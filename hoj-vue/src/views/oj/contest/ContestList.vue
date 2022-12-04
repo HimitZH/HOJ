@@ -468,6 +468,14 @@ export default {
   margin-left: 10px;
   margin-right: -20px;
 }
+@media screen and (max-width: 1500px) and (min-width: 1200px){
+  #contest-list .trophy {
+    width: 100% !important;
+  }
+  #contest-list .contest-main{
+    margin-left: 20px;
+  }
+}
 #contest-list .contest-main {
   text-align: left;
 }
