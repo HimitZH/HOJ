@@ -435,6 +435,7 @@ public class JudgeStrategy {
         if (errorTestCaseList.size() == 0) { // 全部测试点正确，则为AC
             result.put("code", Constants.Judge.STATUS_ACCEPTED.getStatus());
         } else if (isACM || errorTestCaseList.size() == testCaseResultList.size()) {
+            errorTestCaseList.sort(Comparator.comparingInt(jsonObject -> jsonObject.getInt("seq")));
             result.put("code", errorTestCaseList.get(0).getInt("status"));
             result.put("errMsg", errorTestCaseList.get(0).getStr("errMsg", ""));
         } else {
