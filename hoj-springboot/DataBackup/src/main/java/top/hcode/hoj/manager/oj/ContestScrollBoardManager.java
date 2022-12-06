@@ -133,11 +133,16 @@ public class ContestScrollBoardManager {
         if (!removeUidList.contains(contest.getUid())) {
             removeUidList.add(contest.getUid());
         }
-        if (removeStar && StrUtil.isNotBlank(contest.getStarAccount())){
+        List<ContestScrollBoardSubmissionVO> submissions = judgeEntityService.getContestScrollBoardSubmission(cid, removeUidList);
+        if (removeStar && StrUtil.isNotBlank(contest.getStarAccount())) {
             JSONObject jsonObject = JSONUtil.parseObj(contest.getStarAccount());
-            List<String> list = jsonObject.get("star_account", List.class);
-            removeUidList.addAll(list);
+            List<String> usernameList = jsonObject.get("star_account", List.class);
+            if (!CollectionUtils.isEmpty(usernameList)) {
+                submissions = submissions.stream()
+                        .filter(submission -> !usernameList.contains(submission.getUsername()))
+                        .collect(Collectors.toList());
+            }
         }
-        return judgeEntityService.getContestScrollBoardSubmission(cid, removeUidList);
+        return submissions;
     }
 }
