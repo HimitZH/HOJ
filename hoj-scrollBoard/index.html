@@ -60,7 +60,11 @@
                     && parmas.medals instanceof Array){
                     medals = parmas.medals;
                 }
-                var board = new Board(contestInfo, medals);
+                let removeStar = false;
+                if(parmas.removeStar != undefined && parmas.removeStar == 'true'){
+                    removeStar = true;
+                }
+                var board = new Board(contestInfo, medals, removeStar);
 				closeLoading();
                 board.showInitBoard();
                 $('html').keydown(function(e) {

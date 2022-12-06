@@ -16,7 +16,7 @@ import java.util.List;
  * @Date 2022/10/3
  */
 @Service
-public class ContestScrollBoardServiceImpl implements ContestScrollBoardService{
+public class ContestScrollBoardServiceImpl implements ContestScrollBoardService {
 
     @Resource
     private ContestScrollBoardManager contestScrollBoardManager;
@@ -31,9 +31,9 @@ public class ContestScrollBoardServiceImpl implements ContestScrollBoardService{
     }
 
     @Override
-    public CommonResult<List<ContestScrollBoardSubmissionVO>> getContestScrollBoardSubmission(Long cid) {
+    public CommonResult<List<ContestScrollBoardSubmissionVO>> getContestScrollBoardSubmission(Long cid, Boolean removeStar) {
         try {
-            return CommonResult.successResponse(contestScrollBoardManager.getContestScrollBoardSubmission(cid));
+            return CommonResult.successResponse(contestScrollBoardManager.getContestScrollBoardSubmission(cid, removeStar));
         } catch (StatusFailException e) {
             return CommonResult.errorResponse(e.getMessage());
         }

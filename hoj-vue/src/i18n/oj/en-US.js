@@ -481,6 +481,7 @@ export const m = {
   Number_of_silver_medals:'Number of silver medals',
   Number_of_bronze_medals:'Number of bronze medals',
   Formula_for_calculating_the_number_of_medals:'Formula for calculating the number of medals',
+  Whether_to_remove_the_star_user: 'Whether to remove the star user',
   Contest_Non_Ended_But_Want_to_Scroll_Board:'The contest is not over yet. Are you sure you want to sroll the board?',
 
   // /views/oj/contest/children/OIContestRank.vue

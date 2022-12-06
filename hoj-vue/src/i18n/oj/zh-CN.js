@@ -484,6 +484,7 @@ export const m = {
   Number_of_silver_medals:'银牌数量',
   Number_of_bronze_medals:'铜牌数量',
   Formula_for_calculating_the_number_of_medals:'奖牌的计算公式',
+  Whether_to_remove_the_star_user: '是否移除打星用户',
   Contest_Non_Ended_But_Want_to_Scroll_Board:'比赛还未结束，你确定是否前往滚榜？',
 
   // /views/oj/contest/children/OIContestRank.vue

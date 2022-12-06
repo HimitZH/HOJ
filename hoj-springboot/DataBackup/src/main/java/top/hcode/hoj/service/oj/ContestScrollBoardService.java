@@ -10,9 +10,9 @@ import java.util.List;
  * @Author Himit_ZH
  * @Date 2022/10/3
  */
-public interface ContestScrollBoardService{
+public interface ContestScrollBoardService {
 
     public CommonResult<ContestScrollBoardInfoVO> getContestScrollBoardInfo(Long cid);
 
-    public CommonResult<List<ContestScrollBoardSubmissionVO>> getContestScrollBoardSubmission(Long cid);
+    public CommonResult<List<ContestScrollBoardSubmissionVO>> getContestScrollBoardSubmission(Long cid, Boolean removeStar);
 }

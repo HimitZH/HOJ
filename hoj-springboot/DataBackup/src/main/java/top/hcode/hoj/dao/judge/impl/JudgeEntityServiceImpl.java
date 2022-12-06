@@ -151,8 +151,8 @@ public class JudgeEntityServiceImpl extends ServiceImpl<JudgeMapper, Judge> impl
     }
 
 
-    public List<ContestScrollBoardSubmissionVO> getContestScrollBoardSubmission(Long cid, List<String> uidList) {
-        return judgeMapper.getContestScrollBoardSubmission(cid, uidList);
+    public List<ContestScrollBoardSubmissionVO> getContestScrollBoardSubmission(Long cid, List<String> removeUidList) {
+        return judgeMapper.getContestScrollBoardSubmission(cid, removeUidList);
     }
 
 }

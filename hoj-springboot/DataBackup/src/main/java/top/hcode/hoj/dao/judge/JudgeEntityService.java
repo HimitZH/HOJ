@@ -62,5 +62,5 @@ public interface JudgeEntityService extends IService<Judge> {
 
     public List<ProblemCountVO> getProblemListCount(List<Long> pidList);
 
-    public List<ContestScrollBoardSubmissionVO> getContestScrollBoardSubmission(Long cid, List<String> uidList);
+    public List<ContestScrollBoardSubmissionVO> getContestScrollBoardSubmission(Long cid, List<String> removeUidList);
 }

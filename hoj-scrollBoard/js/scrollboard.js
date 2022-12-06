@@ -579,12 +579,12 @@ function getContestInfo(cid){
  * 从服务器获取提交列表信息
  * @return json数组
  */
-function getSubmissionList(cid){
+function getSubmissionList(cid, removeStar){
     var submissions = [];
     $.ajax({
         type: "GET",
         content: "application/json",
-        url: TEST_BACKEND_API + "/api/get-contest-scroll-board-submission?cid="+cid,
+        url: TEST_BACKEND_API + "/api/get-contest-scroll-board-submission?cid="+cid+"&removeStar="+removeStar,
         dataType: "json",
         data: {},
         async: false,
@@ -946,7 +946,7 @@ function TeamCompare(a, b) {
  * @param {ContestInfo}      contestInfo     比赛信息
  * @param {Array<int>}       medalCounts     奖牌数,无特等奖则为3个数,有特等奖则为4个数,第一个为特等奖
  */
-function Board(contestInfo, medalCounts) {
+function Board(contestInfo, medalCounts, removeStar) {
     this.contestInfo = contestInfo; // 比赛信息
     this.problemCount = contestInfo.problemCount; //题目数量
     this.balloonColor = contestInfo.balloonColor; // 气球对应颜色
@@ -980,7 +980,7 @@ function Board(contestInfo, medalCounts) {
 
     //从服务器得到submitList和teamList
 
-    var submssions = getSubmissionList(this.contestInfo.id);
+    var submssions = getSubmissionList(this.contestInfo.id, removeStar);
     this.submitList = getSubmitList(submssions);
     this.teamList = getTeamList(submssions, this.contestInfo.rankShowName, this.contestInfo.starUserList);
 

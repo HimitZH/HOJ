@@ -49,6 +49,9 @@
           size="small"
         ></el-input>
       </el-form-item>
+      <el-form-item :label="$t('m.Whether_to_remove_the_star_user')">
+        <el-switch v-model="removeStar"></el-switch>
+      </el-form-item>
     </el-form>
     <div style="text-align:center">
       <template v-if="!contestEnded">
@@ -87,6 +90,7 @@ export default {
       goldMedal: 0,
       silverMedal: 0,
       bronzeMedal: 0,
+      removeStar: false,
     };
   },
   created() {
@@ -110,7 +114,7 @@ export default {
       });
     },
     goScrollBoard() {
-      let url = `/scrollBoard?cid=${this.cid}&medals[]=${this.goldMedal}&medals[]=${this.silverMedal}&medals[]=${this.bronzeMedal}`;
+      let url = `/scrollBoard?cid=${this.cid}&removeStar=${this.removeStar}&medals[]=${this.goldMedal}&medals[]=${this.silverMedal}&medals[]=${this.bronzeMedal}`;
       window.open(url);
     },
   },

@@ -26,15 +26,16 @@ public class ContestScrollBoardController {
     private ContestScrollBoardService contestScrollBoardService;
 
     @GetMapping("/get-contest-scroll-board-info")
-    public CommonResult<ContestScrollBoardInfoVO> getContestScrollBoardInfo(@RequestParam(value = "cid", required = true) Long cid) {
+    public CommonResult<ContestScrollBoardInfoVO> getContestScrollBoardInfo(@RequestParam(value = "cid") Long cid) {
         return contestScrollBoardService.getContestScrollBoardInfo(cid);
     }
 
 
     @GetMapping("/get-contest-scroll-board-submission")
     public CommonResult<List<ContestScrollBoardSubmissionVO>> getContestScrollBoardSubmission(
-            @RequestParam(value = "cid", required = true) Long cid) {
-        return contestScrollBoardService.getContestScrollBoardSubmission(cid);
+            @RequestParam(value = "cid", required = true) Long cid,
+            @RequestParam(value = "removeStar", defaultValue = "false") Boolean removeStar) {
+        return contestScrollBoardService.getContestScrollBoardSubmission(cid, removeStar);
     }
 
 

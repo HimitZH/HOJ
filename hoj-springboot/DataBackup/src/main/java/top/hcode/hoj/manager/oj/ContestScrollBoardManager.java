@@ -1,5 +1,6 @@
 package top.hcode.hoj.manager.oj;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -110,7 +111,7 @@ public class ContestScrollBoardManager {
     }
 
 
-    public List<ContestScrollBoardSubmissionVO> getContestScrollBoardSubmission(Long cid) throws StatusFailException {
+    public List<ContestScrollBoardSubmissionVO> getContestScrollBoardSubmission(Long cid, Boolean removeStar) throws StatusFailException {
         Contest contest = contestEntityService.getById(cid);
         if (contest == null) {
             throw new StatusFailException("比赛不存在 (The contest does not exist)");
@@ -128,10 +129,15 @@ public class ContestScrollBoardManager {
             throw new StatusFailException("比赛未结束，禁止进行滚榜 (Roll off is prohibited before the contest is over)");
         }
 
-        List<String> superAdminUidList = contestCalculateRankManager.getSuperAdminUidList(contest.getGid());
-        if (!superAdminUidList.contains(contest.getUid())) {
-            superAdminUidList.add(contest.getUid());
+        List<String> removeUidList = contestCalculateRankManager.getSuperAdminUidList(contest.getGid());
+        if (!removeUidList.contains(contest.getUid())) {
+            removeUidList.add(contest.getUid());
         }
-        return judgeEntityService.getContestScrollBoardSubmission(cid, superAdminUidList);
+        if (removeStar && StrUtil.isNotBlank(contest.getStarAccount())){
+            JSONObject jsonObject = JSONUtil.parseObj(contest.getStarAccount());
+            List<String> list = jsonObject.get("star_account", List.class);
+            removeUidList.addAll(list);
+        }
+        return judgeEntityService.getContestScrollBoardSubmission(cid, removeUidList);
     }
 }
