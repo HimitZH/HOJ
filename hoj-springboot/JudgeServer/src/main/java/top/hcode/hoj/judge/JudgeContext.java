@@ -40,8 +40,9 @@ public class JudgeContext {
 
         // c和c++为一倍时间和空间，其它语言为2倍时间和空间
         LanguageConfig languageConfig = languageConfigLoader.getLanguageConfigByName(judge.getLanguage());
-        if (!languageConfig.getSrcName().endsWith(".c")
-                && !languageConfig.getSrcName().endsWith(".cpp")) {
+        if (languageConfig.getSrcName() == null
+                || (!languageConfig.getSrcName().endsWith(".c")
+                && !languageConfig.getSrcName().endsWith(".cpp"))) {
             problem.setTimeLimit(problem.getTimeLimit() * 2);
             problem.setMemoryLimit(problem.getMemoryLimit() * 2);
         }
@@ -77,8 +78,9 @@ public class JudgeContext {
     public TestJudgeRes testJudge(TestJudgeReq testJudgeReq) {
         // c和c++为一倍时间和空间，其它语言为2倍时间和空间
         LanguageConfig languageConfig = languageConfigLoader.getLanguageConfigByName(testJudgeReq.getLanguage());
-        if (!languageConfig.getSrcName().endsWith(".c")
-                && !languageConfig.getSrcName().endsWith(".cpp")) {
+        if (languageConfig.getSrcName() == null
+                || (!languageConfig.getSrcName().endsWith(".c")
+                && !languageConfig.getSrcName().endsWith(".cpp"))) {
             testJudgeReq.setTimeLimit(testJudgeReq.getTimeLimit() * 2);
             testJudgeReq.setMemoryLimit(testJudgeReq.getMemoryLimit() * 2);
         }

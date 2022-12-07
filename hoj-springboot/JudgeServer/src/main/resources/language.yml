@@ -211,6 +211,7 @@ run:
 
 ---
 language: PHP
+src_path: main.php
 exe_path: main.php
 run:
   env: default
@@ -218,6 +219,7 @@ run:
 
 ---
 language: JavaScript Node
+src_path: main.js
 exe_path: main.js
 run:
   env: default
@@ -225,6 +227,7 @@ run:
 
 ---
 language: JavaScript V8
+src_path: main.js
 exe_path: main.js
 run:
   env: default
