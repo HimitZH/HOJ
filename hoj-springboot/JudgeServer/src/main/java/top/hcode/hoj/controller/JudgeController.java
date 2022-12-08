@@ -18,6 +18,7 @@ import top.hcode.hoj.pojo.dto.ToJudgeDTO;
 import top.hcode.hoj.service.JudgeService;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 
 /**
@@ -49,7 +50,7 @@ public class JudgeController {
     @PostMapping(value = "/judge")
     public CommonResult<Void> submitProblemJudge(@RequestBody ToJudgeDTO toJudgeDTO) {
 
-        if (!toJudgeDTO.getToken().equals(judgeToken)) {
+        if (!Objects.equals(toJudgeDTO.getToken(), judgeToken)) {
             return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", ResultStatus.ACCESS_DENIED);
         }
 
@@ -78,7 +79,7 @@ public class JudgeController {
             return CommonResult.errorResponse("调用参数错误！请检查您的调用参数！");
         }
 
-        if (!testJudgeReq.getToken().equals(judgeToken)) {
+        if (!Objects.equals(testJudgeReq.getToken(), judgeToken)) {
             return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", ResultStatus.ACCESS_DENIED);
         }
         return CommonResult.successResponse(judgeService.testJudge(testJudgeReq));
@@ -88,7 +89,7 @@ public class JudgeController {
     @PostMapping(value = "/compile-spj")
     public CommonResult<Void> compileSpj(@RequestBody CompileDTO compileDTO) {
 
-        if (!compileDTO.getToken().equals(judgeToken)) {
+        if (!Objects.equals(compileDTO.getToken(), judgeToken)) {
             return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", ResultStatus.ACCESS_DENIED);
         }
 
@@ -103,7 +104,7 @@ public class JudgeController {
     @PostMapping(value = "/compile-interactive")
     public CommonResult<Void> compileInteractive(@RequestBody CompileDTO compileDTO) {
 
-        if (!compileDTO.getToken().equals(judgeToken)) {
+        if (!Objects.equals(compileDTO.getToken(), judgeToken)) {
             return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", ResultStatus.ACCESS_DENIED);
         }
 
@@ -122,7 +123,7 @@ public class JudgeController {
             return CommonResult.errorResponse("对不起！该判题服务器未开启远程虚拟判题功能！", ResultStatus.ACCESS_DENIED);
         }
 
-        if (!toJudgeDTO.getToken().equals(judgeToken)) {
+        if (!Objects.equals(toJudgeDTO.getToken(), judgeToken)) {
             return CommonResult.errorResponse("对不起！您使用的判题服务调用凭证不正确！访问受限！", ResultStatus.ACCESS_DENIED);
         }
 
