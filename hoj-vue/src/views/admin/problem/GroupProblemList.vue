@@ -245,6 +245,13 @@ export default {
       goGroup(gid){
         window.open('/group/'+gid);
       }
+  },
+  watch: {
+    $route(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.init();
+      }
+    },
   }
 }
 </script>
