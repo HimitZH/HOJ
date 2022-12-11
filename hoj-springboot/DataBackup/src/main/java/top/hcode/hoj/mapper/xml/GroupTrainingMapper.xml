@@ -5,7 +5,6 @@
     <resultMap id="map_TrainingList" type="top.hcode.hoj.pojo.vo.TrainingVO">
         <id column="id" property="id"></id>
         <result column="title" property="title"></result>
-        <result column="description" property="description"></result>
         <result column="author" property="author"></result>
         <result column="auth" property="auth"></result>
         <result column="rank" property="rank"></result>
@@ -16,8 +15,8 @@
     </resultMap>
 
     <select id="getTrainingList" resultMap="map_TrainingList">
-        SELECT t.*,COALESCE(tp.problem_count,0) as problem_count FROM (
-            select t.*,tc.name as category_name,tc.color as category_color
+        SELECT t.id,t.title,t.author,t.auth,t.rank,t.gid,t.gmt_modified,COALESCE(tp.problem_count,0) as problem_count FROM (
+            select t.id,t.title,t.author,t.auth,t.rank,t.gid,t.gmt_modified,tc.name as category_name,tc.color as category_color
             from training t
             left join mapping_training_category mtc
             on t.id = mtc.tid
