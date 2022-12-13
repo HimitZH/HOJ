@@ -166,6 +166,7 @@
           layout="prev, pager, next"
           @current-change="currentChange"
           :page-size="pageSize"
+          :current-page.sync="currentPage"
           :total="total"
         >
         </el-pagination>
