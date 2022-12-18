@@ -693,10 +693,12 @@ public class JudgeManager {
                 subTaskJudgeCaseVo.setTotal(entry.getValue().size());
                 int score = (int) Math.round(sumScore * 1.0 / entry.getValue().size());
                 subTaskJudgeCaseVo.setScore(score);
-                if (score == 0) {
-                    subTaskJudgeCaseVo.setStatus(Constants.Judge.STATUS_WRONG_ANSWER.getStatus());
-                } else if (hasNotACJudgeCase) {
-                    subTaskJudgeCaseVo.setStatus(Constants.Judge.STATUS_PARTIAL_ACCEPTED.getStatus());
+                if (hasNotACJudgeCase) {
+                    if (score == 0){
+                        subTaskJudgeCaseVo.setStatus(Constants.Judge.STATUS_WRONG_ANSWER.getStatus());
+                    }else{
+                        subTaskJudgeCaseVo.setStatus(Constants.Judge.STATUS_PARTIAL_ACCEPTED.getStatus());
+                    }
                 } else {
                     subTaskJudgeCaseVo.setStatus(Constants.Judge.STATUS_ACCEPTED.getStatus());
                 }
