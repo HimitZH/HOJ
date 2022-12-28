@@ -124,6 +124,7 @@ export const m = {
   Guess_robot: 'Speed too fast, may be machine operation! Please verify again!',
   The_current_password_cannot_be_empty: 'The current password is required.',
   The_new_password_cannot_be_empty: 'The new password is required.',
+  The_new_email_cannot_be_empty: 'The new email is required.',
 
 
   // /components/oj/setting/UserInfo.vue 
