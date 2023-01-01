@@ -358,7 +358,7 @@ export default {
     if (this.route_name == 'ContestProblemDetails') {
       this.route_name = 'ContestProblemList';
     }
-    if (this.route_name == 'ContestSubmissionDeatil') {
+    if (this.route_name == 'ContestSubmissionDetails') {
       this.route_name = 'ContestSubmissionList';
     }
     this.CONTEST_TYPE_REVERSE = Object.assign({}, CONTEST_TYPE_REVERSE);
@@ -507,7 +507,7 @@ export default {
       this.route_name = newVal.name;
       if (newVal.name == 'ContestProblemDetails') {
         this.route_name = 'ContestProblemList';
-      } else if (this.route_name == 'ContestSubmissionDeatil') {
+      } else if (this.route_name == 'ContestSubmissionDetails') {
         this.route_name = 'ContestSubmissionList';
       }
       this.contestID = newVal.params.contestID;

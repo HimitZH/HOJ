@@ -157,10 +157,10 @@ const ojRoutes = [
         meta: { title: 'Contest Submission' }
       },
       {
-        name: 'ContestSubmissionDeatil',
+        name: 'ContestSubmissionDetails',
         path: 'problem/:problemID/submission-detail/:submitID',
         component: SubmissionDetails,
-        meta: { title: 'Contest Submission Detail' }
+        meta: { title: 'Contest Submission Details' }
       },
       {
         name: 'ContestProblemList',
@@ -232,9 +232,9 @@ const ojRoutes = [
   },
   {
     path: '/submission-detail/:submitID',
-    name: 'SubmissionDetail',
+    name: 'SubmissionDetails',
     component: SubmissionDetails,
-    meta: {title: 'Submission Detail' }
+    meta: {title: 'Submission Details' }
   },
   {
     path: '/acm-rank',
@@ -366,9 +366,9 @@ const ojRoutes = [
       },
       {
         path: 'submission-detail/:submitID',
-        name: 'GroupSubmissionDetail',
+        name: 'GroupSubmissionDetails',
         component: SubmissionDetails,
-        meta: {title: 'Group Submission Detail' }
+        meta: {title: 'Group Submission Details' }
       },
       {
         path: 'discussion',

@@ -100,7 +100,7 @@
       <template
         v-if="
           $route.name === 'GroupSubmissionList' || 
-          $route.name === 'GroupSubmissionDetail' ||
+          $route.name === 'GroupSubmissionDetails' ||
             $route.name === 'GroupProblemDetails' ||
             ($route.name != 'GroupTrainingList' 
              && $route.name.startsWith('GroupTraining'))
@@ -391,7 +391,7 @@ export default {
     this.route_name = this.$route.name;
     if (this.route_name == 'GroupProblemDetails') {
       this.route_name = 'GroupProblemList';
-    } else if (this.route_name == 'GroupSubmissionDetail') {
+    } else if (this.route_name == 'GroupSubmissionDetails') {
       this.route_name = 'GroupSubmissionList';
     } else if (this.route_name == 'GroupDiscussionDetails') {
       this.route_name = 'GroupDiscussionList';
@@ -557,7 +557,7 @@ export default {
         newVal.name == 'GroupContestAnnouncementList'
       ) {
         this.route_name = 'GroupContestList';
-      } else if (newVal.name == 'GroupSubmissionDetail') {
+      } else if (newVal.name == 'GroupSubmissionDetails') {
         this.route_name = 'GroupSubmissionList';
       } else if (newVal.name == 'GroupDiscussionDetails') {
         this.route_name = 'GroupDiscussionList';

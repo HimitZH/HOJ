@@ -1011,7 +1011,7 @@ export default {
       if (row.cid != 0) {
         // 比赛提交详情
         this.$router.push({
-          name: "ContestSubmissionDeatil",
+          name: "ContestSubmissionDetails",
           params: {
             contestID: this.$route.params.contestID,
             problemID: row.displayId,
@@ -1020,14 +1020,14 @@ export default {
         });
       } else if (this.groupID) {
         this.$router.push({
-          name: "GroupSubmissionDetail",
+          name: "GroupSubmissionDetails",
           params: {
             submitID: row.submitId,
           },
         });
       } else {
         this.$router.push({
-          name: "SubmissionDetail",
+          name: "SubmissionDetails",
           params: { submitID: row.submitId },
         });
       }
@@ -1743,7 +1743,7 @@ export default {
       if (this.contestID) {
         // 比赛提交详情
         this.$router.push({
-          name: "ContestSubmissionDeatil",
+          name: "ContestSubmissionDetails",
           params: {
             contestID: this.contestID,
             problemID: this.problemID,
@@ -1752,12 +1752,12 @@ export default {
         });
       } else if (this.groupID) {
         this.$router.push({
-          name: "GroupSubmissionDetail",
+          name: "GroupSubmissionDetails",
           params: { submitID: this.submissionId, gid: this.groupID },
         });
       } else {
         this.$router.push({
-          name: "SubmissionDetail",
+          name: "SubmissionDetails",
           params: { submitID: this.submissionId },
         });
       }

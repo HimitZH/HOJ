@@ -888,7 +888,7 @@ export default {
       if (this.contestID != null) {
         // 比赛提交详情
         this.$router.push({
-          name: "ContestSubmissionDeatil",
+          name: "ContestSubmissionDetails",
           params: {
             contestID: this.contestID,
             problemID: row.displayId,
@@ -897,12 +897,12 @@ export default {
         });
       } else if (this.groupID != null) {
         this.$router.push({
-          name: "GroupSubmissionDetail",
+          name: "GroupSubmissionDetails",
           params: { submitID: row.submitId },
         });
       } else {
         this.$router.push({
-          name: "SubmissionDetail",
+          name: "SubmissionDetails",
           params: { submitID: row.submitId },
         });
       }
