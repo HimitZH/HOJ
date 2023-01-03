@@ -522,7 +522,7 @@ const ojApi = {
     }
     if (query !== undefined) {
       Object.keys(query).forEach((element) => {
-        if (query[element]) {
+        if (query[element] != null && query[element] != '' && query[element] != undefined) {
           params[element] = query[element]
         }
       })

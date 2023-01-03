@@ -21,7 +21,7 @@
                   >
                     <span class="el-dropdown-link">
                       {{
-                        query.type == ''
+                        query.type === ''
                           ? $t('m.Contest_Rule')
                           : parseContestType(query.type)
                       }}
@@ -326,7 +326,13 @@ export default {
     init() {
       let route = this.$route.query;
       this.query.status = route.status || '';
-      this.query.type = route.type || '';
+      if(route.type === 0 || route.type === '0'){
+        this.query.type = 0;
+      }else if(route.type === 1 || route.type === '1'){
+        this.query.type = 1;
+      }else{
+        this.query.type = '';
+      }
       this.query.keyword = route.keyword || '';
       this.currentPage = parseInt(route.currentPage) || 1;
       this.getContestList();
