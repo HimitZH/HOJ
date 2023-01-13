@@ -1,14 +1,14 @@
 <template>
   <div id="app">
     <el-backtop :right="10"></el-backtop>
-    <div v-if="!isAdminView">
+    <div v-if="!isAdminView" class="full-height flex-column">
       <NavBar></NavBar>
       <div id="oj-content">
         <transition name="el-zoom-in-bottom">
           <router-view></router-view>
         </transition>
       </div>
-      <footer v-if="showFooter">
+      <footer v-if="showFooter" class="fix-to-bottom">
         <div class="mundb-footer">
           <el-row>
             <el-col
@@ -276,6 +276,18 @@ body {
   color: #495060 !important;
   font-size: 12px !important;
 }
+
+.full-height {
+  height: 100vh;
+}
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+.fix-to-bottom {
+  margin-top: auto;
+}
+
 code,
 kbd,
 pre,
