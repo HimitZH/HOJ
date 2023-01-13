@@ -1,14 +1,14 @@
 <template>
   <div id="app">
     <el-backtop :right="10"></el-backtop>
-    <div v-if="!isAdminView">
+    <div v-if="!isAdminView" class="full-height flex-column">
       <NavBar></NavBar>
       <div id="oj-content">
         <transition name="el-zoom-in-bottom">
           <router-view></router-view>
         </transition>
       </div>
-      <footer v-if="showFooter">
+      <footer v-if="showFooter" class="fix-to-bottom">
         <div class="mundb-footer">
           <el-row>
             <el-col
@@ -530,6 +530,7 @@ a:hover {
   #oj-content {
     margin-top: 20px;
     padding: 0 3%;
+    margin-bottom: 1.5rem;
   }
 }
 .markdown-body img {
@@ -542,6 +543,7 @@ a:hover {
   #oj-content {
     margin-top: 20px;
     padding: 0 5px;
+    margin-bottom: 1.5rem;
   }
   .el-row {
     margin-left: 0px !important;
@@ -681,8 +683,18 @@ a:hover {
   display: block;
 }
 
+.full-height {
+  height: 100vh;
+}
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+.fix-to-bottom {
+  margin-top: auto;
+}
+
 footer {
-  margin-top: 2rem;
   color: #555 !important;
   background-color: #fff;
   text-align: center;
