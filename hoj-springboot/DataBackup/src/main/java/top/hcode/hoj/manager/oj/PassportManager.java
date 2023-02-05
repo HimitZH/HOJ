@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
@@ -40,6 +41,7 @@ import top.hcode.hoj.utils.RedisUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -261,7 +263,7 @@ public class PassportManager {
         String captchaKey = applyResetPasswordDto.getCaptchaKey();
         String email = applyResetPasswordDto.getEmail();
 
-        if (StringUtils.isEmpty(captcha) || StringUtils.isEmpty(email) || StringUtils.isEmpty(captchaKey)) {
+        if (StrUtil.isBlank(captcha) || StrUtil.isBlank(email) || StrUtil.isBlank(captchaKey)) {
             throw new StatusFailException("邮箱或验证码不能为空");
         }
 
@@ -276,7 +278,7 @@ public class PassportManager {
 
         // 获取redis中的验证码
         String redisCode = (String) redisUtils.get(captchaKey);
-        if (!redisCode.equals(captcha.trim().toLowerCase())) {
+        if (!Objects.equals(redisCode, captcha.trim().toLowerCase())) {
             throw new StatusFailException("验证码不正确");
         }
 
