@@ -16,6 +16,14 @@
 
 :::
 
+
+
+:::warning
+
+提示：当前默认是设置**amd64**的镜像，如果使用的服务器是**arm64**架构的，请记得修改docker-compose.yml文件，将每个模块中的image配置修改成支持**arm64**的镜像地址，yml文件中也有注释提示，请仔细查看。例如将`image: registry.cn-shenzhen.aliyuncs.com/hcode/hoj_judgeserver`改为`image: himitzh/hoj_judgeserver`
+
+:::
+
 ## 一、单机部署
 
 1. **选择好需要安装的位置，运行下面命令**

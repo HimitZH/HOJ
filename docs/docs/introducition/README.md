@@ -17,7 +17,7 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 ## 二、为什么要开发HOJ？
 
-因为这是Himit_ZH的毕业设计，同时也是个人志趣所在，目前HOJ从开始开发到现在已经有一年了，凭着兴趣与职责一直在不断维护与更新新功能。
+因为这是Himit_ZH的毕业设计，同时也是个人志趣所在，目前HOJ从开始开发到现在已经有两年多了（2020.10），凭着兴趣与职责一直在不断维护与更新新功能。
 
 ## 三、HOJ的特点
 :::tip
@@ -40,7 +40,7 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
     - 支持在线自测调试
 
   - 多样：支持自身题目数据评测，也支持其它知名OJ（HDU、Codeforces、GYM、POJ、AtCoder、SPOJ）题目的爬取与提交
-  :::
+      :::
 
 
 ## 四、使用HOJ的学校
