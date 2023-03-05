@@ -178,7 +178,7 @@
                     <p class="title">{{ $t('m.Description') }}</p>
                     <Markdown 
                       class="md-content"
-                      :isAvoidXss="groupID" 
+                      :isAvoidXss="problemData.problem.gid != null" 
                       :content="problemData.problem.description">
                     </Markdown>
                   </template>
@@ -187,7 +187,7 @@
                     <p class="title">{{ $t('m.Input') }}</p>
                     <Markdown 
                       class="md-content"
-                      :isAvoidXss="groupID" 
+                      :isAvoidXss="problemData.problem.gid != null" 
                       :content="problemData.problem.input">
                     </Markdown>
                   </template>
@@ -196,7 +196,7 @@
                     <p class="title">{{ $t('m.Output') }}</p>
                     <Markdown 
                       class="md-content"
-                      :isAvoidXss="groupID" 
+                      :isAvoidXss="problemData.problem.gid != null" 
                       :content="problemData.problem.output">
                     </Markdown>
                   </template>
@@ -244,7 +244,7 @@
                     <el-card dis-hover>
                       <Markdown 
                       class="hint-content"
-                      :isAvoidXss="groupID" 
+                      :isAvoidXss="!problemData.problem.gid" 
                       :content="problemData.problem.hint">
                     </Markdown>
                     </el-card>
@@ -252,7 +252,7 @@
 
                   <template v-if="problemData.problem.source && !contestID">
                     <p class="title">{{ $t('m.Source') }}</p>
-                    <template v-if="groupID">
+                    <template v-if="!problemData.problem.gid">
                       <p
                       class="md-content"
                       v-dompurify-html="problemData.problem.source"
