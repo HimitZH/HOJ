@@ -244,7 +244,7 @@
                     <el-card dis-hover>
                       <Markdown 
                       class="hint-content"
-                      :isAvoidXss="!problemData.problem.gid" 
+                      :isAvoidXss="problemData.problem.gid != null" 
                       :content="problemData.problem.hint">
                     </Markdown>
                     </el-card>
@@ -252,7 +252,7 @@
 
                   <template v-if="problemData.problem.source && !contestID">
                     <p class="title">{{ $t('m.Source') }}</p>
-                    <template v-if="!problemData.problem.gid">
+                    <template v-if="problemData.problem.gid != null">
                       <p
                       class="md-content"
                       v-dompurify-html="problemData.problem.source"
