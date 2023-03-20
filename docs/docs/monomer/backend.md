@@ -123,9 +123,12 @@ services:
       - MYSQL_SERVICE_HOST=172.20.0.3
       - MYSQL_SERVICE_PORT=3306
       - MYSQL_SERVICE_USER=root
-      - MYSQL_SERVICE_PASSWORD=Hzh&hy2020
+      - MYSQL_SERVICE_PASSWORD=hoj123456
       - MYSQL_SERVICE_DB_NAME=nacos
       - NACOS_AUTH_ENABLE=true # 开启鉴权
+    networks:
+      hoj-network:
+        ipv4_address: 172.20.0.4
 
 networks:
    hoj-network:
