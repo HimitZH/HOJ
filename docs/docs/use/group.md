@@ -28,25 +28,25 @@
 
 1. 用户在登录之后，便可以创建团队
 
-![创建题目](https://img-blog.csdnimg.cn/85647edc236f41ca8b9ab5b8088a7ec1.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![创建题目](/85647edc236f41ca8b9ab5b8088a7ec1.png)
 
 
 
 2. 输入团队的名称、简称、简介、描述，选择权限和是否显示即可创建属于自己的团队！
 
-![创建团队](https://img-blog.csdnimg.cn/8f2c0007609d41258683dd99bb79a5b4.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![创建团队](/8f2c0007609d41258683dd99bb79a5b4.png)
 
 ### 二、加入团队
 
 用户登录后，点击指定的团队进入团队主页，点击右侧的申请加入即可加入团队。
 
-![加入团队](https://img-blog.csdnimg.cn/9f01f31f11f849f998530ee967befee8.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![加入团队](/9f01f31f11f849f998530ee967befee8.png)
 
 - 对于公开团队是直接加入，无需团队管理员审批！
 - 对于保护团队需要输入加入理由，等待团队管理员审批！
 - 对于私有团队需要输入正确的邀请码和加入理由，等待团队管理员审批！
 
-![加入团队](https://img-blog.csdnimg.cn/6272d213a07746f8a10a791105a45385.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![加入团队](/6272d213a07746f8a10a791105a45385.png)
 
 ### 三、管理团队
 
@@ -69,7 +69,7 @@
 - 在团队信息中：团队Owner、主站超管才可以更新团队信息
 - 团队管理员、团队超级管理员、主站超管可以管理题目、管理训练、管理比赛、管理公告
 
-![团队](https://img-blog.csdnimg.cn/6af22926b39149bd8a1314d60b3deb00.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![团队](/6af22926b39149bd8a1314d60b3deb00.png)
 
 
 
@@ -77,10 +77,10 @@
 
 团队管理员、团队超级管理员、主站超管可以点击团队内的题目管理，选择需要公开到主站题库的团队题目，点击申请即可。
 
-![申请公开题目](https://img-blog.csdnimg.cn/750af961bd6f4e53be21037944d092ff.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![申请公开题目](/750af961bd6f4e53be21037944d092ff.png)
 
 申请后，会发消息告知主站的超级管理员和题目管理员对题目进行审批，管理员则可以在后台进行审批，审批通过的团队题目则会加入到主题库中。
 
 **注意：团队题目的统计数据、用户的提交数据在团队内和主站中的数据是隔离的！**
 
-![审批团队题目](https://img-blog.csdnimg.cn/f7207bbef5f64aa5b313de27615a48c7.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![审批团队题目](/f7207bbef5f64aa5b313de27615a48c7.png)

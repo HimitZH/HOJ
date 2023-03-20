@@ -334,11 +334,11 @@
 
    ① hoj-backend模块
 
-   ![在这里插入图片描述](https://img-blog.csdnimg.cn/4dfdcb2461c742f1b3717a8a27c3598a.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+   ![在这里插入图片描述](/4dfdcb2461c742f1b3717a8a27c3598a.png)
 
    ​
 
       ② hoj-judgeserver模块
 
-   ![在这里插入图片描述](https://img-blog.csdnimg.cn/9a936ad86ff2439a9e1188c286cfd751.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+   ![在这里插入图片描述](/9a936ad86ff2439a9e1188c286cfd751.png)
 

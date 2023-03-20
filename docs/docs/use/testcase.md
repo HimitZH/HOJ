@@ -1,6 +1,6 @@
 # 测试用例
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/ad4851c069674b30af08f187363906c4.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![在这里插入图片描述](/ad4851c069674b30af08f187363906c4.png)
 
 **进入后台添加题目，上传题目测试用例数据可以选择手动输入、Zip文件上传两种方式**
 

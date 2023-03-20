@@ -2,7 +2,7 @@
 
 ## 一、HOJ题目
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/f059e38d31c44906b35ad4ff0d488013.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![在这里插入图片描述](/f059e38d31c44906b35ad4ff0d488013.png)
 
 #### 1. 导出题目
 
@@ -190,7 +190,7 @@
 2. 请使用标准的FPS格式的题目数据文件(.xml)
 3. 目前仅支持Hydro的普通评测、交互评测、特殊评测、子任务类型的题目
 
-![导入题目](https://img-blog.csdnimg.cn/2f502aac27ed406f9b0bb3385879b148.png)
+![导入题目](/2f502aac27ed406f9b0bb3385879b148.png)
 
 
 
@@ -209,11 +209,11 @@
 
 **管理员进入后台，点击题目列表**
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/5304425397f249808b7ea0ea2a0153cc.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![在这里插入图片描述](/5304425397f249808b7ea0ea2a0153cc.png)
 
 然后添加上方的添加按钮
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210523222914722.png)
+![在这里插入图片描述](/20210523222914722.png)
 
 
 
@@ -221,4 +221,4 @@
 
 
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210523223042100.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](/20210523223042100.png)

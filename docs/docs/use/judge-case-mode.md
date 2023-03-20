@@ -12,7 +12,7 @@
 
 ### 一、ACM题目
 
-![ACM题目](https://img-blog.csdnimg.cn/f4f4a8bbe15e4ef1aa766524eaa6fbeb.png)
+![ACM题目](/f4f4a8bbe15e4ef1aa766524eaa6fbeb.png)
 
 #### 1. 默认（全部评测）
 
@@ -32,7 +32,7 @@
 
 ### 二、OI题目
 
-![OI题目](https://img-blog.csdnimg.cn/ecdd9ce03251440d9204bc728ef4d66b.png)
+![OI题目](/ecdd9ce03251440d9204bc728ef4d66b.png)
 
 
 
@@ -52,7 +52,7 @@
 
 :::
 
-![子任务](https://img-blog.csdnimg.cn/6b0404229b894d01aa98ee43bbb4d034.png)
+![子任务](/6b0404229b894d01aa98ee43bbb4d034.png)
 
 #### 3. 子任务（平均得分）
 

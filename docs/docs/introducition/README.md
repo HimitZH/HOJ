@@ -59,51 +59,51 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 > 首页页面 
 
-![首页](https://img-blog.csdnimg.cn/7409e6b5def6438385ddd59589afeb83.png)
+![首页](/7409e6b5def6438385ddd59589afeb83.png)
 
 
 
 > 首页英文
 
-![首页英文](https://img-blog.csdnimg.cn/f6792ddc05f34527bdf744fa4d6d5c88.png)
+![首页英文](/f6792ddc05f34527bdf744fa4d6d5c88.png)
 
 ### 2. 站内消息
 
 > 站内消息系统
 
-![站内消息系统](https://img-blog.csdnimg.cn/a1a83ff01be84406954537e2ab78d999.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![站内消息系统](/a1a83ff01be84406954537e2ab78d999.png)
 
 
 
-![站内消息系统](https://img-blog.csdnimg.cn/513e7e37f52f48518c2fa1bf14eeea99.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![站内消息系统](/513e7e37f52f48518c2fa1bf14eeea99.png)
 
 ### 3. 题目
 
 > 题目列表页
 
-![题目列表页](https://img-blog.csdnimg.cn/0ee61f329e094592b0a0cff55d12b404.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![题目列表页](/0ee61f329e094592b0a0cff55d12b404.png)
 
 
 
 > 题目详情页
 
-![题目详情页](https://img-blog.csdnimg.cn/9f872dc1974f45c389e084f0e31a5217.png)
+![题目详情页](/9f872dc1974f45c389e084f0e31a5217.png)
 
 ### 4. 训练
 
 > 训练列表页
 
-![训练列表页](https://img-blog.csdnimg.cn/58ac74824fcf4963810beea7ba1203b9.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![训练列表页](/58ac74824fcf4963810beea7ba1203b9.png)
 
 > 训练题目列表页
 
-![训练题目列表页](https://img-blog.csdnimg.cn/b366a6a628984995b57a49c565a2ec47.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![训练题目列表页](/b366a6a628984995b57a49c565a2ec47.png)
 
 ### 5.  比赛
 
 > 比赛列表页
 
-![比赛列表页](https://img-blog.csdnimg.cn/00a0438a576d43edbab676b829a38922.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![比赛列表页](/00a0438a576d43edbab676b829a38922.png)
 
 
 
@@ -113,30 +113,30 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 > 比赛详情首页
 
-![比赛详情页](https://img-blog.csdnimg.cn/50026bde6dd64cd5929b38f8ecc6e72e.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![比赛详情页](/50026bde6dd64cd5929b38f8ecc6e72e.png)
 
 > 比赛题目列表页
 
-![比赛题目列表](https://img-blog.csdnimg.cn/8646fc212b5c47e9b35e60634cfc8d6a.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![比赛题目列表](/8646fc212b5c47e9b35e60634cfc8d6a.png)
 
 > 比赛排行榜
 
 - ACM比赛
 
-  ![比赛排行榜](https://img-blog.csdnimg.cn/c50140e3b73d482d82ca6f13f47aa080.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+  ![比赛排行榜](/c50140e3b73d482d82ca6f13f47aa080.png)
 
 
 
 - OI比赛
 
-  ![oi排行榜](https://img-blog.csdnimg.cn/67f6262854bb44efa70c374f1f156166.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center)
+  ![oi排行榜](/67f6262854bb44efa70c374f1f156166.png)
 
 
 
 
 - 滚榜
 
-  ![在这里插入图片描述](https://img-blog.csdnimg.cn/8f8258babd3f43f78802144e7ecf18fe.png)
+  ![在这里插入图片描述](/8f8258babd3f43f78802144e7ecf18fe.png)
 
 
 
@@ -144,19 +144,19 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 > 提交列表页
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20210609213021223.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![在这里插入图片描述](/20210609213021223.png)
 
 ### 7. 排行榜
 
 > 排行榜
 
-![排行榜](https://img-blog.csdnimg.cn/407ad16361f34b44a282b07af68825e0.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![排行榜](/407ad16361f34b44a282b07af68825e0.png)
 
 ### 8. 团队
 
-![团队列表页](https://img-blog.csdnimg.cn/7988504326c843ef94e937a2b4f32f03.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![团队列表页](/7988504326c843ef94e937a2b4f32f03.png)
 
-![团队题目列表页](https://img-blog.csdnimg.cn/2c05e44f5a464381b9a357aff37b0086.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![团队题目列表页](/2c05e44f5a464381b9a357aff37b0086.png)
 
 
 
@@ -164,25 +164,25 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 > 公共讨论区
 
-![公共讨论区](https://img-blog.csdnimg.cn/20210513134216723.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![公共讨论区](/20210513134216723.png)
 
 
 
 > 评论组件
 
-![评论组件](https://img-blog.csdnimg.cn/20210513142826730.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70#pic_center)
+![评论组件](/20210513142826730.png)
 
 ### 10. 个人
 
 > 个人首页
 
-![个人首页](https://img-blog.csdnimg.cn/7d3e99dbc6fe4739a0720fcc019b2b6e.png)
+![个人首页](/7d3e99dbc6fe4739a0720fcc019b2b6e.png)
 
 
 
 > 个人设置页
 
-![个人设置](https://img-blog.csdnimg.cn/971566eeac674d388b9f5d6064286e14.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![个人设置](/971566eeac674d388b9f5d6064286e14.png)
 
 
 
@@ -190,7 +190,7 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 > 管理后台首页
 
-![管理后端](https://img-blog.csdnimg.cn/9b9674c0f30a441bb200a32756f24d2c.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![管理后端](/9b9674c0f30a441bb200a32756f24d2c.png)
 
 
 
@@ -198,8 +198,8 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
 
 > 部分手机端显示
 
-![手机端](https://img-blog.csdnimg.cn/c7b3648217af4899bedf7f7d804968ba.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_12,color_FFFFFF,t_70,g_se,x_16)
+![手机端](/c7b3648217af4899bedf7f7d804968ba.png)
 
 
 
-![评论区](https://img-blog.csdnimg.cn/20210509233845230.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80Mzg1MzA5Nw==,size_16,color_FFFFFF,t_70)
+![评论区](/20210509233845230.png)

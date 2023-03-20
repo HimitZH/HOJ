@@ -8,7 +8,7 @@
 
 :::
 
-![训练](https://img-blog.csdnimg.cn/00cd359b634e4483a33f26b10c32e4f6.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![训练](/00cd359b634e4483a33f26b10c32e4f6.png)
 
 :::warning
 
@@ -21,7 +21,7 @@
 - 管理员可在后台添加公开权限的题目，同时能对题目进行排序。
 - 题目的所有用户提交情况以及用户自身对该题目的提交情况与题目列表的题目数据同步。
 
-![训练题目列表](https://img-blog.csdnimg.cn/04264e545b034296b5a9f130b85dc985.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![训练题目列表](/04264e545b034296b5a9f130b85dc985.png)
 
 ### 2. 私有训练
 
@@ -45,4 +45,4 @@
 
 :::
 
-![私有训练榜单](https://img-blog.csdnimg.cn/66820e0888064a64b7f091ea60cb64b5.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGltaXRfWkg=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![私有训练榜单](/66820e0888064a64b7f091ea60cb64b5.png)

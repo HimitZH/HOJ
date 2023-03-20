@@ -14,7 +14,7 @@
 
 点击评测列表中的每个提交的状态，即可选择 **修改评测** 或 **取消评测**
 
-![取消评测](https://img-blog.csdnimg.cn/e279d10f27034767aba7a6fe81c605af.png)
+![取消评测](/e279d10f27034767aba7a6fe81c605af.png)
 
 
 
@@ -22,11 +22,11 @@
 
 1. 点击确认**取消评测**后，该提交会被标记为取消(**Cancelled**)的状态
 
-   ![取消评测](https://img-blog.csdnimg.cn/c1b462bbc01b433e9fc8cd4a641077e8.png)
+   ![取消评测](/c1b462bbc01b433e9fc8cd4a641077e8.png)
 
 2. 同时会有"人工评测"的标记，标致着被修改了，在"评测源"一栏会写明由某用户名进行人工评测。
 
-   ![取消评测](https://img-blog.csdnimg.cn/1e9fa6d4f446425c9213adb2027c77b0.png)
+   ![取消评测](/1e9fa6d4f446425c9213adb2027c77b0.png)
 
 ### 3. 修改评测结果
 
@@ -34,10 +34,10 @@
 
 - **ACM题目**的提交可以修改最终状态值，同时也会有"人工评测"的标记。
 
-![ACM题目修改评测](https://img-blog.csdnimg.cn/c50314e739ff4c38b6fbd41b9db674dc.png)
+![ACM题目修改评测](/c50314e739ff4c38b6fbd41b9db674dc.png)
 
 
 
 - **OI题目**的提交可以修改最终状态值和得分，同时也会有"人工评测"的标记。
 
-![OI题目修改评测](https://img-blog.csdnimg.cn/fb85cffa62e04b2cac3f40af3b5ac0d7.png)
+![OI题目修改评测](/fb85cffa62e04b2cac3f40af3b5ac0d7.png)
