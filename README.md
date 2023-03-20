@@ -99,51 +99,51 @@
 
 > 首页页面 
 
-![首页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/7409e6b5def6438385ddd59589afeb83.png)
+![首页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/7409e6b5def6438385ddd59589afeb83.png)
 
 
 
 > 首页英文
 
-![首页英文](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/f6792ddc05f34527bdf744fa4d6d5c88.png)
+![首页英文](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/f6792ddc05f34527bdf744fa4d6d5c88.png)
 
 ### 2. 站内消息
 
 > 站内消息系统
 
-![站内消息系统](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/a1a83ff01be84406954537e2ab78d999.png)
+![站内消息系统](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/a1a83ff01be84406954537e2ab78d999.png)
 
 
 
-![站内消息系统](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/513e7e37f52f48518c2fa1bf14eeea99.png)
+![站内消息系统](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/513e7e37f52f48518c2fa1bf14eeea99.png)
 
 ### 3. 题目
 
 > 题目列表页
 
-![题目列表页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/0ee61f329e094592b0a0cff55d12b404.png)
+![题目列表页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/0ee61f329e094592b0a0cff55d12b404.png)
 
 
 
 > 题目详情页
 
-![题目详情页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/9f872dc1974f45c389e084f0e31a5217.png)
+![题目详情页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/9f872dc1974f45c389e084f0e31a5217.png)
 
 ### 4. 训练
 
 > 训练列表页
 
-![训练列表页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/58ac74824fcf4963810beea7ba1203b9.png)
+![训练列表页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/58ac74824fcf4963810beea7ba1203b9.png)
 
 > 训练题目列表页
 
-![训练题目列表页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/b366a6a628984995b57a49c565a2ec47.png)
+![训练题目列表页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/b366a6a628984995b57a49c565a2ec47.png)
 
 ### 5.  比赛
 
 > 比赛列表页
 
-![比赛列表页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/00a0438a576d43edbab676b829a38922.png)
+![比赛列表页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/00a0438a576d43edbab676b829a38922.png)
 
 
 
@@ -153,30 +153,30 @@
 
 > 比赛详情首页
 
-![比赛详情页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/50026bde6dd64cd5929b38f8ecc6e72e.png)
+![比赛详情页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/50026bde6dd64cd5929b38f8ecc6e72e.png)
 
 > 比赛题目列表页
 
-![比赛题目列表](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/8646fc212b5c47e9b35e60634cfc8d6a.png)
+![比赛题目列表](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/8646fc212b5c47e9b35e60634cfc8d6a.png)
 
 > 比赛排行榜
 
 - ACM比赛
 
-  ![比赛排行榜](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/c50140e3b73d482d82ca6f13f47aa080.png)
+  ![比赛排行榜](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/c50140e3b73d482d82ca6f13f47aa080.png)
 
 
 
 - OI比赛
 
-  ![oi排行榜](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/67f6262854bb44efa70c374f1f156166.png)
+  ![oi排行榜](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/67f6262854bb44efa70c374f1f156166.png)
 
 
 
 
 - 滚榜
 
-  ![在这里插入图片描述](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/8f8258babd3f43f78802144e7ecf18fe.png)
+  ![在这里插入图片描述](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/8f8258babd3f43f78802144e7ecf18fe.png)
 
 
 
@@ -184,19 +184,19 @@
 
 > 提交列表页
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/20210609213021223.png)
+![在这里插入图片描述](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/20210609213021223.png)
 
 ### 7. 排行榜
 
 > 排行榜
 
-![排行榜](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/407ad16361f34b44a282b07af68825e0.png)
+![排行榜](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/407ad16361f34b44a282b07af68825e0.png)
 
 ### 8. 团队
 
-![团队列表页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/7988504326c843ef94e937a2b4f32f03.png)
+![团队列表页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/7988504326c843ef94e937a2b4f32f03.png)
 
-![团队题目列表页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/2c05e44f5a464381b9a357aff37b0086.png)
+![团队题目列表页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/2c05e44f5a464381b9a357aff37b0086.png)
 
 
 
@@ -204,25 +204,25 @@
 
 > 公共讨论区
 
-![公共讨论区](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/20210513134216723.png)
+![公共讨论区](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/20210513134216723.png)
 
 
 
 > 评论组件
 
-![评论组件](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/20210513142826730.png)
+![评论组件](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/20210513142826730.png)
 
 ### 10. 个人
 
 > 个人首页
 
-![个人首页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/7d3e99dbc6fe4739a0720fcc019b2b6e.png)
+![个人首页](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/7d3e99dbc6fe4739a0720fcc019b2b6e.png)
 
 
 
 > 个人设置页
 
-![个人设置](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/971566eeac674d388b9f5d6064286e14.png)
+![个人设置](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/971566eeac674d388b9f5d6064286e14.png)
 
 
 
@@ -230,7 +230,7 @@
 
 > 管理后台首页
 
-![管理后端](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/9b9674c0f30a441bb200a32756f24d2c.png)
+![管理后端](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/9b9674c0f30a441bb200a32756f24d2c.png)
 
 
 
@@ -238,8 +238,8 @@
 
 > 部分手机端显示
 
-![手机端](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/c7b3648217af4899bedf7f7d804968ba.png)
+![手机端](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/c7b3648217af4899bedf7f7d804968ba.png)
 
 
 
-![评论区](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/master/docs/docs/.vuepress/public/20210509233845230.png)
+![评论区](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/20210509233845230.png)
