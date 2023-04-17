@@ -83,7 +83,7 @@
 1. 下载
 
    ```shell
-   sudo curl -L https://get.daocloud.io/docker/compose/releases/download/1.25.5/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+   sudo curl -L https://github.com/docker/compose/releases/download/1.28.6/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
    ```
 
 2. 授权
