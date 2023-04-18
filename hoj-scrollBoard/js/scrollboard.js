@@ -857,7 +857,7 @@ Team.prototype.init = function(board) {
         p.submitCount++;
 		if (!p.isAccepted && sub.resultId!=7) p.realCount++;
         //更新AC状态
-        p.isAccepted = (sub.resultId == 0);
+        if(!p.isAccepted&&sub.resultId == 0)p.isAccepted = true;
         //如果当前提交AC
         if (p.isAccepted) {
             //则保存AC时间
@@ -1296,7 +1296,7 @@ Board.prototype.updateTeamStatus = function(team) {
                 //传参，不懂原理，用此可以在动画的回调函数使用参数
                 (function(thisBoard, tProblem, problemHTML) {
                     //闪烁两次后显示未知题目的结果
-                    var speed = 300; //闪烁速度
+                    var speed = 150; //闪烁速度
                     $statusSpan.fadeOut(speed).fadeIn(speed).fadeOut(speed).fadeIn(speed, function() {
                         //更新题目表现状态
                         $(this).parent().html(problemHTML);
@@ -1309,7 +1309,7 @@ Board.prototype.updateTeamStatus = function(team) {
     //传参，不懂原理，用此可以在动画的回调函数使用参数
     (function(thisBoard, team) {
         //延时1.2s
-        $('#timer').animate({ margin: 0 }, 1200, function() {
+        $('#timer').animate({ margin: 0 }, 600, function() {
 
             /*
             更新Rank
