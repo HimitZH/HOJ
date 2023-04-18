@@ -857,7 +857,7 @@ Team.prototype.init = function(board) {
         p.submitCount++;
 		if (!p.isAccepted && sub.resultId!=7) p.realCount++;
         //更新AC状态
-        p.isAccepted = sub.resultId == 0;
+        p.isAccepted = (sub.resultId == 0);
         //如果当前提交AC
         if (p.isAccepted) {
             //则保存AC时间
