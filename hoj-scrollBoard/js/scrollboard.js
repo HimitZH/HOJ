@@ -842,7 +842,7 @@ Team.prototype.init = function(board) {
         //设置alphabetId
         p.alphabetId = sub.alphabetId;
         //已经AC的题目不再计算
-        if (p.isAccepted && p.acceptedTime < freezeBoardTime - startTime) continue;
+        if (p.isAccepted) continue;
 		if (sub.resultId == 7) continue;
 		if (sub.resultId==-1){
             p.isUnkonwn = true;
