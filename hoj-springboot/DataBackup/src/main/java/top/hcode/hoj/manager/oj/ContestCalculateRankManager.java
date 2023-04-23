@@ -250,6 +250,10 @@ public class ContestCalculateRankManager {
                 continue;
             }
 
+            if (!DateUtil.isIn(contestRecord.getSubmitTime(), contest.getStartTime(), contest.getEndTime())) { // 非比赛时间的提交记录不入排行榜
+                continue;
+            }
+
             ACMContestRankVO ACMContestRankVo;
             if (!uidMapIndex.containsKey(contestRecord.getUid())) { // 如果该用户信息没还记录
 
@@ -502,6 +506,10 @@ public class ContestCalculateRankManager {
         for (ContestRecordVO contestRecord : oiContestRecord) {
 
             if (superAdminUidList.contains(contestRecord.getUid())) { // 超级管理员的提交不入排行榜
+                continue;
+            }
+
+            if (!DateUtil.isIn(contestRecord.getSubmitTime(), contest.getStartTime(), contest.getEndTime())) { // 非比赛时间的提交记录不入排行榜
                 continue;
             }
 
