@@ -1105,7 +1105,9 @@ export default {
                 this.problem.testCaseScore.forEach((item, index) => {
                   item.index = index + 1;
                 });
-                this.$refs.xTable.sort("groupNum", "asc");
+                if(this.$refs.xTable != undefined){
+                  this.$refs.xTable.sort("groupNum", "asc");
+                }
               } else {
                 this.problemSamples = res.data.data;
                 if (

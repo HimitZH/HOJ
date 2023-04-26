@@ -278,14 +278,13 @@
         </vxe-table-column>
       </vxe-table>
 
-      <div class="panel-options">
+      <div class="panel-options" v-if="showPagination">
         <el-pagination
-          v-if="showPagination"
           class="page"
           layout="prev, pager, next, sizes"
           @current-change="currentChange"
-          :page-size="query.pageSize"
-          :total="total"
+          :page-size.sync="query.pageSize"
+          :total.sync="total"
           :current-page.sync="query.currentPage"
           @size-change="onPageSizeChange"
           :page-sizes="[10, 30, 50, 100]"
@@ -415,7 +414,7 @@ export default {
       this.routeName = this.$route.name;
       let query = this.$route.query;
       this.query.currentPage = query.currentPage || 1;
-      this.query.pageSize = query.pageSize || 10;
+      this.query.pageSize = parseInt(query.pageSize) || 10;
       this.query.keyword = query.keyword;
       this.query.problemListAuth = query.problemListAuth
         ? parseInt(query.problemListAuth)
@@ -498,6 +497,7 @@ export default {
       }
       this.loading = true;
       if (this.routeName === 'admin-problem-list') {
+        this.showPagination = false;
         api.admin_getProblemList(params).then(
           (res) => {
             this.loading = false;
@@ -511,6 +511,7 @@ export default {
           }
         );
       } else {
+        this.showPagination = false;
         api.admin_getContestProblemList(params).then(
           (res) => {
             this.loading = false;
