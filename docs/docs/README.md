@@ -48,7 +48,9 @@ Hcode Online Judge (HOJ) : 基于前后端分离，分布式架构的在线测�
 ## 联系我们
 
 QQ: [372347736](https://wpa.qq.com/msgrd?v=3&uin=372347736&site=qq&menu=yes)  
-HOJ交流群: [598587305](https://qm.qq.com/cgi-bin/qm/qr?k=WWGBZ5gfDiBZOcpNvM8xnZTfUq7BT4Rs&jump_from=webapi)
+HOJ交流群1: [598587305](https://qm.qq.com/cgi-bin/qm/qr?k=WWGBZ5gfDiBZOcpNvM8xnZTfUq7BT4Rs&jump_from=webapi) （已满）
+
+HOJ交流群2: [743568562](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=-W6_SIFnF-hEMeojR5jr3VcZH3Z2pVNe&authKey=%2F6VXOpBmJuPqhU6LwECyoeHk8Ise4ub5yzJ4oG2Qf%2FUfP3RJOz0TsXkUIGW0MlbL&noverify=0&group_code=743568562)
 
 ## 支持我们
 

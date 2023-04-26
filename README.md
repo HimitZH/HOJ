@@ -1,4 +1,6 @@
-# Hcode Online Judge（HOJ）
+HOJ交流群1: [598587305](https://qm.qq.com/cgi-bin/qm/qr?k=WWGBZ5gfDiBZOcpNvM8xnZTfUq7BT4Rs&jump_from=webapi) （已满）
+
+HOJ交流群2: [743568562](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=-W6_SIFnF-hEMeojR5jr3VcZH3Z2pVNe&authKey=%2F6VXOpBmJuPqhU6LwECyoeHk8Ise4ub5yzJ4oG2Qf%2FUfP3RJOz0TsXkUIGW0MlbL&noverify=0&group_code=743568562)Hcode Online Judge（HOJ）
 
 ![logo](./logo.png)
 
@@ -25,9 +27,9 @@
 - **完善的评测功能：普通测评、特殊测评、交互测评、在线自测、子任务分组评测**
 - **完善的比赛功能：打星队伍、关注队伍、外榜、滚榜**
 
-|               在线Demo               |                   在线文档                   |             Github&Gitee仓库地址             |    QQ群    |
-| :--------------------------------: | :--------------------------------------: | :--------------------------------------: | :-------: |
-| [https://hdoi.cn](https://hdoi.cn) | [https://docs.hdoi.cn](https://docs.hdoi.cn) | [https://github.com/HimitZH/HOJ](https://github.com/HimitZH/HOJ)  [https://gitee.com/himitzh0730/hoj](https://gitee.com/himitzh0730/hoj) | 598587305 |
+|               在线Demo               |                   在线文档                   |             Github&Gitee仓库地址             |           QQ群           |
+| :--------------------------------: | :--------------------------------------: | :--------------------------------------: | :---------------------: |
+| [https://hdoi.cn](https://hdoi.cn) | [https://docs.hdoi.cn](https://docs.hdoi.cn) | [https://github.com/HimitZH/HOJ](https://github.com/HimitZH/HOJ)  [https://gitee.com/himitzh0730/hoj](https://gitee.com/himitzh0730/hoj) | 598587305（已满）、743568562 |
 
 **注意：**
 

@@ -26,9 +26,9 @@
 - Perfect contest function：**Star team、 Attention team、 External Rank、Scroll Board**
 - **Support group and discussion area function**
 
-|            Online Demo             |                Documents                 |               Github&Gitee               | QQ Group  |
-| :--------------------------------: | :--------------------------------------: | :--------------------------------------: | :-------: |
-| [https://hdoi.cn](https://hdoi.cn) | [https://docs.hdoi.cn](https://docs.hdoi.cn) | [https://github.com/HimitZH/HOJ](https://github.com/HimitZH/HOJ)  [https://gitee.com/himitzh0730/hoj](https://gitee.com/himitzh0730/hoj) | 598587305 |
+|            Online Demo             |                Documents                 |               Github&Gitee               |         QQ Group          |
+| :--------------------------------: | :--------------------------------------: | :--------------------------------------: | :-----------------------: |
+| [https://hdoi.cn](https://hdoi.cn) | [https://docs.hdoi.cn](https://docs.hdoi.cn) | [https://github.com/HimitZH/HOJ](https://github.com/HimitZH/HOJ)  [https://gitee.com/himitzh0730/hoj](https://gitee.com/himitzh0730/hoj) | 598587305（Full）、743568562 |
 
 ## Installation
 
