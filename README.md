@@ -1,6 +1,4 @@
-HOJ交流群1: [598587305](https://qm.qq.com/cgi-bin/qm/qr?k=WWGBZ5gfDiBZOcpNvM8xnZTfUq7BT4Rs&jump_from=webapi) （已满）
-
-HOJ交流群2: [743568562](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=-W6_SIFnF-hEMeojR5jr3VcZH3Z2pVNe&authKey=%2F6VXOpBmJuPqhU6LwECyoeHk8Ise4ub5yzJ4oG2Qf%2FUfP3RJOz0TsXkUIGW0MlbL&noverify=0&group_code=743568562)Hcode Online Judge（HOJ）
+# Hcode Online Judge（HOJ）
 
 ![logo](./logo.png)
 
