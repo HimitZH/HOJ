@@ -282,10 +282,8 @@ const ojApi = {
     })
   },
 
-  getProblemList(limit, searchParams) {
-    let params = {
-      limit
-    }
+  getProblemList(searchParams) {
+    let params = {}
     Object.keys(searchParams).forEach((element) => {
       if (searchParams[element] !== '' && searchParams[element] !== null && searchParams[element] !== undefined) {
         params[element] = searchParams[element]

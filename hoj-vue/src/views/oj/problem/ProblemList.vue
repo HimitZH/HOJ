@@ -433,6 +433,7 @@ export default {
         this.query.tagId = [];
       }
       this.query.currentPage = parseInt(query.currentPage) || 1;
+      this.limit = parseInt(query.limit) || 30;
       if (this.query.currentPage < 1) {
         this.query.currentPage = 1;
       }
@@ -446,6 +447,7 @@ export default {
       this.query.tagId = JSON.stringify(
         this.filterTagList.map((tagJson) => tagJson.id)
       );
+      this.query.limit = this.limit;
       this.$router.push({
         path: '/problem',
         query: this.query,
@@ -453,7 +455,7 @@ export default {
     },
     onPageSizeChange(pageSize) {
       this.limit = pageSize;
-      this.getProblemList();
+      this.pushRouter();
     },
     getPercentage(partNumber, total) {
       return partNumber == 0
@@ -511,8 +513,9 @@ export default {
         queryParams.oj = 'Mine';
       }
       queryParams.tagId = queryParams.tagId + '';
+      queryParams.limit = this.limit;
       this.loadings.table = true;
-      api.getProblemList(this.limit, queryParams).then(
+      api.getProblemList(queryParams).then(
         (res) => {
           this.total = res.data.data.total;
           this.problemList = res.data.data.records;
