@@ -34,51 +34,84 @@
                   class="panel-title"
                 >
                   <span>{{ problemData.problem.title }}</span><br />
-                  <span v-if="contestID && !contestEnded">
-                    <el-tag
-                      effect="plain"
-                      size="small"
-                    >{{
-                      $t('m.Contest_Problem')
-                    }}</el-tag>
-                  </span>
-                  <div
-                    v-else-if="problemData.tags.length > 0"
-                    class="problem-tag"
-                  >
-                    <el-popover
-                      placement="right-start"
-                      width="60"
-                      trigger="hover"
+                  <div class="problem-tag">
+                    <span v-if="problemData.problem.isFileIO"
+                      style="padding-right: 10px">
+                      <el-popover
+                        placement="bottom"
+                        trigger="hover"
+                      >
+                      <el-tag
+                          slot="reference"
+                          size="medium"
+                          type="warning"
+                          style="cursor: pointer;"
+                          effect="dark"
+                      ><i class="el-icon-document"> {{ $t('m.File_IO') }}</i>
+                      </el-tag>
+                      <table style="white-space: nowrap;">
+                        <tbody>
+                          <tr>
+                            <td align="right" style="padding-right: 10px">
+                            <strong>{{ $t('m.Input_File') }}</strong>
+                            </td>
+                            <td>{{ problemData.problem.ioReadFileName }}</td>
+                          </tr>
+                          <tr>
+                            <td align="right" style="padding-right: 10px">
+                              <strong>{{ $t('m.Output_File') }}</strong>
+                            </td>
+                            <td>{{ problemData.problem.ioWriteFileName }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      </el-popover>
+                    </span>
+                    <span v-if="contestID && !contestEnded">
+                      <el-tag
+                        effect="plain"
+                        size="medium"
+                      >{{
+                        $t('m.Contest_Problem')
+                      }}</el-tag>
+                    </span>
+                    <span
+                      v-else-if="problemData.tags.length > 0"
+                    >
+                      <el-popover
+                        placement="right-start"
+                        width="60"
+                        trigger="hover"
+                      >
+                        <el-tag
+                          slot="reference"
+                          size="medium"
+                          type="primary"
+                          style="cursor: pointer;"
+                          effect="plain"
+                        >{{ $t('m.Show_Tags') }} <i class="el-icon-caret-bottom"></i></el-tag>
+                        <el-tag
+                          v-for="(tag, index) in problemData.tags"
+                          :key="index"
+                          size="small"
+                          :color="tag.color ? tag.color : '#409eff'"
+                          effect="dark"
+                          style="margin-right:5px;margin-top:2px"
+                        >{{ tag.name }}</el-tag>
+                      </el-popover>
+                    </span>
+                    <span
+                      v-else-if="problemData.tags.length == 0"
                     >
                       <el-tag
-                        slot="reference"
-                        size="small"
-                        type="primary"
-                        style="cursor: pointer;"
                         effect="plain"
-                      >{{ $t('m.Show_Tags') }}</el-tag>
-                      <el-tag
-                        v-for="(tag, index) in problemData.tags"
-                        :key="index"
-                        size="small"
-                        :color="tag.color ? tag.color : '#409eff'"
-                        effect="dark"
-                        style="margin-right:5px;margin-top:2px"
-                      >{{ tag.name }}</el-tag>
-                    </el-popover>
+                        size="medium"
+                      >{{
+                        $t('m.No_tag')
+                      }}</el-tag>
+                    </span>
                   </div>
-                  <div
-                    v-else-if="problemData.tags.length == 0"
-                    class="problem-tag"
-                  >
-                    <el-tag
-                      effect="plain"
-                      size="small"
-                    >{{
-                      $t('m.No_tag')
-                    }}</el-tag>
-                  </div>
+                  
                   <div class="problem-menu">
                     <span v-if="isShowProblemDiscussion">
                       <el-link
