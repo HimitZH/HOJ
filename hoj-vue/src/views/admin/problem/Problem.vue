@@ -1537,6 +1537,11 @@ export default {
         }
       }
 
+      if(this.problem.isFileIO && (!this.problem.ioReadFileName || !this.problem.ioWriteFileName)){
+        myMessage.error(this.$i18n.t("m.When_the_read_write_mode_is_File_IO_the_input_file_name_or_output_file_name_cannot_be_empty"));
+        return;
+      }
+
       // // 不强制校验题目样例不能为空
       // if (!this.problem.examples.length && !this.problem.isRemote) {
       //   myMessage.error(

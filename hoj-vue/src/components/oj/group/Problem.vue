@@ -1486,6 +1486,12 @@ export default {
           return;
         }
       }
+
+      if(this.problem.isFileIO && (!this.problem.ioReadFileName || !this.problem.ioWriteFileName)){
+        mMessage.error(this.$i18n.t("m.When_the_read_write_mode_is_File_IO_the_input_file_name_or_output_file_name_cannot_be_empty"));
+        return;
+      }
+
       if (!this.problem.isRemote) {
         if (!this.problem.isUploadCase) {
           if (!this.problemSamples.length) {

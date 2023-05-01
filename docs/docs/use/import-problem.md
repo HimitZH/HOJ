@@ -80,9 +80,12 @@
       "hint": "", // 题目提示
       "isRemoveEndBlank": true, // 评测数据的输出是否自动去掉行末空格
       "openCaseResult": true,  // 是否允许用户看到各个评测点的结果
-      "judgeCaseMode":"default" // default、ergodic_without_error
+      "judgeCaseMode":"default", // default、ergodic_without_error
        // "spjLanguage:"C" // 特殊判题的程序代码语言
-      // "spjCode":"" // 特殊判题的代码
+      // "spjCode":"" // 特殊判题的代码，
+      "isFileIO": false, // 是否为文件IO输入输出，
+      "ioReadFileName":null, // 题目指定的file io输入文件的名称
+      "ioWriteFileName": null, // 题目指定的file io输出文件的名称
   }, 
   "codeTemplates": [
       {

@@ -270,6 +270,7 @@ export const m = {
   File_IO: '文件 IO',
   Input_File_Name: '输入文件名称',
   Output_File_Name: '输出文件名称',
+  When_the_read_write_mode_is_File_IO_the_input_file_name_or_output_file_name_cannot_be_empty:'读写模式为文件IO时，输入文件名或输出文件名不能为空！',
   Problem_Sample: '测试用例',
   Sample_Input: '用例输入',
   Sample_Output: '用例输出',

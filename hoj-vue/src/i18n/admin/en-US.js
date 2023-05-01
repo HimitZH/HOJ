@@ -270,6 +270,7 @@ export const m = {
   File_IO: 'File IO',
   Input_File_Name: 'Input File Name',
   Output_File_Name: 'Output File Name',
+  When_the_read_write_mode_is_File_IO_the_input_file_name_or_output_file_name_cannot_be_empty: 'When the read-write mode is File IO, the input file name or output file name cannot be empty',
   Judge_Samples: 'Judge Samples',
   Problem_Sample: 'Sample',
   Sample_Input: 'Sample Input',

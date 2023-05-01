@@ -241,8 +241,8 @@ exe_path: spj
 compile:
   env: default
   command: /usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {src_path} -lm -o {exe_path}
-  maxCpuTime: 3s
-  maxRealTime: 10s
+  maxCpuTime: 8s
+  maxRealTime: 15s
   maxMemory: 512mb
 run:
   env: default
@@ -255,8 +255,8 @@ exe_path: spj
 compile:
   env: default
   command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {src_path} -lm -o {exe_path}
-  maxCpuTime: 10s
-  maxRealTime: 20s
+  maxCpuTime: 15s
+  maxRealTime: 25s
   maxMemory: 512mb
 run:
   env: default
@@ -269,8 +269,8 @@ exe_path: interactive
 compile:
   env: default
   command: /usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {src_path} -lm -o {exe_path}
-  maxCpuTime: 3s
-  maxRealTime: 10s
+  maxCpuTime: 8s
+  maxRealTime: 15s
   maxMemory: 512mb
 run:
   env: default
@@ -283,8 +283,8 @@ exe_path: interactive
 compile:
   env: default
   command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {src_path} -lm -o {exe_path}
-  maxCpuTime: 10s
-  maxRealTime: 20s
+  maxCpuTime: 15s
+  maxRealTime: 25s
   maxMemory: 512mb
 run:
   env: default
