@@ -1029,3 +1029,36 @@ DELIMITER ;
 CALL add_Language_Change ;
 
 DROP PROCEDURE add_Language_Change;
+
+
+/*
+* 2023.05.01  增加读写模式 支持文件IO
+			 
+*/
+DROP PROCEDURE
+IF EXISTS add_Problem_FileIO;
+DELIMITER $$
+ 
+CREATE PROCEDURE add_Problem_FileIO ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'problem'
+	AND column_name = 'is_file_io'
+) THEN
+	
+	ALTER TABLE `hoj`.`problem`  ADD COLUMN `is_file_io` tinyint(1) DEFAULT '0' COMMENT '是否是file io自定义输入输出文件模式';
+	ALTER TABLE `hoj`.`problem`  ADD COLUMN `io_read_file_name` VARCHAR(255) NULL COMMENT '题目指定的file io输入文件的名称';
+	ALTER TABLE `hoj`.`problem`  ADD COLUMN `io_write_file_name` VARCHAR(255) NULL COMMENT '题目指定的file io输出文件的名称';
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL add_Problem_FileIO ;
+
+DROP PROCEDURE add_Problem_FileIO;

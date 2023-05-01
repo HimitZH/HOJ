@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.BooleanUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -296,6 +297,9 @@ public class SandboxRun {
      * @param exeName         评测的用户程序名称
      * @param fileId          评测的用户程序文件id
      * @param fileContent     评测的用户程序文件内容，如果userFileId存在则为null
+     * @param isFileIO        是否为文件IO
+     * @param ioReadFileName  题目指定的io输入文件的名称
+     * @param ioWriteFileName 题目指定的io输出文件的名称
      * @MethodName testCase
      * @Description 普通评测
      * @Return JSONArray
@@ -311,29 +315,35 @@ public class SandboxRun {
                                      Integer maxStack,
                                      String exeName,
                                      String fileId,
-                                     String fileContent) throws SystemError {
+                                     String fileContent,
+                                     Boolean isFileIO,
+                                     String ioReadFileName,
+                                     String ioWriteFileName) throws SystemError {
 
         JSONObject cmd = new JSONObject();
         cmd.set("args", args);
         cmd.set("env", envs);
 
         JSONArray files = new JSONArray();
-        JSONObject content = new JSONObject();
+
+        JSONObject testCaseInput = new JSONObject();
         if (StringUtils.isEmpty(testCasePath)) {
-            content.set("content", testCaseContent);
+            testCaseInput.set("content", testCaseContent);
         } else {
-            content.set("src", testCasePath);
+            testCaseInput.set("src", testCasePath);
         }
 
-        JSONObject stdout = new JSONObject();
-        stdout.set("name", "stdout");
-        stdout.set("max", maxOutputSize);
+        if (BooleanUtils.isFalse(isFileIO)) {
+            JSONObject stdout = new JSONObject();
+            stdout.set("name", "stdout");
+            stdout.set("max", maxOutputSize);
+            files.put(testCaseInput);
+            files.put(stdout);
+        }
 
         JSONObject stderr = new JSONObject();
         stderr.set("name", "stderr");
         stderr.set("max", 1024 * 1024 * 16);
-        files.put(content);
-        files.put(stdout);
         files.put(stderr);
 
         cmd.set("files", files);
@@ -355,8 +365,18 @@ public class SandboxRun {
         JSONObject copyIn = new JSONObject();
         copyIn.set(exeName, exeFile);
 
+        JSONArray copyOut = new JSONArray();
+        copyOut.put("stderr");
+        if (BooleanUtils.isFalse(isFileIO)){
+            copyOut.put("stdout");
+        }else{
+            copyIn.set(ioReadFileName, testCaseInput);
+            // 在文件名之后加入 '?' 来使文件变为可选，可选文件不存在的情况不会触发 FileError
+            copyOut.put(ioWriteFileName + "?");
+        }
+
         cmd.set("copyIn", copyIn);
-        cmd.set("copyOut", new JSONArray().put("stdout").put("stderr"));
+        cmd.set("copyOut", copyOut);
 
         JSONObject param = new JSONObject();
         param.set("cmd", new JSONArray().put(cmd));
@@ -660,7 +680,7 @@ public class SandboxRun {
         Json Request Body
         {
             "cmd": [{
-                "args": ["/usr/bin/g++", "a.cc", "-o", "a"],
+                "args": ["/usr/bin/g++", "a.c", "-o", "a"],
                 "env": ["PATH=/usr/bin:/bin"],
                 "files": [{
                     "content": ""
@@ -675,7 +695,7 @@ public class SandboxRun {
                 "memoryLimit": 104857600,
                 "procLimit": 50,
                 "copyIn": {
-                    "a.cc": {
+                    "a.c": {
                         "content": "#include <iostream>\nusing namespace std;\nint main() {\nint a, b;\ncin >> a >> b;\ncout << a + b << endl;\n}"
                     }
                 },

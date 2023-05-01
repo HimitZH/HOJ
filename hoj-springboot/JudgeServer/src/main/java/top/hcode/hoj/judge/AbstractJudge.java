@@ -4,6 +4,7 @@ import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
+import org.apache.commons.lang.BooleanUtils;
 import org.springframework.util.StringUtils;
 import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.judge.entity.JudgeDTO;
@@ -55,9 +56,11 @@ public abstract class AbstractJudge {
     public abstract JSONArray judgeCase(JudgeDTO judgeDTO, JudgeGlobalDTO judgeGlobalDTO) throws SystemError;
 
     private JSONObject process(JudgeDTO judgeDTO, JudgeGlobalDTO judgeGlobalDTO, JSONArray judgeResultList) throws SystemError {
+
+        String stdoutName = BooleanUtils.isTrue(judgeGlobalDTO.getIsFileIO()) ? judgeGlobalDTO.getIoWriteFileName() : "stdout";
         JSONObject judgeResult = (JSONObject) judgeResultList.get(0);
         SandBoxRes sandBoxRes = SandBoxRes.builder()
-                .stdout(((JSONObject) judgeResult.get("files")).getStr("stdout"))
+                .stdout(((JSONObject) judgeResult.get("files")).getStr(stdoutName, ""))
                 .stderr(((JSONObject) judgeResult.get("files")).getStr("stderr"))
                 .time(judgeResult.getLong("time") / 1000000) //  ns->ms
                 .memory(judgeResult.getLong("memory") / 1024) // b-->kb

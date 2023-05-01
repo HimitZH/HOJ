@@ -88,7 +88,10 @@ public class JudgeServiceImpl implements JudgeService {
                         "spj_code",
                         "spj_language",
                         "problem_id",
-                        "is_remove_end_blank")
+                        "is_remove_end_blank",
+                        "is_file_io",
+                        "io_read_file_name",
+                        "io_write_file_name")
                 .eq("id", judge.getPid());
         Problem problem = problemEntityService.getOne(problemQueryWrapper);
         Judge finalJudgeRes = judgeContext.Judge(problem, judge);

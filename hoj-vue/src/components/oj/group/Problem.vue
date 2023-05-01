@@ -447,6 +447,45 @@
               </el-col>
             </el-row>
           </template>
+
+          <template v-if="!problem.isRemote">
+            <div class="panel-title home-title">
+              {{ $t('m.Read_Write_Mode') }}
+            </div>
+            <el-row :gutter="20">
+              <el-col :xs="24" :md="8">
+                <el-form-item
+                    required
+                  >
+                    <el-radio-group
+                      v-model="problem.isFileIO"
+                    >
+                      <el-radio :label="false">
+                        {{  $t('m.Standard_IO')}}
+                      </el-radio>
+                      <el-radio :label="true">
+                        {{  $t('m.File_IO')}}
+                      </el-radio>
+                    </el-radio-group>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :md="8">
+                <el-form-item v-if="problem.isFileIO">
+                  <el-input  v-model="problem.ioReadFileName" size="small">
+                      <template slot="prepend">{{  $t('m.Input_File_Name')}}</template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :xs="24" :md="8">
+                <el-form-item v-if="problem.isFileIO">
+                  <el-input v-model="problem.ioWriteFileName" size="small">
+                    <template slot="prepend">{{  $t('m.Output_File_Name')}}</template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </template>
+
           <template v-if="!problem.isRemote">
             <div class="panel-title home-title">
               {{ $t('m.Judge_Mode') }}
@@ -909,6 +948,9 @@ export default {
         userExtraFile: "",
         judgeExtraFile: "",
         gid: null,
+        isFileIO: false,
+        ioReadFileName: null,
+        ioWriteFileName: null
       },
       problemTags: [],
       problemLanguages: [],
@@ -1000,6 +1042,9 @@ export default {
         judgeCaseMode: "default",
         userExtraFile: null,
         judgeExtraFile: null,
+        isFileIO: false,
+        ioReadFileName: null,
+        ioWriteFileName: null
       };
       if (this.contestId) {
         this.problem.cid = this.reProblem.cid = this.contestId;

@@ -79,4 +79,19 @@ public class TestJudgeReq implements Serializable {
      */
     private String problemJudgeMode;
 
+    /**
+     * 是否是file io自定义输入输出文件模式
+     */
+    private Boolean isFileIO;
+
+    /***
+     * 题目指定的io file输入文件的名称
+     */
+    private String ioReadFileName;
+
+    /***
+     * 题目指定的io file输出文件的名称
+     */
+    private String ioWriteFileName;
+
 }

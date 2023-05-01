@@ -129,6 +129,18 @@ public class Problem implements Serializable {
     @ApiModelProperty(value = "申请公开的进度：null为未申请，1为申请中，2为申请通过，3为申请拒绝")
     private Integer applyPublicProgress;
 
+    @ApiModelProperty(value = "是否是file io自定义输入输出文件模式")
+    @TableField(value="is_file_io")
+    private Boolean isFileIO;
+
+    @ApiModelProperty(value = "题目指定的file io输入文件的名称")
+    @TableField(value="io_read_file_name")
+    private String ioReadFileName;
+
+    @ApiModelProperty(value = "题目指定的file io输出文件的名称")
+    @TableField(value="io_write_file_name")
+    private String ioWriteFileName;
+
     @TableField(fill = FieldFill.INSERT)
     private Date gmtCreate;
 

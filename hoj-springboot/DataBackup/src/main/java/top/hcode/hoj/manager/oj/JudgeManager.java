@@ -196,7 +196,10 @@ public class JudgeManager {
                 .setExpectedOutput(testJudgeDto.getExpectedOutput())
                 .setTestCaseInput(testJudgeDto.getUserInput())
                 .setProblemJudgeMode(problem.getJudgeMode())
-                .setIsRemoveEndBlank(problem.getIsRemoveEndBlank() || problem.getIsRemote());
+                .setIsRemoveEndBlank(problem.getIsRemoveEndBlank() || problem.getIsRemote())
+                .setIsFileIO(problem.getIsFileIO())
+                .setIoReadFileName(problem.getIoReadFileName())
+                .setIoWriteFileName(problem.getIoWriteFileName());
         String userExtraFile = problem.getUserExtraFile();
         if (!StringUtils.isEmpty(userExtraFile)) {
             testJudgeReq.setExtraFile((HashMap<String, String>) JSONUtil.toBean(userExtraFile, Map.class));

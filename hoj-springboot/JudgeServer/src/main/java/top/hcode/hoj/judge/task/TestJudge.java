@@ -37,7 +37,10 @@ public class TestJudge extends AbstractJudge {
                 judgeGlobalDTO.getMaxStack(),
                 runConfig.getExeName(),
                 judgeGlobalDTO.getUserFileId(),
-                judgeGlobalDTO.getUserFileContent());
+                judgeGlobalDTO.getUserFileContent(),
+                judgeGlobalDTO.getIsFileIO(),
+                judgeGlobalDTO.getIoReadFileName(),
+                judgeGlobalDTO.getIoWriteFileName());
     }
 
     @Override

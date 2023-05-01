@@ -7,10 +7,7 @@ import top.hcode.hoj.common.exception.SystemError;
 import top.hcode.hoj.judge.entity.JudgeDTO;
 import top.hcode.hoj.judge.entity.JudgeGlobalDTO;
 import top.hcode.hoj.judge.entity.LanguageConfig;
-import top.hcode.hoj.judge.task.DefaultJudge;
-import top.hcode.hoj.judge.task.InteractiveJudge;
-import top.hcode.hoj.judge.task.SpecialJudge;
-import top.hcode.hoj.judge.task.TestJudge;
+import top.hcode.hoj.judge.task.*;
 import top.hcode.hoj.pojo.dto.TestJudgeReq;
 import top.hcode.hoj.pojo.dto.TestJudgeRes;
 import top.hcode.hoj.pojo.entity.problem.Problem;
@@ -99,6 +96,9 @@ public class JudgeRun {
                 .interactiveRunConfig(interactiveConfig)
                 .needUserOutputFile(getUserOutput)
                 .removeEOLBlank(problem.getIsRemoveEndBlank())
+                .isFileIO(problem.getIsFileIO())
+                .ioReadFileName(problem.getIoReadFileName())
+                .ioWriteFileName(problem.getIoWriteFileName())
                 .build();
 
 
@@ -365,6 +365,9 @@ public class JudgeRun {
                 .maxTime((long) testJudgeReq.getTimeLimit())
                 .maxStack(testJudgeReq.getStackLimit())
                 .removeEOLBlank(testJudgeReq.getIsRemoveEndBlank())
+                .isFileIO(testJudgeReq.getIsFileIO())
+                .ioReadFileName(testJudgeReq.getIoReadFileName())
+                .ioWriteFileName(testJudgeReq.getIoWriteFileName())
                 .runConfig(runConfig)
                 .build();
 
