@@ -57,6 +57,8 @@ public class RemoteJudgeToSubmit {
                 }
             }
 
+            errLog = "[" + remoteJudgeDTO.getOj() + "] Submitted Failed! Failed to obtain the ID submitted by the platform!";
+
             // 更新此次提交状态为提交失败！
             UpdateWrapper<Judge> judgeUpdateWrapper = new UpdateWrapper<>();
             judgeUpdateWrapper.set("status", Constants.Judge.STATUS_SUBMITTED_FAILED.getStatus())

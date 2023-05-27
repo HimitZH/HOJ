@@ -173,8 +173,12 @@ public class AtCoderJudge extends RemoteJudgeStrategy {
     private Long getMaxRunId(String username, String contestId, String problemId) {
         // 清除当前线程的cookies缓存
         HttpRequest.getCookieManager().getCookieStore().removeAll();
+        RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
         String url = HOST + String.format("/contests/%s/submissions?f.Task=%s&f.User=%s", contestId, problemId, username);
-        String body = HttpUtil.get(url);
+        HttpRequest httpRequest = HttpUtil.createGet(url);
+        httpRequest.cookie(remoteJudgeDTO.getCookies());
+        httpRequest.addHeaders(headers);
+        String body = httpRequest.execute().body();
         String maxRunId = ReUtil.get("<a href=\"/contests/" + contestId + "/submissions/(\\d+)\">Detail</a>", body, 1);
         return maxRunId != null ? Long.parseLong(maxRunId) : -1L;
     }
