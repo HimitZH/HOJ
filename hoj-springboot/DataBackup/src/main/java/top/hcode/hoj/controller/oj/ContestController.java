@@ -95,17 +95,19 @@ public class ContestController {
      */
     @GetMapping("/get-contest-problem")
     @RequiresAuthentication
-    public CommonResult<List<ContestProblemVO>> getContestProblem(@RequestParam(value = "cid", required = true) Long cid) {
+    public CommonResult<List<ContestProblemVO>> getContestProblem(@RequestParam(value = "cid", required = true) Long cid,
+                                                                  @RequestParam(value = "containsEnd", defaultValue = "false") Boolean containsEnd) {
 
-        return contestService.getContestProblem(cid);
+        return contestService.getContestProblem(cid, containsEnd);
     }
 
     @GetMapping("/get-contest-problem-details")
     @RequiresAuthentication
     public CommonResult<ProblemInfoVO> getContestProblemDetails(@RequestParam(value = "cid", required = true) Long cid,
-                                                                @RequestParam(value = "displayId", required = true) String displayId) {
+                                                                @RequestParam(value = "displayId", required = true) String displayId,
+                                                                @RequestParam(value = "containsEnd", defaultValue = "false") Boolean containsEnd) {
 
-        return contestService.getContestProblemDetails(cid, displayId);
+        return contestService.getContestProblemDetails(cid, displayId, containsEnd);
     }
 
 
@@ -119,7 +121,8 @@ public class ContestController {
                                                                  @RequestParam(value = "username", required = false) String searchUsername,
                                                                  @RequestParam(value = "contestID", required = true) Long searchCid,
                                                                  @RequestParam(value = "beforeContestSubmit", required = true) Boolean beforeContestSubmit,
-                                                                 @RequestParam(value = "completeProblemID", defaultValue = "false") Boolean completeProblemID) {
+                                                                 @RequestParam(value = "completeProblemID", defaultValue = "false") Boolean completeProblemID,
+                                                                 @RequestParam(value = "containsEnd", defaultValue = "false") Boolean containsEnd) {
 
         return contestService.getContestSubmissionList(limit,
                 currentPage,
@@ -129,7 +132,8 @@ public class ContestController {
                 searchUsername,
                 searchCid,
                 beforeContestSubmit,
-                completeProblemID);
+                completeProblemID,
+                containsEnd);
     }
 
 

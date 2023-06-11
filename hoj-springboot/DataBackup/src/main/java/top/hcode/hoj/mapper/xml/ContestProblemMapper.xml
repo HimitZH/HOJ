@@ -13,15 +13,20 @@
                     #{item}
                 </foreach>
             </if>
+            AND submit_time >= #{startTime}
             <choose>
                 <when test="isAdmin">
-                    AND submit_time >= #{startTime} AND #{endTime}>submit_time
+                    <if test="isHideContestEndJudge">
+                        AND #{endTime}>submit_time
+                    </if>
                 </when>
                 <when test="sealTime!=null">
-                    AND submit_time >= #{startTime} AND #{sealTime}>submit_time
+                    AND #{sealTime}>submit_time
                 </when>
                 <otherwise>
-                    AND submit_time >= #{startTime} AND #{endTime}>submit_time
+                    <if test="isHideContestEndJudge">
+                        AND #{endTime}>submit_time
+                    </if>
                 </otherwise>
             </choose>
         </where>
@@ -36,15 +41,20 @@
                     #{item}
                 </foreach>
             </if>
+            AND submit_time >= #{startTime}
             <choose>
                 <when test="isAdmin">
-                    AND submit_time >= #{startTime} AND #{endTime}>=submit_time
+                    <if test="isHideContestEndJudge">
+                        AND #{endTime}>submit_time
+                    </if>
                 </when>
                 <when test="sealTime!=null">
-                    AND submit_time >= #{startTime} AND #{sealTime}>=submit_time
+                    AND #{sealTime}>submit_time
                 </when>
                 <otherwise>
-                    AND submit_time >= #{startTime} AND #{endTime}>=submit_time
+                    <if test="isHideContestEndJudge">
+                        AND #{endTime}>submit_time
+                    </if>
                 </otherwise>
             </choose>
         </where>

@@ -19,7 +19,8 @@ export default {
         forceRefresh: this.forceUpdate ? true: false,
         removeStar: !this.showStarUser,
         concernedList:this.concernedList,
-        keyword: this.keyword == null? null: this.keyword.trim()
+        keyword: this.keyword == null? null: this.keyword.trim(),
+        containsEnd: this.isContainsAfterContestJudge,
       }
       api.getContestRank(data).then(res => {
         if (this.showChart && !refresh) {
@@ -64,7 +65,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['isContestAdmin','userInfo']),
+    ...mapGetters(['isContestAdmin','userInfo', "isContainsAfterContestJudge"]),
     ...mapState({
       'contest': state => state.contest.contest,
       'contestProblems': state => state.contest.contestProblems

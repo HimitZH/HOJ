@@ -446,6 +446,7 @@ export const m = {
   Contest_Award_Show:'Award Style Display',
   Contest_Award_Number:'Number',
   Contest_Award_Proportion:'Proportion',
+  Allow_Submission_After_The_Contest_Ends: 'Allow Submission after the contest ends',
 
   // /views/admin/discussion/Discussion.vue
   Discussion_ID: 'Discussion ID',

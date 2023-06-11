@@ -106,6 +106,26 @@
               </el-tag>
             </el-col>
           </el-row>
+          <div class="contest-config" v-if="isShowContestSetting">
+            <el-popover
+              trigger="hover"
+              placement="left-start"
+            >
+              <el-button
+                round
+                size="small"
+                slot="reference"
+              >
+                {{$t('m.Contest_Setting')}}
+              </el-button>
+              <div class="contest-config-switches">
+                <p>
+                  <span>{{ $t('m.Contains_Submission_After_Contest') }}</span>
+                  <el-switch v-model="isContainsAfterContestJudge"></el-switch>
+                </p>
+                </div>
+              </el-popover>
+          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -469,6 +489,7 @@ export default {
       'contestRuleType',
       'contestStatus',
       'countdown',
+      'isShowContestSetting',
       'BeginToNowDuration',
       'isContestAdmin',
       'isSuperAdmin',
@@ -500,6 +521,14 @@ export default {
     },
     contestEnded() {
       return this.contestStatus === CONTEST_STATUS.ENDED;
+    },
+    isContainsAfterContestJudge:{
+      get () {
+        return this.$store.state.contest.isContainsAfterContestJudge;
+      },
+      set (value) {
+        this.$store.commit('changeContainsAfterContestJudge', {value: value})
+      }
     },
   },
   watch: {

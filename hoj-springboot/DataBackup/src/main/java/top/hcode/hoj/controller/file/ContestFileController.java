@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import top.hcode.hoj.common.exception.StatusFailException;
 import top.hcode.hoj.common.exception.StatusForbiddenException;
 import top.hcode.hoj.service.file.ContestFileService;
+
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 
@@ -31,8 +32,9 @@ public class ContestFileController {
     public void downloadContestRank(@RequestParam("cid") Long cid,
                                     @RequestParam("forceRefresh") Boolean forceRefresh,
                                     @RequestParam(value = "removeStar", defaultValue = "false") Boolean removeStar,
+                                    @RequestParam(value = "containEnd", defaultValue = "false") Boolean isContainsAfterContestJudge,
                                     HttpServletResponse response) throws StatusFailException, IOException, StatusForbiddenException {
-        contestFileService.downloadContestRank(cid, forceRefresh, removeStar, response);
+        contestFileService.downloadContestRank(cid, forceRefresh, removeStar, isContainsAfterContestJudge, response);
     }
 
     @GetMapping("/download-contest-ac-submission")
@@ -48,10 +50,9 @@ public class ContestFileController {
 
     @GetMapping("/download-contest-print-text")
     @RequiresAuthentication
-    public void downloadContestPrintText(@RequestParam("id") Long id, HttpServletResponse response) throws StatusForbiddenException{
+    public void downloadContestPrintText(@RequestParam("id") Long id, HttpServletResponse response) throws StatusForbiddenException {
         contestFileService.downloadContestPrintText(id, response);
     }
-
 
 
 }

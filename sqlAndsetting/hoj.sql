@@ -158,6 +158,7 @@ CREATE TABLE `contest` (
   `gid` bigint(20) unsigned DEFAULT NULL,
   `award_type` int(11) DEFAULT '0' COMMENT '奖项类型：0(不设置),1(设置占比),2(设置人数)',
   `award_config` text DEFAULT NULL COMMENT '奖项配置 json',
+  `allow_end_submit` tinyint(1) DEFAULT '0' COMMENT '是否允许比赛结束后进行提交',
   `gmt_create` datetime DEFAULT CURRENT_TIMESTAMP,
   `gmt_modified` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`uid`),

@@ -177,11 +177,14 @@ export default {
             for (let index = 0; index < this.problems.length; index++) {
               pidList.push(this.problems[index].pid);
             }
+            this.isGetStatusOk = false;
             api
               .getUserProblemStatus(
                 pidList,
                 isContestProblemList,
-                this.$route.params.contestID
+                this.$route.params.contestID,
+                null,
+                this.isContainsAfterContestJudge
               )
               .then((res) => {
                 let result = res.data.data;
@@ -235,8 +238,14 @@ export default {
       'isAuthenticated',
       'contestRuleType',
       'ContestRealTimePermission',
+      'isContainsAfterContestJudge'
     ]),
   },
+  watch:{
+    isContainsAfterContestJudge(){
+      this.getContestProblems();
+    }
+  }
 };
 </script>
 

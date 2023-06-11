@@ -24,7 +24,8 @@ import java.util.List;
 public interface ContestProblemMapper extends BaseMapper<ContestProblem> {
     List<ContestProblemVO> getContestProblemList(@Param("cid") Long cid, @Param("startTime") Date startTime,
                                                  @Param("endTime") Date endTime, @Param("sealTime") Date sealTime,
-                                                 @Param("isAdmin") Boolean isAdmin, @Param("adminList") List<String> adminList);
+                                                 @Param("isAdmin") Boolean isAdmin, @Param("adminList") List<String> adminList,
+                                                 @Param("isHideContestEndJudge") Boolean isHideContestEndJudge);
 
     List<ProblemFullScreenListVO> getContestFullScreenProblemList(@Param("cid") Long cid);
 }

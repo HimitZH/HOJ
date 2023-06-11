@@ -44,7 +44,8 @@ export default {
         concernedList:this.concernedList,
         currentPage: this.page,
         limit: this.limit,
-        keyword: this.keyword == null? null: this.keyword.trim()
+        keyword: this.keyword == null? null: this.keyword.trim(),
+        containsEnd: this.isContainsAfterContestJudge
       }
       this.loading.rank = true;
       api.getContestOutsideScoreboard(data).then(res => {
@@ -121,7 +122,8 @@ export default {
       'countdown',
       'BeginToNowDuration',
       'isContestAdmin',
-      'userInfo'
+      'userInfo',
+      'isShowContestSetting'
     ]),
     forceUpdate: {
       get () {
@@ -164,6 +166,14 @@ export default {
     },
     contestEnded() {
       return this.contest.status == CONTEST_STATUS.ENDED;
+    },
+    isContainsAfterContestJudge:{
+      get () {
+        return this.$store.state.contest.isContainsAfterContestJudge;
+      },
+      set (value) {
+        this.$store.commit('changeContainsAfterContestJudge', {value: value})
+      }
     },
   },
   beforeDestroy () {

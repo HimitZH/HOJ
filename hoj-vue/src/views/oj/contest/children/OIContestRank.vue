@@ -491,6 +491,11 @@ export default {
       return window.screen.width < 768;
     },
   },
+  watch: {
+    isContainsAfterContestJudge(newVal, OldVal) {
+      this.getContestRankData(this.page);
+    },
+  },
   methods: {
     ...mapActions(["getContestProblems"]),
 
@@ -622,7 +627,7 @@ export default {
       utils.downloadFile(
         `/api/file/download-contest-rank?cid=${
           this.$route.params.contestID
-        }&forceRefresh=${this.forceUpdate ? true : false}`
+        }&forceRefresh=${this.forceUpdate ? true : false}&containEnd=${this.isContainsAfterContestJudge}`
       );
     },
   },

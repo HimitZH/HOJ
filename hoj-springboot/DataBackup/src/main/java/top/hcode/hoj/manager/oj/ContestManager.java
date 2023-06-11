@@ -215,7 +215,7 @@ public class ContestManager {
     }
 
 
-    public List<ContestProblemVO> getContestProblem(Long cid) throws StatusFailException, StatusForbiddenException {
+    public List<ContestProblemVO> getContestProblem(Long cid, Boolean isContainsContestEndJudge) throws StatusFailException, StatusForbiddenException {
 
         // 获取当前登录的用户
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
@@ -239,6 +239,8 @@ public class ContestManager {
             groupRootUidList = groupMemberEntityService.getGroupRootUidList(contest.getGid());
         }
 
+        isContainsContestEndJudge = Objects.equals(contest.getAllowEndSubmit(), true) && isContainsContestEndJudge;
+
         // 如果比赛开启封榜
         if (contestValidator.isSealRank(userRolesVo.getUid(), contest, true, isRoot)) {
             contestProblemList = contestProblemEntityService.getContestProblemList(cid,
@@ -247,7 +249,8 @@ public class ContestManager {
                     contest.getSealRankTime(),
                     isAdmin,
                     contest.getAuthor(),
-                    groupRootUidList);
+                    groupRootUidList,
+                    isContainsContestEndJudge);
         } else {
             contestProblemList = contestProblemEntityService.getContestProblemList(cid,
                     contest.getStartTime(),
@@ -255,7 +258,8 @@ public class ContestManager {
                     null,
                     isAdmin,
                     contest.getAuthor(),
-                    groupRootUidList);
+                    groupRootUidList,
+                    isContainsContestEndJudge);
         }
 
         return contestProblemList;
@@ -331,7 +335,7 @@ public class ContestManager {
         return problemList;
     }
 
-    public ProblemInfoVO getContestProblemDetails(Long cid, String displayId) throws StatusFailException, StatusForbiddenException, StatusNotFoundException {
+    public ProblemInfoVO getContestProblemDetails(Long cid, String displayId, Boolean isContainsContestEndJudge) throws StatusFailException, StatusForbiddenException, StatusNotFoundException {
 
         // 获取当前登录的用户
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
@@ -404,6 +408,13 @@ public class ContestManager {
         //封榜时间除超级管理员和比赛管理员外 其它人不可看到最新数据
         if (contestValidator.isSealRank(userRolesVo.getUid(), contest, true, isRoot)) {
             sealRankTime = contest.getSealRankTime();
+        }else{
+            isContainsContestEndJudge = Objects.equals(contest.getAllowEndSubmit(), true)
+                    && Objects.equals(isContainsContestEndJudge, true);
+            // 如果不展示比赛后的提交，则将sealRankTime设置成为比赛结束时间
+            if (!isContainsContestEndJudge){
+                sealRankTime = contest.getEndTime();
+            }
         }
 
         // 筛去 比赛管理员和超级管理员的提交
@@ -437,7 +448,8 @@ public class ContestManager {
                                                    String searchUsername,
                                                    Long searchCid,
                                                    boolean beforeContestSubmit,
-                                                   boolean completeProblemID) throws StatusFailException, StatusForbiddenException {
+                                                   boolean completeProblemID,
+                                                   boolean isContainsContestEndJudge) throws StatusFailException, StatusForbiddenException {
 
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         // 获取本场比赛的状态
@@ -471,6 +483,13 @@ public class ContestManager {
         // 需要判断是否需要封榜
         if (contestValidator.isSealRank(userRolesVo.getUid(), contest, true, isRoot)) {
             sealRankTime = contest.getSealRankTime();
+        }else{
+            isContainsContestEndJudge = Objects.equals(contest.getAllowEndSubmit(), true)
+                    && Objects.equals(isContainsContestEndJudge, true);
+            // 如果不展示比赛后的提交，则将sealRankTime设置成为比赛结束时间
+            if (!isContainsContestEndJudge){
+                sealRankTime = contest.getEndTime();
+            }
         }
         // OI比赛封榜期间不更新，ACM比赛封榜期间可看到自己的提交，但是其它人的不可见
         IPage<JudgeVO> contestJudgeList = judgeEntityService.getContestJudgeList(limit,
@@ -542,6 +561,8 @@ public class ContestManager {
 
         // 校验该比赛是否开启了封榜模式，超级管理员和比赛创建者可以直接看到实际榜单
         boolean isOpenSealRank = contestValidator.isSealRank(userRolesVo.getUid(), contest, forceRefresh, isRoot);
+        boolean isContainsAfterContestJudge = Objects.equals(contest.getAllowEndSubmit(), true)
+                && Objects.equals(contestRankDto.getContainsEnd(), true);
 
         IPage resultList;
         if (contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) {
@@ -555,7 +576,8 @@ public class ContestManager {
                     contest,
                     currentPage,
                     limit,
-                    contestRankDto.getKeyword());
+                    contestRankDto.getKeyword(),
+                    isContainsAfterContestJudge);
 
         } else {
             // OI比赛
@@ -567,7 +589,8 @@ public class ContestManager {
                     contest,
                     currentPage,
                     limit,
-                    contestRankDto.getKeyword());
+                    contestRankDto.getKeyword(),
+                    isContainsAfterContestJudge);
         }
         return resultList;
     }

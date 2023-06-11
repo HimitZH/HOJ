@@ -34,6 +34,7 @@ import top.hcode.hoj.validator.GroupValidator;
 import top.hcode.hoj.validator.TrainingValidator;
 
 import javax.annotation.Resource;
+import java.util.Objects;
 
 /**
  * @Author: Himit_ZH
@@ -120,15 +121,15 @@ public class BeforeDispatchInitManager {
 
     @Transactional(rollbackFor = Exception.class)
     public void initContestSubmission(Long cid, String displayId, AccountProfile userRolesVo, Judge judge) throws StatusNotFoundException, StatusForbiddenException {
-        // 首先判断一下比赛的状态是否是正在进行，结束状态都不能提交，比赛前比赛管理员可以提交
         Contest contest = contestEntityService.getById(cid);
-
         if (contest == null) {
             throw new StatusNotFoundException("对不起，该比赛不存在！");
         }
-
-        if (contest.getStatus().intValue() == Constants.Contest.STATUS_ENDED.getCode()) {
-            throw new StatusForbiddenException("比赛已结束，不可再提交！");
+        // 首先判断一下比赛的状态是否是正在进行，结束状态都不能提交(除非开启允许赛后提交)，比赛前比赛管理员可以提交
+        if (Objects.equals(contest.getAllowEndSubmit(), false)){
+            if (contest.getStatus().intValue() == Constants.Contest.STATUS_ENDED.getCode()) {
+                throw new StatusForbiddenException("比赛已结束，不可再提交！");
+            }
         }
 
         // 是否为超级管理员或者该比赛的创建者，则为比赛管理者

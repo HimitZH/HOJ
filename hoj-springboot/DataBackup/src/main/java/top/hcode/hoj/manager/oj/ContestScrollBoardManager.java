@@ -143,6 +143,9 @@ public class ContestScrollBoardManager {
                         .collect(Collectors.toList());
             }
         }
+        submissions = submissions.stream()
+                .filter(submission -> submission.getSubmitTime().getTime() < contest.getEndTime().getTime())
+                .collect(Collectors.toList());
         return submissions;
     }
 }

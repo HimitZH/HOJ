@@ -693,7 +693,7 @@
                       :closable="false"
                     >{{ $t('m.You_have_submitted_a_solution') }}</el-alert>
                   </div>
-                  <div v-if="contestEnded">
+                  <div v-if="contestEnded && !statusVisible">
                     <el-alert
                       type="warning"
                       show-icon
@@ -1008,6 +1008,7 @@ export default {
         } else {
           params.beforeContestSubmit = false;
         }
+        params.containsEnd = true;
       }
       let func = this.contestID
         ? "getContestSubmissionList"
@@ -1278,7 +1279,7 @@ export default {
           ? "getContestProblem"
           : "getProblem";
       this.loading = true;
-      api[func](this.problemID, this.contestID, this.groupID).then(
+      api[func](this.problemID, this.contestID, this.groupID, true).then(
         (res) => {
           let result = res.data.data;
           this.changeDomTitle({ title: result.problem.title });
@@ -1303,7 +1304,8 @@ export default {
                 pidList,
                 isContestProblemList,
                 this.contestID,
-                this.groupID
+                this.groupID,
+                true
               )
               .then((res) => {
                 let statusMap = res.data.data;
@@ -1758,7 +1760,7 @@ export default {
       "contestStatus",
       "isAuthenticated",
       "canSubmit",
-      "websiteConfig",
+      "websiteConfig"
     ]),
     contest() {
       return this.$store.state.contest.contest;

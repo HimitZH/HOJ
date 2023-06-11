@@ -295,13 +295,14 @@ const ojApi = {
   },
 
   // 查询当前登录用户对题目的提交状态
-  getUserProblemStatus(pidList, isContestProblemList, cid, gid) {
+  getUserProblemStatus(pidList, isContestProblemList, cid, gid, containsEnd = false) {
     return ajax("/api/get-user-problem-status", 'post', {
       data: {
         pidList,
         isContestProblemList,
         cid,
-        gid
+        gid,
+        containsEnd
       }
     })
   },
@@ -564,15 +565,15 @@ const ojApi = {
     })
   },
   // 获取比赛题目列表
-  getContestProblemList(cid) {
+  getContestProblemList(cid, containsEnd = false) {
     return ajax('/api/get-contest-problem', 'get', {
-      params: { cid }
+      params: { cid, containsEnd }
     })
   },
   // 获取比赛题目详情
-  getContestProblem(displayId, cid) {
+  getContestProblem(displayId, cid, gid, containsEnd = false) {
     return ajax('/api/get-contest-problem-details', 'get', {
-      params: { displayId, cid }
+      params: { displayId, cid, containsEnd}
     })
   },
   // 获取比赛提交列表

@@ -40,7 +40,13 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
     private RedisUtils redisUtils;
 
     @Override
-    public IPage<ContestRecord> getACInfo(Integer currentPage, Integer limit, Integer status, Long cid, String contestCreatorId) {
+    public IPage<ContestRecord> getACInfo(Integer currentPage,
+                                          Integer limit,
+                                          Integer status,
+                                          Long cid,
+                                          String contestCreatorId,
+                                          Date startTime,
+                                          Date endTime) {
 
         List<ContestRecord> acInfo = contestRecordMapper.getACInfo(status, cid);
 
@@ -55,6 +61,11 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
 
             if (contestRecord.getUid().equals(contestCreatorId)
                     || superAdminUidList.contains(contestRecord.getUid())) { // 超级管理员和比赛创建者的提交跳过
+                continue;
+            }
+
+
+            if (!DateUtil.isIn(contestRecord.getSubmitTime(), startTime, endTime)){ // 非比赛期间的不记录
                 continue;
             }
 
@@ -101,7 +112,8 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
 
 
     @Override
-    public List<ContestRecordVO> getOIContestRecord(Contest contest, List<Integer> externalCidList, Boolean isOpenSealRank) {
+    public List<ContestRecordVO> getOIContestRecord(Contest contest, List<Integer> externalCidList,
+                                                    Boolean isOpenSealRank, Boolean isContainsAfterContestJudge) {
 
         String oiRankScoreType = contest.getOiRankScoreType();
         Long cid = contest.getId();
@@ -117,23 +129,30 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
                         contestCreatorUid,
                         false,
                         null,
-                        endTime);
+                        endTime,
+                        isContainsAfterContestJudge);
             } else {
                 return contestRecordMapper.getOIContestRecordByHighestSubmission(cid,
                         externalCidList,
                         contestCreatorUid,
                         false,
                         null,
-                        endTime);
+                        endTime,
+                        isContainsAfterContestJudge);
             }
 
         } else {
-            String key = Constants.Contest.OI_CONTEST_RANK_CACHE.getName() + "_" + oiRankScoreType + "_" + cid;
+            String key = null;
+            if (isContainsAfterContestJudge) {
+                key = Constants.Contest.OI_CONTEST_RANK_CACHE.getName() + "_contains_after_" + oiRankScoreType + "_" + cid;
+            } else {
+                key = Constants.Contest.OI_CONTEST_RANK_CACHE.getName() + "_" + oiRankScoreType + "_" + cid;
+            }
             List<ContestRecordVO> oiContestRecordList = (List<ContestRecordVO>) redisUtils.get(key);
             if (oiContestRecordList == null) {
                 Long sealTime = DateUtil.between(contest.getStartTime(), contest.getSealRankTime(), DateUnit.SECOND);
                 if (sealTime > 0) {
-                    sealTime --;
+                    sealTime--;
                 }
                 if (Objects.equals(Constants.Contest.OI_RANK_RECENT_SCORE.getName(), oiRankScoreType)) {
                     oiContestRecordList = contestRecordMapper.getOIContestRecordByRecentSubmission(cid,
@@ -141,14 +160,16 @@ public class ContestRecordEntityServiceImpl extends ServiceImpl<ContestRecordMap
                             contestCreatorUid,
                             true,
                             sealTime,
-                            null);
+                            null,
+                            isContainsAfterContestJudge);
                 } else {
                     oiContestRecordList = contestRecordMapper.getOIContestRecordByHighestSubmission(cid,
                             externalCidList,
                             contestCreatorUid,
                             true,
                             sealTime,
-                            null);
+                            null,
+                            isContainsAfterContestJudge);
                 }
                 redisUtils.set(key, oiContestRecordList, 2 * 3600);
             }

@@ -161,6 +161,13 @@
                 @change="getContestOutsideScoreboard"
               ></el-switch>
             </span>
+            <span v-if="isShowContestSetting">
+              <span>{{ $t('m.Contains_After_Contest') }}</span>
+              <el-switch
+                v-model="isContainsAfterContestJudge"
+                @change="getContestOutsideScoreboard"
+              ></el-switch>
+            </span>
             <span v-if="isContestAdmin">
               <span>{{ $t('m.Force_Update') }}</span>
               <el-switch
@@ -453,7 +460,7 @@
                 <span
                   v-if="row.submissionInfo[problem.displayId].isAC"
                   class="submission-time"
-                >{{ row.submissionInfo[problem.displayId].ACTime }}<br />
+                >{{ row.submissionInfo[problem.displayId].isAfterContest?'*': row.submissionInfo[problem.displayId].ACTime}}<br />
                 </span>
               </el-tooltip>
 
@@ -593,7 +600,9 @@ export default {
             rank[problemID].ACTime = parseInt(rank[problemID].ACTime / 60);
           }
           let status = info[problemID];
-          if (status.isFirstAC) {
+          if(status.isAfterContest && status.isAC){
+            cellClass[problemID] = "after-ac";
+          } else if (status.isFirstAC) {
             cellClass[problemID] = "first-ac";
             acCountMap[problemID] += 1;
           } else if (status.isAC) {

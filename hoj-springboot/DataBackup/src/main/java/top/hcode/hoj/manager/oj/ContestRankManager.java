@@ -35,6 +35,7 @@ public class ContestRankManager {
      * @param currentPage    当前页面
      * @param limit          分页大小
      * @param keyword        搜索关键词：匹配学校或榜单显示名称
+     * @param isContainsAfterContestJudge   是否包含比赛结束后的提交
      * @desc 获取ACM比赛排行榜
      */
     public IPage<ACMContestRankVO> getContestACMRankPage(Boolean isOpenSealRank,
@@ -45,7 +46,8 @@ public class ContestRankManager {
                                                          Contest contest,
                                                          int currentPage,
                                                          int limit,
-                                                         String keyword) {
+                                                         String keyword,
+                                                         Boolean isContainsAfterContestJudge) {
 
         // 进行排序计算
         List<ACMContestRankVO> orderResultList = contestCalculateRankManager.calcACMRank(isOpenSealRank,
@@ -53,7 +55,8 @@ public class ContestRankManager {
                 contest,
                 currentUserId,
                 concernedList,
-                externalCidList);
+                externalCidList,
+                isContainsAfterContestJudge);
 
         if (StrUtil.isNotBlank(keyword)) {
             String finalKeyword = keyword.trim().toLowerCase();
@@ -81,6 +84,7 @@ public class ContestRankManager {
      * @param currentPage    当前页面
      * @param limit          分页大小
      * @param keyword        搜索关键词：匹配学校或榜单显示名称
+     * @param isContainsAfterContestJudge   是否包含比赛结束后的提交
      * @desc 获取OI比赛排行榜
      */
     public IPage<OIContestRankVO> getContestOIRankPage(Boolean isOpenSealRank,
@@ -91,14 +95,16 @@ public class ContestRankManager {
                                                        Contest contest,
                                                        int currentPage,
                                                        int limit,
-                                                       String keyword) {
+                                                       String keyword,
+                                                       Boolean isContainsAfterContestJudge) {
 
         List<OIContestRankVO> orderResultList = contestCalculateRankManager.calcOIRank(isOpenSealRank,
                 removeStar,
                 contest,
                 currentUserId,
                 concernedList,
-                externalCidList);
+                externalCidList,
+                isContainsAfterContestJudge);
 
         if (StrUtil.isNotBlank(keyword)) {
             String finalKeyword = keyword.trim().toLowerCase();
@@ -130,6 +136,7 @@ public class ContestRankManager {
      * @param keyword         搜索关键词
      * @param useCache        是否启用缓存
      * @param cacheTime       缓存时间（秒）
+     * @param isContainsAfterContestJudge   是否包含比赛结束后的提交
      * @return
      */
     public IPage<ACMContestRankVO> getACMContestScoreboard(Boolean isOpenSealRank,
@@ -142,7 +149,8 @@ public class ContestRankManager {
                                                            int limit,
                                                            String keyword,
                                                            Boolean useCache,
-                                                           Long cacheTime) {
+                                                           Long cacheTime,
+                                                           Boolean isContainsAfterContestJudge) {
         if (CollectionUtil.isNotEmpty(externalCidList)) {
             useCache = false;
         }
@@ -153,7 +161,8 @@ public class ContestRankManager {
                 concernedList,
                 externalCidList,
                 useCache,
-                cacheTime);
+                cacheTime,
+                isContainsAfterContestJudge);
 
         if (StrUtil.isNotBlank(keyword)) {
             String finalKeyword = keyword.trim().toLowerCase();
@@ -183,6 +192,7 @@ public class ContestRankManager {
      * @param keyword         搜索关键词
      * @param useCache        是否启用缓存
      * @param cacheTime       缓存时间（秒）
+     * @param isContainsAfterContestJudge   是否包含比赛结束后的提交
      * @return
      */
     public IPage<OIContestRankVO> getOIContestScoreboard(Boolean isOpenSealRank,
@@ -195,7 +205,8 @@ public class ContestRankManager {
                                                          int limit,
                                                          String keyword,
                                                          Boolean useCache,
-                                                         Long cacheTime) {
+                                                         Long cacheTime,
+                                                         Boolean isContainsAfterContestJudge) {
 
         if (CollectionUtil.isNotEmpty(externalCidList)) {
             useCache = false;
@@ -207,7 +218,8 @@ public class ContestRankManager {
                 concernedList,
                 externalCidList,
                 useCache,
-                cacheTime);
+                cacheTime,
+                isContainsAfterContestJudge);
 
         if (StrUtil.isNotBlank(keyword)) {
             String finalKeyword = keyword.trim().toLowerCase();

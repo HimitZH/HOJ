@@ -21,9 +21,9 @@ public interface ContestService {
 
     public CommonResult<AccessVO> getContestAccess(Long cid);
 
-    public CommonResult<List<ContestProblemVO>> getContestProblem(Long cid);
+    public CommonResult<List<ContestProblemVO>> getContestProblem(Long cid, Boolean isContainsContestEndJudge);
 
-    public CommonResult<ProblemInfoVO> getContestProblemDetails(Long cid, String displayId);
+    public CommonResult<ProblemInfoVO> getContestProblemDetails(Long cid, String displayId, Boolean isContainsContestEndJudge);
 
     public CommonResult<IPage<JudgeVO>> getContestSubmissionList(Integer limit,
                                                                  Integer currentPage,
@@ -33,7 +33,8 @@ public interface ContestService {
                                                                  String searchUsername,
                                                                  Long searchCid,
                                                                  Boolean beforeContestSubmit,
-                                                                 Boolean completeProblemID);
+                                                                 Boolean completeProblemID,
+                                                                 Boolean isContainsContestEndJudge);
 
     public CommonResult<IPage> getContestRank(ContestRankDTO contestRankDto);
 

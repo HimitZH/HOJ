@@ -654,6 +654,7 @@ export default {
         } else {
           params.beforeContestSubmit = false;
         }
+        params.containsEnd = true;
       }
       if (this.formFilter.onlyMine) {
         // 需要判断是否为登陆状态

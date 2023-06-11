@@ -426,6 +426,7 @@ export const m = {
   Please_check_the_contest_announcement_for_details: 'Please check the contest announcement for details',
   Go_To_Group_Contest_List:'Go to Group Contest List',
   Group_Contest_Tag:'Group Contest',
+  Contains_Submission_After_Contest:'Contains Submission After Contest',
 
   // /views/oj/contest/children/ACMContestRank.vue
   Contest_Rank: 'Contest Rank',
@@ -445,6 +446,8 @@ export const m = {
   Top_And_Follow: 'Top And Follow',
   Contest_Rank_Search_Placeholder:'Please enter the user rank name or school name',
   Contest_Rank_Setting:'Rank Setting',
+  Contest_Setting:'Contest Setting',
+  Contains_After_Contest:'Contains After Contest',
 
   // /views/oj/contest/children/ACMInfo.vue
   AC_Time: 'AC Time',

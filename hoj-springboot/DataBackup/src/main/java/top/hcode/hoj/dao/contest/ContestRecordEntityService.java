@@ -23,9 +23,12 @@ public interface ContestRecordEntityService extends IService<ContestRecord> {
                                    Integer limit,
                                    Integer status,
                                    Long cid,
-                                   String contestCreatorId);
+                                   String contestCreatorId,
+                                   Date startTime,
+                                   Date endTime);
 
-    List<ContestRecordVO> getOIContestRecord(Contest contest, List<Integer> externalCidList, Boolean isOpenSealRank);
+    List<ContestRecordVO> getOIContestRecord(Contest contest, List<Integer> externalCidList,
+                                             Boolean isOpenSealRank, Boolean isContainsAfterContestJudge);
 
     List<ContestRecordVO> getACMContestRecord(String contestCreatorUid, Long cid, List<Integer> externalCidList, Date startTime);
 

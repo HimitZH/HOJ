@@ -117,6 +117,7 @@ public class FileEntityEntityServiceImpl extends ServiceImpl<FileMapper, File> i
                 HashMap<String, Object> problemInfo = submissionInfo.getOrDefault(displayID, null);
                 if (problemInfo != null) { // 如果是有提交记录的
                     boolean isAC = (boolean) problemInfo.getOrDefault("isAC", false);
+                    boolean isAfterContest = (boolean) problemInfo.getOrDefault("isAfterContest", false);
                     String info = "";
                     int errorNum = (int) problemInfo.getOrDefault("errorNum", 0);
                     int tryNum = (int) problemInfo.getOrDefault("tryNum", 0);
@@ -124,7 +125,10 @@ public class FileEntityEntityServiceImpl extends ServiceImpl<FileMapper, File> i
                         if (errorNum == 0) {
                             info = "+(1)";
                         } else {
-                            info = "-(" + (errorNum + 1) + ")";
+                            info = "+(" + (errorNum + 1) + ")";
+                        }
+                        if (isAfterContest){
+                            info += "*";
                         }
                     } else {
                         if (tryNum != 0 && errorNum != 0) {

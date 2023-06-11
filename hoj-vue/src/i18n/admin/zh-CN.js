@@ -444,6 +444,7 @@ export const m = {
   Contest_Award_Show:'样式展示',
   Contest_Award_Number:'人数',
   Contest_Award_Proportion:'占比',
+  Allow_Submission_After_The_Contest_Ends: '是否允许比赛结束后提交',
 
   // /views/admin/discussion/Discussion.vue
   Discussion_ID: '讨论ID',

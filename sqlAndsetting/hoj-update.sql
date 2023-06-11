@@ -1062,3 +1062,34 @@ DELIMITER ;
 CALL add_Problem_FileIO ;
 
 DROP PROCEDURE add_Problem_FileIO;
+
+
+/*
+* 2023.06.10  增加允许比赛结束后进行交题的开关
+			 
+*/
+DROP PROCEDURE
+IF EXISTS add_Contest_allow_end_submit;
+DELIMITER $$
+ 
+CREATE PROCEDURE add_Contest_allow_end_submit ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'contest'
+	AND column_name = 'allow_end_submit'
+) THEN
+	
+	ALTER TABLE `hoj`.`contest`  ADD COLUMN `allow_end_submit` tinyint(1) DEFAULT '0' COMMENT '是否允许比赛结束后进行提交';
+END
+IF ; END$$
+ 
+DELIMITER ; 
+CALL add_Contest_allow_end_submit ;
+
+DROP PROCEDURE add_Contest_allow_end_submit;

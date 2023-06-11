@@ -77,4 +77,7 @@ public class ContestVO implements Serializable {
 
     @ApiModelProperty(value = "团队ID")
     private Long gid;
+
+    @ApiModelProperty(value = "是否允许比赛结束后继续交题")
+    private Boolean allowEndSubmit;
 }

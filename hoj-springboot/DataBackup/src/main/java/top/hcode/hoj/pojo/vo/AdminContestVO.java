@@ -97,6 +97,9 @@ public class AdminContestVO {
     @ApiModelProperty(value = "奖项配置")
     private List<ContestAwardConfigVO> awardConfigList;
 
+    @ApiModelProperty(value = "是否允许比赛结束后继续交题")
+    private Boolean allowEndSubmit;
+
     private Date gmtCreate;
 
     private Date gmtModified;

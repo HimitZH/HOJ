@@ -52,6 +52,9 @@
                 <when test="isOpenSealRank">
                     AND `time` BETWEEN 0 AND #{sealTime}
                 </when>
+                <when test="isContainsAfterContestJudge">
+                    AND `time` >= 0
+                </when>
                 <otherwise>
                     AND `time` BETWEEN 0 AND #{endTime}
                 </otherwise>
@@ -88,6 +91,9 @@
             <choose>
                 <when test="isOpenSealRank">
                     AND `time` BETWEEN 0 AND #{sealTime}
+                </when>
+                <when test="isContainsAfterContestJudge">
+                    AND `time` >= 0
                 </when>
                 <otherwise>
                     AND `time` BETWEEN 0 AND #{endTime}

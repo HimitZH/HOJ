@@ -153,6 +153,8 @@ public class ProblemManager {
         List<Judge> judges = judgeEntityService.list(queryWrapper);
 
         boolean isACMContest = true;
+        boolean isContainsContestEndJudge = false;
+        long contestEndTime = 0L;
         Contest contest = null;
         if (pidListDto.getIsContestProblemList()) {
             contest = contestEntityService.getById(pidListDto.getCid());
@@ -160,6 +162,9 @@ public class ProblemManager {
                 throw new StatusNotFoundException("错误：该比赛不存在！");
             }
             isACMContest = contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode();
+            isContainsContestEndJudge = Objects.equals(contest.getAllowEndSubmit(), true)
+                    && Objects.equals(pidListDto.getContainsEnd(), true);
+            contestEndTime = contest.getEndTime().getTime();
         }
         boolean isSealRank = false;
         if (!isACMContest && CollectionUtil.isNotEmpty(judges)) {
@@ -167,9 +172,15 @@ public class ProblemManager {
                     SecurityUtils.getSubject().hasRole("root"));
         }
         for (Judge judge : judges) {
-            // 如果是比赛的题目列表状态
+
             HashMap<String, Object> temp = new HashMap<>();
-            if (pidListDto.getIsContestProblemList()) {
+            if (pidListDto.getIsContestProblemList()) { // 如果是比赛的题目列表状态
+
+                // 如果是隐藏比赛后的提交，需要判断提交时间进行过滤
+                if (!isContainsContestEndJudge && judge.getSubmitTime().getTime() >= contestEndTime) {
+                    continue;
+                }
+
                 if (!isACMContest) {
                     if (!result.containsKey(judge.getPid())) {
                         // IO比赛的，如果还未写入，则使用最新一次提交的结果
@@ -252,10 +263,10 @@ public class ProblemManager {
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         if (problem.getIsGroup() && !isRoot) {
-            if (gid == null){
+            if (gid == null) {
                 throw new StatusForbiddenException("题目为团队所属，此处不支持访问，请前往团队查看！");
             }
-            if(!groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid())) {
+            if (!groupValidator.isGroupMember(userRolesVo.getUid(), problem.getGid())) {
                 throw new StatusForbiddenException("对不起，您并非该题目所属的团队内成员，无权查看题目！");
             }
         }

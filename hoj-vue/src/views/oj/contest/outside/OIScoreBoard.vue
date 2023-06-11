@@ -188,6 +188,13 @@
                 @change="getContestOutsideScoreboard"
               ></el-switch>
             </span>
+            <span v-if="isShowContestSetting">
+              <span>{{ $t('m.Contains_After_Contest') }}</span>
+              <el-switch
+                v-model="isContainsAfterContestJudge"
+                @change="getContestOutsideScoreboard"
+              ></el-switch>
+            </span>
             <span v-if="isContestAdmin">
               <span>{{ $t('m.Force_Update') }}</span>
               <el-switch

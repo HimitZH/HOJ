@@ -79,7 +79,8 @@ public class ContestFileManager {
     @Autowired
     private GroupValidator groupValidator;
 
-    public void downloadContestRank(Long cid, Boolean forceRefresh, Boolean removeStar, HttpServletResponse response) throws IOException, StatusFailException, StatusForbiddenException {
+    public void downloadContestRank(Long cid, Boolean forceRefresh, Boolean removeStar, Boolean isContainsAfterContestJudge,
+                                    HttpServletResponse response) throws IOException, StatusFailException, StatusForbiddenException {
         // 获取当前登录的用户
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
@@ -124,7 +125,8 @@ public class ContestFileManager {
                     contest,
                     null,
                     null,
-                    null);
+                    null,
+                    isContainsAfterContestJudge);
             EasyExcel.write(response.getOutputStream())
                     .head(fileEntityService.getContestRankExcelHead(contestProblemDisplayIDList, true))
                     .sheet("rank")
@@ -136,7 +138,8 @@ public class ContestFileManager {
                     contest,
                     null,
                     null,
-                    null);
+                    null,
+                    isContainsAfterContestJudge);
             EasyExcel.write(response.getOutputStream())
                     .head(fileEntityService.getContestRankExcelHead(contestProblemDisplayIDList, false))
                     .sheet("rank")

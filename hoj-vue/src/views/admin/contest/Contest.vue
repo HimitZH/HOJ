@@ -236,6 +236,23 @@
             :xs="24"
           >
             <el-form-item
+              :label="$t('m.Allow_Submission_After_The_Contest_Ends')"
+              required
+            >
+              <el-switch
+                v-model="contest.allowEndSubmit"
+                :active-text="$t('m.Open')"
+                :inactive-text="$t('m.Close')"
+              >
+              </el-switch>
+            </el-form-item>
+          </el-col>
+
+          <el-col
+            :md="8"
+            :xs="24"
+          >
+            <el-form-item
               :label="$t('m.Print_Func')"
               required
             >
@@ -650,6 +667,7 @@ export default {
         openPrint: false,
         rankShowName: "username",
         openAccountLimit: false,
+        allowEndSubmit: false,
         accountLimitRule: "",
         starAccount: [],
         oiRankScoreType: "Recent",

@@ -21,6 +21,7 @@ import top.hcode.hoj.validator.ContestValidator;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author: Himit_ZH
@@ -129,6 +130,8 @@ public class ContestScoreboardManager {
 
         // 校验该比赛是否开启了封榜模式，超级管理员和比赛创建者可以直接看到实际榜单
         boolean isOpenSealRank = contestValidator.isSealRank(currentUid, contest, forceRefresh, isRoot);
+        boolean isContainsAfterContestJudge = Objects.equals(contest.getAllowEndSubmit(), true)
+                && Objects.equals(contestRankDto.getContainsEnd(), true);
 
         if (contest.getType().intValue() == Constants.Contest.TYPE_ACM.getCode()) {
 
@@ -144,7 +147,8 @@ public class ContestScoreboardManager {
                     limit,
                     contestRankDto.getKeyword(),
                     !forceRefresh,
-                    15L); // 默认15s缓存
+                    15L, // 默认15s缓存
+                    isContainsAfterContestJudge);
 
         } else {
             // 获取OI比赛排行榜外榜
@@ -158,7 +162,8 @@ public class ContestScoreboardManager {
                     limit,
                     contestRankDto.getKeyword(),
                     !forceRefresh,
-                    15L); // 默认15s缓存
+                    15L, // 默认15s缓存
+                    isContainsAfterContestJudge);
         }
     }
 }

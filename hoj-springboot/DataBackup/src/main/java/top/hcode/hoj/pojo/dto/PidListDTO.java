@@ -21,6 +21,11 @@ public class PidListDTO {
     @NotNull(message = "是否为比赛题目提交判断不能为空")
     private Boolean isContestProblemList;
 
+    /**
+     * 是否包含比赛结束后的提交统计
+     */
+    private Boolean containsEnd;
+
     private Long cid;
 
     private Long gid;

@@ -429,6 +429,7 @@ export const m = {
   Please_check_the_contest_announcement_for_details: '具体内容请查看比赛公告',
   Go_To_Group_Contest_List:'前往团队比赛列表',
   Group_Contest_Tag:'团队比赛',
+  Contains_Submission_After_Contest:'包含赛后的提交',
 
   // /views/oj/contest/children/ACMContestRank.vue
   Contest_Rank: '比赛排名',
@@ -448,6 +449,8 @@ export const m = {
   Top_And_Follow: '置顶关注',
   Contest_Rank_Search_Placeholder:'请输入用户名称 / 学校名称',
   Contest_Rank_Setting:'榜单设置',
+  Contest_Setting:'比赛设置',
+  Contains_After_Contest:'包含赛后',
 
   // /views/oj/contest/children/ACMInfo.vue
   AC_Time: 'AC 时间',

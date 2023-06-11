@@ -45,7 +45,8 @@ public class ContestProblemEntityServiceImpl extends ServiceImpl<ContestProblemM
                                                         Date sealTime,
                                                         Boolean isAdmin,
                                                         String contestAuthorUid,
-                                                        List<String> groupRootUidList) {
+                                                        List<String> groupRootUidList,
+                                                        Boolean isContainsContestEndJudge) {
         // 筛去 比赛管理员和超级管理员的提交
         List<String> superAdminUidList = userInfoEntityService.getSuperAdminUidList();
         superAdminUidList.add(contestAuthorUid);
@@ -54,7 +55,7 @@ public class ContestProblemEntityServiceImpl extends ServiceImpl<ContestProblemM
             superAdminUidList.addAll(groupRootUidList);
         }
 
-        return contestProblemMapper.getContestProblemList(cid, startTime, endTime, sealTime, isAdmin, superAdminUidList);
+        return contestProblemMapper.getContestProblemList(cid, startTime, endTime, sealTime, isAdmin, superAdminUidList, !isContainsContestEndJudge);
     }
     @Override
     public List<ProblemFullScreenListVO> getContestFullScreenProblemList(Long cid){

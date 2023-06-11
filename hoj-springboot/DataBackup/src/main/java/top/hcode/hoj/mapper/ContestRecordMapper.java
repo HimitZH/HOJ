@@ -27,14 +27,16 @@ public interface ContestRecordMapper extends BaseMapper<ContestRecord> {
                                                                @Param("contestCreatorUid") String contestCreatorUid,
                                                                @Param("isOpenSealRank") Boolean isOpenSealRank,
                                                                @Param("sealTime") Long sealTime,
-                                                               @Param("endTime") Long endTime);
+                                                               @Param("endTime") Long endTime,
+                                                               @Param("isContainsAfterContestJudge") Boolean isContainsAfterContestJudge);
 
     List<ContestRecordVO> getOIContestRecordByHighestSubmission(@Param("cid") Long cid,
                                                                 @Param("externalCidList") List<Integer> externalCidList,
                                                                 @Param("contestCreatorUid") String contestCreatorUid,
                                                                 @Param("isOpenSealRank") Boolean isOpenSealRank,
                                                                 @Param("sealTime") Long sealTime,
-                                                                @Param("endTime") Long endTime);
+                                                                @Param("endTime") Long endTime,
+                                                                @Param("isContainsAfterContestJudge") Boolean isContainsAfterContestJudge);
 
     List<ContestRecordVO> getACMContestRecord(@Param("contestCreatorUid") String contestCreatorUid,
                                               @Param("cid") Long cid,

@@ -9,10 +9,12 @@ const state = {
   forceUpdate: false, // 强制实时榜单
   removeStar: false, // 榜单去除打星队伍
   concernedList:[], // 关注队伍
+  isContainsAfterContestJudge: false, // 是否包含比赛结束后的提交
   contest: {
     auth: CONTEST_TYPE.PUBLIC,
     openPrint: false,
     rankShowName:'username',
+    allowEndSubmit: false,
   },
   contestProblems: [],
   itemVisible: {
@@ -33,6 +35,9 @@ const getters = {
   isContestAdmin: (state, getters, _, rootGetters) => {
     return rootGetters.isAuthenticated &&
       (state.contest.author === rootGetters.userInfo.username || rootGetters.isSuperAdmin || state.groupContestAuth == 5)
+  },
+  isContainsAfterContestJudge: (state, getters) => {
+    return state.isContainsAfterContestJudge;
   },
   canSubmit:(state, getters)=>{
      return state.intoAccess||state.submitAccess || state.contest.auth === CONTEST_TYPE.PUBLIC ||getters.isContestAdmin
@@ -69,12 +74,11 @@ const getters = {
     }
   },
   problemSubmitDisabled: (state, getters, _, rootGetters) => {
-    // 比赛结束不可交题
+    // 比赛结束不可交题, 除非开启了允许
     if (getters.contestStatus === CONTEST_STATUS.ENDED) {
-      return true
-
-      // 比赛未开始不可交题，除非是比赛管理者
+      return !state.contest.allowEndSubmit
     } else if (getters.contestStatus === CONTEST_STATUS.SCHEDULED) {
+      // 比赛未开始不可交题，除非是比赛管理者
       return !getters.isContestAdmin
     }
     // 未登录不可交题
@@ -145,6 +149,10 @@ const getters = {
       return 100;
     }
   },
+
+  isShowContestSetting:(state, getters)=>{
+    return getters.contestStatus === CONTEST_STATUS.ENDED && state.contest.allowEndSubmit
+  }
 }
 
 const mutations = {
@@ -159,6 +167,9 @@ const mutations = {
   },
   changeRankRemoveStar(state, payload){
     state.removeStar = payload.value
+  },
+  changeContainsAfterContestJudge(state, payload){
+    state.isContainsAfterContestJudge = payload.value
   },
   changeConcernedList(state, payload){
     state.concernedList = payload.value
@@ -196,6 +207,7 @@ const mutations = {
     state.forceUpdate = false
     state.removeStar = false
     state.groupContestAuth = 0
+    state.isContainsAfterContestJudge = false
   },
   now(state, payload) {
     state.now = payload.now
@@ -243,7 +255,7 @@ const actions = {
 
   getContestProblems ({commit, rootState}) {
     return new Promise((resolve, reject) => {
-      api.getContestProblemList(rootState.route.params.contestID).then(res => {
+      api.getContestProblemList(rootState.route.params.contestID, rootState.contest.isContainsAfterContestJudge).then(res => {
         resolve(res)
         commit('changeContestProblems', {contestProblems: res.data.data})
       }, (err) => {

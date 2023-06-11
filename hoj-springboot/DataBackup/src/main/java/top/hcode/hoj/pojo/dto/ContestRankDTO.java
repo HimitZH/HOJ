@@ -17,6 +17,7 @@ public class ContestRankDTO {
      *     @param forceRefresh  是否强制实时榜单
      *     @param concernedList 关注的用户(uuid)列表
      *     @param keyword       搜索关键词：学校或榜单显示名称
+     *     @param containsEnd   是否展示比赛结束后的提交结果
      */
     private Long cid;
 
@@ -29,6 +30,8 @@ public class ContestRankDTO {
     private Boolean removeStar;
 
     private String keyword;
+
+    private Boolean containsEnd;
 
     private List<String> concernedList;
 

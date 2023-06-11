@@ -65,7 +65,9 @@ public class ContestAdminManager {
                 limit,
                 Constants.Contest.RECORD_AC.getCode(),
                 cid,
-                contest.getUid());
+                contest.getUid(),
+                contest.getStartTime(),
+                contest.getEndTime());
 
     }
 

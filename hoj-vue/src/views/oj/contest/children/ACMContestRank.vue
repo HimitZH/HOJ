@@ -388,7 +388,7 @@
                 <span
                   v-if="row.submissionInfo[problem.displayId].isAC"
                   class="submission-time"
-                >{{ row.submissionInfo[problem.displayId].ACTime }}<br />
+                >{{ row.submissionInfo[problem.displayId].isAfterContest?'*': row.submissionInfo[problem.displayId].ACTime}}<br />
                 </span>
               </el-tooltip>
 
@@ -636,7 +636,9 @@ export default {
             rank[problemID].ACTime = parseInt(rank[problemID].ACTime / 60);
           }
           let status = info[problemID];
-          if (status.isFirstAC) {
+          if(status.isAfterContest && status.isAC){
+            cellClass[problemID] = "after-ac";
+          } else if (status.isFirstAC) {
             cellClass[problemID] = "first-ac";
           } else if (status.isAC) {
             cellClass[problemID] = "ac";
@@ -720,7 +722,7 @@ export default {
       utils.downloadFile(
         `/api/file/download-contest-rank?cid=${
           this.$route.params.contestID
-        }&forceRefresh=${this.forceUpdate ? true : false}`
+        }&forceRefresh=${this.forceUpdate ? true : false}&containEnd=${this.isContainsAfterContestJudge}`
       );
     },
   },
@@ -729,6 +731,9 @@ export default {
       if (newVal.length != 0) {
         this.addChartCategory(this.contestProblems);
       }
+    },
+    isContainsAfterContestJudge(newVal, OldVal) {
+      this.getContestRankData(this.page);
     },
   },
   computed: {
