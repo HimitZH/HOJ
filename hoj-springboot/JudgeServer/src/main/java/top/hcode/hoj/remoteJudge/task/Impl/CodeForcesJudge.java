@@ -237,6 +237,8 @@ public class CodeForcesJudge extends RemoteJudgeStrategy {
         }
         HttpRequest httpRequest = HttpUtil.createPost(HOST + SUBMIT_SOURCE_URL)
                 .cookie(remoteJudgeDTO.getCookies())
+                .header("Origin", HOST)
+                .header("Referer", HOST + MY_SUBMISSION)
                 .timeout(30000);
         httpRequest.form(MapUtil
                 .builder(new HashMap<String, Object>())
