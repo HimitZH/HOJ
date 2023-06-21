@@ -1020,7 +1020,7 @@ export default {
             let data = res.data.data;
             this.mySubmissions = data.records;
             this.mySubmission_total = data.total;
-            this.loadingTable = false;submitting
+            this.loadingTable = false;
           },
           (err) => {
             this.loadingTable = false;
