@@ -1020,7 +1020,7 @@ export default {
             let data = res.data.data;
             this.mySubmissions = data.records;
             this.mySubmission_total = data.total;
-            this.loadingTable = false;
+            this.loadingTable = false;submitting
           },
           (err) => {
             this.loadingTable = false;
@@ -1272,7 +1272,6 @@ export default {
       if (this.$route.params.trainingID) {
         this.trainingID = this.$route.params.trainingID;
       }
-
       let func =
         this.$route.name === "ContestProblemDetails" ||
         this.$route.name === "ContestFullProblemDetails"
@@ -1348,6 +1347,10 @@ export default {
           this.loading = false;
         }
       );
+      
+      if(this.activeName == "mySubmission"){
+        this.getMySubmission();
+      }
     },
     changePie(problemData) {
       let total = problemData.total;
@@ -1845,10 +1848,18 @@ export default {
   watch: {
     $route() {
       this.initProblemCodeAndSetting();
+      this.submitted = false;
+      this.submitDisabled = false;
+      this.submitting = false;
+      this.statusVisible = false;
       this.init();
     },
     isAuthenticated(newVal) {
       if (newVal === true) {
+        this.submitted = false;
+        this.submitDisabled = false;
+        this.submitting = false;
+        this.statusVisible = false;
         this.init();
       }
     },
