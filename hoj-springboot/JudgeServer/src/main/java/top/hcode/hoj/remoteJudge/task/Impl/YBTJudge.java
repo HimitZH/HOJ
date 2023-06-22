@@ -103,7 +103,7 @@ public class YBTJudge extends RemoteJudgeStrategy {
     }
 
     @Override
-    public RemoteJudgeRes result() {
+    public RemoteJudgeRes result() {   // YBT will need add login info here , change GET to POST, please
         RemoteJudgeDTO remoteJudgeDTO = getRemoteJudgeDTO();
         String url = HOST + String.format(QUERY_URL, remoteJudgeDTO.getSubmitId());
         HttpRequest request = HttpUtil.createGet(url)
@@ -157,9 +157,9 @@ public class YBTJudge extends RemoteJudgeStrategy {
         HttpRequest request = HttpUtil.createPost(HOST + LOGIN_URL).addHeaders(headers);
         HttpResponse response = request.form(MapUtil
                         .builder(new HashMap<String, Object>())
-                        .put("username", remoteJudgeDTO.getUsername())
-                        .put("login", "Sign In")
-                        .put("userpass", remoteJudgeDTO.getPassword()).map())
+                        .put("user_id",  remoteJudgeDTO.getUsername())
+                        .put("password",  remoteJudgeDTO.getPassword()).map())  // map() ? not sure
+                        .map())
                 .execute();
         if (response.getStatus() != 302) {
             throw new RuntimeException("[YBT] not need login! submit user/pass with solution " + response.getStatus());
