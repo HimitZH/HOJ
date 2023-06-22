@@ -26,12 +26,12 @@ import java.util.regex.Pattern;
 
 @Slf4j(topic = "hoj")
 public class YBTJudge extends RemoteJudgeStrategy {
-    public static final String HOST = "http://acm.hdu.edu.cn";
-    public static final String LOGIN_URL = "/userloginex.php?action=login";
-    public static final String SUBMIT_URL = "/submit.php?action=submit";
-    public static final String STATUS_URL = "/status.php?user=%s&pid=%s";
-    public static final String QUERY_URL = "/status.php?first=%d";
-    public static final String ERROR_URL = "/viewerror.php?rid=%d";
+    public static final String HOST = "http://www.ssoier.cn:18087/pubtest";
+    public static final String LOGIN_URL = "";
+    public static final String SUBMIT_URL = "/acx.php";
+    public static final String STATUS_URL = "";
+    public static final String QUERY_URL = "/stux.php?first=%d";
+    public static final String ERROR_URL = "";
     public static Map<String, String> headers = MapUtil
             .builder(new HashMap<String, String>())
             .put("Host", "acm.hdu.edu.cn")
@@ -157,7 +157,7 @@ public class YBTJudge extends RemoteJudgeStrategy {
                         .put("userpass", remoteJudgeDTO.getPassword()).map())
                 .execute();
         if (response.getStatus() != 302) {
-            throw new RuntimeException("[HDU] Failed to login! The possible cause is connection failure, and the returned status code is " + response.getStatus());
+            throw new RuntimeException("[YBT] not need login! submit user/pass with solution " + response.getStatus());
         }
         remoteJudgeDTO.setLoginStatus(response.getStatus());
         remoteJudgeDTO.setCookies(response.getCookies());
@@ -168,19 +168,15 @@ public class YBTJudge extends RemoteJudgeStrategy {
     public String getLanguage(String language) {
         switch (language) {
             case "G++":
-                return "0";
+                return "7";
             case "GCC":
-                return "1";
+                return "7";
             case "C++":
-                return "2";
+                return "7";
             case "C":
-                return "3";
-            case "Pascal":
-                return "4";
-            case "Java":
+                return "7";
+            case "Python":
                 return "5";
-            case "C#":
-                return "6";
             default:
                 // TODO 抛出没有这个语言的异常
                 return null;
