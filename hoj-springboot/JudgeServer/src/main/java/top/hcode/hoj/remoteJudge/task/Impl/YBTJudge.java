@@ -26,6 +26,8 @@ import java.util.regex.Pattern;
 
 @Slf4j(topic = "hoj")
 public class YBTJudge extends RemoteJudgeStrategy {
+    // half done 
+    // anyone continue this work , refer to https://github.com/zhblue/hustoj/blob/master/trunk/web/include/remote_bas.php
     public static final String HOST = "http://www.ssoier.cn:18087/pubtest";
     public static final String LOGIN_URL = "";
     public static final String SUBMIT_URL = "/acx.php";
