@@ -34,9 +34,9 @@ public class YBTJudge extends RemoteJudgeStrategy {
     public static final String ERROR_URL = "";
     public static Map<String, String> headers = MapUtil
             .builder(new HashMap<String, String>())
-            .put("Host", "acm.hdu.edu.cn")
-            .put("origin", "https://acm.hdu.edu.cn")
-            .put("referer", "https://acm.hdu.edu.cn")
+            .put("Host", "www.ssoier.cn")
+            .put("origin", "http://www.ssoier.cn:18087/pubtest")
+            .put("referer", "http://www.ssoier.cn:18087/pubtest")
             .put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36")
             .map();
 
@@ -76,11 +76,11 @@ public class YBTJudge extends RemoteJudgeStrategy {
             response = request.execute();
             remoteJudgeDTO.setSubmitStatus(response.getStatus());
             if (response.getStatus() != 302) {
-                String log = String.format("[HDU] [%s]: Failed to submit code, the http response status is [%s].", remoteJudgeDTO.getCompleteProblemId(), response.getStatus());
+                String log = String.format("[YBT] [%s]: Failed to submit code, the http response status is [%s].", remoteJudgeDTO.getCompleteProblemId(), response.getStatus());
                 throw new RuntimeException(log);
             }
         } else if (response.getStatus() != 302) {
-            String log = String.format("[HDU] [%s]: Failed to submit code, the http response status is [%s].", remoteJudgeDTO.getCompleteProblemId(), response.getStatus());
+            String log = String.format("[YBT] [%s]: Failed to submit code, the http response status is [%s].", remoteJudgeDTO.getCompleteProblemId(), response.getStatus());
             throw new RuntimeException(log);
         }
         // 获取提交的题目id
@@ -195,18 +195,15 @@ public class YBTJudge extends RemoteJudgeStrategy {
     // TODO 添加结果对应的状态
     private static final Map<String, Constants.Judge> statusTypeMap = new HashMap<String, Constants.Judge>() {
         {
-            put("Submitted", Constants.Judge.STATUS_PENDING);
-            put("Accepted", Constants.Judge.STATUS_ACCEPTED);
-            put("Wrong Answer", Constants.Judge.STATUS_WRONG_ANSWER);
-            put("Compilation Error", Constants.Judge.STATUS_COMPILE_ERROR);
-            put("Queuing", Constants.Judge.STATUS_PENDING);
-            put("Running", Constants.Judge.STATUS_JUDGING);
-            put("Compiling", Constants.Judge.STATUS_COMPILING);
-            put("Runtime Error", Constants.Judge.STATUS_RUNTIME_ERROR);
-            put("Time Limit Exceeded", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED);
-            put("Memory Limit Exceeded", Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED);
-            put("Output Limit Exceeded", Constants.Judge.STATUS_RUNTIME_ERROR);
-            put("Presentation Error", Constants.Judge.STATUS_PRESENTATION_ERROR);
+            put("AC", Constants.Judge.STATUS_ACCEPTED);
+            put("WA", Constants.Judge.STATUS_WRONG_ANSWER);
+            put("CE", Constants.Judge.STATUS_COMPILE_ERROR);
+            put("RE", Constants.Judge.STATUS_RUNTIME_ERROR);
+            put("RF", Constants.Judge.STATUS_RUNTIME_ERROR);
+            put("TLE", Constants.Judge.STATUS_TIME_LIMIT_EXCEEDED);
+            put("MLE", Constants.Judge.STATUS_MEMORY_LIMIT_EXCEEDED);
+            put("OLE", Constants.Judge.STATUS_RUNTIME_ERROR);
+            put("PE", Constants.Judge.STATUS_PRESENTATION_ERROR);
         }
     };
 
