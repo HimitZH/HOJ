@@ -49,7 +49,7 @@ public class YBTJudge extends RemoteJudgeStrategy {
             return;
         }
 
-        login();
+      //  login(); // YBT no need
 
         List<HttpCookie> cookies = remoteJudgeDTO.getCookies();
 
@@ -57,10 +57,13 @@ public class YBTJudge extends RemoteJudgeStrategy {
                 .addHeaders(headers)
                 .form(MapUtil
                         .builder(new HashMap<String, Object>())
-                        .put("check", "0")
+                        .put("user_id",  remoteJudgeDTO.getUsername())
+                        .put("password",  remoteJudgeDTO.getPassword()).map())  // map() ? not sure
                         .put("language", getLanguage(remoteJudgeDTO.getLanguage()))
-                        .put("problemid", remoteJudgeDTO.getCompleteProblemId())
-                        .put("_usercode", Base64.encode(URLEncoder.encode(remoteJudgeDTO.getUserCode() + getRandomBlankString())))
+                        .put("problem_id", remoteJudgeDTO.getCompleteProblemId())
+                        .put("data_id", "bas")
+                        .put("submit", "提交")
+                        .put("source", Base64.encode(URLEncoder.encode(remoteJudgeDTO.getUserCode() + getRandomBlankString())))
                         .map())
                 .cookie(cookies);
 
