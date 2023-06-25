@@ -1,5 +1,6 @@
 package top.hcode.hoj.config;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
@@ -64,7 +65,7 @@ public class NacosSwitchConfig {
 
             configService = NacosFactory.createConfigService(properties);
 
-            refreshSWitchConfig(configService.getConfig(switchConfigFileName, group, 6000));
+            refreshSwitchConfig(configService.getConfig(switchConfigFileName, group, 6000));
 
             configService.addListener(switchConfigFileName, group, new Listener() {
                 @Override
@@ -74,7 +75,7 @@ public class NacosSwitchConfig {
 
                 @Override
                 public void receiveConfigInfo(String configInfo) {
-                    refreshSWitchConfig(configInfo);
+                    refreshSwitchConfig(configInfo);
                 }
             });
             log.info("[Switch Config] [Init Succeeded] [{}]", getSwitchConfig());
@@ -96,13 +97,14 @@ public class NacosSwitchConfig {
         }
     }
 
-    private static void refreshSWitchConfig(String config) {
+    private static void refreshSwitchConfig(String config) {
         if (StrUtil.isBlank(config)) {
             switchConfig = new SwitchConfig();
         } else {
             try {
                 Yaml yaml = new Yaml();
                 switchConfig = yaml.loadAs(config, SwitchConfig.class);
+                switchConfig.convertUnicodeRemoteAccount2Str();
             } catch (Exception e) {
                 log.error("[Nacos Config] refresh switch config error:{}, config:{}", e, config);
             }
@@ -135,7 +137,9 @@ public class NacosSwitchConfig {
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         options.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
         Yaml yaml = new Yaml(options);
-        String content = yaml.dumpAsMap(getSwitchConfig());
+        SwitchConfig switchConfig = BeanUtil.copyProperties(getSwitchConfig(), SwitchConfig.class);
+        switchConfig.formatStrRemoteAccount2Unicode();
+        String content = yaml.dumpAsMap(switchConfig);
         try {
             return configService.publishConfig(switchConfigFileName, group, content, ConfigType.YAML.getType());
         } catch (NacosException e) {

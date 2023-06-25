@@ -5,7 +5,7 @@ exe_path: main
 compile:
   env: default
   command: /usr/bin/gcc -DONLINE_JUDGE -w -fmax-errors=1 -std=c11 {src_path} -lm -o {exe_path}
-  maxCpuTime: 3s
+  maxCpuTime: 5s
   maxRealTime: 10s
   maxMemory: 256mb
 run:
@@ -19,7 +19,7 @@ exe_path: main
 compile:
   env: default
   command: /usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=1 -std=c11 {src_path} -lm -o {exe_path}
-  maxCpuTime: 3s
+  maxCpuTime: 5s
   maxRealTime: 10s
   maxMemory: 256mb
 run:
@@ -188,8 +188,8 @@ exe_path: main
 compile:
   env: golang_compile
   command: /usr/bin/go build -o {exe_path} {src_path}
-  maxCpuTime: 3s
-  maxRealTime: 5s
+  maxCpuTime: 5s
+  maxRealTime: 10s
   maxMemory: 512mb
 run:
   env: golang_run
@@ -241,8 +241,8 @@ exe_path: spj
 compile:
   env: default
   command: /usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {src_path} -lm -o {exe_path}
-  maxCpuTime: 8s
-  maxRealTime: 15s
+  maxCpuTime: 10s
+  maxRealTime: 20s
   maxMemory: 512mb
 run:
   env: default
@@ -256,7 +256,7 @@ compile:
   env: default
   command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {src_path} -lm -o {exe_path}
   maxCpuTime: 15s
-  maxRealTime: 25s
+  maxRealTime: 30s
   maxMemory: 512mb
 run:
   env: default
@@ -269,8 +269,8 @@ exe_path: interactive
 compile:
   env: default
   command: /usr/bin/gcc -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c11 {src_path} -lm -o {exe_path}
-  maxCpuTime: 8s
-  maxRealTime: 15s
+  maxCpuTime: 10s
+  maxRealTime: 20s
   maxMemory: 512mb
 run:
   env: default
@@ -284,7 +284,7 @@ compile:
   env: default
   command: /usr/bin/g++ -DONLINE_JUDGE -O2 -w -fmax-errors=3 -std=c++14 {src_path} -lm -o {exe_path}
   maxCpuTime: 15s
-  maxRealTime: 25s
+  maxRealTime: 30s
   maxMemory: 512mb
 run:
   env: default
