@@ -18,7 +18,7 @@
 ## 一、总概
 
 - 基于Vue和Spring Boot、Spring Cloud Alibaba构建的前后端分离，分布式架构的评测系统
-- **支持多种评测语言：C、C++、C#、Python、PyPy、Go、Java、JavaScript、PHP**
+- **支持多种评测语言：C、C++、C#、Python、PyPy、Go、Java、JavaScript、PHP、Ruby、Rust**
 - **支持HDU、POJ、Codeforces（包括GYM）、AtCoder、SPOJ的Remote Judge评测**
 - **支持移动端、PC端浏览，拥有讨论区与站内消息系统**
 - **支持私有训练、公开训练（题单）和团队功能**

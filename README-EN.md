@@ -20,7 +20,7 @@
 ## Overview
 
 - One click deployment based on **Docker** and **Docke-compose**
-- Multi-language support：**C、C++、C#、Python、PyPy、Go、Java、JavaScript、PHP**
+- Multi-language support：**C、C++、C#、Python、PyPy、Go、Java、JavaScript、PHP、Ruby、Rust**
 - Remote judge support： **HDU、POJ、Codeforces、GYM、AtCoder、SPOJ**
 - Perfect evaluation mode：**General 、Special、Interactive 、Self-test、Subtask、File IO**
 - Perfect contest function：**Star team、 Attention team、 External Rank、Scroll Board**
