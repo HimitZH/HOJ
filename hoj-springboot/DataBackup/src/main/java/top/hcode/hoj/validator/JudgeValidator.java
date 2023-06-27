@@ -28,7 +28,7 @@ public class JudgeValidator {
     private final static List<String> HOJ_LANGUAGE_LIST = Arrays.asList(
             "C++", "C++ With O2", "C++ 17", "C++ 17 With O2","C++ 20", "C++ 20 With O2",
             "C", "C With O2", "Python3", "Python2", "Java", "Golang", "C#", "PHP", "PyPy2", "PyPy3",
-            "JavaScript Node", "JavaScript V8");
+            "JavaScript Node", "JavaScript V8", "Ruby", "Rust");
 
     private static HashMap<String, String> MODE_MAP_LANGUAGE;
 
@@ -41,6 +41,8 @@ public class JudgeValidator {
         MODE_MAP_LANGUAGE.put("text/x-go", "Golang");
         MODE_MAP_LANGUAGE.put("text/x-csharp", "C#");
         MODE_MAP_LANGUAGE.put("text/x-php", "PHP");
+        MODE_MAP_LANGUAGE.put("text/x-ruby", "Ruby");
+        MODE_MAP_LANGUAGE.put("text/x-rustsrc", "Rust");
     }
 
     public void validateSubmissionInfo(SubmitJudgeDTO submitJudgeDto) throws StatusFailException, AccessException {
@@ -60,6 +62,7 @@ public class JudgeValidator {
         if (submitJudgeDto.getCode().length() < 50
                 && !submitJudgeDto.getLanguage().contains("Py")
                 && !submitJudgeDto.getLanguage().contains("PHP")
+                && !submitJudgeDto.getLanguage().contains("Ruby")
                 && !submitJudgeDto.getLanguage().contains("JavaScript")) {
             throw new StatusFailException("提交的代码是无效的，代码字符长度请不要低于50！");
         }
@@ -135,6 +138,7 @@ public class JudgeValidator {
         if (testJudgeDto.getCode().length() < 50
                 && !testJudgeDto.getLanguage().contains("Py")
                 && !testJudgeDto.getLanguage().contains("PHP")
+                && !testJudgeDto.getLanguage().contains("Ruby")
                 && !testJudgeDto.getLanguage().contains("JavaScript")) {
             throw new StatusFailException("提交的代码是无效的，代码字符长度请不要低于50！");
         }

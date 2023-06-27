@@ -44,14 +44,14 @@ public class JudgeServerEntityServiceImpl extends ServiceImpl<JudgeServerMapper,
 
         HashMap<String, Object> res = new HashMap<>();
 
-        res.put("version", "20221207");
+        res.put("version", "20230627");
         res.put("currentTime", new Date());
         res.put("judgeServerName", name);
         res.put("cpu", Runtime.getRuntime().availableProcessors());
         res.put("languages", Arrays.asList("G++ 9.4.0", "GCC 9.4.0", "Python 3.7.5",
                 "Python 2.7.17", "OpenJDK 1.8", "Golang 1.19", "C# Mono 4.6.2",
                 "PHP 7.3.33","JavaScript Node 14.19.0","JavaScript V8 8.4.109",
-                "PyPy 2.7.18 (7.3.8)","PyPy 3.8.12 (7.3.8)"));
+                "PyPy 2.7.18 (7.3.8)","PyPy 3.8.12 (7.3.8)", "Ruby 2.5.1", "Rust 1.65.0"));
 
         if (maxTaskNum == -1) {
             res.put("maxTaskNum", Runtime.getRuntime().availableProcessors() + 1);

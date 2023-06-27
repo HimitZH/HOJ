@@ -233,6 +233,28 @@ run:
   env: default
   command: /usr/bin/jsv8/d8 /w/{exe_path}
 
+---
+language: Ruby
+src_path: main.rb
+exe_path: main.rb
+run:
+  env: default
+  command: /usr/bin/ruby /w/{exe_path}
+
+---
+language: Rust
+src_path: Main.cs
+exe_path: main
+compile:
+  env: default
+  command: /usr/bin/rustc -O -o {exe_path} {src_path}
+  maxCpuTime: 5s
+  maxRealTime: 10s
+  maxMemory: 512mb
+run:
+  env: default
+  command: /w/{exe_path}
+
 # 以下为特殊评测或交互评测使用的语言
 ---
 language: SPJ-C

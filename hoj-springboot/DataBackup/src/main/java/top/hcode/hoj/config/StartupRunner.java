@@ -150,6 +150,7 @@ public class StartupRunner implements CommandLineRunner {
 
         initSwitchConfig();
 
+        upsertHOJLanguageV2();
 //      upsertHOJLanguage("PHP", "PyPy2", "PyPy3", "JavaScript Node", "JavaScript V8");
 //      checkAllLanguageUpdate();
     }
@@ -359,6 +360,60 @@ public class StartupRunner implements CommandLineRunner {
         }
     }
 
+
+    private void upsertHOJLanguageV2() {
+        /**
+         * 2023.06.27 新增ruby、rust语言
+         */
+        QueryWrapper<Language> rubyLanguageQueryWrapper = new QueryWrapper<>();
+        rubyLanguageQueryWrapper.eq("oj", "ME")
+                .eq("name", "Ruby");
+        int countRuby = languageEntityService.count(rubyLanguageQueryWrapper);
+        if (countRuby == 0) {
+            Language rubyLanguage = new Language();
+            rubyLanguage.setName("Ruby")
+                    .setCompileCommand("/usr/bin/ruby {src_path}")
+                    .setContentType("text/x-ruby")
+                    .setDescription("Ruby 2.5.1")
+                    .setTemplate("a, b = gets.split.map(&:to_i)\n" +
+                            "puts(a + b)")
+                    .setIsSpj(false)
+                    .setOj("ME");
+            boolean isOk = languageEntityService.save(rubyLanguage);
+            if (!isOk) {
+                log.error("[Init System Config] [HOJ] Failed to add new language [{}]! Please check whether the language table corresponding to the database has the language!", "Ruby");
+            }
+        }
+
+        QueryWrapper<Language> rustLanguageQueryWrapper = new QueryWrapper<>();
+        rustLanguageQueryWrapper.eq("oj", "ME")
+                .eq("name", "Rust");
+        int countRust = languageEntityService.count(rustLanguageQueryWrapper);
+        if (countRust == 0) {
+            Language rustLanguage = new Language();
+            rustLanguage.setName("Rust")
+                    .setCompileCommand("/usr/bin/rustc -O -o {exe_path} {src_path}")
+                    .setContentType("text/x-rustsrc")
+                    .setDescription("Rust 1.65.0")
+                    .setTemplate("use std::io;\n" +
+                            " \n" +
+                            "fn main() {\n" +
+                            "    let mut line = String::new();\n" +
+                            "    io::stdin().read_line(&mut line).expect(\"stdin\");\n" +
+                            " \n" +
+                            "    let sum: i32 = line.split_whitespace()\n" +
+                            "                       .map(|x| x.parse::<i32>().expect(\"integer\"))\n" +
+                            "                       .sum(); \n" +
+                            "    println!(\"{}\", sum);\n" +
+                            "}")
+                    .setIsSpj(false)
+                    .setOj("ME");
+            boolean isOk = languageEntityService.save(rustLanguage);
+            if (!isOk) {
+                log.error("[Init System Config] [HOJ] Failed to add new language [{}]! Please check whether the language table corresponding to the database has the language!", "Rust");
+            }
+        }
+    }
 
     @Deprecated
     private void upsertHOJLanguage(String... languageList) {
