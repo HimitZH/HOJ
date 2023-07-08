@@ -169,7 +169,7 @@ run:
 ---
 language: PyPy3
 src_path: main.py
-exe_path: __pycache__/main.pypy38.pyc
+exe_path: __pycache__/main.pypy39.pyc
 compile:
   env: python3
   command: /usr/bin/pypy3 -m py_compile /w/{src_path}

@@ -1,5 +1,6 @@
 package top.hcode.hoj.config;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -19,6 +20,7 @@ import top.hcode.hoj.pojo.entity.problem.Language;
 import top.hcode.hoj.pojo.vo.ConfigVO;
 import top.hcode.hoj.utils.Constants;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -140,6 +142,9 @@ public class StartupRunner implements CommandLineRunner {
     @Value("${forced-update-remote-judge-account}")
     private Boolean forcedUpdateRemoteJudgeAccount;
 
+    @Resource
+    private CheckLanguageConfig checkLanguageConfig;
+
     @Override
     public void run(String... args) throws Exception {
 
@@ -153,6 +158,8 @@ public class StartupRunner implements CommandLineRunner {
         upsertHOJLanguageV2();
 //      upsertHOJLanguage("PHP", "PyPy2", "PyPy3", "JavaScript Node", "JavaScript V8");
 //      checkAllLanguageUpdate();
+
+        checkLanguageUpdate();
     }
 
 
@@ -593,5 +600,23 @@ public class StartupRunner implements CommandLineRunner {
         return null;
     }
 
+
+    private void checkLanguageUpdate() {
+        if (CollectionUtil.isNotEmpty(checkLanguageConfig.getList())) {
+            for (Language language : checkLanguageConfig.getList()) {
+                UpdateWrapper<Language> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("oj", language.getOj())
+                        .eq("name", language.getName())
+                        .eq("is_spj", language.getIsSpj()) // 这三个条件确定唯一性
+                        .set(StrUtil.isNotEmpty(language.getContentType()), "content_type", language.getContentType())
+                        .set(StrUtil.isNotEmpty(language.getDescription()), "description", language.getDescription())
+                        .set(StrUtil.isNotEmpty(language.getCompileCommand()), "compile_command", language.getCompileCommand())
+                        .set(StrUtil.isNotEmpty(language.getTemplate()), "template", language.getTemplate())
+                        .set(StrUtil.isNotEmpty(language.getCodeTemplate()), "code_template", language.getCodeTemplate())
+                        .set(language.getSeq() != null, "seq", language.getSeq());
+                languageEntityService.update(updateWrapper);
+            }
+        }
+    }
 }
 
