@@ -189,6 +189,9 @@ public class CommonManager {
         queryWrapper.eq("pid", pid).select("lid");
         List<Long> idList = problemLanguageEntityService.list(queryWrapper)
                 .stream().map(ProblemLanguage::getLid).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(idList)){
+            return Collections.emptyList();
+        }
         Collection<Language> languages = languageEntityService.listByIds(idList);
         return languages.stream().sorted(Comparator.comparing(Language::getSeq, Comparator.reverseOrder())
                         .thenComparing(Language::getId))

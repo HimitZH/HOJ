@@ -14,9 +14,13 @@ import org.springframework.util.CollectionUtils;
 import top.hcode.hoj.crawler.language.LanguageContext;
 import top.hcode.hoj.dao.judge.RemoteJudgeAccountEntityService;
 import top.hcode.hoj.dao.problem.LanguageEntityService;
+import top.hcode.hoj.dao.problem.ProblemEntityService;
+import top.hcode.hoj.dao.problem.ProblemLanguageEntityService;
 import top.hcode.hoj.manager.admin.system.ConfigManager;
 import top.hcode.hoj.pojo.entity.judge.RemoteJudgeAccount;
 import top.hcode.hoj.pojo.entity.problem.Language;
+import top.hcode.hoj.pojo.entity.problem.Problem;
+import top.hcode.hoj.pojo.entity.problem.ProblemLanguage;
 import top.hcode.hoj.pojo.vo.ConfigVO;
 import top.hcode.hoj.utils.Constants;
 
@@ -47,6 +51,12 @@ public class StartupRunner implements CommandLineRunner {
 
     @Autowired
     private LanguageEntityService languageEntityService;
+
+    @Autowired
+    private ProblemEntityService problemEntityService;
+
+    @Autowired
+    private ProblemLanguageEntityService problemLanguageEntityService;
 
     @Value("${open-remote-judge}")
     private String openRemoteJudge;
@@ -160,6 +170,8 @@ public class StartupRunner implements CommandLineRunner {
 //      checkAllLanguageUpdate();
 
         checkLanguageUpdate();
+
+
     }
 
 
@@ -500,12 +512,43 @@ public class StartupRunner implements CommandLineRunner {
         for (Constants.RemoteOJ remoteOJ : remoteOJList) {
             QueryWrapper<Language> languageQueryWrapper = new QueryWrapper<>();
             languageQueryWrapper.eq("oj", remoteOJ.getName());
+            if (Objects.equals(remoteOJ, Constants.RemoteOJ.ATCODER)) {
+                // 2023.09.24 由于atcoder官网废弃之前全部的语言，所以根据新语言来判断是否需要重新清空，添加最新的语言
+                languageQueryWrapper.eq("name", "なでしこ (cnako3 3.4.20)");
+            }
             int count = languageEntityService.count(languageQueryWrapper);
             if (count == 0) {
+                if (Objects.equals(remoteOJ, Constants.RemoteOJ.ATCODER)) {
+                    // 2023.09.24 由于atcoder官网废弃之前全部的语言，所以根据新语言来判断是否需要重新清空，添加最新的语言
+                    UpdateWrapper<Language> languageUpdateWrapper = new UpdateWrapper<>();
+                    languageUpdateWrapper.eq("oj", remoteOJ.getName());
+                    languageEntityService.remove(languageUpdateWrapper);
+                }
                 List<Language> languageList = new LanguageContext(remoteOJ).buildLanguageList();
                 boolean isOk = languageEntityService.saveBatch(languageList);
                 if (!isOk) {
                     log.error("[Init System Config] [{}] Failed to initialize language list! Please check whether the language table corresponding to the database has the OJ language!", remoteOJ.getName());
+                }
+                if (Objects.equals(remoteOJ, Constants.RemoteOJ.ATCODER)) {
+                    // 2023.09.24 同时需要把所有atcoder的题目都重新关联上新language的id
+                    QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
+                    problemQueryWrapper.select("id");
+                    problemQueryWrapper.eq("is_remote", true);
+                    problemQueryWrapper.like("problem_id", "AC-");
+                    List<Problem> problemList = problemEntityService.list(problemQueryWrapper);
+                    if (!CollectionUtils.isEmpty(problemList)) {
+                        List<Long> problemIdList = problemList.stream().map(Problem::getId).collect(Collectors.toList());
+                        List<ProblemLanguage> problemLanguageList = new LinkedList<>();
+                        QueryWrapper<Language> newLanguageQueryWrapper = new QueryWrapper<>();
+                        newLanguageQueryWrapper.eq("oj", remoteOJ.getName());
+                        List<Language> newLanguageList = languageEntityService.list(newLanguageQueryWrapper);
+                        for (Long id : problemIdList) {
+                            for (Language language : newLanguageList) {
+                                problemLanguageList.add(new ProblemLanguage().setPid(id).setLid(language.getId()));
+                            }
+                        }
+                        problemLanguageEntityService.saveOrUpdateBatch(problemLanguageList);
+                    }
                 }
             }
         }

@@ -24,6 +24,8 @@ class AtcoderJudgeTest {
     public static Map<String, String> headers = MapUtil
             .builder(new HashMap<String, String>())
             .put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.90 Safari/537.36")
+            .put("Origin", "https://atcoder.jp")
+            .put("Referer", "https://atcoder.jp/contests/abc217/submit")
             .map();
 
     @Test
@@ -81,6 +83,7 @@ class AtcoderJudgeTest {
                 "\treturn 0;\n" +
                 "}\n" +
                 "\n";
+//        String token = getCsrfToken(HOST + "/contests/abc217/submit");
         submit("abc217", "abc217_f", code, csrfToken, cookies);
     }
 
@@ -109,10 +112,11 @@ class AtcoderJudgeTest {
         HttpRequest request = HttpUtil.createPost(submitUrl);
         HttpRequest httpRequest = request.form(MapUtil.builder(new HashMap<String, Object>())
                 .put("data.TaskScreenName", problemId)
-                .put("data.LanguageId", "4003")
+                .put("data.LanguageId", "5001")
                 .put("sourceCode", code)
                 .put("csrf_token", csrfToken).map());
         httpRequest.cookie(cookies);
+//        httpRequest.addHeaders(headers);
         HttpResponse response = httpRequest.execute();
         System.out.println(response.getStatus());
     }
