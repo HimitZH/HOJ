@@ -21,7 +21,6 @@ import top.hcode.hoj.pojo.entity.contest.Contest;
 import top.hcode.hoj.pojo.entity.contest.ContestRegister;
 import top.hcode.hoj.pojo.vo.AdminContestVO;
 import top.hcode.hoj.pojo.vo.ContestAwardConfigVO;
-import top.hcode.hoj.pojo.vo.UserRolesVO;
 import top.hcode.hoj.shiro.AccountProfile;
 import top.hcode.hoj.utils.Constants;
 import top.hcode.hoj.validator.ContestValidator;
@@ -73,7 +72,7 @@ public class AdminContestManager {
             throw new StatusFailException("查询失败：该比赛不存在,请检查参数cid是否准确！");
         }
         // 获取当前登录的用户
-        UserRolesVO userRolesVo = (UserRolesVO) SecurityUtils.getSubject().getSession().getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         // 是否为超级管理员
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
@@ -155,7 +154,8 @@ public class AdminContestManager {
             throw new StatusSystemErrorException("该比赛不存在，无法克隆！");
         }
         // 获取当前登录的用户
-        UserRolesVO userRolesVo = (UserRolesVO) SecurityUtils.getSubject().getSession().getAttribute("userInfo");
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+
         contest.setUid(userRolesVo.getUid())
                 .setAuthor(userRolesVo.getUsername())
                 .setSource(cid.intValue())
