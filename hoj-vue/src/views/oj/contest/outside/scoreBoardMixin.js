@@ -37,6 +37,7 @@ export default {
       });
     },
     getContestOutsideScoreboard () {
+      this.$store.dispatch('getContestProblems');
       let data = {
         cid: this.$route.params.contestID,
         forceRefresh: this.forceUpdate ? true: false,
@@ -79,9 +80,6 @@ export default {
       } else {
         return time.secondFormat(this.contest.duration);
       }
-    },
-    getProblemCount(num){
-      return num == undefined? 0 : num
     },
     updateConcernedList(uid,isConcerned){
       if(isConcerned){

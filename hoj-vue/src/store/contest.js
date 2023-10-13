@@ -243,9 +243,7 @@ const actions = {
       api.getScoreBoardContestInfo(rootState.route.params.contestID).then((res) => {
         resolve(res)
         let contest = res.data.data.contest;
-        let problemList = res.data.data.problemList;
         commit('changeContest', {contest: contest})
-        commit('changeContestProblems', {contestProblems: problemList})
         commit('now', {now: moment(contest.now)})
       }, err => {
         reject(err)

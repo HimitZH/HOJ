@@ -428,23 +428,11 @@
                 <div slot="content">
                   {{ problem.displayId + '. ' + problem.displayTitle }}
                   <br />
-                  {{
-                    'Accepted: ' +
-                      getProblemCount(problemACCountMap[problem.displayId])
-                  }}
+                  {{ 'Accepted: ' + problem.ac }}
                   <br />
-                  {{
-                    'Rejected: ' +
-                      getProblemCount(problemErrorCountMap[problem.displayId])
-                  }}
+                  {{ 'Rejected: ' + (problem.total - problem.ac) }}
                 </div>
-                <span>({{
-                    getProblemCount(problemACCountMap[problem.displayId])
-                  }}/{{
-                    getProblemCount(problemACCountMap[problem.displayId]) +
-                      getProblemCount(problemErrorCountMap[problem.displayId])
-                  }})
-                </span>
+                <span>({{ problem.ac }}/{{ problem.total }}) </span>
               </el-tooltip>
             </span>
           </template>
