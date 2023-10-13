@@ -503,8 +503,6 @@ export default {
       CONTEST_STATUS_REVERSE: {},
       CONTEST_TYPE_REVERSE: {},
       RULE_TYPE: {},
-      problemACCountMap: {},
-      problemErrorCountMap: {},
     };
   },
   created() {
@@ -542,8 +540,6 @@ export default {
       });
     },
     applyToTable(dataRank) {
-      let acCountMap = {};
-      let errorCountMap = {};
       dataRank.forEach((rank, i) => {
         let submissionInfo = rank.submissionInfo;
         let timeInfo = rank.timeInfo;
@@ -553,23 +549,13 @@ export default {
         }
         Object.keys(submissionInfo).forEach((problemID) => {
           rank[problemID] = submissionInfo[problemID];
-          if (!acCountMap[problemID]) {
-            acCountMap[problemID] = 0;
-          }
-          if (!errorCountMap[problemID]) {
-            errorCountMap[problemID] = 0;
-          }
-
           let score = submissionInfo[problemID];
           if (timeInfo != null && timeInfo[problemID] != undefined) {
             cellClass[problemID] = "oi-100";
-            acCountMap[problemID] += 1;
           } else if (score == 0) {
             cellClass[problemID] = "oi-0";
-            errorCountMap[problemID] += 1;
           } else if (score != null) {
             cellClass[problemID] = "oi-between";
-            errorCountMap[problemID] += 1;
           }
         });
         rank.cellClassName = cellClass;
@@ -585,8 +571,6 @@ export default {
         );
       });
       this.dataRank = dataRank;
-      this.problemACCountMap = acCountMap;
-      this.problemErrorCountMap = errorCountMap;
     },
   },
 };
