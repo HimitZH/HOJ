@@ -140,7 +140,7 @@ public class ConfigManager {
         for (ServiceInstance serviceInstance : serviceInstances) {
             try {
                 String result = restTemplate.getForObject(serviceInstance.getUri() + "/get-sys-config", String.class);
-                JSONObject jsonObject = JSONUtil.parseObj(result);
+                JSONObject jsonObject = JSONUtil.parseObj(result, false);
                 jsonObject.put("service", serviceInstance);
                 serviceInfoList.add(jsonObject);
             } catch (Exception e) {
