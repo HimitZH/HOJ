@@ -553,8 +553,9 @@ public class ProblemEntityServiceImpl extends ServiceImpl<ProblemMapper, Problem
         String testCasesDir = Constants.File.TESTCASE_BASE_FOLDER.getPath() + File.separator + "problem_" + problemId;
 
         // 将之前的临时文件夹里面的评测文件全部复制到指定文件夹(覆盖)
-
-        if (!StringUtils.isEmpty(tmpTestcaseDir)) {
+        if (!StringUtils.isEmpty(tmpTestcaseDir)
+                && FileUtil.exist(tmpTestcaseDir)
+                && !FileUtil.isDirEmpty(new File(tmpTestcaseDir))) {
             FileUtil.clean(testCasesDir);
             File testCasesDirFile = new File(testCasesDir);
             FileUtil.copyFilesFromDir(new File(tmpTestcaseDir), testCasesDirFile, true);

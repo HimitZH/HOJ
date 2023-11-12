@@ -365,15 +365,7 @@ public class ProblemManager {
                 }
             }
         }
-        if (!judge.getLanguage().toLowerCase().contains("py")) {
-            return judge.getCode() + "\n\n" +
-                    "/**\n" +
-                    "* @runId: " + judge.getSubmitId() + "\n" +
-                    "* @language: " + judge.getLanguage() + "\n" +
-                    "* @author: " + judge.getUsername() + "\n" +
-                    "* @submitTime: " + DateUtil.format(judge.getSubmitTime(), "yyyy-MM-dd HH:mm:ss") + "\n" +
-                    "*/";
-        } else {
+        if (judge.getLanguage().toLowerCase().contains("py")) {
             return judge.getCode() + "\n\n" +
                     "'''\n" +
                     "    @runId: " + judge.getSubmitId() + "\n" +
@@ -381,6 +373,22 @@ public class ProblemManager {
                     "    @author: " + judge.getUsername() + "\n" +
                     "    @submitTime: " + DateUtil.format(judge.getSubmitTime(), "yyyy-MM-dd HH:mm:ss") + "\n" +
                     "'''";
+        }else if (judge.getLanguage().toLowerCase().contains("ruby")){
+            return judge.getCode() + "\n\n" +
+                    "=begin\n" +
+                    "* @runId: " + judge.getSubmitId() + "\n" +
+                    "* @language: " + judge.getLanguage() + "\n" +
+                    "* @author: " + judge.getUsername() + "\n" +
+                    "* @submitTime: " + DateUtil.format(judge.getSubmitTime(), "yyyy-MM-dd HH:mm:ss") + "\n" +
+                    "=end";
+        } else {
+            return judge.getCode() + "\n\n" +
+                    "/**\n" +
+                    "* @runId: " + judge.getSubmitId() + "\n" +
+                    "* @language: " + judge.getLanguage() + "\n" +
+                    "* @author: " + judge.getUsername() + "\n" +
+                    "* @submitTime: " + DateUtil.format(judge.getSubmitTime(), "yyyy-MM-dd HH:mm:ss") + "\n" +
+                    "*/";
         }
     }
 
