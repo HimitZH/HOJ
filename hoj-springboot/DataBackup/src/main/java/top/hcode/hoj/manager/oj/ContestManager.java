@@ -223,23 +223,44 @@ public class ContestManager {
         // 获取本场比赛的状态
         Contest contest = contestEntityService.getById(cid);
 
-        // 超级管理员或者该比赛的创建者，则为比赛管理者
-        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
-
-        // 需要对该比赛做判断，是否处于开始或结束状态才可以获取题目列表，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
-        contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
-
-        List<ContestProblemVO> contestProblemList;
-        boolean isAdmin = isRoot
-                || contest.getAuthor().equals(userRolesVo.getUsername())
-                || (contest.getIsGroup() && groupValidator.isGroupRoot(userRolesVo.getUid(), contest.getGid()));
-
         List<String> groupRootUidList = null;
         if (contest.getIsGroup() && contest.getGid() != null) {
             groupRootUidList = groupMemberEntityService.getGroupRootUidList(contest.getGid());
         }
 
         isContainsContestEndJudge = Objects.equals(contest.getAllowEndSubmit(), true) && isContainsContestEndJudge;
+
+
+        if (userRolesVo == null){ // 如果访问者没登录
+            if (Objects.equals(contest.getOpenRank(), true)  // 比賽開放赛外榜单
+                    && contest.getStatus().intValue() != Constants.Contest.STATUS_SCHEDULED.getCode()){
+                return contestProblemEntityService.getContestProblemList(cid,
+                        contest.getStartTime(),
+                        contest.getEndTime(),
+                        Objects.equals(contest.getSealRank(), true) ? contest.getSealRankTime() : null,
+                        false,
+                        contest.getAuthor(),
+                        groupRootUidList,
+                        isContainsContestEndJudge);
+            }else{
+                // 比赛没有开启赛外榜单，同时访问者也没登录，则不允许访问比赛题目数据
+                throw new StatusForbiddenException("请您先登录！");
+            }
+        }
+
+        // 超级管理员或者该比赛的创建者，则为比赛管理者
+        boolean isRoot = SecurityUtils.getSubject().hasRole("root");
+
+        if (!Objects.equals(contest.getOpenRank(), true)) { // 当比賽没有開放赛外榜单，需要鉴权
+            // 需要对该比赛做判断，是否处于开始或结束状态才可以获取题目列表，同时若是私有赛需要判断是否已注册（比赛管理员包括超级管理员可以直接获取）
+            contestValidator.validateContestAuth(contest, userRolesVo, isRoot);
+        }
+
+        List<ContestProblemVO> contestProblemList;
+        boolean isAdmin = isRoot
+                || contest.getAuthor().equals(userRolesVo.getUsername())
+                || (contest.getIsGroup() && groupValidator.isGroupRoot(userRolesVo.getUid(), contest.getGid()));
+
 
         // 如果比赛开启封榜
         if (contestValidator.isSealRank(userRolesVo.getUid(), contest, true, isRoot)) {
@@ -408,11 +429,11 @@ public class ContestManager {
         //封榜时间除超级管理员和比赛管理员外 其它人不可看到最新数据
         if (contestValidator.isSealRank(userRolesVo.getUid(), contest, true, isRoot)) {
             sealRankTime = contest.getSealRankTime();
-        }else{
+        } else {
             isContainsContestEndJudge = Objects.equals(contest.getAllowEndSubmit(), true)
                     && Objects.equals(isContainsContestEndJudge, true);
             // 如果不展示比赛后的提交，则将sealRankTime设置成为比赛结束时间
-            if (!isContainsContestEndJudge){
+            if (!isContainsContestEndJudge) {
                 sealRankTime = contest.getEndTime();
             }
         }
@@ -483,11 +504,11 @@ public class ContestManager {
         // 需要判断是否需要封榜
         if (contestValidator.isSealRank(userRolesVo.getUid(), contest, true, isRoot)) {
             sealRankTime = contest.getSealRankTime();
-        }else{
+        } else {
             isContainsContestEndJudge = Objects.equals(contest.getAllowEndSubmit(), true)
                     && Objects.equals(isContainsContestEndJudge, true);
             // 如果不展示比赛后的提交，则将sealRankTime设置成为比赛结束时间
-            if (!isContainsContestEndJudge){
+            if (!isContainsContestEndJudge) {
                 sealRankTime = contest.getEndTime();
             }
         }

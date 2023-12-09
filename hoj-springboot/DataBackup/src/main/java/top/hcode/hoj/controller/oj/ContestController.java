@@ -94,7 +94,6 @@ public class ContestController {
      * @Since 2020/10/28
      */
     @GetMapping("/get-contest-problem")
-    @RequiresAuthentication
     public CommonResult<List<ContestProblemVO>> getContestProblem(@RequestParam(value = "cid", required = true) Long cid,
                                                                   @RequestParam(value = "containsEnd", defaultValue = "false") Boolean containsEnd) {
 
