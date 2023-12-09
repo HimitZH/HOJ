@@ -393,10 +393,10 @@ export default {
       },
       carouselImgList: [
         {
-          url: "https://s1.ax1x.com/2022/05/15/ORSjyT.jpg",
+          url: "https://z1.ax1x.com/2023/12/09/pi20luQ.jpg",
         },
         {
-          url: "https://s1.ax1x.com/2022/05/15/ORp86f.jpg",
+          url: "https://z1.ax1x.com/2023/12/09/pi201Bj.jpg",
         },
       ],
       srcHight: "440px",
