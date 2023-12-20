@@ -120,6 +120,10 @@ public class JudgeManager {
             String lockKey = Constants.Account.SUBMIT_NON_CONTEST_LOCK.getCode() + userRolesVo.getUid();
             long count = redisUtils.incr(lockKey, 1);
             if (count > 1) {
+                Long expireTime = redisUtils.getExpire(lockKey);
+                if (expireTime == null || expireTime == 0L){
+                    redisUtils.expire(lockKey, 3);
+                }
                 throw new StatusForbiddenException("对不起，您的提交频率过快，请稍后再尝试！");
             }
             redisUtils.expire(lockKey, switchConfig.getDefaultSubmitInterval());
@@ -176,6 +180,10 @@ public class JudgeManager {
         String lockKey = Constants.Account.TEST_JUDGE_LOCK.getCode() + userRolesVo.getUid();
         long count = redisUtils.incr(lockKey, 1);
         if (count > 1) {
+            Long expireTime = redisUtils.getExpire(lockKey);
+            if (expireTime == null || expireTime == 0L){
+                redisUtils.expire(lockKey, 3);
+            }
             throw new StatusForbiddenException("对不起，您使用在线调试过于频繁，请稍后再尝试！");
         }
         redisUtils.expire(lockKey, 3);
