@@ -47,7 +47,6 @@ public class SpecialJudge extends AbstractJudge {
                 judgeGlobalDTO.getIoWriteFileName());
     }
 
-
     @Override
     public JSONObject checkMultipleResult(SandBoxRes userSandBoxRes, SandBoxRes interactiveSandBoxRes, JudgeDTO judgeDTO, JudgeGlobalDTO judgeGlobalDTO) {
         return null;
@@ -120,7 +119,7 @@ public class SpecialJudge extends AbstractJudge {
         } else if (sandBoxRes.getExitCode() != 0) {
             result.set("status", Constants.Judge.STATUS_RUNTIME_ERROR.getStatus());
             if (sandBoxRes.getExitCode() < 32) {
-                errMsg.append(String.format("The program return exit status code: %s (%s)\n", sandBoxRes.getExitCode(), SandboxRun.signals.get(sandBoxRes.getExitCode())));
+                errMsg.append(String.format("The program return exit status code: %s (%s)\n", sandBoxRes.getExitCode(), SandboxRun.signals.get(sandBoxRes.getExitCode().intValue())));
             } else {
                 errMsg.append(String.format("The program return exit status code: %s\n", sandBoxRes.getExitCode()));
             }

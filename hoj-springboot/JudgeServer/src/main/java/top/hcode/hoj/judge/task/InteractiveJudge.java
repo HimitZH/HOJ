@@ -72,7 +72,7 @@ public class InteractiveJudge extends AbstractJudge {
         // 记录错误信息
         StringBuilder errMsg = new StringBuilder();
 
-        int userExitCode = userSandBoxRes.getExitCode();
+        Long userExitCode = userSandBoxRes.getExitCode();
         result.set("status", userSandBoxRes.getStatus());
         // 如果运行超过题目限制时间，直接TLE
         if (userSandBoxRes.getTime() > judgeGlobalDTO.getMaxTime()) {
@@ -83,7 +83,7 @@ public class InteractiveJudge extends AbstractJudge {
             // Broken Pipe
             result.set("status", Constants.Judge.STATUS_RUNTIME_ERROR.getStatus());
             if (userExitCode < 32) {
-                errMsg.append(String.format("The program return exit status code: %s (%s)\n", userExitCode, SandboxRun.signals.get(userExitCode)));
+                errMsg.append(String.format("The program return exit status code: %s (%s)\n", userExitCode, SandboxRun.signals.get(userExitCode.intValue())));
             } else {
                 errMsg.append(String.format("The program return exit status code: %s\n", userExitCode));
             }
@@ -131,7 +131,7 @@ public class InteractiveJudge extends AbstractJudge {
 
         JSONObject result = new JSONObject();
 
-        int exitCode = interactiveSandBoxRes.getExitCode();
+        long exitCode = interactiveSandBoxRes.getExitCode();
 
         // 获取跑题用户输出或错误输出
         if (!StringUtils.isEmpty(interactiveSandBoxRes.getStderr())) {

@@ -28,7 +28,7 @@ public class SandBoxRes {
     /**
      * 单个程序的退出码
      */
-    private Integer exitCode;
+    private Long exitCode;
 
     /**
      * 单个程序的运行所耗空间 kb
