@@ -246,7 +246,7 @@ public class ImportHydroProblemManager {
         Yaml yaml = new Yaml();
         HydroConfigYamlBO hydroConfigYamlBO = yaml.loadAs(configYaml, HydroConfigYamlBO.class);
         if (hydroConfigYamlBO != null) {
-            if (Objects.equals(hydroConfigYamlBO.getType(), "default")) {
+            if (Objects.equals(hydroConfigYamlBO.getType(), "default") || hydroConfigYamlBO.getType() == null) {
                 problem.setJudgeMode(Constants.JudgeMode.DEFAULT.getMode());
 
                 if (hydroConfigYamlBO.getChecker() != null) {
