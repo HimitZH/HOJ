@@ -74,6 +74,8 @@ public class Constants {
 
         ATCODER_JUDGE("AC"),
 
+        LIBRE_JUDGE("LIBRE"),
+
         HDU_REMOTE_JUDGE_ACCOUNT("Hdu Remote Judge Account"),
 
         CF_REMOTE_JUDGE_ACCOUNT("Codeforces Remote Judge Account");

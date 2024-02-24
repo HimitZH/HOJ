@@ -216,6 +216,15 @@
             OJ="SPOJ">
           </RemoteJudgeAccount>
         </el-col>
+        <el-col :xs="24" :md="12" style="margin-top: 15px;">
+          <RemoteJudgeAccount
+              :usernameList.sync="switchConfig.libreojUsernameList"
+              :passwordList.sync="switchConfig.libreojPasswordList"
+              :loading.sync="loading"
+              @saveSwitchConfig="saveSwitchConfig"
+              OJ="LibreOJ">
+          </RemoteJudgeAccount>
+        </el-col>
       </el-row>
     </el-card>
 </div>

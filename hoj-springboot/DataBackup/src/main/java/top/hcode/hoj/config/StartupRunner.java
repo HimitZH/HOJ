@@ -149,6 +149,12 @@ public class StartupRunner implements CommandLineRunner {
     @Value("${spoj-password-list}")
     private List<String> spojPasswordList;
 
+    @Value("${libreoj-username-list}")
+    private List<String> libreojUsernameList;
+
+    @Value("${libreoj-password-list}")
+    private List<String> libreojPasswordList;
+
     @Value("${forced-update-remote-judge-account}")
     private Boolean forcedUpdateRemoteJudgeAccount;
 
@@ -171,6 +177,7 @@ public class StartupRunner implements CommandLineRunner {
 
         checkLanguageUpdate();
 
+        upsertHOJLanguageV3();
 
     }
 
@@ -314,6 +321,21 @@ public class StartupRunner implements CommandLineRunner {
             isChanged = true;
         }
 
+        if ((CollectionUtils.isEmpty(switchConfig.getLibreojUsernameList())
+                && !CollectionUtils.isEmpty(libreojUsernameList))
+                || forcedUpdateRemoteJudgeAccount) {
+            switchConfig.setLibreojUsernameList(libreojUsernameList);
+            isChanged = true;
+        }
+
+
+        if ((CollectionUtils.isEmpty(switchConfig.getLibreojPasswordList())
+                && !CollectionUtils.isEmpty(libreojPasswordList))
+                || forcedUpdateRemoteJudgeAccount) {
+            switchConfig.setLibreojPasswordList(libreojPasswordList);
+            isChanged = true;
+        }
+
         if (isChanged) {
             nacosSwitchConfig.publishWebConfig();
         }
@@ -336,6 +358,9 @@ public class StartupRunner implements CommandLineRunner {
             addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.ATCODER.getName(),
                     switchConfig.getAtcoderUsernameList(),
                     switchConfig.getAtcoderPasswordList());
+            addRemoteJudgeAccountToMySQL(Constants.RemoteOJ.LIBRE.getName(),
+                    switchConfig.getLibreojUsernameList(),
+                    switchConfig.getLibreojPasswordList());
             checkRemoteOJLanguage(Constants.RemoteOJ.SPOJ, Constants.RemoteOJ.ATCODER);
         }
     }
@@ -661,5 +686,32 @@ public class StartupRunner implements CommandLineRunner {
             }
         }
     }
+
+    private void upsertHOJLanguageV3() {
+        /**
+         * 2024.02.23 新增loj语言支持
+         */
+
+        int count = languageEntityService.count(new QueryWrapper<Language>()
+                .eq("oj", Constants.RemoteOJ.LIBRE.getName())
+        );
+        if (count == 0) {
+            List<String> languageList = Arrays.asList("text/x-c++src","C++ 11 (G++)","C++ 11 (G++)","text/x-c++src","C++ 17 (G++)","C++ 17 (G++)","text/x-c++src","C++ 11 (Clang++) ","C++ 11 (Clang++) ","text/x-c++src","C++ 17 (Clang++)","C++ 17 (Clang++)","text/x-c++src","C++ 11 O2(G++)","C++ 11 O2(G++)","text/x-c++src","C++ 17 O2(G++)","C++ 17 O2(G++)","text/x-c++src","C++ 11 O2(Clang++) ","C++ 11 O2(Clang++)","text/x-c++src","C++ 17 O2(Clang++)","C++ 17 O2(Clang++)","text/x-csrc","C 11 (GCC)","C 11 (GCC)","text/x-csrc","C 17 (GCC)","C 17 (GCC)","text/x-csrc","C 11 (Clang)","C 11 (Clang)","text/x-csrc","C 17 (Clang)","C 17 (Clang)","text/x-java","Java","Java","text/x-java","Kotlin 1.8 (JVM)","Kotlin 1.8 (JVM)","text/x-pascal","Pascal","Pascal","text/x-python","Python 3.10","Python 3.10","text/x-python","Python 3.9","Python 3.9","text/x-python","Python 2.7","Python 2.7","text/x-rustsrc","Rust 2021","Rust 2021","text/x-rustsrc","Rust 2018","Rust 2018","text/x-rustsrc","Rust 2015","Rust 2015","go","Go 1.x","Go 1.x","text/x-csharp","C# 9","C# 9","text/x-csharp","C# 7.3","C# 7.3");
+            List<Language> languages = new ArrayList<>();
+            for (int i = 0; i <= languageList.size() - 3; i += 3) {
+                languages.add(new Language()
+                        .setContentType(languageList.get(i))
+                        .setDescription(languageList.get(i + 1))
+                        .setName(languageList.get(i + 2))
+                        .setOj(Constants.RemoteOJ.LIBRE.getName())
+                        .setSeq(0)
+                        .setIsSpj(false)
+                );
+            }
+            languageEntityService.saveBatch(languages);
+        }
+
+    }
+
 }
 

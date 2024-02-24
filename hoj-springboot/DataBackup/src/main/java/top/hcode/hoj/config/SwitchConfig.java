@@ -35,6 +35,10 @@ public class SwitchConfig {
 
     private List<String> spojPasswordList = new ArrayList<>();
 
+    private List<String> libreojUsernameList = new ArrayList<>();
+
+    private List<String> libreojPasswordList = new ArrayList<>();
+
     /**
      * 是否开启公开评论区
      */
@@ -116,6 +120,8 @@ public class SwitchConfig {
         this.setAtcoderPasswordList(format2Unicode(this.atcoderPasswordList));
         this.setSpojUsernameList(format2Unicode(this.spojUsernameList));
         this.setSpojPasswordList(format2Unicode(this.spojPasswordList));
+        this.setLibreojUsernameList(format2Unicode(this.libreojUsernameList));
+        this.setLibreojPasswordList(format2Unicode(this.libreojPasswordList));
     }
 
     public void convertUnicodeRemoteAccount2Str(){
@@ -129,6 +135,8 @@ public class SwitchConfig {
         this.setAtcoderPasswordList(convertUnicode2Str(this.atcoderPasswordList));
         this.setSpojUsernameList(convertUnicode2Str(this.spojUsernameList));
         this.setSpojPasswordList(convertUnicode2Str(this.spojPasswordList));
+        this.setLibreojUsernameList(convertUnicode2Str(this.libreojUsernameList));
+        this.setLibreojPasswordList(convertUnicode2Str(this.libreojPasswordList));
     }
 
 

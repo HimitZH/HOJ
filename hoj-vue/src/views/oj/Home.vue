@@ -437,6 +437,12 @@ export default {
           logo: require("@/assets/spoj-logo.png"),
           status: true,
         },
+        {
+          url: "https://loj.ac/",
+          name: "LibreOJ",
+          logo: require("@/assets/libre-logo.png"),
+          status: true,
+        },
       ],
     };
   },

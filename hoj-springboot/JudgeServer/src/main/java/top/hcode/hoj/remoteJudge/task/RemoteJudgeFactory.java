@@ -20,6 +20,8 @@ public class RemoteJudgeFactory {
                 return new SPOJJudge();
             case ATCODER_JUDGE:
                 return new AtCoderJudge();
+            case LIBRE_JUDGE:
+                return new LibreJudge();
             default:
                 return null;
         }
