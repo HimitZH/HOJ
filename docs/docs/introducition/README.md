@@ -39,7 +39,7 @@ HOJ，全称 Hcode Online Judge，是基于（springcloud+vue）前后端分离�
     - 支持testlib的特殊评测、交互评测、子任务评测
     - 支持在线自测调试
 
-  - 多样：支持自身题目数据评测，也支持其它知名OJ（HDU、Codeforces、GYM、POJ、AtCoder、SPOJ）题目的爬取与提交
+  - 多样：支持自身题目数据评测，也支持其它知名OJ（HDU、Codeforces、GYM、POJ、AtCoder、SPOJ、Libre）题目的爬取与提交
       :::
 
 

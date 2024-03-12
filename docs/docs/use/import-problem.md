@@ -199,7 +199,7 @@
 
 ## 三、导入其它OJ题目
 
-导入HDU、Codeforces、POJ、GYM、AtCoder、SPOJ的题目，只需提供该题目的题号便可一键导入。
+导入HDU、Codeforces、POJ、GYM、AtCoder、SPOJ、Libre的题目，只需提供该题目的题号便可一键导入。
 
 :::tip
 
@@ -207,6 +207,7 @@
 - Codeforces和GYM的题号是`1000A`、`1000B`、这种数字加大写英文字母的格式，具体请到[https://codeforces.com](https://codeforces.com)查看
 - SPOJ的题号是大写英文字母，如`TEST`，具体请到[https://www.spoj.com](https://www.spoj.com)查看
 - AtCoder的题号是类似`abc110_a`这种格式，具体请到 [https://atcoder.jp](https://atcoder.jp) 查看
+- Libre的题号是数字，具体请到https://loj.ac/p查看
 
 :::
 

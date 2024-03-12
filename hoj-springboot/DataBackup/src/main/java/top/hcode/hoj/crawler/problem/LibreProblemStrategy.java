@@ -11,6 +11,8 @@ import top.hcode.hoj.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @ClassName LibreProblemStrategy
@@ -44,10 +46,25 @@ public class LibreProblemStrategy extends ProblemStrategy {
         param.put("statistics", Boolean.TRUE);
         param.put("tagsOfLocale", "zh_CN");
         param.put("judgeInfo", Boolean.TRUE);
-        String body = HttpRequest.post(API_HOST + PROBLEM_URL)
-                .body(param.toString())
-                .execute()
-                .body();
+        String body = null;
+        try {
+            body = HttpRequest.post(API_HOST + PROBLEM_URL)
+                    .body(param.toString())
+                    .timeout(5000)
+                    .execute()
+                    .body();
+        }catch (cn.hutool.core.io.IORuntimeException e){
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException ignored) {
+            }
+            // 超时重试
+            body = HttpRequest.post(API_HOST + PROBLEM_URL)
+                    .body(param.toString())
+                    .timeout(5000)
+                    .execute()
+                    .body();
+        }
         JSONObject parseObj = JSONUtil.parseObj(body);
         if (parseObj.containsKey("error")) {
             throw new IllegalArgumentException("LibreOJ: Incorrect problem id!");
@@ -68,7 +85,13 @@ public class LibreProblemStrategy extends ProblemStrategy {
             examples.append("<output>").append(tempObj.getStr("outputData")).append("</output>");
         });
         Problem problem = new Problem();
-        problem.setProblemId(NAME + "-" + problemId+"-"+id)
+        String finalProblemId = null;
+        if (Objects.equals(problemId, id)) {
+            finalProblemId = NAME + "-" + problemId;
+        } else {
+            finalProblemId = NAME + "-" + problemId + "(" + id + ")";
+        }
+        problem.setProblemId(finalProblemId)
                 .setTitle(localizedContentsOfLocale.getStr("title"))
                 .setTimeLimit(Integer.parseInt(judgeInfo.getStr("timeLimit")))
                 .setMemoryLimit(Integer.parseInt(judgeInfo.getStr("memoryLimit")))

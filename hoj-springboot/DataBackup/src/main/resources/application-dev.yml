@@ -45,6 +45,8 @@ atcoder-username-list:
 atcoder-password-list:
 spoj-username-list:
 spoj-password-list:
+libreoj-username-list:
+libreoj-password-list:
 # 是否强制用配置更新覆盖remote judge的账号
 forced-update-remote-judge-account: false
 
