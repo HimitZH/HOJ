@@ -85,7 +85,8 @@ public class Constants {
         GYM("GYM"),
         POJ("POJ"),
         SPOJ("SPOJ"),
-        ATCODER("AC");
+        ATCODER("AC"),
+        LIBRE("LIBRE");
 
         private final String name;
 

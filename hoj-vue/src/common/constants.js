@@ -186,6 +186,9 @@ export const REMOTE_OJ = [
   {
     name:"SPOJ",
     key:"SPOJ"
+  },{
+    name:"LIBREOJ",
+    key: "LIBRE"
   }
 ]
 

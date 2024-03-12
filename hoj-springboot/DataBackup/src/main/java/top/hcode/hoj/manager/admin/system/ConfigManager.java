@@ -438,6 +438,15 @@ public class ConfigManager {
                     Constants.RemoteOJ.ATCODER.getName());
         }
 
+        if (checkListDiff(config.getLibreojUsernameList(), switchConfig.getLibreojUsernameList()) ||
+                checkListDiff(config.getLibreojPasswordList(), switchConfig.getLibreojPasswordList())) {
+            switchConfig.setLibreojUsernameList(config.getLibreojUsernameList());
+            switchConfig.setLibreojPasswordList(config.getLibreojPasswordList());
+            changeRemoteJudgeAccount(config.getLibreojUsernameList(),
+                    config.getLibreojPasswordList(),
+                    Constants.RemoteOJ.LIBRE.getName());
+        }
+
         boolean isOk = nacosSwitchConfig.publishSwitchConfig();
         if (!isOk) {
             throw new StatusFailException("修改失败");

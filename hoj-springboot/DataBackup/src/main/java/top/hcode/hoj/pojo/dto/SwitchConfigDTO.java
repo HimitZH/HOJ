@@ -112,4 +112,9 @@ public class SwitchConfigDTO {
     private List<String> spojUsernameList;
 
     private List<String> spojPasswordList;
+
+    private List<String> libreojUsernameList;
+
+    private List<String> libreojPasswordList;
+
 }

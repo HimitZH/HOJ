@@ -41,7 +41,10 @@ public class RemoteJudgeContext {
         String[] source = toJudgeDTO.getRemoteJudgeProblem().split("-");
         String remoteOj = source[0];
         String remoteProblemId = source[1];
-
+        //libre oj 题目展示和实际提交id不一
+        if (remoteOj.compareTo(Constants.RemoteJudge.LIBRE_JUDGE.getName()) == 0) {
+            remoteProblemId = source[2];
+        }
         RemoteJudgeDTO remoteJudgeDTO = RemoteJudgeDTO.builder()
                 .judgeId(toJudgeDTO.getJudge().getSubmitId())
                 .uid(toJudgeDTO.getJudge().getUid())
@@ -78,8 +81,8 @@ public class RemoteJudgeContext {
         }
     }
 
-    private void initProblemId(RemoteJudgeDTO remoteJudgeDTO){
-        switch (remoteJudgeDTO.getOj()){
+    private void initProblemId(RemoteJudgeDTO remoteJudgeDTO) {
+        switch (remoteJudgeDTO.getOj()) {
             case "GYM":
             case "CF":
                 if (NumberUtil.isInteger(remoteJudgeDTO.getCompleteProblemId())) {
