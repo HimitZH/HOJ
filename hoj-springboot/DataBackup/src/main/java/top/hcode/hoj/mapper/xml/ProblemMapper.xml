@@ -51,7 +51,7 @@
                 and p.is_remote=false
             </if>
         </where>
-        order by length(p.problem_id) asc,p.problem_id asc
+        ORDER BY REGEXP_SUBSTR(p.problem_id, '[A-Z]+[a-z]+') asc, CONVERT(REGEXP_SUBSTR(p.problem_id, '[0-9]+'),SIGNED) asc, p.problem_id asc
     </select>
 
     <!-- 子查询 :为了防止分页总数据数出错-->

@@ -26,7 +26,7 @@
         ) as total
         FROM problem p
         WHERE p.auth = 1 AND p.gid = #{gid}
-        ORDER BY LENGTH(p.problem_id) ASC, p.problem_id ASC
+        ORDER BY REGEXP_SUBSTR(p.problem_id, '[A-Z]+[a-z]+') asc, CONVERT(REGEXP_SUBSTR(p.problem_id, '[0-9]+'),SIGNED) asc, p.problem_id asc
     </select>
 
     <select id="getProblemTag" resultType="top.hcode.hoj.pojo.entity.problem.Tag">
