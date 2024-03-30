@@ -34,7 +34,7 @@ public class JudgeDispatcher {
     @Autowired
     private JudgeReceiver judgeReceiver;
 
-    @Value("${hoj.judge.token}")
+    @Value("${hoj.judge.token:no_judge_token}")
     private String judgeToken;
 
     public void sendTask(Long judgeId, Long pid, Boolean isContest) {

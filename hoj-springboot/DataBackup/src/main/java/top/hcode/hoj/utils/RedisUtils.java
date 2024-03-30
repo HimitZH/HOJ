@@ -3,6 +3,7 @@ package top.hcode.hoj.utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -687,6 +688,31 @@ public final class RedisUtils {
      */
     public Set<String> keys(String key) {
         return redisTemplate.keys(key + "*");
+    }
+
+
+    public boolean isWithinRateLimit(String key, long limitPeriod) {
+        ValueOperations<String, Object> ops = redisTemplate.opsForValue();
+        long currentTimeMillis = System.currentTimeMillis();
+
+        // Try to set a new value if the key does not exist
+        Boolean isSet = ops.setIfAbsent(key, String.valueOf(currentTimeMillis + limitPeriod * 1000), limitPeriod, TimeUnit.SECONDS);
+
+        if (Boolean.TRUE.equals(isSet)) {
+            // Lock acquired, it means that previous request was out of the limit period.
+            return true;
+        } else {
+            // If the key exists, check the stored time.
+            long expiresAt = Long.parseLong((String) ops.get(key));
+            if (currentTimeMillis < expiresAt) {
+                // current time is less than stored time, limit period has not been reached.
+                return false;
+            } else {
+                // limit period has passed, update the time to current time plus limit period.
+                ops.set(key, String.valueOf(currentTimeMillis + limitPeriod * 1000));
+                return true;
+            }
+        }
     }
 
 }

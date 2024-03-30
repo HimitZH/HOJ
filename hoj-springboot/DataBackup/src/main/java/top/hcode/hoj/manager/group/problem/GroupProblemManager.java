@@ -73,7 +73,7 @@ public class GroupProblemManager {
     @Autowired
     private ProblemValidator problemValidator;
 
-    @Value("${hoj.judge.token}")
+    @Value("${hoj.judge.token:no_judge_token}")
     private String judgeToken;
 
     public IPage<ProblemVO> getProblemList(Integer limit, Integer currentPage, Long gid) throws StatusNotFoundException, StatusForbiddenException {

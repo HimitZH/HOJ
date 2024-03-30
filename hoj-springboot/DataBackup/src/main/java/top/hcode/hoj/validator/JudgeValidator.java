@@ -63,6 +63,7 @@ public class JudgeValidator {
                 && !submitJudgeDto.getLanguage().contains("Py")
                 && !submitJudgeDto.getLanguage().contains("PHP")
                 && !submitJudgeDto.getLanguage().contains("Ruby")
+                && !submitJudgeDto.getLanguage().contains("Rust")
                 && !submitJudgeDto.getLanguage().contains("JavaScript")) {
             throw new StatusFailException("提交的代码是无效的，代码字符长度请不要低于50！");
         }
@@ -139,6 +140,7 @@ public class JudgeValidator {
                 && !testJudgeDto.getLanguage().contains("Py")
                 && !testJudgeDto.getLanguage().contains("PHP")
                 && !testJudgeDto.getLanguage().contains("Ruby")
+                && !testJudgeDto.getLanguage().contains("Rust")
                 && !testJudgeDto.getLanguage().contains("JavaScript")) {
             throw new StatusFailException("提交的代码是无效的，代码字符长度请不要低于50！");
         }

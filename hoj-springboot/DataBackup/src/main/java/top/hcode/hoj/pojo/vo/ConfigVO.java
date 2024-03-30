@@ -38,7 +38,7 @@ public class ConfigVO {
     private Integer mysqlPublicPort;
 
     // 判题服务token
-    @Value("${hoj.judge.token}")
+    @Value("${hoj.judge.token:no_judge_token}")
     private String judgeToken;
 
     // 缓存配置
