@@ -157,11 +157,13 @@ public class ProblemFileManager {
             List<Language> languages = new LinkedList<>();
             for (String lang : importProblemVo.getLanguages()) {
                 Long lid = languageMap.getOrDefault(lang, null);
-
-                if (lid == null) {
-                    throw new StatusFailException("请检查编号为：" + key + "的题目的代码语言是否有错，不要添加不支持的语言！");
+                if (lid != null) {
+                    languages.add(new Language().setId(lid).setName(lang));
                 }
-                languages.add(new Language().setId(lid).setName(lang));
+            }
+
+            if (languages.size() == 0){
+                languages = languageList;
             }
 
             // 格式化题目代码模板
@@ -171,8 +173,9 @@ public class ProblemFileManager {
                 String code = tmp.getOrDefault("code", null);
                 Long lid = languageMap.getOrDefault(language, null);
                 if (language == null || code == null || lid == null) {
-                    FileUtil.del(fileDir);
-                    throw new StatusFailException("请检查编号为：" + key + "的题目的代码模板列表是否有错，不要添加不支持的语言！");
+//                    FileUtil.del(fileDir);
+//                    throw new StatusFailException("请检查编号为：" + key + "的题目的代码模板列表是否有错，不要添加不支持的语言！");
+                    continue;
                 }
                 codeTemplates.add(new CodeTemplate().setCode(code).setStatus(true).setLid(lid));
             }
