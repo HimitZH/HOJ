@@ -750,4 +750,8 @@ span.rank-tag {
     overflow-x: hidden !important;
   }
 }
+/deep/.el-image {
+  height: 100%;
+  width: 100%;
+}
 </style>
