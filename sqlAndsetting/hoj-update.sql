@@ -1093,3 +1093,29 @@ DELIMITER ;
 CALL add_Contest_allow_end_submit ;
 
 DROP PROCEDURE add_Contest_allow_end_submit;
+
+/*
+* 2024.08.07  judge表ip字段修改字符长度为64
+			 
+*/
+DROP PROCEDURE
+IF EXISTS change_judge_ip_length;
+DELIMITER $$
+ 
+CREATE PROCEDURE change_judge_ip_length ()
+BEGIN
+ 
+IF NOT EXISTS (
+	SELECT
+		1
+	FROM
+		information_schema.`COLUMNS`
+	WHERE
+		table_name = 'judge'
+	AND column_name = 'ip' AND CHAR_LENGTH(ip) = 20
+) THEN
+
+	ALTER TABLE `hoj`.`judge`  MODIFY COLUMN `ip` varchar(64);
+	
+END
+IF ; END$$
