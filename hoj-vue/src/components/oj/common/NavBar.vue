@@ -35,10 +35,6 @@
               ><i class="el-icon-s-claim"></i
               >{{ $t('m.NavBar_Training') }}</el-menu-item
             >
-            <el-menu-item index="/contest"
-              ><i class="el-icon-trophy"></i
-              >{{ $t('m.NavBar_Contest') }}</el-menu-item
-            >
             <el-menu-item index="/status"
               ><i class="el-icon-s-marketing"></i
               >{{ $t('m.NavBar_Status') }}</el-menu-item
