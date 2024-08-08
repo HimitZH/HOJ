@@ -458,7 +458,7 @@
             }}</mu-list-item-title>
           </mu-list-item>
 
-          <mu-list-item
+          <!-- <mu-list-item
             button
             to="/contest"
             @click="opendrawer = !opendrawer"
@@ -470,7 +470,7 @@
             <mu-list-item-title>{{
               $t('m.NavBar_Contest')
             }}</mu-list-item-title>
-          </mu-list-item>
+          </mu-list-item> -->
 
           <mu-list-item
             button
