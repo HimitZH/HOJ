@@ -179,7 +179,7 @@ public class AtCoderJudge extends RemoteJudgeStrategy {
         httpRequest.cookie(remoteJudgeDTO.getCookies());
         httpRequest.addHeaders(headers);
         String body = httpRequest.execute().body();
-        String maxRunId = ReUtil.get("<a href=\"/contests/" + contestId + "/submissions/(\\d+)\">Detail</a>", body, 1);
+        String maxRunId = ReUtil.get("<a href=\"/contests/" + contestId + "/submissions/(\\d+)\".*?>Detail</a>", body, 1);
         return maxRunId != null ? Long.parseLong(maxRunId) : -1L;
     }
 

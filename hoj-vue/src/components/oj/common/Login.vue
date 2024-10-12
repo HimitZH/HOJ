@@ -49,6 +49,7 @@
           :w="325"
           :h="100"
           :accuracy="3"
+          :imgs="imgs"
           @success="handleLogin"
           :slider-text="$t('m.Slide_Verify')"
           ref="slideBlock"
@@ -98,6 +99,18 @@ export default {
         username: '',
         password: '',
       },
+      imgs:[
+        "https://picsum.photos/325/100?random=1",
+        "https://picsum.photos/325/100?random=2",
+        "https://picsum.photos/325/100?random=3",
+        "https://picsum.photos/325/100?random=4",
+        "https://picsum.photos/325/100?random=5",
+        "https://picsum.photos/325/100?random=6",
+        "https://picsum.photos/325/100?random=7",
+        "https://picsum.photos/325/100?random=8",
+        "https://picsum.photos/325/100?random=9",
+        "https://picsum.photos/325/100?random=10"
+      ],
       loginSlideBlockVisible: false,
       rules: {
         username: [
