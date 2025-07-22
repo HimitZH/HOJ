@@ -55,7 +55,7 @@ sudo apt-get update && sudo apt-get install -y vim curl git
 
 sudo apt-get update
 
-git clone https://github.com/HimitZH/HOJ-Deploy.git && cd hoj-deploy && cd standAlone
+git clone https://github.com/HimitZH/HOJ-Deploy.git && cd HOJ-Deploy && cd standAlone
 
 # Change some configuration such as password.
 vim .env
