@@ -28,7 +28,7 @@ const cdn = {
   },
   // cdn的css链接
   css: [
-      "https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-y/element-ui/2.15.1/theme-chalk/index.min.css",
+      "https://unpkg.com/element-ui@2.14.0/lib/theme-chalk/index.css",
       "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/github-markdown-css/4.0.0/github-markdown.min.css",
       "https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/KaTeX/0.12.0/katex.min.css",
       'https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/muse-ui/3.0.2/muse-ui.min.css',
