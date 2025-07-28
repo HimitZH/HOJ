@@ -362,41 +362,49 @@ public class DiscussionManager {
             }
         }
 
-        QueryWrapper<DiscussionLike> discussionLikeQueryWrapper = new QueryWrapper<>();
-        discussionLikeQueryWrapper.eq("did", did).eq("uid", userRolesVo.getUid());
+        String key = "lock:discussion:like:" + userRolesVo.getUid() + "_" + did;
 
-        DiscussionLike discussionLike = discussionLikeEntityService.getOne(discussionLikeQueryWrapper, false);
+        boolean locked = redisUtils.getLock(key, 5);
+        if (locked) {
+            QueryWrapper<DiscussionLike> discussionLikeQueryWrapper = new QueryWrapper<>();
+            discussionLikeQueryWrapper.eq("did", did).eq("uid", userRolesVo.getUid());
 
-        if (toLike) { // 添加点赞
-            if (discussionLike == null) { // 如果不存在就添加
-                boolean isSave = discussionLikeEntityService.saveOrUpdate(new DiscussionLike().setUid(userRolesVo.getUid()).setDid(did));
-                if (!isSave) {
-                    throw new StatusFailException("点赞失败，请重试尝试！");
+            DiscussionLike discussionLike = discussionLikeEntityService.getOne(discussionLikeQueryWrapper, false);
+
+            if (toLike) { // 添加点赞
+                if (discussionLike == null) { // 如果不存在就添加
+                    boolean isSave = discussionLikeEntityService.saveOrUpdate(new DiscussionLike().setUid(userRolesVo.getUid()).setDid(did));
+                    if (!isSave) {
+                        throw new StatusFailException("点赞失败，请重试尝试！");
+                    }
                 }
-            }
-            // 点赞+1
-            UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<>();
-            discussionUpdateWrapper.eq("id", discussion.getId())
-                    .setSql("like_num=like_num+1");
-            discussionEntityService.update(discussionUpdateWrapper);
-            // 当前帖子要不是点赞者的 才发送点赞消息
-            if (!userRolesVo.getUsername().equals(discussion.getAuthor())) {
-                discussionEntityService.updatePostLikeMsg(discussion.getUid(),
-                        userRolesVo.getUid(),
-                        did,
-                        discussion.getGid());
-            }
-        } else { // 取消点赞
-            if (discussionLike != null) { // 如果存在就删除
-                boolean isDelete = discussionLikeEntityService.removeById(discussionLike.getId());
-                if (!isDelete) {
-                    throw new StatusFailException("取消点赞失败，请重试尝试！");
+                // 点赞+1
+                UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<>();
+                discussionUpdateWrapper.eq("id", discussion.getId())
+                        .setSql("like_num=like_num+1");
+                discussionEntityService.update(discussionUpdateWrapper);
+                // 当前帖子要不是点赞者的 才发送点赞消息
+                if (!userRolesVo.getUsername().equals(discussion.getAuthor())) {
+                    discussionEntityService.updatePostLikeMsg(discussion.getUid(),
+                            userRolesVo.getUid(),
+                            did,
+                            discussion.getGid());
                 }
+            } else { // 取消点赞
+                if (discussionLike != null) { // 如果存在就删除
+                    boolean isDelete = discussionLikeEntityService.removeById(discussionLike.getId());
+                    if (!isDelete) {
+                        throw new StatusFailException("取消点赞失败，请重试尝试！");
+                    }
+                }
+                // 点赞-1
+                UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<>();
+                discussionUpdateWrapper.setSql("like_num=like_num-1").eq("id", did);
+                discussionEntityService.update(discussionUpdateWrapper);
             }
-            // 点赞-1
-            UpdateWrapper<Discussion> discussionUpdateWrapper = new UpdateWrapper<>();
-            discussionUpdateWrapper.setSql("like_num=like_num-1").eq("id", did);
-            discussionEntityService.update(discussionUpdateWrapper);
+            redisUtils.releaseLock(key);
+        }else{
+            throw new StatusForbiddenException("请不要频繁操作点赞！");
         }
 
     }

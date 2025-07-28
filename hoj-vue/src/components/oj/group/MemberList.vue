@@ -55,12 +55,12 @@
             <el-option
               :label="$t('m.Applying')"
               :value="1"
-              :disabled="!isSuperAdmin && !isGroupOwner && 1 >= userAuth"
+              :disabled="1 >= userAuth"
             ></el-option>
             <el-option
               :label="$t('m.Refused')"
               :value="2"
-              :disabled="!isSuperAdmin && !isGroupOwner && 2 >= userAuth"
+              :disabled="2 >= userAuth"
             ></el-option>
             <el-option
               :label="$t('m.General_Member')"

@@ -183,6 +183,10 @@ public class GroupMemberManager {
             throw new StatusNotFoundException("该用户不在团队中！");
         }
 
+        if (currentGroupMember.getAuth() >= 3 && changeGroupMember.getAuth() < 3){
+            throw new StatusForbiddenException("对不起，您无法将已是团队成员的权限降为处理中或拒绝");
+        }
+
         if (!isRoot && (changeGroupMember.getAuth() >= currentGroupMember.getAuth()
                 || groupMemberDto.getAuth() >= currentGroupMember.getAuth())) {
             throw new StatusForbiddenException("对不起，您无权限操作！");

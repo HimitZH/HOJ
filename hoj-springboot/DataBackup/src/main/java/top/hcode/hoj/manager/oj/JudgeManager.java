@@ -239,11 +239,17 @@ public class JudgeManager {
      * @Since 2021/2/12
      */
     @Transactional(rollbackFor = Exception.class)
-    public Judge resubmit(Long submitId) throws StatusNotFoundException {
+    public Judge resubmit(Long submitId) throws StatusNotFoundException, StatusForbiddenException {
 
         Judge judge = judgeEntityService.getById(submitId);
         if (judge == null) {
             throw new StatusNotFoundException("此提交数据不存在！");
+        }
+
+        // 需要获取一下该token对应用户的数据
+        AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
+        if (!Objects.equals(judge.getUid(), userRolesVo.getUid())){
+            throw new StatusForbiddenException("非提交该评测的用户不可操作！");
         }
 
         QueryWrapper<Problem> problemQueryWrapper = new QueryWrapper<>();
@@ -304,6 +310,8 @@ public class JudgeManager {
                     judge.getPid(),
                     judge.getCid() != 0);
         }
+        judge.setVjudgeUsername(null);
+        judge.setVjudgePassword(null);
         return judge;
     }
 

@@ -254,11 +254,12 @@ public class GroupProblemManager {
         }
 
         problemDto.getProblem().setIsGroup(problem.getIsGroup());
+        problemDto.getProblem().setGid(problem.getGid());
 
         List<Tag> tagList = new LinkedList<>();
         for (Tag tag : problemDto.getTags()) {
             if (tag.getGid() != null && tag.getGid().longValue() != gid) {
-                throw new StatusForbiddenException("对不起，您无权限操作！");
+                throw new StatusForbiddenException("对不起，您无权限添加别的团队的题目标签！");
             }
 
             if (tag.getId() == null) {
