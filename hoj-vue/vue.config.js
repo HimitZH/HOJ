@@ -61,15 +61,19 @@ const cdn = {
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue-echarts/5.0.0-beta.0/vue-echarts.min.js",
       "https://cdn.bootcdn.net/ajax/libs/vue-echarts/5.0.0-beta.0/vue-echarts.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/vuex/3.5.1/vuex.min.js",
-      "https://unpkg.com/vuex@3.5.1/dist/vuex.min.js",
+      // "https://unpkg.com/vuex@3.5.1/dist/vuex.min.js",
+      "https://cdn.bootcdn.net/ajax/libs/vuex/3.5.1/vuex.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/KaTeX/0.12.0/katex.min.js",
-      "https://unpkg.com/katex@0.12.0/dist/katex.min.js",
+      // "https://unpkg.com/katex@0.12.0/dist/katex.min.js",
+      "https://cdn.bootcdn.net/ajax/libs/KaTeX/0.12.0/katex.min.js",
       // "https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/KaTeX/0.12.0/contrib/auto-render.min.js",
       "https://cdn.bootcdn.net/ajax/libs/KaTeX/0.12.0/contrib/auto-render.min.js",
       // 'https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/muse-ui/3.0.2/muse-ui.min.js',
-      "https://unpkg.com/muse-ui@3.0.2/dist/muse-ui.js",
+      // "https://unpkg.com/muse-ui@3.0.2/dist/muse-ui.js",
+      "https://cdn.bootcdn.net/ajax/libs/muse-ui/3.0.2/muse-ui.min.js",
       // 'https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.5.1/jquery.min.js',
-      "https://unpkg.com/jquery@3.5.1/dist/jquery.min.js"
+      // "https://unpkg.com/jquery@3.5.1/dist/jquery.min.js"
+      "https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"
       // "https://unpkg.com/xe-utils@3.4.3/dist/xe-utils.umd.min.js",
       // "https://unpkg.com/vxe-table@2.9.26/lib/index.umd.min.js",
       // "https://cdn.jsdelivr.net/npm/xe-utils@3.4.3/dist/xe-utils.umd.min.js",
