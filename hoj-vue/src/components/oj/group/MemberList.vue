@@ -55,12 +55,12 @@
             <el-option
               :label="$t('m.Applying')"
               :value="1"
-              :disabled="1 >= userAuth"
+              :disabled="row.auth >= 3"
             ></el-option>
             <el-option
               :label="$t('m.Refused')"
               :value="2"
-              :disabled="2 >= userAuth"
+              :disabled="row.auth >= 3"
             ></el-option>
             <el-option
               :label="$t('m.General_Member')"

@@ -58,6 +58,11 @@ public class GroupDiscussionManager {
                                                Integer currentPage,
                                                Long gid,
                                                String pid) throws StatusNotFoundException, StatusForbiddenException {
+
+        if (gid == null){
+            throw new StatusNotFoundException("参数错误：gid不能为空");
+        }
+
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
@@ -92,6 +97,11 @@ public class GroupDiscussionManager {
     }
 
     public IPage<Discussion> getAdminDiscussionList(Integer limit, Integer currentPage, Long gid) throws StatusNotFoundException, StatusForbiddenException {
+
+        if (gid == null){
+            throw new StatusNotFoundException("参数错误：gid不能为空");
+        }
+
         AccountProfile userRolesVo = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
 
         boolean isRoot = SecurityUtils.getSubject().hasRole("root");
@@ -134,6 +144,10 @@ public class GroupDiscussionManager {
         boolean isAdmin = SecurityUtils.getSubject().hasRole("admin");
 
         Long gid = discussion.getGid();
+
+        if (gid == null){
+            throw new StatusNotFoundException("参数错误：gid不能为空");
+        }
 
         Group group = groupEntityService.getById(gid);
 
