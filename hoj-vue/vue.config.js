@@ -27,7 +27,7 @@ const cdn = {
     // "mavon-editor": "mavonEditor",
   },
   // cdn的css链接
-css: [
+ css: [
       // "https://unpkg.com/element-ui@2.14.0/lib/theme-chalk/index.css",
       "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/element-ui/2.14.0/theme-chalk/index.min.css",
       "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/github-markdown-css/4.0.0/github-markdown.min.css",
@@ -50,9 +50,12 @@ css: [
       // "https://unpkg.com/element-ui@2.15.3/lib/index.js",
       "https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.3/index.min.js",
       "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/highlight.js/10.3.2/highlight.min.js",
-      "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/moment.js/2.29.1/moment.min.js",
-      "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/moment.js/2.29.1/locale/zh-cn.min.js",
-      "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/moment.js/2.29.1/locale/en-gb.min.js",
+      // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/moment.js/2.29.1/moment.min.js",
+      "https://cdn.bootcdn.net/ajax/libs/moment.js/2.29.1/moment.min.js",
+      // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/moment.js/2.29.1/locale/zh-cn.min.js",
+      "https://cdn.bootcdn.net/ajax/libs/moment.js/2.29.1/locale/zh-cn.min.js",
+      // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/moment.js/2.29.1/locale/en-gb.min.js",
+      "https://cdn.bootcdn.net/ajax/libs/moment.js/2.29.1/locale/en-gb.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/echarts/4.9.0-rc.1/echarts.min.js",
       "https://cdn.bootcdn.net/ajax/libs/echarts/4.9.0-rc.1/echarts.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue-echarts/5.0.0-beta.0/vue-echarts.min.js",
