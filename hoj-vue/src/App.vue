@@ -103,11 +103,14 @@
                   class="fa fa-globe"
                   aria-hidden="true"
                 >
-                  {{ this.webLanguage == 'zh-CN' ? '简体中文' : 'English' }}</i><i class="el-icon-arrow-up el-icon--right"></i>
+                  {{ getLanguageLabelByValue(this.webLanguage) }}</i><i class="el-icon-arrow-up el-icon--right"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="zh-CN">简体中文</el-dropdown-item>
-                <el-dropdown-item command="en-US">English</el-dropdown-item>
+                <el-dropdown-item 
+                  v-for="(lang, index) in languages"
+                  :key="index"
+                  :command="lang.value">{{ lang.label }}
+              </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </span>
@@ -130,6 +133,7 @@ import { mapActions, mapState, mapGetters } from "vuex";
 import { LOGO, MOTTO } from "@/common/logo";
 import storage from "@/common/storage";
 import utils from "@/common/utils";
+import { languages, getLangLabelByValue } from '@/i18n';
 export default {
   name: "app-content",
   components: {
@@ -139,6 +143,7 @@ export default {
     return {
       isAdminView: false,
       showFooter: true,
+      languages:[],
     };
   },
   methods: {
@@ -160,6 +165,12 @@ export default {
         lang = lang.toLowerCase();
         if (lang == "zh-cn") {
           this.$store.commit("changeWebLanguage", { language: "zh-CN" });
+        } else if (lang == 'zh-tw'){
+          this.$store.commit("changeWebLanguage", { language: "zh-TW" });
+        } else if (lang == 'ja-jp' || lang == 'ja'){
+          this.$store.commit("changeWebLanguage", { language: "ja-JP" });
+        } else if (lang == 'ko-kr' || lang == 'ko'){
+          this.$store.commit("changeWebLanguage", { language: "ko-KR" });
         } else {
           this.$store.commit("changeWebLanguage", { language: "en-US" });
         }
@@ -211,6 +222,9 @@ export default {
         }
       }
     },
+    getLanguageLabelByValue(value){
+      return getLangLabelByValue(value);
+    }
   },
   watch: {
     $route(newVal, oldVal) {
@@ -255,6 +269,7 @@ export default {
     window.addEventListener("visibilitychange", this.autoRefreshUserInfo);
   },
   mounted() {
+    this.languages = languages;
     console.log(LOGO);
     console.log(MOTTO);
     this.autoChangeLanguge();

@@ -515,12 +515,15 @@
           <el-dropdown @command="changeWebLanguage" placement="top">
             <span class="el-dropdown-link" style="font-size:14px">
               <i class="fa fa-globe" aria-hidden="true">
-                {{ this.webLanguage == 'zh-CN' ? '简体中文' : 'English' }}</i
+                {{ getLanguageLabelByValue(this.webLanguage) }}</i
               ><i class="el-icon-arrow-up el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item command="zh-CN">简体中文</el-dropdown-item>
-              <el-dropdown-item command="en-US">English</el-dropdown-item>
+              <el-dropdown-item 
+                  v-for="(lang, index) in languages"
+                  :key="index"
+                  :command="lang.value">{{ lang.label }}
+              </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </span>
@@ -539,9 +542,11 @@ const KatexEditor = () => import('@/components/admin/KatexEditor.vue');
 import api from '@/common/api';
 import mMessage from '@/common/message';
 import Avatar from 'vue-avatar';
+import { languages, getLangLabelByValue } from '@/i18n';
 export default {
   name: 'app',
   mounted() {
+    this.languages = languages;
     this.currentPath = this.$route.path;
     this.getBreadcrumb();
     window.onresize = () => {
@@ -559,6 +564,7 @@ export default {
       currentPath: '',
       routeList: [],
       imgUrl: require('@/assets/backstage.png'),
+      languages:[]
     };
   },
   components: {
@@ -590,6 +596,9 @@ export default {
     changeWebLanguage(language) {
       this.$store.commit('changeWebLanguage', { language: language });
     },
+    getLanguageLabelByValue(value){
+      return getLangLabelByValue(value);
+    }
   },
   computed: {
     ...mapGetters([

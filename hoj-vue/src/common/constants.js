@@ -142,6 +142,9 @@ export const PROBLEM_LEVEL={
     name:{
       'zh-CN':'简单',
       'en-US':'Easy',
+      'zh-TW':'簡單',
+      'ja-JP':'簡単',
+      'ko-KR':'간단한'
     },
     color:'#19be6b'
   },
@@ -149,6 +152,9 @@ export const PROBLEM_LEVEL={
     name:{
       'zh-CN':'中等',
       'en-US':'Mid',
+      'zh-TW':'中等',
+      'ja-JP':'中等',
+      'ko-KR':'중간'
     },
     color:'#2d8cf0'
   },
@@ -156,6 +162,9 @@ export const PROBLEM_LEVEL={
     name:{
       'zh-CN':'困难',
       'en-US':'Hard',
+      'zh-TW':'困難​​',
+      'ja-JP':'困難',
+      'ko-KR':'곤란'
     },
     color:'#ed3f14'
   }

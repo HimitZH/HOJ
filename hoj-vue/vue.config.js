@@ -57,6 +57,8 @@ const cdn = {
       "https://cdnjs.webstatic.cn/ajax/libs/moment.js/2.29.1/locale/zh-cn.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/moment.js/2.29.1/locale/en-gb.min.js",
       "https://cdnjs.webstatic.cn/ajax/libs/moment.js/2.29.1/locale/en-gb.min.js",
+      "https://cdnjs.webstatic.cn/ajax/libs/moment.js/2.29.1/locale/ja.min.js",
+      "https://cdnjs.webstatic.cn/ajax/libs/moment.js/2.29.1/locale/ko.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/echarts/4.9.0-rc.1/echarts.min.js",
       "https://cdnjs.webstatic.cn/ajax/libs/echarts/4.9.0-rc.1/echarts.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue-echarts/5.0.0-beta.0/vue-echarts.min.js",

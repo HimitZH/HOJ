@@ -25,6 +25,9 @@ function formatSpecificDuration(startTime, endTime){
   let arr=[86400000,3600000,60000,1000];
   let en_time=['day','hour','minute','second'];
   let zh_time=['天','小时','分钟','秒'];
+  let zh_tw_time=['天','小時','分鐘','秒'];
+  let ja_time=['日','時間','分','秒'];
+  let ko_time=['일','시간','분','​​초'];
 
   let res = '';
 
@@ -39,12 +42,19 @@ function formatSpecificDuration(startTime, endTime){
         return res;
       }
     }
-  }else if(i18n.locale=='zh-CN'){
-
+  }else{
     for(let i=0;i<arr.length;i++){
       let tmp = parseFloat((ms / arr[i]).toFixed(1));
       if(tmp>=1){
-        return tmp+zh_time[i];
+        if(i18n.locale=='zh-CN'){
+          return tmp+zh_time[i];
+        } else if(i18n.locale=='zh-TW'){
+          return tmp+zh_tw_time[i];
+        }else if(i18n.locale=='ja-JP'){
+          return tmp+ja_time[i];
+        }else if(i18n.locale=='ko-KR'){
+          return tmp+ko_time[i];
+        }
       }
     }
   }

@@ -253,6 +253,10 @@ public class GroupManager {
             throw new StatusFailException("团队描述的长度应为 5 到 1000！");
         }
 
+        if (group.getAuth() == null || group.getAuth() < 1 || group.getAuth() > 3) {
+            throw new StatusFailException("团队权限不能为空且应为1~3！");
+        }
+
         QueryWrapper<Group> groupQueryWrapper = new QueryWrapper<>();
         groupQueryWrapper.eq("name", group.getName())
                 .ne("id", group.getId());
@@ -268,7 +272,6 @@ public class GroupManager {
         if (sameShortNameGroupCount > 0) {
             throw new StatusFailException("团队简称已存在，请修改后重试！");
         }
-
         boolean isOk = groupEntityService.updateById(group);
         if (!isOk) {
             throw new StatusFailException("更新失败，请重新尝试！");
