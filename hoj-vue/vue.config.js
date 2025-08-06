@@ -48,7 +48,7 @@ const cdn = {
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/axios/0.26.0/axios.min.js",
       "https://cdnjs.webstatic.cn/ajax/libs/axios/0.26.0/axios.min.js",
       // "https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-y/element-ui/2.15.3/index.min.js",
-      "https://cdnjs.webstatic.cn/ajax/libs/element-ui/2.15.1/index.min.js",
+      "https://cdnjs.webstatic.cn/ajax/libs/element-ui/2.15.3/index.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/highlight.js/10.3.2/highlight.min.js,
       "https://cdnjs.webstatic.cn/ajax/libs/highlight.js/10.3.2/highlight.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/moment.js/2.29.1/moment.min.js",
