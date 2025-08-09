@@ -109,11 +109,16 @@ module.exports={
     config.plugin('webpack-bundle-analyzer') // 查看打包文件体积大小
       .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
     // ============注入cdn end============
+    if(isProduction) {
+      config.output.filename('assets/js/app.[contentHash].js')
+    } else {
+      config.output.filename('assets/js/app.js')
+    }
   },
   configureWebpack: (config) => {
     // 用cdn方式引入，则构建时要忽略相关资源
     const plugins = [];
-    if (isProduction || devNeedCdn){
+    if (isProduction){
       config.externals = cdn.externals
       config.mode = 'production';
       config["performance"] = {//打包文件大小配置
@@ -146,6 +151,8 @@ module.exports={
             minRatio: 0.8 // 压缩比
         })
       )
+    } else {
+      config.externals = cdn.externals
     }
   }
 
