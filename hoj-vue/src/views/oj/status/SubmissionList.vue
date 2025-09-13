@@ -217,7 +217,7 @@
                     ></i>
                     <i
                       class="el-icon-refresh"
-                      v-if="row.status == JUDGE_STATUS_RESERVE['sf']"
+                      v-if="row.status == JUDGE_STATUS_RESERVE['sf'] && row.uid == userInfo.uid"
                       @click="reSubmit(row)"
                     ></i>
                     {{ JUDGE_STATUS[row.status].name }}

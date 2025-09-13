@@ -312,6 +312,7 @@ public class JudgeManager {
         }
         judge.setVjudgeUsername(null);
         judge.setVjudgePassword(null);
+        judge.setVjudgeSubmitId(null);
         return judge;
     }
 
