@@ -188,7 +188,7 @@
 
 > 提交列表页
 
-![在这里插入图片描述](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/20210609213021223.png)
+![提交列表](https://cdn.jsdelivr.net/gh/HimitZH/HOJ/docs/docs/.vuepress/public/20210609213021223.png)
 
 ### 7. 排行榜
 
