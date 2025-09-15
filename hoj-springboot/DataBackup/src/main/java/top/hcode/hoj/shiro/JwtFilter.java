@@ -30,6 +30,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * @Author: Himit_ZH
@@ -150,8 +151,9 @@ public class JwtFilter extends AuthenticatingFilter {
      * @return
      */
     private void refreshToken(HttpServletRequest request, HttpServletResponse response, String userId) throws IOException {
-        boolean lock = redisUtils.getLock(ShiroConstant.SHIRO_TOKEN_LOCK + userId, 20);// 获取锁20s
-        if (lock) {
+        String requestId = UUID.randomUUID().toString();
+        boolean locked = redisUtils.getLock(ShiroConstant.SHIRO_TOKEN_LOCK + userId, 20, requestId);// 获取锁20s
+        if (locked) {
             String newToken = jwtUtils.generateToken(userId);
             response.setHeader("Access-Control-Allow-Credentials", "true");
             response.setHeader("Authorization", newToken); //放到信息头部
@@ -159,7 +161,7 @@ public class JwtFilter extends AuthenticatingFilter {
             response.setHeader("Url-Type", request.getHeader("Url-Type")); // 为了前端能区别请求来源
             response.setHeader("Refresh-Token", "true"); //告知前端需要刷新token
         }
-        redisUtils.releaseLock(ShiroConstant.SHIRO_TOKEN_LOCK + userId);
+        redisUtils.releaseLock(ShiroConstant.SHIRO_TOKEN_LOCK + userId, requestId);
     }
 
 

@@ -4,13 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -32,28 +30,38 @@ public final class RedisUtils {
 
     // =============================common============================
 
-    public boolean getLock(String lockName, int expireTime) {
-        boolean result = false;
+
+    // 获取锁
+    public boolean getLock(String lockName, int expireTime, String requestId) {
         try {
-            boolean isExist = hasKey(lockName);
-            if (!isExist) {
-                set(lockName, 0);
-                expire(lockName, expireTime <= 0 ? 3600 : expireTime);
-            }
-            long reVal = incr(lockName, 1);
-            if (1 == reVal) {
-                //获取到锁
-                result = true;
-            }
+            expireTime = expireTime <= 0 ? 3600 : expireTime;
+
+            // 使用setIfAbsent实现原子操作：不存在则设置
+            Boolean result = redisTemplate.opsForValue().setIfAbsent(lockName, requestId, expireTime, TimeUnit.SECONDS);
+            return Boolean.TRUE.equals(result);
         } catch (Exception e) {
-            log.error("获取锁过程出错-->", e.getMessage());
+            log.error("获取锁过程出错-->", e);
+            return false;
         }
-        return result;
     }
 
-    public boolean releaseLock(String lockName) {
+    // 释放锁
+    public boolean releaseLock(String lockName, String requestId) {
+        try {
+            // 使用Lua脚本保证删除操作的原子性
+            String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
 
-        return expire(lockName, 10);
+            Long result = redisTemplate.execute(
+                    new DefaultRedisScript<>(script, Long.class),
+                    Collections.singletonList(lockName),
+                    requestId
+            );
+
+            return result != null && result > 0;
+        } catch (Exception e) {
+            log.error("释放锁过程出错-->", e);
+            return false;
+        }
     }
 
     /**
