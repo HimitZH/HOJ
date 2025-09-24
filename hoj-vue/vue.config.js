@@ -29,50 +29,54 @@ const cdn = {
   // cdn的css链接
  css: [
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/element-ui/2.14.0/theme-chalk/index.min.css",
-      "https://cdnjs.webstatic.cn/ajax/libs/element-ui/2.14.0/theme-chalk/index.min.css",
+      // "https://cdnjs.webstatic.cn/ajax/libs/element-ui/2.14.0/theme-chalk/index.min.css",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/github-markdown-css/4.0.0/github-markdown.min.css",
-      "https://cdnjs.webstatic.cn/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css",
+      // "https://cdnjs.webstatic.cn/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/KaTeX/0.12.0/katex.min.css",
-      "https://cdnjs.webstatic.cn/ajax/libs/KaTeX/0.12.0/katex.min.css",
+      // "https://cdnjs.webstatic.cn/ajax/libs/KaTeX/0.12.0/katex.min.css",
       // 'https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/muse-ui/3.0.2/muse-ui.min.css',
-      "https://cdnjs.webstatic.cn/ajax/libs/muse-ui/3.0.2/muse-ui.min.css"
+      // "https://cdnjs.webstatic.cn/ajax/libs/muse-ui/3.0.2/muse-ui.min.css"
       // "https://unpkg.com/vxe-table@2.9.26/lib/style.min.css",
       // "https://cdn.jsdelivr.net/npm/vxe-table@2.9.26/lib/style.min.css",
+      "https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.14.0/theme-chalk/index.min.css",
+      "https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css",
+      "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.css",
+      "https://cdnjs.cloudflare.com/ajax/libs/muse-ui/3.0.2/muse-ui.min.css"
   ],
   // cdn的js链接
   js: [
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/2.6.11/vue.min.js",
-      "https://cdnjs.webstatic.cn/ajax/libs/vue/2.6.11/vue.min.js",
-      // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue-router/3.2.0/vue-router.min.js",
-      "https://cdnjs.webstatic.cn/ajax/libs/vue-router/3.2.0/vue-router.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js",
+      // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue-router/3.2.0/Fvue-router.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.2.0/vue-router.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/axios/0.26.0/axios.min.js",
-      "https://cdnjs.webstatic.cn/ajax/libs/axios/0.26.0/axios.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.0/axios.min.js",
       // "https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-y/element-ui/2.15.3/index.min.js",
-      "https://cdnjs.webstatic.cn/ajax/libs/element-ui/2.15.3/index.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.15.3/index.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/highlight.js/10.3.2/highlight.min.js,
-      "https://cdnjs.webstatic.cn/ajax/libs/highlight.js/10.3.2/highlight.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.3.2/highlight.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/moment.js/2.29.1/moment.min.js",
-      "https://cdnjs.webstatic.cn/ajax/libs/moment.js/2.29.1/moment.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/moment.js/2.29.1/locale/zh-cn.min.js",
-      "https://cdnjs.webstatic.cn/ajax/libs/moment.js/2.29.1/locale/zh-cn.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/zh-cn.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/moment.js/2.29.1/locale/en-gb.min.js",
-      "https://cdnjs.webstatic.cn/ajax/libs/moment.js/2.29.1/locale/en-gb.min.js",
-      "https://cdnjs.webstatic.cn/ajax/libs/moment.js/2.29.1/locale/ja.min.js",
-      "https://cdnjs.webstatic.cn/ajax/libs/moment.js/2.29.1/locale/ko.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/en-gb.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/ja.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/locale/ko.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/echarts/4.9.0-rc.1/echarts.min.js",
-      "https://cdnjs.webstatic.cn/ajax/libs/echarts/4.9.0-rc.1/echarts.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/echarts/4.9.0-rc.1/echarts.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue-echarts/5.0.0-beta.0/vue-echarts.min.js",
-      "https://cdnjs.webstatic.cn/ajax/libs/vue-echarts/5.0.0-beta.0/vue-echarts.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/vue-echarts/5.0.0-beta.0/vue-echarts.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/vuex/3.5.1/vuex.min.js",
-      "https://cdnjs.webstatic.cn/ajax/libs/vuex/3.5.1/vuex.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/vuex/3.5.1/vuex.min.js",
       // "https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/KaTeX/0.12.0/katex.min.js",
-      "https://cdnjs.webstatic.cn/ajax/libs/KaTeX/0.12.0/katex.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/katex.min.js",
       // "https://lf6-cdn-tos.bytecdntp.com/cdn/expire-1-M/KaTeX/0.12.0/contrib/auto-render.min.js",
-      "https://cdnjs.webstatic.cn/ajax/libs/KaTeX/0.12.0/contrib/auto-render.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.12.0/contrib/auto-render.min.js",
       // 'https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/muse-ui/3.0.2/muse-ui.min.js',
-      "https://cdnjs.webstatic.cn/ajax/libs/muse-ui/3.0.2/muse-ui.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/muse-ui/3.0.2/muse-ui.min.js",
       // 'https://lf26-cdn-tos.bytecdntp.com/cdn/expire-1-M/jquery/3.5.1/jquery.min.js',
-      "https://cdnjs.webstatic.cn/ajax/libs/jquery/3.5.1/jquery.min.js"
+      "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
       // "https://unpkg.com/xe-utils@3.4.3/dist/xe-utils.umd.min.js",
       // "https://unpkg.com/vxe-table@2.9.26/lib/index.umd.min.js",
       // "https://cdn.jsdelivr.net/npm/xe-utils@3.4.3/dist/xe-utils.umd.min.js",
@@ -109,6 +113,7 @@ module.exports={
     config.plugin('webpack-bundle-analyzer') // 查看打包文件体积大小
       .use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
     // ============注入cdn end============
+
   },
   configureWebpack: (config) => {
     // 用cdn方式引入，则构建时要忽略相关资源
@@ -140,8 +145,8 @@ module.exports={
         new CompressionWebpackPlugin({
             filename: '[path].gz[query]',
             algorithm: 'gzip',
-            test: /\.(js|css)$/,// 匹配文件名
-            threshold: 10000, // 对超过10k的数据压缩
+            test: /\.(js|css|html|svg|json)$/,// 匹配文件名
+            threshold: 10240, // 对超过10k的数据压缩
             deleteOriginalAssets: false, // 不删除源文件
             minRatio: 0.8 // 压缩比
         })
