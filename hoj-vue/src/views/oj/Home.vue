@@ -6,37 +6,12 @@
         :sm="24"
       >
         <el-card>
-          <div
-            slot="header"
-            class="content-center"
-          >
-            <span class="panel-title home-title welcome-title">{{ $t('m.Welcome_to')
-              }}{{ websiteConfig.shortName }}</span>
+        <div slot="header" class="content-center">
+          <div class="title-wrapper">
+            <span class="panel-title home-title welcome-title">欢迎来到SXUOJ</span>
+            <span class="sub-title">这里是ACM-ICPC算法竞赛队官方OJ平台</span>
           </div>
-          <el-carousel
-            :interval="interval"
-            :height="srcHight"
-            class="img-carousel"
-            arrow="always"
-            indicator-position="outside"
-          >
-            <el-carousel-item
-              v-for="(item, index) in carouselImgList"
-              :key="index"
-            >
-              <el-image
-                :src="item.url"
-                fit="fill"
-              >
-                <div
-                  slot="error"
-                  class="image-slot"
-                >
-                  <i class="el-icon-picture-outline"></i>
-                </div>
-              </el-image>
-            </el-carousel-item>
-          </el-carousel>
+        </div>
         </el-card>
         <Announcements class="card-top"></Announcements>
         <SubmissionStatistic class="card-top"></SubmissionStatistic>
@@ -309,50 +284,7 @@
             </vxe-table-column>
           </vxe-table>
         </el-card>
-        <el-card class="card-top">
-          <div
-            slot="header"
-            class="clearfix title"
-          >
-            <span class="home-title panel-title">
-              <i class="el-icon-monitor"></i> {{ $t('m.Supported_Remote_Online_Judge') }}
-            </span>
-          </div>
-          <el-row :gutter="20">
-            <el-col
-              :md="8"
-              :sm="24"
-              v-for="(oj, index) in remoteJudgeList"
-              :key="index"
-            >
-              <a
-                :href="oj.url"
-                target="_blank"
-              >
-                <el-tooltip
-                  :content="oj.name"
-                  placement="top"
-                >
-                  <el-image
-                    :src="oj.logo"
-                    fit="fill"
-                    class="oj-logo"
-                    :class="
-                      oj.status ? 'oj-normal ' + oj.name : 'oj-error ' + oj.name
-                    "
-                  >
-                    <div
-                      slot="error"
-                      class="image-slot"
-                    >
-                      <i class="el-icon-picture-outline"></i>
-                    </div>
-                  </el-image>
-                </el-tooltip>
-              </a>
-            </el-col>
-          </el-row>
-        </el-card>
+
       </el-col>
     </el-row>
   </div>
@@ -563,6 +495,22 @@ export default {
 /deep/.el-card__header {
   padding: 0.6rem 1.25rem !important;
 }
+.title-wrapper {
+  display: flex;              /* 主副标题竖直排列 */
+  flex-direction: column;
+  align-items: center;        /* 居中 */
+  line-height: 1.2;           /* 紧凑行高 */
+}
+
+.sub-title {
+  font-size: 16px;
+  font-weight: 400;
+  margin-top: 2px;            /* 减少间距 */
+  margin-bottom: 0;           /* 去掉底部空白 */
+  color: #666;
+}
+
+
 .card-top {
   margin-top: 20px;
 }

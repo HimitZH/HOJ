@@ -1,16 +1,10 @@
-# hoj-vue-pc
+# 开发指南
 
-## Development Environment Requirements
-
-We recommend using Node.js version 14.21.3.
-
-If you wish to not disrupt your existing development environment, you can download precompiled binaries of Node.js and temporarily modify your environment variables to use this version.
-
-[Download Precompiled Binaries](https://nodejs.org/en/download/prebuilt-binaries)
+使用 Node.js version 14.21.3.
 
 ## Project setup
 ```
-npm install
+npm i
 ```
 
 ### Compiles and hot-reloads for development
@@ -22,6 +16,3 @@ npm run serve
 ```
 npm run build
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

@@ -43,17 +43,14 @@
               ><i class="el-icon-s-marketing"></i
               >{{ $t('m.NavBar_Status') }}</el-menu-item
             >
-            <el-submenu index="rank">
-              <template slot="title"
-                ><i class="el-icon-s-data"></i>{{ $t('m.NavBar_Rank') }}</template
-              >
-              <el-menu-item index="/acm-rank">{{
-                $t('m.NavBar_ACM_Rank')
-              }}</el-menu-item>
-              <el-menu-item index="/oi-rank">{{
-                $t('m.NavBar_OI_Rank')
-              }}</el-menu-item>
-            </el-submenu>
+
+            <el-menu-item index="/acm-rank"
+              ><i
+                class="fa fa-users navbar-icon"
+              ></i
+              >{{ $t('m.NavBar_Rank') }}</el-menu-item
+            >
+
             <el-menu-item index="/discussion"
               v-if="websiteConfig.openPublicDiscussion"
               ><i class="el-icon-s-comment"></i
@@ -65,17 +62,12 @@
               ></i
               >{{ $t('m.NavBar_Group') }}</el-menu-item
             >
-            <el-submenu index="about">
-              <template slot="title"
-                ><i class="el-icon-info"></i>{{ $t('m.NavBar_About') }}</template
-              >
-              <el-menu-item index="/introduction">{{
-                $t('m.NavBar_Introduction')
-              }}</el-menu-item>
-              <el-menu-item index="/developer">{{
-                $t('m.NavBar_Developer')
-              }}</el-menu-item>
-            </el-submenu>
+            <el-menu-item index="/introduction"
+              ><i
+                class="fa fa-users navbar-icon"
+              ></i
+              >{{ $t('m.NavBar_About') }}</el-menu-item
+            >
         </template>
         <template v-else-if="mode == 'training'">
           <el-menu-item index="/home"

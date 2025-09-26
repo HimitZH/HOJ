@@ -35,28 +35,27 @@
               <p>
                 <a @click="goRoute('/status')">{{ $t('m.Judging_Queue') }}</a>
               </p>
-              <p>
-                <a @click="goRoute('/developer')">{{ $t('m.System_Info') }}</a>
-              </p>
             </el-col>
             <el-col class="hr-none">
               <el-divider></el-divider>
             </el-col>
+
             <el-col
               :md="6"
               :xs="24"
             >
-              <h1>{{ $t('m.Development') }}</h1>
-              <p class="mb-1">
-                <a
-                  href="https://gitee.com/himitzh0730/hoj"
-                  target="_blank"
-                >{{
-                  $t('m.Open_Source')
-                }}</a>
+              <h1>功能</h1>
+              <p>
+                <a @click="goRoute('/problem')">题目</a>
               </p>
-              <p class="mb-1"><a @click="goRoute('/#')">API</a></p>
+              <p>
+                <a @click="goRoute('/contest')">比赛</a>
+              </p>
+              <p>
+                <a @click="goRoute('/discussion')">讨论</a>
+              </p>
             </el-col>
+            
             <el-col class="hr-none">
               <el-divider></el-divider>
             </el-col>
@@ -71,13 +70,6 @@
                   aria-hidden="true"
                 ></i><a @click="goRoute('/introduction')"> {{ $t('m.NavBar_About') }}</a>
               </p>
-              <p>
-                <i class="el-icon-document"></i>
-                <a
-                  href="https://docs.hdoi.cn"
-                  target="_blank"
-                > {{ $t('m.Help') }}</a>
-              </p>
             </el-col>
           </el-row>
         </div>
@@ -87,12 +79,12 @@
             :href="websiteConfig.recordUrl"
             target="_blank"
           >{{ websiteConfig.recordName }}</a>
-          Powered by
+          感谢开源项目
           <a
             :href="websiteConfig.projectUrl"
             style="color:#1E9FFF"
             target="_blank"
-          >{{ websiteConfig.projectName }}</a>
+          >HOJ</a>
           <span style="margin-left:10px">
             <el-dropdown
               @command="changeWebLanguage"

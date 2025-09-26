@@ -196,7 +196,7 @@ export const m = {
   Judging_Queue: '评测队列',
   System_Info: '系统信息',
   Development: '开发',
-  Open_Source: '开源',
+  Open_Source: '题目',
   Support: '支持',
   Help: '帮助',
   Group: 'Q群',
