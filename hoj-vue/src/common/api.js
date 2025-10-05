@@ -731,11 +731,13 @@ const ojApi = {
     })
   },
 
-  getDiscussion(did) {
+  getDiscussion(did, gid) {
+    const params = { did };
+    if (gid !== undefined && gid !== null && gid !== '') {
+      params.gid = gid;
+    }
     return ajax("/api/get-discussion-detail", 'get', {
-      params: {
-        did
-      }
+      params
     })
   },
 

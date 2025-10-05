@@ -258,7 +258,8 @@ export default {
       this.routeName = this.$route.name;
       this.discussionID = this.$route.params.discussionID || '';
       this.loading = true;
-      api.getDiscussion(this.discussionID).then(
+      const gid = this.$route.params.groupID || '';
+      api.getDiscussion(this.discussionID, gid).then(
         (res) => {
           this.discussion = res.data.data;
           this.changeDomTitle({ title: this.discussion.title });
