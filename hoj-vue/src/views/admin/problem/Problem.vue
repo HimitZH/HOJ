@@ -11,6 +11,38 @@
         label-position="top"
         label-width="70px"
       >
+        <!-- 题目命名规范提示（所有题目创建时显示） -->
+        <el-card 
+          v-if="mode === 'add'"
+          class="naming-rules-card"
+          shadow="hover"
+          style="margin-bottom: 20px;"
+        >
+          <div slot="header">
+            <i class="el-icon-info" style="color: #409EFF;"></i>
+            <span style="margin-left: 5px; font-weight: bold;">题目命名规范</span>
+          </div>
+          <div class="naming-rules-content">
+            <h4>请遵循以下题目ID命名规范：</h4>
+            <ul>
+              <li><strong>纯数字：</strong>纯数字的题目id一般作为 非比赛题 加入题库，用于日常练习，难度标记一般贴合题目实际难度</li>
+              <li><strong>年份开头：</strong>年份开头的题目，是作为当年的招新题目公开后加入题库的，难度标记与题目实际难度无关</li>
+              <li><strong>train开头：</strong>train开头的题目，是算法队队内训练或各类公开训练的题目公开后加入题库的，难度标记与题目实际难度无关</li>
+              <li><strong>contest开头：</strong>contest开头的题目，是 非招新赛 的其他 正式 比赛的题目，难度标记与题目实际难度无关</li>
+            </ul>
+            <p style="color: #E6A23C; margin-top: 15px;">
+              <i class="el-icon-warning"></i>
+              <strong>注意：</strong>题目创建后修改会影响比赛进行，请仔细检查后再提交。
+            </p>
+          </div>
+          <el-checkbox 
+            v-model="agreedToNamingRules"
+            style="margin-top: 15px;"
+          >
+            <span style="font-weight: bold; color: #409EFF;">我已阅读并将按照题目命名规范进行命题</span>
+          </el-checkbox>
+        </el-card>
+
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item
@@ -21,7 +53,7 @@
               <el-input
                 :placeholder="$t('m.Problem_Display_ID')"
                 v-model="problem.problemId"
-                :disabled="problem.isRemote"
+                :disabled="problem.isRemote || (mode === 'add' && !agreedToNamingRules)"
               >
               </el-input>
             </el-form-item>
@@ -37,6 +69,7 @@
               <el-input
                 :placeholder="$t('m.Title')"
                 v-model="problem.title"
+                :disabled="mode === 'add' && !agreedToNamingRules"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -57,6 +90,7 @@
               <el-input
                 :placeholder="$t('m.Contest_Display_Title')"
                 v-model="contestProblem.displayTitle"
+                :disabled="mode === 'add' && !agreedToNamingRules"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -72,6 +106,7 @@
               <el-input
                 :placeholder="$t('m.Contest_Display_ID')"
                 v-model="contestProblem.displayId"
+                :disabled="mode === 'add' && !agreedToNamingRules"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -84,7 +119,10 @@
               :label="$t('m.Description')"
               required
             >
-              <Editor :value.sync="problem.description"></Editor>
+              <Editor 
+                :value.sync="problem.description"
+                :disabled="mode === 'add' && !agreedToNamingRules"
+              ></Editor>
             </el-form-item>
           </el-col>
         </el-row>
@@ -102,7 +140,7 @@
                 type="Number"
                 :placeholder="$t('m.Time_Limit')"
                 v-model="problem.timeLimit"
-                :disabled="problem.isRemote"
+                :disabled="problem.isRemote || (mode === 'add' && !agreedToNamingRules)"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -118,7 +156,7 @@
                 type="Number"
                 :placeholder="$t('m.Memory_Limit')"
                 v-model="problem.memoryLimit"
-                :disabled="problem.isRemote"
+                :disabled="problem.isRemote || (mode === 'add' && !agreedToNamingRules)"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -134,7 +172,7 @@
                 type="Number"
                 :placeholder="$t('m.Stack_Limit')"
                 v-model="problem.stackLimit"
-                :disabled="problem.isRemote"
+                :disabled="problem.isRemote || (mode === 'add' && !agreedToNamingRules)"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -150,6 +188,7 @@
                 class="difficulty-select"
                 placeholder="Enter the level of problem"
                 v-model="problem.difficulty"
+                :disabled="mode === 'add' && !agreedToNamingRules"
               >
                 <el-option
                   :label="getLevelName(key)"
@@ -169,7 +208,10 @@
               :label="$t('m.Input')"
               required
             >
-              <Editor :value.sync="problem.input"></Editor>
+              <Editor 
+                :value.sync="problem.input"
+                :disabled="mode === 'add' && !agreedToNamingRules"
+              ></Editor>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -178,7 +220,10 @@
               :label="$t('m.Output')"
               required
             >
-              <Editor :value.sync="problem.output"></Editor>
+              <Editor 
+                :value.sync="problem.output"
+                :disabled="mode === 'add' && !agreedToNamingRules"
+              ></Editor>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -186,7 +231,10 @@
               style="margin-top: 20px"
               :label="$t('m.Hint')"
             >
-              <Editor :value.sync="problem.hint"></Editor>
+              <Editor 
+                :value.sync="problem.hint"
+                :disabled="mode === 'add' && !agreedToNamingRules"
+              ></Editor>
             </el-form-item>
           </el-col>
         </el-row>
@@ -200,6 +248,7 @@
               <el-select
                 v-model="problem.auth"
                 size="small"
+                :disabled="mode === 'add' && !agreedToNamingRules"
               >
                 <el-option
                   :label="$t('m.Public_Problem')"
@@ -224,7 +273,7 @@
             <el-form-item :label="$t('m.Type')">
               <el-radio-group
                 v-model="problem.type"
-                :disabled="disableRuleType || problem.isRemote"
+                :disabled="disableRuleType || problem.isRemote || (mode === 'add' && !agreedToNamingRules)"
                 @change="problemTypeChange"
               >
                 <el-radio :label="0">ACM</el-radio>
@@ -242,6 +291,7 @@
                 v-model="problem.codeShare"
                 active-text=""
                 inactive-text=""
+                :disabled="mode === 'add' && !agreedToNamingRules"
               >
               </el-switch>
             </el-form-item>
@@ -268,6 +318,7 @@
                 class="input-new-tag"
                 v-model="tagInput"
                 :trigger-on-focus="true"
+                :disabled="mode === 'add' && !agreedToNamingRules"
                 @keyup.enter.native="addTag"
                 @click="selectTag"
                 @select="addTag"
@@ -285,6 +336,7 @@
                   size="small"
                   @click="inputVisible = true"
                   icon="el-icon-plus"
+                  :disabled="mode === 'add' && !agreedToNamingRules"
                 ></el-button>
               </el-tooltip>
             </el-form-item>
@@ -366,6 +418,7 @@
                       :placeholder="$t('m.Example_Input')"
                       v-model="example.input"
                       style="white-space: pre-line"
+                      :disabled="mode === 'add' && !agreedToNamingRules"
                     >
                     </el-input>
                   </el-form-item>
@@ -383,6 +436,7 @@
                       type="textarea"
                       :placeholder="$t('m.Example_Output')"
                       v-model="example.output"
+                      :disabled="mode === 'add' && !agreedToNamingRules"
                     >
                     </el-input>
                   </el-form-item>
@@ -398,6 +452,7 @@
             @click="addExample()"
             icon="el-icon-plus"
             type="small"
+            :disabled="mode === 'add' && !agreedToNamingRules"
           >{{ $t('m.Add_Example') }}
           </el-button>
         </div>
@@ -759,6 +814,7 @@
                         type="textarea"
                         :placeholder="$t('m.Sample_Input')"
                         v-model="sample.input"
+                        :disabled="mode === 'add' && !agreedToNamingRules"
                       >
                       </el-input>
                     </el-form-item>
@@ -776,6 +832,7 @@
                         type="textarea"
                         :placeholder="$t('m.Sample_Output')"
                         v-model="sample.output"
+                        :disabled="mode === 'add' && !agreedToNamingRules"
                       >
                       </el-input>
                     </el-form-item>
@@ -820,6 +877,7 @@
                 @click="addSample()"
                 icon="el-icon-plus"
                 type="small"
+                :disabled="mode === 'add' && !agreedToNamingRules"
               >{{ $t('m.Add_Sample') }}
               </el-button>
             </div>
@@ -830,6 +888,7 @@
           <el-input
             :placeholder="$t('m.Source')"
             v-model="problem.source"
+            :disabled="mode === 'add' && !agreedToNamingRules"
           ></el-input>
         </el-form-item>
 
@@ -858,6 +917,7 @@
           type="primary"
           @click.native="submit()"
           size="small"
+          :disabled="mode === 'add' && !agreedToNamingRules"
         >{{
           $t('m.Save')
         }}</el-button>
@@ -987,6 +1047,8 @@ export default {
       judgeExtraFile: null,
       judgeCaseModeRecord: "default",
       sampleIndex: 1,
+      // 题目命名规范同意状态
+      agreedToNamingRules: false,
     };
   },
   mounted() {
@@ -1872,7 +1934,51 @@ export default {
 </script>
 
 <style scoped>
-/deep/.el-form-item__label {
+/* 题目命名规范卡片样式 */
+
+.naming-rules-card {
+  border: 2px solid #409EFF;
+  font-size: 18px;
+  padding: 18px 20px;
+}
+
+.naming-rules-card .el-icon-info {
+  font-size: 22px;
+}
+
+.naming-rules-content h4 {
+  color: #409EFF;
+  margin-bottom: 16px;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.naming-rules-content ul {
+  margin: 16px 0;
+  padding-left: 28px;
+  font-size: 18px;
+}
+
+.naming-rules-content li {
+  margin: 12px 0;
+  line-height: 1.8;
+  font-size: 18px;
+}
+
+.naming-rules-content strong {
+  color: #303133;
+  font-size: 18px;
+}
+
+.naming-rules-content p {
+  font-size: 17px;
+}
+
+.naming-rules-card .el-checkbox {
+  font-size: 18px;
+}
+
+::v-deep .el-form-item__label {
   padding: 0 !important;
 }
 .el-form-item {

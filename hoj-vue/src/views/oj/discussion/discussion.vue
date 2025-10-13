@@ -110,6 +110,7 @@
       </div>
       <div class="body-article">
         <Markdown 
+          :key="discussion.id + '-' + discussion.gmtModified"
           :isAvoidXss="discussion.role != 'root'&&discussion.role != 'admin'" 
           :content="discussion.content">
         </Markdown>
@@ -233,6 +234,9 @@ export default {
       discussion: {
         author: 'HOJ',
         avatar: '',
+        content: '',
+        id: null,
+        gmtModified: null,
       },
       query: {
         currentPage: 1,
@@ -261,7 +265,8 @@ export default {
       const gid = this.$route.params.groupID || '';
       api.getDiscussion(this.discussionID, gid).then(
         (res) => {
-          this.discussion = res.data.data;
+          // 使用Vue.set确保响应式更新
+          this.$set(this, 'discussion', res.data.data);
           this.changeDomTitle({ title: this.discussion.title });
           this.$nextTick((_) => {
             addCodeBtn();
