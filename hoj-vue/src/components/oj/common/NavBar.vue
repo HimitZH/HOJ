@@ -10,18 +10,11 @@
           text-color="#495060"
         >
           <div class="logo">
-            <el-tooltip
-              :content="$t('m.Click_To_Change_Web_Language')"
-              placement="bottom"
-              effect="dark"
-            >
-              <el-image
-                style="width: 139px; height: 50px"
-                :src="imgUrl"
-                fit="scale-down"
-                @click="changeWebLanguage"
-              ></el-image>
-            </el-tooltip>
+            <el-image
+              style="width: 139px; height: 50px"
+              :src="imgUrl"
+              fit="scale-down"
+            ></el-image>
           </div>
           <template v-if="mode == 'defalut'">
             <el-menu-item index="/home"
@@ -244,17 +237,11 @@
         <mu-button icon slot="left" @click="opendrawer = !opendrawer">
           <i class="el-icon-s-unfold"></i>
         </mu-button>
-        <el-tooltip
-            :content="$t('m.Click_To_Change_Web_Language')"
-            placement="bottom"
-            effect="dark"
-          >
-          <span @click="changeWebLanguage">
-          {{
-            websiteConfig.shortName ? websiteConfig.shortName : 'OJ'
-          }}
-          </span>
-        </el-tooltip>
+        <span>
+        {{
+          websiteConfig.shortName ? websiteConfig.shortName : 'OJ'
+        }}
+        </span>
         <mu-button
           flat
           slot="right"
@@ -480,48 +467,17 @@
             <mu-list-item-title>{{ $t('m.NavBar_Status') }}</mu-list-item-title>
           </mu-list-item>
 
+          <!-- 精简排名，仅保留直达 ACM 排名 -->
           <mu-list-item
             button
-            :ripple="false"
-            nested
-            :open="openSideMenu === 'rank'"
-            @toggle-nested="openSideMenu = arguments[0] ? 'rank' : ''"
+            to="/acm-rank"
+            @click="opendrawer = !opendrawer"
+            active-class="mobile-menu-active"
           >
             <mu-list-item-action>
               <mu-icon value=":el-icon-s-data" size="24"></mu-icon>
             </mu-list-item-action>
             <mu-list-item-title>{{ $t('m.NavBar_Rank') }}</mu-list-item-title>
-            <mu-list-item-action>
-              <mu-icon
-                class="toggle-icon"
-                size="24"
-                value=":el-icon-arrow-down"
-              ></mu-icon>
-            </mu-list-item-action>
-            <mu-list-item
-              button
-              :ripple="false"
-              slot="nested"
-              to="/acm-rank"
-              @click="opendrawer = !opendrawer"
-              active-class="mobile-menu-active"
-            >
-              <mu-list-item-title>{{
-                $t('m.NavBar_ACM_Rank')
-              }}</mu-list-item-title>
-            </mu-list-item>
-            <mu-list-item
-              button
-              :ripple="false"
-              slot="nested"
-              to="/oi-rank"
-              @click="opendrawer = !opendrawer"
-              active-class="mobile-menu-active"
-            >
-              <mu-list-item-title>{{
-                $t('m.NavBar_OI_Rank')
-              }}</mu-list-item-title>
-            </mu-list-item>
           </mu-list-item>
 
           <mu-list-item
@@ -551,48 +507,17 @@
             <mu-list-item-title>{{ $t('m.NavBar_Group') }}</mu-list-item-title>
           </mu-list-item>
 
+          <!-- 精简关于，仅保留简介 -->
           <mu-list-item
             button
-            :ripple="false"
-            nested
-            :open="openSideMenu === 'about'"
-            @toggle-nested="openSideMenu = arguments[0] ? 'about' : ''"
+            to="/introduction"
+            @click="opendrawer = !opendrawer"
+            active-class="mobile-menu-active"
           >
             <mu-list-item-action>
               <mu-icon value=":el-icon-info" size="24"></mu-icon>
             </mu-list-item-action>
-            <mu-list-item-title>{{ $t('m.NavBar_About') }}</mu-list-item-title>
-            <mu-list-item-action>
-              <mu-icon
-                class="toggle-icon"
-                size="24"
-                value=":el-icon-arrow-down"
-              ></mu-icon>
-            </mu-list-item-action>
-            <mu-list-item
-              button
-              :ripple="false"
-              slot="nested"
-              to="/introduction"
-              @click="opendrawer = !opendrawer"
-              active-class="mobile-menu-active"
-            >
-              <mu-list-item-title>{{
-                $t('m.NavBar_Introduction')
-              }}</mu-list-item-title>
-            </mu-list-item>
-            <mu-list-item
-              button
-              :ripple="false"
-              slot="nested"
-              to="/developer"
-              @click="opendrawer = !opendrawer"
-              active-class="mobile-menu-active"
-            >
-              <mu-list-item-title>{{
-                $t('m.NavBar_Developer')
-              }}</mu-list-item-title>
-            </mu-list-item>
+            <mu-list-item-title>{{ $t('m.NavBar_Introduction') }}</mu-list-item-title>
           </mu-list-item>
         </mu-list>
       </mu-drawer>

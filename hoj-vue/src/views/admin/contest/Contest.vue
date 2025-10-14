@@ -175,22 +175,16 @@
               :required="contest.sealRank"
               v-show="contest.sealRank"
             >
-              <el-select v-model="seal_rank_time">
-                <el-option
-                  :label="$t('m.Contest_Seal_Half_Hour')"
-                  :value="0"
-                  :disabled="contest.duration < 1800"
-                ></el-option>
-                <el-option
-                  :label="$t('m.Contest_Seal_An_Hour')"
-                  :value="1"
-                  :disabled="contest.duration < 3600"
-                ></el-option>
-                <el-option
-                  :label="$t('m.Contest_Seal_All_Hour')"
-                  :value="2"
-                ></el-option>
-              </el-select>
+              <el-date-picker
+                v-model="contest.sealRankTime"
+                type="datetime"
+                :placeholder="$t('m.Seal_Rank_Time')"
+                :picker-options="sealPickerOptions"
+              >
+              </el-date-picker>
+              <div v-if="contest.sealRank && contest.sealRankTime && contest.endTime && contest.startTime" class="seal-tip">
+                {{$t('m.Contest_End_Time')}} - {{$t('m.Seal_Rank_Time')}} = {{ sealDiffSeconds }}s
+              </div>
             </el-form-item>
           </el-col>
 
@@ -705,6 +699,15 @@ export default {
       },
       starUserInput: "",
       inputVisible: false,
+      sealPickerOptions: {
+        disabledDate: (time) => {
+          const start = this.contest.startTime ? moment(this.contest.startTime) : null;
+          const end = this.contest.endTime ? moment(this.contest.endTime) : null;
+          if (!start || !end) return false;
+          // 禁用早于开始时间，或晚于等于结束时间的时间点
+          return time.getTime() < start.toDate().getTime() || time.getTime() >= end.toDate().getTime();
+        },
+      },
     };
   },
   mounted() {
@@ -732,6 +735,14 @@ export default {
   },
   computed: {
     ...mapGetters(["userInfo"]),
+    // 结束时间与封榜时间的差值（秒）
+    sealDiffSeconds() {
+      if (!this.contest || !this.contest.sealRankTime || !this.contest.endTime) return 0;
+      const end = moment(this.contest.endTime);
+      const seal = moment(this.contest.sealRankTime);
+      const diff = end.diff(seal, 'seconds');
+      return diff > 0 ? diff : 0;
+    },
   },
   methods: {
     getContestByCid() {
@@ -742,24 +753,19 @@ export default {
           this.contest = data;
           this.changeDuration();
           // 封榜时间转换
-          let halfHour = moment(this.contest.endTime)
-            .subtract(1800, "seconds")
-            .toString();
-          let oneHour = moment(this.contest.endTime)
-            .subtract(3600, "seconds")
-            .toString();
-          let allHour = moment(this.contest.startTime).toString();
-          let sealRankTime = moment(this.contest.sealRankTime).toString();
-          switch (sealRankTime) {
-            case halfHour:
-              this.seal_rank_time = 0;
-              break;
-            case oneHour:
-              this.seal_rank_time = 1;
-              break;
-            case allHour:
-              this.seal_rank_time = 2;
-              break;
+          // 确保编辑时sealRankTime在[startTime, endTime)范围，否则设为默认值
+          if (this.contest.sealRank) {
+            const start = moment(this.contest.startTime);
+            const end = moment(this.contest.endTime);
+            let seal = this.contest.sealRankTime ? moment(this.contest.sealRankTime) : null;
+            if (!seal || !seal.isValid() || !seal.isBetween(start, end, undefined, '[)')) {
+              // 默认：若为ACM且时长>=1h则默认结束前1小时，否则默认全程；OI默认全程
+              if (this.contest.type == 0 && end.diff(start, 'seconds') >= 3600) {
+                this.contest.sealRankTime = end.clone().subtract(3600, 'seconds');
+              } else {
+                this.contest.sealRankTime = start.clone();
+              }
+            }
           }
           if (this.contest.accountLimitRule) {
             this.formRule = this.changeStrToAccountRule(
@@ -825,21 +831,23 @@ export default {
           ? "admin_editContest"
           : "admin_createContest";
 
-      switch (this.seal_rank_time) {
-        case 0: // 结束前半小时
-          this.contest.sealRankTime = moment(this.contest.endTime).subtract(
-            1800,
-            "seconds"
-          );
-          break;
-        case 1: // 结束前一小时
-          this.contest.sealRankTime = moment(this.contest.endTime).subtract(
-            3600,
-            "seconds"
-          );
-          break;
-        case 2: // 全程
-          this.contest.sealRankTime = moment(this.contest.startTime);
+      // 保存前校验封榜时间范围，并确保为moment对象
+      if (this.contest.sealRank) {
+        if (!this.contest.sealRankTime) {
+          myMessage.error(this.$i18n.t('m.Seal_Rank_Time') + ' ' + this.$i18n.t('m.is_required'));
+          return;
+        }
+        const start = moment(this.contest.startTime);
+        const end = moment(this.contest.endTime);
+        const seal = moment(this.contest.sealRankTime);
+        if (!seal.isBetween(start, end, undefined, '[)')) {
+          myMessage.error(this.$i18n.t('m.Seal_Rank_Time') + ' ' + this.$i18n.t('m.Contets_Time_Check'));
+          return;
+        }
+        // 统一存为moment对象（后端已有Date接收，将由axios序列化）
+        this.contest.sealRankTime = seal;
+      } else {
+        this.contest.sealRankTime = null;
       }
       let data = Object.assign({}, this.contest);
       if (funcName === "admin_createContest") {
@@ -1033,5 +1041,10 @@ export default {
 }
 .input-new-star-user {
   width: 200px;
+}
+.seal-tip {
+  margin-top: 6px;
+  color: #909399;
+  font-size: 12px;
 }
 </style>

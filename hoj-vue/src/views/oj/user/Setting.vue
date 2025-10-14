@@ -28,7 +28,7 @@ export default {
     return {
       Account: 'Account',
       UserInfo: 'UserInfo',
-      activeName: 'Account',
+      activeName: 'UserInfo',
     };
   },
 };
