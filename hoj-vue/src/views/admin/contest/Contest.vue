@@ -704,8 +704,13 @@ export default {
           const start = this.contest.startTime ? moment(this.contest.startTime) : null;
           const end = this.contest.endTime ? moment(this.contest.endTime) : null;
           if (!start || !end) return false;
-          // 禁用早于开始时间，或晚于等于结束时间的时间点
-          return time.getTime() < start.toDate().getTime() || time.getTime() >= end.toDate().getTime();
+          // 仅按“日期”维度禁用：允许选择与开始/结束为同一天的日期，具体时间由保存校验控制
+          // Element UI 的 disabledDate 在 datetime 下传入的是一天的 00:00 时间戳
+          const dayTs = time.getTime();
+          const startDayTs = start.clone().startOf('day').toDate().getTime();
+          const endDayTs = end.clone().startOf('day').toDate().getTime();
+          // 禁用开始日之前的所有日期，以及结束日之后的所有日期
+          return dayTs < startDayTs || dayTs > endDayTs;
         },
       },
     };
