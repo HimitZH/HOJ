@@ -11,8 +11,7 @@
               type="search"
               size="medium"
               @search-click="filterByKeyword"
-              @keyup.enter.native="filterByKeyword"
-            ></vxe-input>
+              @keyup.enter.native="filterByKeyword"></vxe-input>
           </span>
         </div>
       </div>
@@ -22,15 +21,13 @@
         :data="contestList"
         auto-resize
         stripe
-        align="center"
-      >
+        align="center">
         <vxe-table-column field="id" width="80" title="ID"> </vxe-table-column>
         <vxe-table-column
           field="title"
           min-width="150"
           :title="$t('m.Title')"
-          show-overflow
-        >
+          show-overflow>
         </vxe-table-column>
         <vxe-table-column :title="$t('m.Type')" width="100">
           <template v-slot="{ row }">
@@ -42,12 +39,10 @@
             <el-tooltip
               :content="$t('m.' + CONTEST_TYPE_REVERSE[row.auth].tips)"
               placement="top"
-              effect="light"
-            >
+              effect="light">
               <el-tag
                 :type="CONTEST_TYPE_REVERSE[row.auth].color"
-                effect="plain"
-              >
+                effect="plain">
                 {{ CONTEST_TYPE_REVERSE[row.auth].name }}
               </el-tag>
             </el-tooltip>
@@ -58,8 +53,7 @@
             <el-tag
               effect="dark"
               :color="CONTEST_STATUS_REVERSE[row.status].color"
-              size="medium"
-            >
+              size="medium">
               {{ CONTEST_STATUS_REVERSE[row.status].name }}
             </el-tag>
           </template>
@@ -69,8 +63,7 @@
             <el-switch
               v-model="row.visible"
               :disabled="!isSuperAdmin && userInfo.uid != row.uid"
-              @change="changeContestVisible(row.id, row.visible, row.uid)"
-            >
+              @change="changeContestVisible(row.id, row.visible, row.uid)">
             </el-switch>
           </template>
         </vxe-table-column>
@@ -84,32 +77,29 @@
         </vxe-table-column>
         <vxe-table-column min-width="150" :title="$t('m.Option')">
           <template v-slot="{ row }">
-            <template v-if="isSuperAdmin || userInfo.uid == row.uid">
+            <template v-if="isSuperAdmin || isProblemAdmin || userInfo.uid == row.uid">
               <div style="margin-bottom:10px">
                 <el-tooltip
+                  v-if="userInfo.uid == row.uid"
                   effect="dark"
                   :content="$t('m.Edit')"
-                  placement="top"
-                >
+                  placement="top">
                   <el-button
                     icon="el-icon-edit"
                     size="mini"
                     @click.native="goEdit(row.id)"
-                    type="primary"
-                  >
+                    type="primary">
                   </el-button>
                 </el-tooltip>
                 <el-tooltip
                   effect="dark"
                   :content="$t('m.View_Contest_Problem_List')"
-                  placement="top"
-                >
+                  placement="top">
                   <el-button
                     icon="el-icon-tickets"
                     size="mini"
                     @click.native="goContestProblemList(row.id)"
-                    type="success"
-                  >
+                    type="success">
                   </el-button>
                 </el-tooltip>
               </div>
@@ -117,70 +107,43 @@
                 <el-tooltip
                   effect="dark"
                   :content="$t('m.View_Contest_Announcement_List')"
-                  placement="top"
-                >
+                  placement="top">
                   <el-button
                     icon="el-icon-info"
                     size="mini"
                     @click.native="goContestAnnouncement(row.id)"
-                    type="info"
-                  >
+                    type="info">
                   </el-button>
                 </el-tooltip>
 
                 <el-tooltip
+                  v-if="userInfo.uid == row.uid"
                   effect="dark"
                   :content="$t('m.Download_Contest_AC_Submission')"
-                  placement="top"
-                >
+                  placement="top">
                   <el-button
                     icon="el-icon-download"
                     size="mini"
                     @click.native="openDownloadOptions(row.id)"
-                    type="warning"
-                  >
+                    type="warning">
                   </el-button>
                 </el-tooltip>
               </div>
             </template>
-            <el-tooltip
-              effect="dark"
-              :content="$t('m.Delete')"
-              placement="top"
-              v-if="isSuperAdmin"
-            >
-              <el-button
-                icon="el-icon-delete"
-                size="mini"
-                @click.native="deleteContest(row.id)"
-                type="danger"
-              >
+            <el-tooltip effect="dark" :content="$t('m.Delete')" placement="top" v-if="isSuperAdmin">
+              <el-button icon="el-icon-delete" size="mini" @click.native="deleteContest(row.id)" type="danger">
               </el-button>
             </el-tooltip>
           </template>
         </vxe-table-column>
       </vxe-table>
       <div class="panel-options">
-        <el-pagination
-          class="page"
-          layout="prev, pager, next"
-          @current-change="currentChange"
-          :page-size="pageSize"
-          :current-page.sync="currentPage"
-          :total="total"
-        >
+        <el-pagination class="page" layout="prev, pager, next" @current-change="currentChange" :page-size="pageSize" :current-page.sync="currentPage" :total="total">
         </el-pagination>
       </div>
     </el-card>
-    <el-dialog
-      :title="$t('m.Download_Contest_AC_Submission')"
-      width="320px"
-      :visible.sync="downloadDialogVisible"
-    >
-      <el-switch
-        v-model="excludeAdmin"
-        :active-text="$t('m.Exclude_admin_submissions')"
-      ></el-switch>
+    <el-dialog :title="$t('m.Download_Contest_AC_Submission')" width="320px" :visible.sync="downloadDialogVisible">
+      <el-switch v-model="excludeAdmin" :active-text="$t('m.Exclude_admin_submissions')"></el-switch>
       <el-radio-group v-model="splitType" style="margin-top:10px">
         <el-radio label="user">{{ $t('m.SplitType_User') }}</el-radio>
         <el-radio label="problem">{{ $t('m.SplitType_Problem') }}</el-radio>
@@ -234,7 +197,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['isSuperAdmin', 'userInfo']),
+    ...mapGetters(['isSuperAdmin', 'isProblemAdmin', 'userInfo']),
   },
   methods: {
     // 切换页码回调
@@ -276,7 +239,7 @@ export default {
     goContestProblemList(contestId) {
       this.$router.push({
         name: 'admin-contest-problem-list',
-        params: { contestId },
+        params: { contestId }
       });
     },
     deleteContest(contestId) {
@@ -306,19 +269,23 @@ export default {
 .filter-row {
   margin-top: 10px;
 }
+
 @media screen and (max-width: 768px) {
   .filter-row span {
     margin-right: 5px;
   }
+
   .filter-row span div {
     width: 80% !important;
   }
 }
+
 @media screen and (min-width: 768px) {
   .filter-row span {
     margin-right: 20px;
   }
 }
+
 .el-tag--dark {
   border-color: #fff;
 }
