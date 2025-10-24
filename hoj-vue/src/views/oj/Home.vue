@@ -3,35 +3,29 @@
     <el-row :gutter="20">
       <el-col
         :md="15"
-        :sm="24"
-      >
+        :sm="24">
         <el-card>
           <div
             slot="header"
-            class="content-center"
-          >
+            class="content-center">
             <span class="panel-title home-title welcome-title">{{ $t('m.Welcome_to')
-              }}{{ websiteConfig.shortName }}</span>
+            }}{{ websiteConfig.shortName }}</span>
           </div>
           <el-carousel
             :interval="interval"
             :height="srcHight"
             class="img-carousel"
             arrow="always"
-            indicator-position="outside"
-          >
+            indicator-position="outside">
             <el-carousel-item
               v-for="(item, index) in carouselImgList"
-              :key="index"
-            >
+              :key="index">
               <el-image
                 :src="item.url"
-                fit="fill"
-              >
+                fit="contain">
                 <div
                   slot="error"
-                  class="image-slot"
-                >
+                  class="image-slot">
                   <i class="el-icon-picture-outline"></i>
                 </div>
               </el-image>
@@ -43,12 +37,11 @@
         <el-card class="card-top">
           <div
             slot="header"
-            class="clearfix"
-          >
+            class="clearfix">
             <span class="panel-title home-title">
               <i class="el-icon-magic-stick"></i> {{
-              $t('m.Latest_Problem')
-            }}</span>
+                $t('m.Latest_Problem')
+              }}</span>
           </div>
           <vxe-table
             border="inner"
@@ -57,36 +50,31 @@
             :loading="loading.recentUpdatedProblemsLoading"
             auto-resize
             :data="recentUpdatedProblems"
-            @cell-click="goProblem"
-          >
+            @cell-click="goProblem">
             <vxe-table-column
               field="problemId"
               :title="$t('m.Problem_ID')"
               min-width="100"
               show-overflow
-              align="center"
-            >
+              align="center">
             </vxe-table-column>
             <vxe-table-column
               field="title"
               :title="$t('m.Title')"
               show-overflow
               min-width="130"
-              align="center"
-            >
+              align="center">
             </vxe-table-column>
             <vxe-table-column
               field="gmtModified"
               :title="$t('m.Recent_Update')"
               show-overflow
               min-width="96"
-              align="center"
-            >
+              align="center">
               <template v-slot="{ row }">
                 <el-tooltip
                   :content="row.gmtModified | localtime"
-                  placement="top"
-                >
+                  placement="top">
                   <span>{{ row.gmtModified | fromNow }}</span>
                 </el-tooltip>
               </template>
@@ -95,17 +83,12 @@
           </vxe-table>
         </el-card>
       </el-col>
-      <el-col
-        :md="9"
-        :sm="24"
-        class="phone-margin"
-      >
+      <el-col :md="9" :sm="24" class="phone-margin">
         <template v-if="contests.length">
           <el-card>
             <div
               slot="header"
-              class="clearfix title content-center"
-            >
+              class="clearfix title content-center">
               <div class="home-title home-contest">
                 <i class="el-icon-trophy"></i> {{ $t('m.Recent_Contest') }}
               </div>
@@ -115,32 +98,26 @@
               v-for="(contest, index) in contests"
               :key="index"
               class="contest-card"
-              :class="
-                contest.status == 0
+              :class="contest.status == 0
                   ? 'contest-card-running'
                   : 'contest-card-schedule'
-              "
-            >
+                ">
               <div
                 slot="header"
-                class="clearfix contest-header"
-              >
+                class="clearfix contest-header">
                 <a
                   class="contest-title"
-                  @click="goContest(contest.id)"
-                >{{
-                  contest.title
-                }}</a>
+                  @click="goContest(contest.id)">{{
+                    contest.title
+                  }}</a>
                 <div class="contest-status">
                   <el-tag
                     effect="dark"
                     size="medium"
-                    :color="CONTEST_STATUS_REVERSE[contest.status]['color']"
-                  >
+                    :color="CONTEST_STATUS_REVERSE[contest.status]['color']">
                     <i
                       class="fa fa-circle"
-                      aria-hidden="true"
-                    ></i>
+                      aria-hidden="true"></i>
                     {{
                       $t('m.' + CONTEST_STATUS_REVERSE[contest.status]['name'])
                     }}
@@ -154,85 +131,55 @@
                     round
                     @click="goContestList(contest.type)"
                     size="mini"
-                    style="margin-right: 10px;"
-                  ><i class="fa fa-trophy"></i>
+                    style="margin-right: 10px;"><i class="fa fa-trophy"></i>
                     {{ contest.type | parseContestType }}
                   </el-button>
                 </template>
                 <template v-else>
                   <el-tooltip
-                    :content="
-                      $t('m.Contest_Rank') +
-                        '：' +
-                        (contest.oiRankScoreType == 'Recent'
-                          ? $t(
-                              'm.Based_on_The_Recent_Score_Submitted_Of_Each_Problem'
-                            )
-                          : $t(
-                              'm.Based_on_The_Highest_Score_Submitted_For_Each_Problem'
-                            ))
-                    "
-                    placement="top"
-                  >
+                    :content="$t('m.Contest_Rank') +
+                      '：' +
+                      (contest.oiRankScoreType == 'Recent'
+                        ? $t(
+                          'm.Based_on_The_Recent_Score_Submitted_Of_Each_Problem'
+                        )
+                        : $t(
+                          'm.Based_on_The_Highest_Score_Submitted_For_Each_Problem'
+                        ))
+                      "
+                    placement="top">
                     <el-button
                       :type="'warning'"
                       round
                       @click="goContestList(contest.type)"
                       size="mini"
-                      style="margin-right: 10px;"
-                    ><i class="fa fa-trophy"></i>
+                      style="margin-right: 10px;"><i class="fa fa-trophy"></i>
                       {{ contest.type | parseContestType }}
                     </el-button>
                   </el-tooltip>
                 </template>
-                <el-tooltip
-                  :content="$t('m.' + CONTEST_TYPE_REVERSE[contest.auth].tips)"
-                  placement="top"
-                  effect="light"
-                >
-                  <el-tag
-                    :type="CONTEST_TYPE_REVERSE[contest.auth]['color']"
-                    size="medium"
-                    effect="plain"
-                  >
+                <el-tooltip :content="$t('m.' + CONTEST_TYPE_REVERSE[contest.auth].tips)" placement="top" effect="light">
+                  <el-tag :type="CONTEST_TYPE_REVERSE[contest.auth]['color']" size="medium" effect="plain">
                     {{ $t('m.' + CONTEST_TYPE_REVERSE[contest.auth]['name']) }}
                   </el-tag>
                 </el-tooltip>
               </div>
               <ul class="contest-info">
                 <li>
-                  <el-button
-                    type="primary"
-                    round
-                    size="mini"
-                    style="margin-top: 4px;"
-                  ><i class="fa fa-calendar"></i>
+                  <el-button type="primary" round size="mini" style="margin-top: 4px;"><i class="fa fa-calendar"></i>
                     {{
                       contest.startTime | localtime((format = 'MM-DD HH:mm'))
                     }}
                   </el-button>
                 </li>
                 <li>
-                  <el-button
-                    type="success"
-                    round
-                    size="mini"
-                    style="margin-top: 4px;"
-                  ><i class="fa fa-clock-o"></i>
+                  <el-button type="success" round size="mini" style="margin-top: 4px;"><i class="fa fa-clock-o"></i>
                     {{ getDuration(contest.startTime, contest.endTime) }}
                   </el-button>
                 </li>
                 <li>
-                  <el-button
-                    size="mini"
-                    round
-                    plain
-                    v-if="contest.count != null"
-                  >
-                    <i
-                      class="el-icon-user-solid"
-                      style="color:rgb(48, 145, 242);"
-                    ></i>x{{ contest.count }}
+                  <el-button size="mini" round plain v-if="contest.count != null">
+                    <i class="el-icon-user-solid" style="color:rgb(48, 145, 242);"></i>x{{ contest.count }}
                   </el-button>
                 </li>
               </ul>
@@ -240,39 +187,20 @@
           </el-card>
         </template>
         <el-card :class="contests.length ? 'card-top' : ''">
-          <div
-            slot="header"
-            class="clearfix"
-          >
+          <div slot="header" class="clearfix">
             <span class="panel-title home-title">
-              <i class="el-icon-s-data"></i> {{ $t('m.Recent_7_Days_AC_Rank')}}
+              <i class="el-icon-s-data"></i> {{ $t('m.Recent_7_Days_AC_Rank') }}
             </span>
           </div>
-          <vxe-table
-            border="inner"
-            stripe
-            auto-resize
-            align="center"
-            :data="recentUserACRecord"
-            max-height="500px"
-            :loading="loading.recent7ACRankLoading"
-          >
-            <vxe-table-column
-              type="seq"
-              min-width="50"
-            >
+          <vxe-table border="inner" stripe auto-resize align="center" :data="recentUserACRecord" max-height="500px" :loading="loading.recent7ACRankLoading">
+            <vxe-table-column type="seq" min-width="50">
               <template v-slot="{ rowIndex }">
                 <span :class="getRankTagClass(rowIndex)">{{ rowIndex + 1 }}
                 </span>
                 <span :class="'cite no' + rowIndex"></span>
               </template>
             </vxe-table-column>
-            <vxe-table-column
-              field="username"
-              :title="$t('m.Username')"
-              min-width="200"
-              align="left"
-            >
+            <vxe-table-column field="username" :title="$t('m.Username')" min-width="200" align="left">
               <template v-slot="{ row }">
                 <avatar
                   :username="row.username"
@@ -280,71 +208,39 @@
                   :size="25"
                   color="#FFF"
                   :src="row.avatar"
-                  class="user-avatar"
-                ></avatar>
+                  class="user-avatar"></avatar>
                 <a
                   @click="goUserHome(row.username, row.uid)"
-                  style="color:#2d8cf0;"
-                >{{ row.username }}</a>
+                  style="color:#2d8cf0;">{{ row.username }}</a>
                 <span
                   style="margin-left:2px"
-                  v-if="row.titleName"
-                >
+                  v-if="row.titleName">
                   <el-tag
                     effect="dark"
                     size="small"
-                    :color="row.titleColor"
-                  >
+                    :color="row.titleColor">
                     {{ row.titleName }}
                   </el-tag>
                 </span>
               </template>
             </vxe-table-column>
-            <vxe-table-column
-              field="ac"
-              :title="$t('m.AC')"
-              min-width="50"
-              align="left"
-            >
+            <vxe-table-column field="ac" :title="$t('m.AC')" min-width="50" align="left">
             </vxe-table-column>
           </vxe-table>
         </el-card>
         <el-card class="card-top">
-          <div
-            slot="header"
-            class="clearfix title"
-          >
+          <div slot="header" class="clearfix title">
             <span class="home-title panel-title">
               <i class="el-icon-monitor"></i> {{ $t('m.Supported_Remote_Online_Judge') }}
             </span>
           </div>
           <el-row :gutter="20">
-            <el-col
-              :md="8"
-              :sm="24"
-              v-for="(oj, index) in remoteJudgeList"
-              :key="index"
-            >
-              <a
-                :href="oj.url"
-                target="_blank"
-              >
-                <el-tooltip
-                  :content="oj.name"
-                  placement="top"
-                >
-                  <el-image
-                    :src="oj.logo"
-                    fit="fill"
-                    class="oj-logo"
-                    :class="
-                      oj.status ? 'oj-normal ' + oj.name : 'oj-error ' + oj.name
-                    "
-                  >
-                    <div
-                      slot="error"
-                      class="image-slot"
-                    >
+            <el-col :md="8" :sm="24" v-for="(oj, index) in remoteJudgeList" :key="index">
+              <a :href="oj.url" target="_blank">
+                <el-tooltip :content="oj.name" placement="top">
+                  <el-image :src="oj.logo" fit="contain" class="oj-logo" :class="oj.status ? 'oj-normal ' + oj.name : 'oj-error ' + oj.name
+                    ">
+                    <div slot="error" class="image-slot">
                       <i class="el-icon-picture-outline"></i>
                     </div>
                   </el-image>
@@ -555,6 +451,7 @@ export default {
 .contest-card-running {
   border-color: rgb(25, 190, 107);
 }
+
 .contest-card-schedule {
   border-color: #f90;
 }
@@ -563,15 +460,18 @@ export default {
 /deep/.el-card__header {
   padding: 0.6rem 1.25rem !important;
 }
+
 .card-top {
   margin-top: 20px;
 }
+
 .home-contest {
   text-align: left;
   font-size: 21px;
   font-weight: 500;
   line-height: 30px;
 }
+
 .oj-logo {
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 4px;
@@ -580,9 +480,11 @@ export default {
   background: rgb(255, 255, 255);
   min-height: 47px;
 }
+
 .oj-normal {
   border-color: #409eff;
 }
+
 .oj-error {
   border-color: #e65c47;
 }
@@ -598,24 +500,29 @@ export default {
 .contest-card {
   margin-bottom: 20px;
 }
+
 .contest-title {
   font-size: 1.15rem;
   font-weight: 600;
 }
+
 .contest-type-auth {
   text-align: center;
   margin-top: -10px;
   margin-bottom: 5px;
 }
+
 ul,
 li {
   padding: 0;
   margin: 0;
   list-style: none;
 }
+
 .contest-info {
   text-align: center;
 }
+
 .contest-info li {
   display: inline-block;
   padding-right: 10px;
@@ -625,6 +532,7 @@ li {
   border-color: rgb(25, 190, 107);
   background-color: rgba(94, 185, 94, 0.15);
 }
+
 .contest-card-running .contest-title {
   color: #5eb95e;
 }
@@ -641,22 +549,27 @@ li {
 .content-center {
   text-align: center;
 }
+
 .clearfix:before,
 .clearfix:after {
   display: table;
   content: "";
 }
+
 .clearfix:after {
   clear: both;
 }
+
 .welcome-title {
   font-weight: 600;
   font-size: 25px;
   font-family: "Raleway";
 }
+
 .contest-status {
   float: right;
 }
+
 .img-carousel {
   height: 490px;
 }
@@ -667,35 +580,44 @@ li {
     float: none;
     margin-top: 5px;
   }
+
   .contest-header {
     text-align: center;
   }
+
   .img-carousel {
     height: 220px;
     overflow: hidden;
   }
+
   .phone-margin {
     margin-top: 20px;
   }
 }
+
 .title .el-link {
   font-size: 21px;
   font-weight: 500;
   color: #444;
 }
+
 .clearfix h2 {
   color: #409eff;
 }
+
 .el-link.el-link--default:hover {
   color: #409eff;
   transition: all 0.28s ease;
 }
+
 .contest .content-info {
   padding: 0 70px 40px 70px;
 }
+
 .contest .contest-description {
   margin-top: 25px;
 }
+
 span.rank-tag.no1 {
   line-height: 24px;
   background: #bf2c24;
@@ -721,10 +643,12 @@ span.rank-tag {
   background: #000;
   background: rgba(0, 0, 0, 0.6);
 }
+
 .user-avatar {
   margin-right: 5px !important;
   vertical-align: middle;
 }
+
 .cite {
   display: block;
   width: 14px;
@@ -735,12 +659,15 @@ span.rank-tag {
   border-bottom: 0 none;
   border-left: 11px solid transparent;
 }
+
 .cite.no0 {
   border-top: 5px solid #bf2c24;
 }
+
 .cite.no1 {
   border-top: 5px solid #e67225;
 }
+
 .cite.no2 {
   border-top: 5px solid #e6bf25;
 }
@@ -750,6 +677,7 @@ span.rank-tag {
     overflow-x: hidden !important;
   }
 }
+
 /deep/.el-image {
   height: 100%;
   width: 100%;
