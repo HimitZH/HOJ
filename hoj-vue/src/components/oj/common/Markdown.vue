@@ -1,6 +1,7 @@
 <template>
   <div
     v-if="isAvoidXss"
+    key="avoidXssOn"
     v-dompurify-html="html"
     v-highlight
     v-katex
@@ -8,6 +9,7 @@
   ></div>
   <div
     v-else
+    key="avoidXssOff"
     v-html="html"
     v-highlight
     v-katex
