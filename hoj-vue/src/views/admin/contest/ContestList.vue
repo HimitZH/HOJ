@@ -80,7 +80,7 @@
             <template v-if="isSuperAdmin || isProblemAdmin || userInfo.uid == row.uid">
               <div style="margin-bottom:10px">
                 <el-tooltip
-                  v-if="userInfo.uid == row.uid"
+                  v-if="isSuperAdmin || userInfo.uid == row.uid"
                   effect="dark"
                   :content="$t('m.Edit')"
                   placement="top">
@@ -117,7 +117,7 @@
                 </el-tooltip>
 
                 <el-tooltip
-                  v-if="userInfo.uid == row.uid"
+                  v-if="isSuperAdmin || userInfo.uid == row.uid"
                   effect="dark"
                   :content="$t('m.Download_Contest_AC_Submission')"
                   placement="top">
