@@ -43,7 +43,7 @@ public class StartupRunner implements CommandLineRunner {
     @Autowired
     private ConfigManager configManager;
 
-    @Autowired
+    @Autowired(required = false)
     private NacosSwitchConfig nacosSwitchConfig;
 
     @Autowired
@@ -167,9 +167,12 @@ public class StartupRunner implements CommandLineRunner {
         // 修改nacos上的默认、web、switch配置文件
         initDefaultConfig();
 
-        initWebConfig();
-
-        initSwitchConfig();
+        if (nacosSwitchConfig != null) {
+            initWebConfig();
+            initSwitchConfig();
+        } else {
+            log.warn("[Init System Config] 未连接 Nacos，跳过 Web/Switch 远程配置初始化");
+        }
 
         upsertHOJLanguageV2();
 //      upsertHOJLanguage("PHP", "PyPy2", "PyPy3", "JavaScript Node", "JavaScript V8");

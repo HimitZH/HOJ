@@ -14,11 +14,11 @@ import top.hcode.hoj.exception.AccessException;
 @Component
 public class AccessValidator {
 
-    @Autowired
+    @Autowired(required = false)
     private NacosSwitchConfig nacosSwitchConfig;
 
     public void validateAccess(HOJAccessEnum hojAccessEnum) throws AccessException {
-        SwitchConfig switchConfig = nacosSwitchConfig.getSwitchConfig();
+        SwitchConfig switchConfig = nacosSwitchConfig != null ? nacosSwitchConfig.getSwitchConfig() : new SwitchConfig();
         switch (hojAccessEnum) {
             case PUBLIC_DISCUSSION:
                 if (!switchConfig.getOpenPublicDiscussion()) {

@@ -1,8 +1,10 @@
 package top.hcode.hoj.common.result;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class CommonResult<T> {
 
     private final Integer status;   // 状态码

@@ -1,0 +1,674 @@
+2025-11-18 23:24:53 [main] DEBUG o.s.b.c.l.ClasspathLoggingApplicationListener - Application started with classpath: unknown
+2025-11-18 23:24:53 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'spring.application.name' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:24:53 [main] DEBUG org.springframework.boot.SpringApplication - Loading source class org.springframework.cloud.bootstrap.BootstrapImportSelectorConfiguration
+2025-11-18 23:24:53 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Activated activeProfiles dev
+2025-11-18 23:24:53 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Profiles already activated, '[prod]' will not be applied
+2025-11-18 23:24:53 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Loaded config file 'file:/Users/yun/Project/SXUOJ/hoj-springboot/DataBackup/target/classes/bootstrap.yml' (classpath:/bootstrap.yml)
+2025-11-18 23:24:53 [main] DEBUG o.s.c.a.AnnotationConfigApplicationContext - Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@663411de
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalConfigurationAnnotationProcessor'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.internalCachingMetadataReaderFactory'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'propertySourcesPlaceholderConfigurer'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBeanDefinitionValidator'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.event.internalEventListenerProcessor'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.event.internalEventListenerFactory'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalAutowiredAnnotationProcessor'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalCommonAnnotationProcessor'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.internalConfigurationPropertiesBinder'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.internalConfigurationPropertiesBinderFactory'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'configurationPropertiesBeans'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'bootstrapImportSelectorConfiguration'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'com.alibaba.cloud.nacos.NacosConfigBootstrapConfiguration'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosConfigProperties'
+2025-11-18 23:24:53 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-password' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:24:53 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-url' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:24:53 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-username' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosConfigManager'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'nacosConfigManager' via factory method to bean named 'nacosConfigProperties'
+2025-11-18 23:24:53 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-username' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:24:53 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-password' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:24:53 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-url' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosPropertySourceLocator'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'nacosPropertySourceLocator' via factory method to bean named 'nacosConfigManager'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationBeanFactoryMetadata'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'spring.cloud.config-org.springframework.cloud.bootstrap.config.PropertySourceBootstrapProperties'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.bootstrap.encrypt.EncryptionBootstrapConfiguration'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'encrypt-org.springframework.cloud.bootstrap.encrypt.KeyProperties'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'environmentDecryptApplicationListener'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'configurationPropertiesRebinder'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'configurationPropertiesRebinder' via factory method to bean named 'configurationPropertiesBeans'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration'
+2025-11-18 23:24:53 [main] DEBUG o.s.b.a.l.ConditionEvaluationReportLoggingListener - 
+
+
+============================
+CONDITIONS EVALUATION REPORT
+============================
+
+
+Positive matches:
+-----------------
+
+   ConfigurationPropertiesRebinderAutoConfiguration matched:
+      - @ConditionalOnBean (types: org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor; SearchStrategy: all) found bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor' (OnBeanCondition)
+
+   ConfigurationPropertiesRebinderAutoConfiguration#configurationPropertiesBeans matched:
+      - @ConditionalOnMissingBean (types: org.springframework.cloud.context.properties.ConfigurationPropertiesBeans; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   ConfigurationPropertiesRebinderAutoConfiguration#configurationPropertiesRebinder matched:
+      - @ConditionalOnMissingBean (types: org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   EncryptionBootstrapConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.security.crypto.encrypt.TextEncryptor' (OnClassCondition)
+
+   NacosConfigBootstrapConfiguration matched:
+      - @ConditionalOnProperty (spring.cloud.nacos.config.enabled) matched (OnPropertyCondition)
+
+   NacosConfigBootstrapConfiguration#nacosConfigManager matched:
+      - @ConditionalOnMissingBean (types: com.alibaba.cloud.nacos.NacosConfigManager; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   NacosConfigBootstrapConfiguration#nacosConfigProperties matched:
+      - @ConditionalOnMissingBean (types: com.alibaba.cloud.nacos.NacosConfigProperties; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   PropertyPlaceholderAutoConfiguration#propertySourcesPlaceholderConfigurer matched:
+      - @ConditionalOnMissingBean (types: org.springframework.context.support.PropertySourcesPlaceholderConfigurer; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+
+Negative matches:
+-----------------
+
+   EncryptionBootstrapConfiguration.RsaEncryptionConfiguration:
+      Did not match:
+         - Keystore nor key found in Environment (EncryptionBootstrapConfiguration.KeyCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'org.springframework.security.rsa.crypto.RsaSecretEncryptor' (OnClassCondition)
+
+   EncryptionBootstrapConfiguration.VanillaEncryptionConfiguration:
+      Did not match:
+         - @ConditionalOnMissingClass found unwanted class 'org.springframework.security.rsa.crypto.RsaSecretEncryptor' (OnClassCondition)
+
+   NacosDiscoveryClientConfigServiceBootstrapConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.cloud.config.client.ConfigServicePropertySourceLocator' (OnClassCondition)
+
+
+Exclusions:
+-----------
+
+    None
+
+
+Unconditional classes:
+----------------------
+
+    None
+
+
+
+2025-11-18 23:32:43 [main] DEBUG o.s.b.c.l.ClasspathLoggingApplicationListener - Application started with classpath: unknown
+2025-11-18 23:32:43 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'spring.application.name' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:32:43 [main] DEBUG org.springframework.boot.SpringApplication - Loading source class org.springframework.cloud.bootstrap.BootstrapImportSelectorConfiguration
+2025-11-18 23:32:43 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Activated activeProfiles dev
+2025-11-18 23:32:43 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Profiles already activated, '[prod]' will not be applied
+2025-11-18 23:32:43 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Loaded config file 'file:/Users/yun/Project/SXUOJ/hoj-springboot/DataBackup/target/classes/bootstrap.yml' (classpath:/bootstrap.yml)
+2025-11-18 23:32:43 [main] DEBUG o.s.c.a.AnnotationConfigApplicationContext - Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@56113384
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalConfigurationAnnotationProcessor'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.internalCachingMetadataReaderFactory'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'propertySourcesPlaceholderConfigurer'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBeanDefinitionValidator'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.event.internalEventListenerProcessor'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.event.internalEventListenerFactory'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalAutowiredAnnotationProcessor'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalCommonAnnotationProcessor'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.internalConfigurationPropertiesBinder'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.internalConfigurationPropertiesBinderFactory'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'configurationPropertiesBeans'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'bootstrapImportSelectorConfiguration'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'com.alibaba.cloud.nacos.NacosConfigBootstrapConfiguration'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosConfigProperties'
+2025-11-18 23:32:43 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-password' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:32:43 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-host' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:32:43 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-port' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:32:43 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-url' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:32:43 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-username' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosConfigManager'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'nacosConfigManager' via factory method to bean named 'nacosConfigProperties'
+2025-11-18 23:32:43 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-username' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:32:43 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-password' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:32:43 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-url' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:32:43 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-host' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:32:43 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-port' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosPropertySourceLocator'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'nacosPropertySourceLocator' via factory method to bean named 'nacosConfigManager'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationBeanFactoryMetadata'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'spring.cloud.config-org.springframework.cloud.bootstrap.config.PropertySourceBootstrapProperties'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.bootstrap.encrypt.EncryptionBootstrapConfiguration'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'encrypt-org.springframework.cloud.bootstrap.encrypt.KeyProperties'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'environmentDecryptApplicationListener'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'configurationPropertiesRebinder'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'configurationPropertiesRebinder' via factory method to bean named 'configurationPropertiesBeans'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration'
+2025-11-18 23:32:43 [main] DEBUG o.s.b.a.l.ConditionEvaluationReportLoggingListener - 
+
+
+============================
+CONDITIONS EVALUATION REPORT
+============================
+
+
+Positive matches:
+-----------------
+
+   ConfigurationPropertiesRebinderAutoConfiguration matched:
+      - @ConditionalOnBean (types: org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor; SearchStrategy: all) found bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor' (OnBeanCondition)
+
+   ConfigurationPropertiesRebinderAutoConfiguration#configurationPropertiesBeans matched:
+      - @ConditionalOnMissingBean (types: org.springframework.cloud.context.properties.ConfigurationPropertiesBeans; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   ConfigurationPropertiesRebinderAutoConfiguration#configurationPropertiesRebinder matched:
+      - @ConditionalOnMissingBean (types: org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   EncryptionBootstrapConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.security.crypto.encrypt.TextEncryptor' (OnClassCondition)
+
+   NacosConfigBootstrapConfiguration matched:
+      - @ConditionalOnProperty (spring.cloud.nacos.config.enabled) matched (OnPropertyCondition)
+
+   NacosConfigBootstrapConfiguration#nacosConfigManager matched:
+      - @ConditionalOnMissingBean (types: com.alibaba.cloud.nacos.NacosConfigManager; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   NacosConfigBootstrapConfiguration#nacosConfigProperties matched:
+      - @ConditionalOnMissingBean (types: com.alibaba.cloud.nacos.NacosConfigProperties; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   PropertyPlaceholderAutoConfiguration#propertySourcesPlaceholderConfigurer matched:
+      - @ConditionalOnMissingBean (types: org.springframework.context.support.PropertySourcesPlaceholderConfigurer; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+
+Negative matches:
+-----------------
+
+   EncryptionBootstrapConfiguration.RsaEncryptionConfiguration:
+      Did not match:
+         - Keystore nor key found in Environment (EncryptionBootstrapConfiguration.KeyCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'org.springframework.security.rsa.crypto.RsaSecretEncryptor' (OnClassCondition)
+
+   EncryptionBootstrapConfiguration.VanillaEncryptionConfiguration:
+      Did not match:
+         - @ConditionalOnMissingClass found unwanted class 'org.springframework.security.rsa.crypto.RsaSecretEncryptor' (OnClassCondition)
+
+   NacosDiscoveryClientConfigServiceBootstrapConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.cloud.config.client.ConfigServicePropertySourceLocator' (OnClassCondition)
+
+
+Exclusions:
+-----------
+
+    None
+
+
+Unconditional classes:
+----------------------
+
+    None
+
+
+
+2025-11-18 23:35:59 [main] DEBUG o.s.b.c.l.ClasspathLoggingApplicationListener - Application started with classpath: unknown
+2025-11-18 23:35:59 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'spring.application.name' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:35:59 [main] DEBUG org.springframework.boot.SpringApplication - Loading source class org.springframework.cloud.bootstrap.BootstrapImportSelectorConfiguration
+2025-11-18 23:35:59 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Activated activeProfiles dev
+2025-11-18 23:35:59 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Profiles already activated, '[prod]' will not be applied
+2025-11-18 23:35:59 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Loaded config file 'file:/Users/yun/Project/SXUOJ/hoj-springboot/DataBackup/target/classes/bootstrap.yml' (classpath:/bootstrap.yml)
+2025-11-18 23:35:59 [main] DEBUG o.s.c.a.AnnotationConfigApplicationContext - Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@112f364d
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalConfigurationAnnotationProcessor'
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.internalCachingMetadataReaderFactory'
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'propertySourcesPlaceholderConfigurer'
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBeanDefinitionValidator'
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.event.internalEventListenerProcessor'
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.event.internalEventListenerFactory'
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalAutowiredAnnotationProcessor'
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalCommonAnnotationProcessor'
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor'
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.internalConfigurationPropertiesBinder'
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.internalConfigurationPropertiesBinderFactory'
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'configurationPropertiesBeans'
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'bootstrapImportSelectorConfiguration'
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'com.alibaba.cloud.nacos.NacosConfigBootstrapConfiguration'
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosConfigProperties'
+2025-11-18 23:35:59 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-password' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:35:59 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-host' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:35:59 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-port' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:35:59 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-url' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:35:59 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-username' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosConfigManager'
+2025-11-18 23:35:59 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'nacosConfigManager' via factory method to bean named 'nacosConfigProperties'
+2025-11-18 23:35:59 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-username' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:35:59 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-password' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:35:59 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-url' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:35:59 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-host' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:35:59 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-port' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:36:00 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosPropertySourceLocator'
+2025-11-18 23:36:00 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'nacosPropertySourceLocator' via factory method to bean named 'nacosConfigManager'
+2025-11-18 23:36:00 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration'
+2025-11-18 23:36:00 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationBeanFactoryMetadata'
+2025-11-18 23:36:00 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'spring.cloud.config-org.springframework.cloud.bootstrap.config.PropertySourceBootstrapProperties'
+2025-11-18 23:36:00 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.bootstrap.encrypt.EncryptionBootstrapConfiguration'
+2025-11-18 23:36:00 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'encrypt-org.springframework.cloud.bootstrap.encrypt.KeyProperties'
+2025-11-18 23:36:00 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'environmentDecryptApplicationListener'
+2025-11-18 23:36:00 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration'
+2025-11-18 23:36:00 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'configurationPropertiesRebinder'
+2025-11-18 23:36:00 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'configurationPropertiesRebinder' via factory method to bean named 'configurationPropertiesBeans'
+2025-11-18 23:36:00 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration'
+2025-11-18 23:36:00 [main] DEBUG o.s.b.a.l.ConditionEvaluationReportLoggingListener - 
+
+
+============================
+CONDITIONS EVALUATION REPORT
+============================
+
+
+Positive matches:
+-----------------
+
+   ConfigurationPropertiesRebinderAutoConfiguration matched:
+      - @ConditionalOnBean (types: org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor; SearchStrategy: all) found bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor' (OnBeanCondition)
+
+   ConfigurationPropertiesRebinderAutoConfiguration#configurationPropertiesBeans matched:
+      - @ConditionalOnMissingBean (types: org.springframework.cloud.context.properties.ConfigurationPropertiesBeans; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   ConfigurationPropertiesRebinderAutoConfiguration#configurationPropertiesRebinder matched:
+      - @ConditionalOnMissingBean (types: org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   EncryptionBootstrapConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.security.crypto.encrypt.TextEncryptor' (OnClassCondition)
+
+   NacosConfigBootstrapConfiguration matched:
+      - @ConditionalOnProperty (spring.cloud.nacos.config.enabled) matched (OnPropertyCondition)
+
+   NacosConfigBootstrapConfiguration#nacosConfigManager matched:
+      - @ConditionalOnMissingBean (types: com.alibaba.cloud.nacos.NacosConfigManager; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   NacosConfigBootstrapConfiguration#nacosConfigProperties matched:
+      - @ConditionalOnMissingBean (types: com.alibaba.cloud.nacos.NacosConfigProperties; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   PropertyPlaceholderAutoConfiguration#propertySourcesPlaceholderConfigurer matched:
+      - @ConditionalOnMissingBean (types: org.springframework.context.support.PropertySourcesPlaceholderConfigurer; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+
+Negative matches:
+-----------------
+
+   EncryptionBootstrapConfiguration.RsaEncryptionConfiguration:
+      Did not match:
+         - Keystore nor key found in Environment (EncryptionBootstrapConfiguration.KeyCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'org.springframework.security.rsa.crypto.RsaSecretEncryptor' (OnClassCondition)
+
+   EncryptionBootstrapConfiguration.VanillaEncryptionConfiguration:
+      Did not match:
+         - @ConditionalOnMissingClass found unwanted class 'org.springframework.security.rsa.crypto.RsaSecretEncryptor' (OnClassCondition)
+
+   NacosDiscoveryClientConfigServiceBootstrapConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.cloud.config.client.ConfigServicePropertySourceLocator' (OnClassCondition)
+
+
+Exclusions:
+-----------
+
+    None
+
+
+Unconditional classes:
+----------------------
+
+    None
+
+
+
+2025-11-18 23:40:50 [main] DEBUG o.s.b.c.l.ClasspathLoggingApplicationListener - Application started with classpath: unknown
+2025-11-18 23:40:50 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'spring.application.name' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:40:50 [main] DEBUG org.springframework.boot.SpringApplication - Loading source class org.springframework.cloud.bootstrap.BootstrapImportSelectorConfiguration
+2025-11-18 23:40:50 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Activated activeProfiles dev
+2025-11-18 23:40:50 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Profiles already activated, '[prod]' will not be applied
+2025-11-18 23:40:50 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Loaded config file 'file:/Users/yun/Project/SXUOJ/hoj-springboot/DataBackup/target/classes/bootstrap.yml' (classpath:/bootstrap.yml)
+2025-11-18 23:40:50 [main] DEBUG o.s.c.a.AnnotationConfigApplicationContext - Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@28e8dde3
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalConfigurationAnnotationProcessor'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.internalCachingMetadataReaderFactory'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'propertySourcesPlaceholderConfigurer'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBeanDefinitionValidator'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.event.internalEventListenerProcessor'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.event.internalEventListenerFactory'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalAutowiredAnnotationProcessor'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalCommonAnnotationProcessor'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.internalConfigurationPropertiesBinder'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.internalConfigurationPropertiesBinderFactory'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'configurationPropertiesBeans'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'bootstrapImportSelectorConfiguration'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'com.alibaba.cloud.nacos.NacosConfigBootstrapConfiguration'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosConfigProperties'
+2025-11-18 23:40:50 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-password' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:40:50 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-host' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:40:50 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-port' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:40:50 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-url' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:40:50 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-username' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosConfigManager'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'nacosConfigManager' via factory method to bean named 'nacosConfigProperties'
+2025-11-18 23:40:50 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-username' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:40:50 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-password' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:40:50 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-url' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:40:50 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-host' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:40:50 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-port' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosPropertySourceLocator'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'nacosPropertySourceLocator' via factory method to bean named 'nacosConfigManager'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationBeanFactoryMetadata'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'spring.cloud.config-org.springframework.cloud.bootstrap.config.PropertySourceBootstrapProperties'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.bootstrap.encrypt.EncryptionBootstrapConfiguration'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'encrypt-org.springframework.cloud.bootstrap.encrypt.KeyProperties'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'environmentDecryptApplicationListener'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'configurationPropertiesRebinder'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'configurationPropertiesRebinder' via factory method to bean named 'configurationPropertiesBeans'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration'
+2025-11-18 23:40:50 [main] DEBUG o.s.b.a.l.ConditionEvaluationReportLoggingListener - 
+
+
+============================
+CONDITIONS EVALUATION REPORT
+============================
+
+
+Positive matches:
+-----------------
+
+   ConfigurationPropertiesRebinderAutoConfiguration matched:
+      - @ConditionalOnBean (types: org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor; SearchStrategy: all) found bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor' (OnBeanCondition)
+
+   ConfigurationPropertiesRebinderAutoConfiguration#configurationPropertiesBeans matched:
+      - @ConditionalOnMissingBean (types: org.springframework.cloud.context.properties.ConfigurationPropertiesBeans; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   ConfigurationPropertiesRebinderAutoConfiguration#configurationPropertiesRebinder matched:
+      - @ConditionalOnMissingBean (types: org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   EncryptionBootstrapConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.security.crypto.encrypt.TextEncryptor' (OnClassCondition)
+
+   NacosConfigBootstrapConfiguration matched:
+      - @ConditionalOnProperty (spring.cloud.nacos.config.enabled) matched (OnPropertyCondition)
+
+   NacosConfigBootstrapConfiguration#nacosConfigManager matched:
+      - @ConditionalOnMissingBean (types: com.alibaba.cloud.nacos.NacosConfigManager; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   NacosConfigBootstrapConfiguration#nacosConfigProperties matched:
+      - @ConditionalOnMissingBean (types: com.alibaba.cloud.nacos.NacosConfigProperties; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   PropertyPlaceholderAutoConfiguration#propertySourcesPlaceholderConfigurer matched:
+      - @ConditionalOnMissingBean (types: org.springframework.context.support.PropertySourcesPlaceholderConfigurer; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+
+Negative matches:
+-----------------
+
+   EncryptionBootstrapConfiguration.RsaEncryptionConfiguration:
+      Did not match:
+         - Keystore nor key found in Environment (EncryptionBootstrapConfiguration.KeyCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'org.springframework.security.rsa.crypto.RsaSecretEncryptor' (OnClassCondition)
+
+   EncryptionBootstrapConfiguration.VanillaEncryptionConfiguration:
+      Did not match:
+         - @ConditionalOnMissingClass found unwanted class 'org.springframework.security.rsa.crypto.RsaSecretEncryptor' (OnClassCondition)
+
+   NacosDiscoveryClientConfigServiceBootstrapConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.cloud.config.client.ConfigServicePropertySourceLocator' (OnClassCondition)
+
+
+Exclusions:
+-----------
+
+    None
+
+
+Unconditional classes:
+----------------------
+
+    None
+
+
+
+2025-11-18 23:48:29 [main] DEBUG o.s.b.c.l.ClasspathLoggingApplicationListener - Application started with classpath: unknown
+2025-11-18 23:48:29 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'spring.application.name' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:48:29 [main] DEBUG org.springframework.boot.SpringApplication - Loading source class org.springframework.cloud.bootstrap.BootstrapImportSelectorConfiguration
+2025-11-18 23:48:29 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Activated activeProfiles dev
+2025-11-18 23:48:29 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Profiles already activated, '[prod]' will not be applied
+2025-11-18 23:48:29 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Loaded config file 'file:/Users/yun/Project/SXUOJ/hoj-springboot/DataBackup/target/classes/bootstrap.yml' (classpath:/bootstrap.yml)
+2025-11-18 23:48:29 [main] DEBUG o.s.c.a.AnnotationConfigApplicationContext - Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@362045c0
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalConfigurationAnnotationProcessor'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.internalCachingMetadataReaderFactory'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'propertySourcesPlaceholderConfigurer'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBeanDefinitionValidator'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.event.internalEventListenerProcessor'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.event.internalEventListenerFactory'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalAutowiredAnnotationProcessor'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalCommonAnnotationProcessor'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.internalConfigurationPropertiesBinder'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.internalConfigurationPropertiesBinderFactory'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'configurationPropertiesBeans'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'bootstrapImportSelectorConfiguration'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'com.alibaba.cloud.nacos.NacosConfigBootstrapConfiguration'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosConfigProperties'
+2025-11-18 23:48:29 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-password' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:48:29 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-host' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:48:29 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-port' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:48:29 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-url' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:48:29 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-username' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosConfigManager'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'nacosConfigManager' via factory method to bean named 'nacosConfigProperties'
+2025-11-18 23:48:29 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-username' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:48:29 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-password' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:48:29 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-url' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:48:29 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-host' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:48:29 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-port' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosPropertySourceLocator'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'nacosPropertySourceLocator' via factory method to bean named 'nacosConfigManager'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationBeanFactoryMetadata'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'spring.cloud.config-org.springframework.cloud.bootstrap.config.PropertySourceBootstrapProperties'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.bootstrap.encrypt.EncryptionBootstrapConfiguration'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'encrypt-org.springframework.cloud.bootstrap.encrypt.KeyProperties'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'environmentDecryptApplicationListener'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'configurationPropertiesRebinder'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'configurationPropertiesRebinder' via factory method to bean named 'configurationPropertiesBeans'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration'
+2025-11-18 23:48:29 [main] DEBUG o.s.b.a.l.ConditionEvaluationReportLoggingListener - 
+
+
+============================
+CONDITIONS EVALUATION REPORT
+============================
+
+
+Positive matches:
+-----------------
+
+   ConfigurationPropertiesRebinderAutoConfiguration matched:
+      - @ConditionalOnBean (types: org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor; SearchStrategy: all) found bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor' (OnBeanCondition)
+
+   ConfigurationPropertiesRebinderAutoConfiguration#configurationPropertiesBeans matched:
+      - @ConditionalOnMissingBean (types: org.springframework.cloud.context.properties.ConfigurationPropertiesBeans; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   ConfigurationPropertiesRebinderAutoConfiguration#configurationPropertiesRebinder matched:
+      - @ConditionalOnMissingBean (types: org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   EncryptionBootstrapConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.security.crypto.encrypt.TextEncryptor' (OnClassCondition)
+
+   NacosConfigBootstrapConfiguration matched:
+      - @ConditionalOnProperty (spring.cloud.nacos.config.enabled) matched (OnPropertyCondition)
+
+   NacosConfigBootstrapConfiguration#nacosConfigManager matched:
+      - @ConditionalOnMissingBean (types: com.alibaba.cloud.nacos.NacosConfigManager; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   NacosConfigBootstrapConfiguration#nacosConfigProperties matched:
+      - @ConditionalOnMissingBean (types: com.alibaba.cloud.nacos.NacosConfigProperties; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   PropertyPlaceholderAutoConfiguration#propertySourcesPlaceholderConfigurer matched:
+      - @ConditionalOnMissingBean (types: org.springframework.context.support.PropertySourcesPlaceholderConfigurer; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+
+Negative matches:
+-----------------
+
+   EncryptionBootstrapConfiguration.RsaEncryptionConfiguration:
+      Did not match:
+         - Keystore nor key found in Environment (EncryptionBootstrapConfiguration.KeyCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'org.springframework.security.rsa.crypto.RsaSecretEncryptor' (OnClassCondition)
+
+   EncryptionBootstrapConfiguration.VanillaEncryptionConfiguration:
+      Did not match:
+         - @ConditionalOnMissingClass found unwanted class 'org.springframework.security.rsa.crypto.RsaSecretEncryptor' (OnClassCondition)
+
+   NacosDiscoveryClientConfigServiceBootstrapConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.cloud.config.client.ConfigServicePropertySourceLocator' (OnClassCondition)
+
+
+Exclusions:
+-----------
+
+    None
+
+
+Unconditional classes:
+----------------------
+
+    None
+
+
+
+2025-11-18 23:50:56 [main] DEBUG o.s.b.c.l.ClasspathLoggingApplicationListener - Application started with classpath: unknown
+2025-11-18 23:50:56 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'spring.application.name' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:50:56 [main] DEBUG org.springframework.boot.SpringApplication - Loading source class org.springframework.cloud.bootstrap.BootstrapImportSelectorConfiguration
+2025-11-18 23:50:56 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Activated activeProfiles dev
+2025-11-18 23:50:56 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Profiles already activated, '[prod]' will not be applied
+2025-11-18 23:50:56 [main] DEBUG o.s.b.context.config.ConfigFileApplicationListener - Loaded config file 'file:/Users/yun/Project/SXUOJ/hoj-springboot/DataBackup/target/classes/bootstrap.yml' (classpath:/bootstrap.yml)
+2025-11-18 23:50:56 [main] DEBUG o.s.c.a.AnnotationConfigApplicationContext - Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@301ec38b
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalConfigurationAnnotationProcessor'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.internalCachingMetadataReaderFactory'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'propertySourcesPlaceholderConfigurer'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBeanDefinitionValidator'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.event.internalEventListenerProcessor'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.event.internalEventListenerFactory'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalAutowiredAnnotationProcessor'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.context.annotation.internalCommonAnnotationProcessor'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.internalConfigurationPropertiesBinder'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.internalConfigurationPropertiesBinderFactory'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'configurationPropertiesBeans'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'bootstrapImportSelectorConfiguration'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'com.alibaba.cloud.nacos.NacosConfigBootstrapConfiguration'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosConfigProperties'
+2025-11-18 23:50:56 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-password' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:50:56 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-host' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:50:56 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-port' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:50:56 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-url' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:50:56 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-username' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosConfigManager'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'nacosConfigManager' via factory method to bean named 'nacosConfigProperties'
+2025-11-18 23:50:56 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-username' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:50:56 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-password' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:50:56 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-url' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:50:56 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-host' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:50:56 [main] DEBUG o.s.core.env.PropertySourcesPropertyResolver - Found key 'nacos-port' in PropertySource 'configurationProperties' with value of type String
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'nacosPropertySourceLocator'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'nacosPropertySourceLocator' via factory method to bean named 'nacosConfigManager'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.context.properties.ConfigurationBeanFactoryMetadata'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'spring.cloud.config-org.springframework.cloud.bootstrap.config.PropertySourceBootstrapProperties'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.bootstrap.encrypt.EncryptionBootstrapConfiguration'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'encrypt-org.springframework.cloud.bootstrap.encrypt.KeyProperties'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'environmentDecryptApplicationListener'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'configurationPropertiesRebinder'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Autowiring by type from bean name 'configurationPropertiesRebinder' via factory method to bean named 'configurationPropertiesBeans'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.factory.support.DefaultListableBeanFactory - Creating shared instance of singleton bean 'org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration'
+2025-11-18 23:50:56 [main] DEBUG o.s.b.a.l.ConditionEvaluationReportLoggingListener - 
+
+
+============================
+CONDITIONS EVALUATION REPORT
+============================
+
+
+Positive matches:
+-----------------
+
+   ConfigurationPropertiesRebinderAutoConfiguration matched:
+      - @ConditionalOnBean (types: org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor; SearchStrategy: all) found bean 'org.springframework.boot.context.properties.ConfigurationPropertiesBindingPostProcessor' (OnBeanCondition)
+
+   ConfigurationPropertiesRebinderAutoConfiguration#configurationPropertiesBeans matched:
+      - @ConditionalOnMissingBean (types: org.springframework.cloud.context.properties.ConfigurationPropertiesBeans; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   ConfigurationPropertiesRebinderAutoConfiguration#configurationPropertiesRebinder matched:
+      - @ConditionalOnMissingBean (types: org.springframework.cloud.context.properties.ConfigurationPropertiesRebinder; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   EncryptionBootstrapConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.security.crypto.encrypt.TextEncryptor' (OnClassCondition)
+
+   NacosConfigBootstrapConfiguration matched:
+      - @ConditionalOnProperty (spring.cloud.nacos.config.enabled) matched (OnPropertyCondition)
+
+   NacosConfigBootstrapConfiguration#nacosConfigManager matched:
+      - @ConditionalOnMissingBean (types: com.alibaba.cloud.nacos.NacosConfigManager; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   NacosConfigBootstrapConfiguration#nacosConfigProperties matched:
+      - @ConditionalOnMissingBean (types: com.alibaba.cloud.nacos.NacosConfigProperties; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   PropertyPlaceholderAutoConfiguration#propertySourcesPlaceholderConfigurer matched:
+      - @ConditionalOnMissingBean (types: org.springframework.context.support.PropertySourcesPlaceholderConfigurer; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+
+Negative matches:
+-----------------
+
+   EncryptionBootstrapConfiguration.RsaEncryptionConfiguration:
+      Did not match:
+         - Keystore nor key found in Environment (EncryptionBootstrapConfiguration.KeyCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'org.springframework.security.rsa.crypto.RsaSecretEncryptor' (OnClassCondition)
+
+   EncryptionBootstrapConfiguration.VanillaEncryptionConfiguration:
+      Did not match:
+         - @ConditionalOnMissingClass found unwanted class 'org.springframework.security.rsa.crypto.RsaSecretEncryptor' (OnClassCondition)
+
+   NacosDiscoveryClientConfigServiceBootstrapConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.cloud.config.client.ConfigServicePropertySourceLocator' (OnClassCondition)
+
+
+Exclusions:
+-----------
+
+    None
+
+
+Unconditional classes:
+----------------------
+
+    None
+
+
+

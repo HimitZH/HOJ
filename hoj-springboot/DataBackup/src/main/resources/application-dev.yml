@@ -1,17 +1,42 @@
-# redis配置
-redis-host: 127.0.0.1
-redis-port: 6379
-redis-password: hoj123456
+# redis配置（支持 .env / 环境变量覆盖）
+redis-host: ${REDIS_HOST:100.97.103.105}
+redis-port: ${REDIS_PORT:6379}
+redis-password: ${REDIS_PASSWORD:hoj123456}
 
-# 本服务连接mysql的地址和端口号
-mysql-host: 127.0.0.1
-mysql-port: 3306
+# 本服务连接mysql的地址和端口号（支持 .env / 环境变量覆盖）
+mysql-host: ${MYSQL_HOST:${HOJ_DB_PUBLIC_HOST:100.97.103.105}}
+mysql-port: ${MYSQL_PORT:${HOJ_DB_PUBLIC_PORT:3306}}
 # mysql的公网地址和端口号
-mysql-public-host: 127.0.0.1
-mysql-public-port: 3306
-mysql-username: root
-mysql-password: hoj123456
-mysql-name: hoj
+mysql-public-host: ${MYSQL_PUBLIC_HOST:${HOJ_DB_PUBLIC_HOST:100.97.103.105}}
+mysql-public-port: ${MYSQL_PUBLIC_PORT:${HOJ_DB_PUBLIC_PORT:3306}}
+mysql-username: ${MYSQL_USERNAME:${HOJ_DB_USERNAME:root}}
+mysql-password: ${MYSQL_PASSWORD:${HOJ_DB_PASSWORD:hoj123456}}
+mysql-name: ${MYSQL_DB:hoj}
+
+# 兼容部分 Bean 直接读取 hoj.db.* 的属性（优先 HOJ_DB_*，否则回落到 mysql-*）
+hoj:
+  db:
+    host: ${HOJ_DB_HOST:${HOJ_DB_PUBLIC_HOST:${mysql-host}}}
+    port: ${HOJ_DB_PORT:${HOJ_DB_PUBLIC_PORT:${mysql-port}}}
+    username: ${HOJ_DB_USERNAME:${mysql-username}}
+    password: ${HOJ_DB_PASSWORD:${mysql-password}}
+    public-host: ${HOJ_DB_PUBLIC_HOST:${mysql-public-host}}
+    public-port: ${HOJ_DB_PUBLIC_PORT:${mysql-public-port}}
+    name: ${HOJ_DB_NAME:${mysql-name}}
+  redis:
+    host: ${HOJ_REDIS_HOST:${redis-host}}
+    port: ${HOJ_REDIS_PORT:${redis-port}}
+    password: ${HOJ_REDIS_PASSWORD:${redis-password}}
+  jwt:
+    # 优先使用 HOJ_JWT_SECRET 或 JWT_TOKEN_SECRET，否则回落到旧字段 jwt-token-secret
+    secret: ${HOJ_JWT_SECRET:${JWT_TOKEN_SECRET:${jwt-token-secret:default}}}
+    # 过期时间（秒），兼容 HOJ_JWT_EXPIRE / JWT_TOKEN_EXPIRE / 旧字段 jwt-token-expire
+    expire: ${HOJ_JWT_EXPIRE:${JWT_TOKEN_EXPIRE:${jwt-token-expire:86400}}}
+    # 刷新校验过期时间（秒），兼容 HOJ_JWT_CHECK_REFRESH_EXPIRE / JWT_TOKEN_FRESH_EXPIRE / 旧字段 jwt-token-fresh-expire
+    checkRefreshExpire: ${HOJ_JWT_CHECK_REFRESH_EXPIRE:${JWT_TOKEN_FRESH_EXPIRE:${jwt-token-fresh-expire:43200}}}
+  judge:
+    # 判题服务 token，支持 HOJ_JUDGE_TOKEN 或回落到旧字段 judge-token
+    token: ${HOJ_JUDGE_TOKEN:${judge-token:default}}
 
 # token密钥，default表示随机生成
 jwt-token-secret: default

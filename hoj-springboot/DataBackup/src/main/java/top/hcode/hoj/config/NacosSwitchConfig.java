@@ -55,45 +55,51 @@ public class NacosSwitchConfig {
     private static WebConfig webConfig;
 
     @PostConstruct
-    public void init() throws NacosException {
+    public void init() {
         if (init.compareAndSet(false, true)) {
-            Properties properties = new Properties();
-            properties.put("serverAddr", NACOS_URL);
-            // if need username and password to login
-            properties.put("username", nacosUsername);
-            properties.put("password", nacosPassword);
+            try {
+                Properties properties = new Properties();
+                properties.put("serverAddr", NACOS_URL);
+                // if need username and password to login
+                properties.put("username", nacosUsername);
+                properties.put("password", nacosPassword);
 
-            configService = NacosFactory.createConfigService(properties);
+                configService = NacosFactory.createConfigService(properties);
 
-            refreshSwitchConfig(configService.getConfig(switchConfigFileName, group, 6000));
+                refreshSwitchConfig(configService.getConfig(switchConfigFileName, group, 6000));
 
-            configService.addListener(switchConfigFileName, group, new Listener() {
-                @Override
-                public Executor getExecutor() {
-                    return null;
-                }
+                configService.addListener(switchConfigFileName, group, new Listener() {
+                    @Override
+                    public Executor getExecutor() {
+                        return null;
+                    }
 
-                @Override
-                public void receiveConfigInfo(String configInfo) {
-                    refreshSwitchConfig(configInfo);
-                }
-            });
-            log.info("[Switch Config] [Init Succeeded] [{}]", getSwitchConfig());
+                    @Override
+                    public void receiveConfigInfo(String configInfo) {
+                        refreshSwitchConfig(configInfo);
+                    }
+                });
+                log.info("[Switch Config] [Init Succeeded] [{}]", getSwitchConfig());
 
+                refreshWebConfig(configService.getConfig(webConfigFileName, group, 6000));
+                configService.addListener(webConfigFileName, group, new Listener() {
+                    @Override
+                    public Executor getExecutor() {
+                        return null;
+                    }
 
-            refreshWebConfig(configService.getConfig(webConfigFileName, group, 6000));
-            configService.addListener(webConfigFileName, group, new Listener() {
-                @Override
-                public Executor getExecutor() {
-                    return null;
-                }
-
-                @Override
-                public void receiveConfigInfo(String configInfo) {
-                    refreshWebConfig(configInfo);
-                }
-            });
-            log.info("[Web Config] [Init Succeeded] [{}]", getWebConfig());
+                    @Override
+                    public void receiveConfigInfo(String configInfo) {
+                        refreshWebConfig(configInfo);
+                    }
+                });
+                log.info("[Web Config] [Init Succeeded] [{}]", getWebConfig());
+            } catch (Exception e) {
+                log.warn("[Nacos Config] init failed, fallback to defaults: {}", e.getMessage());
+                // fallback to defaults to allow local startup without Nacos
+                refreshSwitchConfig(null);
+                refreshWebConfig(null);
+            }
         }
     }
 

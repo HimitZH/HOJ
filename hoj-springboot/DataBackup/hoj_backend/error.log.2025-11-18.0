@@ -1,0 +1,854 @@
+2025-11-18 23:24:54 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:54 [com.alibaba.nacos.client.config.security.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:24:54 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:54 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:54 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:54 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:142)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:24:54 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:54 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:55 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:55 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:55 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj.yml, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:145)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:24:55 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:55 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:55 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:55 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:55 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj-dev.yml, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:150)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:24:57 [main] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:24:57 [com.alibaba.nacos.client.naming.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:24:57 [main] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:24:57 [com.alibaba.nacos.client.config.security.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:24:57 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:57 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:57 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:58 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:58 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj-switch.yml, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at top.hcode.hoj.config.NacosSwitchConfig.init(NacosSwitchConfig.java:68)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleElement.invoke(InitDestroyAnnotationBeanPostProcessor.java:389)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:333)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:157)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:416)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1788)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:595)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:517)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:222)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:321)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:882)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:878)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:550)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:747)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:24:58 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:58 [com.alibaba.nacos.client.Worker.longPolling.fixed-127.0.0.1_8848] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpPost] currentServerAddr: http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:58 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:58 [com.alibaba.nacos.client.Worker.longPolling.fixed-127.0.0.1_8848] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpPost] currentServerAddr: http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:58 [com.alibaba.nacos.client.Worker.longPolling.fixed-127.0.0.1_8848] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpPost] currentServerAddr: http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:58 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:58 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:58 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj-web.yml, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at top.hcode.hoj.config.NacosSwitchConfig.init(NacosSwitchConfig.java:84)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleElement.invoke(InitDestroyAnnotationBeanPostProcessor.java:389)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:333)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:157)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:416)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1788)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:595)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:517)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:222)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:321)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:882)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:878)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:550)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:747)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:24:58 [com.alibaba.nacos.client.Worker.longPolling.fixed-127.0.0.1_8848] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpPost] currentServerAddr: http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:24:58 [com.alibaba.nacos.client.Worker.longPolling.fixed-127.0.0.1_8848] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [check-update] get changed dataId exception
+java.net.ConnectException: [NACOS HTTP-POST] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpPost(ServerHttpAgent.java:181)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpPost(MetricsHttpAgent.java:67)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.checkUpdateConfigStr(ClientWorker.java:380)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.checkUpdateDataIds(ClientWorker.java:347)
+	at com.alibaba.nacos.client.config.impl.ClientWorker$LongPollingRunnable.run(ClientWorker.java:535)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2025-11-18 23:24:58 [com.alibaba.nacos.client.Worker.longPolling.fixed-127.0.0.1_8848] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - longPolling error : 
+java.net.ConnectException: [NACOS HTTP-POST] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpPost(ServerHttpAgent.java:181)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpPost(MetricsHttpAgent.java:67)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.checkUpdateConfigStr(ClientWorker.java:380)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.checkUpdateDataIds(ClientWorker.java:347)
+	at com.alibaba.nacos.client.config.impl.ClientWorker$LongPollingRunnable.run(ClientWorker.java:535)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2025-11-18 23:24:59 [com.alibaba.nacos.client.config.security.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:25:00 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'scopedTarget.configVO': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'hoj.db.username' in value "${hoj.db.username}"
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:405)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1422)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:594)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:517)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$1(AbstractBeanFactory.java:359)
+	at org.springframework.cloud.context.scope.GenericScope$BeanLifecycleWrapper.getBean(GenericScope.java:389)
+	at org.springframework.cloud.context.scope.GenericScope.get(GenericScope.java:186)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:356)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1108)
+	at org.springframework.cloud.context.scope.refresh.RefreshScope.eagerlyInitialize(RefreshScope.java:127)
+	at org.springframework.cloud.context.scope.refresh.RefreshScope.start(RefreshScope.java:118)
+	at org.springframework.cloud.context.scope.refresh.RefreshScope.onApplicationEvent(RefreshScope.java:112)
+	at org.springframework.cloud.context.scope.refresh.RefreshScope.onApplicationEvent(RefreshScope.java:66)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:172)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:165)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:139)
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:403)
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:360)
+	at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:897)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.finishRefresh(ServletWebServerApplicationContext.java:162)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:553)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:747)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'hoj.db.username' in value "${hoj.db.username}"
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:178)
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:124)
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:236)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:210)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer.lambda$processProperties$0(PropertySourcesPlaceholderConfigurer.java:175)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.resolveEmbeddedValue(AbstractBeanFactory.java:909)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1231)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1210)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:640)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:130)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:399)
+	... 28 common frames omitted
+2025-11-18 23:32:43 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:43 [com.alibaba.nacos.client.config.security.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:32:43 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:44 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:44 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:44 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:142)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:32:44 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:44 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:44 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:44 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:44 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj.yml, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:145)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:32:44 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:45 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:45 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:45 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:45 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj-dev.yml, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:150)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:32:47 [main] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:32:47 [com.alibaba.nacos.client.naming.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:32:47 [main] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:32:47 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:47 [com.alibaba.nacos.client.config.security.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:32:47 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:47 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:47 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:47 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj-switch.yml, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at top.hcode.hoj.config.NacosSwitchConfig.init(NacosSwitchConfig.java:68)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleElement.invoke(InitDestroyAnnotationBeanPostProcessor.java:389)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:333)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:157)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:416)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1788)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:595)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:517)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:222)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:321)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:882)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:878)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:550)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:747)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:32:47 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:47 [com.alibaba.nacos.client.Worker.longPolling.fixed-127.0.0.1_8848] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpPost] currentServerAddr: http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:48 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:48 [com.alibaba.nacos.client.Worker.longPolling.fixed-127.0.0.1_8848] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpPost] currentServerAddr: http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:48 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:48 [com.alibaba.nacos.client.Worker.longPolling.fixed-127.0.0.1_8848] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpPost] currentServerAddr: http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:48 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:48 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj-web.yml, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at top.hcode.hoj.config.NacosSwitchConfig.init(NacosSwitchConfig.java:84)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleElement.invoke(InitDestroyAnnotationBeanPostProcessor.java:389)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:333)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:157)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:416)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1788)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:595)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:517)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:222)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:321)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:882)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:878)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:550)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:747)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:32:48 [com.alibaba.nacos.client.Worker.longPolling.fixed-127.0.0.1_8848] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpPost] currentServerAddr: http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:32:48 [com.alibaba.nacos.client.Worker.longPolling.fixed-127.0.0.1_8848] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [check-update] get changed dataId exception
+java.net.ConnectException: [NACOS HTTP-POST] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpPost(ServerHttpAgent.java:181)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpPost(MetricsHttpAgent.java:67)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.checkUpdateConfigStr(ClientWorker.java:380)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.checkUpdateDataIds(ClientWorker.java:347)
+	at com.alibaba.nacos.client.config.impl.ClientWorker$LongPollingRunnable.run(ClientWorker.java:535)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2025-11-18 23:32:48 [com.alibaba.nacos.client.Worker.longPolling.fixed-127.0.0.1_8848] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - longPolling error : 
+java.net.ConnectException: [NACOS HTTP-POST] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpPost(ServerHttpAgent.java:181)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpPost(MetricsHttpAgent.java:67)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.checkUpdateConfigStr(ClientWorker.java:380)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.checkUpdateDataIds(ClientWorker.java:347)
+	at com.alibaba.nacos.client.config.impl.ClientWorker$LongPollingRunnable.run(ClientWorker.java:535)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at java.base/java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:304)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+2025-11-18 23:32:48 [com.alibaba.nacos.client.config.security.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:32:50 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'scopedTarget.configVO': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'hoj.db.username' in value "${hoj.db.username}"
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:405)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1422)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:594)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:517)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$1(AbstractBeanFactory.java:359)
+	at org.springframework.cloud.context.scope.GenericScope$BeanLifecycleWrapper.getBean(GenericScope.java:389)
+	at org.springframework.cloud.context.scope.GenericScope.get(GenericScope.java:186)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:356)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1108)
+	at org.springframework.cloud.context.scope.refresh.RefreshScope.eagerlyInitialize(RefreshScope.java:127)
+	at org.springframework.cloud.context.scope.refresh.RefreshScope.start(RefreshScope.java:118)
+	at org.springframework.cloud.context.scope.refresh.RefreshScope.onApplicationEvent(RefreshScope.java:112)
+	at org.springframework.cloud.context.scope.refresh.RefreshScope.onApplicationEvent(RefreshScope.java:66)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.doInvokeListener(SimpleApplicationEventMulticaster.java:172)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.invokeListener(SimpleApplicationEventMulticaster.java:165)
+	at org.springframework.context.event.SimpleApplicationEventMulticaster.multicastEvent(SimpleApplicationEventMulticaster.java:139)
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:403)
+	at org.springframework.context.support.AbstractApplicationContext.publishEvent(AbstractApplicationContext.java:360)
+	at org.springframework.context.support.AbstractApplicationContext.finishRefresh(AbstractApplicationContext.java:897)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.finishRefresh(ServletWebServerApplicationContext.java:162)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:553)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:747)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'hoj.db.username' in value "${hoj.db.username}"
+	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:178)
+	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:124)
+	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:236)
+	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:210)
+	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer.lambda$processProperties$0(PropertySourcesPlaceholderConfigurer.java:175)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.resolveEmbeddedValue(AbstractBeanFactory.java:909)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1231)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1210)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:640)
+	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:130)
+	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:399)
+	... 28 common frames omitted
+2025-11-18 23:36:00 [com.alibaba.nacos.client.config.security.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - login failed: {"code":403,"message":"unknown user!","header":{"header":{"Accept-Charset":"UTF-8","Accept-Encoding":"gzip","Connection":"keep-alive","Content-Length":"13","Content-Type":"text/plain;charset=UTF-8","Date":"Tue, 18 Nov 2025 15:35:59 GMT","Keep-Alive":"timeout=4","Proxy-Connection":"keep-alive"},"originalResponseHeader":{"Connection":["keep-alive"],"Content-Length":["13"],"Content-Type":["text/plain;charset=UTF-8"],"Date":["Tue, 18 Nov 2025 15:35:59 GMT"],"Keep-Alive":["timeout=4"],"Proxy-Connection":["keep-alive"]},"charset":"UTF-8"}}
+2025-11-18 23:36:00 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-100.97.103.105_8848] [sub-server-error] no right, dataId=hoj, group=DEFAULT_GROUP, tenant=
+2025-11-18 23:36:00 [main] ERROR c.a.cloud.nacos.client.NacosPropertySourceBuilder - get data from Nacos error,dataId:hoj, 
+com.alibaba.nacos.api.exception.NacosException: {"timestamp":"2025-11-18T23:36:00.559+08:00","status":403,"error":"Forbidden","message":"unknown user!","path":"/nacos/v1/cs/configs"}
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:239)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:142)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:36:00 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-100.97.103.105_8848] [sub-server-error] no right, dataId=hoj.yml, group=DEFAULT_GROUP, tenant=
+2025-11-18 23:36:00 [main] ERROR c.a.cloud.nacos.client.NacosPropertySourceBuilder - get data from Nacos error,dataId:hoj.yml, 
+com.alibaba.nacos.api.exception.NacosException: {"timestamp":"2025-11-18T23:36:00.773+08:00","status":403,"error":"Forbidden","message":"unknown user!","path":"/nacos/v1/cs/configs"}
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:239)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:145)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:36:00 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-100.97.103.105_8848] [sub-server-error] no right, dataId=hoj-dev.yml, group=DEFAULT_GROUP, tenant=
+2025-11-18 23:36:00 [main] ERROR c.a.cloud.nacos.client.NacosPropertySourceBuilder - get data from Nacos error,dataId:hoj-dev.yml, 
+com.alibaba.nacos.api.exception.NacosException: {"timestamp":"2025-11-18T23:36:00.819+08:00","status":403,"error":"Forbidden","message":"unknown user!","path":"/nacos/v1/cs/configs"}
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:239)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:150)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:36:02 [main] ERROR com.alibaba.nacos.client.security.SecurityProxy - login failed: {"code":403,"message":"unknown user!","header":{"header":{"Accept-Charset":"UTF-8","Accept-Encoding":"gzip","Connection":"keep-alive","Content-Length":"13","Content-Type":"text/plain;charset=UTF-8","Date":"Tue, 18 Nov 2025 15:36:01 GMT","Keep-Alive":"timeout=4","Proxy-Connection":"keep-alive"},"originalResponseHeader":{"Connection":["keep-alive"],"Content-Length":["13"],"Content-Type":["text/plain;charset=UTF-8"],"Date":["Tue, 18 Nov 2025 15:36:01 GMT"],"Keep-Alive":["timeout=4"],"Proxy-Connection":["keep-alive"]},"charset":"UTF-8"}}
+2025-11-18 23:36:02 [com.alibaba.nacos.client.naming.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - login failed: {"code":403,"message":"unknown user!","header":{"header":{"Accept-Charset":"UTF-8","Accept-Encoding":"gzip","Connection":"keep-alive","Content-Length":"13","Content-Type":"text/plain;charset=UTF-8","Date":"Tue, 18 Nov 2025 15:36:01 GMT","Keep-Alive":"timeout=4","Proxy-Connection":"keep-alive"},"originalResponseHeader":{"Connection":["keep-alive"],"Content-Length":["13"],"Content-Type":["text/plain;charset=UTF-8"],"Date":["Tue, 18 Nov 2025 15:36:01 GMT"],"Keep-Alive":["timeout=4"],"Proxy-Connection":["keep-alive"]},"charset":"UTF-8"}}
+2025-11-18 23:36:02 [main] ERROR com.alibaba.nacos.client.security.SecurityProxy - login failed: {"code":403,"message":"unknown user!","header":{"header":{"Accept-Charset":"UTF-8","Accept-Encoding":"gzip","Connection":"keep-alive","Content-Length":"13","Content-Type":"text/plain;charset=UTF-8","Date":"Tue, 18 Nov 2025 15:36:02 GMT","Keep-Alive":"timeout=4","Proxy-Connection":"keep-alive"},"originalResponseHeader":{"Connection":["keep-alive"],"Content-Length":["13"],"Content-Type":["text/plain;charset=UTF-8"],"Date":["Tue, 18 Nov 2025 15:36:02 GMT"],"Keep-Alive":["timeout=4"],"Proxy-Connection":["keep-alive"]},"charset":"UTF-8"}}
+2025-11-18 23:36:02 [com.alibaba.nacos.client.config.security.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - login failed: {"code":403,"message":"unknown user!","header":{"header":{"Accept-Charset":"UTF-8","Accept-Encoding":"gzip","Connection":"keep-alive","Content-Length":"13","Content-Type":"text/plain;charset=UTF-8","Date":"Tue, 18 Nov 2025 15:36:02 GMT","Keep-Alive":"timeout=4","Proxy-Connection":"keep-alive"},"originalResponseHeader":{"Connection":["keep-alive"],"Content-Length":["13"],"Content-Type":["text/plain;charset=UTF-8"],"Date":["Tue, 18 Nov 2025 15:36:02 GMT"],"Keep-Alive":["timeout=4"],"Proxy-Connection":["keep-alive"]},"charset":"UTF-8"}}
+2025-11-18 23:36:02 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-100.97.103.105_8848] [sub-server-error] no right, dataId=hoj-switch.yml, group=DEFAULT_GROUP, tenant=
+2025-11-18 23:36:02 [main] ERROR org.springframework.boot.SpringApplication - Application run failed
+org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'nacosSwitchConfig': Invocation of init method failed; nested exception is ErrCode:403, ErrMsg:{"timestamp":"2025-11-18T23:36:02.939+08:00","status":403,"error":"Forbidden","message":"unknown user!","path":"/nacos/v1/cs/configs"}
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:160)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:416)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1788)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:595)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:517)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:323)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:222)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:321)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202)
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:882)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:878)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:550)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:747)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:315)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+Caused by: com.alibaba.nacos.api.exception.NacosException: {"timestamp":"2025-11-18T23:36:02.939+08:00","status":403,"error":"Forbidden","message":"unknown user!","path":"/nacos/v1/cs/configs"}
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:239)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at top.hcode.hoj.config.NacosSwitchConfig.init(NacosSwitchConfig.java:68)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleElement.invoke(InitDestroyAnnotationBeanPostProcessor.java:389)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:333)
+	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:157)
+	... 18 common frames omitted
+2025-11-18 23:40:50 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:40:50 [com.alibaba.nacos.client.config.security.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:40:50 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:40:50 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:40:51 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:40:51 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:142)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:40:51 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:40:51 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:40:51 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:40:51 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:40:51 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj.yml, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:145)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:40:51 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:40:51 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:40:52 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:40:52 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:40:52 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj-dev.yml, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:150)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:40:53 [main] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:40:53 [com.alibaba.nacos.client.naming.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:40:54 [main] ERROR o.s.b.diagnostics.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field nacosSwitchConfig in top.hcode.hoj.manager.admin.system.ConfigManager required a bean of type 'top.hcode.hoj.config.NacosSwitchConfig' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'top.hcode.hoj.config.NacosSwitchConfig' in your configuration.
+
+2025-11-18 23:48:29 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:48:29 [com.alibaba.nacos.client.config.security.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:48:29 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:48:29 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:48:30 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:48:30 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:142)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:48:30 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:48:30 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:48:30 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:48:30 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:48:30 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj.yml, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:145)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:48:30 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:48:30 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:48:31 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:48:31 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:48:31 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj-dev.yml, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:150)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:48:32 [main] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:48:32 [com.alibaba.nacos.client.naming.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:48:33 [main] ERROR o.s.b.diagnostics.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field nacosSwitchConfig in top.hcode.hoj.validator.AccessValidator required a bean of type 'top.hcode.hoj.config.NacosSwitchConfig' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'top.hcode.hoj.config.NacosSwitchConfig' in your configuration.
+
+2025-11-18 23:50:56 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:50:56 [com.alibaba.nacos.client.config.security.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:50:57 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:50:57 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:50:57 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:50:57 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:142)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:50:57 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:50:57 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:50:57 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:50:58 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:50:58 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj.yml, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:145)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:50:58 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:50:58 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:50:58 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:50:58 [main] ERROR c.alibaba.nacos.client.config.http.ServerHttpAgent - [NACOS ConnectException httpGet] currentServerAddr:http://127.0.0.1:8848, err : Connection refused
+2025-11-18 23:50:58 [main] ERROR com.alibaba.nacos.client.config.impl.ClientWorker - [fixed-127.0.0.1_8848] [sub-server] get server config exception, dataId=hoj-dev.yml, group=DEFAULT_GROUP, tenant=
+java.net.ConnectException: [NACOS HTTP-GET] The maximum number of tolerable server reconnection errors has been reached
+	at com.alibaba.nacos.client.config.http.ServerHttpAgent.httpGet(ServerHttpAgent.java:125)
+	at com.alibaba.nacos.client.config.http.MetricsHttpAgent.httpGet(MetricsHttpAgent.java:51)
+	at com.alibaba.nacos.client.config.impl.ClientWorker.getServerConfig(ClientWorker.java:200)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfigInner(NacosConfigService.java:160)
+	at com.alibaba.nacos.client.config.NacosConfigService.getConfig(NacosConfigService.java:100)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.loadNacosData(NacosPropertySourceBuilder.java:85)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceBuilder.build(NacosPropertySourceBuilder.java:74)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosPropertySource(NacosPropertySourceLocator.java:204)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadNacosDataIfPresent(NacosPropertySourceLocator.java:191)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.loadApplicationConfiguration(NacosPropertySourceLocator.java:150)
+	at com.alibaba.cloud.nacos.client.NacosPropertySourceLocator.locate(NacosPropertySourceLocator.java:103)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:52)
+	at org.springframework.cloud.bootstrap.config.PropertySourceLocator.locateCollection(PropertySourceLocator.java:47)
+	at org.springframework.cloud.bootstrap.config.PropertySourceBootstrapConfiguration.initialize(PropertySourceBootstrapConfiguration.java:101)
+	at org.springframework.boot.SpringApplication.applyInitializers(SpringApplication.java:626)
+	at org.springframework.boot.SpringApplication.prepareContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1226)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at top.hcode.hoj.DataBackupApplication.main(DataBackupApplication.java:24)
+2025-11-18 23:51:00 [main] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:51:00 [com.alibaba.nacos.client.naming.updater] ERROR com.alibaba.nacos.client.security.SecurityProxy - [SecurityProxy] login http request failed url: http://127.0.0.1:8848/nacos/v1/auth/users/login, params: {username=root}, bodyMap: {password=hoj123456}, errorMsg: Connection refused
+2025-11-18 23:51:00 [main] ERROR o.s.b.diagnostics.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field nacosSwitchConfig in top.hcode.hoj.manager.group.GroupManager required a bean of type 'top.hcode.hoj.config.NacosSwitchConfig' that could not be found.
+
+The injection point has the following annotations:
+	- @org.springframework.beans.factory.annotation.Autowired(required=true)
+
+
+Action:
+
+Consider defining a bean of type 'top.hcode.hoj.config.NacosSwitchConfig' in your configuration.
+

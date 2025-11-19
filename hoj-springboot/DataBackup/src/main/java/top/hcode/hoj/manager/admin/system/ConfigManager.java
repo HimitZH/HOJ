@@ -65,7 +65,7 @@ public class ConfigManager {
     @Autowired
     private DiscoveryClient discoveryClient;
 
-    @Autowired
+    @Autowired(required = false)
     private NacosSwitchConfig nacosSwitchConfig;
 
     @Value("${service-url.name}")
@@ -152,7 +152,7 @@ public class ConfigManager {
 
 
     public WebConfigDTO getWebConfig() {
-        WebConfig webConfig = nacosSwitchConfig.getWebConfig();
+        WebConfig webConfig = nacosSwitchConfig != null ? nacosSwitchConfig.getWebConfig() : new WebConfig();
         return WebConfigDTO.builder()
                 .baseUrl(UnicodeUtil.toString(webConfig.getBaseUrl()))
                 .name(UnicodeUtil.toString(webConfig.getName()))
@@ -183,6 +183,9 @@ public class ConfigManager {
 
     public void setWebConfig(WebConfigDTO config) throws StatusFailException {
 
+        if (nacosSwitchConfig == null) {
+            throw new StatusFailException("本地未连接 Nacos，无法修改远程 Web 配置");
+        }
         WebConfig webConfig = nacosSwitchConfig.getWebConfig();
 
         if (!StringUtils.isEmpty(config.getBaseUrl())) {
@@ -219,7 +222,7 @@ public class ConfigManager {
     }
 
     public EmailConfigDTO getEmailConfig() {
-        WebConfig webConfig = nacosSwitchConfig.getWebConfig();
+        WebConfig webConfig = nacosSwitchConfig != null ? nacosSwitchConfig.getWebConfig() : new WebConfig();
         return EmailConfigDTO.builder()
                 .emailUsername(webConfig.getEmailUsername())
                 .emailPassword(webConfig.getEmailPassword())
@@ -232,6 +235,9 @@ public class ConfigManager {
 
 
     public void setEmailConfig(EmailConfigDTO config) throws StatusFailException {
+        if (nacosSwitchConfig == null) {
+            throw new StatusFailException("本地未连接 Nacos，无法修改远程邮箱配置");
+        }
         WebConfig webConfig = nacosSwitchConfig.getWebConfig();
         if (!StringUtils.isEmpty(config.getEmailHost())) {
             webConfig.setEmailHost(config.getEmailHost());
@@ -328,7 +334,7 @@ public class ConfigManager {
     }
 
     public SwitchConfigDTO getSwitchConfig() {
-        SwitchConfig switchConfig = nacosSwitchConfig.getSwitchConfig();
+        SwitchConfig switchConfig = nacosSwitchConfig != null ? nacosSwitchConfig.getSwitchConfig() : new SwitchConfig();
         SwitchConfigDTO switchConfigDTO = new SwitchConfigDTO();
         BeanUtil.copyProperties(switchConfig, switchConfigDTO);
         return switchConfigDTO;
@@ -336,6 +342,9 @@ public class ConfigManager {
 
     public void setSwitchConfig(SwitchConfigDTO config) throws StatusFailException {
 
+        if (nacosSwitchConfig == null) {
+            throw new StatusFailException("本地未连接 Nacos，无法修改远程开关配置");
+        }
         SwitchConfig switchConfig = nacosSwitchConfig.getSwitchConfig();
 
         if (config.getOpenPublicDiscussion() != null) {

@@ -15,6 +15,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.2.6.RELEASE</version>
                 <configuration>
                     <!-- 指定该Main Class为全局的唯一入口 -->
                     <mainClass>top.hcode.hoj.DataBackupApplication</mainClass>
@@ -34,6 +35,13 @@
                 <configuration>
                     <source>8</source>
                     <target>8</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
         </plugins>
@@ -50,6 +58,12 @@
         </resources>
     </build>
     <dependencies>
+        <!-- Load .env into Spring Environment -->
+        <dependency>
+            <groupId>me.paulschwarz</groupId>
+            <artifactId>spring-dotenv</artifactId>
+            <version>3.0.0</version>
+        </dependency>
         <dependency>
             <groupId>top.hcode</groupId>
             <artifactId>hoj-api</artifactId>
