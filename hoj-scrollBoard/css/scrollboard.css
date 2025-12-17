@@ -94,8 +94,12 @@ th.rank {
     color: #fff;
 }
 
-.team-name.girl {
+.team.girl {
     background: #FFCCCC;
+}
+
+.team.star{
+    background-color: #ffffcc;
 }
 
 #timer {
@@ -159,4 +163,77 @@ th.rank {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+table.rank-fixed {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.team-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 100%;
+    min-width: 0; /* 关键：允许子元素收缩 */
+}
+
+.team-avatar {
+    flex: 0 0 auto; /* 不伸缩，不收缩 */
+    width: 50x;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #f0f0f0;
+}
+
+.team-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1 1 auto;
+    min-width: 0; /* 允许内部文本截断 */
+}
+
+.team-title {
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.team-school {
+    color: #666;
+    font-size: 70%;
+    font-weight: normal;
+    color: dimgrey;
+    position: relative;
+    display: block;
+    table.rank-fixed {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.team-title,
+.team-school {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.team-title {
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.team-school {
+    color: #666;
+    font-size: 70%;
+    font-weight: normal;
+    color: dimgrey;
+    position: relative;
+    display: block;
+    overflow: hidden;
+}
+
+.table>tbody>tr>td{
+    padding: 5px !important;
 }

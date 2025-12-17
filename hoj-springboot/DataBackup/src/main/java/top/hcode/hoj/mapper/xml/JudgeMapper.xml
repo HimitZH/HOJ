@@ -181,10 +181,11 @@
 
     <select id="getContestScrollBoardSubmission" resultType="top.hcode.hoj.pojo.vo.ContestScrollBoardSubmissionVO" useCache="true">
         select ju.submit_id,ju.submit_time, ju.uid, ju.username, ju.status, ju.nickname, ju.realname, ju.gender, ju.school,
-        cp.display_id
+        ju.avatar, cp.display_id
         from
         (
-            select j.submit_id, j.submit_time, j.status,j.cpid, u.uuid as uid, u.username, u.nickname, u.realname, u.gender, u.school
+            select j.submit_id, j.submit_time, j.status,j.cpid, u.uuid as uid, u.username, u.nickname, u.realname, u.gender,
+                   u.school, u.avatar
             from judge j, user_info u
             where j.cid = #{cid}
             and j.uid = u.uuid

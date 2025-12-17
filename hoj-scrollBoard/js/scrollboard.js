@@ -509,7 +509,7 @@ function int64add5(dst, a, b, c, d, e)
 /**
  * 本地调试请提供后端api的域名
  */
-const TEST_BACKEND_API = '';
+const TEST_BACKEND_API = 'http://scpc.fun';
 
 /**
  * 
@@ -701,7 +701,7 @@ function getTeamList(submissions, rankShowName, starUsernameList) {
             official = false;
         }
         var school = team.school == null? '': team.school;
-        data[team.uid] = new Team(team.uid, name, null, official, girl, school);
+        data[team.uid] = new Team(team.uid, name, null, official, girl, school, team.avatar);
     }
     return data;
 }
@@ -805,7 +805,7 @@ function TeamProblem() {
  * @param {String}  teamMember  队员
  * @param {boolean} official     是否计入排名
  */
-function Team(teamId, teamName, teamMember, official, girl, teamSchool) {
+function Team(teamId, teamName, teamMember, official, girl, teamSchool, avatar) {
     this.teamId = teamId; //队伍ID
     this.teamName = teamName; //队伍名
     this.teamMember = teamMember; //队员
@@ -813,7 +813,8 @@ function Team(teamId, teamName, teamMember, official, girl, teamSchool) {
     this.solved = 0; //通过数
     this.penalty = 0; //罚时,单位为毫秒
     this.girl = girl; //女队,默认否
-    this.teamSchool = teamSchool // 学校
+    this.teamSchool = teamSchool; // 学校
+    this.avatar = avatar; // 头像
     this.submitProblemList = []; //提交题目列表
     this.unkonwnAlphabetIdMap = new Array(); //未知的题目AlphabetId列表
     this.submitList = []; //提交列表
@@ -1080,7 +1081,7 @@ Board.prototype.showInitBoard = function() {
     var headHTML =
         "<div id=\"timer\"></div>\
         <div class=\"ranktable-head\">\
-            <table class=\"table\">\
+            <table class=\"table rank-fixed\">\
                 <tr>\
                     <th width=\"" + rankPer + "%\">Rank</th>\
                     <th width=\"" + teamPer + "%\">Team</th>\
@@ -1154,13 +1155,32 @@ Board.prototype.showInitBoard = function() {
         //构造HTML
         var headHTML =
             "<div id=\"team_" + team.teamId + "\" class=\"team-item\" team-id=\"" + team.teamId + "\"> \
-                    <table class=\"table\"> \
+                    <table class=\"table rank-fixed\"> \
                         <tr>";
 		var rankHTML;
 		if (team.official==true)
         	 rankHTML = "<th class=\"rank\" width=\"" + rankPer + "%\">" + rank + "</th>";
 		else rankHTML = "<th class=\"rank\" width=\"" + rankPer + "%\">" + "*" + "</th>";
-        var teamHTML = "<td class=\"team-name\" width=\"" + teamPer + "%\"><span class=\"fw-bold\">" + team.teamName + "</span><span class=\"univ\">" + team.teamSchool + "</span></td>";
+        // var teamHTML = "<td class=\"team\" width=\"" + teamPer + "%\"><span class=\"fw-bold\">" + team.teamName + "</span><span class=\"univ\">" + team.teamSchool + "</span></td>";
+        var avatarUrl;
+        if(team.avatar == null){
+            var avatarName = encodeURIComponent(team.teamName);
+            avatarUrl = "https://ui-avatars.com/api/?name=" + avatarName + "&background=random&color=ffffff&rounded=true&size=50";
+        }else{
+            avatarUrl = team.avatar;
+        }
+        var teamHTML = 
+            '<td class="team" width="' + teamPer + '%">' +
+                '<div class="team-row">' +
+                    '<img src="' + avatarUrl + '" alt="" class="team-avatar" />' +
+                    '<div class="team-info">' +
+                    '<div class="team-title" title="' + (team.teamName || '').replace(/"/g, '&quot;') + '">' + (team.teamName || '') + '</div>' +
+                        '<div class="team-school">' + (team.teamSchool || '') + '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</td>';
+        
+        
         var solvedHTML = "<td class=\"solved fw-bold\" width=\"" + solvedPer + "%\">" + team.solved + "</td>";
         var penaltyHTML = "<td class=\"penalty\" width=\"" + penaltyPer + "%\">" + parseInt(team.penalty / 1000.0 / 60.0) + "</td>";
         var problemHTML = "";
@@ -1197,8 +1217,10 @@ Board.prototype.showInitBoard = function() {
         //设置奖牌对应的CSS样式
         if (medal != -1 && team.official == true)
             $("#team_" + team.teamId + ' .rank').addClass(this.medalStr[medal]);
-        if(girl == true){
-            $("#team_" + team.teamId + ' .team-name').addClass("girl");
+        if(team.official == false){
+            $("#team_" + team.teamId + ' .team').addClass("star");
+        }else if(girl == true){
+            $("#team_" + team.teamId + ' .team').addClass("girl");
         }
 
     }
@@ -1207,10 +1229,10 @@ Board.prototype.showInitBoard = function() {
     //构造一个空的队伍，填充底部
     var headHTML =
         "<div id=\"team-void\" class=\"team-item\"> \
-                    <table class=\"table\"> \
+                    <table class=\"table rank-fixed\"> \
                         <tr>";
     var rankHTML = "<th class=\"rank\" width=\"" + rankPer + "%\"></th>";
-    var teamHTML = "<td class=\"team-name\" width=\"" + teamPer + "%\"></td>";
+    var teamHTML = "<td class=\"team\" width=\"" + teamPer + "%\"></td>";
     var solvedHTML = "<td class=\"solved\" width=\"" + solvedPer + "%\"></td>";
     var penaltyHTML = "<td class=\"penalty\" width=\"" + penaltyPer + "%\"></td>";
     var problemHTML = "";
@@ -1322,7 +1344,7 @@ Board.prototype.updateTeamStatus = function(team) {
             }
             // 移除女队
             for (var i in thisBoard.medalStr) {
-                $(".team-item .team-name").removeClass("girl");
+                $(".team-item .team").removeClass("girl");
             }
 
             //对于每个队计算排名和奖牌情况
@@ -1350,7 +1372,7 @@ Board.prototype.updateTeamStatus = function(team) {
                 if (medal != -1 && t.official == true)
                     $("div[team-id=\"" + t.teamId + "\"]  .rank").addClass(thisBoard.medalStr[medal]);
                 if(girl == true){
-                    $("div[team-id=\"" + t.teamId + "\"]  .team-name").addClass("girl");
+                    $("div[team-id=\"" + t.teamId + "\"]  .team").addClass("girl");
                 }
 				if (t.official==true)
                 	$("#team_" + t.teamId + " .rank").html(rankValue);

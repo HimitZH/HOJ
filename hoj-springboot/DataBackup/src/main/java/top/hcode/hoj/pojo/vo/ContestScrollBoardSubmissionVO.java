@@ -30,6 +30,9 @@ public class ContestScrollBoardSubmissionVO {
     @ApiModelProperty(value = "学校")
     private String school;
 
+    @ApiModelProperty(value = "头像图片地址")
+    private String avatar;
+
     @ApiModelProperty(value = "性别")
     private String gender;
 
