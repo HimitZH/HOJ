@@ -509,7 +509,7 @@ function int64add5(dst, a, b, c, d, e)
 /**
  * 本地调试请提供后端api的域名
  */
-const TEST_BACKEND_API = 'http://scpc.fun';
+const TEST_BACKEND_API = '';
 
 /**
  * 
