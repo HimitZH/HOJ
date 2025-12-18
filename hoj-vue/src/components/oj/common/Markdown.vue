@@ -5,16 +5,14 @@
     v-dompurify-html="html"
     v-highlight
     v-katex
-    class="markdown-body"
-  ></div>
+    class="markdown-body"></div>
   <div
     v-else
     key="avoidXssOff"
     v-html="html"
     v-highlight
     v-katex
-    class="markdown-body"
-  ></div>
+    class="markdown-body"></div>
 </template>
 <script>
 export default {
@@ -29,9 +27,9 @@ export default {
       type: String,
     },
   },
-  data(){
-    return{
-        pdfLogo: require('@/assets/pdf-logo.svg'),
+  data() {
+    return {
+      pdfLogo: require('@/assets/pdf-logo.svg'),
     }
   },
   computed: {
@@ -71,6 +69,7 @@ file-card .pdf-svg {
   margin: 0 !important;
   box-shadow: none !important;
 }
+
 file-card {
   margin: 1rem 0;
   display: flex;
@@ -84,7 +83,8 @@ file-card {
   position: relative;
   border: 1px solid rgba(0, 0, 0, 0.15);
 }
-file-card > div:first-of-type {
+
+file-card>div:first-of-type {
   display: flex;
   align-items: center;
   padding-right: 1rem;
@@ -93,6 +93,7 @@ file-card > div:first-of-type {
   flex-shrink: 0;
   flex-grow: 0;
 }
+
 file-card .filename {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -109,6 +110,7 @@ file-card .filename {
   display: -webkit-box;
   -webkit-box-orient: vertical;
 }
+
 file-card p {
   margin: 0;
   line-height: 1;
